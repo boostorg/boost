@@ -42,9 +42,11 @@ rule boost-test ( sources + : target-type : requirements * : test-name ? )
         # Make sure that targets don't become part of "all"
         local gSUPPRESS_FAKE_TARGETS = true ;
         
+        local dependencies = [ select-gristed $(sources) ] ;
+        local source-files = [ select-ungristed $(sources) ] ;
         result = [
             declare-local-target $(test-name)
-            : $(sources:R=$(BOOST_ROOT)) # sources
+            : $(source-files:R=$(BOOST_ROOT)) $(dependencies)  # sources 
             : $(requirements) <include>$(BOOST_ROOT) # requirements
             :             # default build
             : $(target-type)
@@ -365,6 +367,7 @@ rule test-suite # pseudotarget-name : test-targets...
 
 # ----------- Actual test invocations follow ----------------#
 
+
 test-suite "bind"
     : [ run libs/bind/bind_test.cpp ]
       [ run libs/bind/bind_test.cpp ]
@@ -454,6 +457,17 @@ run libs/test/example/test_tools_example.cpp ;
 
 run-fail libs/test/test/test_tools_fail2.cpp ;
 
+test-suite threads
+  : [
+    run libs/thread/test/test_thread.cpp <lib>../libs/thread/build/boost_thread 
+      <dll>../libs/thread/build/boost_threadmon
+      : #args
+      : #input-files
+      : #requirements
+        <threading>multi
+    ]
+  ;
+
 compile libs/timer/timer_test.cpp ;
 
 test-suite tokenizer
@@ -508,8 +522,7 @@ test-suite iterator_adaptors
       [ run libs/utility/projection_iterator_example.cpp ]
       [ run libs/utility/reverse_iterator_example.cpp ]
       [ run libs/utility/transform_iterator_example.cpp ]
-    ;
-
+    ;    
 
 run libs/utility/iterator_traits_test.cpp ;
 
