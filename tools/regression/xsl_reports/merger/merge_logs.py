@@ -35,34 +35,36 @@ def unzip( archive_path, result_dir ):
     z.close()
     
 
-def merge_test_runs( incoming_dir, tag, writer ):
-    test_runs_dir = os.path.join( incoming_dir, tag )
-    
-    utils.log( 'Looking for test runs in the directory "%s"' % test_runs_dir )
-    
-    all_runs_xml = xml.sax.saxutils.XMLGenerator( writer )
-    all_runs_xml.startDocument()
-    all_runs_xml.startElement( 'all-test-runs', {} )
-    
-    utils.log( 'Unzipping new test runs...' )
-    files = glob.glob( os.path.join( test_runs_dir, '*.zip' ) )
+def unzip_test_runs( dir ):
+    files = glob.glob( os.path.join( dir, '*.zip' ) )
     for test_run in files:
         try:
             utils.log( '  Unzipping "%s" ...' % test_run )
-            zip_path = os.path.join( test_runs_dir, test_run )
-            unzip( zip_path, test_runs_dir )
+            zip_path = os.path.join( dir, test_run )
+            unzip( zip_path, dir )
             utils.log( '  Removing "%s" ...' % test_run )
             os.unlink( zip_path )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
+    
+def merge_test_runs( incoming_dir, tag, writer ):
+    test_runs_dir = os.path.join( incoming_dir, tag )
+    
+    utils.log( 'Looking for test runs in the directory "%s"' % test_runs_dir )
 
+    utils.log( 'Unzipping new test runs...' )
+    unzip_test_runs( test_runs_dir )
+    
+    all_runs_xml = xml.sax.saxutils.XMLGenerator( writer )
+    all_runs_xml.startDocument()
+    all_runs_xml.startElement( 'all-test-runs', {} )
     
     utils.log( 'Processing test runs...' )
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
         try:
             utils.log( '  Loading "%s" in memory...' % test_run )
-            run = xml.dom.minidom.parse( os.path.join( test_runs_dir, test_run ) )
+            run = xml.dom.minidom.parse( test_run  )
             utils.log( '  Writing "%s" into the resulting XML...' % test_run )
             run.documentElement.writexml( writer )
         except Exception, msg:
