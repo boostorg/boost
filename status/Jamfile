@@ -36,6 +36,7 @@ rule boost-test
         ] ;
     }
     Clean clean : $(result) ;
+    type-DEPENDS $(<:B:S=) : $(result) ;
     type-DEPENDS test : $(result) ;
     return $(result) ;
 }
@@ -250,6 +251,7 @@ run libs/functional/function_test.cpp ;
 
 run libs/graph/test/graph.cpp ;
 
+
 test-suite integer
     : [ run libs/integer/cstdint_test.cpp ]
       [ run libs/integer/integer_test.cpp ]
@@ -274,6 +276,8 @@ test-suite random
     : [ run libs/random/random_test.cpp ]
       [ run libs/random/random_demo.cpp ]
     ;
+
+run libs/utility/ref_test.cpp ;
 
 test-suite regex
     : [ run libs/regex/test/regress/regex_test.cpp : :
