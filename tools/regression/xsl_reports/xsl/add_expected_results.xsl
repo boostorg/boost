@@ -38,7 +38,7 @@
           <!-- Hack: needs to be researched (and removed). See M.Wille's incident. -->
           <xsl:when test="run/@result='succeed' and lib/@result='fail'">
             <xsl:text>success</xsl:text>
-	  </xsl:when>
+      </xsl:when>
           <xsl:when test="./*/@result = 'fail'" >
             <xsl:text>fail</xsl:text>
           </xsl:when>
@@ -59,7 +59,6 @@
          </xsl:choose>
       </xsl:variable>
 
-      
       <xsl:variable name="expected_result">
         <xsl:choose>
           <xsl:when test='count( $failures_markup ) &gt; 0'>
