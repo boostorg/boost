@@ -16,6 +16,9 @@
 <xsl:stylesheet 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:exsl="http://exslt.org/common"
+  xmlns:func="http://exslt.org/functions"
+  xmlns:meta="http://www.meta-comm.com"
+  extension-element-prefixes="func"
   version="1.0">
 
   <xsl:import href="common.xsl"/>
@@ -75,7 +78,7 @@
     <tr valign="middle">
       <td class="head" colspan="2">test / toolset</td>
 
-      <xsl:variable name="library_notes" select="$library_marks/note"/>
+      <xsl:variable name="all_library_notes" select="$library_marks/note"/>
       <xsl:for-each select="$toolsets/toolset">
         <xsl:variable name="toolset" select="@toolset"/>
 
@@ -89,20 +92,30 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
-          
-        <td class="{$class}"><xsl:value-of select="$toolset"/>
-          <xsl:if test="$library_notes">
-            <span class="super">
-              <xsl:for-each select="$library_notes">
+
+        <xsl:variable name="toolset_notes_fragment">
+            <xsl:for-each select="$all_library_notes">
                 <xsl:if test="../@toolset=$toolset or ( ../toolset/@name=$toolset or ../toolset/@name = '*' )">
-                  <xsl:variable name="note_index" select="position()"/>
-                  <a href="#{$library}-note-{$note_index}" title="Note {$note_index}"><xsl:value-of select="$note_index"/></a>
+                    <note index="{position()}"/>
                 </xsl:if>
-              </xsl:for-each>
-            </span>
+            </xsl:for-each>
+        </xsl:variable>
+
+        <xsl:variable name="toolset_notes" select="exsl:node-set( $toolset_notes_fragment )/*"/>
+
+        <td class="{$class}"><xsl:value-of select="$toolset"/>
+          <xsl:if test="count( $toolset_notes ) > 0">
+              <span class="super">
+                  <xsl:for-each select="$toolset_notes">
+                      <xsl:variable name="note_index" select="@index"/>
+                      <xsl:if test="generate-id( . ) != generate-id( $toolset_notes[1] )">, </xsl:if>
+                      <a href="#{$library}-note-{$note_index}" title="Note {$note_index}"><xsl:value-of select="$note_index"/></a>
+                  </xsl:for-each>
+              </span>
           </xsl:if>
         </td>
       </xsl:for-each>
+
       <td class="head">toolset / test</td>
     </tr>
   </xsl:template>
@@ -287,7 +300,7 @@
             </a>
           </div>
 
-          <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable"/>
+          <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/>
 
           <table border="0" cellspacing="0" cellpadding="0" class="detail-table" summary="library results">
 
@@ -307,78 +320,43 @@
             </tfoot>
 
             <tbody>
-              <xsl:variable name="lib_tests" select="//test-log[@library = $library]" />
-              <xsl:variable name="lib_unique_test_names" 
-                select="$lib_tests[ generate-id(.) = generate-id( key('test_name_key', concat( @library, '&gt;@&lt;', @test-name ) ) ) ]" />
+                <!-- lib_tests = test_log* -->
+                <xsl:variable name="lib_tests" select="//test-log[@library = $library]" /> 
 
-              <xsl:variable name="lib_corner_case_tests_markup" select="$explicit_markup//library[ @name = $library ]/test[ @corner-case='yes' ]"/>
-              
-              <xsl:variable name="lib_general_tests" select="$lib_unique_test_names[ not( @test-name = $lib_corner_case_tests_markup/@name )  ]"/>
+                <!-- lib_unique_test_names = test_log* -->
+                <xsl:variable name="lib_unique_test_names" 
+                    select="$lib_tests[ generate-id(.) = generate-id( key('test_name_key', concat( @library, '&gt;@&lt;', @test-name ) ) ) ]" />
 
-              <xsl:variable name="lib_corner_case_tests" select="$lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] " />
-            
-              <xsl:for-each select="$lib_general_tests">
-                <xsl:variable name="test_name" select="./@test-name"/>
-                <xsl:variable name="line_mod">
-                  <xsl:choose>
-                    <xsl:when test="1 = last()">
-                      <xsl:text>-single</xsl:text>
-                    </xsl:when>
-                    <xsl:when test="generate-id( . ) = generate-id( $lib_general_tests[1] )">
-                      <xsl:text>-first</xsl:text>
-                    </xsl:when>
-                    <xsl:when test="generate-id( . ) = generate-id( $lib_general_tests[last()] )">
-                      <xsl:text>-last</xsl:text>
-                    </xsl:when>
-                  <xsl:otherwise>
-                    <xsl:text></xsl:text>
-                  </xsl:otherwise>
-                  </xsl:choose>
-                </xsl:variable>
-
-                <xsl:call-template name="insert-test-line">
-                  <xsl:with-param name="test_results" select="$lib_tests[ @test-name = $test_name ]"/>
-                  <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
-                  <xsl:with-param name="test_name" select="$test_name"/>
-                  <xsl:with-param name="line_mod" select="$line_mod"/>
-                </xsl:call-template>
-              </xsl:for-each>
-
-              <xsl:if test="count( $lib_corner_case_tests ) > 0">
-                <tr>
-                  <!--<td colspan="2">&#160;</td>                  -->
-                  <td class="detail-corner-case-header" colspan="{count($ordered_toolsets) + 3 }" align="center">Corner-case tests</td>
-                  <!--<td>&#160;</td>-->
-                </tr>
+                <xsl:variable name="lib_corner_case_tests_markup" select="$explicit_markup//library[ @name = $library ]/test[ @corner-case='yes' ]"/>
                 
-                <xsl:for-each select="$lib_corner_case_tests">
-                  <xsl:variable name="test_name" select="@test-name"/>
+                <xsl:variable name="lib_general_tests" 
+                    select="meta:order_tests_by_name( $lib_unique_test_names[ not( @test-name = $lib_corner_case_tests_markup/@name ) ]  )"/>
 
-                  <xsl:variable name="line_mod">
-                    <xsl:choose>
-                      <xsl:when test="1 = last()">
-                        <xsl:text>-single</xsl:text>
-                      </xsl:when>
-                      <xsl:when test="generate-id( . ) = generate-id( $lib_general_tests[1] )">
-                        <xsl:text>-first</xsl:text>
-                      </xsl:when>
-                      <xsl:when test="generate-id( . ) = generate-id( $lib_general_tests[last()] )">
-                        <xsl:text>-last</xsl:text>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <xsl:text></xsl:text>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                  </xsl:variable>
 
-                  
-                  <xsl:call-template name="insert-test-line">
-                    <xsl:with-param name="test_results" select="$lib_tests[ @test-name = $test_name ]"/>
+                <xsl:variable name="lib_corner_case_tests" select="meta:order_tests_by_name( $lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] ) " />
+
+                <!-- general tests section -->
+
+                <xsl:call-template name="insert_test_section">
+                    <xsl:with-param name="section_tests" select="$lib_general_tests"/>
+                    <xsl:with-param name="lib_tests" select="$lib_tests"/>
                     <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
-                    <xsl:with-param name="test_name" select="$test_name"/>
-                    <xsl:with-param name="line_mod" select="$line_mod"/>
-                  </xsl:call-template>
-                </xsl:for-each>
+                </xsl:call-template>
+
+                <!-- corner-case tests section -->
+
+                <xsl:if test="count( $lib_corner_case_tests ) > 0">
+                    <tr>
+                        <!--<td colspan="2">&#160;</td>                  -->
+                        <td class="detail-corner-case-header" colspan="{count($ordered_toolsets) + 3 }" align="center">Corner-case tests</td>
+                        <!--<td>&#160;</td>-->
+                    </tr>
+
+                <xsl:call-template name="insert_test_section">
+                    <xsl:with-param name="section_tests" select="$lib_corner_case_tests"/>
+                    <xsl:with-param name="lib_tests" select="$lib_tests"/>
+                    <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
+                </xsl:call-template>
                 
               </xsl:if>
 
@@ -591,5 +569,49 @@
     </tr>
   </xsl:template>
 
+  <xsl:template name="insert_test_section">
+      <xsl:param name="section_tests"/>
+      <xsl:param name="lib_tests"/>
+      <xsl:param name="toolsets"/>
 
+      <xsl:for-each select="$section_tests">
+          <xsl:variable name="test_name" select="@test-name"/>
+          <xsl:variable name="line_mod">
+              <xsl:choose>
+                  <xsl:when test="1 = last()">
+                      <xsl:text>-single</xsl:text>
+                  </xsl:when>
+                  <xsl:when test="generate-id( . ) = generate-id( $section_tests[1] )">
+                      <xsl:text>-first</xsl:text>
+                  </xsl:when>
+                  <xsl:when test="generate-id( . ) = generate-id( $section_tests[last()] )">
+                      <xsl:text>-last</xsl:text>
+                  </xsl:when>
+                  <xsl:otherwise>
+                      <xsl:text></xsl:text>
+                  </xsl:otherwise>
+              </xsl:choose>
+          </xsl:variable>
+          
+          <xsl:call-template name="insert-test-line">
+              <xsl:with-param name="test_results" select="$lib_tests[ @test-name = $test_name ]"/>
+              <xsl:with-param name="toolsets" select="$toolsets"/>
+              <xsl:with-param name="test_name" select="$test_name"/>
+              <xsl:with-param name="line_mod" select="$line_mod"/>
+          </xsl:call-template>
+      </xsl:for-each>
+      
+  </xsl:template>
+
+  <func:function name="meta:order_tests_by_name">
+      <xsl:param name="tests"/>
+
+      <xsl:variable name="a">                  
+          <xsl:for-each select="$tests">
+              <xsl:sort select="@test-name" order="ascending"/>
+              <xsl:copy-of select="."/>
+          </xsl:for-each>
+      </xsl:variable>
+      <func:result select="exsl:node-set( $a )/*"/>
+  </func:function>
 </xsl:stylesheet>
