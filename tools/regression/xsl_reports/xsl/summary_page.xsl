@@ -83,7 +83,7 @@
                 <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
                 <title>Boost regression summary: <xsl:value-of select="$source"/></title>
             </head>
-            <frameset cols="170px,*" frameborder="0" framespacing="0" border="0">
+            <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
             <frame name="tocframe" src="toc.html" scrolling="auto"/>
             <frame name="docframe" src="{$summary_results}" scrolling="auto"/>
             </frameset>
@@ -135,12 +135,13 @@
                 <!-- for each library -->
                 <xsl:for-each select="$sorted_libraries">
                 <xsl:variable name="library" select="."/>
+                <xsl:variable name="library_page" select="meta:encode_path( $library )" />
                 <xsl:variable name="current_row" select="$test_logs[ @library=$library]"/>
 
                 <xsl:variable name="expected_test_count" select="count( $current_row[ generate-id(.) = generate-id( key('test_name_key',@test-name)[1] ) ] )"/>
                 <xsl:variable name="library_header">
                     <td class="library-name">
-                    <a href="{.}.html" class="library-link" target="_top">
+                    <a href="{$library_page}.html" class="library-link" target="_top">
                         <xsl:value-of select="$library"/>
                     </a>
                     </td>
@@ -237,10 +238,12 @@
         </xsl:choose>
     </xsl:variable>
       
+    <xsl:variable name="library_page" select="meta:encode_path( $library )" />
+
     <td class="{$class}">
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
-            <a href="{$library}.html" class="log-link" target="_top">
+            <a href="{$library_page}.html" class="log-link" target="_top">
             <xsl:text>n/a</xsl:text>
             </a>          
         </xsl:when>
@@ -248,12 +251,12 @@
             <xsl:text>missing</xsl:text>
         </xsl:when>
         <xsl:when test="$class='summary-fail-unexpected'">
-            <a href="{$library}.html" class="log-link" target="_top">
+            <a href="{$library_page}.html" class="log-link" target="_top">
             <xsl:text>broken</xsl:text>
             </a>
         </xsl:when>
         <xsl:when test="$class='summary-fail-unexpected-new' ">
-            <a href="{$library}.html" class="log-link" target="_top">
+            <a href="{$library_page}.html" class="log-link" target="_top">
             <xsl:text>fail</xsl:text>
             </a>
         </xsl:when>
@@ -299,10 +302,12 @@
         </xsl:choose>
     </xsl:variable>
       
+    <xsl:variable name="library_page" select="meta:encode_path( $library )" />
+    
     <td class="{$class}">
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
-            <a href="{$library}.html" class="log-link" target="_top">
+            <a href="{$library_page}.html" class="log-link" target="_top">
             <xsl:text>unusable</xsl:text>
             </a>          
         </xsl:when>
@@ -312,13 +317,13 @@
         </xsl:when>
 
         <xsl:when test="$class='summary-user-fail-unexpected'">
-            <a href="{$library}.html" class="log-link" target="_top">
+            <a href="{$library_page}.html" class="log-link" target="_top">
             <xsl:text>unexp.</xsl:text>
             </a>
         </xsl:when>
 
         <xsl:when test="$class='summary-user-fail-expected'">
-            <a href="{$library}.html" class="log-link" target="_top">
+            <a href="{$library_page}.html" class="log-link" target="_top">
             <xsl:text>details</xsl:text>
             </a>
         </xsl:when>

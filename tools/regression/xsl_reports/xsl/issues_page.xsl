@@ -88,7 +88,7 @@
             <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
             <title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>
         </head>
-        <frameset cols="170px,*" frameborder="0" framespacing="0" border="0">
+        <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
         <frame name="tocframe" src="toc.html" scrolling="auto"/>
         <frame name="docframe" src="{$issues_list}" scrolling="auto"/>
         </frameset>
@@ -126,24 +126,31 @@
                 <xsl:for-each select="$libraries">
                     <xsl:sort select="." order="ascending"/>
                     <xsl:variable name="library" select="."/>
+                    <xsl:variable name="library_page" select="meta:encode_path( $library )" />
                 
                     <xsl:variable name="library_tests" select="meta:get_library_tests( $unexpected_test_cases, $library )"/>
                     <xsl:if test="count( $library_tests ) > 0">
                         <xsl:variable name="library_test_names" select="set:distinct( $library_tests/@test-name )"/>
 
                         <h2>
-                            <a class="hover-link" href="{$library}.html" target="_top">
+                            <a class="hover-link" href="{$library_page}.html" target="_top">
                                 <xsl:value-of select="$library"/>
                             </a>
                         </h2>
                         
-                        <table border="0" cellspacing="0" cellpadding="0" class="library-table" summary="issues">
+                        <table class="library-issues-table" summary="issues">
                             <thead>
                                 <tr valign="middle">
                                     <td class="head">test</td>
                                     <td class="head">failures</td>
                                 </tr>
                             </thead>
+                            <tfoot>
+                                <tr valign="middle">
+                                    <td class="head">test</td>
+                                    <td class="head">failures</td>
+                                </tr>
+                            </tfoot>
 
                             <tbody>
                             <xsl:for-each select="$library_test_names">
@@ -160,34 +167,37 @@
                                                 <xsl:value-of select="$test_name"/>
                                             </a>
                                         </td>
-                                        <td>
-                                            <xsl:for-each select="$unexpected_toolsets">
-                                                <xsl:sort select="." order="ascending"/>
-                                                <xsl:variable name="toolset" select="."/>
-                                                <xsl:variable name="test_result" select="$library_tests[@test-name = $test_name and @toolset = $toolset]"/>
-                                                <xsl:variable name="log_link" select="meta:output_file_path( $test_result/@target-directory )"/>
-                                                <xsl:variable name="class">
-                                                    <xsl:choose>
-                                                        <xsl:when test="$test_result/@is-new = 'yes'">
-                                                            <xsl:text>library-fail-unexpected-new</xsl:text>
-                                                        </xsl:when>
-                                                        <xsl:otherwise>
-                                                            <xsl:text>library-fail-unexpected</xsl:text>
-                                                        </xsl:otherwise>
-                                                    </xsl:choose>
-                                                </xsl:variable>
+                                        <td class="failures-row">
+                                            <table summary="unexpected fail legend" class="issue-box">
+                                                <tr class="library-row-single">
+                                                
+                                                <xsl:for-each select="$unexpected_toolsets">
+                                                    <xsl:sort select="." order="ascending"/>
+                                                    <xsl:variable name="toolset" select="."/>
+                                                    <xsl:variable name="test_result" select="$library_tests[@test-name = $test_name and @toolset = $toolset]"/>
+                                                    <xsl:variable name="log_link" select="meta:output_file_path( $test_result/@target-directory )"/>
+                                                    <xsl:variable name="class">
+                                                        <xsl:choose>
+                                                            <xsl:when test="$test_result/@is-new = 'yes'">
+                                                                <xsl:text>library-fail-unexpected-new</xsl:text>
+                                                            </xsl:when>
+                                                            <xsl:otherwise>
+                                                                <xsl:text>library-fail-unexpected</xsl:text>
+                                                            </xsl:otherwise>
+                                                        </xsl:choose>
+                                                    </xsl:variable>
 
-                                                <table summary="unexpected fail legend">
-                                                    <tr class="library-row-single">
-                                                        <td class="library-fail-unexpected">
-                                                            <a href="{$log_link}" class="log-link" target="_top">
-                                                                <xsl:value-of select="."/>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-
-                                            </xsl:for-each>
+                                                    <td class="{$class}">
+                                                        <span>
+                                                        <a href="{$log_link}" class="log-link" target="_top">
+                                                            <xsl:value-of select="."/>
+                                                        </a>
+                                                        </span>
+                                                    </td>
+                                                </xsl:for-each>
+                                                
+                                                </tr>
+                                            </table>
                                         </td>
                                     </tr>
                                 </xsl:if>
