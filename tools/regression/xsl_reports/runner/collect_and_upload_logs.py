@@ -43,19 +43,22 @@ def collect_test_logs( input_dirs, test_results_writer ):
         os.path.walk( input_dir, process_test_log_files, test_results_writer )
 
 
-def upload_to_ftp( tag, results_file, ftp_proxy ):
+def upload_to_ftp( tag, results_file, ftp_proxy, debug_level ):
     ftp_site = 'fx.meta-comm.com'
     site_path = '/boost-regression'
     utils.log( 'Uploading log archive "%s" to ftp://%s%s/%s' % ( results_file, ftp_site, site_path, tag ) )
     
     if not ftp_proxy:
         ftp = ftplib.FTP( ftp_site )
+        ftp.set_debuglevel( debug_level )
         ftp.login()
     else:
         utils.log( '    Connecting through FTP proxy server "%s"' % ftp_proxy )
         ftp = ftplib.FTP( ftp_proxy )
+        ftp.set_debuglevel( debug_level )
+        ftp.set_pasv (0) # turn off PASV mode
         ftp.login( 'anonymous@%s' % ftp_site, 'anonymous@' )
-        
+
     ftp.cwd( site_path )
     try:
         ftp.cwd( tag )
@@ -154,9 +157,9 @@ def collect_logs(
             utils.log( 'Done compressing "%s".' % archive_path )
 
 
-def upload_logs( results_dir, runner_id, tag, user, ftp_proxy ):
+def upload_logs( results_dir, runner_id, tag, user, ftp_proxy, debug_level ):
     logs_archive = os.path.join( results_dir, '%s.zip' % runner_id )
-    upload_to_ftp( tag, logs_archive, ftp_proxy )
+    upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level )
 
 
 def collect_and_upload_logs( 
@@ -169,6 +172,8 @@ def collect_and_upload_logs(
         , user
         , source
         , run_type
+        , ftp_proxy = None
+        , debug_level = 0
         ):
     
     collect_logs( 
@@ -183,7 +188,7 @@ def collect_and_upload_logs(
         , run_type
         )
     
-    upload_logs( locate_root_dir, runner_id, tag, user )
+    upload_logs( locate_root_dir, runner_id, tag, user, ftp_proxy, debug_level )
 
 
 def accept_args( args ):

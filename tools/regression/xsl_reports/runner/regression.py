@@ -538,11 +538,12 @@ def upload_logs(
         , runner
         , user
         , ftp_proxy
+        , debug_level
         , **unused
         ):
     import_utils()
     from runner import upload_logs
-    upload_logs( regression_results, runner, tag, user, ftp_proxy )
+    upload_logs( regression_results, runner, tag, user, ftp_proxy, debug_level )
 
 
 def update_itself( **unused ):
@@ -576,6 +577,7 @@ def regression(
         , mail = None
         , proxy = None
         , ftp_proxy = None
+        , debug_level = 0
         , args = []
         ):
 
@@ -610,7 +612,7 @@ def regression(
         setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
         test( toolsets, bjam_options, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
-        upload_logs( tag, runner, user, ftp_proxy )
+        upload_logs( tag, runner, user, ftp_proxy, debug_level )
         update_itself()
         
         if mail:
@@ -659,6 +661,7 @@ def accept_args( args ):
         , 'mail='
         , 'proxy='
         , 'ftp-proxy='
+        , 'debug-level='
         , 'incremental'
         , 'monitored'
         , 'help'
@@ -677,6 +680,7 @@ def accept_args( args ):
         , '--timeout'       : 5
         , '--mail'          : None
         , '--proxy'         : None
+        , '--debug-level'   : 0
         , '--ftp-proxy'     : None
         }
     
@@ -707,6 +711,7 @@ def accept_args( args ):
         , 'mail'            : options[ '--mail' ]
         , 'proxy'           : options[ '--proxy' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
+        , 'debug_level'     : int(options[ '--debug-level' ])
         , 'args'            : other_args
         }
 
@@ -752,6 +757,8 @@ Options:
 \t--proxy         HTTP proxy server address and port (e.g. 
 \t                'http://www.someproxy.com:3128', optional)
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
+\t--debug-level   debugging level; controls the amount of debugging 
+\t                output printed; 0 by default (no debug output)
 ''' % '\n\t'.join( commands.keys() )
 
     print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )
