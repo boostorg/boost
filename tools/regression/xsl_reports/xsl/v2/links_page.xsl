@@ -15,6 +15,7 @@
     xmlns:func="http://exslt.org/functions"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
+    exclude-result-prefixes="meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
