@@ -160,7 +160,7 @@ f.write( "<html>\n<head>\n<title>\nCompiler Status: " + platform + "\n</title>\n
 f.write( "<body bgcolor=\"#FFFFFF\" text=\"#000000\">\n" )
 f.write( "<h1><img border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\"></h1>\n" )
 f.write( "<h1>Compiler Status: " + platform + "</h1>\n" )
-f.write( "<p><b>Run Date:</b> " + time.strftime("%d %b %Y GMT", time.gmtime(time.time())) + "</p>\n" )
+f.write( "<p><b>Run Date:</b> " + time.strftime("%d %b %Y %H:%M GMT", time.gmtime(time.time())) + "</p>\n" )
 f.write( "<p>\n" )
 f.write( "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n"  )
 f.write( "<tr>\n" )
@@ -190,7 +190,7 @@ else:
   if compiler_arg=="*" or compiler_arg=="vc":
     f.write( "<td>Microsoft<br>VC++<br>6.0 SP4</td>\n" )
   if compiler_arg=="*" or compiler_arg=="vcstlport":
-    f.write( "<td>Microsoft<br>VC++<br>6.0 SP4<br>STLport<br>3.2.1</td>\n" )
+    f.write( "<td>Microsoft<br>VC++<br>6.0 SP4<br>STLport<br>4.0</td>\n" )
 
 f.write( "</tr>\n" )
 
