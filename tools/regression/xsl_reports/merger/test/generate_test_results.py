@@ -1,9 +1,10 @@
 import xml.sax.saxutils
 
 import os
+import time
 
 number_of_libs = 2
-number_of_runners = 2
+number_of_runners = 3
 initial_number_of_toolsets = 3
 number_of_tests = 10
 
@@ -16,14 +17,33 @@ def make_test_results():
         runner_id = "runner_%02d" % i_runner
         g = xml.sax.saxutils.XMLGenerator( open( os.path.join( "1_30_0", runner_id + ".xml" ), "w" ) )
         platform = "Win32"
-        g.startElement( "test-run", { "platform": platform, "runner": runner_id } )
+        g.startElement( "test-run", { "platform": platform
+                                      , "runner": runner_id
+                                      , "timestamp": time.strftime( "%a, %d %b %Y %H:%M:%S +0000"
+                                                                   , time.gmtime()) } )
+
+        g.startElement( "comment", {} )
+        g.characters( "<b>Runner</b> is who <i>running</i> does." )
+        g.endElement( "comment" )
+        
         for i_lib in range( 0, number_of_libs ):
             library_name = "library_%02d" % i_lib
+            if number_of_runners - 1 == i_runner and  i_lib % 2: 
+                continue 
+                
             for i_toolset in range( initial_number_of_toolsets ):
                 toolset_name = "toolset_%02d" % ( i_toolset )
+
+                if number_of_runners - 1 == i_runner and i_toolset % 2:
+                    continue
+                
                 for i_test in range( number_of_tests ):
                     test_name = "test_%02d_%02d" % ( i_lib, i_test )
                     test_result = ""
+                    
+                    if number_of_runners - 1 == i_runner and i_test % 2:
+                        continue
+                    
                     if i_runner % 2: test_result = "success"
                     else:             test_result = "fail"
                     make_test_log( g, library_name, toolset_name, test_name, test_result  )
@@ -62,8 +82,31 @@ def make_expicit_failure_markup():
             g.endElement( "mark-unusable" )
 
         for i_test in range( 0, number_of_tests ):
-            if i_test > number_of_tests - 3:
-                g.startElement( "test", { "name": make_test_name( i_library, i_test ), "corner-case": "yes" } )
+            if i_test > number_of_tests - 3:     corner_case_test = 1
+            else:                                corner_case_test = 0
+            
+            if i_test % 4 == 0:      explicitly_marked_test = 1
+            else:                    explicitly_marked_test = 0
+
+            if corner_case_test or explicitly_marked_test:
+                test_attrs = { "name": make_test_name( i_library, i_test ) }
+                if corner_case_test:
+                    test_attrs[ "corner_case" ] = "yes"
+                g.startElement( "test", test_attrs )
+                if explicitly_marked_test:
+                    g.startElement( "mark-failure", {} )
+                    
+                    g.startElement( "toolset", { "name": make_toolset_name( 1 ) } )
+                    g.endElement( "toolset" )
+                    g.startElement( "toolset", { "name": make_toolset_name( 0 ) } )
+                    g.endElement( "toolset" )
+
+                    g.startElement( "note", {  "author": "V. Annotated" } )
+                    g.characters( "Some thoughtful note" )
+                    g.endElement( "note" )
+                    
+                    g.endElement( "mark-failure" )
+                    
                 g.endElement( "test" );
         g.endElement( "library" )
             
@@ -76,7 +119,7 @@ def make_test_log( g, library, toolset_name, test_name, test_result ):
                                   , "toolset": toolset_name
                                   , "test-type": "run"
                                   , "test-program": "some_program"
-                                  , "target-directory": "some_directory"
+                                  , "target-directory": "%s/%s/%s" % ( library, toolset_name, test_name )
                                   , "show-run-output": "false"
                                   } )
     g.startElement( "run", { "result": test_result } );
