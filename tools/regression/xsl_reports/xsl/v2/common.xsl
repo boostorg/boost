@@ -137,7 +137,7 @@
         <xsl:param name="library"/>
         <xsl:param name="toolset"/>
           
-        <func:result select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $toolset or toolset/@name='*' ]"/>
+        <func:result select="count( $explicit_markup//library[ @name = $library ]/mark-unusable/toolset[ meta:re_match( @name, $toolset ) ] ) > 0"/>
     </func:function>
 
     <func:function name="meta:re_match">
@@ -355,6 +355,7 @@
 
                 <td class="{$class}">
 
+                    <!-- break toolset names into words -->
                     <xsl:for-each select="str:tokenize($toolset, '-')">
                         <xsl:value-of select="." />
                         <xsl:if test="position()!=last()">
@@ -363,9 +364,10 @@
                     </xsl:for-each>
                     
                     <xsl:if test="$mode = 'details'">
+                        <!-- prepare toolset notes -->
                         <xsl:variable name="toolset_notes_fragment">
                             <xsl:for-each select="$library_marks/note">
-                                <xsl:if test="../@toolset=$toolset or ( ../toolset/@name=$toolset or ../toolset/@name = '*' )">
+                                <xsl:if test="count( ../toolset[meta:re_match( @name, $toolset )] ) > 0">
                                     <note index="{position()}"/>
                                 </xsl:if>
                             </xsl:for-each>
@@ -394,13 +396,16 @@
     <xsl:template name="show_notes">
         <xsl:param name="explicit_markup"/>
         <xsl:param name="notes"/>
+        <notes>
+            <xsl:copy-of select="$notes"/>
+        </notes>
             <div class="notes">
             <xsl:for-each select="$notes">
                 <div>
-                    <xsl:variable name="refid" select="@refid"/>
+                    <xsl:variable name="ref_id" select="@refid"/>
                     <xsl:call-template name="show_note">
                         <xsl:with-param name="note" select="."/>
-                        <xsl:with-param name="reference" select="$explicit_markup//note[ $refid = @id ]"/>
+                        <xsl:with-param name="references" select="$ref_id"/>
                     </xsl:call-template>
                 </div>
             </xsl:for-each>
@@ -409,15 +414,13 @@
 
     <xsl:template name="show_note">
         <xsl:param name="note"/>
-        <xsl:param name="reference"/>
+        <xsl:param name="references"/>
+
         <div class="note">
             <xsl:variable name="author">
                 <xsl:choose>
                     <xsl:when test="$note/@author">
                         <xsl:value-of select="$note/@author"/>
-                    </xsl:when>
-                    <xsl:when test="$reference">
-                        <xsl:value-of select="$reference/@author"/>                               
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text/>
@@ -429,9 +432,6 @@
                 <xsl:choose>
                     <xsl:when test="$note/@date">
                         <xsl:value-of select="$note/@date"/>
-                    </xsl:when>
-                    <xsl:when test="$reference">
-                        <xsl:value-of select="$reference/@date"/>                      
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text/>
@@ -453,9 +453,23 @@
             </xsl:choose>
         </span>
 
-        <xsl:if test="$reference">
-            <xsl:copy-of select="$reference/node()"/>                
+        <xsl:if test="$references">
+            <!-- lookup references (refid="17,18") -->
+            <xsl:for-each select="str:tokenize($references, ',')">
+                <xsl:variable name="ref_id" select="."/>
+                <xsl:variable name="referenced_note" select="$explicit_markup//note[ $ref_id = @id ]"/>
+
+                <xsl:choose>
+                    <xsl:when test="$referenced_note">
+                        <xsl:copy-of select="$referenced_note/node()"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="$ref_id"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
         </xsl:if>
+
         <xsl:copy-of select="$note/node()"/>      
 
         </div>

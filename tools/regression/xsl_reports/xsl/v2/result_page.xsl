@@ -280,8 +280,11 @@
                     <b>Report Time: </b> <xsl:value-of select="$run_date"/>
                 </div>
 
-                <!--                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/> -->
-                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable"/>
+                <!-- library marks = library-unusable markup for toolsets in the report  -->
+                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[  meta:re_match( toolset/@name, $run_toolsets//toolset/@name ) ]"/>
+                <lmarks>
+                    <xsl:copy-of select="$library_marks"/>
+                </lmarks>
 
                 <table border="0" cellspacing="0" cellpadding="0" class="library-table" width="1%" summary="Library results">
 
@@ -368,7 +371,7 @@
                             <xsl:variable name="refid" select="@refid"/>
                             <xsl:call-template name="show_note">
                                 <xsl:with-param name="note" select="." />
-                                <xsl:with-param name="reference" select="$explicit_markup//note[ $refid = @id ]"/>
+                                <xsl:with-param name="references" select="$refid"/>
                             </xsl:call-template>
                         </td>
                         </tr>
