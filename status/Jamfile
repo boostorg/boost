@@ -1,0 +1,666 @@
+# Boost regression-testing Jamfile
+#  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+subproject status ;
+
+# ----------- Jam rules for testing; test invocations at bottom ----------------#
+
+#######################################################################################
+# Tests generate a number of files reflecting their status in the subvariant-directory
+#
+# <test-name>.test -    a marker so that Jam knows when it needs to be
+#                       rebuilt.  It will contain the paths from this
+#                       directory to the source files used for the test
+#
+# <test-name>.success - present only if the test last succeeded. 
+#                       Contains the string "succeeded"
+#
+# <test-name>.failure - present only if the test last failed. Contains the string
+#                       "failed".
+#
+# <test-name>.output -  contains the output of the test if it was a run test.
+#######################################################################################
+
+
+
+# Declares a test target. If name is not supplied, it is taken from the name of
+# the first source file, sans extension and directory path.
+#
+# type should be a target type (e.g. OBJ, DLL, LIB, EXE)
+#
+# RETURNS the name(s) of the generated test target(s).
+rule boost-test ( sources + : target-type : requirements * : test-name ? )
+{
+    local result ;
+    {
+        # manufacture a test name if none supplied explicitly
+        test-name ?= $(sources[1]:D=:S=) ;
+
+        # Make sure that targets don't become part of "all"
+        local gSUPPRESS_FAKE_TARGETS = true ;
+        
+        local dependencies = [ select-gristed $(sources) ] ;
+        local source-files = [ select-ungristed $(sources) ] ;
+        result = [
+            declare-local-target $(test-name)
+            : $(source-files:R=$(BOOST_ROOT)) $(dependencies)  # sources 
+            : $(requirements) <include>$(BOOST_ROOT) # requirements
+            :             # default build
+            : $(target-type)
+        ] ;
+    }
+    
+    Clean clean : $(result) ;
+    
+    # make NOTFILE targets of the same base name as the sources which can
+    # be used to build a single test.
+    type-DEPENDS $(sources:B:S=) : $(result) ;
+    
+    # The NOTFILE target called "test" builds all tests
+    type-DEPENDS test : $(result) ;
+    
+    return $(result) ;
+}
+
+#######
+
+BOOST_TEST_SUFFIX ?= .test ;
+
+# a utility rule which causes test-file to be built successfully only if
+# dependency fails to build. Used for expected-failure tests.
+rule failed-test-file ( test-file : dependency + )
+{
+    catenate-output-on-failure $(test-file) : $(dependency[1]) ;
+    DEPENDS $(test-file) : $(dependency) ;
+    NOCARE $(dependency) ;
+    TEMPORARY $(dependency) ;
+}
+
+# a utility rule which causes test-file to be built successfully only if
+# dependency builds. Used for expected-success tests.
+rule succeeded-test-file ( test-file : dependency + )
+{
+    catenate-output-on-failure $(test-file) : $(dependency[1]) ;
+    DEPENDS $(test-file) : $(dependency) ;
+    NOCARE $(dependency) ;
+    TEMPORARY $(dependency) ;
+}
+
+rule catenate-output-on-failure ( test-file : dependency )
+{
+    if $(gTEST_OUTPUT_FILE($(dependency)))
+    {
+        output-file on $(test-file) = $(gTEST_OUTPUT_FILE($(dependency))) ;
+    }
+}
+
+if $(NT)
+{
+    CATENATE1 = "if exist \"" ;
+    CATENATE2 = "\" ( type \"" ;
+    CATENATE3 = "\"
+ECHO ****************************************************** )" ;
+    
+    actions failed-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > $(<:S=.test)
+        if EXIST "$(>)". (
+          if EXIST "$(<:S=.success)". del /f/q "$(<:S=.success)".
+          echo "failed" > "$(<:S=.failure)"
+            
+          echo *
+          echo ***************** failed above test: $(<:B:S=) ********************
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo *
+        ) ELSE (
+          if EXIST "$(<:S=.failure)". del /f/q "$(<:S=.failure)".
+          echo succeeded > "$(<:S=.success)"
+        )
+    }
+
+    actions succeeded-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > $(<:S=.test)
+        if EXIST "$(>)". (
+          if EXIST "$(<:S=.failure)". del /f/q "$(<:S=.failure)".
+          echo succeeded > "$(<:S=.success)"
+        ) ELSE (
+          if EXIST "$(<:S=.success)". del /f/q "$(<:S=.success)".
+          echo failed > "$(<:S=.failure)"
+            
+          echo *
+          echo ***************** failed above test: $(<:B:S=) ********************
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo *
+        )
+    }
+}
+else
+{
+    CATENATE = "cat " ;
+    CATENATE1 = "if [ -f \"" ;
+    CATENATE2 = "\" ] ; then
+      cat \"" ;
+    CATENATE3 = "\" ; echo ******************************************************
+      fi" ;
+    
+    actions failed-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > $(<:S=.test)
+        if [ -f "$(>)" ] ; then
+          if [ -f "$(<:S=.success)" ] ; then
+                $(RM) "$(<:S=.success)"
+          fi
+          echo "failed" > $(<:S=.failure)
+          echo "*"
+          echo "***************** failed above test: $(<:B:S=) ********************"
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo "*"
+        else
+          if [ -f "$(<:S=.failure)" ] ; then
+                $(RM) "$(<:S=.failure)"
+          fi
+          echo "succeeded" > "$(<:S=.success)" 
+        fi
+    }
+
+    actions succeeded-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > "$(<:S=.test)"
+        if [ -f "$(>)" ] ; then
+          if [ -f "$(<:S=.failure)" ] ; then
+                $(RM) "$(<:S=.failure)"
+          fi
+          echo "succeeded" > "$(<:S=.success)"
+        else
+          if [ -f "$(<:S=.success)" ] ; then
+                $(RM) "$(<:S=.success)" 
+          fi
+          echo "failed" > "$(<:S=.failure)"
+          echo "*"
+          echo "***************** failed above test: $(<:B:S=) ********************"
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo "*"
+        fi
+    }
+}
+
+rule declare-build-succeed-test ( test-type : dependency-type )
+{
+    gGENERATOR_FUNCTION($(test-type)) = build-test succeeded-test-file ;
+    gDEPENDENCY_TYPE($(test-type)) = $(dependency-type) ;
+    SUF$(test-type) = $(BOOST_TEST_SUFFIX) ;
+}
+
+# A utility rule which declares test-type to be a target type which
+# depends on the /failed/ construction of a target of type
+# dependency-type.
+rule declare-build-fail-test ( test-type : dependency-type )
+{
+    gGENERATOR_FUNCTION($(test-type)) = build-test failed-test-file ;
+    gDEPENDENCY_TYPE($(test-type)) = $(dependency-type) ;
+    SUF$(test-type) = $(BOOST_TEST_SUFFIX) ;
+}
+
+# A temporary measure in case people don't rebuild their Jam
+# executables. Define the builtin RMOLD if it's missing.
+if ! ( RMOLD in [ RULENAMES ] )
+{
+    rule RMOLD { }
+}
+
+# When the appropriate generator function is bound to the
+# test-file-generator argument, this is a target generator function
+# for target types declared with declare-build-succeed-test and
+# declare-build-fail-test, above.
+rule build-test ( test-file-generator test-file + : sources + : requirements * )
+{
+    # Get the target type of the current target out of the build properties
+    local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
+
+    # Get the type of target to attempt to build; the outcome of this
+    # attempt determines the result of the test.
+    local dependency-type = $(gDEPENDENCY_TYPE($(target-type))) ;
+    
+    # Get the actual name of the target to attempt to build
+    local dependency = $(test-file[1]:S=$(SUF$(dependency-type))) ;
+
+    # record the source file names so we can put them in the .test
+    # file.
+    source-files on $(test-file) = $(sources) ;
+    
+    # Make sure that the dependency is erased, so as not to give a
+    # false indication of success.
+    RMOLD $(dependency) ;
+    
+    # Call dependency-type's generator function to attempt the build
+    local ignored = [
+        $(gGENERATOR_FUNCTION($(dependency-type))) $(dependency) : $(sources) : $(requirements) ] ;
+
+    # Generator functions don't handle this job for us; perhaps they should.
+    set-target-variables $(dependency) ;
+    
+    # The .test file goes with the other subvariant targets
+    MakeLocate $(test-file:S=.test) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.success) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.failure) : $(LOCATE_TARGET) ;
+
+    # Generate the test file
+    $(test-file-generator) $(test-file) : $(dependency) ;
+}
+
+### Rules for testing whether a file compiles ###
+
+# Establish the rule which generates targets of type "OBJ". Should really go
+# into basic build system, but wasn't needed 'till now.
+gGENERATOR_FUNCTION(OBJ) = Object ;
+declare-build-fail-test COMPILE_FAIL : OBJ ;
+declare-build-succeed-test COMPILE : OBJ ;
+
+# Test that the given source-file(s) compile
+rule compile ( sources + : requirements * : test-name ? )
+{
+    return [ boost-test $(sources) : COMPILE : $(requirements) : $(test-name) ] ;
+}
+
+# Test that the given source-file(s) fail to compile
+rule compile-fail ( sources + : requirements * : test-name ? )
+{
+    return [ boost-test $(sources) : COMPILE_FAIL : $(requirements) : $(test-name) ] ;
+}
+
+
+### Rules for testing whether a program runs ###
+
+gGENERATOR_FUNCTION(RUN_TEST) = run-test ;
+SUFRUN_TEST = .run ;
+rule run-test ( target : sources + : requirements * )
+{
+    local executable = $(target:S=$(SUFEXE)) ; 
+    
+    local parent = $(target:S=.test) ;
+    # Move important data from the test target to the executable
+    gRUN_LD_LIBRARY_PATH($(executable)) = $(gRUN_LD_LIBRARY_PATH($(parent))) ;
+    gRUN_PATH($(executable)) = $(gRUN_PATH($(parent))) ;
+    
+    executable-file $(executable) : $(sources) : $(requirements) ;
+    set-target-variables $(executable) ;
+    
+    # The .test file goes with the other subvariant targets
+    # normalization is a hack to get the slashes going the right way on Windoze
+    local LOCATE_TARGET = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
+    MakeLocate $(target) : $(LOCATE_TARGET) ;
+    
+    DEPENDS $(target) : $(executable) $(gRUN_TEST_INPUT_FILES) ;
+    INPUT_FILES on $(target) = $(gRUN_TEST_INPUT_FILES) ;
+    ARGS on $(target) = $(gRUN_TEST_ARGS) ;
+    capture-run-output $(target) : $(executable) ;
+    
+    if $(RUN_ALL_TESTS)
+    {
+        ALWAYS $(target) ;
+    }
+}
+
+# The rule is just used for argument checking
+rule capture-run-output ( target : executable + )
+{
+    gTEST_OUTPUT_FILE($(target)) = $(target:S=.output) ;
+    INCLUDES $(target) : $(target:S=.output) ;
+    MakeLocate $(test-file:S=.failure) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.output) : $(LOCATE_TARGET) ;
+    capture-run-output1 $(target) : $(executable) ;
+}
+
+rule capture-run-output1 ( target : executable )
+{
+    output-file on $(target) = $(target:S=.output) ;
+    local targets = $(target) $(target:S=.output) ;
+    
+    RUN_PATH on $(targets) = [ join $(gRUN_PATH($(executable))) : $(SPLITPATH) ] ;
+    if $(UNIX) 
+    {
+    	RUN_LD_LIBRARY_PATH on $(targets) = [ join $(gRUN_LD_LIBRARY_PATH($(executable))) : $(SPLITPATH) ] ;
+    }
+}
+
+
+
+if $(UNIX)  
+{
+    actions capture-run-output1 bind INPUT_FILES output-file
+    {
+        $(SHELL_SET)PATH=$(RUN_PATH):$PATH
+    	$(SHELL_EXPORT)PATH
+    	$(SHELL_SET)LD_LIBRARY_PATH=$(RUN_LD_LIBRARY_PATH):$LD_LIBRARY_PATH
+    	$(SHELL_EXPORT)LD_LIBRARY_PATH
+        $(>) $(ARGS) $(INPUT_FILES) > $(output-file) 2>&1 && $(CP) $(output-file) $(<[1])
+    }
+}
+else
+{
+    actions capture-run-output1 bind INPUT_FILES output-file
+    {
+        $(SHELL_SET)PATH=$(RUN_PATH);%PATH%
+        $(SHELL_EXPORT)PATH
+        $(>) $(ARGS) $(INPUT_FILES) > $(output-file) 2>&1 && $(CP) $(output-file) $(<[1])
+    }
+}
+
+declare-build-fail-test RUN_FAIL : RUN_TEST ;
+declare-build-succeed-test RUN : RUN_TEST ;
+rule run ( sources + : args * : input-files * : requirements * : name ? )
+{
+    local gRUN_TEST_ARGS = $(args) ;
+    local gRUN_TEST_INPUT_FILES = $(input-files) ;
+    SEARCH on $(input-files) = $(LOCATE_SOURCE) ;
+    return [ boost-test $(sources) : RUN : $(requirements) : $(name) ] ;
+}
+
+rule run-fail ( sources + : args * : input-files * : requirements * : name ? )
+{
+    local gRUN_TEST_ARGS = $(2) ;
+    local gRUN_TEST_INPUT_FILES = $(3) ;
+    SEARCH on $(3) = $(LOCATE_SOURCE) ;
+    return [ boost-test $(<) : RUN_FAIL : $(4) : $(name) ] ;
+}
+
+### Rules for testing whether a program links
+
+declare-build-fail-test LINK_FAIL : EXE ;
+rule link-fail ( sources + : requirements * : name ? )
+{
+    return [ boost-test $(<) : LINK_FAIL : $(2) : $(name) ] ;
+}
+
+### Rules for grouping tests into suites:
+
+rule test-suite # pseudotarget-name : test-targets...
+{
+    NOTFILE $(<) ;
+    type-DEPENDS $(<) : $(>) ;
+}
+
+# ------------- Actual test invocations follow -----------------#
+    
+# Note that the Compiler Status Report HTML generator scans
+# these rule invocations to find test type. That program is
+# pretty stupid and needs help, including test names (if supplied)
+# which are unambiguous, not the same as a .cpp file name, and
+# preceded and followed by a space. 
+
+test-suite "bind"
+    : [ run libs/bind/bind_test.cpp ]
+      [ run libs/bind/bind_test.cpp ]
+      [ run libs/bind/mem_fn_test.cpp ]
+      [ run libs/bind/mem_fn_void_test.cpp ]
+    ;
+
+test-suite config
+    : [ run libs/config/test/config_test.cpp 
+            : #args
+            : #input-files
+            : #requirements
+            <threading>multi
+      ]
+       [ run libs/config/test/config_info.cpp ]
+       [ run libs/config/test/limits_test.cpp ]
+    ;
+    
+run libs/any/any_test.cpp ;
+
+run libs/array/array1.cpp ;
+
+test-suite concept_check
+    : [ compile libs/concept_check/concept_check_test.cpp ]
+      [ compile libs/concept_check/class_concept_check_test.cpp ]
+      [ link-fail libs/concept_check/concept_check_fail_expected.cpp ]
+      [ link-fail libs/concept_check/class_concept_fail_expected.cpp ]
+    ;
+
+test-suite conversion
+    : [ run libs/conversion/cast_test.cpp ]
+      [ run libs/conversion/lexical_cast_test.cpp ]
+    ;
+    
+run libs/crc/crc_test.cpp ;
+
+run libs/function/test/function_test.cpp ;
+
+run libs/functional/function_test.cpp ;
+
+run libs/graph/test/graph.cpp ;
+
+
+test-suite integer
+    : [ run libs/integer/cstdint_test.cpp ]
+      [ run libs/integer/integer_test.cpp ]
+      [ run libs/integer/integer_traits_test.cpp ]
+    ;
+
+run libs/io/test/ios_state_test.cpp ;
+
+test-suite lambda
+    : [ run libs/lambda/test/bind_tests_simple.cpp ]
+      [ run libs/lambda/test/bind_tests_advanced.cpp ]
+      [ run libs/lambda/test/bind_tests_simple_f_refs.cpp ]
+      [ run libs/lambda/test/bll_and_function.cpp ]
+      [ run libs/lambda/test/cast_test.cpp ]
+      [ run libs/lambda/test/constructor_tests.cpp ]
+      [ run libs/lambda/test/control_structures.cpp ]
+      [ run libs/lambda/test/exception_test.cpp ]
+      [ run libs/lambda/test/extending_rt_traits.cpp ]
+      [ run libs/lambda/test/is_instance_of_test.cpp ]
+      [ run libs/lambda/test/member_pointer_test.cpp ]
+      [ run libs/lambda/test/operator_tests_simple.cpp ]
+      [ run libs/lambda/test/phoenix_control_structures.cpp ]
+      [ run libs/lambda/test/switch_construct.cpp ]
+    ;
+
+test-suite math
+    : [ run libs/math/test/common_factor_test.cpp ]
+      [ run libs/math/octonion/octonion_test.cpp ]
+      [ run libs/math/quaternion/quaternion_test.cpp ]
+      [ run libs/math/special_functions/special_functions_test.cpp ]
+    ;
+
+run libs/pool/test/test_pool_alloc.cpp ;
+
+test-suite rational
+    : [ run libs/rational/rational_example.cpp ]
+      [ run libs/rational/rational_test.cpp ]
+    ;
+
+test-suite random
+    : [ run libs/random/random_test.cpp ]
+      [ run libs/random/random_demo.cpp ]
+    ;
+
+run libs/utility/ref_test.cpp ;
+
+{
+        local test-dir = $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)test$(SLASH)regress$(SLASH) ;
+        
+        local test-files = $(test-dir)tests.txt
+        # dwa -- not sure if this is generally applicable
+        #  $(test-dir)test1252.txt
+        ;
+
+    test-suite regex
+    : [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+       : 
+                $(test-files)
+       : 
+       : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+       :
+                regress ]
+
+        [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+                $(test-files)
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>TEST_UNICODE=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+        :
+                wregress ]
+
+        [ run libs/regex/test/c_compiler_checks/posix_api_check.c
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	:
+                posix_api_check_c ]
+
+        [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.c
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	:
+                wide_posix_api_check_c ]
+
+        [ run libs/regex/test/c_compiler_checks/posix_api_check.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	]
+
+        [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	]
+
+ ;
+
+}
+
+
+run libs/smart_ptr/smart_ptr_test.cpp ;
+
+test-suite static_assert
+    : [ compile libs/static_assert/static_assert_test.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_1.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_2.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_3.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_4.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_5.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_6.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_7.cpp ]
+      [ link-fail libs/static_assert/static_assert_test_fail_8.cpp ]
+    ;
+    
+run libs/test/example/test_tools_example.cpp ;
+
+run-fail libs/test/test/test_tools_fail2.cpp ;
+
+{
+    local threadmon ;
+    if $(NT)
+    {
+        threadmon = <dll>../libs/thread/build/boost_threadmon ;
+    }
+    
+    test-suite threads
+      : [
+        run libs/thread/test/test_thread.cpp
+          <lib>../libs/thread/build/boost_thread 
+          $(threadmon)
+            : #args
+            : #input-files
+            : #requirements
+            <threading>multi
+      ]
+        ;
+}
+
+
+compile libs/timer/timer_test.cpp ;
+
+test-suite tokenizer
+    : [ run libs/tokenizer/examples.cpp ]
+      [ run libs/tokenizer/simple_example_1.cpp ]
+      [ run libs/tokenizer/simple_example_2.cpp ]
+      [ run libs/tokenizer/simple_example_3.cpp ]
+      [ run libs/tokenizer/simple_example_4.cpp ]
+      [ run libs/tokenizer/simple_example_5.cpp ]
+    ;
+
+test-suite type_traits
+    : [ run libs/type_traits/tests/alignment_test.cpp ]
+      [ run libs/type_traits/tests/arithmetic_traits_test.cpp ]
+      [ run libs/type_traits/tests/composite_traits_test.cpp ]
+      [ run libs/type_traits/tests/cv_traits_test.cpp ]
+      [ run libs/type_traits/tests/is_function_test.cpp ]
+      [ run libs/type_traits/tests/is_convertible_test.cpp ]
+      [ run libs/type_traits/tests/is_same_test.cpp ]
+      [ run libs/type_traits/tests/object_type_traits_test.cpp ]
+      [ run libs/type_traits/tests/transform_traits_test.cpp ]
+    ;
+    
+run libs/utility/call_traits_test.cpp : -u ;
+
+compile-fail libs/utility/checked_delete_test.cpp ;
+
+run libs/utility/compressed_pair_test.cpp : -u ;
+
+test-suite iterator_adaptors
+    : [ run libs/utility/counting_iterator_test.cpp : # args
+        : # input files
+        : # requirements
+        
+        # borland warns incorrectly in this case, so often that
+        # successful compilation is prevented.
+        <borland><*><cxxflags>"-w-8091 -w-8092"
+      ]
+        
+      [ run libs/utility/iterator_adaptor_test.cpp ] 
+      [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ] 
+      [ compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ]
+      [ run libs/utility/transform_iterator_test.cpp ]
+      [ run libs/utility/indirect_iterator_test.cpp ]
+      [ run libs/utility/iter_traits_gen_test.cpp ]
+      
+      [ run libs/utility/iterator_adaptor_examples.cpp ]
+      [ run libs/utility/counting_iterator_example.cpp ]
+      [ run libs/utility/filter_iterator_example.cpp ]
+      [ run libs/utility/fun_out_iter_example.cpp ]
+      [ run libs/utility/indirect_iterator_example.cpp ]
+      [ run libs/utility/projection_iterator_example.cpp ]
+      [ run libs/utility/reverse_iterator_example.cpp ]
+      [ run libs/utility/transform_iterator_example.cpp ]
+    ;    
+
+run libs/utility/iterator_traits_test.cpp ;
+
+run libs/utility/iterators_test.cpp ;
+
+compile-fail libs/utility/noncopyable_test.cpp ;
+
+run libs/utility/numeric_traits_test.cpp ;
+
+run libs/utility/operators_test.cpp ;
+
+run libs/utility/tie_example.cpp ;
+
+run libs/utility/binary_search_test.cpp ;
