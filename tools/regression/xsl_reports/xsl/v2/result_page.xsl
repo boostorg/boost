@@ -193,10 +193,10 @@
             </head>
             <body class="{$mode}-toc">
                 <div class="toc-header-entry">
-                    <a href="index.html" class="toc-entry" target="_top">Report info</a>
+                    <a href="index{$release_postfix}.html" class="toc-entry" target="_top">Report info</a>
                 </div>
                 <div class="toc-header-entry">
-                    <a href="summary.html" class="toc-entry" target="_top">Summary</a>
+                    <a href="summary{$release_postfix}.html" class="toc-entry" target="_top">Summary</a>
                 </div>
                 
                 <xsl:if test="$mode='developer'">

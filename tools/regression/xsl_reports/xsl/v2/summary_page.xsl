@@ -52,7 +52,7 @@
 
     <!-- libraries -->
 
-    <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
+    <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) and meta:show_library( @library, $release ) and meta:show_toolset( @toolset, $release )]"/>
     <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
     <xsl:variable name="sorted_libraries_output">
@@ -81,7 +81,7 @@
                 <title>Boost regression summary: <xsl:value-of select="$source"/></title>
             </head>
             <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-            <frame name="tocframe" src="toc.html" scrolling="auto"/>
+            <frame name="tocframe" src="toc{$release_postfix}.html" scrolling="auto"/>
             <frame name="docframe" src="{$summary_results}" scrolling="auto"/>
             </frameset>
         </html>
@@ -103,7 +103,7 @@
 
             <h1 class="page-title">
                 <xsl:text>Summary: </xsl:text>
-                <a class="hover-link" href="summary.html" target="_top"><xsl:value-of select="$source"/></a>
+                <a class="hover-link" href="summary{$release_postfix}.html" target="_top"><xsl:value-of select="$source"/></a>
             </h1>
 
             <div class="report-info">
@@ -256,7 +256,7 @@
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
             <xsl:text>&#160;&#160;</xsl:text>
-            <a href="{$library_page}.html" class="log-link" target="_top">
+            <a href="{$library_page}{$release_postfix}.html" class="log-link" target="_top">
                 <xsl:text>n/a</xsl:text>
             </a>          
             <xsl:text>&#160;&#160;</xsl:text>
@@ -265,13 +265,13 @@
             <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
         </xsl:when>
         <xsl:when test="$class='summary-fail-unexpected'">
-            <a href="{$library_page}.html" class="log-link" target="_top">
+            <a href="{$library_page}{$release_postfix}.html" class="log-link" target="_top">
                 <xsl:text>broken</xsl:text>
             </a>
         </xsl:when>
         <xsl:when test="$class='summary-fail-unexpected-new' ">
             <xsl:text>&#160;&#160;</xsl:text>
-            <a href="{$library_page}.html" class="log-link" target="_top">
+            <a href="{$library_page}{$release_postfix}.html" class="log-link" target="_top">
                 <xsl:text>fail</xsl:text>
             </a>
             <xsl:text>&#160;&#160;</xsl:text>
