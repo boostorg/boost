@@ -107,7 +107,7 @@ int main()
 
 The scope of variable definitions in <code>for</code> loops should be
 local to the loop's body, but it is instead local to the enclosing
-block:
+block.
 
 
 <pre>
@@ -142,7 +142,7 @@ struct A
 <h3>[koenig-lookup] Argument-dependent lookup</h3>
 
 Argument-dependent lookup, also called Koenig lookup, does not work.
-No additional namespace induced from the argument types seem to be
+No additional namespaces induced from the argument types seem to be
 considered.
 
 <pre>
@@ -240,6 +240,14 @@ The type <code>wchar_t</code> is not a built-in type.
 <pre>
 wchar_t x;  // &quot;missing storage class or type identifier&quot;
 </pre>
+
+<strong>Workaround:</strong> The header <code>&lt;cstddef></code>
+provides a typedef for <code>wchar_t</code> and
+<a href="../boost/config.hpp">boost/config.hpp</a>
+includes it to provide the workaround.  Note that this is not a
+distinct type from any other built-in type as required by the
+standard, so ambiguities when overloading on <code>wchar_t</code> may
+emanate.
 
 
 <h2>
