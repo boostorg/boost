@@ -67,7 +67,9 @@ namespace
   fs::ofstream links_file;
   string links_name;
 
-  string notes_file;
+  fs::path notes_path;
+  string notes_html;
+
   fs::path notes_map_path;
   typedef std::multimap< string, string > notes_map; // key is test_name-toolset,
                                                 // value is note bookmark
@@ -99,6 +101,28 @@ namespace
 //      std::cout << "inserting \"" << key << "\",\"" << bookmark << "\"\n";
       notes.insert( std::make_pair( key, bookmark ) );
     }
+  }
+
+//  load_notes_html  ---------------------------------------------------------//
+
+  bool load_notes_html()
+  {
+    if ( notes_path.empty() ) return false;
+    fs::ifstream notes_file( notes_path );
+    if ( !notes_file )
+    {
+      std::cerr << "Could not open --notes input file: " << notes_path.string() << std::endl;
+      std::exit( 1 );
+    }
+    string line;
+    bool in_body( false );
+    while( std::getline( notes_file, line ) )
+    {
+      if ( in_body && line.find( "</body>" ) != string::npos ) in_body = false;
+      if ( in_body ) notes_html += line;
+      else if ( line.find( "<body>" ) ) in_body = true;
+    }
+    return true;
   }
 
 //  relative path between two paths  -----------------------------------------//
@@ -392,7 +416,6 @@ const string & attribute_value( const xml::element & element,
         target += sep;
         sep = ",";
         target += "<a href=\"";
-        target += notes_file;
         target += "#";
         target += itr->second;
         target += "\">";
@@ -472,17 +495,16 @@ const string & attribute_value( const xml::element & element,
     if ( !notes.empty() )
     {
       // test-specific notes
-      string key( test_name );
-      key += "-";
-      key += toolset;
+      string key( toolset );
+      key += "/";
+      key += test_name;
       string sep;
       do_notes( key, sep, target );
 
       // library-wide notes
-      key = "*";
+      key = toolset;
+      key += "/*";
       key += lib_name;
-      key += "-";
-      key += toolset;
       do_notes( key, sep, target );
     }
 
@@ -673,7 +695,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
     else if ( argc > 2 && std::strcmp( argv[1], "--comment" ) == 0 )
       { comment_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--notes" ) == 0 )
-      { notes_file = argv[2]; --argc; ++argv; }
+      { notes_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--notes-map" ) == 0 )
       { notes_map_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
@@ -697,8 +719,9 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "                               default boost-root.\n"
       "           --comment path      Path to file containing HTML\n"
       "                               to be copied into status-file.\n"
-      "           --notes file        HTML notes filename; no path information.\n"
-      "           --notes-map path    Path to file of test-toolset,n lines, where\n"
+      "           --notes path        Path to file containing HTML\n"
+      "                               to be copied into status-file.\n"
+      "           --notes-map path    Path to file of toolset/test,n lines, where\n"
       "                               n is number of note bookmark in --notes file.\n"
       "Example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n"
       "Note: Only the leaf of the links-file path and --notes file string are\n"
@@ -798,6 +821,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
   }
 
   do_table();
+
+  if ( load_notes_html() ) report << notes_html << "\n";
 
   report << "</body>\n"
           "</html>\n"
