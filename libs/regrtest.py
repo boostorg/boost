@@ -78,6 +78,11 @@ def compile( program ):
 #    if compiler_arg == "*" or compiler_arg == "occ":
 #      invoke( "OpenC++ 2.5.9", 'occ -c --regular-c++ -I' + path + ' ' + fullpath)
 
+# ----------- BeOS5/Intel ------ #
+  elif sys.platform == "beos":
+    if compiler_arg=="*" or compiler_arg=="gcc":
+      invoke( "GNU GCC", "c++ -ftemplate-depth-30 -pedantic -Wall -I" + path + "  " + fullpath )
+
 # ----------  Windows ---------- #
 
   else:
@@ -148,6 +153,8 @@ if len(sys.argv)>2:
 
 if sys.platform == "linux2":
   platform = "Linux/x86"
+elif sys.platform == "beos":
+  platform = "BeOS5/x86"
 elif sys.platform == "win32":
   platform = "Windows"
   if os.name == "nt":
@@ -179,6 +186,9 @@ if sys.platform == "linux2":
     f.write( "<td>Comeau C++<br>4.2.44 beta3<br>STLport<br>4.0</td>\n" )
 #  if compiler_arg == "*" or compiler_arg == "occ":
 #    f.write( "<td>OpenC++<br>2.5.9</td>\n" )
+elif sys.platform == "beos":
+  if compiler_arg == "*" or compiler_arg == "gcc":
+    f.write( "<td>GNUPro<br>GCC<br>2.9</td>\n" )
 else:
 #  if compiler_arg=="*" or compiler_arg=="bcc54":
 #    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
