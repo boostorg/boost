@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2004
+# Copyright (c) MetaCommunications, Inc. 2003-2005
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -19,18 +19,17 @@ import traceback
 import string
 import sys
 
-regression_root = os.path.abspath( os.path.dirname( sys.argv[0] ) )
+regression_root    = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 regression_results = os.path.join( regression_root, 'results' )
-regression_log = os.path.join( regression_results, 'bjam.log' )
-install_log = os.path.join( regression_results, 'bjam_install.log' )
+regression_log     = os.path.join( regression_results, 'bjam.log' )
+install_log        = os.path.join( regression_results, 'bjam_install.log' )
 
-boost_root = os.path.join( regression_root, 'boost' )
+boost_root      = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
-comment_path = os.path.join( regression_root, 'comment.html' )
-timestamp_path = os.path.join( regression_root, 'timestamp' )
+timestamp_path  = os.path.join( regression_root, 'timestamp' )
 
-cvs_command_line = 'cvs -z9 %(command)s'
-cvs_ext_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+cvs_command_line         = 'cvs -z9 %(command)s'
+cvs_ext_command_line     = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 
 bjam = {}
@@ -39,12 +38,21 @@ process_jam_log = {}
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
     bjam[ 'build_cmd' ] = lambda toolset: 'build.bat %s' % toolset
+    bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'borland', 'como', 'gcc', 'gcc-nocygwin' \
+                                                    , 'intel-win32', 'metrowerks', 'mingw' \
+                                                    , 'msvc', 'vc7' \
+                                                    ]
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
     process_jam_log[ 'default_toolset' ] = 'vc-7_1'
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
     bjam[ 'build_cmd' ] = lambda toolset:'./build.sh %s' % toolset
+    bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'acc', 'como', 'darwin', 'gcc' \
+                                                    , 'intel-linux', 'kcc', 'kylix' \
+                                                    , 'mipspro', 'sunpro', 'tru64cxx' \
+                                                    , 'vacpp'\
+                                                    ]
     process_jam_log[ 'name' ] = 'process_jam_log'
     process_jam_log[ 'default_toolset' ] = 'gcc'
     patch_boost_name = './patch_boost'
@@ -61,7 +69,8 @@ process_jam_log[ 'build_path_root' ] = os.path.join(
     , process_jam_log[ 'name' ]
     )
 
-process_jam_log[ 'build_cmd' ] = lambda toolset:'%s -sTOOLS=%s'% ( tool_path( bjam ), toolset )
+process_jam_log[ 'build_cmd' ] = lambda toolset: bjam_command( toolset )
+process_jam_log[ 'is_supported_toolset' ] = lambda x : True
 
 build_monitor_url = 'http://www.meta-comm.com/engineering/resources/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
@@ -310,6 +319,12 @@ def build_if_needed( tool, toolset, toolsets ):
     if toolset is None:
         if toolsets is not None:
             toolset = string.split( toolsets, ',' )[0]
+            if not tool[ 'is_supported_toolset' ]( toolset ):
+                log( 'Warning: Specified toolset (%s) cannot be used to bootstrap "%s".'\
+                     % ( toolset, tool[ 'name' ] ) )
+
+                toolset = tool[ 'default_toolset' ]
+                log( '         Using default toolset for the platform (%s).' % toolset )
         else:
             toolset = tool[ 'default_toolset' ]
             log( 'Warning: No bootstrap toolset for "%s" was specified.' % tool[ 'name' ] )
@@ -389,10 +404,17 @@ def setup(
 
 
 def bjam_command( toolsets ):
-    result = '"%s"' % tool_path( bjam )
+    result = '%s "-sBOOST_BUILD_PATH=%s:%s" "-sBOOST_ROOT=%s"'\
+        % (
+            tool_path( bjam )
+          , regression_root
+          , os.path.join( boost_root, 'tools/build/v1' )
+          , boost_root
+          )
+    
     if not toolsets is None:
-        result += ' "-sTOOLS=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
-    result += ' "-sBOOST_ROOT=%s"' % boost_root
+        result += '-sTOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' )
+
     return result
 
 
@@ -498,14 +520,15 @@ def collect_logs(
         ):
     import_utils()
     
-    global comment_path
     if comment is None:
+        comment = 'comment.html'
+
+    comment_path = os.path.join( regression_root, comment )
+    if not os.path.exists( comment_path ):
         log( 'Comment file "%s" not found; creating default comment.' % comment_path )
         f = open( comment_path, 'w' )
         f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
         f.close()
-    else: 
-        comment_path = os.path.join( regression_root, comment )
     
     run_type = ''
     if incremental: run_type = 'incremental'
@@ -560,6 +583,29 @@ def update_itself( **unused ):
         shutil.copy2( source, sys.argv[0] )
 
 
+def send_mail( smtp_login, mail, subject, msg = '', debug_level = 0 ):
+    import smtplib
+    if not smtp_login:
+        server_name = 'mail.%s' % mail.split( '@' )[-1]
+        user_name = None
+        password = None
+    else:
+        server_name = smtp_login.split( '@' )[-1]
+        ( user_name, password ) = string.split( smtp_login.split( '@' )[0], ':' )
+        
+    log( '    Sending mail through "%s"...' % server_name )
+    smtp_server = smtplib.SMTP( server_name )
+    smtp_server.set_debuglevel( debug_level )
+    if user_name:
+        smtp_server.login( user_name, password )
+    
+    smtp_server.sendmail( 
+          mail
+        , [ mail ]
+        , 'Subject: %s\nTo: %s\n\n%s' % ( subject, mail, msg )
+        )
+
+
 def regression( 
           tag
         , local
@@ -575,6 +621,7 @@ def regression(
         , monitored
         , timeout
         , mail = None
+        , smtp_login = None
         , proxy = None
         , ftp_proxy = None
         , debug_level = 0
@@ -582,11 +629,16 @@ def regression(
         ):
 
     try:
-        mail_subject = 'Boost regression for %s on %s ' % ( tag, string.split(socket.gethostname(), '.')[0] )
+        mail_subject = 'Boost regression for %s on %s' % ( tag, string.split(socket.gethostname(), '.')[0] )
         start_time = time.localtime()
         if mail:
             log( 'Sending start notification to "%s"' % mail )
-            utils.send_mail( mail, mail_subject + ' started at %s.' % format_time( start_time ) )
+            send_mail(
+                  smtp_login
+                , mail
+                , '%s started at %s.' % ( mail_subject, format_time( start_time ) )
+                , debug_level = debug_level
+                )
 
         if local is not None:
             log( 'Using local file "%s"' % local )
@@ -595,13 +647,7 @@ def regression(
             tag = b[ 0: b.find( '.' ) ]
             log( 'Tag: "%s"' % tag  )
             
-            if not os.path.isdir( local ):
-                unpack_tarball( local, regression_root )
-            else:
-                if b != 'boost':
-                    log( 'Renaming "%s" into "%s"' % ( local, boost_root ) )
-                    os.rename( local, boost_root )
-                    
+            unpack_tarball( local, regression_root )
         else:
             if incremental:
                 update_source( user, tag, proxy, [] )
@@ -618,19 +664,23 @@ def regression(
         if mail:
             log( 'Sending report to "%s"' % mail )
             end_time = time.localtime()
-            utils.send_mail( 
-                  mail
-                , mail_subject + ' completed successfully at %s.' % format_time( end_time )
+            send_mail( 
+                  smtp_login
+                , mail
+                , '%s completed successfully at %s.' % ( mail_subject, format_time( end_time ) )
+                , debug_level = debug_level
                 )
     except:
         if mail:
             log( 'Sending report to "%s"' % mail )
-            msg = regression_log + [ '' ] + apply( traceback.format_exception, sys.exc_info() ) 
+            traceback_ = '\n'.join( apply( traceback.format_exception, sys.exc_info() ) )
             end_time = time.localtime()
-            utils.send_mail( 
-                  mail
-                , mail_subject + ' failed at %s.' % format_time( end_time )
-                , '\n'.join( msg )
+            send_mail(
+                  smtp_login
+                , mail
+                , '%s failed at %s.' % ( mail_subject, format_time( end_time ) )
+                , traceback_
+                , debug_level
                 )
         raise
 
@@ -659,6 +709,7 @@ def accept_args( args ):
         , 'pjl-toolset='
         , 'timeout='
         , 'mail='
+        , 'smtp-login='
         , 'proxy='
         , 'ftp-proxy='
         , 'debug-level='
@@ -673,24 +724,22 @@ def accept_args( args ):
         , '--platform'      : sys.platform
         , '--user'          : None
         , '--comment'       : None
-        , '--bjam-options'  : ''
         , '--toolsets'      : None
+        , '--bjam-options'  : ''
         , '--bjam-toolset'  : None
         , '--pjl-toolset'   : None
         , '--timeout'       : 5
         , '--mail'          : None
+        , '--smtp-login'    : None
         , '--proxy'         : None
         , '--debug-level'   : 0
         , '--ftp-proxy'     : None
         }
     
-    defaults_num = len( options )
-
     ( option_pairs, other_args ) = getopt.getopt( args, '', args_spec )
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
-    
-    if  options.has_key( '--help' ):
+    if not options.has_key( '--runner' ) or options.has_key( '--help' ):
         usage()
         sys.exit( 1 )
 
@@ -709,6 +758,7 @@ def accept_args( args ):
         , 'monitored'       : options.has_key( '--monitored' )
         , 'timeout'         : options[ '--timeout' ]
         , 'mail'            : options[ '--mail' ]
+        , 'smtp_login'      : options[ '--smtp-login' ]
         , 'proxy'           : options[ '--proxy' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
@@ -754,6 +804,8 @@ Options:
 \t--pjl-toolset   bootstrap toolset for 'process_jam_log' executable
 \t                (optional)
 \t--mail          email address to send run notification to (optional)
+\t--smtp-login    STMP server address/login information, in the following
+\t                form: <user>:<password>@<host>[:<port>] (optional).
 \t--proxy         HTTP proxy server address and port (e.g. 
 \t                'http://www.someproxy.com:3128', optional)
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
