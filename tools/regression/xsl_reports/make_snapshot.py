@@ -121,7 +121,7 @@ def make_tarball_send_mail(
         , tag
         , user
         , site_dir
-	, mail
+        , mail
         ):
     try:
         mail_subject = '[Boost CVS tarball] Build for %s on %s' % ( tag, string.split(socket.gethostname(), '.')[0] )
