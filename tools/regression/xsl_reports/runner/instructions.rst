@@ -35,7 +35,7 @@ Running tests
     python regression.py --runner=Metacomm
   
   You can specify a particular set of toolsets you want to test with by passing them as 
-  a comma-separated list using ``--toolsets`` option::
+  a comma-separated list using the ``--toolsets`` option::
   
     python regression.py --runner=Metacomm --toolsets=gcc,vc7
   
@@ -43,9 +43,9 @@ Running tests
   If you are interested in seeing all available options, run ``python regression.py``
   or ``python regression.py --help``.
   
-  **Note**: If you are using a proxy server, everything should still "just work". 
+  **Note**: If you are behind a firewall/proxy server, everything should still "just work". 
   In the rare cases when it doesn't, you can explicitly specify the proxy server 
-  parameters through ``--proxy`` option, e.g.::
+  parameters through the ``--proxy`` option, e.g.::
 
     python regression.py --runner=Metacomm --proxy=http://www.someproxy.com:3128
 
