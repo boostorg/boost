@@ -52,12 +52,9 @@
         use="concat( @library, '&gt;@&lt;', @test-name )"/>
     <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
 
-    <!-- toolsets -->
-
-    <xsl:variable name="not_ordered_toolsets" select="//test-log[ generate-id(.) = generate-id( key('toolset_key',@toolset)[1] ) and @toolset != '' ]/@toolset"/>
-
-    <xsl:variable name="required_toolsets" select="$explicit_markup//mark-toolset[ @status='required' ]"/>
-
+    <xsl:variable name="run_toolsets" select="meta:test_structure( / )"/>
+    
+    <!--
     <xsl:variable name="ordered_toolsets_fragment">
         <xsl:call-template name="get_toolsets">
         <xsl:with-param name="toolsets" select="$not_ordered_toolsets"/>
@@ -66,61 +63,14 @@
     </xsl:variable>
 
     <xsl:variable name="ordered_toolsets" select="exsl:node-set( $ordered_toolsets_fragment )"/>
+    -->
 
     <!-- libraries -->
     <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
     <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
-    <xsl:template name="insert_toolsets_row">
-        <xsl:param name="library"/>
-        <xsl:param name="library_marks"/>
-        <xsl:param name="toolsets"/>
-        <tr valign="middle">
-        <td class="head" colspan="2">test / toolset</td>
 
-        <xsl:variable name="all_library_notes" select="$library_marks/note"/>
-        <xsl:for-each select="$toolsets/toolset">
-            <xsl:variable name="toolset" select="@toolset"/>
 
-            <xsl:variable name="class">
-            <xsl:choose>
-                <xsl:when test="@required='yes'">
-                    <xsl:text>required-toolset-name</xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>toolset-name</xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-            </xsl:variable>
-
-            <xsl:variable name="toolset_notes_fragment">
-                <xsl:for-each select="$all_library_notes">
-                    <xsl:if test="../@toolset=$toolset or ( ../toolset/@name=$toolset or ../toolset/@name = '*' )">
-                        <note index="{position()}"/>
-                    </xsl:if>
-                </xsl:for-each>
-            </xsl:variable>
-
-            <xsl:variable name="toolset_notes" select="exsl:node-set( $toolset_notes_fragment )/*"/>
-
-            <td class="{$class}"><xsl:value-of select="$toolset"/>
-            <xsl:if test="count( $toolset_notes ) > 0">
-                <span class="super">
-                    <xsl:for-each select="$toolset_notes">
-                        <xsl:variable name="note_index" select="@index"/>
-                        <xsl:if test="generate-id( . ) != generate-id( $toolset_notes[1] )">, </xsl:if>
-                        <a href="#{$library}-note-{$note_index}" title="Note {$note_index}">
-                            <xsl:value-of select="$note_index"/>
-                        </a>
-                    </xsl:for-each>
-                </span>
-            </xsl:if>
-            </td>
-        </xsl:for-each>
-
-        <td class="head">toolset / test</td>
-        </tr>
-    </xsl:template>
 
     <xsl:template name="test_type_col">
         <td class="test-type">
@@ -142,6 +92,18 @@
 
 
     <xsl:template match="/">
+
+        <exsl:document href="debug.xml" 
+          method="xml" 
+          encoding="utf-8"
+          indent="yes">
+
+          <runs>
+            <xsl:for-each select="$run_toolsets">
+              <xsl:copy-of select="."/>
+            </xsl:for-each>
+          </runs>
+        </exsl:document>
 
         <xsl:variable name="index_path" select="'index_.html'"/>
         
@@ -315,23 +277,27 @@
                     <b>Report Time: </b> <xsl:value-of select="$run_date"/>
                 </div>
 
-                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/>
+                <!--                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/> -->
+                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable"/>
 
                 <table border="0" cellspacing="0" cellpadding="0" class="library-table" summary="library results">
 
                     <thead>
-                    <xsl:call-template name="insert_toolsets_row">
+                      <xsl:call-template name="insert_runners_rows">
+                        <xsl:with-param name="run_toolsets" select="$run_toolsets"/>
+                      </xsl:call-template>
+                      
+                      <xsl:call-template name="insert_toolsets_row">
                         <xsl:with-param name="library_marks" select="$library_marks"/>
                         <xsl:with-param name="library" select="$library"/>
-                        <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
-                    </xsl:call-template>
+                      </xsl:call-template>
                     </thead>
                     <tfoot>
-                    <xsl:call-template name="insert_toolsets_row">
+                      <xsl:call-template name="insert_toolsets_row">
                         <xsl:with-param name="library_marks" select="$library_marks"/>
                         <xsl:with-param name="library" select="$library"/>
-                        <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
-                    </xsl:call-template>
+                      </xsl:call-template>
+                    <xsl:call-template name="insert_runners_rows"/>
                     </tfoot>
 
                     <tbody>
@@ -350,13 +316,21 @@
 
                         <xsl:variable name="lib_corner_case_tests" select="meta:order_tests_by_name( $lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] ) " />
 
+                        <!-- debug section -->
+
+                        <lib_unique_test_names>
+                          <xsl:for-each select="$lib_unique_test_names">
+                            <test name="{@test-name}"/>
+                          </xsl:for-each>
+                        </lib_unique_test_names>
+   
+
                         <!-- general tests section -->
 
                         <xsl:call-template name="insert_test_section">
                             <xsl:with-param name="library" select="$library"/>
-                            <xsl:with-param name="section_tests" select="$lib_general_tests"/>
+                            <xsl:with-param name="section_test_names" select="$lib_general_tests"/>
                             <xsl:with-param name="lib_tests" select="$lib_tests"/>
-                            <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
                         </xsl:call-template>
 
                         <!-- corner-case tests section -->
@@ -364,15 +338,14 @@
                         <xsl:if test="count( $lib_corner_case_tests ) > 0">
                             <tr>
                                 <!--<td colspan="2">&#160;</td>                  -->
-                                <td class="library-corner-case-header" colspan="{count($ordered_toolsets) + 3 }" align="center">Corner-case tests</td>
+                                <td class="library-corner-case-header" colspan="{count($run_toolsets/runs/run/toolset) + 3 }" align="center">Corner-case tests</td>
                                 <!--<td>&#160;</td>-->
                             </tr>
 
                         <xsl:call-template name="insert_test_section">
                             <xsl:with-param name="library" select="$library"/>
-                            <xsl:with-param name="section_tests" select="$lib_corner_case_tests"/>
+                            <xsl:with-param name="section_test_names" select="$lib_corner_case_tests"/>
                             <xsl:with-param name="lib_tests" select="$lib_tests"/>
-                            <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
                         </xsl:call-template>
                         
                     </xsl:if>
@@ -546,12 +519,13 @@
         <xsl:copy-of select="$test_header"/>
         <xsl:call-template name="test_type_col"/>
           
-        <xsl:for-each select="$toolsets/toolset">
-            <xsl:variable name="toolset" select="@toolset" />
+        <xsl:for-each select="$run_toolsets/runs/run/toolset">
+            <xsl:variable name="toolset" select="@name" />
+            <xsl:variable name="runner" select="../@runner" />
 
             <!-- Write log file -->
-            <xsl:variable name="test_result_for_toolset" select="$test_results[ @toolset = $toolset ]"/>
-            <xsl:variable name="log_file" select="meta:output_file_path( $test_result_for_toolset/@target-directory )"/>
+            <xsl:variable name="test_result_for_toolset" select="$test_results[ @toolset = $toolset and ../@runner=$runner ]"/>
+            <xsl:variable name="log_file" select="meta:output_file_path( concat( $test_result_for_toolset/../@runner, '-', $test_result_for_toolset/@target-directory ) )"/>
             <xsl:message>Writing document <xsl:value-of select="$log_file"/></xsl:message>
             
             <exsl:document href="{$log_file}"
@@ -595,21 +569,21 @@
 
     <xsl:template name="insert_test_section">
         <xsl:param name="library"/>      
-        <xsl:param name="section_tests"/>
+        <xsl:param name="section_test_nanes"/>
         <xsl:param name="lib_tests"/>
         <xsl:param name="toolsets"/>
 
-        <xsl:for-each select="$section_tests">
+        <xsl:for-each select="$section_test_names">
             <xsl:variable name="test_name" select="@test-name"/>
             <xsl:variable name="line_mod">
                 <xsl:choose>
                     <xsl:when test="1 = last()">
                         <xsl:text>-single</xsl:text>
                     </xsl:when>
-                    <xsl:when test="generate-id( . ) = generate-id( $section_tests[1] )">
+                    <xsl:when test="generate-id( . ) = generate-id( $section_test_names[1] )">
                         <xsl:text>-first</xsl:text>
                     </xsl:when>
-                    <xsl:when test="generate-id( . ) = generate-id( $section_tests[last()] )">
+                    <xsl:when test="generate-id( . ) = generate-id( $section_test_names[last()] )">
                         <xsl:text>-last</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>

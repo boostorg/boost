@@ -18,6 +18,35 @@
 
   <xsl:variable name="output_directory" select="'output'"/>
 
+  <func:function name="meta:test_structure">
+    <xsl:param name="document"/>
+    <xsl:variable name="required_toolsets" select="$explicit_markup//mark-toolset[ @status='required' ]"/>
+
+    <xsl:variable name="runs" select="//test-run"/>
+    <xsl:variable name="run_toolsets_f">
+      <runs>
+        <xsl:for-each select="$runs">
+          <run runner="{@runner}" timestamp="{@timestamp}">
+            <comment><xsl:value-of select="comment"/></comment>
+            <xsl:variable name="not_ordered_toolsets" select="set:distinct( //test-log/@toolset )"/>
+            <xsl:for-each select="$not_ordered_toolsets">
+              <xsl:sort select="." order="ascending"/>
+              <xsl:variable name="toolset" select="."/>
+              <xsl:variable name="required">
+                <xsl:choose>
+                  <xsl:when test="count( $required_toolsets[ @name = $toolset ] ) > 0">yes</xsl:when>
+                    <xsl:otherwise>no</xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <toolset name="{$toolset}" required="{$required}"/>
+            </xsl:for-each>
+          </run>
+        </xsl:for-each>
+      </runs>
+    </xsl:variable>
+    <func:result select="exsl:node-set( $run_toolsets_f )"/>
+  </func:function>
+
   <xsl:template name="get_toolsets">
     <xsl:param name="toolsets"/>
     <xsl:param name="required-toolsets"/>
@@ -70,6 +99,74 @@
       <xsl:param name="path"/>
       <func:result select="concat( $output_directory, '/', meta:encode_path( $path ), '.html' )"/>
   </func:function>
+
+  <xsl:template name="insert_runners_rows">
+    <xsl:with-param name="run_toolsets"/>
+    
+    <tr>
+      <td colspan="2">&#160;</td>
+      <xsl:for-each select="$run_toolsets/runs/run">
+        <td colspan="{count(toolset)}" class="runner"><a href="{@runner}.html"><xsl:value-of select="@runner"/></a></td>
+      </xsl:for-each>
+    </tr>
+    <tr>
+      <td colspan="2">&#160;</td>
+      <xsl:for-each select="$run_toolsets/runs/run">
+        <td colspan="{count(toolset)}" class="timestamp"><xsl:value-of select="@timestamp"/></td>
+      </xsl:for-each>
+    </tr>
+  </xsl:template>
+
+  <xsl:template name="insert_toolsets_row">
+        <xsl:param name="library"/>
+        <xsl:param name="library_marks"/>
+
+        <tr valign="middle">
+        <td class="head" colspan="2">test / toolset</td>
+
+        <xsl:variable name="all_library_notes" select="$library_marks/note"/>
+        <xsl:for-each select="$run_toolsets/runs/run/toolset">
+            <xsl:variable name="toolset" select="@name"/>
+
+            <xsl:variable name="class">
+            <xsl:choose>
+                <xsl:when test="@required='yes'">
+                    <xsl:text>required-toolset-name</xsl:text>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text>toolset-name</xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+            </xsl:variable>
+
+            <xsl:variable name="toolset_notes_fragment">
+                <xsl:for-each select="$all_library_notes">
+                    <xsl:if test="../@toolset=$toolset or ( ../toolset/@name=$toolset or ../toolset/@name = '*' )">
+                        <note index="{position()}"/>
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:variable>
+
+            <xsl:variable name="toolset_notes" select="exsl:node-set( $toolset_notes_fragment )/*"/>
+
+            <td class="{$class}"><xsl:value-of select="$toolset"/>
+            <xsl:if test="count( $toolset_notes ) > 0">
+                <span class="super">
+                    <xsl:for-each select="$toolset_notes">
+                        <xsl:variable name="note_index" select="@index"/>
+                        <xsl:if test="generate-id( . ) != generate-id( $toolset_notes[1] )">, </xsl:if>
+                        <a href="#{$library}-note-{$note_index}" title="Note {$note_index}">
+                            <xsl:value-of select="$note_index"/>
+                        </a>
+                    </xsl:for-each>
+                </span>
+            </xsl:if>
+            </td>
+        </xsl:for-each>
+
+        <td class="head">toolset / test</td>
+        </tr>
+    </xsl:template>
 
   <xsl:template name="show_notes">
       <xsl:param name="explicit_markup"/>
