@@ -39,14 +39,12 @@ process_jam_log = {}
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
     bjam[ 'build_cmd' ] = lambda toolset: 'build.bat %s' % toolset
-    bjam[ 'location' ] = 'bin.ntx86'
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
     process_jam_log[ 'default_toolset' ] = 'vc7.1'
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
     bjam[ 'build_cmd' ] = lambda toolset:'./build.sh %s' % toolset
-    bjam[ 'location' ] = ''
     process_jam_log[ 'name' ] = 'process_jam_log'
     process_jam_log[ 'default_toolset' ] = 'gcc'
     patch_boost_name = './patch_boost'
@@ -54,7 +52,7 @@ else:
 bjam[ 'default_toolset' ] = ''
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
 bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
-bjam[ 'build_path' ] = os.path.join( bjam[ 'source_dir' ], bjam[ 'location' ], bjam[ 'name' ] )
+bjam[ 'build_path_root' ] = bjam[ 'source_dir' ]
 
 process_jam_log[ 'path' ] = os.path.join( regression_root, process_jam_log[ 'name' ] )
 process_jam_log[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'regression', 'build' )
@@ -251,6 +249,27 @@ def update_source( user, tag, proxy, args, **unused ):
         get_source( user, tag, proxy, args )
 
 
+def tool_path( name_or_spec ):
+    if isinstance( name_or_spec, basestring ):
+        return os.path.join( regression_root, name_or_spec )
+
+    if os.path.exists( name_or_spec[ 'path' ] ):
+        return name_or_spec[ 'path' ]
+
+    if name_or_spec.has_key( 'build_path' ):
+        return name_or_spec[ 'build_path' ]
+
+    build_path_root = name_or_spec[ 'build_path_root' ]
+    log( 'Searching for "%s" in "%s"...' % ( name_or_spec[ 'name' ], build_path_root ) )
+    for root, dirs, files in os.walk( build_path_root ):
+        if name_or_spec[ 'name' ] in files:
+            return os.path.join( root, name_or_spec[ 'name' ] )
+    
+    raise Exception( 'Cannot find "%" in any of the following locations:\n%s' % (
+          '\n'.join( [ name_or_spec[ 'path' ], build_path_root ] )
+        ) )
+
+
 def build_if_needed( tool, toolset, toolsets ):
     if os.path.exists( tool[ 'path' ] ):
         log( 'Found preinstalled "%s"; will use it.' % tool[ 'path' ] )
@@ -278,15 +297,12 @@ def build_if_needed( tool, toolset, toolsets ):
         raise 'Could not find "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
 
     if not tool.has_key( 'build_path' ):
-        tool[ 'build_path' ] = os.path.join(
-              tool[ 'build_path_root' ]
-            , toolset, 'release', tool[ 'name' ]
-            )
+        tool[ 'build_path' ] = tool_path( tool )
 
     if not os.path.exists( tool[ 'build_path' ] ):
         raise 'Failed to find "%s" after build.' % tool[ 'build_path' ]
 
-    log( '%s succesfully built in "%s" directory' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
+    log( '%s succesfully built in "%s" location' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
 
 
 def import_utils():
@@ -295,27 +311,6 @@ def import_utils():
         sys.path.append( xsl_reports_dir )
         import utils as utils_module
         utils = utils_module
-
-
-def tool_path( name_or_spec ):
-    if isinstance( name_or_spec, basestring ):
-        return os.path.join( regression_root, name_or_spec )
-
-    if os.path.exists( name_or_spec[ 'path' ] ):
-        return name_or_spec[ 'path' ]
-
-    if name_or_spec.has_key( 'build_path' ):
-        return name_or_spec[ 'build_path' ]
-
-    build_path_root = name_or_spec[ 'build_path_root' ]
-    log( 'Searching for "%s" in "%s"...' % ( name_or_spec[ 'name' ], build_path_root ) )
-    for root, dirs, files in os.walk( build_path_root ):
-        if name_or_spec[ 'name' ] in files:
-            return os.path.join( root, name_or_spec[ 'name' ] )
-    
-    raise Exception( 'Cannot find "%" in any of the following locations:\n%s' % (
-          '\n'.join( [ name_or_spec[ 'path' ], build_path_root ] )
-        ) )
 
 
 def download_if_needed( tool_name, tool_url, proxy ):
