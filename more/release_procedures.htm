@@ -1,0 +1,169 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Release Procedures</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF">
+    <img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="../more/faq.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="../more/index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+
+
+<h1>Boost Release Procedures</h1>
+<p><a href="#Introduction">Introduction</a><br>
+<a href="#Overview">Procedure Overview</a><br>
+<a href="#Developers">Procedures for Developers</a><br>
+<a href="#Manager">Procedures for the Release Manager</a><br>
+<a href="#Acknowledgements">Acknowledgements</a></p>
+<h2><a name="Introduction">Introduction</a></h2>
+<p>Each release of Boost software is overseen by a release manager, who 
+coordinates release activities via the Boost mailing list, as well as performing 
+the detailed procedures for the release.</p>
+<p>Boost developers assist the release manager by reviewing regression test 
+logs, and committing fixes  to CVS.</p>
+<h2>Release Procedure <a name="Overview">Overview</a></h2>
+<ul>
+  <li>Discussion on the main Boost mailing list to determine the target date for 
+  release candidate branch and tag of the CVS main trunk.<br>
+&nbsp;</li>
+  <li>Release manager performs release candidate branch and tag.<br>
+&nbsp;</li>
+  <li>Regression tests run on release candidate.<br>
+&nbsp;</li>
+  <li>Developers commit fixes to the release candidate branch (and possibly 
+  merge into the main trunk - see below).<br>
+&nbsp;</li>
+  <li>Repeat previous two steps until release manager is satisfied.<br>
+&nbsp;</li>
+  <li>Release manager rolls out the actual release.</li>
+</ul>
+<h2>Release Procedures for <a name="Developers">Developers</a></h2>
+<ul>
+  <li>As the release candidate branch date approaches (as announced on the main 
+  mailing list), bring the main trunk CVS files you are responsible for into a 
+  stable state.<br>
+&nbsp;</li>
+  <li>If you know of changes in either your code or its dependencies, start 
+  checking regression test results to ensure your tests still pass.&nbsp; Don't 
+  necessarily wait for the initial release tagging.<br>
+&nbsp;</li>
+  <li>After the release manager announces that the release candidate branch has 
+  occurred, check the latest regression test results to be sure 
+  your tests haven't broken.<br>
+&nbsp;</li>
+  <li>Developers can continue working on main trunk code changes after 
+  the release candidate branch has occurred. There is no need to wait until the release 
+  itself.&nbsp; 
+  Modified files committed to CVS on the main trunk will not be included in the release unless the 
+  developer explicitly commits the changes to the release candidate branch.<br>
+&nbsp;</li>
+  <li>To make a fix to the release candidate, the change must be committed to 
+  the release candidate branch rather than the main trunk.&nbsp; Here is a 
+  typical procedure (assuming the release candidate branch is named RC_1_26_2):</li>
+</ul>
+<blockquote>
+  <ul>
+    <li>Command Line CVS:</li>
+  </ul>
+  <blockquote>
+    <pre>cvs update -r RC_1_26_2 [switch to the branch]
+[modify buggycode.hpp]
+cvs commit buggycode.hpp
+[repeat modify/commit as desired]
+
+[when ready for first merge]
+cvs update -A [switch to the trunk]
+cvs update -j RC_1_26_2 buggycode.hpp [merge changes to the trunk]
+[resolve any conflicts, make sure it builds, etc. etc.]
+cvs commit -m &quot;Merged from branch to trunk&quot; buggycode.hpp
+cvs update -r RC_1_26_2 buggycode.hpp [switch back to the branch]
+cvs tag RC_1_26_2_last_merge buggycode.hpp [keep track of the last merge
+point]
+[merge is complete]
+
+[modify buggycode.hpp]
+cvs commit buggycode.hpp
+[repeat modify/commit as desired]
+
+[when ready for second and subsequent merges]
+cvs update -A
+cvs update -j RC_1_26_2_last_merge -j RC_1_26_2 buggycode.hpp
+[resolve any conflicts, make sure it builds, etc. etc.]
+cvs commit -m &quot;Second merge from branch to trunk&quot; buggycode.hpp
+cvs update -r RC_1_26_2 buggycode.hpp
+cvs tag -F RC_1_26_2_last_merge buggycode.hpp [-F forces the tag to move; or
+create a new tag]
+[merge is complete]
+</pre>
+  </blockquote>
+  <ul>
+    <li>WinCVS:</li>
+  </ul>
+  <blockquote>
+    <p>Switch to branch: Select file(s), then Modify | Update selection... | 
+    Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK<br>
+    <br>
+    Edit files needing fixes.<br>
+    <br>
+    Commit changes: Modify | Commit... | Enter log message: ... | OK<br>
+    <br>
+    Switch back to main trunk: Modify | Update selection... | Update settings | 
+    Reset any sticky date/tag/-k options. | OK<br>
+    <br>
+    If changes should also be merged into main trunk:</p>
+    <blockquote>
+      <p>Merge changes from release candidate to main trunk: Modify | Update 
+      selection... | Merge options | Only the rev/tag: RC_!_26_2 | OK<br>
+      <br>
+      Commit merge results: Modify | Commit... | Enter log message: ... | OK</p>
+    </blockquote>
+    <p>Note that if a second or subsequent merge is required:</p>
+    <blockquote>
+      <p>Switch to branch: Select file(s), then Modify | Update selection... | 
+      Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK</p>
+      <p>Tag to keep track of last merge point: Modify | Create tag on 
+      selection... | Enter tag name: RC_1_26_2_last_merge | Overwrite existing 
+      tags with same name | OK</p>
+      <p>Edit files needing fixes.</p>
+      <p>Commit changes: Modify | Commit... | Enter log message: ... | OK</p>
+      <p>Switch back to main trunk: Modify | Update selection... | Update 
+      settings | Reset any sticky date/tag/-k options. | OK<br>
+      <br>
+      If changes should also be merged into main trunk:</p>
+      <blockquote>
+        <p>Merge changes from release candidate to main trunk: Modify | Update 
+        selection... | Merge options | [select] Plus with this rev/tag: 
+        RC_1_26_2 | [and above that, without selecting, enter ]Only the rev/tag: 
+        RC_1_26_2_last_merge | OK<br>
+        <br>
+        Commit merge results: Modify | Commit... | Enter log message: ... | OK</p>
+      </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<h2>Release Procedures for the Release <a name="Manager">Manager</a></h2>
+<p>(To be supplied)</p>
+<h2><a name="Acknowledgements">Acknowledgements</a></h2>
+<p>This web page was written by Beman Dawes, with helpful suggestions from Dave 
+Abrahams and Steve Robbins. Jim Hyslop contributed the detailed CVS procedures.</p>
+<hr>
+<p>Revised:
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->28 January, 2002<!--webbot bot="Timestamp" i-checksum="38454" endspan --></p>
+
+</body>
+
+</html>
