@@ -33,6 +33,8 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <sys/resource.h>
+#else
+#include <boost/progress.hpp>
 #endif
 
 // It is OK to use boost headers which contain entirely inline code.
@@ -329,7 +331,11 @@ bool execute(const std::string & command)
               << std::endl;
   }
 #else
-  int ret = std::system(command.c_str());
+  int ret;
+  {
+    boost::progress_timer pt;
+    ret = std::system(command.c_str());
+  }
 #endif
   if(ret != 0)
     std::cout << "Return code: " << ret << std::endl;
