@@ -39,13 +39,6 @@ http://www.boost.org/LICENSE_1_0.txt)
     <!-- the author-specified expected test results -->
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
     <xsl:variable name="expected_results" select="document( $expected_results_file )" />
-
-    <xsl:variable name="alternate_mode">
-        <xsl:choose>
-        <xsl:when test="$mode='user'">developer</xsl:when>
-        <xsl:otherwise>user</xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
      
     <!-- necessary indexes -->
     <xsl:key 
@@ -65,10 +58,15 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <!-- modes -->
 
+    <xsl:variable name="alternate_mode">
+        <xsl:choose>
+        <xsl:when test="$mode='user'">developer</xsl:when>
+        <xsl:otherwise>user</xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
     <xsl:variable name="release_postfix">
-        <xsl:if test="$release='yes'">
-            <xsl:text>_release</xsl:text>
-        </xsl:if>
+        <xsl:if test="$release='yes'">_release</xsl:if>
     </xsl:variable>
 
 
@@ -206,8 +204,17 @@ http://www.boost.org/LICENSE_1_0.txt)
                         <a href="issues.html" class="toc-entry" target="_top">Unresolved issues</a>
                     </div>
                 </xsl:if>
+                
+                <div class="toc-header-entry">
+                    <xsl:call-template name="insert_view_link">
+                        <xsl:with-param name="page" select="'index'"/>
+                        <xsl:with-param name="class" select="'toc-entry'"/>
+                        <xsl:with-param name="release" select="$release"/>
+                    </xsl:call-template>
+                </div>
+
                 <hr/>
-                  
+                                  
                 <xsl:for-each select="$libraries">
                     <xsl:sort select="." order="ascending" />
                     <xsl:variable name="library_page" select="meta:encode_path(.)" />
@@ -267,6 +274,11 @@ http://www.boost.org/LICENSE_1_0.txt)
                 </head>
                   
                 <body>
+
+                <xsl:call-template name="insert_page_links">
+                    <xsl:with-param name="page" select="meta:encode_path( $library )"/>
+                    <xsl:with-param name="release" select="$release"/>
+                </xsl:call-template>
 
                 <h1 class="page-title">
                     <a class="hover-link" name="{$library}" href="http://www.boost.org/libs/{$library}" target="_top">
@@ -380,7 +392,11 @@ http://www.boost.org/LICENSE_1_0.txt)
                 </xsl:if>
                     
                 <xsl:copy-of select="document( concat( 'html/library_', $mode, '_legend.html' ) )"/>
-                <xsl:copy-of select="document( 'html/make_tinyurl.html' )"/>
+
+                <xsl:call-template name="insert_page_links">
+                    <xsl:with-param name="page" select="meta:encode_path( $library )"/>
+                    <xsl:with-param name="release" select="$release"/>
+                </xsl:call-template>
 
                 </body>
                 </html>
@@ -496,7 +512,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             </xsl:choose>
         </xsl:variable>
 
-        <td class="{$class}">
+        <td class="{$class}" title="{$test_log/@test-name}/{$toolset}">
         <xsl:choose>
             <xsl:when test="count( $test_log ) &lt; 1">
                 <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
@@ -566,7 +582,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     </xsl:variable>
 
-        <td class="{$class}">
+        <td class="{$class}" title="{$test_log/@test-name}/{$toolset}">
         <xsl:choose>
             <xsl:when test="not( $test_log )">
             missing

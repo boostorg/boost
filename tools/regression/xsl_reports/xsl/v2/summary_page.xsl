@@ -101,6 +101,11 @@ http://www.boost.org/LICENSE_1_0.txt)
             </head>
             <body>
 
+            <xsl:call-template name="insert_page_links">
+                <xsl:with-param name="page" select="'summary'"/>
+                <xsl:with-param name="release" select="$release"/>
+            </xsl:call-template>
+
             <h1 class="page-title">
                 <xsl:text>Summary: </xsl:text>
                 <a class="hover-link" href="summary{$release_postfix}.html" target="_top"><xsl:value-of select="$source"/></a>
@@ -110,10 +115,14 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <b>Report Time: </b> <xsl:value-of select="$run_date"/>
             </div>
 
+            <div class="statistics">
             Unusable: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'unusable' ] )"/>
-            Fail-unexepected: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected' ] )"/>
-            fail-unexpected-new: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected-new' ] )"/>
-
+            &#160;|&#160;
+            Regressions: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected' ] )"/>
+            &#160;|&#160;
+            New failures: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected-new' ] )"/>
+            </div>
+            
             <!-- summary table -->
 
             <table border="0" cellspacing="0" cellpadding="0" width="1%" class="summary-table" summary="Overall summary">
@@ -211,7 +220,11 @@ http://www.boost.org/LICENSE_1_0.txt)
             </table>
 
             <xsl:copy-of select="document( concat( 'html/summary_', $mode, '_legend.html' ) )"/>
-            <xsl:copy-of select="document( 'html/make_tinyurl.html' )"/>
+
+            <xsl:call-template name="insert_page_links">
+                <xsl:with-param name="page" select="'summary'"/>
+                <xsl:with-param name="release" select="$release"/>
+            </xsl:call-template>
 
             </body>
             </html>
@@ -230,7 +243,7 @@ http://www.boost.org/LICENSE_1_0.txt)
       
     <xsl:variable name="library_page" select="meta:encode_path( $library )" />
 
-    <td class="{$class}">
+    <td class="{$class}" title="{$library}/{$toolset}">
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
             <xsl:text>&#160;&#160;</xsl:text>
@@ -298,7 +311,7 @@ http://www.boost.org/LICENSE_1_0.txt)
       
     <xsl:variable name="library_page" select="meta:encode_path( $library )" />
     
-    <td class="{$class}">
+    <td class="{$class}" title="{$library}/{$toolset}">
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
             <a href="{$library_page}.html" class="log-link" target="_top">
