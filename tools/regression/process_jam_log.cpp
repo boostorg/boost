@@ -104,6 +104,7 @@ namespace
     string::size_type pos = s.find( ".test/" );
     if ( pos == string::npos ) pos = s.find( ".dll/" );
     if ( pos == string::npos ) pos = s.find( ".lib/" );
+    if ( pos == string::npos ) pos = s.find( ".pyd/" );
     return pos;
   }
 
