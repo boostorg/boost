@@ -140,6 +140,11 @@ include testing.jam ;
           [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
 
+    test-suite format
+        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+    
     test-suite function
         : [ run libs/function/test/deprecated_syntax_test.cpp <lib>../libs/test/build/test_exec_monitor ]
           [ run libs/function/test/function_test.cpp <lib>../libs/test/build/test_exec_monitor ]
@@ -298,19 +303,186 @@ include testing.jam ;
                     <define>BOOST_REGEX_STATIC_LINK=1
             ]
 
+            [ run libs/regex/example/timer/regex_timer.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)example$(SLASH)timer$(SLASH)input_script.txt
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_timer
+            ]
+
+            [ run libs/regex/example/jgrep/jgrep.cpp libs/regex/example/jgrep/main.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  -n boost/ $(BOOST_ROOT)$(SLASH)boost$(SLASH)regex.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  jgrep
+           ]
+
+           [ run libs/regex/example/snippets/credit_card_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  credit_card_example
+           ]
+
+           [ run libs/regex/example/snippets/partial_regex_grep.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  partial_regex_grep
+           ]
+
+           [ run libs/regex/example/snippets/partial_regex_match.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  1234-5678-8765-4
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  partial_regex_match
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_1.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_1
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_2.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_2
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_3.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_3
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_4.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_4
+            ]
+
+            [ run libs/regex/example/snippets/regex_match_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  -auto
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_match_example
+            ]
+
+            [ run libs/regex/example/snippets/regex_merge_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_merge_example
+            ]
+
+            [ run libs/regex/example/snippets/regex_search_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_search_example
+            ]
+
+            [ run libs/regex/example/snippets/regex_split_example_1.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  -auto
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_split_example_1
+            ]
+
+            [ run libs/regex/example/snippets/regex_split_example_2.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_split_example_2
+            ]
+
      ;
 
     }
 
     test-suite signals
-        : [ run libs/signals/test/dead_slot_test.cpp 
-              <lib>../libs/test/build/test_exec_monitor 
+        : [ run libs/signals/test/dead_slot_test.cpp
+              <lib>../libs/test/build/test_exec_monitor
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
-          [ run libs/signals/test/deletion_test.cpp 
-              <lib>../libs/test/build/test_exec_monitor 
+          [ run libs/signals/test/deletion_test.cpp
+              <lib>../libs/test/build/test_exec_monitor
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
-          [ run libs/signals/test/ordering_test.cpp 
-              <lib>../libs/test/build/test_exec_monitor 
+          [ run libs/signals/test/ordering_test.cpp
+              <lib>../libs/test/build/test_exec_monitor
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
           [ run libs/signals/test/signal_n_test.cpp 
               <lib>../libs/test/build/test_exec_monitor 
@@ -444,6 +616,7 @@ include testing.jam ;
                 libs/numeric/ublas/test1/test11.cpp
                 libs/numeric/ublas/test1/test12.cpp
                 libs/numeric/ublas/test1/test13.cpp
+            : # args
             : # input files
             : # requirements
 
@@ -454,6 +627,7 @@ include testing.jam ;
                 libs/numeric/ublas/test2/test21.cpp
                 libs/numeric/ublas/test2/test22.cpp
                 libs/numeric/ublas/test2/test23.cpp
+            : # args
             : # input files
             : # requirements
 
@@ -464,6 +638,7 @@ include testing.jam ;
                 libs/numeric/ublas/test3/test31.cpp
                 libs/numeric/ublas/test3/test32.cpp
                 libs/numeric/ublas/test3/test33.cpp
+            : # args
             : # input files
             : # requirements
 
@@ -474,6 +649,7 @@ include testing.jam ;
                 libs/numeric/ublas/test4/test41.cpp
                 libs/numeric/ublas/test4/test42.cpp
                 libs/numeric/ublas/test4/test43.cpp
+            : # args
             : # input files
             : # requirements
 
@@ -484,6 +660,7 @@ include testing.jam ;
                 libs/numeric/ublas/test5/test51.cpp
                 libs/numeric/ublas/test5/test52.cpp
                 libs/numeric/ublas/test5/test53.cpp
+            : # args
             : # input files
             : # requirements
 
@@ -494,6 +671,7 @@ include testing.jam ;
                 libs/numeric/ublas/test6/test61.cpp
                 libs/numeric/ublas/test6/test62.cpp
                 libs/numeric/ublas/test6/test63.cpp
+            : # args
             : # input files
             : # requirements
 
@@ -501,6 +679,7 @@ include testing.jam ;
                 <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
           ]
           [ run libs/numeric/ublas/concepts.cpp
+            : # args
             : # input files
             : # requirements
 
