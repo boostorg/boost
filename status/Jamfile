@@ -27,9 +27,9 @@ include testing.jam ;
     
     test-suite "bind"
         : [ run libs/bind/bind_test.cpp ]
-          [ run libs/bind/bind_test.cpp ]
           [ run libs/bind/mem_fn_test.cpp ]
           [ run libs/bind/mem_fn_void_test.cpp ]
+          [ run libs/bind/mem_fn_derived_test.cpp ]
         ;
 
     test-suite config
@@ -217,7 +217,11 @@ include testing.jam ;
         ;
 
 
-    run libs/smart_ptr/smart_ptr_test.cpp ;
+    test-suite smart_ptr
+        : [ run libs/smart_ptr/smart_ptr_test.cpp ]
+          [ run libs/smart_ptr/shared_ptr_test.cpp ]
+          [ compile-fail libs/smart_ptr/shared_ptr_assign_fail.cpp ]
+        ;
 
     test-suite static_assert
         : [ compile libs/static_assert/static_assert_test.cpp ]
