@@ -119,6 +119,12 @@ install-subinclude
 
 if [ install-sources lib ]
 {
+    local lib-build =
+        debug release
+        [ cond $(with-debug-python) : debug-python ]
+        [ cond $(NT) : <runtime-link>static/dynamic ]
+        <threading>single/multi
+        ;
     stage $(lib-locate:D=)
         :
             [ install-sources lib ]
@@ -128,7 +134,7 @@ if [ install-sources lib ]
             [ cond $(with-install) : <target>install : <target>all ]
             [ cond $(with-stage) : <target>stage : <target>all ]
         :
-            debug release [ cond $(with-debug-python) : debug-python ] <threading>single/multi
+            $(lib-build)
             [ unless $(with-install) $(with-stage) : <suppress>true ]
         ;
 }
