@@ -159,9 +159,9 @@ f.write( "<td>Program</td>\n" )
 
 if sys.platform == "linux2": 
   if compiler_arg == "*" or compiler_arg == "gcc":
-    f.write( "<td>GNU<br>GCC<br>2.95.2<br>(Linux)</td>\n" )
+    f.write( "<td>GNU<br>GCC<br>2.95.2</td>\n" )
   if compiler_arg == "*" or compiler_arg == "gcc-stlport":
-    f.write( "<td>GNU<br>GCC<br>2.95.2<br>4.0 beta 8<br>(Linux)</td>\n" )
+    f.write( "<td>GNU<br>GCC<br>2.95.2<br>STLport<br>4.0 beta 8</td>\n" )
 else:
   if compiler_arg=="*" or compiler_arg=="bcc54":
     f.write( "<td>Borland<br>BCC<br>5.4</td>\n" )
