@@ -656,14 +656,14 @@ const string & attribute_value( const xml::element & element,
     // - Boost.Build V1 location with ALL_LOCATE_TARGET
     // - Boost.Build V2 location with top-lelve "build-dir" 
     // - Boost.Build V1 location without ALL_LOCATE_TARGET
-    fs::path bin_path( locate_root / "bin/boost/status" );
+    string relative( fs::initial_path().string() );
+    relative.erase( 0, boost_root.string().size()+1 );
+    fs::path bin_path( locate_root / "bin/boost" / relative );
     if (!fs::exists(bin_path))
     {
       bin_path = locate_root / "bin/status/bin";
       if (!fs::exists(bin_path))
       {
-        string relative( fs::initial_path().string() );
-        relative.erase( 0, boost_root.string().size()+1 );
         bin_path = fs::path( locate_root / relative / "bin" );
       }
     }
