@@ -304,9 +304,12 @@ def accept_args( args ):
     if not options.has_key( '--results-dir' ):
          options[ '--results-dir' ] = options[ '--locate-root' ]
 
-    if options.has_key( '--v2' ) and not options.has_key( '--results-prefix' ):
-        options[ '--results-prefix' ] = 'all'
-        
+    if not options.has_key( '--results-prefix' ):
+        if options.has_key( '--v2' ):
+            options[ '--results-prefix' ] = 'all'
+        else:
+            options[ '--results-prefix' ] = ''
+    
     return ( 
           options[ '--locate-root' ]
         , options[ '--tag' ]
