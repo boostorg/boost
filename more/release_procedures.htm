@@ -40,12 +40,12 @@ logs, and committing fixes  to CVS.</p>
   <li>Discussion on the main Boost mailing list to determine the target date for 
   release candidate branch and tag of the CVS main trunk.<br>
 &nbsp;</li>
-  <li>Release manager performs release candidate branch and tag.<br>
+  <li>Release manager performs release candidate branch, and also tags the 
+  branch point in main trunk.<br>
 &nbsp;</li>
-  <li>Regression tests run on release candidate.<br>
+  <li>Regression tests run on release candidate branch.<br>
 &nbsp;</li>
-  <li>Developers commit fixes to the release candidate branch (and possibly 
-  merge into the main trunk - see below).<br>
+  <li>Developers fix problems, test, and commit fixes. See below for details.<br>
 &nbsp;</li>
   <li>Repeat previous two steps until release manager is satisfied.<br>
 &nbsp;</li>
@@ -71,98 +71,67 @@ logs, and committing fixes  to CVS.</p>
   Modified files committed to CVS on the main trunk will not be included in the release unless the 
   developer explicitly commits the changes to the release candidate branch.<br>
 &nbsp;</li>
-  <li>To make a fix to the release candidate, the change must be committed to 
-  the release candidate branch rather than the main trunk.&nbsp; Here is a 
-  typical procedure (assuming the release candidate branch is named RC_1_26_2):</li>
+  <li>If specific to the release candidate only, the fixes should be committed 
+  directly to the release candidate branch. In the more common case of fixes 
+  which apply to both the main trunk and the release branch, the fixes are best 
+  made to the main trunk, and then merged into the release candidate branch. <br>
+  <br>
+  After a fix has been committed to the main trunk, here is a 
+  typical procedure (assuming the release candidate branch is named RC_1_26_2) 
+  to merge the fixed main trunk into the release candidate branch:</li>
 </ul>
 <blockquote>
   <ul>
     <li>Command Line CVS:</li>
   </ul>
   <blockquote>
-    <pre>cvs update -r RC_1_26_2 [switch to the branch]
-[modify buggycode.hpp]
-cvs commit buggycode.hpp
-[repeat modify/commit as desired]
+    <pre>[After fixed code is committed to main branch]
+cvs update -r RC_1_26_2 [switch to the release candidate branch]
+cvs update -j HEAD buggycode.hpp [merge changes from the trunk to the branch]
+ --&gt; RCS file: /cvsroot/boost/.../buggycode.hpp,v
+ --&gt;    retrieving revision 1.4
+ --&gt;    retrieving revision 1.6
+ --&gt;    Merging differences between 1.4 and 1.6 into buggycode.hpp
 
-[when ready for first merge]
-cvs update -A [switch to the trunk]
-cvs update -j RC_1_26_2 buggycode.hpp [merge changes to the trunk]
-[resolve any conflicts, make sure it builds, etc. etc.]
-cvs commit -m &quot;Merged from branch to trunk&quot; buggycode.hpp
-cvs update -r RC_1_26_2 buggycode.hpp [switch back to the branch]
-cvs tag RC_1_26_2_last_merge buggycode.hpp [keep track of the last merge
-point]
-[merge is complete]
+cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggycode.hpp
 
-[modify buggycode.hpp]
-cvs commit buggycode.hpp
-[repeat modify/commit as desired]
-
-[when ready for second and subsequent merges]
-cvs update -A
-cvs update -j RC_1_26_2_last_merge -j RC_1_26_2 buggycode.hpp
-[resolve any conflicts, make sure it builds, etc. etc.]
-cvs commit -m &quot;Second merge from branch to trunk&quot; buggycode.hpp
-cvs update -r RC_1_26_2 buggycode.hpp
-cvs tag -F RC_1_26_2_last_merge buggycode.hpp [-F forces the tag to move; or
-create a new tag]
-[merge is complete]
-</pre>
+[Repeat as needed]</pre>
   </blockquote>
   <ul>
     <li>WinCVS:</li>
   </ul>
   <blockquote>
-    <p>Switch to branch: Select file(s), then Modify | Update selection... | 
-    Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK<br>
-    <br>
-    Edit files needing fixes.<br>
-    <br>
-    Commit changes: Modify | Commit... | Enter log message: ... | OK<br>
-    <br>
-    Switch back to main trunk: Modify | Update selection... | Update settings | 
-    Reset any sticky date/tag/-k options. | OK<br>
-    <br>
-    If changes should also be merged into main trunk:</p>
+    <p>After fixed code is committed to main branch, switch to the release 
+    candidate branch:</p>
     <blockquote>
-      <p>Merge changes from release candidate to main trunk: Modify | Update 
-      selection... | Merge options | Only the rev/tag: RC_!_26_2 | OK<br>
-      <br>
-      Commit merge results: Modify | Commit... | Enter log message: ... | OK</p>
+    <p>Select file(s)</p>
+    <p>Modify | Update selection... | 
+    Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK</p>
     </blockquote>
-    <p>Note that if a second or subsequent merge is required:</p>
+      <p>Merge changes from main trunk into the release candidate branch:</p>
     <blockquote>
-      <p>Switch to branch: Select file(s), then Modify | Update selection... | 
-      Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK</p>
-      <p>Tag to keep track of last merge point: Modify | Create tag on 
-      selection... | Enter tag name: RC_1_26_2_last_merge | Overwrite existing 
-      tags with same name | OK</p>
-      <p>Edit files needing fixes.</p>
-      <p>Commit changes: Modify | Commit... | Enter log message: ... | OK</p>
-      <p>Switch back to main trunk: Modify | Update selection... | Update 
-      settings | Reset any sticky date/tag/-k options. | OK<br>
-      <br>
-      If changes should also be merged into main trunk:</p>
-      <blockquote>
-        <p>Merge changes from release candidate to main trunk: Modify | Update 
-        selection... | Merge options | [select] Plus with this rev/tag: 
-        RC_1_26_2 | [and above that, without selecting, enter ]Only the rev/tag: 
-        RC_1_26_2_last_merge | OK<br>
-        <br>
-        Commit merge results: Modify | Commit... | Enter log message: ... | OK</p>
-      </blockquote>
+      <p>Modify | Update selection... | 
+    Update settings | Merge options | Only this rev/tag: HEAD | OK</p>
+    </blockquote>
+      <p>Commit merge results:</p>
+    <blockquote>
+      <p>Modify | Commit... | Enter log message: ... | OK</p>
     </blockquote>
   </blockquote>
 </blockquote>
 <h2>Release Procedures for the Release <a name="Manager">Manager</a></h2>
-<p>(To be supplied)</p>
+<p>At time of branch-for-release:</p>
+<ul>
+  <li>Tag the main trunk&nbsp; <code>merged_to_RC_n_n_n</code>.</li>
+  <li>Branch the main trunk with the tag <code>RC_n_n_n</code>.</li>
+</ul>
 <h2><a name="Acknowledgements">Acknowledgements</a></h2>
 <p>This web page was written by Beman Dawes, with helpful suggestions from Dave 
-Abrahams and Steve Robbins. Jim Hyslop contributed the detailed CVS procedures.</p>
+Abrahams and Steve Robbins. Jim Hyslop contributed the original CVS procedures. 
+Updated by Jeff Garland after 1.29 release based on list discussions.</p>
 <hr>
 <p>Revised:
-<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->28 January, 2002<!--webbot bot="Timestamp" i-checksum="38454" endspan --></p>
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->06 March, 2003<!--webbot bot="Timestamp" i-checksum="28840" endspan --></p>
 
 </body>
 
