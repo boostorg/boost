@@ -18,8 +18,6 @@
     extension-element-prefixes="func"
     version="1.0">
 
-    <xsl:import href="exslt/str.xsl"/>
-
     <xsl:variable name="output_directory" select="'output'"/>
 
     <xsl:template name="get_toolsets">
@@ -72,7 +70,7 @@
 
     <func:function name="meta:toolset_name">
         <xsl:param name="name"/>
-        <func:result select="str:replace( $name, '-', '- ' )"/>
+        <func:result select="$name"/>
     </func:function>
 
     <func:function name="meta:output_file_path">
