@@ -37,6 +37,8 @@ filenames</a><br>
 rationale</a><br>
 &nbsp;&nbsp;&nbsp; <a href="#Naming">Naming conventions rationale</a><br>
 &nbsp;&nbsp;&nbsp; <a href="#code fonts">Source code fonts rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Tabs">Tabs rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#JavaScript">ECMAScript/JavaScript rationale</a><br>
 &nbsp;&nbsp;&nbsp; <a href="#Rationale rationale">Rationale rationale</a><br>
 &nbsp;&nbsp;&nbsp; <a href="#Acknowledgements">Acknowledgements rationale</a></p>
 <h2 align="left"><a name="Introduction">Introduction</a></h2>
@@ -201,7 +203,7 @@ library, but a reasonable effort to comply is expected.</p>
     should follow more conservative guidelines:
     <ul>
       <li>Use fixed-width fonts.&nbsp; See <a href="#code fonts">fonts rationale</a>.</li>
-      <li>Use spaces rather than tabs.</li>
+      <li>Use spaces rather than tabs. See <a href="#Tabs">tabs rationale</a>.</li>
       <li>Limit line lengths to 80 characters.</li>
     </ul>
   </li>
@@ -266,6 +268,7 @@ library, but a reasonable effort to comply is expected.</p>
     </tr>
   </table>
 </blockquote>
+<h4><a name="Redirection">Redirection</a></h4>
 <p>If the documentation is in a doc sub-directory, the primary directory should 
 contain an index.html file which redirects to the doc subdirectory:</p>
 <blockquote>
@@ -304,8 +307,10 @@ chose the name &quot;filesystem&quot;, but not &quot;filesystems&quot;, &quot;fs
 proportional to the need.&nbsp; The documentation should assume the readers have
 a basic knowledge of C++, but are not necessarily experts.</p>
 <p>The format for documentation should be HTML, and should not require an
-advanced browser or server-side extensions. The documentation entry point should 
-always be a file named index.html or index.htm.</p>
+advanced browser or server-side extensions. Style sheets are acceptable. ECMAScript/JavaScript 
+is not acceptable. The documentation entry point should 
+always be a file named index.html or index.htm; see <a href="#Redirection">
+Redirection</a>.</p>
 <p>There is no single right way to do documentation. HTML documentation is often
 organized quite differently from traditional printed documents. Task-oriented
 styles differ from reference oriented styles. In the end, it comes down to the
@@ -385,9 +390,34 @@ reasonably well when viewed with a variable-width font, and as far as I can tell
 every editor supporting variable-width fonts also supports fixed width. I don't
 think the converse is true.</p>
 <hr>
+<h3><a name="Tabs">Tabs</a> rationale</h3>
+<p>Tabs are banned because of the practical problems caused by tabs in 
+multi-developer projects like Boost, rather than any dislike in principle. See
+<a href="mailing_lists.htm#archive">mailing list archives</a>. Problems include 
+maintenance of a single source file by programmers using tabs and programmers 
+using spaces, and the difficulty of enforcing a consistent tab policy other than 
+just &quot;no tabs&quot;. Discussions concluded that Boost files should either all use 
+tabs, or all use spaces, and thus the decision to stick with spaces.</p>
+<hr>
+<h3>ECMAScript/<a name="JavaScript">JavaScript</a> rationale</h3>
+<p>Before the 1.29.0 release, two Boost libraries added ECMAScript/JavaScript 
+documentation. Controversy followed (see <a href="mailing_lists.htm#archive">
+mailing list archives</a>), and the developers were asked to remove the 
+ECMAScript/JavaScript. Reasons given for banning included:</p>
+<ul>
+  <li>Incompatible with some older browsers and some text based browsers.</li>
+  <li>Makes printing docs pages difficult.</li>
+  <li>Often results in really bad user interface design.</li>
+  <li>&quot;It's just annoying in general.&quot;</li>
+  <li>Would require Boost to test web pages for ECMAScript/JavaScript 
+  compliance.</li>
+  <li>Makes docs maintenance by other than the original developer more 
+  difficult.</li>
+</ul>
+<hr>
 <h3><a name="Rationale rationale">Rationale rationale</a></h3>
 <p>Rationale is defined as &quot;The fundamental reasons for something;
-basis.&quot; by the American Heritage Dictionary.</p>
+basis&quot; by the American Heritage Dictionary.</p>
 <p>Beman Dawes comments:&nbsp; Failure to supply contemporaneous rationale for
 design decisions is a major defect in many software projects. Lack of accurate
 rationale causes issues to revisited endlessly, causes maintenance bugs when a
@@ -404,7 +434,7 @@ suggestion.&nbsp; Major contributions are usually acknowledged in the
 documentation, while minor fixes are often mentioned in comments within the code
 itself.</p>
 <hr>
-<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->15 August, 2002<!--webbot bot="Timestamp" endspan i-checksum="34415" --></p>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->10 September, 2002<!--webbot bot="Timestamp" endspan i-checksum="39330" --></p>
 
 </body>
 
