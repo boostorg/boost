@@ -39,7 +39,7 @@ def checked_system( commands, user, background = False ):
 def untar( archive, user, background ):
     checked_system( 
           [
-              'cd %s' % os.path.dirname( archive )
+              'cd %s' % os.path.join( site_dir, os.path.dirname( archive ) )
             , 'tar -x -z --overwrite --mode=+w -f %s' % os.path.basename( archive )
             , 'rm -f %s' % archive
             ]
