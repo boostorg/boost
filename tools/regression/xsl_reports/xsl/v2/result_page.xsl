@@ -413,14 +413,28 @@
             <xsl:text>missing</xsl:text>
             </xsl:when> 
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
-            <a href="{$log_link}" class="log-link" target="_top">
-                fail
-            </a>
+                <xsl:choose>
+                    <xsl:when test="$log_link != ''">
+                        <a href="{$log_link}" class="log-link" target="_top">
+                            fail
+                        </a>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        fail
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'unexpected'">
-            <a href="{$log_link}" class="log-link" target="_top">
-                fail
-            </a>
+                <xsl:choose>
+                    <xsl:when test="$log_link != ''">
+                        <a href="{$log_link}" class="log-link" target="_top">
+                            fail
+                        </a>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        fail
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:when test="$test_log/@result = 'success' and $test_log/@status = 'unexpected'">
                 pass
@@ -522,11 +536,20 @@
             <!-- Write log file -->
             <xsl:variable name="test_result_for_toolset" select="$test_results[ @toolset = $toolset and ../@runner=$runner ]"/>
 
-            <xsl:variable name="log_file" select="meta:output_file_path( concat( $test_result_for_toolset/../@runner, '-', $test_result_for_toolset/@target-directory ) )"/>
+            <xsl:variable name="log_file">
+                <xsl:choose>
+                    <xsl:when test="meta:show_output( $explicit_markup, $test_result_for_toolset )">
+                        <xsl:value-of select="meta:output_file_path( concat( $test_result_for_toolset/../@runner, '-', $test_result_for_toolset/@target-directory ) )"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text></xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
 
-            <xsl:if test="meta:show_output( $test_result_for_toolset )">
-                <xsl:if test="count( $test_result_for_toolset ) > 0">
-                    <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
+            
+            <xsl:if test="count( $test_result_for_toolset ) > 0 and $log_file != ''">
+                <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
                     <exsl:document href="{$log_file}"
                         method="html" 
                         doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
@@ -544,7 +567,6 @@
                             </frameset>
                         </html>
                     </exsl:document>
-                </xsl:if>
             </xsl:if>
 
             <!-- Insert cell -->
