@@ -27,13 +27,22 @@ Boost's internal regression test suite produces the
 <p>Although not ordinarily run by Boost library users, it is documented here for
 the benefit of Boost developers, and for Boost users porting to a new platform.</p>
 
+<p>Boost is transitioning to a new version of the regression tests.&nbsp; During 
+the transition, both versions are available.</p>
+
+<blockquote>
+<p><a href="#Version Three">Documentation for version 3</a><br>
+<a href="#Version Two">Documentation for version 2</a></p>
+
+</blockquote>
+
 <h2>Requirements</h2>
 
 The test suite has been designed to meet to the following requirements.
 <ul>
 <li>Pure ISO C++, no tools required except a C++ compiler.
 <li>Support for tests which expect an error
-<li>Flexible configuration
+<li>Flexible configuration, independent of the target platform or compiler.
 <li>HTML output
 </ul>
 
@@ -41,7 +50,7 @@ These requirements rule out any script-based approach such as dejagnu
 (requires Tcl and expect) or even shell scripts.
 
 
-<h2>Running Regression Tests</h2>
+<h1>Regression Tests - <a name="Version Two">Version Two</a></h1>
 
 The implementation is provided in a single source file named
 <a href="../status/regression.cpp">regression.cpp</a>.
@@ -244,9 +253,100 @@ You also need to configure the compilers available on your platform in
 <p>You may need to add an entry for the compiler to <a href="../boost/config.hpp">boost/config.hpp</a>,
 but only if entries for the compiler is not already present, and the compiler
 doesn't fully conform to the ISO C++ Standard.</p>
+<h1>Regression Tests - <a name="Version Three">Version Three</a></h1>
+<p>Version 3 of the Boost regression testing framework is based on
+<a href="../tools/build/index.html">Boost.Build</a>, and uses <i>bjam</i> to 
+actually run the tests. Because Boost.Build does dependency analysis, only tests 
+for which some dependency has change are rerun.</p>
+<p>The reporting of test results as HTML files is accomplished by separate C++ 
+programs which process the residue and log files from the <i>bjam</i> run.</p>
+<h2>Preparation</h2>
+<p>Install the following programs on your system, in some location suitable for 
+program executables. Normally that location will be a directory which is part of 
+your search path for executables.</p>
+<ul>
+  <li><i>bjam</i> - Executables and sources are available; see
+  <a href="../tools/build/index.html#Jam">Boost.Build docs</a>.&nbsp; Before 
+  worrying about regression tests, you might want to verify your <i>bjam</i> 
+  installation works by <a href="../tools/build/index.html#Building">building 
+  the boost-root/status/Jamfile libraries</a>.<br>
+&nbsp;</li>
+  <li><i>process_jam_log</i> and <i>compiler_status</i> - Sources available in 
+  the <a href="mailing_lists.htm#sandbox">Boost Sandbox</a>. These two post-bjam 
+  processing programs are currently only available in the sandbox <i>libs/filesystem/example</i> 
+  directory, since they depend on the Filesystem Library, which is not scheduled 
+  for Boost formal review until late September, 2002.&nbsp; Once the Filesystem 
+  Library has been accepted, they will become part of the regular Boost 
+  distribution.</li>
+</ul>
+<h2>Execution</h2>
+<p>These examples assume several environment variables have been set:</p>
+<ul>
+  <li>BOOST_ROOT is set to the directory where the unzipped Boost distribution 
+  or CVS working copy resides.&nbsp; For example:<br>
+  <br>
+  set BOOST_ROOT=/boost_1_29_0<br>
+&nbsp;</li>
+  <li>TOOLS is set to the <a href="../tools/build/index.html#Tools">compiler 
+  toolsets</a> you wish to use. For example:<br>
+  <br>
+  set TOOLS=borland gcc intel-win32 metrowerks vc7<br>
+&nbsp;</li>
+  <li>Any environment variables required for particular compilers.&nbsp; You 
+  might wish to test first with one compiler at a time to make sure each toolset 
+  is fully operational.</li>
+</ul>
+<p>A full set of tests and status tables can then be run thusly on a Window 2000 
+system:</p>
+<blockquote>
+  <pre>cd %BOOST_ROOT%\status
+md bin 2&gt;nul
+bjam test &gt;bin\regr.log 2&gt;&amp;1
+start notepad bin\regr.log
+process_jam_log &lt;bin\regr.log
+compiler_status %BOOST_ROOT% cs-win32.html
+rem Specify links file, even though it will be overwritten, so report html includes links
+rem This works because the generated bookmark names are the same regardless of other settings
+compiler_status --ignore-pass --no-warn %BOOST_ROOT% cs-win32-fail.html cs-win32-links.html
+compiler_status --ignore-pass %BOOST_ROOT% cs-win32-warn-or-fail.html cs-win32-links.html
+compiler_status %BOOST_ROOT% cs-win32-full.html cs-win32-links.html</pre>
+</blockquote>
+<p>Modulo syntax adjustments, the same procedure should work on other operating 
+systems.&nbsp; Rename the cs-win-xxx output files as appropriate.</p>
+<p>If you execute <i>compiler_status</i> without arguments, you can see the 
+available options and tailor your own favorite report.</p>
+<p>If you want to run just a single test, specify it as the <i>bjam</i> target 
+rather than &quot;test&quot;.&nbsp; For example, to debug configurations, it might be 
+useful to just run the <i>config_info</i> test, with a switch to force even 
+up-to-date programs be rebuilt:</p>
+<blockquote>
+  <pre>bjam -a config_info</pre>
+</blockquote>
+<h2>Adding a new test</h2>
+<h3>Overall Boost regression tests</h3>
+<p>Adding tests is as simple as adding a single line to the
+<a href="../status/Jamfile">boost-root/status/Jamfile</a>:</p>
+<blockquote>
+  <pre>run libs/mylib/test/mytest.cpp ;</pre>
+</blockquote>
+<p>Don't forget that Jam is white-space sensitive; delete the space before the 
+semi-colon in the example above, and you will get an introduction to Jam error 
+messages.</p>
+<p>For creating more complex tests and test-suites, look at examples in the
+<a href="../status/Jamfile">Jamfile</a>.&nbsp; The <i>bind</i> and <i>config</i> 
+test-suites are simple examples, while the <i>regex</i> and <i>threads</i> test 
+suites show more of the power of Jam based testing.</p>
+<h3>Private tests for a specific library</h3>
+<p>A library can have its own private set of tests by creating a Jamfile in one 
+of the library's own sub-directories.&nbsp; For an example of this, see
+<a href="../libs/test/test/Jamfile">boost-root/libs/test/test/Jamfile</a>.</p>
 <h2>History</h2>
-<p>The regression.cpp test program was contributed
-by Jens Maurer, generalizing and improving an earlier program by Beman Dawes.</p>
+<p>The version 3 testing.jam and status/Jamfile foundation was contributed by 
+Dave Abrahams. The post-bjam processing programs were contributed by Beman 
+Dawes.</p>
+
+<p>The version 2 regression.cpp test program was contributed
+by Jens Maurer, generalizing and improving an earlier version 1 program by Beman Dawes.</p>
 
 <hr>
 2001-01-30<br>
