@@ -16,6 +16,7 @@ DEPENDS all : test ;
 
 # Tests from Jamfiles in individual library test subdirectories
 subinclude libs/filesystem/test ;
+subinclude libs/type_traits/test ;
 
 # Tests specified in this Jamfile
 {
@@ -723,97 +724,6 @@ subinclude libs/filesystem/test ;
             [ run libs/utility/ref_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
-    {
-
-	lib type_traits_init : libs/type_traits/test/init.cpp 
-    	: 
-        	<sysinclude>$(BOOST_ROOT)
-    	: 
-	;
-	
-    rule type-traits-run ( sources + )
-    {
-        return [ 
-           run
-             # sources
-             $(sources)
-
-             # dependencies
-             <lib>type_traits_init 
-             <lib>../libs/test/build/boost_unit_test_framework 
-         :  # additional args
-            --report_level=detailed --build_info=yes --log_level=messages
-         :  # test-files
-         :  # requirements
-            <sysinclude>$(BOOST_ROOT)
-         :  # test name
-        ] ;
-    }
-        
-test-suite type_traits :
-
-[ type-traits-run ../libs/type_traits/test/add_const_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/add_pointer_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/add_reference_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/add_volatile_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/alignment_of_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/function_traits_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_nothrow_assign_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_nothrow_constructor_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_nothrow_copy_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_trivial_assign_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_trivial_constructor_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_trivial_copy_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/has_trivial_destructor_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_arithmetic_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_array_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_base_and_derived_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_class_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_compound_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_const_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_convertible_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_empty_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_enum_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_float_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_function_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_fundamental_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_integral_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_member_function_pointer_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_member_pointer_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_object_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_pod_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_pointer_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_polymorphic_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_reference_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_same_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_scalar_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_stateless_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_union_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_void_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/is_volatile_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/remove_bounds_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/remove_const_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/remove_cv_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/remove_pointer_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/remove_reference_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/remove_volatile_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/tricky_abstract_type_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/tricky_add_pointer_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/tricky_function_type_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/tricky_incomplete_type_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/tricky_partial_specialization_test.cpp ]
-[ type-traits-run ../libs/type_traits/test/type_with_alignment_test.cpp ]
-            
-; # type traits suite
-
-    } # type traits sub rules...
-
 }
-
-
-
-
-
-
 
 
