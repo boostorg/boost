@@ -11,6 +11,21 @@ num_of_tests = 10
 
 tag = "1_30_0"
 
+
+# Generated results follow the rules:
+#
+# * odd runners are testing on Win32, even runners are testin on Unix
+# * the third toolset has 2 variants
+#
+
+# Generated expected markup:
+#
+# * First two toolset are required
+# * Every fourth library is unusable on event toolsets
+# * Last two tests are corner-ase tests
+# * Every 4th test is explicitly marked up as expected-failure
+
+
 def library_build_failed( library_idx ):
     return library_idx % 2
 
@@ -25,6 +40,7 @@ def test_run_type( runner_idx ):
 def make_test_results():
     if not os.path.exists( tag ):
         os.makedirs( tag )
+
     for i_runner in range( 0, num_of_runners ):
         runner_id = "runner_%02d" % i_runner
         g = xml.sax.saxutils.XMLGenerator( open( os.path.join( tag, runner_id + ".xml" ), "w" ) )
@@ -83,13 +99,15 @@ def make_test_results():
                     if i_runner % 2: test_result = "success"
                     else:             test_result = "fail"
 
+                    if i_runner == 1 and i_toolset == 2 and i_test % 6 == 0:
+                        test_result = "fail"
+                        
                     if test_result == "success" and ( 0 == i_test % 5 ):
                         show_run_output = "true"
 
                     if i_toolset == 2:
                         variants = [ "static-lib", "shared-lib" ]
                     else:
-                        print i_toolset
                         variants = [ None ]
 
                     for variant in variants:
