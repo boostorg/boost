@@ -28,6 +28,7 @@
 <a href="#Overview">Procedure Overview</a><br>
 <a href="#Developers">Procedures for Developers</a><br>
 <a href="#Manager">Procedures for the Release Manager</a><br>
+<a href="#FAQ">FAQ</a><br>
 <a href="#Acknowledgements">Acknowledgements</a></p>
 <h2><a name="Introduction">Introduction</a></h2>
 <p>Each release of Boost software is overseen by a release manager, who 
@@ -74,7 +75,8 @@ logs, and committing fixes  to CVS.</p>
   <li>If specific to the release candidate only, the fixes should be committed 
   directly to the release candidate branch. In the more common case of fixes 
   which apply to both the main trunk and the release branch, the fixes are best 
-  made to the main trunk, and then merged into the release candidate branch. <br>
+  made to the main trunk, and then merged into the release candidate branch. See 
+  FAQ for <a href="#merged_to_RC_n_n_n">tag rationale</a>.<br>
   <br>
   After a fix has been committed to the main trunk, here is a 
   typical procedure (assuming the release candidate branch is named RC_1_26_2) 
@@ -87,7 +89,7 @@ logs, and committing fixes  to CVS.</p>
   <blockquote>
     <pre>[After fixed code is committed to main branch]
 cvs update -r RC_1_26_2 [switch to the release candidate branch]
-cvs update -jmerged_to_1_26_2 -jHEAD buggycode.hpp [merge changes from the trunk to the branch]
+cvs update -j<a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a> -jHEAD buggycode.hpp [merge changes from trunk to branch]
  --&gt; RCS file: /cvsroot/boost/.../buggycode.hpp,v
  --&gt;    retrieving revision 1.4
  --&gt;    retrieving revision 1.6
@@ -115,7 +117,8 @@ cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp [tag new merged point]
       <p>Merge changes from main trunk into the release candidate branch:</p>
     <blockquote>
       <p>Modify | Update selection... | 
-    Update settings | Merge options | Only this rev/tag: <code>merged_to_1_26_2</code> 
+    Update settings | Merge options | Only this rev/tag: <code>
+      <a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a></code> 
       | Plus with this rev/tag: <code>HEAD</code> | OK</p>
     </blockquote>
       <p>Commit merge results:</p>
@@ -141,13 +144,21 @@ cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp [tag new merged point]
   <li>Tag the main trunk&nbsp; <code>merged_to_RC_n_n_n</code>.</li>
   <li>Branch the main trunk with the tag <code>RC_n_n_n</code>.</li>
 </ul>
+<h2><a name="FAQ">FAQ</a></h2>
+<p><b>What is the purpose of the <i><a name="merged_to_RC_n_n_n">
+merged_to_RC_n_n_n</a></i> tag?</b> This tag allows multiple merges from the 
+main trunk to the release candidate branch. Without it, merging an initial main 
+trunk fix&nbsp; into the release candidate branch would work, but merging a 
+second fix from main trunk to release candidate branch would result in a merge 
+conflict. Although this procedure seems convoluted, it works much better in 
+practice than several prior procedures we tried.</p>
 <h2><a name="Acknowledgements">Acknowledgements</a></h2>
 <p>This web page was written by Beman Dawes, with helpful suggestions from Dave 
 Abrahams and Steve Robbins. Jim Hyslop contributed the original CVS procedures. 
 Updated by Jeff Garland after 1.29 release based on list discussions.</p>
 <hr>
 <p>Revised:
-<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->06 March, 2003<!--webbot bot="Timestamp" i-checksum="28840" endspan --></p>
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->11 March, 2003<!--webbot bot="Timestamp" i-checksum="28831" endspan --></p>
 
 </body>
 
