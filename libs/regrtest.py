@@ -246,7 +246,10 @@ if  program_arg=="*":
 else:
   compile( program_arg )
 
-f.write( "</table>\n</body>\n</html>\n"  )
+f.write( "</table>\n" );
+if sys.platform == "linux2":
+  f.write( "<p>\nNote: A hand-crafted &lt;limits&gt; Standard header has been applied to all configurations.\n" )
+f.write( "</body>\n</html>\n" )
 
 # end
 
