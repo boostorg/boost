@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
+    <!-- 
+    The following online services can be used to validate collected test results:
+
+        - http://apps.gotdotnet.com/xmltools/xsdvalidator/
+        - http://tools.decisionsoft.com/schemaValidate.html
+    -->
+
     <xs:simpleType name="test_result">
         <xs:restriction base="xs:NMTOKEN">
             <xs:enumeration value="fail"/>
@@ -9,7 +16,9 @@
     </xs:simpleType>
     
     <xs:simpleType name="run_test_result">
-        <xs:restriction base="test_result">
+        <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="fail"/>
+            <xs:enumeration value="succeed"/>
             <xs:enumeration value="note"/>
         </xs:restriction>
     </xs:simpleType>
