@@ -170,7 +170,7 @@ def cvs_checkout( user, tag, args ):
        )
 
 
-def get_source( user, tag, proxy, args ):
+def get_source( user, tag, proxy, args, **unused ):
     log( "Getting sources ..." )
 
     if user is not None:
@@ -182,7 +182,7 @@ def get_source( user, tag, proxy, args ):
     open( timestamp_path, 'w' ).close()
 
 
-def update_source( user, tag, proxy, args ):
+def update_source( user, tag, proxy, args, **unused ):
     if user is not None:
         log( 'Updating sources...' )
         cvs_update( user, tag, args )
@@ -254,14 +254,23 @@ def build_process_jam_log_if_needed():
     log( 'Process_jam_log succesfully built in "%s" directory' % process_jam_log_path )
 
 
-
-def setup( comment_file, args ):
-    sys.path.append( xsl_reports_dir )
-    import utils as utils_module
+def import_utils():
     global utils    
-    utils = utils_module
+    if utils is None:
+        sys.path.append( xsl_reports_dir )
+        print sys.path
+        import utils as utils_module
+        utils = utils_module
+
+
+def setup(
+          comment
+        , args
+        , **unused
+        ):
+    import_utils()
     
-    if comment_file is None:
+    if comment is None:
         log( 'Comment file "%s" not found; creating default comment.' % comment_path )
         f = open( comment_path, 'w' )
         f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
@@ -305,9 +314,12 @@ def process_bjam_log():
 def test( 
           toolsets
         , args
+        , **unused
         ):
     if args == []:
         args = [ "test", "process" ]
+
+    import_utils()
 
     try:
         start_build_monitor()
@@ -348,21 +360,23 @@ def test(
 
 def upload( 
           tag
-        , runner_id
+        , runner
         , platform
         , user
-        , comment_file
+        , comment
         , args
-        ):
-    import runner
-    
-    if comment_file is not None:
+        , **unused
+        ):    
+    import_utils()
+
+    if comment is not None:
         global comment_path
-        comment_path = os.path.join( regression_root, comment_file )
+        comment_path = os.path.join( regression_root, comment )
     
-    runner.collect_and_upload_logs( 
+    from runner import collect_and_upload_logs 
+    collect_and_upload_logs( 
           regression_results
-        , runner_id
+        , runner
         , tag
         , platform
         , comment_path
@@ -379,7 +393,7 @@ def regression(
         , runner
         , platform
         , user
-        , comment_file
+        , comment
         , toolsets
         , incremental
         , mail = None
@@ -391,14 +405,14 @@ def regression(
         mail_subject = "Boost regression for %s on %s \n" % ( tag, string.split(socket.gethostname(), '.')[0] )
         if incremental:
             update_source( user, tag, proxy, [] )
-            setup( comment_file, [] )
+            setup( comment, [] )
         else:
             cleanup( args )
             get_source( user, tag, proxy, [] )
-            setup( comment_file, [] )
+            setup( comment, [] )
 
         test( toolsets, [] )
-        upload( tag, runner, platform, user, comment_file, [] )
+        upload( tag, runner, platform, user, comment, [] )
 
         if mail:
             log( 'Sending report to "%s"' % mail )
@@ -444,18 +458,18 @@ def accept_args( args ):
         usage()
         sys.exit( 1 )
 
-    return ( 
-          options[ '--tag' ]
-        , options[ '--runner' ]
-        , options[ '--platform']
-        , options[ '--user' ]
-        , options[ '--comment' ]
-        , options[ '--toolsets' ]
-        , options.has_key( '--incremental' )
-        , options[ '--mail' ]
-        , options[ '--proxy' ]
-        , other_args
-        )
+    return {
+          'tag':  options[ '--tag' ]
+        , 'runner': options[ '--runner' ]
+        , 'platform': options[ '--platform']
+        , 'user':    options[ '--user' ]
+        , 'comment': options[ '--comment' ]
+        , 'toolsets': options[ '--toolsets' ]
+        , 'incremental': options.has_key( '--incremental' )
+        , 'mail': options[ '--mail' ]
+        , 'proxy': options[ '--proxy' ]
+        , 'args': other_args
+        }
 
 
 commands = {
@@ -497,5 +511,5 @@ if len(sys.argv) > 1 and sys.argv[1] in commands:
 else:
     command = 'regression'
     args = sys.argv[ 1: ]
-    
-commands[ command ]( *accept_args( args ) )
+
+commands[ command ]( **accept_args( args ) )
