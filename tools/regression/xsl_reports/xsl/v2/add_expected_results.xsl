@@ -56,6 +56,7 @@
         </xsl:variable>
 
         <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and ( @test-name=$test-name or @test-name='*' ) and @toolset = $toolset]"/>
+        <xsl:variable name="new_failures_markup" select="$failures_markup//library[@name=$library]/mark-expected-failures[ meta:re_match( test/@name, $test-name ) and meta:re_match( toolset/@name, $toolset ) ]"/>
         <xsl:variable name="failures_markup" select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]/mark-failure[ meta:re_match( toolset/@name, $toolset ) ]"/>
         <xsl:variable name="is_new">
             <xsl:choose>
@@ -68,7 +69,7 @@
 
         <xsl:variable name="expected_result">
             <xsl:choose>
-            <xsl:when test='count( $failures_markup ) &gt; 0'>
+            <xsl:when test='count( $failures_markup ) &gt; 0 or count( $new_failures_markup ) &gt; 0'>
                 <xsl:text>fail</xsl:text>
             </xsl:when>
               
@@ -86,7 +87,7 @@
 
         <xsl:variable name="status">
             <xsl:choose>
-            <xsl:when test="count( $failures_markup ) &gt; 0">
+            <xsl:when test="count( $failures_markup ) &gt; 0 or count( $new_failures_markup ) &gt; 0">
                 <xsl:choose>
                 <xsl:when test="$expected_result = $actual_result">expected</xsl:when>
                 <xsl:otherwise>unexpected</xsl:otherwise>
@@ -105,13 +106,18 @@
 
         <xsl:variable name="notes">
             <xsl:choose>
+
             <xsl:when test='count( $failures_markup ) &gt; 0'>
                 <xsl:for-each select="$failures_markup/note">
                 <xsl:copy-of select="."/>
                 </xsl:for-each>
-                <!--        <xsl:copy-of select="$expected_results_test_case/node()"/>-->
             </xsl:when>
 
+            <xsl:when test='count( $new_failures_markup ) &gt; 0'>
+                <xsl:for-each select="$new_failures_markup/note">
+                <xsl:copy-of select="."/>
+                </xsl:for-each>
+            </xsl:when>
               
             </xsl:choose>
         </xsl:variable>
