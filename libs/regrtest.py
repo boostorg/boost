@@ -75,6 +75,8 @@ def compile( program ):
 #      invoke( "GCC pre-2.96 experimental", '/opt/exp/gcc/bin/g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "como":
       invoke( "Comeau C++ 4.2.44 beta3", 'como -c -I' + path + ' ' + fullpath)
+#    if compiler_arg == "*" or compiler_arg == "occ":
+#      invoke( "OpenC++ 2.5.9", 'occ -c --regular-c++ -I' + path + ' ' + fullpath)
 
 # ----------  Windows ---------- #
 
@@ -175,6 +177,8 @@ if sys.platform == "linux2":
 #    f.write( "<td>GNU<br>GCC<br>pre-2.96 experimental</td>\n" )
   if compiler_arg == "*" or compiler_arg == "como":
     f.write( "<td>Comeau C++<br>4.2.44 beta3<br>STLport<br>4.0</td>\n" )
+#  if compiler_arg == "*" or compiler_arg == "occ":
+#    f.write( "<td>OpenC++<br>2.5.9</td>\n" )
 else:
 #  if compiler_arg=="*" or compiler_arg=="bcc54":
 #    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
