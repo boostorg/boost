@@ -301,7 +301,10 @@ test_result run(std::string command, const std::string & boostpath,
   std::string exename = "boosttmp.exe";
   replace(command, "%source", boostpath + "/" + file);
   if(execute(command)) {
+// cygwin seems to require leading ./ on some systems (JM)
+#if !defined(__CYGWIN__) && defined(_WIN32)
     if(get_host() != "win32")
+#endif
       exename = "./" + exename;
     replace(args, "%boost", boostpath);
     return execute(exename + " " + args) ? run_ok : run_failed;
@@ -471,3 +474,5 @@ int main(int argc, char * argv[])
   out << "</p>\n</body>\n</html>" << std::endl;
   return 0;
 }
+
+
