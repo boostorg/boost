@@ -150,7 +150,7 @@
             <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
             <title>Boost regression: <xsl:value-of select="$source"/></title>
         </head>
-        <frameset cols="170px,*" frameborder="0" framespacing="0" border="0">
+        <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
             <frame name="tocframe" src="toc.html" scrolling="auto"/>
             <frame name="docframe" src="{$index_path}" scrolling="auto"/>
         </frameset>
@@ -245,8 +245,9 @@
                   
                 <xsl:for-each select="$libraries">
                     <xsl:sort select="." order="ascending" />
+                    <xsl:variable name="library_page" select="meta:encode_path(.)" />
                     <div class="toc-entry">
-                        <a href="{.}.html" class="toc-entry" target="_top">
+                        <a href="{$library_page}.html" class="toc-entry" target="_top">
                             <xsl:value-of select="."/>
                         </a>
                     </div>
@@ -262,8 +263,8 @@
             <xsl:sort select="." order="ascending" />
             <xsl:variable name="library" select="." />
             
-            <xsl:variable name="library_results" select="concat( $library, '_.html' )"/>
-            <xsl:variable name="library_page" select="concat( $library, '.html' )"/>
+            <xsl:variable name="library_results" select="concat( meta:encode_path( $library ), '_.html' )"/>
+            <xsl:variable name="library_page" select="concat( meta:encode_path( $library ), '.html' )"/>
 
             <!-- Library page -->
             <xsl:message>Writing document <xsl:value-of select="$library_page"/></xsl:message>
@@ -279,7 +280,7 @@
                     <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
                     <title>Boost regression: <xsl:value-of select="$library"/>/<xsl:value-of select="$source"/></title>
                 </head>
-                <frameset cols="170px,*" frameborder="0" framespacing="0" border="0">
+                <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
                 <frame name="tocframe" src="toc.html" scrolling="auto"/>
                 <frame name="docframe" src="{$library_results}" scrolling="auto"/>
                 </frameset>
@@ -564,7 +565,7 @@
                     <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
                     <!--<title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>-->
                 </head>
-                <frameset cols="170px,*" frameborder="0" framespacing="0" border="0">
+                <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
                 <frame name="tocframe" src="../toc.html" scrolling="auto"/>
                 <frame name="docframe" src="../../{$log_file}" scrolling="auto"/>
                 </frameset>
