@@ -33,6 +33,7 @@
     <xsl:param name="run_date"/>
     <xsl:param name="comment_file"/>
     <xsl:param name="explicit_markup_file"/>
+    <xsl:param name="release"/>
 
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
 
@@ -47,7 +48,7 @@
     <!--<xsl:variable name="expected_results" select="document( $expected_results_file )" />-->
 
     <!-- runs / toolsets -->
-    <xsl:variable name="run_toolsets" select="meta:test_structure( / )"/>
+    <xsl:variable name="run_toolsets" select="meta:test_structure( /, $release )"/>
 
     <!-- libraries -->
 
@@ -55,17 +56,23 @@
     <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
     <xsl:variable name="sorted_libraries_output">
-        <xsl:for-each select="$libraries">
+        <xsl:for-each select="$libraries[ meta:show_library( ., $release )]">
             <xsl:sort select="." order="ascending" />
             <library><xsl:copy-of select="."/></library>
         </xsl:for-each>
     </xsl:variable>
 
     <xsl:variable name="sorted_libraries" select="exsl:node-set( $sorted_libraries_output )/library/@library"/>
+
+    <xsl:variable name="release_postfix">
+        <xsl:if test="$release='yes'">
+            <xsl:text>_release</xsl:text>
+        </xsl:if>
+    </xsl:variable>
      
     <xsl:template match="/">
 
-        <xsl:variable name="summary_results" select="'summary_.html'"/>
+        <xsl:variable name="summary_results" select="concat( 'summary_', $release_postfix, '.html' )"/>
 
         <!-- Summary page -->
         <html>
@@ -103,6 +110,10 @@
                 <b>Report Time: </b> <xsl:value-of select="$run_date"/>
             </div>
 
+            Unusable: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'unusable' ] )"/>
+            Fail-unexepected: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected' ] )"/>
+            fail-unexpected-new: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected-new' ] )"/>
+
             <!-- summary table -->
 
             <table border="0" cellspacing="0" cellpadding="0" width="1%" class="summary-table" summary="Overall summary">
@@ -138,7 +149,7 @@
                     <xsl:variable name="expected_test_count" select="count( $current_row[ generate-id(.) = generate-id( key('test_name_key',@test-name)[1] ) ] )"/>
                     <xsl:variable name="library_header">
                         <td class="library-name">
-                            <a href="{$library_page}.html" class="library-link" target="_top">
+                            <a href="{$library_page}{$release_postfix}.html" class="library-link" target="_top">
                                 <xsl:value-of select="$library"/>
                             </a>
                         </td>
