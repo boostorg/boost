@@ -3,10 +3,6 @@ import os
 import string
 import sys
 
-class failure_exception:
-    def __init__( self, rc ):
-        self.rc_ = rc
-
 def system( commands ):
     if sys.platform == 'win32':
         f = open( 'tmp.cmd', 'w' )
@@ -21,5 +17,6 @@ def system( commands ):
     
 def checked_system( commands, valid_return_codes = [ 0 ] ):
     rc = system( commands ) 
-    if rc not in [ 0 ] + valid_return_codes: raise failure_exception( rc )
+    if rc not in [ 0 ] + valid_return_codes:
+        raise Exception( 'Command sequence "%s" failed with return code %d' % ( commands, rc ) )
     return rc
