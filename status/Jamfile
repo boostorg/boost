@@ -60,7 +60,9 @@ rule fail-to-build # sources.test : sources : requirements
     local fail-target = $(<[1]:S=$(SUF$(dependency-type))) ;
     local ignored = [
         $(gGENERATOR_FUNCTION($(dependency-type))) $(fail-target) : $(>) : $(3) ] ;
-        
+
+    set-target-variables $(fail-target)
+    
     # The .test file goes with the other subvariant targets
     MakeLocate $(<) : $(LOCATE_TARGET) ;
     failed-test-file $(<) : $(fail-target) ;
@@ -74,6 +76,7 @@ rule run-test # target : sources : requirements
 {
     local executable = $(<:S=$(SUFEXE)) ; 
     executable-file $(executable) : $(>) : $(3) ;
+    set-target-variables $(executable) ;
     
     # The .test file goes with the other subvariant targets
     MakeLocate $(<) : $(LOCATE_TARGET) ;
