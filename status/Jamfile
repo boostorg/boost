@@ -186,6 +186,11 @@ rule test-suite # pseudotarget-name : test-targets...
 
 # ----------- Actual test invocations follow ----------------#
 
+test-suite "bind"
+    : [ run libs/bind/bind_test.cpp ]
+      [ run libs/bind/mem_fn_test.cpp ]
+    ;
+
 test-suite config
     : [ run libs/config/test/config_test.cpp ]
       [ run libs/config/test/limits_test.cpp ]
