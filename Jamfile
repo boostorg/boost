@@ -1,7 +1,6 @@
-#~ Copyright 2003, Rene Rivera.
-#~ Use, modification and distribution are subject to the
-#~ Boost Software License, Version 1.0. (See accompanying file
-#~ LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#~ Copyright 2003-2004, Rene Rivera.
+#~ Distributed under the Boost Software License, Version 1.0.
+#~ (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
 if --help in $(ARGV)
 {
@@ -32,6 +31,9 @@ Locations:
                             Default; ./stage
 
 Features:
+    --with-<library>        Build, stage, or install the specified <library>
+                            If used, teh default becomes to only build
+                            indicated libraries.
     --without-<library>     Do not build, stage, or install the specified
                             <library>. By default all libraries attempt to build.
     --with-python-root[=PYTHON_ROOT]
@@ -102,6 +104,20 @@ if --with-pydebug in $(ARGV)
 # libraries to disable building, etc.
 local without-libraries = [ MATCH "^--without-(.*)" : $(ARGV) ] ;
 
+# libraries to enable
+local with-libraries ;
+for local arg in $(ARGV)
+{
+    switch $(arg)
+    {
+        case --with-python-root=* : local _ ;
+        case --with-pydebug : local _ ;
+        
+        case --with-* :
+        with-libraries += [ MATCH "^--with-(.*)" : $(arg) ] ;
+    }
+}
+
 #
 project-root ;
 
@@ -115,7 +131,7 @@ version-tag = $(version-tag:J="_") ;
 #
 install-subinclude
     [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ]
-    : <exclude>$(without-libraries) ;
+    : <exclude>$(without-libraries) <include>$(with-libraries) ;
 
 local lib-sources = [ install-sources lib ] ;
 
