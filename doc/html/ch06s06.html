@@ -1,0 +1,340 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Design Rationale</title><link rel="stylesheet" href="reference.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.61.3"><link rel="home" href="index.html" title="The Boost C++ Libraries"><link rel="up" href="signals.html" title="Boost.Signals"><link rel="previous" href="ch06s05.html" title="Design Overview"><link rel="next" href="signals.tests.html" title="Testsuite"><link rel="chapter" href="libraries.html" title="The Boost C++ Libraries"><link rel="chapter" href="any.html" title="Boost.Any"><link rel="refentry" href="class.boost.bad_any_cast.html" title="Class bad_any_cast"><link rel="refentry" href="class.boost.any.html" title="Class any"><link rel="refentry" href="id2383300-bb.html" title="Function any_cast"><link rel="chapter" href="array.html" title="Boost.Array"><link rel="refentry" href="class.boost.array.html" title="Class template array"><link rel="chapter" href="function.html" title="Boost.Function"><link rel="refentry" href="class.boost.bad_function_call.html" title="Class bad_function_call"><link rel="refentry" href="class.boost.function_base.html" title="Class function_base"><link rel="refentry" href="class.boost.functionN.html" title="Class template functionN"><link rel="refentry" href="class.boost.function.html" title="Class template function"><link rel="chapter" href="ref.html" title="Boost.Ref"><link rel="refentry" href="class.boost.reference_wrapper.html" title="Class template reference_wrapper"><link rel="refentry" href="class.boost.is_reference_wrapper.html" title="Class template is_reference_wrapper"><link rel="refentry" href="class.boost.unwrap_reference.html" title="Class template unwrap_reference"><link rel="chapter" href="signals.html" title="Boost.Signals"><link rel="refentry" href="class.boost.signalN.html" title="Class template signalN"><link rel="refentry" href="class.boost.signal.html" title="Class template signal"><link rel="refentry" href="class.boost.slot.html" title="Class template slot"><link rel="refentry" href="class.boost.signals.trackable.html" title="Class trackable"><link rel="refentry" href="class.boost.signals.connection.html" title="Class connection"><link rel="refentry" href="class.boost.signals.scoped_connection.html" title="Class scoped_connection"><link rel="refentry" href="id2532119-bb.html" title="Function template visit_each"><link rel="refentry" href="class.boost.last_value.html" title="Class template last_value"><link rel="refentry" href="id2354683-bb.html" title="Class last_value&lt;void&gt;"><link rel="chapter" href="variant.html" title="Boost.Variant"><link rel="refentry" href="BOOST_VARIANT_LIMIT_TYPES.html" title="Macro BOOST_VARIANT_LIMIT_TYPES"><link rel="refentry" href="BOOST_VARIANT_ENUM_PARAMS.html" title="Macro BOOST_VARIANT_ENUM_PARAMS"><link rel="refentry" href="BOOST_VARIANT_ENUM_SHIFTED_PARAMS.html" title="Macro BOOST_VARIANT_ENUM_SHIFTED_PARAMS"><link rel="refentry" href="BOOST_VARIANT_NO_REFERENCE_SUPPORT.html" title="Macro BOOST_VARIANT_NO_REFERENCE_SUPPORT"><link rel="refentry" href="BOOST_VARIANT_NO_TYPE_SEQUENCE_SUPPORT.html" title="Macro BOOST_VARIANT_NO_TYPE_SEQUENCE_SUPPORT"><link rel="refentry" href="BOOST_VARIANT_NO_FULL_RECURSIVE_VARIANT_SUPPORT.html" title="Macro BOOST_VARIANT_NO_FULL_RECURSIVE_VARIANT_SUPPORT"><link rel="refentry" href="class.boost.variant.html" title="Class template variant"><link rel="refentry" href="id2518553-bb.html" title="Function template swap"><link rel="refentry" href="id2524211-bb.html" title="Function template operator&lt;&lt;"><link rel="refentry" href="class.boost.make_variant_over.html" title="Class template make_variant_over"><link rel="refentry" href="class.boost.make_recursive_variant.html" title="Class template make_recursive_variant"><link rel="refentry" href="class.boost.make_recursive_variant_over.html" title="Class template make_recursive_variant_over"><link rel="refentry" href="class.boost.recursive_wrapper.html" title="Class template recursive_wrapper"><link rel="refentry" href="class.boost.is_recursive_wrapper.html" title="Class template is_recursive_wrapper"><link rel="refentry" href="class.boost.unwrap_recursive_wrapper.html" title="Class template unwrap_recursive_wrapper"><link rel="refentry" href="class.boost.apply_visitor_delayed_t.html" title="Class template apply_visitor_delayed_t"><link rel="refentry" href="id2557051-bb.html" title="Function apply_visitor"><link rel="refentry" href="class.boost.bad_get.html" title="Class bad_get"><link rel="refentry" href="id2493238-bb.html" title="Function get"><link rel="refentry" href="class.boost.bad_visit.html" title="Class bad_visit"><link rel="refentry" href="class.boost.static_visitor.html" title="Class template static_visitor"><link rel="refentry" href="class.boost.visitor_ptr_t.html" title="Class template visitor_ptr_t"><link rel="refentry" href="id2544445-bb.html" title="Function template visitor_ptr"><link rel="chapter" href="boostbook.html" title="The BoostBook Documentation Format"><link rel="refentry" href="boostbook.dtd.class-specialization.html" title="
+          BoostBook element class-specialization"><link rel="refentry" href="boostbook.dtd.link-test.html" title="
+          BoostBook element link-test"><link rel="refentry" href="boostbook.dtd.link-fail-test.html" title="
+          BoostBook element link-fail-test"><link rel="refentry" href="boostbook.dtd.typedef.html" title="
+          BoostBook element typedef"><link rel="refentry" href="boostbook.dtd.static-constant.html" title="
+          BoostBook element static-constant"><link rel="refentry" href="boostbook.dtd.code.html" title="
+          BoostBook element code"><link rel="refentry" href="boostbook.dtd.destructor.html" title="
+          BoostBook element destructor"><link rel="refentry" href="boostbook.dtd.template-type-parameter.html" title="
+          BoostBook element template-type-parameter"><link rel="refentry" href="boostbook.dtd.description.html" title="
+          BoostBook element description"><link rel="refentry" href="boostbook.dtd.librarylist.html" title="
+          BoostBook element librarylist"><link rel="refentry" href="boostbook.dtd.library-reference.html" title="
+          BoostBook element library-reference"><link rel="refentry" href="boostbook.dtd.boostbook.html" title="
+          BoostBook element boostbook"><link rel="refentry" href="boostbook.dtd.union.html" title="
+          BoostBook element union"><link rel="refentry" href="boostbook.dtd.inherit.html" title="
+          BoostBook element inherit"><link rel="refentry" href="boostbook.dtd.template-varargs.html" title="
+          BoostBook element template-varargs"><link rel="refentry" href="boostbook.dtd.source.html" title="
+          BoostBook element source"><link rel="refentry" href="boostbook.dtd.function.html" title="
+          BoostBook element function"><link rel="refentry" href="boostbook.dtd.postconditions.html" title="
+          BoostBook element postconditions"><link rel="refentry" href="boostbook.dtd.compile-test.html" title="
+          BoostBook element compile-test"><link rel="refentry" href="boostbook.dtd.method.html" title="
+          BoostBook element method"><link rel="refentry" href="boostbook.dtd.snippet.html" title="
+          BoostBook element snippet"><link rel="refentry" href="boostbook.dtd.constructor.html" title="
+          BoostBook element constructor"><link rel="refentry" href="boostbook.dtd.namespace.html" title="
+          BoostBook element namespace"><link rel="refentry" href="boostbook.dtd.if-fails.html" title="
+          BoostBook element if-fails"><link rel="refentry" href="boostbook.dtd.free-function-group.html" title="
+          BoostBook element free-function-group"><link rel="refentry" href="boostbook.dtd.functionname.html" title="
+          BoostBook element functionname"><link rel="refentry" href="boostbook.dtd.librarycategory.html" title="
+          BoostBook element librarycategory"><link rel="refentry" href="boostbook.dtd.notes.html" title="
+          BoostBook element notes"><link rel="refentry" href="boostbook.dtd.data-member.html" title="
+          BoostBook element data-member"><link rel="refentry" href="boostbook.dtd.specialization.html" title="
+          BoostBook element specialization"><link rel="refentry" href="boostbook.dtd.union-specialization.html" title="
+          BoostBook element union-specialization"><link rel="refentry" href="boostbook.dtd.throws.html" title="
+          BoostBook element throws"><link rel="refentry" href="boostbook.dtd.template-arg.html" title="
+          BoostBook element template-arg"><link rel="refentry" href="boostbook.dtd.method-group.html" title="
+          BoostBook element method-group"><link rel="refentry" href="boostbook.dtd.requirement.html" title="
+          BoostBook element requirement"><link rel="refentry" href="boostbook.dtd.precondition.html" title="
+          BoostBook element precondition"><link rel="refentry" href="boostbook.dtd.paramtype.html" title="
+          BoostBook element paramtype"><link rel="refentry" href="boostbook.dtd.using-class.html" title="
+          BoostBook element using-class"><link rel="refentry" href="boostbook.dtd.run-test.html" title="
+          BoostBook element run-test"><link rel="refentry" href="boostbook.dtd.librarypurpose.html" title="
+          BoostBook element librarypurpose"><link rel="refentry" href="boostbook.dtd.copy-assignment.html" title="
+          BoostBook element copy-assignment"><link rel="refentry" href="boostbook.dtd.run-fail-test.html" title="
+          BoostBook element run-fail-test"><link rel="refentry" href="boostbook.dtd.template.html" title="
+          BoostBook element template"><link rel="refentry" href="boostbook.dtd.compile-fail-test.html" title="
+          BoostBook element compile-fail-test"><link rel="refentry" href="boostbook.dtd.returns.html" title="
+          BoostBook element returns"><link rel="refentry" href="boostbook.dtd.default.html" title="
+          BoostBook element default"><link rel="refentry" href="boostbook.dtd.parameter.html" title="
+          BoostBook element parameter"><link rel="refentry" href="boostbook.dtd.signature.html" title="
+          BoostBook element signature"><link rel="refentry" href="boostbook.dtd.overloaded-function.html" title="
+          BoostBook element overloaded-function"><link rel="refentry" href="boostbook.dtd.class.html" title="
+          BoostBook element class"><link rel="refentry" href="boostbook.dtd.librarycategorydef.html" title="
+          BoostBook element librarycategorydef"><link rel="refentry" href="boostbook.dtd.type.html" title="
+          BoostBook element type"><link rel="refentry" href="boostbook.dtd.enumvalue.html" title="
+          BoostBook element enumvalue"><link rel="refentry" href="boostbook.dtd.overloaded-method.html" title="
+          BoostBook element overloaded-method"><link rel="refentry" href="boostbook.dtd.programlisting.html" title="
+          BoostBook element programlisting"><link rel="refentry" href="boostbook.dtd.complexity.html" title="
+          BoostBook element complexity"><link rel="refentry" href="boostbook.dtd.purpose.html" title="
+          BoostBook element purpose"><link rel="refentry" href="boostbook.dtd.template-nontype-parameter.html" title="
+          BoostBook element template-nontype-parameter"><link rel="refentry" href="boostbook.dtd.library.html" title="
+          BoostBook element library"><link rel="refentry" href="boostbook.dtd.librarycategorylist.html" title="
+          BoostBook element librarycategorylist"><link rel="refentry" href="boostbook.dtd.using-namespace.html" title="
+          BoostBook element using-namespace"><link rel="refentry" href="boostbook.dtd.struct-specialization.html" title="
+          BoostBook element struct-specialization"><link rel="refentry" href="boostbook.dtd.struct.html" title="
+          BoostBook element struct"><link rel="refentry" href="boostbook.dtd.lib.html" title="
+          BoostBook element lib"><link rel="refentry" href="boostbook.dtd.enum.html" title="
+          BoostBook element enum"><link rel="refentry" href="boostbook.dtd.requires.html" title="
+          BoostBook element requires"><link rel="refentry" href="boostbook.dtd.effects.html" title="
+          BoostBook element effects"><link rel="refentry" href="boostbook.dtd.libraryname.html" title="
+          BoostBook element libraryname"><link rel="refentry" href="boostbook.dtd.libraryinfo.html" title="
+          BoostBook element libraryinfo"><link rel="refentry" href="boostbook.dtd.testsuite.html" title="
+          BoostBook element testsuite"><link rel="refentry" href="boostbook.dtd.header.html" title="
+          BoostBook element header"><link rel="refentry" href="boostbook.dtd.rationale.html" title="
+          BoostBook element rationale"><link rel="refentry" href="Assignable.html" title="Concept Assignable"><link rel="refentry" href="InputIterator.html" title="Concept InputIterator"><link rel="refentry" href="OutputIterator.html" title="Concept OutputIterator"><link rel="refentry" href="ForwardIterator.html" title="Concept ForwardIterator"><link rel="refentry" href="BidirectionalIterator.html" title="Concept BidirectionalIterator"><link rel="refentry" href="RandomAccessIterator.html" title="Concept RandomAccessIterator"><link rel="refentry" href="DefaultConstructible.html" title="Concept DefaultConstructible"><link rel="refentry" href="CopyConstructible.html" title="Concept CopyConstructible"><link rel="refentry" href="EqualityComparable.html" title="Concept EqualityComparable"><link rel="refentry" href="LessThanComparable.html" title="Concept LessThanComparable"><link rel="refentry" href="SignedInteger.html" title="Concept SignedInteger"><link rel="subsection" href="ch06s06.html#id2526764" title="Choice of Slot Definitions"><link rel="subsection" href="ch06s06.html#id2526849" title="User-level Connection Management"><link rel="subsection" href="ch06s06.html#id2526998" title="Combiner Interface"><link rel="subsection" href="ch06s06.html#id2527145" title="Connection Interfaces: +=  operator"><link rel="subsection" href="ch06s06.html#id2527303" title="trackable rationale"><link rel="subsection" href="ch06s06.html#id2527465" title="Comparison with other Signal/Slot implementations"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" border="1" cellpadding="2" bgcolor="#007F7F"><tr><td bgcolor="#FFFFFF"><img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td><td><a href="../../index.htm"><font color="#FFFFFF" size="4" face="Arial">Home</font></a></td><td><a href="libraries.html"><font color="#FFFFFF" size="4" face="Arial">Libraries</font></a></td><td><a href="../../people/people.htm"><font color="#FFFFFF" size="4" face="Arial">People</font></a></td><td><a href="../../more/faq.htm"><font color="#FFFFFF" size="4" face="Arial">FAQ</font></a></td><td><a href="../../more/index.htm"><font color="#FFFFFF" size="4" face="Arial">More</font></a></td></tr></table><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2526755"></a>Design Rationale</h3></div></div><div></div></div><div class="toc"><dl><dt><a href="ch06s06.html#id2526764">Choice of Slot Definitions</a></dt><dt><a href="ch06s06.html#id2526849">User-level Connection Management</a></dt><dt><a href="ch06s06.html#id2526998">Combiner Interface</a></dt><dt><a href="ch06s06.html#id2527145">Connection Interfaces: +=  operator</a></dt><dt><a href="ch06s06.html#id2527303">trackable rationale</a></dt><dt><a href="ch06s06.html#id2527465">Comparison with other Signal/Slot implementations</a></dt></dl></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526764"></a>Choice of Slot Definitions</h4></div></div><div></div></div><p> The definition of a slot differs amongst signals and slots
+    libraries. Within Boost.Signals, a slot is defined in a very loose
+    manner: it can be any function object that is callable given
+    parameters of the types specified by the signal, and whose return
+    value is convertible to the result type expected by the
+    signal. However, alternative definitions have associated pros and
+    cons that were considered prior to the construction of
+    Boost.Signals.</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><b>Slots derive from a specific base
+        class</b></span>: generally a scheme such as this will require
+        all user-defined slots to derive from some library-specified
+        <tt class="computeroutput">Slot</tt> abstract class that defines a virtual
+        function calling the slot. Adaptors can be used to convert a
+        definition such as this to a definition similar to that used
+        by Boost.Signals, but the use of a large number of small
+        adaptor classes containing virtual functions has been found to
+        cause an unacceptable increase in the size of executables
+        (polymorphic class types require more code than
+        non-polymorphic types).</p><p> This approach does have the benefit of simplicity of
+        implementation and user interface, from an object-oriented
+        perspective.</p></li><li><p><span class="bold"><b>Slots constructed from a set of
+        primitives</b></span>: in this scheme the slot can have a
+        limited set of types (often derived from a common abstract
+        base class) that are constructed from some library-defined set
+        of primitives that often include conversions from free
+        function pointers and member function pointers, and a limited
+        set of binding capabilities. Such an approach is reasonably
+        simple and cover most common cases, but it does not allow a
+        large degree of flexibility in slot construction. Libraries
+        for function object composition have become quite advanced and
+        it is out of the scope of a signals and slots library to
+        encorporate such enhancements. Thus Boost.Signals does not
+        include argument binding or function object composition
+        primitives, but instead provides a hook (via the
+        <tt class="computeroutput"><a href="id2532119-bb.html" title="Function template visit_each">visit_each</a></tt>
+        mechanism) that allows existing binder/composition libraries
+        to provide the necessary information to Signals.</p></li></ul></div><p> Users not satisfied with the slot definition choice may opt
+    to replace the default slot function type with an alternative that
+    meets their specific needs.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526849"></a>User-level Connection Management</h4></div></div><div></div></div><p> Users need to have fine control over the connection of
+    signals to slots and their eventual disconnection. The approach
+    taken by Boost.Signals is to return a
+    <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> object that enables
+    connected/disconnected query, manual disconnection, and an
+    automatic disconnection on destruction mode. Some other possible
+    interfaces include:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><b>Pass slot to
+        disconnect</b></span>: in this interface model, the
+        disconnection of a slot connected with
+        <tt class="computeroutput">sig.<a href="class.boost.signalN.html#id2450121-bb">connect</a>(slot)</tt> is
+        performed via
+        <tt class="computeroutput">sig.<a href="class.boost.signalN.html#id2498444-bb">disconnect</a>(slot)</tt>. Internally,
+        a linear search using slot comparison is performed and the
+        slot, if found, is removed from the list. Unfortunately,
+        querying connectedness will generally also end up as
+        linear-time operations. This model also fails for
+        implementation reasons when slots become more complex than
+        simple function pointers, member function pointers and a
+        limited set of compositions and argument binders: to match the
+        slot given in the call to
+        <tt class="computeroutput"><a href="class.boost.signalN.html#id2498444-bb">disconnect</a></tt> with an
+        existing slot we would need to be able to compare arbitrary
+        function objects, which is not feasible.</p></li><li><p><span class="bold"><b>Pass a token to
+        disconnect</b></span>: this approach identifies slots with a
+        token that is easily comparable (e.g., a string), enabling
+        slots to be arbitrary function objects. While this approach is
+        essentially equivalent to the approach taken by Boost.Signals,
+        it is possibly more error-prone for several reasons:</p><div class="itemizedlist"><ul type="circle"><li><p>Connections and disconnections must be paired, so
+            the problem becomes similar to the problems incurred when
+            pairing <tt class="computeroutput">new</tt> and <tt class="computeroutput">delete</tt> for
+            dynamic memory allocation. While errors of this sort would
+            not be catastrophic for a signals and slots
+            implementation, their detection is generally
+            nontrivial.</p></li><li><p>Tokens must be unique, otherwise two slots will have
+            the same name and will be indistinguishable. In
+            environments where many connections will be made
+            dynamically, name generation becomes an additional task
+            for the user. Uniqueness of tokens also results in an
+            additional failure mode when attempting to connect a slot
+            using a token that has already been used.</p></li><li><p>More parameterization would be required, because the
+            token type must be user-defined. Additional
+            parameterization steepens the learning curver and
+            overcomplicates a simple interface.</p></li></ul></div><p> This type of interface is supported in Boost.Signals
+        via the slot grouping mechanism. It augments the
+        <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> object-based
+        connection management scheme.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526998"></a>Combiner Interface</h4></div></div><div></div></div><p> The Combiner interface was chosen to mimic a call to an
+    algorithm in the C++ standard library. It is felt that by viewing
+    slot call results as merely a sequence of values accessed by input
+    iterators, the combiner interface would be most natural to a
+    proficient C++ programmer. Competing interface design generally
+    required the combiners to be constructed to conform to an
+    interface that would be customized for (and limited to) the
+    Signals library. While these interfaces are generally enable more
+    straighforward implementation of the signals &amp; slots
+    libraries, the combiners are unfortunately not reusable (either in
+    other signals &amp; slots libraries or within other generic
+    algorithms), and the learning curve is steepened slightly to learn
+    the specific combiner interface.</p><p> The Signals formulation of combiners is based on the
+    combiner using the "pull" mode of communication, instead of the
+    more complex "push" mechanism. With a "pull" mechanism, the
+    combiner's state can be kept on the stack and in the program
+    counter, because whenever new data is required (i.e., calling the
+    next slot to retrieve its return value), there is a simple
+    interface to retrieve that data immediately and without returning
+    from the combiner's code. Contrast this with the "push" mechanism,
+    where the combiner must keep all state in class members because
+    the combiner's routines will be invoked for each signal
+    called. Compare, for example, a combiner that returns the maximum
+    element from calling the slots. If the maximum element ever
+    exceeds 100, no more slots are to be called.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left"><p>Pull</p></th><th align="left"><p>Push</p></th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+struct pull_max {
+  typedef int result_type;
+
+  template&lt;typename InputIterator&gt;
+  result_type operator()(InputIterator first,
+                         InputIterator last)
+  {
+    if (first == last)
+      throw std::runtime_error("Empty!");
+
+    int max_value = *first++;
+    while(first != last &amp;&amp; *first &lt;= 100) {
+      if (*first &gt; max_value)
+        max_value = *first;
+      ++first;
+    }
+
+    return max_value;
+  }
+};
+</pre></td><td align="left"><pre class="programlisting">
+struct push_max {
+  typedef int result_type;
+
+  push_max() : max_value(), got_first(false) {}
+
+  // returns false when we want to stop
+  bool operator()(int result) {
+    if (result &gt; 100)
+      return false;
+
+    if (!got_first) {
+      got_first = true;
+      max_value = result;
+      return true;
+    }
+
+    if (result &gt; max_value)
+      max_value = result;
+
+    return true;
+  }
+
+  int get_value() const 
+  { 
+    if (!got_first)
+      throw std::runtime_error("Empty!");
+    return max_value; 
+  }
+
+private:
+  int  max_value; 
+  bool got_first;
+};
+</pre></td></tr></tbody></table></div><p>There are several points to note in these examples. The
+    "pull" version is a reusable function object that is based on an
+    input iterator sequence with an integer <tt class="computeroutput">value_type</tt>,
+    and is very straightforward in design. The "push" model, on the
+    other hand, relies on an interface specific to the caller and is
+    not generally reusable. It also requires extra state values to
+    determine, for instance, if any elements have been
+    received. Though code quality and ease-of-use is generally
+    subjective, the "pull" model is clearly shorter and more reusable
+    and will often be construed as easier to write and understand,
+    even outside the context of a signals &amp; slots library.</p><p> The cost of the "pull" combiner interface is paid in the
+    implementation of the Signals library itself. To correctly handle
+    slot disconnections during calls (e.g., when the dereference
+    operator is invoked), one must construct the iterator to skip over
+    disconnected slots. Additionally, the iterator must carry with it
+    the set of arguments to pass to each slot (although a reference to
+    a structure containing those arguments suffices), and must cache
+    the result of calling the slot so that multiple dereferences don't
+    result in multiple calls. This apparently requires a large degree
+    of overhead, though if one considers the entire process of
+    invoking slots one sees that the overhead is nearly equivalent to
+    that in the "push" model, but we have inverted the control
+    structures to make iteration and dereference complex (instead of
+    making combiner state-finding complex).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2527145"></a>Connection Interfaces: +=  operator</h4></div></div><div></div></div><p> Boost.Signals supports a connection syntax with the form
+    <tt class="computeroutput">sig.<a href="class.boost.signalN.html#id2450121-bb">connect</a>(slot)</tt>, but a
+    more terse syntax <tt class="computeroutput">sig += slot</tt> has been suggested (and
+    has been used by other signals &amp; slots implementations). There
+    are several reasons as to why this syntax has been
+    rejected:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><b>It's unnecessary</b></span>: the
+        connection syntax supplied by Boost.Signals is no less
+        powerful that that supplied by the <tt class="computeroutput">+=</tt>
+        operator. The savings in typing (<tt class="computeroutput">connect()</tt>
+        vs. <tt class="computeroutput">+=</tt>) is essentially negligible. Furthermore,
+        one could argue that calling <tt class="computeroutput">connect()</tt> is more
+        readable than an overload of <tt class="computeroutput">+=</tt>.</p></li><li><p><span class="bold"><b>Ambiguous return type</b></span>:
+        there is an ambiguity concerning the return value of the
+        <tt class="computeroutput">+=</tt> operation: should it be a reference to the
+        signal itself, to enable <tt class="computeroutput">sig += slot1 += slot2</tt>,
+        or should it return a
+        <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> for the
+        newly-created signal/slot connection?</p></li><li><p><span class="bold"><b>Gateway to operators -=,
+        +</b></span>: when one has added a connection operator
+        <tt class="computeroutput">+=</tt>, it seems natural to have a disconnection
+        operator <tt class="computeroutput">-=</tt>. However, this presents problems when
+        the library allows arbitrary function objects to implicitly
+        become slots, because slots are no longer comparable.  </p><p> The second obvious addition when one has
+        <tt class="computeroutput">operator+=</tt> would be to add a <tt class="computeroutput">+</tt>
+        operator that supports addition of multiple slots, followed by
+        assignment to a signal. However, this would require
+        implementing <tt class="computeroutput">+</tt> such that it can accept any two
+        function objects, which is technically infeasible.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2527303"></a><tt class="computeroutput">trackable</tt> rationale</h4></div></div><div></div></div><div class="toc"><dl><dt><a href="ch06s06.html#id2527342">trackable copying behavior</a></dt><dt><a href="ch06s06.html#id2527396">Why derivation from trackable?</a></dt></dl></div><p> The <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt>
+      class is the primary user interface to automatic connection
+      lifetime management, and its design affects users directly. Two
+      issues stick out most: the odd copying behavior of
+      <tt class="computeroutput">trackable</tt>, and the limitation requiring users to
+      derive from <tt class="computeroutput">trackable</tt> to create types that can
+      participate in automatic connection management.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="id2527342"></a><tt class="computeroutput">trackable</tt> copying behavior</h5></div></div><div></div></div><p> The copying behavior of
+      <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> is essentially
+      that <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> subobjects
+      are never copied; instead, the copy operation is merely a
+      no-op. To understand this, we look at the nature of a
+      signal-slot connection and note that the connection is based on
+      the entities that are being connected; when one of the entities
+      is destroyed, the connection is destroyed. Therefore, when a
+      <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> subobject is
+      copied, we cannot copy the connections because the connections
+      don't refer to the target entity - they refer to the source
+      entity. This reason is dual to the reason signals are
+      noncopyable: the slots connected to them are connected to that
+      particular signal, not the data contained in the signal.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="id2527396"></a>Why derivation from <tt class="computeroutput">trackable</tt>?</h5></div></div><div></div></div><p> For <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> to work
+      properly, there are two constraints:</p><div class="itemizedlist"><ul type="disc"><li><p><tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> must
+          have storage space to keep track of all connections made to
+          this object.</p></li><li><p><tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> must be
+          notified when the object is being destructed so that it can
+          disconnect its connections.</p></li></ul></div><p>Clearly, deriving from
+      <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> meets these two
+      guidelines. We have not yet found a superior solution.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2527465"></a>Comparison with other Signal/Slot implementations</h4></div></div><div></div></div><div class="toc"><dl><dt><a href="ch06s06.html#id2527469">libsigc++</a></dt><dt><a href="ch06s06.html#id2527530">.NET delegates</a></dt></dl></div><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="id2527469"></a>libsigc++</h5></div></div><div></div></div><p><a href="http://libsigc.sourceforge.net" target="_top">libsigc++</a> is a C++
+      signals &amp; slots library that originally started as part of
+      an initiative to wrap the C interfaces to <a href="http://www.gtk.org" target="_top">GTK</a> libraries in C++, and has
+      grown to be a separate library maintained by Karl Nelson. There
+      are many similarities between libsigc++ and Boost.Signals, and
+      indeed Boost.Signals was strongly influenced by Karl Nelson and
+      libsigc++. A cursory inspection of each library will find a
+      similar syntax for the construction of signals and in the use of
+      connections and automatic connection lifetime management. There
+      are some major differences in design that separate these
+      libraries:</p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><b>Slot definitions</b></span>:
+          slots in libsigc++ are created using a set of primitives
+          defined by the library. These primitives allow binding of
+          objects (as part of the library), explicit adaptation from
+          the argument and return types of the signal to the argument
+          and return types of the slot (libsigc++ is, by default, more
+          strict about types than Boost.Signals). A discussion of this
+          approach with a comparison against the approach taken by
+          Boost.Signals is given in Choice of Slot Definitions.</p></li><li><p><span class="bold"><b>Combiner/Marshaller
+          interface</b></span>: the equivalent to Boost.Signals
+          combiners in libsigc++ are the marshallers. Marshallers are
+          similar to the "push" interface described in Combiner
+          Interface, and a proper treatment of the topic is given
+          there.</p></li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a name="id2527530"></a>.NET delegates</h5></div></div><div></div></div><p><a href="http://www.microsoft.com" target="_top">Microsoft</a>
+      has introduced the .NET Framework and an associated set of
+      languages and language extensions, one of which is the
+      delegate. Delegates are similar to signals and slots, but they
+      are more limited than most C++ signals and slots implemetations
+      in that they:</p><div class="itemizedlist"><ul type="disc"><li><p>Require exact type matches between a delegate and what
+          it is calling.</p></li><li><p>Do not allow return types.</p></li><li><p>Must call a method with <tt class="computeroutput">this</tt> already
+          bound.</p></li></ul></div></div></div></div><table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr><td align="left"><small>Last revised: March 12, 2003 at 23:27:23 GMT</small></td><td align="right"><small>Copyright © 2001-2003 Douglas Gregor</small></td></tr></table><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s05.html"><img src="images/prev.png" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="signals.html"><img src="images/up.png" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="signals.tests.html"><img src="images/next.png" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Design Overview </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a></td><td width="40%" align="right" valign="top"> Testsuite</td></tr></table></div></body></html>

@@ -1,0 +1,29 @@
+# Regression test status reporting tools build Jamfile
+
+exe process_jam_log
+	:
+	../process_jam_log.cpp ../detail/tiny_xml.cpp
+	../../../libs/filesystem/build//boost_filesystem
+	:	
+	:
+        release
+	;
+
+exe compiler_status
+	:
+	../compiler_status.cpp ../detail/tiny_xml.cpp
+	../../../libs/filesystem/build//boost_filesystem
+	:	
+	:
+        release
+	;
+
+stage run
+    :
+        process_jam_log
+        compiler_status
+    :
+    :
+        release
+    ;
+explicit run ;    
