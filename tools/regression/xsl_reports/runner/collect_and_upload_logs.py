@@ -47,10 +47,10 @@ def upload_to_sourceforge( user, tag, results_file ):
     
     utils.sourceforge.upload( results_file, upload_dir, user )
 
-def upload_to_ftp( tag, source ):
+def upload_to_ftp( tag, results_file ):
     ftp_site = 'fx.meta-comm.com'
     site_path = '/boost-regression'
-    utils.log( "Uploading log archive \"%s\" to ftp://%s%s/%s" % ( result_file, ftp_site, site_path, tag ) )
+    utils.log( "Uploading log archive \"%s\" to ftp://%s%s/%s" % ( results_file, ftp_site, site_path, tag ) )
     
     ftp = ftplib.FTP( ftp_site )
     ftp.login()
@@ -61,8 +61,8 @@ def upload_to_ftp( tag, source ):
         ftp.mkd( tag )
         ftp.cwd( tag )
 
-    f = open( source, 'rb' )
-    ftp.storbinary( 'STOR %s' % os.path.basename( result_file ), f )
+    f = open( results_file, 'rb' )
+    ftp.storbinary( 'STOR %s' % os.path.basename( results_file ), f )
     ftp.quit()
 
 
