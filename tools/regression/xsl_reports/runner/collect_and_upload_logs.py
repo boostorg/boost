@@ -47,22 +47,23 @@ def upload_to_sourceforge( user, tag, results_file ):
     
     utils.sourceforge.upload( results_file, upload_dir, user )
 
-def upload_to_ftp( tag, result_file ):
+def upload_to_ftp( tag, source ):
     ftp_site = 'fx.meta-comm.com'
-    side_path = '/boost-regression'
-    utils.log( "Uploading log archive \"%s\" to ftp://%s%s/%s" % ( result_file, ftp_site, side_path, tag ) )
+    site_path = '/boost-regression'
+    utils.log( "Uploading log archive \"%s\" to ftp://%s%s/%s" % ( result_file, ftp_site, site_path, tag ) )
     
     ftp = ftplib.FTP( ftp_site )
     ftp.login()
-    ftp.cwd( side_path )
+    ftp.cwd( site_path )
     try:
         ftp.cwd( tag )
     except ftplib.error_perm:
         ftp.mkd( tag )
         ftp.cwd( tag )
 
-    result_file_reader = open( result_file, "rb" )
-    ftp.storbinary( "STOR %s" % os.path.basename( result_file ), result_file_reader )
+    f = open( source, 'rb' )
+    ftp.storbinary( 'STOR %s' % os.path.basename( result_file ), f )
+    ftp.quit()
 
 
 def copy_comments( results_xml, comment_file ):
@@ -170,9 +171,12 @@ def accept_args( args ):
         ]
     
     options = {
-          '--user' :          None
-          , '--source' :      ''
-          , '--run-type' :    ''
+          '--tag' :         'CVS-HEAD'
+        , '--platform' :    sys.platform
+        , '--user' :        None
+        , '--comment' :     None
+        , '--source' :      ''
+        , '--run-type' :    ''
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -193,15 +197,16 @@ def accept_args( args ):
 def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
-\t--locate-root         directory to to scan for 'test_log.xml' files
-\t--runner              runner ID (e.g. 'Metacomm')
-\t--tag                 the tag for the results (e.g. 'CVS-HEAD')
-\t--platform            platform name
-\t--comment             an html comment file (will be inserted in the reports)
-\t--timestamp           timestamp of the run
-\t--user                SourceForge user name for a shell account (optional)
-\t--source              SourceForge user name for a shell account (optional)
-\t--run-type            "incremental" or "full" (optional)
+\t--locate-root   directory to to scan for 'test_log.xml' files
+\t--runner        runner ID (e.g. 'Metacomm')
+\t--timestamp     timestamp of the run
+\t--comment       an HTML comment file to be inserted in the reports
+\t                ('comment.html' by default)
+\t--tag           the tag for the results ('CVS-HEAD' by default)
+\t--user          SourceForge user name for a shell account (optional)
+\t--source        where Boost sources came from (e.g. CVS, tarball, 
+\t                anonymous CVS)
+\t--run-type      "incremental" or "full" (optional)
 '''
     
 def main():

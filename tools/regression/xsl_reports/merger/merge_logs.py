@@ -8,22 +8,46 @@
 import xml.sax.saxutils
 import xml.dom.minidom
 import zipfile
+import ftplib
 import glob
 import os.path
 import sys
 
 
-def download_test_runs( destination, tag, user ):
-    utils.log( 'Downloading test runs for tag "%s" [connecting as %s]...' % ( tag, user ) )
+def download_from_ftp( destination_dir, tag ):
+    ftp_site = 'fx.meta-comm.com'
+    site_path = '/boost-regression/%s' % tag
+    utils.log( 'Downloading test runs from  ftp://%s%s' % ( ftp_site, site_path ) )
 
-    destination_dir = os.path.join( destination, tag )
+    ftp = ftplib.FTP( ftp_site )
+    ftp.login()
+    ftp.cwd( site_path )
+    
+    files = ftp.nlst()
+    for f in files:
+        utils.log( '  Downloading %s into "%s" directory...' % ( f, destination_dir ) )
+        result = open( os.path.join( destination_dir, f ), 'wb' )
+        ftp.retrbinary( 'RETR %s' % f, result.write )
+
+    ftp.quit()
+
+
+def download_test_runs( incoming_dir, tag, user ):
+    utils.log( 'Downloading test runs for tag "%s"...' % tag )
+
+    destination_dir = os.path.join( incoming_dir, tag )
     utils.makedirs( destination_dir )
+    
+    if user is not None:
+        utils.log( 'Downloading test runs from SourceForge [connecting as %s]...' % user )
+        utils.sourceforge.download( 
+              'regression-logs/incoming/%s/' % tag
+            , destination_dir
+            , user
+            )
+    
+    download_from_ftp( destination_dir, tag )
 
-    utils.sourceforge.download( 
-          'regression-logs/incoming/%s/' % tag
-        , destination_dir
-        , user
-        )
     
 def unzip( archive_path, result_dir ):
     z = zipfile.ZipFile( archive_path, 'r', zipfile.ZIP_DEFLATED ) 
@@ -46,18 +70,20 @@ def unzip_test_runs( dir ):
             os.unlink( zip_path )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
-    
-def merge_test_runs( incoming_dir, tag, writer ):
+
+
+def merge_test_runs( incoming_dir, tag, writer, dont_collect_logs ):
     test_runs_dir = os.path.join( incoming_dir, tag )
     
-    utils.log( 'Removing stale XMLs in "%s"...' % test_runs_dir )
-    files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
-    for f in files:  
-       	utils.log( '  Removing "%s" ...' % f )
-        os.unlink( f )
+    if not dont_collect_logs:
+        utils.log( 'Removing stale XMLs in "%s"...' % test_runs_dir )
+        files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
+        for f in files:  
+       	    utils.log( '  Removing "%s" ...' % f )
+            os.unlink( f )
 
-    utils.log( 'Unzipping new test runs...' )
-    unzip_test_runs( test_runs_dir )
+        utils.log( 'Unzipping new test runs...' )
+        unzip_test_runs( test_runs_dir )
     
     all_runs_xml = xml.sax.saxutils.XMLGenerator( writer )
     all_runs_xml.startDocument()
@@ -87,7 +113,8 @@ def merge_logs(
         , dont_collect_logs
         ):
     
-    utils.log( 'Merging test runs into "%s"...' % results_xml )
+    results_xml_path = os.path.join( results_dir, results_xml )
+    utils.log( 'Merging test runs into "%s"...' % results_xml_path )
     
     incoming_dir = os.path.join( results_dir, 'incoming/' )
 
@@ -95,10 +122,10 @@ def merge_logs(
     if not dont_collect_logs:
         download_test_runs( incoming_dir, tag, user )
     
-    writer = open( results_xml, 'w' )
-    merge_test_runs( incoming_dir, tag, writer )
+    writer = open( results_xml_path, 'w' )
+    merge_test_runs( incoming_dir, tag, writer, dont_collect_logs )
 
-    utils.log( 'Done writing "%s"' % results_xml )
+    utils.log( 'Done writing "%s"' % results_xml_path )
 
 
 def accept_args( args ):
@@ -111,7 +138,11 @@ def accept_args( args ):
         , 'help'
         ]
 
-    options = { '--results-xml' : 'all-runs.xml' }
+    options = { 
+          '--results-xml' : 'all-runs.xml'
+        , '--user' :        None
+        , '--tag' :         'CVS-HEAD'
+        }
     utils.accept_args( args_spec, args, options, usage )
 
     return (
@@ -126,11 +157,12 @@ def accept_args( args ):
 def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
-\t--tag                 the tag for the results (e.g. 'CVS-HEAD')
-\t--user                SourceForge user name for a shell account
-\t--results-dir         directory for the resulting XML
+\t--results-dir         directory for the resulting XML/collected logs
 \t--results-xml         name of the resulting XML document (default 'all-runs.xml')
-\t--dont-collect-logs   don't collect logs from SourceForge
+\t--tag                 the tag for the results ('CVS-HEAD' by default)
+\t--user                SourceForge user name for a shell account (optional,
+\t                      if not provided, logs are collected from FTP only)
+\t--dont-collect-logs   don't collect logs from SourceForge/FTP
 '''
     
 def main():

@@ -393,14 +393,14 @@ def collect_logs(
     else: 
         comment_path = os.path.join( regression_root, comment )
     
-    run_type = ""
-    if incremental: run_type = "incremental"
-    else:           run_type = "incremental"
+    run_type = ''
+    if incremental: run_type = 'incremental'
+    else:           run_type = 'full'
 
-    source = ""
-    if user is None:          source = "tarball"
-    elif user == "anonymous": source = "cvs:pserver %s" % tag
-    else:                     source = "cvs:ext %s" % tag
+    source = ''
+    if user is None:          source = 'tarball'
+    elif user == 'anonymous': source = 'anonymous CVS'
+    else:                     source = 'CVS'
    
     from runner import collect_logs
     collect_logs( 
@@ -536,8 +536,8 @@ Commands:
 Options:
 \t--runner        runner ID (e.g. 'Metacomm')
 \t--tag           the tag for the results ('CVS-HEAD' by default)
-\t--comment       an html comment file (will be inserted in the reports, 
-\t                'comment.html' by default)
+\t--comment       an HTML comment file to be inserted in the reports
+\t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
 \t--user          SourceForge user name for a shell/CVS account (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)

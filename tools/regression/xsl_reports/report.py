@@ -39,7 +39,7 @@ def make_result_pages(
           test_results_file
         , expected_results_file
         , failures_markup_file
-        , source
+        , tag
         , run_date
         , comment_file
         , results_dir
@@ -88,7 +88,7 @@ def make_result_pages(
             , xsl_path( 'links_page.xsl', v2 )
             , links
             , {
-                  'source':                 source
+                  'source':                 tag
                 , 'run_date':               run_date 
                 , 'comment_file':           comment_file
                 , 'explicit_markup_file':   failures_markup_file
@@ -105,7 +105,7 @@ def make_result_pages(
             , xsl_path( 'issues_page.xsl', v2 )
             , issues
             , {
-                  'source':                 source
+                  'source':                 tag
                 , 'run_date':               run_date
                 , 'comment_file':           comment_file
                 , 'explicit_markup_file':   failures_markup_file
@@ -123,7 +123,7 @@ def make_result_pages(
                 , { 
                       'links_file':             'links.html'
                     , 'mode':                   mode
-                    , 'source':                 source
+                    , 'source':                 tag
                     , 'run_date':               run_date 
                     , 'comment_file':           comment_file
                     , 'expected_results_file':  expected_results_file
@@ -141,7 +141,7 @@ def make_result_pages(
                 , os.path.join( output_dir, mode, 'summary.html' )
                 , { 
                       'mode' :                  mode 
-                    , 'source':                 source
+                    , 'source':                 tag
                     , 'run_date':               run_date 
                     , 'comment_file':           comment_file
                     , 'explicit_markup_file' :  failures_markup_file
@@ -174,7 +174,7 @@ def make_result_pages(
 
 def build_xsl_reports( 
           locate_root_dir
-        , source
+        , tag
         , expected_results_file
         , failures_markup_file
         , comment_file
@@ -195,7 +195,7 @@ def build_xsl_reports(
     if v2:
         import merger
         merger.merge_logs(
-              source
+              tag
             , user
             , results_dir
             , test_results_file
@@ -214,7 +214,7 @@ def build_xsl_reports(
           test_results_file
         , expected_results_file
         , failures_markup_file
-        , source
+        , tag
         , run_date
         , comment_file
         , results_dir
