@@ -377,8 +377,9 @@ rule test-suite # pseudotarget-name : test-targets...
 
 # Note that the Compiler Status Report HTML generator scans
 # these rule invocations to find test type. That program is
-# pretty stupid, so needs help such as test names (if supplied)
-# which are unambiguous and preceded and followed by spaces. 
+# pretty stupid and needs help, including test names (if supplied)
+# which are unambiguous, not the same as a .cpp file name, and
+# preceded and followed by a space. 
 
 test-suite "bind"
     : [ run libs/bind/bind_test.cpp ]
@@ -468,7 +469,7 @@ run libs/utility/ref_test.cpp ;
 		<define>BOOST_REGEX_NO_LIB=1
 		<define>BOOST_REGEX_STATIC_LINK=1
        :
-                regex-regress ]
+                regress ]
 
         [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
                 <lib>../libs/regex/build/boost_regex$(SUFLIB) 
@@ -480,7 +481,7 @@ run libs/utility/ref_test.cpp ;
 		<define>TEST_UNICODE=1
 		<define>BOOST_REGEX_STATIC_LINK=1
         :
-                regex-wregress ]
+                wregress ]
 
         [ run libs/regex/test/c_compiler_checks/posix_api_check.c
                 <lib>../libs/regex/build/boost_regex$(SUFLIB) 
@@ -490,7 +491,7 @@ run libs/utility/ref_test.cpp ;
 		<define>BOOST_REGEX_NO_LIB=1
 		<define>BOOST_REGEX_STATIC_LINK=1
 	:
-                regex-posix_api_check_c ]
+                posix_api_check_c ]
 
         [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.c
                 <lib>../libs/regex/build/boost_regex$(SUFLIB) 
@@ -500,7 +501,7 @@ run libs/utility/ref_test.cpp ;
 		<define>BOOST_REGEX_NO_LIB=1
 		<define>BOOST_REGEX_STATIC_LINK=1
 	:
-                regex-wide_posix_api_check_c ]
+                wide_posix_api_check_c ]
 
         [ run libs/regex/test/c_compiler_checks/posix_api_check.cpp
                 <lib>../libs/regex/build/boost_regex$(SUFLIB) 
@@ -509,8 +510,7 @@ run libs/utility/ref_test.cpp ;
         : 
 		<define>BOOST_REGEX_NO_LIB=1
 		<define>BOOST_REGEX_STATIC_LINK=1
-	:
-                regex-posix_api_check ]
+	]
 
         [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
                 <lib>../libs/regex/build/boost_regex$(SUFLIB) 
@@ -519,8 +519,7 @@ run libs/utility/ref_test.cpp ;
         : 
 		<define>BOOST_REGEX_NO_LIB=1
 		<define>BOOST_REGEX_STATIC_LINK=1
-        :
-                regex-wide_posix_api_check ]
+	]
 
  ;
 
