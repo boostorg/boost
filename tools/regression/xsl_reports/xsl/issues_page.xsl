@@ -163,7 +163,7 @@
                                     <xsl:variable name="test_program"  select="$library_tests[@test-name = $test_name]/@test-program"/>
                                     <tr>
                                         <td class="test-name">
-                                            <a href="../../{$test_program}" class="test-link">
+                                            <a href="../../../{$test_program}" class="test-link">
                                                 <xsl:value-of select="$test_name"/>
                                             </a>
                                         </td>
