@@ -121,6 +121,7 @@
             <thead>
                 <xsl:call-template name="insert_runners_rows">
                     <xsl:with-param name="mode" select="'summary'"/>
+                    <xsl:with-param name="top_or_bottom" select="'top'"/>
                 </xsl:call-template>
 
                 <xsl:call-template name="insert_toolsets_row">
@@ -134,6 +135,7 @@
                 </xsl:call-template>
                 <xsl:call-template name="insert_runners_rows">
                     <xsl:with-param name="mode" select="'summary'"/>
+                    <xsl:with-param name="top_or_bottom" select="'bottom'"/>
                 </xsl:call-template>
             </tfoot>
           
@@ -176,7 +178,7 @@
                 <tr class="summary-row{$line_mod}">
                     <xsl:copy-of select="$library_header"/>
 
-                    <xsl:for-each select="$run_toolsets/runs/run/toolset">
+                    <xsl:for-each select="$run_toolsets/platforms/platform/runs/run/toolset">
                         <xsl:variable name="toolset" select="@name" />
                         <xsl:variable name="runner" select="../@runner" />
 
