@@ -101,21 +101,24 @@ http://www.boost.org/LICENSE_1_0.txt)
         </xsl:variable>
 
         <xsl:variable name="notes">
-            <xsl:choose>
 
-            <xsl:when test='count( $test_failures_markup ) > 0'>
+            <xsl:if test='count( $test_failures_markup ) > 0'>
                 <xsl:for-each select="$test_failures_markup/note">
                 <xsl:copy-of select="."/>
                 </xsl:for-each>
-            </xsl:when>
+            </xsl:if>
 
-            <xsl:when test='count( $test_failures_markup2 ) > 0'>
+            <xsl:if test='count( $test_failures_markup2 ) > 0'>
                 <xsl:for-each select="$test_failures_markup2/note">
                 <xsl:copy-of select="."/>
                 </xsl:for-each>
-            </xsl:when>
+            </xsl:if>
               
-            </xsl:choose>
+            <xsl:if test='$expected_results_test_case'>
+                <note>This failure was present in the reference ("last-known-good") release.
+                </note>
+            </xsl:if>
+            
         </xsl:variable>
 
         <xsl:attribute name="result"><xsl:value-of select="$actual_result"/></xsl:attribute>
