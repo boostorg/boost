@@ -13,9 +13,11 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
+    xmlns:str="http://exslt.org/strings"
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
+    exclude-result-prefixes="set str meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
@@ -353,7 +355,7 @@
             </xsl:choose>
         </xsl:variable>
           
-        <td class="{$class}"><xsl:value-of select="@toolset"/></td>
+        <td class="{$class}"><xsl:value-of select="meta:toolset_name( @toolset )"/></td>
         </xsl:for-each>
 
         <td class="head">toolset / library</td>
