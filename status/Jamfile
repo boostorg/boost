@@ -262,7 +262,7 @@ include testing.jam ;
                     wregress ]
 
             [ run libs/regex/test/c_compiler_checks/posix_api_check.c
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB)
                     <lib>../libs/test/build/prg_exec_monitor
             : 
             : 
@@ -286,13 +286,13 @@ include testing.jam ;
                     <lib>../libs/regex/build/boost_regex$(SUFLIB) 
             : 
             : 
-            : 
+            :
                     <define>BOOST_REGEX_NO_LIB=1
                     <define>BOOST_REGEX_STATIC_LINK=1
             ]
 
             [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB)
             : 
             : 
             : 
@@ -442,8 +442,8 @@ include testing.jam ;
             <borland><*><cxxflags>"-w-8091 -w-8092"
           ]
 
-          [ run libs/utility/iterator_adaptor_test.cpp ] 
-          [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ] 
+          [ run libs/utility/iterator_adaptor_test.cpp ]
+          [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ]
           [ compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ]
           [ run libs/utility/transform_iterator_test.cpp ]
           [ run libs/utility/indirect_iterator_test.cpp ]
@@ -517,4 +517,75 @@ include testing.jam ;
           [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
           [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
+
+    test-suite ublas
+        : [ run libs/numeric/ublas/test1/test1.cpp
+                libs/numeric/ublas/test1/test11.cpp
+                libs/numeric/ublas/test1/test12.cpp
+                libs/numeric/ublas/test1/test13.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test2/test2.cpp
+                libs/numeric/ublas/test2/test21.cpp
+                libs/numeric/ublas/test2/test22.cpp
+                libs/numeric/ublas/test2/test23.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test3/test3.cpp
+                libs/numeric/ublas/test3/test31.cpp
+                libs/numeric/ublas/test3/test32.cpp
+                libs/numeric/ublas/test3/test33.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test4/test4.cpp
+                libs/numeric/ublas/test4/test41.cpp
+                libs/numeric/ublas/test4/test42.cpp
+                libs/numeric/ublas/test4/test43.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test5/test5.cpp
+                libs/numeric/ublas/test5/test51.cpp
+                libs/numeric/ublas/test5/test52.cpp
+                libs/numeric/ublas/test5/test53.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test6/test6.cpp
+                libs/numeric/ublas/test6/test61.cpp
+                libs/numeric/ublas/test6/test62.cpp
+                libs/numeric/ublas/test6/test63.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/concepts.cpp
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+        ;
+
 }
