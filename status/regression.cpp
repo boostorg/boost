@@ -50,6 +50,8 @@ std::string get_host()
   return "beos";
 #elif defined __hpux
   return "hpux";
+#elif defined __IBMCPP__
+  return "aix";
 #else
 # error Please adapt for your platform
 #endif
