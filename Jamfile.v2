@@ -17,14 +17,14 @@ import stage ;
 constant BOOST_VERSION : 1.32.0 ;
 
 project boost
-    : requirements <include>$(BOOST_ROOT)
+    : requirements <include>.
       # disable auto-linking for all targets here,
       # primarily because it caused troubles with V2
       <define>BOOST_ALL_NO_LIB=1
       # Used to encode variant in target name. See the
       # 'tag' rule below.
       <tag>@$(__name__).tag
-    : usage-requirements <include>$(BOOST_ROOT)
+    : usage-requirements <include>.
     : build-dir bin.v2  
     ;
 
