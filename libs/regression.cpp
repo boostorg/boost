@@ -245,7 +245,7 @@ int main(int argc, char * argv[])
   std::string boostpath = args[2];
 
   if(args.size() >= 5) {
-    std::string cmd = l.front().compile_only_command;
+    std::string cmd = l.front().compile_link_command;
     replace(cmd, "%include", boostpath);
     compile(cmd, boostpath, args[4]);
     return 0;
