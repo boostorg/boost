@@ -591,7 +591,13 @@ def regression(
             tag = b[ 0: b.find( '.' ) ]
             log( 'Tag: "%s"' % tag  )
             
-            unpack_tarball( local, regression_root )
+            if not os.path.isdir( local ):
+                unpack_tarball( local, regression_root )
+            else:
+                if b != 'boost':
+                    log( 'Renaming "%s" into "%s"' % ( local, boost_root ) )
+                    os.rename( local, boost_root )
+                    
         else:
             if incremental:
                 update_source( user, tag, proxy, [] )
