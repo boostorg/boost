@@ -32,8 +32,10 @@ std::string get_host()
 {
 #if defined __linux__
   return "linux";
-#elif defined _MSC_VER
+#elif defined _WIN32
   return "win32";
+#elif defined __BEOS__
+  return "beos";
 #else
 #error Please adapt for your platform
 #endif
@@ -275,3 +277,5 @@ int main(int argc, char * argv[])
   out << "</table>\n";
   return 0;
 }
+
+
