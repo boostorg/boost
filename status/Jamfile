@@ -141,7 +141,7 @@ ECHO ****************************************************** )" ;
 else
 {
     CATENATE = "cat " ;
-    CATENATE1 = "if [ -a \"" ;
+    CATENATE1 = "if [ -f \"" ;
     CATENATE2 = "\" ] ; then
       cat \"" ;
     CATENATE3 = "\" ; echo ******************************************************
@@ -150,8 +150,8 @@ else
     actions failed-test-file bind output-file source-files
     {
         echo "$(source-files)" > $(<:S=.test)
-        if [ -a "$(>)" ] ; then
-          if [ -a "$(<:S=.success)" ] ; then
+        if [ -f "$(>)" ] ; then
+          if [ -f "$(<:S=.success)" ] ; then
                 $(RM) "$(<:S=.success)"
           fi
           echo "failed" > $(<:S=.failure)
@@ -160,7 +160,7 @@ else
           $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
           echo "*"
         else
-          if [ -a "$(<:S=.failure)" ] ; then
+          if [ -f "$(<:S=.failure)" ] ; then
                 $(RM) "$(<:S=.failure)"
           fi
           echo "succeeded" > "$(<:S=.success)" 
@@ -170,13 +170,13 @@ else
     actions succeeded-test-file bind output-file source-files
     {
         echo "$(source-files)" > "$(<:S=.test)"
-        if [ -a "$(>)" ] ; then
-          if [ -a "$(<:S=.failure)" ] ; then
+        if [ -f "$(>)" ] ; then
+          if [ -f "$(<:S=.failure)" ] ; then
                 $(RM) "$(<:S=.failure)"
           fi
           echo "succeeded" > "$(<:S=.success)"
         else
-          if [ -a "$(<:S=.success)" ] ; then
+          if [ -f "$(<:S=.success)" ] ; then
                 $(RM) "$(<:S=.success)" 
           fi
           echo "failed" > "$(<:S=.failure)"
@@ -552,3 +552,4 @@ run libs/utility/operators_test.cpp ;
 run libs/utility/tie_example.cpp ;
 
 run libs/utility/binary_search_test.cpp ;
+
