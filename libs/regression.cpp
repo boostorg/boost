@@ -117,7 +117,7 @@ void replace_environment(std::string & s)
 void getstringline( std::ifstream & is, std::string & s )
 {
   do {
-    std::getline( is, s, '\n' );    // third argument required by IRIX
+    std::getline( static_cast<std::istream&>(is), s ); // cast required by IRIX
   } while ( is.good()
 	    && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
 }
