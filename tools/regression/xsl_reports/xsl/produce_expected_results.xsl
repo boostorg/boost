@@ -7,14 +7,14 @@
   <xsl:template match="/">
     <root>
       <expected-failures>
-        <xsl:apply-templates select="*/test-log[@result != 'success']"/>
+        <xsl:apply-templates select="*/test-log"/>
       </expected-failures>
     </root>
   </xsl:template>
   
   <xsl:template match="test-log">
     <xsl:if test="@result != 'success'">
-      <test-result library="{@library}" test-name="{@test-name}" toolset="{@toolset}" />
+      <test-result library="{@library}" test-name="{@test-name}" toolset="{@toolset}" result="{@result}" />
     </xsl:if>
   </xsl:template>
 
