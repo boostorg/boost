@@ -19,6 +19,7 @@ DEPENDS all : test ;
 subinclude libs/bind/test ;              # test-suite bind
 subinclude libs/filesystem/test ;        # test-suite filesystem
 subinclude libs/function/test ;          # test-suite function
+subinclude libs/format/test ;            # test-suite format
 subinclude libs/optional/test ;          # test-suite optional
 subinclude libs/regex/test ;             # test-suite regex
 subinclude libs/regex/example ;          # test-suite regex-examples
@@ -142,25 +143,6 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
           [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
-    test-suite format
-        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/boost_test_exec_monitor
-              : # args
-              : # input files
-              : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
-            ]
-              
-          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/boost_test_exec_monitor
-              : # args
-              : # input files
-              : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
-          ]
-
-          [ run libs/format/test/format_test_wstring.cpp <lib>../libs/test/build/boost_test_exec_monitor
-              : # args
-              : # input files
-              : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
-          ]
-        ;
     
     run libs/functional/function_test.cpp ;
 
