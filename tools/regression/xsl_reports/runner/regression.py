@@ -30,31 +30,41 @@ timestamp_path = os.path.join( boost_root, 'boost' )
 cvs_ext_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 
+bjam = {}
+process_jam_log = {}
+
 if sys.platform == 'win32': 
-    bjam_name = 'bjam.exe'
-    bjam_build_compiler = 'vc7'
-    bjam_make_cmd = 'build.bat %s' % bjam_build_compiler
-    bjam_location = 'bin.ntx86'
-    process_jam_log_name = 'process_jam_log.exe'
-    process_jam_log_toolset = 'vc7.1'
+    bjam[ 'name' ] = 'bjam.exe'
+    bjam[ 'toolset/compiler' ] = 'vc7'
+    bjam[ 'build_cmd' ] = 'build.bat %s' % bjam[ 'toolset/compiler' ]
+    bjam[ 'location' ] = 'bin.ntx86'
+    process_jam_log[ 'name' ] = 'process_jam_log.exe'
+    process_jam_log[ 'toolset/compiler' ] = 'vc7.1'
 else:
-    bjam_name = 'bjam'
-    bjam_build_compiler = 'gcc'
-    bjam_make_cmd = './build.sh %s' % bjam_build_compiler
-    bjam_location = ''
-    process_jam_log_name = "process_jam_log"
-    process_jam_log_toolset = 'gcc'
+    bjam[ 'name' ] = 'bjam'
+    bjam[ 'toolset/compiler' ] = 'gcc'
+    bjam[ 'build_cmd' ] = './build.sh %s' % bjam[ 'toolset/compiler' ]
+    bjam[ 'location' ] = ''
+    process_jam_log[ 'name' ] = "process_jam_log"
+    process_jam_log[ 'toolset/compiler' ] = 'gcc'
 
-bjam_path = os.path.join( regression_root, bjam_name )
-bjam_source_dir = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
-bjam_build_path = os.path.join( bjam_source_dir, bjam_location, bjam_name )
+bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
+bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
+bjam[ 'build_path' ] = os.path.join( bjam[ 'source_dir' ], bjam[ 'location' ], bjam[ 'name' ] )
 
-process_jam_log_path = os.path.join( regression_root, process_jam_log_name )
-process_jam_log_source_dir = os.path.join( boost_root, 'tools', 'regression', 'build' )
-process_jam_log_build_path = os.path.join( 
+process_jam_log[ 'path' ] = os.path.join( regression_root, process_jam_log[ 'name' ] )
+process_jam_log[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'regression', 'build' )
+process_jam_log[ 'build_path' ] = os.path.join( 
           boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
-        , process_jam_log_name, process_jam_log_toolset, 'release', process_jam_log_name
+        , process_jam_log[ 'name' ], process_jam_log[ 'toolset/compiler' ]
+        , 'release', process_jam_log[ 'name' ]
         )
+
+process_jam_log[ 'build_cmd' ] = '%s -sTOOLS=%s'% (
+      bjam[ 'path' ]
+    , process_jam_log[ 'toolset/compiler' ]
+    )
+
 
 utils = None
 
@@ -196,56 +206,27 @@ def update_source( user, tag, proxy, args, **unused ):
         get_source( user, tag, proxy, args )
 
 
-def build_bjam_if_needed():
-    global bjam_path
-    if os.path.exists( bjam_path ):
-        log( 'Found preinstalled "%s"; will use it.' % bjam_path )
+def build_if_needed( tool ):
+    if os.path.exists( tool[ 'path' ] ):
+        log( 'Found preinstalled "%s"; will use it.' % tool[ 'path' ] )
         return
     
-    log( 'Preinstalled "%s" is not found; building one...' % bjam_path )
-    log( 'Locating bjam source directory...' )    
-    if os.path.exists( bjam_source_dir ):
-        log( 'Found bjam source directory "%s"' % bjam_source_dir )
-        log( 'Building bjam using \"%s\"...' % bjam_build_compiler )
-            
-        log( "Building bjam (%s)" % bjam_make_cmd )
+    log( 'Preinstalled "%s" is not found; building one...' % tool[ 'path' ] )
+    if os.path.exists( tool[ 'source_dir' ] ):
+        log( 'Found %s source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
+        log( 'Building %s using \"%s\"...' % ( tool[ 'name'], tool[ 'toolset/compiler' ] ) )            
+        log( '%s' % tool[ 'build_cmd' ] )
         utils.system( [ 
-              'cd %s' % bjam_source_dir
-            , bjam_make_cmd 
+              'cd %s' % tool[ 'source_dir' ]
+            , tool[ 'build_cmd' ]
             ] )
     else:
-        raise 'Could not find bjam source directory \"%s\"' % bjam_source_dir
+        raise 'Could not find %s source directory \"%s\"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
 
-    if not os.path.exists( bjam_build_path ):
-        raise 'Failed to find bjam (\"%s\") after build.' % bjam_build_path
+    if not os.path.exists( tool[ 'build_path' ] ):
+        raise 'Failed to find bjam (\"%s\") after build.' % tool[ 'build_path' ]
 
-    log( 'Bjam succesfully built in "%s" directory' % bjam_build_path )
-
-
-def build_process_jam_log_if_needed():
-    global process_jam_log_path
-    if os.path.exists( process_jam_log_path ):
-        log( 'Found preinstalled "%s"; will use it.' % process_jam_log_path )
-        return
-    
-    log( 'Preinstalled "%s" is not found; building one.' % process_jam_log_path )    
-    log( 'Locating proces_jam_log source directory...' )
-    if os.path.exists( process_jam_log_source_dir ):
-        log( 'Found proces_jam_log source directory "%s"' % process_jam_log_source_dir )
-
-        log( 'Building process_jam_log using toolset "%s"' % process_jam_log_toolset )
-        utils.system( [ 
-              'cd %s' % process_jam_log_source_dir
-            , '%s -sTOOLS=%s' % ( bjam_path, process_jam_log_toolset )
-            ] )
-
-    else:
-        raise 'Could not find process_jam_log source directory "%s"' % process_jam_log_source_dir
-    
-    if not os.path.exists( process_jam_log_build_path ):
-        raise 'Failed to find process_jam_log ("%s") after build.' % process_jam_log_build_path
-    
-    log( 'Process_jam_log succesfully built in "%s" directory' % process_jam_log_build_path )
+    log( '%s succesfully built in "%s" directory' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
 
 
 def import_utils():
@@ -262,9 +243,8 @@ def setup(
         , **unused
         ):
     import_utils()
-    
-    build_bjam_if_needed()
-    build_process_jam_log_if_needed()
+    build_if_needed( bjam )
+    build_if_needed( process_jam_log )
 
 
 def tool_path( name ):
@@ -284,16 +264,16 @@ def stop_build_monitor():
             utils.system( [ '%s build_monitor' %  tool_path( 'pskill.exe' ) ] )
 
 
-def process_jam_log():
+def run_process_jam_log():
     log( 'Getting test case results out of "%s"...' % regression_log )
 
-    global process_jam_log_path
-    if not os.path.exists( process_jam_log_path ):
-        process_jam_log_path = process_jam_log_build_path
+    global process_jam_log
+    if not os.path.exists( process_jam_log[ 'path' ] ):
+        process_jam_log[ 'path' ] = process_jam_log[ 'build_path' ]
 
     utils.checked_system( [ 
-        "%s %s <%s" % (  
-              process_jam_log_path
+        '%s %s <%s' % (  
+              process_jam_log[ 'path' ]
             , regression_results
             , regression_log
             )
@@ -326,16 +306,16 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
-            global bjam_path
-            if not os.path.exists( bjam_path ):
-                bjam_path = bjam_build_path
+            global bjam
+            if not os.path.exists( bjam[ 'path' ] ):
+                bjam[ 'path' ] = bjam[ 'build_path' ]
 
             test_cmd = []
             if not toolsets is None:
                 test_cmd.append( 'set TOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' ) )
             test_cmd.append( 'set BOOST_ROOT=%s' % boost_root )
             test_cmd.append( '"%s" -d2 --dump-tests "-sALL_LOCATE_TARGET=%s" >>%s 2>&1'
-                                      % (     bjam_path
+                                      % (     bjam[ 'path' ]
                                             , regression_results
                                             , regression_log
                                             )
@@ -345,7 +325,7 @@ def test(
             utils.system( test_cmd )
 
         if "process" in args:
-            process_jam_log()
+            run_process_jam_log()
 
         os.chdir( cd )
     finally:
