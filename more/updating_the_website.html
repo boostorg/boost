@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content=
+    "text/html; charset=windows-1252">
+    <meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+    <meta name="ProgId" content="FrontPage.Editor.Document">
+
+    <title>Updating The Boost Website</title>
+  </head>
+
+  <body bgcolor="#FFFFFF" text="#000000">
+    <table border="1" bgcolor="#007F7F" cellpadding="2">
+      <tr>
+        <td bgcolor="#FFFFFF"><img src="../boost.png" alt=
+        "boost.png (6897 bytes)" width="277" height="86"></td>
+
+        <td><a href="../index.htm"><font face="Arial" color=
+        "#FFFFFF"><big>Home</big></font></a></td>
+
+        <td><a href="../libs/libraries.htm"><font face="Arial" color=
+        "#FFFFFF"><big>Libraries</big></font></a></td>
+
+        <td><a href="../people/people.htm"><font face="Arial" color=
+        "#FFFFFF"><big>People</big></font></a></td>
+
+        <td><a href="faq.htm"><font face="Arial" color=
+        "#FFFFFF"><big>FAQ</big></font></a></td>
+
+        <td><a href="index.htm"><font face="Arial" color=
+        "#FFFFFF"><big>More</big></font></a></td>
+      </tr>
+    </table>
+
+    <h1>Making Updates to the Boost Website Content</h1>
+
+    <p>Any boost developer can update the Boost website content between
+    releases.</p>
+
+    <ul>
+      <li>You should first make the change in our CVS repository, so it
+      doesn't get lost or overwritten by the next person that updates the
+      page between releases.</li>
+
+      <li>
+        You will upload the file(s) by <code>scp</code>'ing to the
+        appropriate subdirectory of
+        <code>shell.sf.net:/home/groups/b/bo/boost/htdocs/</code>. For
+        example, to update the page you are reading, I would issue 
+<pre>
+scp updating_the_website.html david_abrahams@shell.sf.net:/home/groups/b/bo/boost/htdocs/more/
+</pre>
+      </li>
+
+      <li>
+        It is <b>crucial</b> to ensure that you set group write permission on
+        every file you upload. If you don't do that, nobody else will be able
+        to change it, which is particularly deadly at release time. If you
+        are on Unix or Cygwin, you may be able to do that with a
+        <tt>chmod</tt> command before uploading the file. The absolutely
+        failsafe thing to do is to <tt>ssh</tt> into <tt>shell.sf.net</tt>
+        and do the <tt>chmod</tt> there. The files also need to have general
+        read permission, and any directories should have general execute
+        permission and the "set user or group ID on execution" (s) bit should
+        also be set. If you're not touching any directories, you can do it
+        all with one command, e.g. 
+<pre>
+ssh david_abrahams@shell.sf.net &quot;chmod a+r,g+rw /home/groups/b/bo/boost/htdocs/more/updating_the_website.html&quot;
+</pre>
+        <hr>
+
+        <p>Revised 
+        <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->05
+        March, 2005<!--webbot bot="Timestamp" endspan i-checksum="38708" -->
+        </p>
+
+        <p>&copy; Copyright David Abrahams 2005</p>
+
+        <p>Use, modification, and distribution are subject to the Boost
+        Software License, Version 1.0. (See accompanying file <a href=
+        "../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy at <a href=
+        "http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a>)</p>
+      </li>
+    </ul>
+  </body>
+</html>
+
