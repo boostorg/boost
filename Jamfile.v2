@@ -177,4 +177,12 @@ install stage : libs/$(libraries)/build
   ;
 
 explicit install install-libs install-headers stage ;        
+
+
+# Make project ids of all libraries known.
+
+for local l in $(libraries)
+{
+    use-project /boost/$(l) : libs/$(l)/build ;
+}
     
