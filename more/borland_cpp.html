@@ -284,6 +284,36 @@ int main()
 either taking a value or a reference parameter.
 
 
+<h3>[instantiate memfun ptr] Instantiation with member function pointer</h3>
+
+When directly instantiating a template with some member function
+pointer, which is itself dependent on some template parameter, the
+compiler cannot cope:
+<pre>
+template&lt;class U&gt; class C { };
+template&lt;class T&gt;
+class A
+{
+  static const int v = C&lt;void (T::*)()&gt;::value;
+};
+</pre>
+
+<strong>Workaround:</strong> Use an intermediate <code>typedef</code>:
+
+<pre>
+template&lt;class U&gt; class C { };
+template&lt;class T&gt;
+class A
+{
+  typedef void (T::*my_type)();
+  static const int v = C&lt;my_type&gt;::value;
+};
+</pre>
+
+(Extracted from e-mail exchange of David Abrahams, Fernando Cacciola,
+and Peter Dimov; not actually tested.)
+
+
 <h2>Library</h2>
 
 
