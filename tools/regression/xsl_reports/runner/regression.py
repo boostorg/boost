@@ -12,6 +12,7 @@ import time
 import getopt
 import glob
 import shutil
+import stat
 import os.path
 import os
 import traceback
@@ -28,6 +29,7 @@ xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports'
 comment_path = os.path.join( regression_root, 'comment.html' )
 timestamp_path = os.path.join( boost_root, 'boost' )
 
+cvs_command_line = 'cvs -z9 %(command)s'
 cvs_ext_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 
@@ -119,7 +121,7 @@ def download_boost_tarball( destination, tag, proxy ):
     site = 'www.boost-consulting.com'
     tarball_name = 'boost.tar.bz2'
     tarball_path = os.path.join( destination, tarball_name )
-
+    return tarball_path
     log( "Downloading '%s' for tag %s from %s..."  % ( tarball_path, tag, site ) )
     if os.path.exists( tarball_path ):
         os.unlink( tarball_path )
@@ -135,6 +137,12 @@ def download_boost_tarball( destination, tag, proxy ):
     return tarball_path
 
 
+def time_to_string( t ):
+    return time.strftime( 
+              "%a, %d %b %Y %H:%M:%S +0000"
+              , time.gmtime( t )
+              )
+
 def unpack_tarball( tarball_path, destination ):
     log( 'Looking for old unpacked archives...' )
     old_boost_dirs =  glob.glob( os.path.join( destination, 'boost-*' ) )
@@ -146,7 +154,12 @@ def unpack_tarball( tarball_path, destination ):
     log( 'Unpacking boost tarball ("%s")...' % tarball_path )
     tar = tarfile.open( tarball_path, 'r|bz2' )
     for tarinfo in tar:
-        tar.extract(tarinfo)
+        tar.extract( tarinfo, destination )        
+        if not tarinfo.isdir():
+            f = os.path.join( destination, tarinfo.name )
+            os.chmod( f, stat.S_IWRITE )
+            os.utime( f, ( tarinfo.mtime, tarinfo.mtime ) )
+    
     tar.close()
 
     boost_dir = glob.glob( os.path.join( destination, 'boost-*' ) )[0]
@@ -159,9 +172,17 @@ def unpack_tarball( tarball_path, destination ):
     log( 'Renaming "%s" into "%s"' % ( boost_dir, boost_root ) )
     os.rename( boost_dir, boost_root )
 
+    # utime doesn't work on directories in Win32, but for that same 
+    # reason we don't need to adjust the timestamp -- it's already 
+    # current
+    if not sys.platform == 'win32':
+        os.utime( timestamp_path, ( time.time(), time.time() ) )
+
 
 def cvs_command( user, command ):
-    if user == 'anonymous':
+    if user is None:
+        cmd = cvs_command_line % { 'command': command }
+    elif user == 'anonymous':
         cmd = cvs_pserver_command_line % { 'user': user, 'command': command }
     else:
         cmd = cvs_ext_command_line % { 'user': user, 'command': command }
@@ -188,9 +209,9 @@ def cvs_checkout( user, tag, args ):
 
 def cvs_update( user, tag, args ):
     if tag != 'CVS-HEAD':
-        command = 'update -r %s' % tag
+        command = 'update -dPA -r %s' % tag
     else:
-        command = 'update'
+        command = 'update -dPA'
     
     os.chdir( os.path.join( regression_root, 'boost' ) )
     retry( 
@@ -211,8 +232,8 @@ def get_source( user, tag, proxy, args, **unused ):
 
 
 def update_source( user, tag, proxy, args, **unused ):
-    if user is not None:
-        log( 'Updating sources...' )
+    if user is not None or os.path.exists( os.path.join( boost_root, 'CVS' ) ):
+        log( 'Updating sources from CVS...' )
         cvs_update( user, tag, args )
     else:
         get_source( user, tag, proxy, args )
