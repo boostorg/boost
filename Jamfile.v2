@@ -1,12 +1,14 @@
 #
 # This is Boost Jamfile for Boost.Build V2.
-# Currently, known to work on Linux with gcc
 # 
-# To build Boost with it, run
+# Pass --v2 option to bjam to use this file. For example:
 #
 #    bjam --v2 link=static
 #
-# from the top-level directory
+
+# TODO:
+#  - handle boost version
+
 
 import modules ;
 import set ;
@@ -16,6 +18,7 @@ project boost
       # disable auto-linking for all targets here,
       # primarily because it caused troubles with V2
       <define>BOOST_ALL_NO_LIB=1
+      <tag>@stage.add-variant
     : usage-requirements <include>$(BOOST_ROOT)
     : build-dir bin.v2  
     ;
@@ -114,6 +117,7 @@ PYTHON_ROOT ?= $(python-root) ;
 libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
 libraries = [ libraries-to-install $(libraries) ] ;
 
+
 local rename-rule ;
 if $(layout) = versioned
 {
@@ -124,20 +128,27 @@ else
     rename-rule = stage.add-variant ;
 }
 
-stage install : libs/$(libraries)/build 
-  : <so-version>1.32.0 
-    <location>$(lib-locate) <tag>@$(rename-rule)
-  ;
-        
-    
-#build-project libs/test/build ;
-#build-project libs/date_time/build ;
-#build-project libs/regex/build ;
-#build-project libs/signals/build ;
-#build-project libs/graph/build ;
+# Install to system location.
 
-# Comment this out if you don't have Python2.2 installed
-#build-project libs/python/build ;
-#build-project libs/thread/build ;
-#build-project libs/filesystem/build ;
-#build-project libs/program_options/build ;
+alias install : install-libs install-headers ;
+
+stage install-libs : libs/$(libraries)/build   
+  : <so-version>1.32.0 
+    <location>$(lib-locate) 
+  ;
+
+stage install-headers : 
+  [ glob boost/compatibility/cpp_c_headers/c* ]
+  [ glob boost/*.hpp boost/*/*.hpp *.ipp *.h *.inc ]
+  :  
+  <location>$(include-locate)
+  ;  
+
+# Install just library.
+stage stage : libs/$(libraries)/build 
+  : <so-version>1.32.0 
+    <location>$(stage-locate)
+  ;
+
+explicit install install-libs install-headers stage ;        
+    
