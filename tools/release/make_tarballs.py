@@ -1,104 +1,284 @@
+# Copyright (c) MetaCommunications, Inc. 2003-2004
+#
+# Distributed under the Boost Software License, Version 1.0. 
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http://www.boost.org/LICENSE_1_0.txt)
+
 import sys
 import os
 import shutil
-
 import optparse
 
 
-dont_export = 0
+import utils
+
+my_location  = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 
 def accept_args( args ):
-    return ( args[0], args[1], args[2], args[3] )
+    return ( args[0], args[1], args[2], args[3], args[4] )
 
 
-def clean_directory( directory ):
+def remove_directory( directory ):
     if os.path.exists( directory ):
         print "    Removing  directory %s" % directory
         os.system( 'rd /s /q "%s"' % directory )
-        
+    
+def clean_directory( directory ):
+    remove_directory( directory )
     print "    Creating directory %s" % directory 
     os.makedirs( directory )
 
-def make_temp_platform( temp, platform ):
-    temp_platform = os.path.join( temp, platform )
-    if not dont_export:
-        clean_directory( temp_platform )
-    return temp_platform
     
-def cvs_export( sf_user, cvs_tag, release_version, shell = "%s" ):
-    if not dont_export:
-        print "    Exporting..."
-        cvs_export_template = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 export -r %(branch)s boost'
+    
 
-        cmd = cvs_export_template % { "user": sf_user
-                                      , "branch" : cvs_tag }
+    
 
-        os.system( shell % cmd )
-        os.system( "del /S/F/Q .cvsignore >nul" )
-        os.rename( "boost", "boost_%s" % release_version )
+start_dir = os.getcwd()
+
+class make_tarballs( utils.step_controller ):
+    def __init__( self, release_version, cvs_tag, sf_user, temp_dir, start_step ):
+        utils.step_controller.__init__( self, start_step )
+        self.release_version_ = release_version
+        self.cvs_tag_         = cvs_tag
+        self.sf_user_         = sf_user
+        self.temp_dir_        = temp_dir
+    
+    def run( self ):
+        archives = []
+
+        win_build_results = self.build_win( self.release_version_
+                                         , self.cvs_tag_
+                                         , self.sf_user_
+                                         , self.temp_dir_ )
+        archives.extend( win_build_results[1] )
         
-    
-def build_win( release_version, cvs_tag, sf_user, temp_dir ):
-    print "Preparing windows .zip"
-    temp_win = make_temp_platform( temp_dir, "win" )
-    os.chdir( temp_win )
+        archives.extend( self.build_unix( self.release_version_
+                                         , self.cvs_tag_
+                                         , self.sf_user_
+                                         , self.temp_dir_
+                                         , win_build_results[0] ) )
 
-    cvs_export( sf_user, cvs_tag, release_version )
-    
-    print "    Zipping"
-    zip_name = "boost_%s.zip" % release_version 
-    if os.path.exists( zip_name ): os.unlink( zip_name )
+        
+        #    os.chdir( start_dir )
+        #    for archive in archives:
+        #        shutil.copy( archive, start_dir )
 
-    os.system( "7z a -r -tzip %s %s\* > %s" % ( os.path.splitext( zip_name )[0], "boost_%s" % release_version, zip_name + ".log" ) )
-    return [ os.path.abspath( zip_name ) ]
 
-def correct_permissions( path ):
-    print "    Correcting permissions"
-    for i in os.walk( path ):
-        for f in i[2]:
-            if os.path.splitext( f )[1] in ( ".css", ".hpp", ".cpp",\
-                                             ".html", ".htm", ".rst", \
-                                             ".pdf", ".xml", ".png",\
-                                             ".jpg", ".vcproj", ".pattern2", \
-                                             ".jam", ".bat", ".sty", ".diff" ) \
-               or os.path.basename( f ).lower() in ( "jamfile", "todo", "makefile", "jamrules", "gnumakefile" ):
-                print os.path.join( i[0], f )
+    def make_temp_platform( self, temp, platform ):
+        temp_platform = os.path.join( temp, platform )
+        if not self.is_skipping():
+            clean_directory( temp_platform )
+        return temp_platform
+
+    def cvs_export( self, sf_user, cvs_tag, release_version, shell = "%s" ):
+        if not self.is_skipping():
+            print "    Exporting..."
+            cvs_export_template = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 export -r %(branch)s boost'
+
+            cmd = cvs_export_template % { "user": sf_user
+                                          , "branch" : cvs_tag }
+
+            os.system( shell % cmd )
+            os.system( "del /S/F/Q .cvsignore >nul" )
+            os.rename( "boost", "boost_%s" % release_version )
+        return "boost_%s" % release_version
+
+    def build_win( self, release_version, cvs_tag, sf_user, temp_dir ):
+
+        if "win.export":
+            self.start_step( "win.export", "Exporting windows copy" )
+
+            temp_win = self.make_temp_platform( temp_dir, "win" )
+            os.chdir( temp_win )
+
+            exported_dir = self.cvs_export( sf_user, cvs_tag, release_version )
+            self.finish_step( "win.export" )
+        
+        self.make_docs( os.path.abspath( exported_dir ) )
+
+        if self.start_step( "win.make_readonly", "Making all files readonly" ):
+            os.chdir( temp_win )
+            utils.checked_system( [ "attrib /S +R *.*" ] )
+            self.finish_step( "win.make_readonly" )
+        
+        zip_name = "boost_%s.zip" % release_version
+        os.chdir( temp_win )
+        
+        if self.start_step( "win.zip", "    Zipping" ):
+             print "    Zipping"
+             if os.path.exists( zip_name ): os.unlink( zip_name )
+
+             os.system( "7z a -r -tzip %s %s\* > %s" % ( os.path.splitext( zip_name )[0], "boost_%s" % release_version, zip_name + ".log" ) )
+             self.finish_step( "win.zip" )
+
+
+        return ( os.path.abspath( exported_dir ), [ os.path.abspath( zip_name ) ] )
+
+    def make_docs( self, boost_directory ):
+
+        boostbook_temp = os.path.join( boost_directory, "bin.v2" )
+
+        if self.start_step( "win.make_docs.clean", "Clearing \"bin.v2" ):
+            if os.path.exists( boostbook_temp ):
+                shutil.rmtree( boostbook_temp )
+            self.finish_step( "win.make_docs.clean" )
+            
+        cd = os.getcwd()
+        os.chdir( os.path.join( boost_directory, "doc" )  )
+
+        if self.start_step( "win.make_docs.correct_permissions", "Making html's writable" ):
+            utils.checked_system( 
+                [ 
+                "cd html"
+                , "attrib -R *"
+                , "cd .."
+                ] )
+            self.finish_step( "win.make_docs.correct_permissions" )
+
+        def generate( output_format ):
+            if self.start_step( "win.make_docs.%s" % output_format, '    Generating %s' % output_format ):
+                utils.checked_system( [ 
+                    "set HOME=%s" % my_location
+                    , "%s -d2 --v2 %s" % ( bjam_path(), output_format )
+                    ] )
+                self.finish_step( "win.make_docs.%s" % output_format )
+        
+        generate( "html" )
+        generate( "docbook" )
+        generate( "fo" )
+
+        if self.start_step( "win.make_docs.copy_docs", "Copying docs into doc directory" ):
+            shutil.copy( os.path.join( boostbook_temp, "doc", "debug", "boost.docbook" ), "boost.docbook" )
+            shutil.copy( os.path.join( boostbook_temp, "doc", "debug", "boost.fo" ), "boost.fo" )
+            self.finish_step( "win.make_docs.copy_docs" )
+
+
+        if self.start_step( "win.make_docs.clean2", "Copying docs into doc directory" ):            
+            shutil.rmtree( boostbook_temp )
+            shutil.rmtree( "xml" )
+            self.finish_step( "win.make_docs.clean2" )
+
+        if self.start_step( "win.make_docs.bb_userman", "Creating Boost.Build user manual" ):
+            os.chdir( os.path.join( boost_directory, "tools", "build", "v2", "doc" ) )
+
+            utils.checked_system( [ 
+                    "set HOME=%s" % my_location
+                    , "%s -d2 --v2 pdf" % bjam_path()
+                    ] )
+
+            for f in [ "userman.pdf" ]:
+                shutil.copy( os.path.join( boostbook_temp, "tools", "build", "v2", "doc", "debug", f ), f  )
+
+            shutil.rmtree( boostbook_temp )
+            self.finish_step( "win.make_docs.bb_userman" )
+
+        if self.start_step( "win.make_docs.clean3", boost_directory ):
+            for i in os.walk( boost_directory ):
+                for f in i[2]:
+                    full_path = os.path.join( i[0], f )
+                    if os.path.splitext( f )[1] in [ ".boostbook" ] \
+                        and os.access( full_path, os.W_OK ):
+                        os.unlink( full_path )
+                        
+
+    def correct_executable_permissions( self, path ):
+        if not self.is_skipping():
+            print "    Correcting permissions"
+            for i in os.walk( path ):
+                for f in i[2]:
+                    if os.path.splitext( f )[1] in ( ".css", ".hpp", ".cpp",\
+                                                     ".html", ".htm", ".rst", \
+                                                     ".pdf", ".xml", ".png",\
+                                                     ".jpg", ".vcproj", ".pattern2", \
+                                                     ".jam", ".bat", ".sty", ".diff" ) \
+                       or os.path.basename( f ).lower() in ( "jamfile", "todo", "makefile", "jamrules", "gnumakefile" ):
+                        print os.path.join( i[0], f )
+                        os.system( "chmod a-x %s" % os.path.join( i[0], f ) )
+
+        
+    def build_unix( self, release_version, cvs_tag, sf_user, temp_dir, win_build_dir ):
+
+        self.start_step( "unix.export", "Exporting unix copy" )
+
+        temp_unix = self.make_temp_platform( temp_dir, "unix" )
+        os.chdir( temp_unix )
+
+        exported_dir = self.cvs_export( sf_user, cvs_tag, release_version, "bash -c \"%s\"" )
+        self.correct_executable_permissions( "." )
+        self.finish_step( "unix.export" )
+
+        self.copy_docs_to_unix( os.path.abspath( exported_dir )
+                                , win_build_dir )
+
+        if self.start_step( "unix.make_readonly", "Making all files readonly" ):
+            utils.checked_system( [ "chmod -R a-w+r %s" % temp_unix ] )
+            self.finish_step( "unix.make_readonly" )
+
+        gz_archive_name = "boost_%s" % release_version + ".tar.gz"
+        if self.start_step( "unix.gz", "    Making .gz" ):
+            if os.path.exists( gz_archive_name  ):  os.unlink( gz_archive_name  )
+            os.system( "tar cfz %s %s" % ( gz_archive_name, "boost_%s" % release_version ) )
+            self.finish_step( "unix.gz" )
+
+        bz2_archive_name = "boost_%s" % release_version + ".tar.bz2"
+        if self.start_step( "unix.bz2", "    Making .bz2" ):
+            if os.path.exists( bz2_archive_name  ):  os.unlink( bz2_archive_name )
+            os.system( 'bash -c "gunzip -c %s | bzip2 > %s"' % ( gz_archive_name, bz2_archive_name ) )
+            self.finish_step( "unix.bz2" )
+            
+        return [ os.path.abspath( x ) for x in ( gz_archive_name, bz2_archive_name ) ]
+
+    def remove_x_permission( self, directory ):
+        for i in os.walk( directory ):
+            for f in i[1]:
+                os.system( "chmod a=xr %s" % os.path.join( i[0], f ) )
+            for f in i[2]:
                 os.system( "chmod a=r %s" % os.path.join( i[0], f ) )
-    
-def build_unix( release_version, cvs_tag, sf_user, temp_dir ):
-    print "Preparing unix .gz and .bz2"
-    temp_unix = make_temp_platform( temp_dir, "unix" )
-    os.chdir( temp_unix )
+        
+    def copy_docs_to_unix( self, unix_boost_directory, win_boost_directory ):
+        if self.start_step( "unix.copy_docs", "Copying docs to unix copy" ):
+            doc_directory = os.path.join( unix_boost_directory, "doc" )
+            doc_html_directory = os.path.join( doc_directory, "html" )
+            remove_directory( doc_html_directory )
+            utils.checked_system( [
+                "cp -R %s %s " % ( os.path.join( win_boost_directory, "doc", "html" )
+                                , doc_html_directory )
+                ] )
+            for f in [ "boost.docbook", "boost.fo", "catalog.xml" ]:
+                utils.checked_system( [
+                    "cp %s %s" % ( os.path.join( win_boost_directory, "doc", f )
+                                    , os.path.join( doc_directory, f ) )
+                    ] )
 
-    cvs_export( sf_user, cvs_tag, release_version, "bash -c \"%s\"" )
-    correct_permissions( "." )
+            self.remove_x_permission( doc_directory )
 
-    
-    
-    print "    Making .gz"
-    gz_archive_name = "boost_%s" % release_version + ".tar.gz"
-    
-    if os.path.exists( gz_archive_name  ):  os.unlink( gz_archive_name  )
+            boost_build_doc_directory = os.path.join( unix_boost_directory, "tools", "build", "v2", "doc" )
+            boost_build_doc_html_directory = os.path.join( boost_build_doc_directory, "html" )
+            
+            remove_directory( boost_build_doc_html_directory )
+            utils.checked_system( [
+                "cp -R %s %s " % ( os.path.join( win_boost_directory, "tools", "build", "v2", "doc", "html" )
+                                , boost_build_doc_html_directory ) ] )
 
-    os.system( "tar cfz %s %s" % ( gz_archive_name, "boost_%s" % release_version ) )
+            for f in [ "userman.pdf" ]:
+                utils.checked_system( [
+                    "cp %s %s " % ( os.path.join( win_boost_directory, "tools", "build", "v2", "doc", f )
+                                    , os.path.join( boost_build_doc_directory, f ) ) ] )
 
-    bz2_archive_name = "boost_%s" % release_version + ".tar.bz2"
-    if os.path.exists( bz2_archive_name  ):  os.unlink( bz2_archive_name )
-    
-    print "    Making .bz2"
-    os.system( 'bash -c "gunzip -c %s | bzip2 > %s"' % ( gz_archive_name, bz2_archive_name ) )
-    return [ os.path.abspath( x ) for x in ( gz_archive_name, bz2_archive_name ) ]
+            self.remove_x_permission( boost_build_doc_directory )
+            self.finish_step( "unix.copy_docs" )
 
+
+def bjam_path():
+    if os.path.exists( os.path.join( my_location, "bjam.exe" ) ):
+        return os.path.join( my_location, "bjam.exe" )
+    else:
+        return "bjam.exe"
+        
 def main():
-    start_dir = os.getcwd()
-    ( release_version, cvs_tag, sf_user, temp_dir ) = accept_args( sys.argv[ 1: ] )
+    ( release_version, cvs_tag, sf_user, temp_dir, start_step ) = accept_args( sys.argv[ 1: ] )
 
-    archives = build_win( release_version, cvs_tag, sf_user, temp_dir )\
-               + build_unix( release_version, cvs_tag, sf_user, temp_dir )
-
-    os.chdir( start_dir )
-    for archive in archives:
-        shutil.copy( archive, start_dir )
+    make_tarballs( release_version, cvs_tag, sf_user, temp_dir, start_step  ).run()
     
 if __name__ == "__main__":
     main()
