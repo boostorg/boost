@@ -211,6 +211,8 @@ namespace
         // object files.  This confuses the target_directory() algorithm.
         // This patch ignores the SunCC internal directory. Jens Maurer
         if ( (*itr).leaf() == "SunWS_cache" ) continue;
+        // SGI does something similar for template instantiations. Jens Maurer
+        if(  (*itr).leaf() == "ii_files" ) continue; 
 
         if ( child.empty() ) child = *itr;
         else
