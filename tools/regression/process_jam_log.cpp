@@ -10,6 +10,7 @@
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/fstream.hpp"
 #include "boost/filesystem/exception.hpp"
+#include "boost/filesystem/convenience.hpp"
 
 #include <iostream>
 #include <string>
@@ -25,6 +26,11 @@ namespace fs = boost::filesystem;
 
 #define BOOST_NO_CPP_MAIN_SUCCESS_MESSAGE
 #include <boost/test/included/prg_exec_monitor.hpp>
+
+// options 
+
+static bool echo = false;
+static bool create_dirs = false;
 
 namespace
 {
@@ -110,6 +116,7 @@ namespace
     if ( pos == string::npos ) pos = s.find( ".so/" );
     if ( pos == string::npos ) pos = s.find( ".lib/" );
     if ( pos == string::npos ) pos = s.find( ".pyd/" );
+    if ( pos == string::npos ) pos = s.find( ".a/" );
     return pos;
   }
 
@@ -281,6 +288,8 @@ namespace
     ~test_log()
     {
       fs::path pth( locate_root / m_target_directory / "test_log.xml" );
+      if ( create_dirs && !fs::exists( pth.branch_path() ) )
+          fs::create_directories( pth.branch_path() );
       fs::ofstream file( pth );
       if ( !file )
       {
@@ -424,14 +433,18 @@ namespace
   };
 }
 
+
 //  main  --------------------------------------------------------------------//
+
 
 int cpp_main( int argc, char ** argv )
 {
   if ( argc <= 1 )
-    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [locate-root]\n"
-                 "  locate-root is the same as the bjam ALL_LOCATE_TARGET\n"
-                 "  parameter, if any. Default is boost-root.\n";
+    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [locate-root]\n"
+                 "locate-root         - the same as the bjam ALL_LOCATE_TARGET\n"
+                 "                      parameter, if any. Default is boost-root.\n"
+                 "create-directories  - if the directory for xml file doesn't exists - creates it.\n"
+                 "                      usually used for processing logfile on different machine\n";
 
   boost_root = fs::initial_path();
 
@@ -447,12 +460,19 @@ int cpp_main( int argc, char ** argv )
     return 1;
   }
 
-  bool echo = false;
+
   if ( argc > 1 && std::strcmp( argv[1], "--echo" ) == 0 )
   {
     echo = true;
     --argc; ++argv;
   }
+
+
+  if (argc > 1 && std::strcmp( argv[1], "--create-directories" ) == 0 )
+  {
+      create_dirs = true;
+      --argc; ++argv;
+  } 
 
   if (argc > 1)
   {
@@ -533,6 +553,8 @@ int cpp_main( int argc, char ** argv )
       || line.find( "Cc-action " ) != string::npos
       || line.find( "vc-Cc " ) != string::npos
       || line.find( "Link-action " ) != string::npos
+      // archive can fail too
+      || line.find( "Archive-action " ) != string::npos
       || line.find( "vc-Link " ) != string::npos 
       || line.find( ".compile.") != string::npos
       || ( line.find( ".link") != string::npos &&
@@ -543,7 +565,8 @@ int cpp_main( int argc, char ** argv )
     {
       string action( ( line.find( "Link-action " ) != string::npos
         || line.find( "vc-Link " ) != string::npos 
-        || line.find( ".link") != string::npos)
+        || line.find( ".link") != string::npos
+        || line.find( "Archive-action "))
         ? "link" : "compile" );
       if ( line.find( "...failed " ) != string::npos )
         mgr.stop_message( action, target_directory( line ),
