@@ -224,8 +224,6 @@ include testing.jam ;
           [ run libs/random/random_demo.cpp ]
         ;
 
-    run libs/utility/addressof_test.cpp <lib>../libs/test/build/test_exec_monitor ;
-    run libs/utility/ref_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     {
             local test-dir = $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)test$(SLASH)regress$(SLASH) ;
@@ -413,24 +411,6 @@ include testing.jam ;
           [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/test_exec_monitor ]
 	;
 
-    test-suite type_traits
-        : [ run libs/type_traits/tests/alignment_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/arithmetic_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/composite_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/cv_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/function_traits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/type_traits/tests/is_function_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/is_convertible_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/is_same_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/object_type_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/transform_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-        ;
-
-    run libs/utility/call_traits_test.cpp : -u ;
-
-    compile-fail libs/utility/checked_delete_test.cpp ;
-
-    run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/test_exec_monitor : -u ;
 
     test-suite iterator_adaptors
         : [ run libs/utility/counting_iterator_test.cpp : # args
@@ -529,19 +509,6 @@ include testing.jam ;
           ]
         ;
 
-    run libs/utility/iterator_traits_test.cpp ;
-
-    run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
-
-    compile-fail libs/utility/noncopyable_test.cpp ;
-
-    run libs/utility/numeric_traits_test.cpp ;
-
-    run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
-
-    run libs/utility/tie_example.cpp ;
-
-    run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     test-suite multi_array
         : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/test_exec_monitor ]
@@ -581,4 +548,627 @@ include testing.jam ;
           [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
 
+    test-suite utility
+        : 
+	        [ run libs/utility/iterator_traits_test.cpp ]
+			[ run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+		    [ compile-fail libs/utility/noncopyable_test.cpp ]
+		    [ run libs/utility/numeric_traits_test.cpp ]
+		    [ run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+		    [ run libs/utility/tie_example.cpp ]
+		    [ run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+		    [ run libs/utility/call_traits_test.cpp : -u ]
+		    [ compile-fail libs/utility/checked_delete_test.cpp ]
+		    [ run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/test_exec_monitor : -u ]
+		    [ run libs/utility/addressof_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+			[ run libs/utility/ref_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+	{
+
+	local TYPE_TRAIT_PATH = "../libs/type_traits/test/" ;
+	local TEST_LIB_PATH = "../libs/test/build/" ;
+		
+	test-suite type_traits :
+
+		[ lib type_traits_init : $(TYPE_TRAIT_PATH)init.cpp 
+    		: 
+        		<sysinclude>$(BOOST_ROOT)
+    		: 
+		]
+    
+    				
+		[ run $(TYPE_TRAIT_PATH)add_const_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)add_pointer_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)add_reference_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)add_volatile_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)alignment_of_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)function_traits_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_nothrow_assign_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_nothrow_constructor_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_nothrow_copy_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_trivial_assign_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_trivial_constructor_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_trivial_copy_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)has_trivial_destructor_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_arithmetic_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_array_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_base_and_derived_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_class_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_compound_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_const_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_convertible_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_empty_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_enum_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_float_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_function_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_fundamental_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_integral_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_member_function_pointer_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_member_pointer_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_object_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_pod_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_pointer_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_reference_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_same_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_scalar_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_union_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_void_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)is_volatile_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)remove_bounds_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)remove_const_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)remove_cv_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)remove_pointer_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)remove_reference_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)remove_volatile_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)tricky_abstract_type_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)tricky_add_pointer_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)tricky_function_type_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)tricky_incomplete_type_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)tricky_partial_specialization_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+				
+		[ run $(TYPE_TRAIT_PATH)type_with_alignment_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+				
+
+	;
+
+	}
+
 }
+
