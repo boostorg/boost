@@ -52,18 +52,8 @@
         use="concat( @library, '&gt;@&lt;', @test-name )"/>
     <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
 
+    <!-- runs / toolsets -->
     <xsl:variable name="run_toolsets" select="meta:test_structure( / )"/>
-    
-    <!--
-    <xsl:variable name="ordered_toolsets_fragment">
-        <xsl:call-template name="get_toolsets">
-        <xsl:with-param name="toolsets" select="$not_ordered_toolsets"/>
-        <xsl:with-param name="required_toolsets" select="$required_toolsets"/>
-        </xsl:call-template>
-    </xsl:variable>
-
-    <xsl:variable name="ordered_toolsets" select="exsl:node-set( $ordered_toolsets_fragment )"/>
-    -->
 
     <!-- libraries -->
     <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
