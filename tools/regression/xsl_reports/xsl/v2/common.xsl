@@ -434,9 +434,6 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:template name="show_notes">
         <xsl:param name="explicit_markup"/>
         <xsl:param name="notes"/>
-        <notes>
-            <xsl:copy-of select="$notes"/>
-        </notes>
             <div class="notes">
             <xsl:for-each select="$notes">
                 <div>
