@@ -1,0 +1,181 @@
+subproject status ;
+
+gGENERATOR_FUNCTION(OBJ) = Object ;
+
+rule boost-test # sources : type : suppress-fake-targets : requirements
+{
+    local result ;
+    {
+        local requirements = $(4) ;
+        local suppress = $(3) ;
+        suppress ?= dummy ;
+        local $(suppress) = true ;
+        
+        result = [
+            declare-local-target $(<:D=:S=)
+            : $(<:R=$(BOOST_ROOT)) # sources
+            : $(requirements) <include>$(BOOST_ROOT) # requirements
+            :             # default build
+            : $(>)     # target type
+        ] ;
+    }
+    Clean clean : $(result) ;
+    type-DEPENDS test : $(result) ;
+}
+
+rule compile # source-file : fail : requirements
+{
+    boost-test $(<) : OBJ : : $(3) ;
+}
+
+rule compile-fail # source-file : requirements
+{
+    boost-test $(<) : COMPILE_FAIL : gSUPPRESS_FAKE_TARGETS : $(2) ;
+}
+
+rule failed-test-file # test-file : fail-to-build-file
+{
+    DEPENDS $(<) : $(>) ;
+    FAIL_EXPECTED $(>) ;
+}
+# to avoid building the test-file when it's actually up-to-date,
+# we need to put something in place of the thing it depends on.
+actions failed-test-file
+{
+    echo building "$(>)" failed as expected > $(>)
+    echo building "$(>)" failed as expected > $(<)
+}
+
+rule declare-build-fail-test # test-type : dependency-type
+{
+    gGENERATOR_FUNCTION($(<)) = fail-to-build ;
+    gDEPENDENCY_TYPE($(<)) = $(>) ;
+    SUF$(<) = .fail ;
+}
+
+rule fail-to-build # sources.test : sources : requirements
+{
+    local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
+    local dependency-type = $(gDEPENDENCY_TYPE($(target-type))) ;
+    local fail-target = $(<[1]:S=$(SUF$(dependency-type))) ;
+    local ignored = [
+        $(gGENERATOR_FUNCTION($(dependency-type))) $(fail-target) : $(>) : $(3) ] ;
+
+    set-target-variables $(fail-target)
+    
+    # The .test file goes with the other subvariant targets
+    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    failed-test-file $(<) : $(fail-target) ;
+}
+
+declare-build-fail-test COMPILE_FAIL : OBJ ;
+
+gGENERATOR_FUNCTION(RUN_TEST) = run-test ;
+SUFRUN_TEST = .test ;
+rule run-test # target : sources : requirements
+{
+    local executable = $(<:S=$(SUFEXE)) ; 
+    executable-file $(executable) : $(>) : $(3) ;
+    set-target-variables $(executable) ;
+    
+    # The .test file goes with the other subvariant targets
+    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    INPUT_FILES on $(<) = $(gRUN_TEST_INPUT_FILES) ;
+    ARGS on $(<) = $(gRUN_TEST_ARGS) ;
+    capture-run-output $(<) : $(executable) ;
+}
+actions capture-run-output bind INPUT_FILES
+{
+    $(>) $(ARGS) $(INPUT_FILES) > $(<)
+}
+
+rule run # sources : args : input-files : requirements
+{
+    local gRUN_TEST_ARGS = $(2) ;
+    local gRUN_TEST_INPUT_FILES = $(3) ;
+    SEARCH on $(3) = $(LOCATE_SOURCE) ;
+    boost-test $(<) : RUN_TEST : : $(4) ;
+}
+
+declare-build-fail-test LINK_FAIL : EXE ;
+rule link-fail # sources : requirements
+{
+    boost-test $(<) : LINK_FAIL : gSUPPRESS_FAKE_TARGETS : $(2) ;
+}
+
+declare-build-fail-test RUN_FAIL : RUN_TEST ;
+rule run-fail # sources : args : input-files : requirements
+{
+    local gRUN_TEST_ARGS = $(2) ;
+    local gRUN_TEST_INPUT_FILES = $(3) ;
+    SEARCH on $(3) = $(LOCATE_SOURCE) ;
+    boost-test $(<) : RUN_FAIL : gSUPPRESS_FAKE_TARGETS : $(4) ;
+}
+
+run libs/config/config_test.cpp ;
+run libs/config/limits_test.cpp ;
+run libs/any/any_test.cpp ;
+run libs/array/array1.cpp ;
+compile libs/concept_check/concept_check_test.cpp ;
+compile libs/concept_check/class_concept_check_test.cpp ;
+link-fail libs/concept_check/concept_check_fail_expected.cpp ;
+link-fail libs/concept_check/class_concept_fail_expected.cpp ;
+run libs/conversion/cast_test.cpp ;
+run libs/conversion/lexical_cast_test.cpp ;
+run libs/crc/crc_test.cpp ;
+run libs/function/test/function_test.cpp ;
+run libs/functional/function_test.cpp ;
+run libs/graph/test/graph.cpp ;
+run libs/integer/cstdint_test.cpp ;
+run libs/integer/integer_test.cpp ;
+run libs/integer/integer_traits_test.cpp ;
+run libs/math/octonion/octonion_test.cpp ;
+run libs/math/quaternion/quaternion_test.cpp ;
+run libs/math/special_functions/special_functions_test.cpp ;
+run libs/pool/test/test_pool_alloc.cpp ;
+run libs/rational/rational_example.cpp ;
+run libs/rational/rational_test.cpp ;
+run libs/random/random_test.cpp ;
+run libs/random/random_demo.cpp ;
+run libs/regex/test/regress/regex_test.cpp : : $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ;
+run libs/regex/test/regress/wregex_test.cpp : : $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ;
+run libs/smart_ptr/smart_ptr_test.cpp ;
+compile libs/static_assert/static_assert_test.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_1.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_2.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_3.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_4.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_5.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_6.cpp ;
+compile-fail libs/static_assert/static_assert_test_fail_7.cpp ;
+link-fail libs/static_assert/static_assert_test_fail_8.cpp ;
+run libs/test/example/test_tools_example.cpp ;
+run-fail libs/test/test/test_tools_fail2.cpp ;
+compile libs/timer/timer_test.cpp ;
+run libs/tokenizer/examples.cpp ;
+run libs/type_traits/tests/alignment_test.cpp ;
+run libs/type_traits/tests/arithmetic_traits_test.cpp ;
+run libs/type_traits/tests/composite_traits_test.cpp ;
+run libs/type_traits/tests/cv_traits_test.cpp ;
+run libs/type_traits/tests/is_function_test.cpp ;
+run libs/type_traits/tests/is_convertible_test.cpp ;
+run libs/type_traits/tests/is_same_test.cpp ;
+run libs/type_traits/tests/object_type_traits_test.cpp ;
+run libs/type_traits/tests/transform_traits_test.cpp ;
+run libs/utility/call_traits_test.cpp : -u ;
+compile-fail libs/utility/checked_delete_test.cpp ;
+run libs/utility/compressed_pair_test.cpp : -u ;
+run libs/utility/counting_iterator_test.cpp ;
+run libs/utility/iterator_adaptor_test.cpp ;
+run libs/utility/transform_iterator_test.cpp ;
+run libs/utility/indirect_iterator_test.cpp ;
+run libs/utility/iter_traits_gen_test.cpp ;
+compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ;
+compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ;
+run libs/utility/iterator_traits_test.cpp ;
+run libs/utility/iterators_test.cpp ;
+compile-fail libs/utility/noncopyable_test.cpp ;
+run libs/utility/numeric_traits_test.cpp ;
+run libs/utility/operators_test.cpp ;
+run libs/utility/tie_example.cpp ;
+
