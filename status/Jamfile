@@ -14,6 +14,8 @@ subproject status ;
 # the first source file, sans extension and directory path.
 #
 # type should be a target type (e.g. OBJ, DLL, LIB, EXE)
+#
+# RETURNS the name(s) of the generated test target(s).
 rule boost-test
 {
     local result ;
@@ -35,7 +37,7 @@ rule boost-test
     }
     Clean clean : $(result) ;
     type-DEPENDS test : $(result) ;
-    return result ;
+    return $(result) ;
 }
 
 #######
@@ -107,13 +109,13 @@ declare-build-fail-test COMPILE_FAIL : OBJ ;
 # Test that the given source-file(s) compile
 rule compile # source-file : fail : requirements
 {
-    boost-test $(<) : OBJ : $(3) ;
+    return [ boost-test $(<) : OBJ : $(3) ] ;
 }
 
 # Test that the given source-file(s) fail to compile
 rule compile-fail # source-file : requirements
 {
-    boost-test $(<) : COMPILE_FAIL : $(2) ;
+    return [ boost-test $(<) : COMPILE_FAIL : $(2) ] ;
 }
 
 
@@ -149,7 +151,7 @@ rule run # sources : args : input-files : requirements
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    boost-test $(<) : RUN_TEST : $(4) ;
+    return [ boost-test $(<) : RUN_TEST : $(4) ] ;
 }
 
 declare-build-fail-test RUN_FAIL : RUN_TEST ;
@@ -158,7 +160,7 @@ rule run-fail # sources : args : input-files : requirements
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    boost-test $(<) : RUN_FAIL : $(4) ;
+    return [ boost-test $(<) : RUN_FAIL : $(4) ] ;
 }
 
 ### Rules for testing whether a program links
@@ -166,75 +168,148 @@ rule run-fail # sources : args : input-files : requirements
 declare-build-fail-test LINK_FAIL : EXE ;
 rule link-fail # sources : requirements
 {
-    boost-test $(<) : LINK_FAIL : $(2) ;
+    return [ boost-test $(<) : LINK_FAIL : $(2) ] ;
+}
+
+### Rules for grouping tests into suites:
+
+rule test-suite # pseudotarget-name : test-targets...
+{
+    NOTFILE $(<) ;
+    type-DEPENDS $(<) : $(>) ;
 }
 
 # ----------- Actual test invocations follow ----------------#
 
-run libs/config/test/config_test.cpp ;
-run libs/config/test/limits_test.cpp ;
+test-suite config
+    : [ run libs/config/test/config_test.cpp ]
+      [ run libs/config/test/limits_test.cpp ]
+    ;
+    
 run libs/any/any_test.cpp ;
+
 run libs/array/array1.cpp ;
-compile libs/concept_check/concept_check_test.cpp ;
-compile libs/concept_check/class_concept_check_test.cpp ;
-link-fail libs/concept_check/concept_check_fail_expected.cpp ;
-link-fail libs/concept_check/class_concept_fail_expected.cpp ;
-run libs/conversion/cast_test.cpp ;
-run libs/conversion/lexical_cast_test.cpp ;
+
+test-suite concept_check
+    : [ compile libs/concept_check/concept_check_test.cpp ]
+      [ compile libs/concept_check/class_concept_check_test.cpp ]
+      [ link-fail libs/concept_check/concept_check_fail_expected.cpp ]
+      [ link-fail libs/concept_check/class_concept_fail_expected.cpp ]
+    ;
+
+test-suite conversion
+    : [ run libs/conversion/cast_test.cpp ]
+      [ run libs/conversion/lexical_cast_test.cpp ]
+    ;
+    
 run libs/crc/crc_test.cpp ;
+
 run libs/function/test/function_test.cpp ;
+
 run libs/functional/function_test.cpp ;
+
 run libs/graph/test/graph.cpp ;
-run libs/integer/cstdint_test.cpp ;
-run libs/integer/integer_test.cpp ;
-run libs/integer/integer_traits_test.cpp ;
-run libs/math/octonion/octonion_test.cpp ;
-run libs/math/quaternion/quaternion_test.cpp ;
-run libs/math/special_functions/special_functions_test.cpp ;
+
+test-suite integer
+    : [ run libs/integer/cstdint_test.cpp ]
+      [ run libs/integer/integer_test.cpp ]
+      [ run libs/integer/integer_traits_test.cpp ]
+    ;
+
+test-suite math
+    : [ run libs/math/octonion/octonion_test.cpp ]
+      [ run libs/math/quaternion/quaternion_test.cpp ]
+      [ run libs/math/special_functions/special_functions_test.cpp ]
+    ;
+
 run libs/pool/test/test_pool_alloc.cpp ;
-run libs/rational/rational_example.cpp ;
-run libs/rational/rational_test.cpp ;
-run libs/random/random_test.cpp ;
-run libs/random/random_demo.cpp ;
-run libs/regex/test/regress/regex_test.cpp : : $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ;
-run libs/regex/test/regress/wregex_test.cpp : : $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ;
+
+test-suite rational
+    : [ run libs/rational/rational_example.cpp ]
+      [ run libs/rational/rational_test.cpp ]
+    ;
+
+test-suite random
+    : [ run libs/random/random_test.cpp ]
+      [ run libs/random/random_demo.cpp ]
+    ;
+
+test-suite regex
+    : [ run libs/regex/test/regress/regex_test.cpp : :
+        $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ]
+      [ run libs/regex/test/regress/wregex_test.cpp : :
+        $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ]
+    ;
+
 run libs/smart_ptr/smart_ptr_test.cpp ;
-compile libs/static_assert/static_assert_test.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_1.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_2.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_3.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_4.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_5.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_6.cpp ;
-compile-fail libs/static_assert/static_assert_test_fail_7.cpp ;
-link-fail libs/static_assert/static_assert_test_fail_8.cpp ;
+
+test-suite static_assert
+    : [ compile libs/static_assert/static_assert_test.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_1.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_2.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_3.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_4.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_5.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_6.cpp ]
+      [ compile-fail libs/static_assert/static_assert_test_fail_7.cpp ]
+      [ link-fail libs/static_assert/static_assert_test_fail_8.cpp ]
+    ;
+    
 run libs/test/example/test_tools_example.cpp ;
+
 run-fail libs/test/test/test_tools_fail2.cpp ;
+
 compile libs/timer/timer_test.cpp ;
+
 run libs/tokenizer/examples.cpp ;
-run libs/type_traits/tests/alignment_test.cpp ;
-run libs/type_traits/tests/arithmetic_traits_test.cpp ;
-run libs/type_traits/tests/composite_traits_test.cpp ;
-run libs/type_traits/tests/cv_traits_test.cpp ;
-run libs/type_traits/tests/is_function_test.cpp ;
-run libs/type_traits/tests/is_convertible_test.cpp ;
-run libs/type_traits/tests/is_same_test.cpp ;
-run libs/type_traits/tests/object_type_traits_test.cpp ;
-run libs/type_traits/tests/transform_traits_test.cpp ;
+
+test-suite type_traits
+    : [ run libs/type_traits/tests/alignment_test.cpp ]
+      [ run libs/type_traits/tests/arithmetic_traits_test.cpp ]
+      [ run libs/type_traits/tests/composite_traits_test.cpp ]
+      [ run libs/type_traits/tests/cv_traits_test.cpp ]
+      [ run libs/type_traits/tests/is_function_test.cpp ]
+      [ run libs/type_traits/tests/is_convertible_test.cpp ]
+      [ run libs/type_traits/tests/is_same_test.cpp ]
+      [ run libs/type_traits/tests/object_type_traits_test.cpp ]
+      [ run libs/type_traits/tests/transform_traits_test.cpp ]
+    ;
+    
 run libs/utility/call_traits_test.cpp : -u ;
+
 compile-fail libs/utility/checked_delete_test.cpp ;
+
 run libs/utility/compressed_pair_test.cpp : -u ;
-run libs/utility/counting_iterator_test.cpp ;
-run libs/utility/iterator_adaptor_test.cpp ;
-run libs/utility/transform_iterator_test.cpp ;
-run libs/utility/indirect_iterator_test.cpp ;
-run libs/utility/iter_traits_gen_test.cpp ;
-compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ;
-compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ;
+
+test-suite iterator_adaptors
+    : [ run libs/utility/counting_iterator_test.cpp ]
+      [ run libs/utility/iterator_adaptor_test.cpp ] 
+      [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ] 
+      [ compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ]
+      [ run libs/utility/transform_iterator_test.cpp ]
+      [ run libs/utility/indirect_iterator_test.cpp ]
+      [ run libs/utility/iter_traits_gen_test.cpp ]
+      
+      [ run libs/utility/iterator_adaptor_examples.cpp ]
+      [ run libs/utility/counting_iterator_example.cpp ]
+      [ run libs/utility/filter_iterator_example.cpp ]
+      [ run libs/utility/fun_out_iterator_example.cpp ]
+      [ run libs/utility/indirect_iterator_example.cpp ]
+      [ run libs/utility/projection_iterator_examples.cpp ]
+      [ run libs/utility/reverse_iterator_example.cpp ]
+      [ run libs/utility/transform_iterator_example.cpp ]
+    ;
+
+
 run libs/utility/iterator_traits_test.cpp ;
+
 run libs/utility/iterators_test.cpp ;
+
 compile-fail libs/utility/noncopyable_test.cpp ;
+
 run libs/utility/numeric_traits_test.cpp ;
+
 run libs/utility/operators_test.cpp ;
+
 run libs/utility/tie_example.cpp ;
 
