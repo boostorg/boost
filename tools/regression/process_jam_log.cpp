@@ -251,6 +251,7 @@ namespace
         if ( target_directory.find( ".lib/" ) != string::npos
           || target_directory.find( ".dll/" ) != string::npos 
           || target_directory.find( ".so/" ) != string::npos 
+          || target_directory.find( ".dylib/" ) != string::npos 
           )
         {
           info.type = "lib";
