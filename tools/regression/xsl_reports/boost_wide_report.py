@@ -6,6 +6,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import shutil
+import codecs
 import xml.sax.handler
 import glob
 import os.path
@@ -303,7 +304,7 @@ def execute_tasks(
 
 
     results_xml_path = os.path.join( output_dir, "extended_test_results.xml" )
-    writer = open( results_xml_path, 'w' )
+    writer = codecs.open( results_xml_path, 'w', "utf-8" )
     merge_processed_test_runs( merged_dir, tag, writer )
     writer.close()
 
