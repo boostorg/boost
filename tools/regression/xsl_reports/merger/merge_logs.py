@@ -72,6 +72,17 @@ def unzip_test_runs( dir ):
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
 
+class xmlgen( xml.sax.saxutils.XMLGenerator ):
+    def __init__( self, out=None, encoding="iso-8859-1" ):
+        xml.sax.saxutils.XMLGenerator.__init__( self, out, encoding )
+        self.no_more_start_documents_ = 0
+        
+    def startDocument(self):
+        if not self.no_more_start_documents_:
+            xml.sax.saxutils.XMLGenerator.startDocument( self )
+            self.no_more_start_documents_ = 1
+    
+
 def merge_test_runs( incoming_dir, tag, writer, dont_collect_logs ):
     test_runs_dir = os.path.join( incoming_dir, tag )
     
@@ -79,24 +90,24 @@ def merge_test_runs( incoming_dir, tag, writer, dont_collect_logs ):
         utils.log( 'Removing stale XMLs in "%s"...' % test_runs_dir )
         files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
         for f in files:  
-       	    utils.log( '  Removing "%s" ...' % f )
+            utils.log( '  Removing "%s" ...' % f )
             os.unlink( f )
 
         utils.log( 'Unzipping new test runs...' )
         unzip_test_runs( test_runs_dir )
     
-    all_runs_xml = xml.sax.saxutils.XMLGenerator( writer )
+    all_runs_xml = xmlgen( writer )
     all_runs_xml.startDocument()
     all_runs_xml.startElement( 'all-test-runs', {} )
-    
     utils.log( 'Processing test runs...' )
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
         try:
             utils.log( '  Loading "%s" in memory...' % test_run )
-            run = xml.dom.minidom.parse( test_run  )
+            xml.sax.parse( test_run, all_runs_xml  )
             utils.log( '  Writing "%s" into the resulting XML...' % test_run )
-            run.documentElement.writexml( writer )
+            ##run.documentElement.writexml( writer )
+            ## run = None
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
