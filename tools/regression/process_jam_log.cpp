@@ -16,6 +16,7 @@
 #include <map>
 #include <utility> // for make_pair
 #include <ctime>
+#include <cctype>   // for tolower
 
 using std::string;
 namespace xml = boost::tiny_xml;
@@ -26,8 +27,14 @@ namespace fs = boost::filesystem;
 
 namespace
 {
-  typedef std::map< string, string > test2prog_map;  // test_name, test_file_path
-  test2prog_map test2prog;
+  struct test_info
+  {
+    string      file_path;
+    string      type;
+    bool        always_show_run_output;
+  };
+  typedef std::map< string, test_info > test2info_map;  // key is test-name
+  test2info_map test2info;
 
 //  append_html  -------------------------------------------------------------//
 
@@ -151,17 +158,18 @@ namespace
       fs::ifstream file( pth );
       if ( !file )
       {
-        string test_program, library_name;
-        test2prog_map::iterator itr( test2prog.find( test_name ) );
-        if ( itr != test2prog.end() )
+        test_info info;
+        string library_name;
+        test2info_map::iterator itr( test2info.find( test_name ) );
+        if ( itr != test2info.end() )
         {
-          test_program = itr->second;
-          string::size_type start_pos( test_program.find( "libs/" ) );
+          info = itr->second;
+          string::size_type start_pos( info.file_path.find( "libs/" ) );
           if ( start_pos != string::npos )
           {
             start_pos += 5;
-            library_name = test_program.substr( start_pos,
-              test_program.find( '/', start_pos )-start_pos );
+            library_name = info.file_path.substr( start_pos,
+              info.file_path.find( '/', start_pos )-start_pos );
           }
         }
         m_root.reset( new xml::element( "test-log" ) );
@@ -170,11 +178,16 @@ namespace
         m_root->attributes.push_back(
           xml::attribute( "test-name", test_name ) );
         m_root->attributes.push_back(
-          xml::attribute( "test-program", test_program ) );
+          xml::attribute( "test-type", info.type ) );
+        m_root->attributes.push_back(
+          xml::attribute( "test-program", info.file_path ) );
         m_root->attributes.push_back(
           xml::attribute( "target-directory", target_directory ) );
         m_root->attributes.push_back(
           xml::attribute( "toolset", toolset ) );
+        m_root->attributes.push_back(
+          xml::attribute( "show-run-output",
+            info.always_show_run_output ? "true" : "false" ) );
       }
       else // existing file
       {
@@ -348,21 +361,24 @@ int cpp_main( int argc, char ** argv )
   {
 //      std::cout << line << "\n";
 
-    // create map of test-name to test-file-path
-    if ( line.find( "(boost-test " ) == 0 )
+    // create map of test-name to test-info
+    if ( line.find( "boost-test(" ) == 0 )
     {
-      string test_name, test_file_path;
-      string::size_type colon = line.find( ":" );
-      if ( colon != string::npos )
-      {
-        test_name = line.substr( 13, colon-15 );
-        test_file_path = line.substr( colon+3,
-          line.find( "\"", colon+3 )-colon-3 );
-        convert_path_separators( test_file_path );
-        test2prog.insert( std::make_pair( test_name, test_file_path ) );
-//        std::cout << test_name << ", " << test_file_path << "\n";
-        continue;
-      }
+      string::size_type pos = line.find( '"' );
+      string test_name( line.substr( pos+1, line.find( '"', pos+1)-pos-1 ) );
+      test_info info;
+      info.always_show_run_output
+        = line.find( "\"always_show_run_output\"" ) != string::npos;
+      info.type = line.substr( 11, line.find( ')' )-11 );
+      for (int i = 0; i!=info.type.size(); ++i )
+        { info.type[i] = std::tolower( info.type[i] ); }
+      pos = line.find( ':' );
+      info.file_path = line.substr( pos+3,
+        line.find( "\"", pos+3 )-pos-3 );
+      convert_path_separators( info.file_path );
+      test2info.insert( std::make_pair( test_name, info ) );
+//      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
+      continue;
     }
 
     // these actions represent both the start of a new action
