@@ -132,9 +132,9 @@
                       </td>
                     </tr>
                     <tr>
-                      <td><table><tr><td class="summary-fail-unexpected-new">broken</td></tr></table></td>
+                      <td><table><tr><td class="summary-fail-unexpected-new">fail</td></tr></table></td>
                       <td class="legend-item">
-                        there are some failures on a newly added test or compiler
+                        there are some failures on the newly added tests/compiler(s)
                       </td>
                     </tr>
                     <tr>
@@ -255,9 +255,14 @@
   
   <td class="{$class}">
     <xsl:choose>
-      <xsl:when test="$class='summary-fail-unexpected' or $class='summary-fail-unexpected-new' ">
+      <xsl:when test="$class='summary-fail-unexpected'">
         <a href="{$mode}_result_page.html#{$library}" class="log-link">
           <xsl:text>broken</xsl:text>
+        </a>
+      </xsl:when>
+      <xsl:when test="$class='summary-fail-unexpected-new' ">
+        <a href="{$mode}_result_page.html#{$library}" class="log-link">
+          <xsl:text>fail</xsl:text>
         </a>
       </xsl:when>
       <xsl:otherwise>
