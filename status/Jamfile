@@ -131,8 +131,8 @@ rule run-test # target : sources : requirements
     
     # The .test file goes with the other subvariant targets
     # normalization is a hack to get the slashes going the right way on Windoze
-    local normalized-locate = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
-    MakeLocate $(<) : $(normalized-locate) ;
+    local LOCATE_TARGET = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
+    MakeLocate $(<) : $(LOCATE_TARGET) ;
     
     DEPENDS $(<) : $(executable) $(gRUN_TEST_INPUT_FILES) ;
     INPUT_FILES on $(<) = $(gRUN_TEST_INPUT_FILES) ;
@@ -144,6 +144,9 @@ rule run-test # target : sources : requirements
         ALWAYS $(<) ;
     }
 }
+
+# The rule is just used for argument checking
+rule capture-run-output ( target : executable + ) { }
 actions capture-run-output bind INPUT_FILES
 {
     $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
