@@ -99,22 +99,30 @@ namespace
     return temp;
   }
 
+  string::size_type target_name_end( const string & s )
+  {
+    string::size_type pos = s.find( ".test/" );
+    if ( pos == string::npos ) pos = s.find( ".dll/" );
+    if ( pos == string::npos ) pos = s.find( ".lib/" );
+    return pos;
+  }
+
   string toolset( const string & s )
   {
-    string t( s );
-    string::size_type pos = t.find( ".test/" );
-    if ( pos != string::npos ) pos += 6;
-    else return "";
-    return t.substr( pos, t.find( "/", pos ) - pos );
+    string::size_type pos = target_name_end( s );
+    if ( pos == string::npos ) return "";
+    pos = s.find( "/", pos ) + 1;
+    return s.substr( pos, s.find( "/", pos ) - pos );
   }
 
   string test_name( const string & s )
   {
-    string t( s );
-    string::size_type pos = t.find( ".test/" );
+    string::size_type pos = target_name_end( s );
     if ( pos == string::npos ) return "";
-    string::size_type pos_start = t.rfind( '/', pos ) + 1;
-    return t.substr( pos_start, pos - pos_start );
+    string::size_type pos_start = s.rfind( '/', pos ) + 1;
+    return s.substr( pos_start,
+      (s.find( ".test/" ) != string::npos
+        ? pos : s.find( "/", pos )) - pos_start );
   }
 
   // the format of paths is really kinky, so convert to normal form
@@ -179,21 +187,25 @@ namespace
   public:
     test_log( const string & target_directory,
               const string & test_name,
-              const string & toolset )
+              const string & toolset,
+              bool force_new_file )
       : m_target_directory( target_directory )
     {
-      fs::path pth( locate_root / target_directory / "test_log.xml" );
-      fs::ifstream file( pth  );
-      if ( file )   // existing file
+      if ( !force_new_file )
       {
-        try
+        fs::path pth( locate_root / target_directory / "test_log.xml" );
+        fs::ifstream file( pth  );
+        if ( file )   // existing file
         {
-          m_root = xml::parse( file, pth.string() );
-          return;
-        }
-        catch(...)
-        {
-          // unable to parse existing XML file, fall through
+          try
+          {
+            m_root = xml::parse( file, pth.string() );
+            return;
+          }
+          catch(...)
+          {
+            // unable to parse existing XML file, fall through
+          }
         }
       }
 
@@ -218,6 +230,24 @@ namespace
           }
         }
       }
+
+      if ( library_name.empty() )
+      {
+        string::size_type pos = target_directory.find( "/libs/" );
+        if ( pos != string::npos )
+        {
+          pos += 6;
+          library_name
+            = target_directory.substr( pos,
+                target_directory.find( "/", pos ) - pos );
+        }
+      }
+      
+      if ( info.type.empty()
+        && (target_directory.find( ".lib/" ) != string::npos
+          || target_directory.find( ".dll/" ) != string::npos) )
+        { info.type = "lib"; }
+
       m_root.reset( new xml::element( "test-log" ) );
       m_root->attributes.push_back(
         xml::attribute( "library", library_name ) );
@@ -348,7 +378,8 @@ namespace
         if ( action_name == "compile"
           && result == "fail" ) m_compile_failed = true;
 
-        test_log tl( target_directory, m_test_name, m_toolset );
+        test_log tl( target_directory,
+          m_test_name, m_toolset, action_name == "compile" );
         tl.remove_action( "lib" ); // always clear out lib residue
 
         // dependency removal
