@@ -1,0 +1,104 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Feature Model Diagrams</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<p><img border="0" src="../c++boost.gif" width="277" height="86"></p>
+<h1>Feature Model Diagrams in text and HTML</h1>
+<p>By <a href="../people/beman_dawes.html">Beman Dawes</a></p>
+<h2>Introduction</h2>
+<p>In their seminal book, Generative Programming, Czarnecki and Eisenecker (<a href="#Generative Programming">C&amp;E</a>)
+describe how to build feature models [C&amp;E 4.4] consisting of a feature
+diagram plus semantic, rationale, and other attributes.&nbsp; Feature models are
+then used to drive design cycles which eventually lead to manual or automatic
+assembly of configurations.</p>
+<p>Feature models provide a language to describe the library variability that is
+often such an issue in boost.org discussions. The Whorf hypothesis that
+&quot;Language shapes the way we think, and determines what we can think
+about&quot; seems to apply.&nbsp; In discussion of library variability issues,
+we have been crippled by lack of a good language. With feature models we now
+have a language to carry on the dialog.</p>
+<p>The graphical feature diagrams presented by C&amp;E are not in a suitable
+form for the email discussions boost.org depends upon. The hierarchical nature
+of feature diagrams can be represented by a simple text-based feature diagram
+language.&nbsp; A feature model can also take advantage of the hyperlinks
+inherent in HTML.</p>
+<h2><a name="Grammar">Grammar</a></h2>
+<p>The grammar for the feature diagram language is expressed in Extended
+Bakus-Naur Form; ::= represents productions, [...] represents options, {...}
+represents zero or more instances, and represents | alternatives.</p>
+<blockquote>
+  <pre>feature-model       ::= concept-name details { feature }</pre>
+  <pre>feature             ::= feature-name [details]</pre>
+  <pre>details             ::= &quot;(&quot; feature-list &quot;)&quot;      // required features
+                      | &quot;[&quot; feature-list &quot;]&quot;      // optional features</pre>
+  <pre>feature-list        ::= element { &quot;|&quot; element }   // one only
+                      | element { &quot;+&quot; element }   // one or more
+                      | element { &quot;,&quot; element }   // all
+                                                  // [a+b] equivalent to [a,b]</pre>
+  <pre>element             ::= feature
+                      | details</pre>
+  <pre>concept-name        ::= name</pre>
+  <pre>feature-name        ::= name</pre>
+</blockquote>
+<p>The usual lexical conventions apply. Names are case-insensitive and consist
+of a leading letter, followed by letters, digits, underscores or hyphens, with
+no spaces allowed.</p>
+<p>At least one instance of each name should be hyperlinked to the corresponding
+<a href="#Feature Descriptions">Feature Description</a>.</p>
+<p>While the grammar is intended for written communication between people, it
+may also be trivially machine parsed for use by automatic tools.</p>
+<h2><a name="Feature Descriptions">Feature Description</a></h2>
+<p>Descriptive information is associated with each concept or feature. According
+to [C&amp;E 4.4.2] this includes:</p>
+<ul>
+  <li>Semantic descriptions.</li>
+  <li>Rationale.</li>
+  <li>Stakeholders and client programs.</li>
+  <li>Exemplar systems.</li>
+  <li>Constraints and default dependency rules.</li>
+  <li>Availability sites, binding sites, and binding mode.</li>
+  <li>Open/Closed attribute.</li>
+</ul>
+<h2>What is a Feature?</h2>
+<p>A feature [C&amp;E 4.9.1] is &quot;anything users or client programs might
+want to control about a concept.&nbsp; Thus, during feature modeling, we
+document no only functional features ... but also implementation features, ...,
+various optimizations, alternative implementation techniques, and so on.&quot;</p>
+<h2>Example</h2>
+<blockquote>
+  <pre>special-container ( organization,
+                    performance,
+                    interface  )         // all required</pre>
+  <pre>organization [ ordered + indexed ]       // zero or more (4 configurations)</pre>
+  <pre>indexed [ hash-function ]                // zero or one  (2 configurations)</pre>
+  <pre>performance ( fast | small | balanced )  // exactly one  (3 configurations)</pre>
+  <pre>interface ( STL-style + cursor-style )   // one or more  (3 configurations)</pre>
+</blockquote>
+<p>There should be feature descriptions for <code>some-container, organization,
+ordered, indexed, hash-function, performance, fast, small, balanced, interface,
+STL-style, and cursor-style</code>.</p>
+<p>The number of possible configurations is&nbsp; (2 + 2*2) * 3 * 3 = 54,
+assuming no constraints.</p>
+<p>There are equivalent representations. For example:</p>
+<blockquote>
+  <pre>special-container ( organization[ ordered+indexed[ hash-function ]],
+                    performance( fast|small|balanced ),
+                    interface( STL-style+cursor-style ) )</pre>
+</blockquote>
+<h2>References</h2>
+<p>Krzysztof Czarnecki and Ulrich W. Eisenecker, <a name="Generative Programming" href="http://www.generative-programming.org">Generative
+Programming</a>, Addison-Wesley, 2000, ISBN 0-210-30977-7</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B %Y" startspan -->19 August 2001<!--webbot bot="Timestamp" endspan i-checksum="31287" --></p>
+<p>© Copyright Beman Dawes, 2000</p>
+
+</body>
+
+</html>
