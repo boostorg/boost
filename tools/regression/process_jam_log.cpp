@@ -260,13 +260,20 @@ namespace
     string  m_test_name;
     string  m_toolset;
 
+    bool    m_note;  // if true, run result set to "note"
+                     // set false by start_message()
+
     // data needed to stop further compile action after a compile failure
     // detected in the same target directory
     string  m_previous_target_directory;
     bool    m_compile_failed;
 
   public:
+    message_manager() : m_note(false) {}
     ~message_manager() { /*assert( m_action_name.empty() );*/ }
+
+    bool note() const { return m_note; }
+    void note( bool value ) { m_note = value; }
 
     void start_message( const string & action_name,
                       const string & target_directory,
@@ -279,6 +286,7 @@ namespace
       m_target_directory = target_directory;
       m_test_name = test_name;
       m_toolset = toolset;
+      m_note = false;
       if ( m_previous_target_directory != target_directory )
       {
         m_previous_target_directory = target_directory;
@@ -300,8 +308,9 @@ namespace
                      const string & content )
     // the only valid action_names are "compile", "link", "run", "lib"
     {
-      // my understanding of the jam output is that there should never be
+      // My understanding of the jam output is that there should never be
       // a stop_message that was not preceeded by a matching start_message.
+      // That understanding is built into message_manager code.
       assert( m_action_name == action_name );
       assert( m_target_directory == target_directory );
       assert( result == "succeed" || result == "fail" );
@@ -334,8 +343,10 @@ namespace
         // dependency removal won't work right with random names, so assert
         else { assert( action_name == "run" ); }
 
-        // add the stop_message action
-        tl.add_action( action_name, result, timestamp, content );
+        // add the "run" stop_message action
+        tl.add_action( action_name,
+          result == "succeed" && note() ? "note" : result,
+          timestamp, content );
       }
 
       m_action_name = ""; // signal no pending action
@@ -469,7 +480,8 @@ int cpp_main( int argc, char ** argv )
           string ln;
           while ( std::getline( file, ln ) )
           {
-            append_html( ln, content );;
+            if ( ln.find( "<note>" ) != string::npos ) mgr.note( true );
+            append_html( ln, content );
             content += "\n";
           }
         }
