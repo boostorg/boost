@@ -143,29 +143,57 @@ def download_boost_tarball( destination, tag, proxy ):
     return tarball_path
 
 
-def unpack_tarball( tarball_path, destination ):
-    log( 'Looking for old unpacked archives...' )
-    old_boost_dirs =  glob.glob( os.path.join( destination, 'boost-*' ) )
+def find_boost_dirs( path ):
+    return [ x for x in glob.glob( os.path.join( path, 'boost[-_]*' ) )
+                        if os.path.isdir( x ) ]
 
+
+def unpack_tarball( tarball_path, destination  ):
+    log( 'Looking for old unpacked archives...' )
+    old_boost_dirs = find_boost_dirs( destination )
+    
     for old_boost_dir in old_boost_dirs:
         if old_boost_dir != tarball_path:
             log( 'Deleting old directory %s.' % old_boost_dir ) 
             rmtree( old_boost_dir )
 
     log( 'Unpacking boost tarball ("%s")...' % tarball_path )
-    tar = tarfile.open( tarball_path, 'r|bz2' )
-    for tarinfo in tar:
-        tar.extract( tarinfo, destination )        
-        if sys.platform == 'win32' and not tarinfo.isdir():
-            # workaround what appears to be a Win32-specific bug in 'tarfile'
-            # (modification times for extracted files are not set properly)
-            f = os.path.join( destination, tarinfo.name )
-            os.chmod( f, stat.S_IWRITE )
-            os.utime( f, ( tarinfo.mtime, tarinfo.mtime ) )
-    
-    tar.close()
 
-    boost_dir = glob.glob( os.path.join( destination, 'boost-*' ) )[0]
+    b = os.path.basename( tarball_path )
+    name = b[ 0: b.find( '.' ) ]
+    extension =b[ b.find( '.' ) : ]
+
+    if extension in ( ".tar.gz", ".tar.bz2" ):
+        mode = os.path.splitext( extension )[1][1:]
+        tar = tarfile.open( tarball_path, 'r|%s' % mode )
+        for tarinfo in tar:
+            tar.extract( tarinfo, destination )        
+            if sys.platform == 'win32' and not tarinfo.isdir():
+                # workaround what appears to be a Win32-specific bug in 'tarfile'
+                # (modification times for extracted files are not set properly)
+                f = os.path.join( destination, tarinfo.name )
+                os.chmod( f, stat.S_IWRITE )
+                os.utime( f, ( tarinfo.mtime, tarinfo.mtime ) )
+        tar.close()
+    elif extension in ( ".zip" ):
+        import zipfile
+        
+        z = zipfile.ZipFile( tarball_path, 'r', zipfile.ZIP_DEFLATED ) 
+        for f in z.infolist():
+            destination_file_path = os.path.join( destination, f.filename )
+            print f.filename
+            if destination_file_path[-1] == "/": # directory 
+                if not os.path.exists( destination_file_path  ):
+                    os.makedirs( destination_file_path  )
+            else: # file
+                result = open( destination_file_path, 'wb' )
+                result.write( z.read( f.filename ) )
+                result.close()
+        z.close()
+    else:
+        raise "Do not know how to unpack archives with extension \"%s\"" % extension
+
+    boost_dir = find_boost_dirs( destination )[0]
     log( '    Unpacked into directory "%s"' % boost_dir )
     
     if os.path.exists( boost_root ):
@@ -532,6 +560,7 @@ def update_itself( **unused ):
 
 def regression( 
           tag
+        , local
         , runner
         , platform
         , user
@@ -555,11 +584,20 @@ def regression(
             log( 'Sending start notification to "%s"' % mail )
             utils.send_mail( mail, mail_subject + ' started at %s.' % format_time( start_time ) )
 
-        if incremental:
-            update_source( user, tag, proxy, [] )
+        if local is not None:
+            log( 'Using local file "%s"' % local )
+            
+            b = os.path.basename( local )
+            tag = b[ 0: b.find( '.' ) ]
+            log( 'Tag: "%s"' % tag  )
+            
+            unpack_tarball( local, regression_root )
         else:
-            cleanup( [] )
-            get_source( user, tag, proxy, [] )
+            if incremental:
+                update_source( user, tag, proxy, [] )
+            else:
+                cleanup( [] )
+                get_source( user, tag, proxy, [] )
 
         setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
         test( toolsets, bjam_options, monitored, timeout, [] )
@@ -600,6 +638,7 @@ def show_revision( **unused ):
 def accept_args( args ):
     args_spec = [
           'tag='
+        , 'local='
         , 'runner='
         , 'platform='
         , 'user='
@@ -618,6 +657,7 @@ def accept_args( args ):
     
     options = {
           '--tag'           : 'CVS-HEAD'
+        , '--local'         : None
         , '--platform'      : sys.platform
         , '--user'          : None
         , '--comment'       : None
@@ -635,12 +675,14 @@ def accept_args( args ):
     ( option_pairs, other_args ) = getopt.getopt( args, '', args_spec )
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
-    if ( options.has_key( '--help' ) or len( options.keys() ) == defaults_num ):
+    
+    if  options.has_key( '--help' ):
         usage()
         sys.exit( 1 )
 
     return {
           'tag'             : options[ '--tag' ]
+        , 'local'           : options[ '--local' ]
         , 'runner'          : options[ '--runner' ]
         , 'platform'        : options[ '--platform']
         , 'user'            : options[ '--user' ]
@@ -681,6 +723,7 @@ Commands:
 Options:
 \t--runner        runner ID (e.g. 'Metacomm')
 \t--tag           the tag for the results ('CVS-HEAD' by default)
+\t--local         the name of the boost tarball
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
