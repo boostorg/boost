@@ -125,10 +125,23 @@ def collect_logs(
 
     utils.log( 'Compressing "%s"...' % results_file )
     archive_path = os.path.join( locate_root_dir,'%s.zip' % runner_id )
-    z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
-    z.write( results_file, os.path.basename( results_file ) )
-    z.close()
-    utils.log( 'Done writing "%s".'% archive_path )
+
+    try:
+        z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
+        z.write( results_file, os.path.basename( results_file ) )
+        z.close()
+        utils.log( 'Done writing "%s".'% archive_path )
+    except Exception, msg:
+        utils.log( 'Warning: Compressing falied (%s)' % msg )
+        utils.log( '         Trying to compress using a platform-specific tool...' )
+        try: import zip_cmd
+        except ImportError:
+            script_dir = os.path.dirname( os.path.abspath( sys.argv[0] ) )
+            utils.log( 'Could not find \'zip_cmd\' module in the script directory (%s).' % script_dir )
+            raise Exception( 'Compressing failed!' )
+        else:
+            zip_cmd.main( results_file, archive_path )
+            utils.log( 'Done compressing "%s".' % archive_path )
 
 
 def upload_logs( results_dir, runner_id, tag, user ):
@@ -178,13 +191,13 @@ def accept_args( args ):
         ]
     
     options = {
-          '--tag' :         'CVS-HEAD'
-        , '--platform' :    sys.platform
-        , '--comment' :     'comment.html'
-        , '--timestamp' :   'timestamp'
-        , '--user' :        None
-        , '--source' :      'CVS'
-        , '--run-type' :    'full'
+          '--tag'           : 'CVS-HEAD'
+        , '--platform'      : sys.platform
+        , '--comment'       : 'comment.html'
+        , '--timestamp'     : 'timestamp'
+        , '--user'          : None
+        , '--source'        : 'CVS'
+        , '--run-type'      : 'full'
         }
     
     utils.accept_args( args_spec, args, options, usage )
