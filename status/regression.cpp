@@ -93,14 +93,14 @@ struct configuration
   std::string compiler_config_file, test_config_file;
   std::string boostpath;
   std::string html_output;
-  bool note_differences;
+  bool highlight_differences;
   std::string compiler, test;
 
   // defaults
   configuration()
     : compiler_config_file("compiler.cfg"), test_config_file("regression.cfg"),
       boostpath(".."), html_output("cs-" + get_host() + ".html"),
-      note_differences(false),
+      highlight_differences(false),
       compiler("*"), test("") { }
 };
 
@@ -120,7 +120,7 @@ configuration parse_command_line(char **first, char **last)
       cfg.html_output = *++first;
       output_redirected = true;
     } else if(arg == "--diff") {
-      cfg.note_differences = true;
+      cfg.highlight_differences = true;
     } else if(arg == "--compiler") {
       cfg.compiler = *++first;
     } else if(arg.substr(0,1) == "-") {
@@ -338,7 +338,8 @@ template<class ForwardIterator>
 void do_tests(std::ostream & out,
 	      ForwardIterator firstcompiler, ForwardIterator lastcompiler,
 	      const std::string & testconfig, const std::string & boostpath,
-	      const previous_results_type& previous_results)
+	      const previous_results_type& previous_results,
+	      bool highlight_diff)
 {
   out << "<tr>\n"
       << "<td>Program</td>\n"
@@ -391,8 +392,8 @@ void do_tests(std::ostream & out,
       }
       bool pass = result.first == result.second;
       char prev = (i < previous.size() ? previous[i] : ' ');
-      bool changed = (prev == 'F' && pass) || (prev == 'P' && !pass) || 
-	prev == ' ';
+      bool changed = highlight_diff &&
+	((prev == 'F' && pass) || (prev == 'P' && !pass) || prev == ' ');
       out << "<td>"
 	  << (changed ? "<font size=\"+3\"><em>" : "")
           << (pass ? pass_string : fail_string)
@@ -431,7 +432,7 @@ int main(int argc, char * argv[])
   }
 
   previous_results_type previous_results;
-  if(config.note_differences) {
+  if(config.highlight_differences) {
     std::ifstream in(config.html_output.c_str());
     previous_results = read_previous_results(in);
   }
@@ -455,7 +456,7 @@ int main(int argc, char * argv[])
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
   do_tests(out, l.begin(), l.end(), config.test_config_file, config.boostpath,
-	   previous_results);
+	   previous_results, config.highlight_differences);
 
   out << "</table></p>\n<p>\n";
   if(host == "linux")
