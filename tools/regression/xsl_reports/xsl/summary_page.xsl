@@ -235,7 +235,7 @@
             <xsl:text>summary-expected</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:value-of select="count( $current_cell )"/>
+            <xsl:text>summary-unknown-status</xsl:text>
         </xsl:otherwise>
         </xsl:choose>
     </xsl:variable>
@@ -295,11 +295,7 @@
             <xsl:text>summary-user-success</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:message terminate="yes">
-                Unknown status
-                <xsl:copy-of select="$current_cell">
-                </xsl:copy-of>
-            </xsl:message>
+            <xsl:text>summary-unknown-status</xsl:text>
         </xsl:otherwise>
         </xsl:choose>
     </xsl:variable>
