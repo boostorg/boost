@@ -620,25 +620,20 @@ for more information.
             </note>
         </mark-unusable>        
         <mark-expected-failures>
-            <test name="chset_tests"/>
-            <test name="chset_tests_debug"/>
-            <test name="escape_char_parser_tests"/>
-            <test name="escape_char_parser_tests_debug"/>
-            <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
-            <note author="Aleksey Gurtovoy">
-                The test is likely to pass, but it takes too long to run (> 5 minutes),
-                and is therefore terminated by regression tools before its completion.
-            </note>
+            <test name="action_tests*"/>
+            <toolset name="intel-win32-7.1-vc6"/>
+            <note author="Aleksey Gurtovoy" refid="4"/>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="chset_tests"/>
-            <test name="chset_tests_debug"/>
-            <test name="escape_char_parser_tests"/>
-            <test name="escape_char_parser_tests_debug"/>
-            <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
-            <note author="Aleksey Gurtovoy">
-                The test is likely to pass, but it takes too long to run (> 5 minutes),
-                and is therefore terminated by regression tools before its completion.
+            <test name="ast_calc_tests*"/>
+            <test name="closure_tests*"/>
+            <test name="multi_pass_compile_tests"/>
+            <test name="repeat_ast_tests*"/>
+            <toolset name="intel-8.0-linux"/>            
+            <note author="Aleksey Gurtovoy"/>
+                This failure is caused by a compiler bug that manifests itself in the 
+                particular environment/hardware configuration the test has been run in.
+                You may or may not experience this issue in your local setup.
             </note>
         </mark-expected-failures>
     </library>
@@ -649,7 +644,7 @@ for more information.
             <mark-failure>
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
-                <note author="B.Dawes" refid="5"/>
+                <note author="B. Dawes" refid="5"/>
             </mark-failure>
         </test>
         <test name="contains_test">
