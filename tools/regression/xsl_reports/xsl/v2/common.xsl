@@ -188,50 +188,40 @@
               
             <td class="head" colspan="{$colspan}" width="1%"><xsl:value-of select="$title"/></td>
               
-            <xsl:variable name="all_library_notes">
-                <xsl:choose>
-                    <xsl:when test="$mode = 'summary'">
-                        <xsl:value-of select="exsl:node-set( '&lt;none/&gt;' )"/>
-                    </xsl:when>
-                    <xsl:when test="$mode = 'details'">
-                        <xsl:value-of select="$library_marks/note"/>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:variable>
 
             <xsl:for-each select="$run_toolsets/runs/run/toolset">
                 <xsl:variable name="toolset" select="@name"/>
                   
                 <xsl:variable name="class">
-                        <xsl:choose>
-                            <xsl:when test="@required='yes'">
-                                <xsl:text>required-toolset-name</xsl:text>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:text>toolset-name</xsl:text>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:variable>
-                      
-                    <xsl:variable name="toolset_notes_fragment">
-                        <xsl:for-each select="$all_library_notes">
-                            <xsl:if test="../@toolset=$toolset or ( ../toolset/@name=$toolset or ../toolset/@name = '*' )">
-                                <note index="{position()}"/>
-                            </xsl:if>
-                        </xsl:for-each>
-                    </xsl:variable>
+                    <xsl:choose>
+                        <xsl:when test="@required='yes'">
+                            <xsl:text>required-toolset-name</xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>toolset-name</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
 
-                    <xsl:variable name="toolset_notes" select="exsl:node-set( $toolset_notes_fragment )/*"/>
-                      
-                    <td class="{$class}">
+                <td class="{$class}">
 
-                        <xsl:for-each select="str:tokenize($toolset, '-')">
-                            <xsl:value-of select="." />
-                            <xsl:if test="position()!=last()">
-                                <xsl:text>- </xsl:text>
-                            </xsl:if>
-                        </xsl:for-each>
-
+                    <xsl:for-each select="str:tokenize($toolset, '-')">
+                        <xsl:value-of select="." />
+                        <xsl:if test="position()!=last()">
+                            <xsl:text>- </xsl:text>
+                        </xsl:if>
+                    </xsl:for-each>
+                    
+                    <xsl:if test="$mode = 'details'">
+                        <xsl:variable name="toolset_notes_fragment">
+                            <xsl:for-each select="$library_marks/note">
+                                <xsl:if test="../@toolset=$toolset or ( ../toolset/@name=$toolset or ../toolset/@name = '*' )">
+                                    <note index="{position()}"/>
+                                </xsl:if>
+                            </xsl:for-each>
+                        </xsl:variable>
+                        
+                        <xsl:variable name="toolset_notes" select="exsl:node-set( $toolset_notes_fragment )/*"/>
                         <xsl:if test="count( $toolset_notes ) > 0">
                             <span class="super">
                             <xsl:for-each select="$toolset_notes">
@@ -243,8 +233,9 @@
                             </xsl:for-each>
                             </span>
                         </xsl:if>
-                    </td>
-                </xsl:for-each>
+                    </xsl:if>
+                </td>
+            </xsl:for-each>
               
         <td class="head" width="1%"><xsl:value-of select="$title"/></td>
     </tr>
