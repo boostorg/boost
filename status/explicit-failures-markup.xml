@@ -791,6 +791,22 @@ for more information.
         </test>
     </library>
 
+
+    <!-- numeric/conversion -->
+    <library name="numeric/conversion">
+        <mark-unusable>
+            <toolset name="gcc-2.95.3-linux"/>            
+            <note author="Aleksey Gurtovoy" refid="5"/>
+        </mark-unusable>
+        <mark-expected-failures>
+            <test name="udt_support_test"/>
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <toolset name="intel-7.1-linux"/>
+            <note author="Aleksey Gurtovoy" refid="2"/>
+        </mark-expected-failures>
+    </library>
+
+
     <!-- numeric/interval -->
     <library name="numeric/interval">
         <mark-unusable>
@@ -817,6 +833,7 @@ for more information.
             </mark-failure>
         </test>
     </library>
+
 
     <!-- numeric/ublas -->
     <library name="numeric/ublas">
@@ -908,7 +925,7 @@ for more information.
         <mark-expected-failures>
             <test name="variable_map_test"/>
             <test name="variable_map_test_dll"/>
-            <toolset name="msvc"/>            
+            <toolset name="msvc"/>
             <note>
                The failures are caused by compiler bug: it's not possible to
                explicitly pass template arguments to member template function. The
