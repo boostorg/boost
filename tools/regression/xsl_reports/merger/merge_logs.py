@@ -42,6 +42,7 @@ def merge_test_runs( incoming_dir, tag, writer ):
 
     all_runs_xml.endElement( 'all-test-runs' )
     all_runs_xml.endDocument()
+    writer.close()
 
 
 def merge_logs(
