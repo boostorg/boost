@@ -184,9 +184,9 @@ else:
   if compiler_arg=="*" or compiler_arg=="cw":
     f.write( "<td>Metrowerks<br>CodeWarrior<br>5.3</td>\n" )
   if compiler_arg=="*" or compiler_arg=="vc":
-    f.write( "<td>Microsoft<br>VC++<br>6.0 SP3</td>\n" )
+    f.write( "<td>Microsoft<br>VC++<br>6.0 SP4</td>\n" )
   if compiler_arg=="*" or compiler_arg=="vcstlport":
-    f.write( "<td>Microsoft<br>VC++<br>6.0 SP3<br>STLport<br>3.2.1</td>\n" )
+    f.write( "<td>Microsoft<br>VC++<br>6.0 SP4<br>STLport<br>3.2.1</td>\n" )
 
 f.write( "</tr>\n" )
 
