@@ -103,11 +103,8 @@ def merge_test_runs( incoming_dir, tag, writer, dont_collect_logs ):
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
         try:
-            utils.log( '  Loading "%s" in memory...' % test_run )
-            xml.sax.parse( test_run, all_runs_xml  )
             utils.log( '  Writing "%s" into the resulting XML...' % test_run )
-            ##run.documentElement.writexml( writer )
-            ## run = None
+            xml.sax.parse( test_run, all_runs_xml  )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
