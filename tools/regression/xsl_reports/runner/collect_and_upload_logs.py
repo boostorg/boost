@@ -88,7 +88,7 @@ def copy_comments( results_xml, comment_file ):
 
 
 def collect_logs( 
-          locate_root_dir
+          results_dir
         , runner_id
         , tag
         , platform
@@ -97,9 +97,10 @@ def collect_logs(
         , user
         , source
         , run_type
+        , **unused
         ):
     
-    results_file = os.path.join( locate_root_dir, '%s.xml' % runner_id )
+    results_file = os.path.join( results_dir, '%s.xml' % runner_id )
     results_writer = open( results_file, 'w' )
     utils.log( 'Collecting test logs into "%s"...' % results_file )
     
@@ -125,7 +126,7 @@ def collect_logs(
         )
     
     copy_comments( results_xml, comment_file )
-    collect_test_logs( [ locate_root_dir ], results_writer )
+    collect_test_logs( [ results_dir ], results_writer )
 
     results_xml.endElement( "test-run" )
     results_xml.endDocument()
@@ -133,7 +134,7 @@ def collect_logs(
     utils.log( 'Done writing "%s".' % results_file )
 
     utils.log( 'Compressing "%s"...' % results_file )
-    archive_path = os.path.join( locate_root_dir,'%s.zip' % runner_id )
+    archive_path = os.path.join( results_dir,'%s.zip' % runner_id )
 
     try:
         z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
@@ -157,13 +158,22 @@ def collect_logs(
             utils.log( 'Done compressing "%s".' % archive_path )
 
 
-def upload_logs( results_dir, runner_id, tag, user, ftp_proxy, debug_level ):
+def upload_logs(
+          results_dir
+        , runner_id
+        , tag
+        , user
+        , ftp_proxy
+        , debug_level
+        , **unused
+        ):
+
     logs_archive = os.path.join( results_dir, '%s.zip' % runner_id )
     upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level )
 
 
 def collect_and_upload_logs( 
-          locate_root_dir
+          results_dir
         , runner_id
         , tag
         , platform
@@ -174,10 +184,11 @@ def collect_and_upload_logs(
         , run_type
         , ftp_proxy = None
         , debug_level = 0
+        , **unused
         ):
     
     collect_logs( 
-          locate_root_dir
+          results_dir
         , runner_id
         , tag
         , platform
@@ -188,7 +199,7 @@ def collect_and_upload_logs(
         , run_type
         )
     
-    upload_logs( locate_root_dir, runner_id, tag, user, ftp_proxy, debug_level )
+    upload_logs( results_dir, runner_id, tag, user, ftp_proxy, debug_level )
 
 
 def accept_args( args ):
@@ -202,6 +213,8 @@ def accept_args( args ):
         , 'source='
         , 'run-type='
         , 'user='
+        , 'ftp-proxy='
+        , 'debug-level='
         , 'help'
         ]
     
@@ -213,26 +226,40 @@ def accept_args( args ):
         , '--user'          : None
         , '--source'        : 'CVS'
         , '--run-type'      : 'full'
+        , '--debug-level'   : 0
+        , '--ftp-proxy'     : None
         }
     
     utils.accept_args( args_spec, args, options, usage )
         
-    return ( 
-          options[ '--locate-root' ]
-        , options[ '--runner' ]
-        , options[ '--tag' ]
-        , options[ '--platform']
-        , options[ '--comment' ]
-        , options[ '--timestamp' ]
-        , options[ '--user' ]
-        , options[ '--source' ]
-        , options[ '--run-type' ]
-        )
+    return {
+          'results_dir'     : options[ '--locate-root' ]
+        , 'runner_id'       : options[ '--runner' ]
+        , 'tag'             : options[ '--tag' ]
+        , 'platform'        : options[ '--platform']
+        , 'comment_file'    : options[ '--comment' ]
+        , 'timestamp'       : options[ '--timestamp' ]
+        , 'user'            : options[ '--user' ]
+        , 'source'          : options[ '--source' ]
+        , 'run_type'        : options[ '--run-type' ]
+        , 'ftp_proxy'       : options[ '--ftp-proxy' ]
+        , 'debug_level'     : int(options[ '--debug-level' ])
+        }
 
+
+commands = {
+      'collect-and-upload'  : collect_and_upload_logs
+    , 'collect-logs'        : collect_logs
+    , 'upload-logs'         : upload_logs
+    }
 
 def usage():
-    print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
+    print 'Usage: %s [command] [options]' % os.path.basename( sys.argv[0] )
     print    '''
+Commands:
+\t%s
+
+Options:
 \t--locate-root   directory to to scan for "test_log.xml" files
 \t--runner        runner ID (e.g. "Metacomm")
 \t--timestamp     path to a file which modification time will be used 
@@ -244,10 +271,21 @@ def usage():
 \t--source        where Boost sources came from (e.g. "CVS", "tarball",
 \t                "anonymous CVS"; "CVS" by default)
 \t--run-type      "incremental" or "full" ("full" by default)
-'''
+\t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
+\t--debug-level   debugging level; controls the amount of debugging 
+\t                output printed; 0 by default (no debug output)
+''' % '\n\t'.join( commands.keys() )
+
     
 def main():
-    collect_and_upload_logs( *accept_args( sys.argv[ 1 : ] ) )
+    if len(sys.argv) > 1 and sys.argv[1] in commands:
+        command = sys.argv[1]
+        args = sys.argv[ 2: ]
+    else:
+        command = 'collect-and-upload'
+        args = sys.argv[ 1: ]
+    
+    commands[ command ]( **accept_args( args ) )
 
 
 if __name__ != '__main__':  import utils
