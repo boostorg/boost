@@ -14,9 +14,12 @@ import sys
 def download_test_runs( destination, tag, user ):
     utils.log( 'Downloading test runs for tag "%s" [connecting as %s]...' % ( tag, user ) )
 
+    destination_dir = os.path.join( destination, tag )
+    utils.makedirs( destination_dir )
+
     utils.sourceforge.download( 
           'regression-logs/incoming/%s/' % tag
-        , os.path.join( destination, tag )
+        , destination_dir
         , user
         )
     
