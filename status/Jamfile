@@ -26,7 +26,7 @@ include testing.jam ;
     local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
     
     test-suite "bind"
-        : [ run libs/bind/bind_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/bind/bind_test.cpp ]
           [ run libs/bind/mem_fn_test.cpp ]
           [ run libs/bind/mem_fn_void_test.cpp ]
           [ run libs/bind/mem_fn_derived_test.cpp ]
@@ -234,8 +234,8 @@ include testing.jam ;
 
 
     test-suite smart_ptr
-        : [ run libs/smart_ptr/smart_ptr_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/smart_ptr/shared_ptr_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/smart_ptr/smart_ptr_test.cpp ]
+          [ run libs/smart_ptr/shared_ptr_test.cpp ]
           [ compile-fail libs/smart_ptr/shared_ptr_assign_fail.cpp ]
         ;
 
