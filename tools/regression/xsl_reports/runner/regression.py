@@ -409,6 +409,7 @@ def run_process_jam_log():
 
 def test( 
           toolsets
+        , bjam_options
         , monitored
         , timeout
         , args
@@ -437,8 +438,9 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
-            test_cmd = '%s -d2 --dump-tests "-sALL_LOCATE_TARGET=%s" >>%s 2>&1' % (
+            test_cmd = '%s -d2 --dump-tests %s "-sALL_LOCATE_TARGET=%s" >>%s 2>&1' % (
                   bjam_command( toolsets )
+                , bjam_options
                 , regression_results
                 , regression_log
                 )
@@ -534,6 +536,7 @@ def regression(
         , user
         , comment
         , toolsets
+        , bjam_options
         , bjam_toolset
         , pjl_toolset
         , incremental
@@ -558,7 +561,7 @@ def regression(
             get_source( user, tag, proxy, [] )
 
         setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
-        test( toolsets, monitored, timeout, [] )
+        test( toolsets, bjam_options, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
         upload_logs( tag, runner, user )
         update_itself()
@@ -601,6 +604,7 @@ def accept_args( args ):
         , 'user='
         , 'comment='
         , 'toolsets='
+        , 'bjam-options='
         , 'bjam-toolset='
         , 'pjl-toolset='
         , 'timeout='
@@ -616,6 +620,7 @@ def accept_args( args ):
         , '--platform'      : sys.platform
         , '--user'          : None
         , '--comment'       : None
+        , '--bjam-options'  : None
         , '--toolsets'      : None
         , '--bjam-toolset'  : None
         , '--pjl-toolset'   : None
@@ -640,6 +645,7 @@ def accept_args( args ):
         , 'user'            : options[ '--user' ]
         , 'comment'         : options[ '--comment' ]
         , 'toolsets'        : options[ '--toolsets' ]
+        , 'bjam_options'    : options[ '--bjam-options' ]
         , 'bjam_toolset'    : options[ '--bjam-toolset' ]
         , 'pjl_toolset'     : options[ '--pjl-toolset' ]
         , 'incremental'     : options.has_key( '--incremental' )
@@ -683,6 +689,7 @@ Options:
 \t                default)
 \t--user          SourceForge user name for a shell/CVS account (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
+\t--bjam-options  options to pass to the regression test (optional)
 \t--bjam-toolset  bootstrap toolset for 'bjam' executable (optional)
 \t--pjl-toolset   bootstrap toolset for 'process_jam_log' executable
 \t                (optional)
