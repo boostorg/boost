@@ -127,6 +127,9 @@ def msxsl( xml_file, xsl_file, output_file, parameters = None ):
     os.system( transform_command )    
 
 def libxslt( xml_file, xsl_file, output_file, parameters = None ):
+
+    if sys.platform == "win32":
+        os.chdir( os.path.dirname( xsl_file ) )
     transform_command = "xsltproc"
     transform_command = transform_command + ' -o ' + "%s" % output_file
 

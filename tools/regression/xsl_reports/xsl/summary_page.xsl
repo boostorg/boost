@@ -307,7 +307,7 @@
   <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose> 
-      <xsl:when test="$explicit_markup//mark-library[ @name = $library and @as='unusable' and (@toolset=$toolset or toolset/@name=$toolset)]">
+      <xsl:when test="$explicit_markup//library[ @name = $library ]/mark-unusable[ @toolset=$toolset or toolset/@name=$toolset]">
         <xsl:text>summary-unusable</xsl:text>
       </xsl:when>
       <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
@@ -368,7 +368,7 @@
   <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose>
-      <xsl:when test="$explicit_markup//mark-library[ @name = $library and @as='unusable' and (@toolset=$toolset or toolset/@name=$toolset)]">
+      <xsl:when test="$explicit_markup//library[ @name = $library ]/mark-unusable[ @toolset=$toolset or toolset/@name=$toolset ]">
         <xsl:text>summary-unusable</xsl:text>
       </xsl:when>
       <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
