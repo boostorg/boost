@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-<title>Boost Internal Regression Test Suite</title>
+<title>Boost Regression Test User Documentation</title>
 </head>
 
 <body bgcolor="#FFFFFF" text="#000000">
@@ -20,249 +20,32 @@
 </table>
 
 
-<h1>Boost Internal Regression Test Suite</h1>
+<h1>Boost Regression Test User Documentation</h1>
 
-Boost's internal regression test suite produces the
-<a href="../status/compiler_status.html">compiler status tables</a>.
+
+<p><a href="#Introduction">Introduction</a><br>
+<a href="#Preparation">Preparation</a><br>
+<a href="#Execution">Execution</a><br>
+<a href="#Adding_new_test">Adding a new test</a><br>
+<a href="#Requirements">Requirements</a><br>
+<a href="#History">History</a></p>
+
+<h2><a name="Introduction">Introduction</a></h2>
+<p>Boost's internal regression test suite produces the
+<a href="../status/compiler_status.html">compiler status tables</a>. </p>
 <p>Although not ordinarily run by Boost library users, it is documented here for
 the benefit of Boost developers, and for Boost users porting to a new platform.</p>
 
-<p>Boost is transitioning to a new version of the regression tests.&nbsp; During 
-the transition, both versions are available.</p>
-
-<blockquote>
-<p><a href="#Version Three">Documentation for version 3</a><br>
-<a href="#Version Two">Documentation for version 2</a></p>
-
-</blockquote>
-
-<h2>Requirements</h2>
-
-The test suite has been designed to meet to the following requirements.
-<ul>
-<li>Pure ISO C++, no tools required except a C++ compiler.
-<li>Support for tests which expect an error
-<li>Flexible configuration, independent of the target platform or compiler.
-<li>HTML output
-</ul>
-
-These requirements rule out any script-based approach such as dejagnu
-(requires Tcl and expect) or even shell scripts.
-
-
-<h1>Regression Tests - <a name="Version Two">Version Two</a></h1>
-
-The implementation is provided in a single source file named
-<a href="../status/regression.cpp">regression.cpp</a>.
-<p>
-You should be able to compile and link this file using whatever C++
-compiler is at your disposition.  However, you may need to configure
-both the compiler and the standard library to use "strict" ISO
-compliance mode.  Also, you need to extend the search path for include
-files with the main boost directory so that the header file
-<a href="../boost/config.hpp">boost/config.hpp</a>
-can be found.  This header file is required to work around compiler
-deficiencies.
-<p>
-
-You can then start the resulting executable to run regression tests.
-By default, the regression test program reads the file "compiler.cfg"
-in the current directory to determine the list of compilers and their
-invocation syntax.  After that, it reads the file "regression.cfg" in
-the current directory to determine the regression tests to run.  The
-results of the regression tests are written in an HTML formatted text
-file.  This file is by default named "cs-OS.html" in the current
-directory, where "OS" is a placeholder for the name of the operating
-system (e.g., "linux" or "win32").
-<p>
-
-To generate the
-<a href="../status/compiler_status.html">compiler status tables</a>,
-boost uses the files
-<a href="../status/compiler.cfg">status/compiler.cfg</a>
-and
-<a href="../status/regression.cfg">status/regression.cfg</a>.
-<p>
-
-The regression test program accepts some command-line options to alter
-its behavior.
-<p>
-<table border="1">
-
-<tr>
-<td>-h <em>or</em> --help</td>
-<td>prints a help message
-</tr>
-
-<tr>
-<td>--config <em>file</em></td>
-<td>Use <em>file</em> instead of "compiler.cfg" as the compiler
-configuration file.  This allows for private compiler setups.</td>
-</tr>
-
-<tr>
-<td>--tests <em>file</em></td>
-<td>Use <em>file</em> instead of "regression.cfg" as the tests
-configuration file.  This allows individual libraries to specify
-additional tests not to be published in the main 
-<a href="../status/compiler_status.html">compiler status tables</a>.
-</td>
-</tr>
-
-<tr>
-<td>--boost <em>path</em></td>
-<td>Use <em>path</em> as the filesystem path to the main boost
-directory.  The default is "..", i.e. the parent directory.</td>
-</tr>
-
-<tr>
-<td>--output <em>file</em><br>-o <em>file</em></td>
-<td>Write the HTML output to <em>file</em> instead of the default
-"cs-OS.html".</td>
-</tr>
-
-<tr>
-<td>--compiler <em>name</em></td>
-<td>Run the tests only with compiler <em>name</em>.  The <em>name</em>
-must be defined in the second line of an applicable compiler
-configuration (see below).  The default is to run the tests with all
-compilers suitable for the platform.</td>
-</tr>
-
-<tr>
-<td>--diff</td>
-<td>Read the HTML output file before writing it.  In the HTML output,
-highlight differences in test outcomes compared to the previous
-run.</td>
-</tr>
-
-<tr>
-<td><em>test</em></td>
-<td>Run only the named test.  The syntax is the same as in the
-configuration file (see below).</td>
-</tr>
-</table>
-<p>
-When running only a selected test, you must also provide an alternate
-HTML output filename with "--output" so that the full test output is 
-not accidentally overwritten.
-<p>
-
-You should redirect the output (<code>std::cout</code>) and error
-(<code>std::cerr</code>) channels to a suitable log file for later
-inspection.
-
-
-<h2>Configuration Files</h2>
-
-In both configuration files, single-line comments starting with "//"
-at the leftmost column are ignored.
-
-<h3>Compiler Configuration</h3>
-
-The compiler configuration file can contain descriptions for an
-arbitrary number of compilers.  Each compiler is configured by a block
-of six consecutive text lines.
-<ol>
-<li>Name of the operating system for which the entry is applicable
-(e.g., "linux" or "win32").
-<li>Name of the compiler; should be unique within one operating
-system.  The name of the compiler should not contain the version
-number, because it is expected that regression tests are always run
-with the most recent compiler version available.
-<li>Name and version number of the compiler.  This is printed on
-<code>std::cout</code> prior to running a test with that compiler.
-<li>Command-line invocation of the compiler to compile a single source
-file to an object file.
-<li>Command-line invocation of the compiler to compile a single source
-file to an executable.
-<li>Identification of the compiler for inclusion in the HTML output;
-may contain HTML tags such as &lt;br>.
-</ol>
-
-The two command-lines are subject to the following substitutions:
-<ul>
-<li>Any string starting with a dollar symbol "$", then containing an
-arbitrary number of underscores, digits, or uppercase letters, is
-replaced by the value of the associated environment variable.
-<li>%include is replaced by the path given by the "--boost" command
-line option (".." by default).  This should be used to extend the
-search path of your compiler so that the boost header files are found.
-<li>%source is the name of the source file to be compiled, qualified
-with the path given by the "--boost" command-line option (".." by
-default).
-</ul>
-
-
-<h3>Test Configuration</h3>
-
-The test configuration file can contain descriptions for an arbitrary
-number of tests.  Each test is described by a single line.  The first
-word (up to the first space) is the type of the test, the next word
-gives the filename of the test relative the directory to be given by the
-"--boost" command-line option.  Optionally, additional words are
-passed on as command-line arguments when the test is executed (only
-for types "run" and "run-fail").  In these arguments, "%boost" is
-replaced by the path given by the "--boost" command-line option (".."
-by default).
-<p>
-
-The following test types are available:
-<ul>
-<li>compile: The given test file should compile successfully.
-Otherwise, the test fails.
-<li>compile-fail: The given test file should not compile successfully,
-but instead the compiler should give an error message.  If the test
-does compile successfully, the test fails.
-<li>link: The given test file should compile and link successfully.
-Otherwise, the test fails.  In particular, a <code>main</code>
-function must be present in the test file.
-<li>link-fail: The given test file should not compile and link
-successfully.  It is not specified whether the compile or the link
-should not succeed.  If the test does compile and link successfully,
-the test fails.
-<li>run: The given test file should compile and link successfully.
-After that, the resulting executable is invoked and should return a
-zero exit code.  If any of these steps fail, the test fails.
-<li>run-fail: The given test file is compiled, linked, and, if an
-executable was successfully generated, it is invoked.  Either
-compiling or linking should fail or the resulting executable should
-return a non-zero exit code.  If compiling and linking succeeds and
-the resulting executable returns a zero exit code, the test fails.
-</ul>
-
-<h2>Adapting for a New Platform</h2>
-
-In order to adapt the regression test suite for a new platform, a few
-changes to the <a href="../status/regression.cpp">regression.cpp</a>
-are required.
-
-<ul>
-<li>Add an appropriate check for your platform in
-<code>get_host()</code> and return a unique string identifying the
-platform (this string is used to filter the compile configuration
-file).
-<li>Verify that <code>get_system_configuration()</code> is
-appropriately defined for your platform.  For a Unix platform, it most
-likely is.  The function may return a verbose HTML string describing
-the platform.
-</ul>
-
-You also need to configure the compilers available on your platform in
-"compiler.cfg" as described above.
-<p>You may need to add an entry for the compiler to <a href="../boost/config.hpp">boost/config.hpp</a>,
-but only if entries for the compiler is not already present, and the compiler
-doesn't fully conform to the ISO C++ Standard.</p>
-<h1>Regression Tests - <a name="Version Three">Version Three</a></h1>
 <p>Version 3 of the Boost regression testing framework is based on
 <a href="../tools/build/index.html">Boost.Build</a>, and uses <i>bjam</i> to 
 actually run the tests. Because Boost.Build does dependency analysis, only tests 
 for which some dependency has change are rerun.</p>
-<p>The reporting of test results as HTML files is accomplished by separate C++ 
-programs which process the residue and log files from the <i>bjam</i> run.</p>
-<h2>Preparation</h2>
+<p>The reporting of test results as HTML files is accomplished by separate 
+<a href="../tools/regression/index.htm">regression reporting 
+programs</a> which process the residue and log files from the <i>bjam</i> run.</p>
+<h2><a name="Preparation">Preparation</a></h2>
 <p>Install the following programs on your system, in some location suitable for 
-program executables. Normally that location will be a directory which is part of 
+program executables. Normally that location must be in a directory which is part of 
 your search path for executables.</p>
 <ul>
   <li><i>bjam</i> - Executables and sources are available; see
@@ -271,16 +54,10 @@ your search path for executables.</p>
   installation works by <a href="../tools/build/index.html#Building">building 
   the boost-root/status/Jamfile libraries</a>.<br>
 &nbsp;</li>
-  <li><i>process_jam_log</i> and <i>compiler_status</i> - Sources available in 
-  the <a href="mailing_lists.htm#sandbox">Boost Sandbox</a>. These two post-bjam 
-  processing programs are currently only available in the sandbox <i>libs/filesystem/example</i> 
-  directory, since they depend on the Filesystem Library, which is not scheduled 
-  for Boost formal review until late September, 2002.&nbsp; Once the Filesystem 
-  Library has been accepted, they will become part of the regular Boost 
-  distribution. There is a Jamfile in the <i>libs/filesystem/example</i> 
-  directory to automate building these programs.</li>
+  <li><i>process_jam_log</i> and <i>compiler_status</i> -
+  <a href="regression.html">Sources and docs</a> are available for these, too. </li>
 </ul>
-<h2>Execution</h2>
+<h2><a name="Execution">Execution</a></h2>
 <p>These examples assume several environment variables have been set:</p>
 <ul>
   <li>BOOST_ROOT is set to the directory where the unzipped Boost distribution 
@@ -302,9 +79,9 @@ system:</p>
 <blockquote>
   <pre>cd %BOOST_ROOT%\status
 md bin 2&gt;nul
-bjam test &gt;bin\regr.log 2&gt;&amp;1
-start notepad bin\regr.log
-process_jam_log &lt;bin\regr.log
+bjam --dump-tests test &gt;bin\bjam.log 2&gt;&amp;1
+start notepad bin\bjam.log
+process_jam_log &lt;bin\bjam.log
 compiler_status %BOOST_ROOT% cs-win32.html
 rem Specify links file, even though it will be overwritten, so report html includes links
 rem This works because the generated bookmark names are the same regardless of other settings
@@ -321,9 +98,12 @@ rather than &quot;test&quot;.&nbsp; For example, to debug configurations, it mig
 useful to just run the <i>config_info</i> test, with a switch to force even 
 up-to-date programs be rebuilt:</p>
 <blockquote>
-  <pre>bjam -a config_info</pre>
+  <pre>bjam -a --dump-tests config_info &gt;bin\bjam.log 2&gt;&amp;1
+process_jam_log &lt;bin\bjam.log
+compiler_status %BOOST_ROOT% cs-win32.html
+</pre>
 </blockquote>
-<h2>Adding a new test</h2>
+<h2><a name="Adding_new_test">Adding a new test</a></h2>
 <h3>Overall Boost regression tests</h3>
 <p>Adding tests is as simple as adding a single line to the
 <a href="../status/Jamfile">boost-root/status/Jamfile</a>:</p>
@@ -341,7 +121,22 @@ suites show more of the power of Jam based testing.</p>
 <p>A library can have its own private set of tests by creating a Jamfile in one 
 of the library's own sub-directories.&nbsp; For an example of this, see
 <a href="../libs/test/test/Jamfile">boost-root/libs/test/test/Jamfile</a>.</p>
-<h2>History</h2>
+
+<h2><a name="Requirements">Requirements</a></h2>
+
+<p>The test suite has been designed to meet to the following requirements. </p>
+<ul>
+<li>Doesn't depend on an external toolchain. This requirement is met by 
+supplying all tools in the regular <a href="download.html">Boost distribution</a>, except 
+for a C++ compiler.<li>Tools are written in C++; it is the only language that 
+all Boost developers and users are comfortable with.<li>Supports tests which expect an error
+<li>Configuration is independent of the target platform or compiler.
+<li>HTML output
+</ul>
+
+<p>These requirements rule out any script-based approach such as dejagnu
+(requires Tcl and expect) or even shell scripts. </p>
+<h2><a name="History">History</a></h2>
 <p>The version 3 testing.jam and status/Jamfile foundation was contributed by 
 Dave Abrahams. The post-bjam processing programs were contributed by Beman 
 Dawes.</p>
@@ -350,8 +145,11 @@ Dawes.</p>
 by Jens Maurer, generalizing and improving an earlier version 1 program by Beman Dawes.</p>
 
 <hr>
-2001-01-30<br>
-<a href="../people/jens_maurer.htm">Jens Maurer</a>
+Revised
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->07 January, 2003<!--webbot bot="Timestamp" endspan i-checksum="38578" --><p>
+Original author:
+<a href="../people/jens_maurer.htm">Jens Maurer</a><br>
+Updates: <a href="../people/beman_dawes.html">Beman Dawes</a></p>
 
 </body>
 </html>
