@@ -23,7 +23,7 @@
       in Generic Components''</a>, originally published in <a href=
       "http://www.springer.de/cgi-bin/search_book.pl?isbn=3-540-41090-2">M.
       Jazayeri, R. Loos, D. Musser (eds.): Generic Programming, Proc. of a
-      Dagstuhl Seminar, Lecture Notes on Computer Science 1766</a>
+      Dagstuhl Seminar, Lecture Notes on Computer Science. Volume. 1766</a>
     </blockquote>
 
     <h2>Guidelines</h2>
@@ -63,13 +63,14 @@
       <code>catch(...)</code>, see below.</li>
 
       <li>
-        <b><i>Don't</i> embed a std::string object</b> or any other data
-        member or base class whose copy constructor could throw an exception.
-        That could lead to termination during stack unwinding. Similarly,
-        it's a bad idea to use a base or member whose ordinary constructor
-        might throw, because, though not fatal, you will report a different
-        exception than intended when that happens in a
-        <i>throw-expression</i> such as: 
+        <b><i>Don't</i> embed a std::string object</b> or any other
+        data member or base class whose copy constructor could throw
+        an exception.  That could lead to directly to std::terminate()
+        at the throw point. Similarly, it's a bad idea to use a base
+        or member whose ordinary constructor(s) might throw, because,
+        though not necessarily fatal to your program, you may report a
+        different exception than intended from a
+        <i>throw-expression</i> that includes construction such as:
 
         <blockquote>
 <pre>
@@ -135,7 +136,7 @@ throw some_exception();
     where the problem was detected. That usually means <tt>assert()</tt> or
     something like it.</p>
 
-    <p>Sometimes it is neccessary to have resilient APIs which can stand up
+    <p>Sometimes it is necessary to have resilient APIs which can stand up
     to nearly any kind of client abuse, but there is usually a significant
     cost to this approach. For example, it usually requires that each object
     used by a client be tracked so that it can be checked for validity. If
@@ -200,7 +201,7 @@ extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
 
     <p>Revised 
     <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
-     22 March, 2003<!--webbot bot="Timestamp" endspan i-checksum="34359" -->
+     25 March, 2003<!--webbot bot="Timestamp" endspan i-checksum="34359" -->
     </p>
   </body>
 </html>
