@@ -48,7 +48,7 @@
             <xsl:choose>
                 <xsl:when test="@test-name != ''">
                 <div class="log-test-title">
-                    <xsl:value-of select="concat( @library, ' - ', @test-name, ' / ', @toolset )"/>
+                    <xsl:value-of select="concat( ../@runner, ' - ', @library, ' - ', @test-name, ' / ', @toolset )"/>
                 </div>
                 </xsl:when>
                 <xsl:otherwise>

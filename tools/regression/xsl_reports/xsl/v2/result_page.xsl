@@ -13,9 +13,11 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
+    xmlns:str="http://exslt.org/strings"
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
+    exclude-result-prefixes="set str meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
@@ -382,6 +384,24 @@
     </xsl:template>
       
 
+    <!-- insert test result with log file link -->
+
+    <xsl:template name="insert_test_result">
+        <xsl:param name="result"/>
+        <xsl:param name="log_link"/>
+
+        <xsl:choose>
+            <xsl:when test="$log_link != ''">
+                <a href="{$log_link}" class="log-link" target="_top">
+                    <xsl:value-of select="$result"/>
+                </a>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$result"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <!-- report developer status -->
     <xsl:template name="insert_cell_developer">
         <xsl:param name="test_log"/>
@@ -396,13 +416,13 @@
         <xsl:variable name="class">
         <xsl:choose>
             <xsl:when test="not( $test_log )">
-            <xsl:text>library-missing</xsl:text>
+                <xsl:text>library-missing</xsl:text>
             </xsl:when>
             <xsl:when test="meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )">
-            <xsl:text>library-unusable</xsl:text>
+                <xsl:text>library-unusable</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-            <xsl:value-of select="concat( 'library-', $test_log/@result, '-', $test_log/@status, $is_new )"/>
+                <xsl:value-of select="concat( 'library-', $test_log/@result, '-', $test_log/@status, $is_new )"/>
             </xsl:otherwise>
         </xsl:choose>
         </xsl:variable>
@@ -410,37 +430,35 @@
         <td class="{$class}">
         <xsl:choose>
             <xsl:when test="not( $test_log )">
-            <xsl:text>missing</xsl:text>
+                <xsl:text/>
             </xsl:when> 
+ 
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
-                <xsl:choose>
-                    <xsl:when test="$log_link != ''">
-                        <a href="{$log_link}" class="log-link" target="_top">
-                            fail
-                        </a>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        fail
-                    </xsl:otherwise>
-                </xsl:choose>
+                    <xsl:call-template name="insert_test_result">
+                        <xsl:with-param name="result" select="'fail'"/>
+                        <xsl:with-param name="log_link" select="$log_link"/>
+                    </xsl:call-template>
             </xsl:when>
+
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'unexpected'">
-                <xsl:choose>
-                    <xsl:when test="$log_link != ''">
-                        <a href="{$log_link}" class="log-link" target="_top">
-                            fail
-                        </a>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        fail
-                    </xsl:otherwise>
-                </xsl:choose>
+                    <xsl:call-template name="insert_test_result">
+                        <xsl:with-param name="result" select="'fail'"/>
+                        <xsl:with-param name="log_link" select="$log_link"/>
+                    </xsl:call-template>
             </xsl:when>
+
             <xsl:when test="$test_log/@result = 'success' and $test_log/@status = 'unexpected'">
-                pass
+                    <xsl:call-template name="insert_test_result">
+                        <xsl:with-param name="result" select="'pass'"/>
+                        <xsl:with-param name="log_link" select="$log_link"/>
+                    </xsl:call-template>
             </xsl:when>
+
             <xsl:otherwise>
-            <xsl:text>pass</xsl:text>
+                    <xsl:call-template name="insert_test_result">
+                        <xsl:with-param name="result" select="'pass'"/>
+                        <xsl:with-param name="log_link" select="$log_link"/>
+                    </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>  
         <xsl:if test="count( $test_log ) > 1" > 

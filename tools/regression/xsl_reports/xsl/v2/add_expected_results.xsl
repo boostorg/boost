@@ -59,15 +59,6 @@
          </xsl:choose>
       </xsl:variable>
 
-      <xsl:variable name="show_run_output">
-         <xsl:choose>
-            <xsl:when test="@show-run-output = 'true' ">
-                <xsl:text>yes</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>no</xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
-
       <xsl:variable name="expected_result">
         <xsl:choose>
           <xsl:when test='count( $failures_markup ) &gt; 0'>
@@ -122,7 +113,6 @@
       <xsl:attribute name="expected-result"><xsl:value-of select="$expected_result"/></xsl:attribute>
       <xsl:attribute name="status"><xsl:value-of select="$status"/></xsl:attribute>
       <xsl:attribute name="is-new"><xsl:value-of select="$is_new"/></xsl:attribute>
-      <xsl:attribute name="show-run-output"><xsl:value-of select="$show_run_output"/></xsl:attribute>
       <!--<a><xsl:value-of select="count( $failures_markup )"/></a>-->
       <xsl:element name="notes"><xsl:copy-of select="$notes"/></xsl:element>
 

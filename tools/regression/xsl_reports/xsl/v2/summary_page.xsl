@@ -168,10 +168,6 @@
                         <xsl:variable name="toolset" select="@name" />
                         <xsl:variable name="runner" select="../@runner" />
 
-                        <xsl:message>
-                            <xsl:value-of select="$runner"/>
-                        </xsl:message>
-
                         <xsl:variable name="current_cell" select="$current_row[ @toolset=$toolset and ../@runner = $runner ]"/>
 
                         <xsl:choose>
