@@ -5,241 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.3.4: http://docutils.sourceforge.net/" />
 <title>Running Boost Regression Tests</title>
-<style type="text/css"><!--
-
-/*
-:Author: David Goodger
-:Contact: goodger@users.sourceforge.net
-:date: $Date$
-:version: $Revision$
-:copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-*/
-
-body {
-    background-color: #fffff5;
-}
-
-.first {
-  margin-top: 0 }
-
-.last {
-  margin-bottom: 0 }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dd {
-  margin-bottom: 0.5em }
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.attention, div.caution, div.danger, div.error, div.hint,
-div.important, div.note, div.tip, div.warning, div.admonition {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.hint p.admonition-title, div.important p.admonition-title,
-div.note p.admonition-title, div.tip p.admonition-title,
-div.admonition p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em }
-
-div.footer, div.header {
-  font-size: smaller }
-
-div.sidebar {
-  margin-left: 1em ;
-  border: medium outset ;
-  padding: 0em 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr {
-  width: 75% }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font-family: serif ;
-  font-size: 100% }
-
-pre.line-block {
-  font-family: serif ;
-  font-size: 100% }
-
-pre.literal-block, pre.doctest-block {
-  margin-left: 2em ;
-  margin-right: 2em ;
-  background-color: #eeeeee }
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.option-argument {
-  font-style: italic }
-
-span.pre {
-  white-space: pre }
-
-span.problematic {
-  color: red }
-
-table {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
-
-table.citation {
-  border-left: solid thin gray ;
-  padding-left: 0.5ex }
-
-table.docinfo {
-  margin: 2em 4em }
-
-table.footnote {
-  border-left: solid thin black ;
-  padding-left: 0.5ex }
-
-td, th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
-
-th.docinfo-name, th.field-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap }
-
-h1 tt, h2 tt, h3 tt, h4 tt, h5 tt, h6 tt {
-  font-size: 100% }
-
-tt {
-  background-color: #eeeeee }
-
-ul.auto-toc {
-  list-style-type: none }
-
---></style>
+<link rel="stylesheet" href="default.css" type="text/css" />
 </head>
 <body>
 <h1 class="title">Running Boost Regression Tests</h1>
@@ -274,14 +40,14 @@ my_boost_regressions/
 <ul>
 <li><p class="first">To start a regression run, simply run <tt class="literal"><span class="pre">regression.py</span></tt> providing it with the only
 required option, runner id (something unique of your choice that will identify your 
-results in the reports <a class="footnote-reference" href="#runnerid" id="id2" name="id2"><sup>1</sup></a>). For example:</p>
+results in the reports <a class="footnote-reference" href="#runnerid1" id="id2" name="id2"><sup>1</sup></a>, <a class="footnote-reference" href="#runnerid2" id="id3" name="id3"><sup>2</sup></a>). For example:</p>
 <pre class="literal-block">
 python regression.py --runner=Metacomm
 </pre>
 <p>You can specify a particular set of toolsets you want to test with by passing them as 
 a comma-separated list using the <tt class="literal"><span class="pre">--toolsets</span></tt> option:</p>
 <pre class="literal-block">
-python regression.py --runner=Metacomm --toolsets=gcc,vc7
+python regression.py --runner=Metacomm <strong>--toolsets=gcc,vc7</strong>
 </pre>
 <p>If you are interested in seeing all available options, run <tt class="literal"><span class="pre">python</span> <span class="pre">regression.py</span></tt>
 or <tt class="literal"><span class="pre">python</span> <span class="pre">regression.py</span> <span class="pre">--help</span></tt>.</p>
@@ -289,17 +55,26 @@ or <tt class="literal"><span class="pre">python</span> <span class="pre">regress
 In the rare cases when it doesn't, you can explicitly specify the proxy server 
 parameters through the <tt class="literal"><span class="pre">--proxy</span></tt> option, e.g.:</p>
 <pre class="literal-block">
-python regression.py --runner=Metacomm --proxy=http://www.someproxy.com:3128
+python regression.py --runner=Metacomm <strong>--proxy=http://www.someproxy.com:3128</strong>
 </pre>
 </li>
 </ul>
-<table class="footnote" frame="void" id="runnerid" rules="none">
+<table class="footnote" frame="void" id="runnerid1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2" name="runnerid">[1]</a></td><td>If you are running regressions interlacingly with a different 
+<tr><td class="label"><a class="fn-backref" href="#id2" name="runnerid1">[1]</a></td><td>If you are running regressions interlacingly with a different 
 set of compilers (e.g. for Intel in the morning and GCC at the end of the day), you need 
 to provide a <em>different</em> runner id for each of these runs, e.g. <tt class="literal"><span class="pre">your_name-intel</span></tt>, and
 <tt class="literal"><span class="pre">your_name-gcc</span></tt>.</td></tr>
+</tbody>
+</table>
+<table class="footnote" frame="void" id="runnerid2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3" name="runnerid2">[2]</a></td><td>The limitations of the reports' format/medium impose a direct dependency
+between the number of compilers you are testing with and the amount of space available 
+for your runner id. If you are running regressions for a single compiler, please make 
+sure to choose a short enough id that does not significantly disturb the reports' picture.</td></tr>
 </tbody>
 </table>
 </div>
@@ -319,11 +94,41 @@ Boost.Build)</li>
 merge all submitted test runs and publish them at 
 <a class="reference" href="http://boost.sourceforge.net/regression-logs/developer">http://boost.sourceforge.net/regression-logs/developer</a>.</p>
 </div>
+<div class="section" id="advanced-use">
+<h2><a name="advanced-use">Advanced use</a></h2>
+<div class="section" id="incremental-runs">
+<h3><a name="incremental-runs">Incremental runs</a></h3>
+<p>You can run <tt class="literal"><span class="pre">regression.py</span></tt> in <em>incremental mode</em> <a class="footnote-reference" href="#incremental" id="id4" name="id4"><sup>3</sup></a> by simply passing 
+it an identically named command line flag:</p>
+<pre class="literal-block">
+python regression.py --runner=Metacomm <strong>--incremental</strong>
+</pre>
+</div>
+<div class="section" id="message-dialogs-access-violations">
+<h3><a name="message-dialogs-access-violations">Message dialogs/access violations</a></h3>
+<p>TODO</p>
+</div>
+<div class="section" id="getting-source-from-cvs">
+<h3><a name="getting-source-from-cvs">Getting source from CVS</a></h3>
+<p>TODO</p>
+<table class="footnote" frame="void" id="incremental" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4" name="incremental">[3]</a></td><td>By default the script runs in what is known as <em>full run mode</em>: on 
+each script invocation all the files that were left in place by the previous run 
+-- in particular, binaries for successfully built tests and libraries -- are 
+deleted, and rebuilt once again from scratch. By contrast, in <em>incremental run</em> 
+mode the already existing binaries are left intact, and only tests and libraries 
+which source files has changed since the previous run are re-built and re-tested.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <hr class="footer" />
 <div class="footer">
 <a class="reference" href="instructions.rst">View document source</a>.
-Generated on: 2004-07-22 02:13 UTC.
+Generated on: 2004-07-23 19:58 UTC.
 Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
 </div>
 </body>
