@@ -310,7 +310,7 @@ const string & attribute_value( const xml::element_ptr & element,
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
       {
         failed_lib_target_dirs.insert( lib );
-        fs::path pth( boost_root / lib / "test_log.xml" );
+        fs::path pth( locate_root / lib / "test_log.xml" );
         fs::ifstream file( pth );
         if ( file )
         {
