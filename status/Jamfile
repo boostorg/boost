@@ -18,6 +18,7 @@ DEPENDS all : test ;
 subinclude libs/bind/test ;              # test-suite bind
 subinclude libs/conversion/test ;        # test-suite conversion
 subinclude libs/date_time/test ;         # test-suite date_time
+subinclude libs/dynamic_bitset ;         # test suite dynamic_bitset
 subinclude libs/filesystem/test ;        # test-suite filesystem
 subinclude libs/format/test ;            # test-suite format
 subinclude libs/function/test ;          # test-suite function
@@ -95,13 +96,6 @@ subinclude libs/variant/test ;           # test-suite variant
         : [ run libs/disjoint_sets/disjoint_set_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
-    test-suite dynamic_bitset
-        : [ run libs/dynamic_bitset/dyn_bitset_unit_tests1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/dynamic_bitset/dyn_bitset_unit_tests2.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-        ;
-
-    
     run libs/functional/function_test.cpp ;
 
     test-suite integer
