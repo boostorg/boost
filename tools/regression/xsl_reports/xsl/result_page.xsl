@@ -146,7 +146,7 @@
                     <tr>
                       <td><table><tr><td class="result-fail-unexpected-new">fail</td></tr></table></td>
                       <td class="legend-item">
-                        a failure on a newly added test or compiler
+                        failure on a newly added test/compiler
                       </td>
                     </tr>
                     <tr>
