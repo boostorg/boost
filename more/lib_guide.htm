@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Boost Library Requirements and Guidelines</title>
-<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
 <meta name="ProgId" content="FrontPage.Editor.Document">
 <meta name="Microsoft Border" content="none, default">
 </head>
@@ -21,6 +21,25 @@
   </tr>
 </table>
 <h1 align="left">Boost Library Requirements and Guidelines</h1>
+<p align="left"><a href="#Introduction">Introduction</a><br>
+<a href="#Requirements">Requirements</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#License">License requirements</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Portability">Portability requirements</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Ownership">Ownership</a><br>
+<a href="#Guidelines">Guidelines</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Design and Programming">Design and programming</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Design and Programming">Directory structure and 
+filenames</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Naming consistency">Naming consistency</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Documentation">Documentation</a><br>
+<a href="#Rationale">Rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Exception-specification">Exception-specification 
+rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Naming">Naming conventions rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#code fonts">Source code fonts rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Rationale rationale">Rationale rationale</a><br>
+&nbsp;&nbsp;&nbsp; <a href="#Acknowledgements">Acknowledgements rationale</a></p>
+<h2 align="left"><a name="Introduction">Introduction</a></h2>
 <p align="left">This page describes requirements and guidelines for the content
 of a library submitted to Boost.</p>
 <p align="left">See the <a href="submission_process.htm">Boost Library
@@ -116,7 +135,7 @@ Press, 1990 says:</p>
   your employer in advance.</p>
 </blockquote>
 <p align="left">Place a copyright notice in all the important files you submit.
-Boost.org won't accept libraries without clear copyright information.</p>
+Boost won't accept libraries without clear copyright information.</p>
 <h2 align="left"><a name="Guidelines">Guidelines</a></h2>
 <p align="left">Please use these guidelines as a checklist for preparing the
 content a library submission.&nbsp; Not every guideline applies to every
@@ -133,7 +152,7 @@ library, but a reasonable effort to comply is expected.</p>
 </ul>
 <ul>
   <li>Headers should be good neighbors. See the <a href="header.htm">header
-    policy</a>.</li>
+    policy</a>. See <a href="#Naming consistency">Naming consistency</a>.</li>
 </ul>
 <ul>
   <li>Follow quality programming practices. See, for example, &quot;Effective
@@ -207,7 +226,7 @@ library, but a reasonable effort to comply is expected.</p>
     alphabetic. Maximum length 31. Only a single period is permitted.&nbsp;
     These requirements ensure file and directory names are relatively portable.</li>
   <li>All libraries have at their highest level a primary directory named for
-    the particular library. The primary directory may have sub-directories.</li>
+    the particular library. See <a href="#Naming consistency">Naming consistency</a>. The primary directory may have sub-directories.</li>
   <li>For very simple libraries implemented entirely within the library header,
     all files go in the primary directory (except headers, which go in the boost
     header directory).</li>
@@ -222,7 +241,7 @@ library, but a reasonable effort to comply is expected.</p>
     </tr>
     <tr>
       <td><code>build</code></td>
-      <td>Library build files such as make files or IDE project files.</td>
+      <td>Library build files such as a Jamfile.</td>
       <td>If any build files.</td>
     </tr>
     <tr>
@@ -247,12 +266,46 @@ library, but a reasonable effort to comply is expected.</p>
     </tr>
   </table>
 </blockquote>
+<p>If the documentation is in a doc sub-directory, the primary directory should 
+contain an index.html file which redirects to the doc subdirectory:</p>
+<blockquote>
+  <pre>&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0; URL=doc/index.html&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Automatic redirection failed, please go to
+&lt;a href=&quot;doc/index.html&quot;&gt;doc/index.html&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</blockquote>
+<h3><a name="Naming consistency">Naming consistency</a></h3>
+<p>As library developers and users have gained experience with Boost, the 
+following consistent naming approach has come to be viewed as very helpful, 
+particularly for larger libraries which need their own header subdirectories and 
+namespaces.</p>
+<p>Here is how it works. The library is given a name which describes the 
+contents of the library.&nbsp; Cryptic abbreviations are not acceptable. 
+Following the practice of the C++ Standard Library, names are usually singular 
+rather than plural.&nbsp; For example, a library dealing with file systems might 
+chose the name &quot;filesystem&quot;, but not &quot;filesystems&quot;, &quot;fs&quot; or &quot;nicecode&quot;.</p>
+<ul>
+  <li>The library's primary directory (in parent <i>boost-root/libs</i>) is 
+  given that same name.&nbsp; For example, <i>boost-root/libs/filesystem</i>.<br>
+&nbsp;</li>
+  <li>The library's primary header directory (in parent <i>boost-root/boost</i>) 
+  is given that same name. For example, <i>boost-root/boost/filesystem</i>.<br>
+&nbsp;</li>
+  <li>The library's primary namespace (in parent <i>::boost</i>) is given that 
+  same name. For example, <i>::boost::filesystem</i>.</li>
+</ul>
 <h3><a name="Documentation">Documentation</a></h3>
 <p>Even the simplest library needs some documentation; the amount should be
 proportional to the need.&nbsp; The documentation should assume the readers have
 a basic knowledge of C++, but are not necessarily experts.</p>
 <p>The format for documentation should be HTML, and should not require an
-advanced browser or server-side extensions.</p>
+advanced browser or server-side extensions. The documentation entry point should 
+always be a file named index.html or index.htm.</p>
 <p>There is no single right way to do documentation. HTML documentation is often
 organized quite differently from traditional printed documents. Task-oriented
 styles differ from reference oriented styles. In the end, it comes down to the
@@ -277,7 +330,7 @@ C++ programmer to use the library successfully?</p>
 </ul>
 <p>If you need more help with how to write documentation you can check out the 
   article on <a href="writingdoc/index.html">Writing Documentation for Boost</a>.</p>
-<h2>Rationale</h2>
+<h2><a name="Rationale">Rationale</a></h2>
 <p>Rationale for some of the requirements and guidelines follows.</p>
 <hr>
 <h3><a name="Exception-specification">Exception-specification</a> rationale</h3>
@@ -332,7 +385,7 @@ reasonably well when viewed with a variable-width font, and as far as I can tell
 every editor supporting variable-width fonts also supports fixed width. I don't
 think the converse is true.</p>
 <hr>
-<h3><a name="Rationale">Rationale</a> rationale</h3>
+<h3><a name="Rationale rationale">Rationale rationale</a></h3>
 <p>Rationale is defined as &quot;The fundamental reasons for something;
 basis.&quot; by the American Heritage Dictionary.</p>
 <p>Beman Dawes comments:&nbsp; Failure to supply contemporaneous rationale for
@@ -351,7 +404,7 @@ suggestion.&nbsp; Major contributions are usually acknowledged in the
 documentation, while minor fixes are often mentioned in comments within the code
 itself.</p>
 <hr>
-<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->02 November, 2001<!--webbot bot="Timestamp" endspan i-checksum="39353" --></p>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->15 August, 2002<!--webbot bot="Timestamp" endspan i-checksum="34415" --></p>
 
 </body>
 
