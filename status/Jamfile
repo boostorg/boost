@@ -13,7 +13,7 @@ rule boost-test # sources : type : suppress-fake-targets : requirements
         
         result = [
             declare-local-target $(<:D=:S=)
-            : $(BOOST_ROOT)$(SLASH)$(<) # sources
+            : $(<:R=$(BOOST_ROOT)) # sources
             : $(requirements) <include>$(BOOST_ROOT) # requirements
             :             # default build
             : $(>)     # target type
