@@ -15,6 +15,8 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:exsl="http://exslt.org/common"
+  xmlns:func="http://exslt.org/functions"
+  xmlns:meta="http://www.meta-comm.com"
   version="1.0">
 
   <xsl:import href="common.xsl"/>
@@ -307,7 +309,7 @@
   <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose> 
-      <xsl:when test="$explicit_markup//library[ @name = $library ]/mark-unusable[ @toolset=$toolset or toolset/@name=$toolset]">
+      <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
         <xsl:text>summary-unusable</xsl:text>
       </xsl:when>
       <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
@@ -368,7 +370,7 @@
   <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose>
-      <xsl:when test="$explicit_markup//library[ @name = $library ]/mark-unusable[ @toolset=$toolset or toolset/@name=$toolset ]">
+      <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
         <xsl:text>summary-unusable</xsl:text>
       </xsl:when>
       <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
