@@ -33,6 +33,7 @@ subinclude libs/smart_ptr/test ;         # test-suite smart_ptr
 subinclude libs/static_assert ;          # test-suite static_assert
 subinclude libs/thread/test ;            # test-suite thread
 subinclude libs/type_traits/test ;       # test-suite type_traits
+subinclude libs/utility/test ;           # test-suite utility
 subinclude libs/variant/test ;           # test-suite variant
  
 
@@ -315,23 +316,6 @@ subinclude libs/variant/test ;           # test-suite variant
           [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
           [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
-
-    test-suite utility
-        : 
-            [ run libs/utility/iterator_traits_test.cpp ]
-            [ run libs/utility/iterators_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-            [ compile-fail libs/utility/noncopyable_test.cpp ]
-            [ run libs/utility/numeric_traits_test.cpp ]
-            [ run libs/utility/operators_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-            [ run libs/utility/tie_example.cpp ]
-            [ run libs/utility/binary_search_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-            [ run libs/utility/call_traits_test.cpp : -u ]
-            [ compile-fail libs/utility/checked_delete_test.cpp ]
-            [ run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/boost_test_exec_monitor : -u ]
-            [ run libs/utility/addressof_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-            [ run libs/utility/ref_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-        ;
-
 }
 
 
