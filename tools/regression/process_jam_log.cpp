@@ -50,6 +50,9 @@ namespace
       || src.find( "cc1plus.exe: warning:   as it has already been specified as a non-system directory" ) != string::npos
       ) return;
 
+    // on some platforms (e.g. tru64cxx) the following line is a real performance boost
+    target.reserve(src.size() * 2 + target.size());
+
     for ( string::size_type pos = 0; pos < src.size(); ++pos )
     {
       if ( src[pos] == '<' ) target += "&lt;";
