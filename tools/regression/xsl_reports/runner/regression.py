@@ -537,11 +537,12 @@ def upload_logs(
           tag
         , runner
         , user
+        , ftp_proxy
         , **unused
         ):
     import_utils()
     from runner import upload_logs
-    upload_logs( regression_results, runner, tag, user )
+    upload_logs( regression_results, runner, tag, user, ftp_proxy )
 
 
 def update_itself( **unused ):
@@ -574,6 +575,7 @@ def regression(
         , timeout
         , mail = None
         , proxy = None
+        , ftp_proxy = None
         , args = []
         ):
 
@@ -608,7 +610,7 @@ def regression(
         setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
         test( toolsets, bjam_options, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
-        upload_logs( tag, runner, user )
+        upload_logs( tag, runner, user, ftp_proxy )
         update_itself()
         
         if mail:
@@ -656,6 +658,7 @@ def accept_args( args ):
         , 'timeout='
         , 'mail='
         , 'proxy='
+        , 'ftp-proxy='
         , 'incremental'
         , 'monitored'
         , 'help'
@@ -674,6 +677,7 @@ def accept_args( args ):
         , '--timeout'       : 5
         , '--mail'          : None
         , '--proxy'         : None
+        , '--ftp-proxy'     : None
         }
     
     defaults_num = len( options )
@@ -702,6 +706,7 @@ def accept_args( args ):
         , 'timeout'         : options[ '--timeout' ]
         , 'mail'            : options[ '--mail' ]
         , 'proxy'           : options[ '--proxy' ]
+        , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'args'            : other_args
         }
 
@@ -746,6 +751,7 @@ Options:
 \t--mail          email address to send run notification to (optional)
 \t--proxy         HTTP proxy server address and port (e.g. 
 \t                'http://www.someproxy.com:3128', optional)
+\t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
 ''' % '\n\t'.join( commands.keys() )
 
     print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )
