@@ -9,7 +9,7 @@ import merger
 import utils
 
 
-tag = "1_30_0"
+tag = "CVS-HEAD"
 
 utils.makedirs( "results" )
     
@@ -27,7 +27,7 @@ report.make_result_pages(
     , comment_file = os.path.abspath( "comment.html" )
     , results_dir = "results"
     , result_prefix = ""
-    , reports = [ "x", "ds", "dd" ]
+    , reports = [ "x", "dd" ]
     , v2 = 1
     )
 
