@@ -381,8 +381,14 @@ test-suite "bind"
     ;
 
 test-suite config
-    : [ run libs/config/test/config_test.cpp ]
-      [ run libs/config/test/limits_test.cpp ]
+    : [ run libs/config/test/config_test.cpp 
+            : #args
+            : #input-files
+            : #requirements
+            <threading>multi
+      ]
+       [ run libs/config/test/config_info.cpp ]
+       [ run libs/config/test/limits_test.cpp ]
     ;
     
 run libs/any/any_test.cpp ;
@@ -437,12 +443,83 @@ test-suite random
 
 run libs/utility/ref_test.cpp ;
 
-test-suite regex
-    : [ run libs/regex/test/regress/regex_test.cpp : :
-        $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ]
-      [ run libs/regex/test/regress/wregex_test.cpp : :
-        $(BOOST_ROOT)/libs/regex/test/regress/tests.txt ]
-    ;
+{
+        local test-dir = $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)test$(SLASH)regress$(SLASH) ;
+        
+        local test-files = $(test-dir)tests.txt
+        # dwa -- not sure if this is generally applicable
+        #  $(test-dir)test1252.txt
+        ;
+
+    test-suite regex
+    : [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+       : 
+                $(test-files)
+       : 
+       : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+       :
+                regress	]
+
+        [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+                $(test-files)
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>TEST_UNICODE=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+        :
+                wregress ]
+
+        [ run libs/regex/test/c_compiler_checks/posix_api_check.c
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	:
+                posix_api_check_c
+        ]
+
+        [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.c
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	:
+                wide_posix_api_check_c
+        ]
+
+        [ run libs/regex/test/c_compiler_checks/posix_api_check.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	]
+
+        [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
+                <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+	: 
+	: 
+        : 
+		<define>BOOST_REGEX_NO_LIB=1
+		<define>BOOST_REGEX_STATIC_LINK=1
+	]
+
+
+ ;
+
+}
+
 
 run libs/smart_ptr/smart_ptr_test.cpp ;
 
