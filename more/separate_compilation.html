@@ -31,8 +31,8 @@
                <dd>
                   <dl class="index">
                      <dt><A href="#abi">Preventing Compiler ABI Clashes</A> <dt><A href="#dlls">Supporting 
-                              Windows Dll's</A> <dt><A href="#auto-link">Enabling Automatic Library Selection 
-                                 and Linking</A> </dt>
+                              Windows Dll's</A> <dt><a href="#auto-link">
+                     Automatic Library Selection and Linking with auto_link.hpp</a> </dt>
                   </dl>
                   <dt><A href="#build_changes">Changes Affecting the Build System</A>
                      <dd>
@@ -253,7 +253,8 @@ BOOST_WHATEVER_DECL whatever get_whatever()
          size is often significantly smaller this way as well: i.e. you pay for what you 
          use and no more), but this is a subjective call, and some libraries may even 
          only be available in dynamic versions (Boost.threads for example).</P>
-      <h3><A name="auto-link"></A>Enabling Automatic Library Selection and Linking</h3>
+      <h3><A name="auto-link"></A>Automatic Library Selection and Linking with
+      <a href="../boost/config/auto_link.hpp">auto_link.hpp</a></h3>
       <p>Many Windows compilers ship with multiple runtime libraries - for example 
          Microsoft Visual Studio .NET comes with 6 versions of the C and C++ runtime. It 
          is essential that the Boost library that the user links to is built against the 
@@ -286,10 +287,9 @@ libboost_regex-vc71-sgd-1_31.lib
          the name of the right library build variant gets embedded in the object file, 
          and as long as that library is in the linker search path, it will get pulled in 
          by the linker without any user intervention.</p>
-      <p>This feature can be enabled for Boost libraries by including the header
-         <boostconfigauto_link.hpp>after defining BOOST_LIB_NAME and BOOST_DYN_LINK as 
-         required, as usual the feature can also be disabled by the user, if they define 
-         either BOOST_ALL_NO_LIB or BOOST_WHATEVER_NO_LIB:</p>
+      <p>Automatic library selection and linking can be enabled for a Boost library by including the header 
+      &lt;boost/config/auto_link.hpp&gt;, after first defining BOOST_LIB_NAME and, if 
+      applicable, BOOST_DYN_LINK.</p>
       <pre>//
 // Automatically link to the correct build variant where possible.
 //
@@ -312,6 +312,9 @@ libboost_regex-vc71-sgd-1_31.lib
 #endif  // auto-linking disabled
 </pre>
       <P></P>
+      <p>The library's user documentation should note that the feature can be disabled 
+      by defining 
+         either BOOST_ALL_NO_LIB or BOOST_WHATEVER_NO_LIB:</p>
       <P>If for any reason you need to debug this feature, the header 
          &lt;boost/config/auto_link.hpp&gt; will output some helpful diagnostic messages 
          if you first define BOOST_LIB_DIAGNOSTIC.</P>
@@ -436,11 +439,9 @@ run
       </PRE>
       <HR>
       <p><A name="copyright"></A>Revised 
-         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan --> 
-         21 Nov 2003 
-         <!--webbot bot="Timestamp" endspan i-checksum="39359" --></p>
+         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->25 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39363" --></p>
       <p><i>© Copyright John Maddock&nbsp;1998- 
-            <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%Y" startspan -->  2003<!--webbot bot="Timestamp" endspan i-checksum="39359" --></i></p>
+            <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%Y" startspan -->2003<!--webbot bot="Timestamp" endspan i-checksum="746" --></i></p>
       <P><I>Use, modification and distribution are subject to the Boost Software License, 
             Version 1.0. (See accompanying file <A href="../../../LICENSE_1_0.txt">LICENSE_1_0.txt</A>
             or copy at <A href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</A>).</I></P>
