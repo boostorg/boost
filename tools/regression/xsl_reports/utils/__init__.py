@@ -7,5 +7,6 @@ from libxslt import *
 from log import *
 from makedirs import *
 from tar import *
+from zip import *
 
 import sourceforge
