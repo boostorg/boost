@@ -15,6 +15,9 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:exsl="http://exslt.org/common"
+  xmlns:func="http://exslt.org/functions"
+  xmlns:meta="http://www.meta-comm.com"
+  extension-element-prefixes="func"
   version="1.0">
 
   <xsl:template name="get_toolsets">
@@ -47,6 +50,85 @@
     
   </xsl:template>
 
+  <func:function name="meta:is_unusable">
+      <xsl:param name="explicit_markup"/>
+      <xsl:param name="library"/>
+      <xsl:param name="toolset"/>
+      
+      <func:result select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $toolset or toolset/@name='*' ]"/>
+  </func:function>
+
+  <xsl:template name="show_notes">
+      <xsl:param name="explicit_markup"/>
+      <xsl:param name="notes"/>
+        <div class="log-notes">
+          <xsl:for-each select="notes/note">
+            <div>
+              <xsl:if test="@refid">
+                <xsl:variable name="refid" select="@refid"/>
+                <xsl:call-template name="show_note">
+                    <xsl:with-param name="note" select="."/>
+                    <xsl:with-param name="reference" select="$explicit_markup//note[ $refid = @id ]"/>
+                </xsl:call-template>
+              </xsl:if>
+            </div>
+          </xsl:for-each>
+        </div>
+  </xsl:template>
+
+  <xsl:template name="show_note">
+      <xsl:param name="note"/>
+      <xsl:param name="reference"/>
+      <div class="note">
+          <xsl:variable name="author">
+              <xsl:choose>
+                  <xsl:when test="$note/@author">
+                      <xsl:value-of select="$note/@author"/>
+                  </xsl:when>
+                  <xsl:when test="$reference">
+                      <xsl:value-of select="$reference/@author"/>                               
+                  </xsl:when>
+                  <xsl:otherwise>
+                      <xsl:text/>
+                  </xsl:otherwise>
+              </xsl:choose>
+          </xsl:variable>
+
+          <xsl:variable name="date">
+              <xsl:choose>
+                  <xsl:when test="$note/@date">
+                      <xsl:value-of select="$note/@date"/>
+                  </xsl:when>
+                  <xsl:when test="$reference">
+                      <xsl:value-of select="$reference/@date"/>                      
+                  </xsl:when>
+                  <xsl:otherwise>
+                      <xsl:text/>
+                  </xsl:otherwise>
+              </xsl:choose>
+          </xsl:variable>
+
+      <span class="note-header">
+          <xsl:choose>
+              <xsl:when test="$author != '' and $date != ''">
+                  [&#160;<xsl:value-of select="$author"/>&#160;<xsl:value-of select="$date"/>&#160;]
+              </xsl:when>
+              <xsl:when test="$author != ''">
+                  [&#160;<xsl:value-of select="$author"/>&#160;]                        
+              </xsl:when>
+              <xsl:when test="$date != ''">
+                  [&#160;<xsl:value-of select="$date"/>&#160;]                        
+              </xsl:when>
+          </xsl:choose>
+      </span>
+
+      <xsl:if test="$reference">
+          <xsl:copy-of select="$reference/node()"/>                
+      </xsl:if>
+      <xsl:copy-of select="$note/node()"/>      
+
+      </div>
+  </xsl:template>
 
 
 </xsl:stylesheet>

@@ -275,30 +275,37 @@
          </div>
       </div>
 
+      <xsl:variable name="multiple.libraries" select="count( $libraries ) > 1"/>
+
       <!-- TOC -->
-      <div class="detail-toc">
-        <a name="toc"></a>
-        <ul>
-          <xsl:for-each select="$libraries">
-            <xsl:sort select="." order="ascending" />
-            <li class="detail-toc-entry">
-              <a href="#{.}" class="detail-toc-entry">
-                <xsl:value-of select="."/>
-              </a>
-            </li>
-          </xsl:for-each>
-        </ul>
-      </div>
-      
+      <xsl:if test="$multiple.libraries">
+          <div class="detail-toc">
+              <a name="toc"></a>
+              <ul>
+                  <xsl:for-each select="$libraries">
+                      <xsl:sort select="." order="ascending" />
+                      <li class="detail-toc-entry">
+                          <a href="#{.}" class="detail-toc-entry">
+                              <xsl:value-of select="."/>
+                          </a>
+                      </li>
+                  </xsl:for-each>
+              </ul>
+          </div>
+      </xsl:if> 
+     
       <!-- for each library -->
       <xsl:for-each select="$libraries">
         <xsl:sort select="." order="ascending" />
         <xsl:variable name="library" select="." />
-        <div class="library-name">
-            <a name="{$library}" href="../libs/{$library}" class="library-link">
-              <xsl:value-of select="$library" />
-            </a>
-          </div>
+        
+        <xsl:if test="$multiple.libraries">
+            <div class="library-name">
+                <a name="{$library}" href="../libs/{$library}" class="library-link">
+                    <xsl:value-of select="$library" />
+                </a>
+            </div>
+        </xsl:if>
 
           <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/>
 
@@ -372,34 +379,25 @@
                     </a>
                   </td>
                   <td>
-                    <span class="detail-library-note-header">
-                      <xsl:choose>
-                        <xsl:when test="@author and @date">
-                          [&#160;<xsl:value-of select="@author"/>&#160;<xsl:value-of select="@date"/>&#160;]
-                        </xsl:when>
-                        <xsl:when test="@author">
-                          [&#160;<xsl:value-of select="@author"/>&#160;]                        
-                        </xsl:when>
-                        <xsl:when test="@date">
-                          [&#160;<xsl:value-of select="@date"/>&#160;]                        
-                        </xsl:when>
-                      </xsl:choose>
-                    </span>
-                    <xsl:if test="@refid">
-                        <xsl:variable name="refid" select="@refid"/>
-                        <xsl:copy-of select="$explicit_markup//note[ $refid = @id ]/node()"/>
-                    </xsl:if>
-                    <xsl:copy-of select="node()"/>
+                      <xsl:variable name="refid" select="@refid"/>
+                      <xsl:call-template name="show_note">
+                          <xsl:with-param name="note" select="." />
+                          <xsl:with-param name="reference" select="$explicit_markup//note[ $refid = @id ]"/>
+                      </xsl:call-template>
                   </td>
                 </tr>
               </xsl:for-each>
             </table>
           </xsl:if>
-          <div class="detail-footer">
-            <a href="#toc" class="back-link">toc</a>
-            <xsl:text>&#160;|&#160;</xsl:text>
-            <a href="{$mode}_summary_page.html" class="back-link">summary</a>
-          </div>
+          
+          <!-- Dont generate the link to toc and summary if there is just on library -->
+          <xsl:if test="$multiple.libraries">
+              <div class="detail-footer">
+                  <a href="#toc" class="back-link">toc</a>
+                  <xsl:text>&#160;|&#160;</xsl:text>
+                  <a href="{$mode}_summary_page.html" class="back-link">summary</a>
+              </div>
+          </xsl:if>
         </xsl:for-each>
         <div>
           <a href="http://validator.w3.org/check/referer">
@@ -429,7 +427,7 @@
         <xsl:when test="not( $test_log )">
           <xsl:text>detail-missing</xsl:text>
         </xsl:when>
-        <xsl:when test="$explicit_markup//library[ @name=$test_log/@library ]/mark-unusable[ @toolset = $test_log/@toolset or toolset/@name = $test_log/@toolset ]">
+        <xsl:when test="meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )">
           <xsl:text>detail-unusable</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -476,7 +474,7 @@
         <xsl:when test="not( $test_log )">
           <xsl:text>detail-missing</xsl:text>
         </xsl:when>
-        <xsl:when test="$explicit_markup//library[ @name=$test_log/@library ]/test/mark-library[ @toolset = $test_log/@toolset or toolset/@name = $test_log/@toolset ]">
+        <xsl:when test="meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )">
           <xsl:text>detail-unusable</xsl:text>
         </xsl:when>
         <xsl:when test="$test_log[@result='fail' and @status='unexpected']">
@@ -614,4 +612,6 @@
       </xsl:variable>
       <func:result select="exsl:node-set( $a )/*"/>
   </func:function>
+
+
 </xsl:stylesheet>

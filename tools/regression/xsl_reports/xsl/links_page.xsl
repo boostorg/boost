@@ -15,18 +15,22 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
+  <xsl:import href="common.xsl"/>
+
   <xsl:output method="html" 
     doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" 
     encoding="utf-8" 
     indent="yes"
     />
 
+
+
   <xsl:param name="source"/>
   <xsl:param name="run_date"/>
   <xsl:param name="comment_file"/>
   <xsl:param name="explicit_markup_file"/>
 
-  <xsl:variable name="explicit-markup" select="document( $explicit_markup_file )"/>
+  <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
 
   <xsl:template match="/">
     <html>
@@ -80,24 +84,11 @@
 
     <xsl:if test="notes/note">
       <p>
-        <div class="log-notes-title">Notes:</div>
-        <div class="log-notes">
-          <xsl:for-each select="notes/note">
-            <div>
-              <xsl:if test="@date">
-                <xsl:value-of select="@date"/><xsl:text> </xsl:text>
-              </xsl:if>
-              <xsl:if test="@author">
-                <xsl:value-of select="@author"/><xsl:text> </xsl:text>
-              </xsl:if>
-              <xsl:if test="@refid">
-                <xsl:variable name="refid" select="@refid"/>
-                <xsl:copy-of select="$explicit-markup//note[ $refid = @id ]/node()"/>
-              </xsl:if>
-              <xsl:copy-of select="node()"/>
-            </div>
-          </xsl:for-each>
-        </div>
+        <div class="notes-title">Notes</div>
+        <xsl:call-template name="show_notes">
+            <xsl:with-param name="notes" select="notes/note"/>
+            <xsl:with-param name="explicit_markup" select="$explicit_markup"/>
+        </xsl:call-template>
       </p>
     </xsl:if>
 
@@ -140,4 +131,6 @@
     </div>
 
   </xsl:template>
+
+
 </xsl:stylesheet>
