@@ -284,7 +284,7 @@ const string & attribute_value( const xml::element_ptr & element,
     }
 
     links_file << "<h2><a name=\""
-      << test_name << " " << toolset << "\">"
+      << test_name << "-" << toolset << "\">"
       << test_name << " / " << toolset << "</a></h2>\n";
 
     if ( !compile.empty() )
@@ -304,7 +304,7 @@ const string & attribute_value( const xml::element_ptr & element,
       if ( lib[0] == '\n' ) lib.erase( 0, 1 );
       string lib_test_name( extract_test_name( lib ) );
       links_file << "<h3>Library build failure: </h3>\n"
-        "See <a href=\"#" << lib_test_name << " " << toolset << "\">"
+        "See <a href=\"#" << lib_test_name << "-" << toolset << "\">"
         << lib_test_name << " / " << toolset << "</a>";
 
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
@@ -320,7 +320,7 @@ const string & attribute_value( const xml::element_ptr & element,
         else
         {
           links_file << "<h2><a name=\""
-            << lib_test_name << " " << toolset << "\">"
+            << lib_test_name << "-" << toolset << "\">"
             << lib_test_name << " / " << toolset << "</a></h2>\n"
             "test_log.xml not found\n";
         }
@@ -378,7 +378,7 @@ const string & attribute_value( const xml::element_ptr & element,
       target += links_name;
       target += "#";
       target += test_name;
-      target += " ";
+      target += "-";
       target += toolset;
       target += "\">";
       target += pass ? (anything_generated < 2 ? pass_msg : warn_msg) : fail_msg;
