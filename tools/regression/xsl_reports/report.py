@@ -200,6 +200,7 @@ def make_result_pages( test_results_file
                      "source": source
                      , "run_date": run_date 
                      , "comment_file": comment_file
+                     , "explicit_markup_file" : failures_markup_file
                      }
                    )
 

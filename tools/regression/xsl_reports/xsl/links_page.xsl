@@ -24,7 +24,9 @@
   <xsl:param name="source"/>
   <xsl:param name="run_date"/>
   <xsl:param name="comment_file"/>
-  <xsl:param name="expected_results_file"/>
+  <xsl:param name="explicit_markup_file"/>
+
+  <xsl:variable name="explicit-markup" select="document( $explicit_markup_file )"/>
 
   <xsl:template match="/">
     <html>
@@ -87,6 +89,10 @@
               </xsl:if>
               <xsl:if test="@author">
                 <xsl:value-of select="@author"/><xsl:text> </xsl:text>
+              </xsl:if>
+              <xsl:if test="@refid">
+                <xsl:variable name="refid" select="@refid"/>
+                <xsl:copy-of select="$explicit-markup//note[ $refid = @id ]/node()"/>
               </xsl:if>
               <xsl:copy-of select="node()"/>
             </div>
