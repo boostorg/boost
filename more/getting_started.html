@@ -3,7 +3,8 @@
 <html>
 <head>
   <meta name="generator" content=
-  "Microsoft FrontPage 5.0">
+  "HTML Tidy for Linux/x86 (vers 1st September 2003), see www.w3.org">
+  <meta name="generator" content="Microsoft FrontPage 5.0">
   <meta http-equiv="Content-Language" content="en-us">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
   <link rel="stylesheet" type="text/css" href="../boost.css">
@@ -185,10 +186,11 @@
   <h2><a name="Preparation"></a>Preparation</h2>
 
   <p>The recommended way to build and install the Boost Libraries is to use
-  Boost.Build, the Boost Build system. The rest of these instructions explain
-  that use, but it is up to you to use this method, or not. Note that some of
-  the libraries also include non Boost.Build makefiles and/or project files.
-  But all include the needed files for building with Boost.Build.</p>
+  <a href="../tools/build/v1/build_system.htm">Boost.Build</a>, the Boost
+  Build system. The rest of these instructions explain that use, but it is up
+  to you to use this method, or not. Note that some of the libraries also
+  include non Boost.Build makefiles and/or project files. But all include the
+  needed files for building with Boost.Build.</p>
 
   <table summary="" width="100%" border="0" cellspacing="2" cellpadding="2">
     <tr align="left" valign="top">
@@ -403,7 +405,8 @@
       "../tools/build/v1/msvc-tools.html"><code>msvc</code></a></td>
 
       <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools.</td>
+      C++</a> version 6 command-line tools. NOTE; For version 7.x (the .NET
+      series) use the vc7 or vc7.1 toolsets below.</td>
     </tr>
 
     <tr>
@@ -411,9 +414,10 @@
       "../tools/build/v1/msvc-stlport-tools.html"><code>msvc-stlport</code></a></td>
 
       <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools, using the <a href=
-      "http://www.stlport.org">STLport</a> standard library
-      implementation</td>
+      C++</a> version 6 command-line tools, using the <a href=
+      "http://www.stlport.org">STLport</a> standard library implementation.
+      NOTE; For version 7.x (the .NET series) use the vc7 or vc7.1 toolsets
+      below.</td>
     </tr>
 
     <tr>
@@ -490,10 +494,10 @@
   <p>The default build and install attempts to build all available libraries
   and install to default locations the libraries and Boost header files. On
   Unix systems the default install location is "<tt>/usr/local</tt>", and on
-  Windows systems the default is "<tt>C:\\Boost</tt>". Within those libraries
-  are installed to the "lib" subdirectory, and headers to an
-  "<tt>include/boost-1_31</tt>" subdirectory, the version will reflect the
-  distribution you are installing.</p>
+  Windows systems the default is "<tt>C:\Boost</tt>". Within those
+  directories libraries are installed to the "<tt>lib</tt>" subdirectory, and
+  headers to an "<tt>include/boost-1_31</tt>" subdirectory, the version will
+  reflect the distribution you are installing.</p>
 
   <table summary="" width="100%" border="0" cellspacing="2" cellpadding="2">
     <tr align="left" valign="top">
@@ -507,6 +511,14 @@
 
         <blockquote>
           <p><code>bjam&nbsp;"-sTOOLS=gcc" install</code></p>
+        </blockquote>
+
+        <p>Or if you are interested only in the built libraries you can have
+        them built and collected to a common directory without
+        installation.</p>
+
+        <blockquote>
+          <p><code>bjam&nbsp;"-sTOOLS=gcc" stage</code></p>
         </blockquote>
       </td>
     </tr>
@@ -547,8 +559,8 @@
     <tr>
       <td nowrap align="left" valign="top"><tt>stage</tt></td>
 
-      <td align="left" valign="top">Builds the Boost libraries and "stages"
-      them into a "stage" directory.</td>
+      <td align="left" valign="top">Builds the Boost libraries and copies
+      them into a common directory.</td>
     </tr>
 
     <tr>
@@ -577,7 +589,7 @@
 
       <td align="left" valign="top">Install architecture independent files
       here.<br>
-      Default; <tt>C:\\Boost</tt> on Win32.<br>
+      Default; <tt>C:\Boost</tt> on Win32.<br>
       Default; <tt>/usr/local</tt> on Unix. Linux, etc.</td>
     </tr>
 
@@ -619,7 +631,7 @@
       <td nowrap align="left" valign="top"><tt>--stagedir=DIR</tt></td>
 
       <td align="left" valign="top">When staging only, with the
-      "<tt>stage</tt>" action, stage to the given location.<br>
+      "<tt>stage</tt>" action, copy to the given location.<br>
       Default; <tt>./stage</tt></td>
     </tr>
 
@@ -639,7 +651,7 @@
       Python devel packages located at <tt>PYTHON_ROOT</tt>. The Boost.Python
       libraries are built only if the build can find the Python development
       package at this location.<br>
-      Default; <tt>C:\\tools\\python</tt> on Win32.<br>
+      Default; <tt>C:\tools\python</tt> on Win32.<br>
       Default; <tt>/usr/local</tt> on Unix, Linux, etc.<br>
       Default; <tt>/usr</tt> on Cygwin.</td>
     </tr>
@@ -653,6 +665,20 @@
       Boost.Python libraries are also built.</td>
     </tr>
   </table>
+
+  <p>There are additional options as supported by <a href=
+  "../tools/build/v1/build_system.htm">Boost.Build</a> and <a href=
+  "../tools/build/jam_src/index.html">Boost.Jam</a>. Of the additional
+  options perhaps the most imporant is "<tt>-s<a href=
+  "../tools/build/v1/build_system.htm#build">BUILD</a>=&lt;features/variants&gt;</tt>"
+  which lets you override what is built by default. The
+  "<tt>&lt;features/variants&gt;</tt>" value is a list, separated by spaces,
+  of build requests. Features take the form of a tag and a value or values.
+  And variants are single symbolic names for a collection of features. For
+  example the default is to request "<tt>debug release
+  &lt;runtime-link&gt;static/dynamic &lt;threading&gt;single/multiple</tt>",
+  in which "<tt>debug</tt>" and "<tt>release</tt>" are variants, and the rest
+  features with two values each.</p>
 
   <p>If you have some feedback about the build and install process please
   drop us a line at the <a href="mailing_lists.htm#jamboost">Boost.Build
@@ -1121,14 +1147,15 @@
   <hr>
 
   <p>Revised <!--webbot bot="Timestamp" s-type="EDITED"
-                                s-format="%d %B, %Y" startspan -->26 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
+                                      s-format="%d %B, %Y" startspan -->1
+  December, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
 
   <p>Copyright &copy; Rene Rivera 2003.<br>
   Copyright &copy; Jens Maurer 2001.</p>
 
   <p><small>Use, modification, and distribution are subject to the Boost
-  Software License, Version 1.0. (See accompanying file
-  <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy at <a href=
+  Software License, Version 1.0. (See accompanying file <a href=
+  "../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy at <a href=
   "http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a>)</small></p>
 </body>
 </html>
