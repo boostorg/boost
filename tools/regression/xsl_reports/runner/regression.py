@@ -500,7 +500,7 @@ def upload_logs(
         ):
     import_utils()
     from runner import upload_logs
-    upload_logs( runner, tag, user )
+    upload_logs( regression_results, runner, tag, user )
 
 
 def update_itself( **unused ):

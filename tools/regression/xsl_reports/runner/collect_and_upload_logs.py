@@ -90,9 +90,9 @@ def collect_logs(
         , run_type
         ):
     
-    test_results_file =  '%s.xml' % runner_id
-    test_results_writer = open( test_results_file, "w" )
-    utils.log( 'Collecting test logs into "%s"...' % test_results_file )
+    results_file = os.path.join( locate_root_dir, '%s.xml' % runner_id )
+    results_writer = open( results_file, 'w' )
+    utils.log( 'Collecting test logs into "%s"...' % results_file )
     
     if not os.path.exists( timestamp ):
         t = time.gmtime()
@@ -101,7 +101,7 @@ def collect_logs(
     else:
         t = time.gmtime( os.stat( timestamp ).st_mtime )
     
-    results_xml = xml.sax.saxutils.XMLGenerator( test_results_writer )
+    results_xml = xml.sax.saxutils.XMLGenerator( results_writer )
     results_xml.startDocument()
     results_xml.startElement( 
           'test-run'
@@ -116,22 +116,23 @@ def collect_logs(
         )
     
     copy_comments( results_xml, comment_file )
-    collect_test_logs( [ locate_root_dir ], test_results_writer )
+    collect_test_logs( [ locate_root_dir ], results_writer )
 
     results_xml.endElement( "test-run" )
     results_xml.endDocument()
-    test_results_writer.close()
-    utils.log( 'Done writing "%s"...' % test_results_file )
+    results_writer.close()
+    utils.log( 'Done writing "%s".' % results_file )
 
-    utils.log( 'Compressing "%s"...' % test_results_file )
-    
-    z = zipfile.ZipFile( '%s.zip' % runner_id, 'w', zipfile.ZIP_DEFLATED ) 
-    z.write( test_results_file, os.path.basename( test_results_file ) )
+    utils.log( 'Compressing "%s"...' % results_file )
+    archive_path = os.path.join( locate_root_dir,'%s.zip' % runner_id )
+    z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
+    z.write( results_file, os.path.basename( results_file ) )
     z.close()
+    utils.log( 'Done writing "%s".'% archive_path )
 
 
-def upload_logs( runner_id, tag, user ):
-    logs_archive = '%s.zip' % runner_id
+def upload_logs( results_dir, runner_id, tag, user ):
+    logs_archive = os.path.join( results_dir, '%s.zip' % runner_id )
     upload_to_ftp( tag, logs_archive )
 
 
@@ -159,7 +160,7 @@ def collect_and_upload_logs(
         , run_type
         )
     
-    upload_logs( runner_id, tag, user )
+    upload_logs( locate_root_dir, runner_id, tag, user )
 
 
 def accept_args( args ):
