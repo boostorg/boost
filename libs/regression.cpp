@@ -35,6 +35,10 @@ std::string get_host()
 {
 #if defined __linux__
   return "linux";
+#elif defined __osf__
+  return "tru64";
+#elif defined __sgi
+  return "irix";
 #elif defined _WIN32
   return "win32";
 #elif defined __BEOS__
@@ -46,15 +50,13 @@ std::string get_host()
 
 
 // retrieve precise system configuration as descriptive string
-#ifdef __unix__
+#ifdef __unix
 
 #include <sys/utsname.h>
 
-#define STRINGIFY(x) #x
-
 std::string get_system_configuration()
 {
-  utsname ut;
+  struct utsname ut;      // "struct" is required for the DEC Tru64 compiler
   if(uname(&ut) < 0)
     return "";
 
@@ -114,9 +116,10 @@ void replace_environment(std::string & s)
 // get a string line, ignoring empty lines and comment lines
 void getstringline( std::ifstream & is, std::string & s )
 {
-  do { std::getline( is, s ); }
-    while ( is.good()
-      && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
+  do {
+    std::getline( is, s, '\n' );    // third argument required by IRIX
+  } while ( is.good()
+	    && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
 }
 
 // read the compiler configuration from file and push entry's to out
