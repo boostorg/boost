@@ -2,10 +2,11 @@ subproject status ;
 
 gGENERATOR_FUNCTION(OBJ) = Object ;
 
-rule boost-test # sources : type : suppress-fake-targets
+rule boost-test # sources : type : suppress-fake-targets : requirements
 {
     local result ;
     {
+        local requirements = $(4) ;
         local suppress = $(3) ;
         suppress ?= dummy ;
         local $(suppress) = true ;
@@ -13,7 +14,7 @@ rule boost-test # sources : type : suppress-fake-targets
         result = [
             declare-local-target $(<:D=:S=)
             : $(BOOST_ROOT)$(SLASH)$(<) # sources
-            : <include>$(BOOST_ROOT) # requirements
+            : $(requirements) <include>$(BOOST_ROOT) # requirements
             :             # default build
             : $(>)     # target type
         ] ;
@@ -22,14 +23,14 @@ rule boost-test # sources : type : suppress-fake-targets
     type-DEPENDS test : $(result) ;
 }
 
-rule compile # source-file : fail
+rule compile # source-file : fail : requirements
 {
-    boost-test $(<) : OBJ ;
+    boost-test $(<) : OBJ : : $(3) ;
 }
 
-rule compile-fail
+rule compile-fail # source-file : requirements
 {
-    boost-test $(<) : COMPILE_FAIL : gSUPPRESS_FAKE_TARGETS ;
+    boost-test $(<) : COMPILE_FAIL : gSUPPRESS_FAKE_TARGETS : $(2) ;
 }
 
 rule failed-test-file # test-file : fail-to-build-file
@@ -52,13 +53,13 @@ rule declare-build-fail-test # test-type : dependency-type
     SUF$(<) = .fail ;
 }
 
-rule fail-to-build # sources.test : sources
+rule fail-to-build # sources.test : sources : requirements
 {
     local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
     local dependency-type = $(gDEPENDENCY_TYPE($(target-type))) ;
     local fail-target = $(<[1]:S=$(SUF$(dependency-type))) ;
     local ignored = [
-        $(gGENERATOR_FUNCTION($(dependency-type))) $(fail-target) : $(>) ] ;
+        $(gGENERATOR_FUNCTION($(dependency-type))) $(fail-target) : $(>) : $(3) ] ;
         
     # The .test file goes with the other subvariant targets
     MakeLocate $(<) : $(LOCATE_TARGET) ;
@@ -69,10 +70,10 @@ declare-build-fail-test COMPILE_FAIL : OBJ ;
 
 gGENERATOR_FUNCTION(RUN_TEST) = run-test ;
 SUFRUN_TEST = .test ;
-rule run-test
+rule run-test # target : sources : requirements
 {
     local executable = $(<:S=$(SUFEXE)) ; 
-    executable-file $(executable) : $(>) ;
+    executable-file $(executable) : $(>) : $(3) ;
     
     # The .test file goes with the other subvariant targets
     MakeLocate $(<) : $(LOCATE_TARGET) ;
@@ -85,27 +86,27 @@ actions capture-run-output bind INPUT_FILES
     $(>) $(ARGS) $(INPUT_FILES) > $(<)
 }
 
-rule run # sources : args : input-files
+rule run # sources : args : input-files : requirements
 {
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    boost-test $(<) : RUN_TEST ;
+    boost-test $(<) : RUN_TEST : : $(4) ;
 }
 
 declare-build-fail-test LINK_FAIL : EXE ;
-rule link-fail
+rule link-fail # sources : requirements
 {
-    boost-test $(<) : LINK_FAIL : gSUPPRESS_FAKE_TARGETS ;
+    boost-test $(<) : LINK_FAIL : gSUPPRESS_FAKE_TARGETS : $(2) ;
 }
 
 declare-build-fail-test RUN_FAIL : RUN_TEST ;
-rule run-fail # sources : args : input-files
+rule run-fail # sources : args : input-files : requirements
 {
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    boost-test $(<) : RUN_FAIL : gSUPPRESS_FAKE_TARGETS ;
+    boost-test $(<) : RUN_FAIL : gSUPPRESS_FAKE_TARGETS : $(4) ;
 }
 
 run libs/config/config_test.cpp ;
