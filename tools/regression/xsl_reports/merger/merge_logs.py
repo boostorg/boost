@@ -7,6 +7,8 @@
 
 import xml.sax.saxutils
 import xml.dom.minidom
+import zipfile
+import glob
 import os.path
 import sys
 
@@ -23,6 +25,15 @@ def download_test_runs( destination, tag, user ):
         , user
         )
     
+def unzip( archive_path, result_dir ):
+    z = zipfile.ZipFile( archive_path, 'r', zipfile.ZIP_DEFLATED ) 
+    for f in z.infolist():
+        result = open( os.path.join( result_dir, f.filename ), 'w' )
+        result.write( z.read( f.filename ) )
+        result.close()
+
+    z.close()
+    
 
 def merge_test_runs( incoming_dir, tag, writer ):
     test_runs_dir = os.path.join( incoming_dir, tag )
@@ -33,7 +44,21 @@ def merge_test_runs( incoming_dir, tag, writer ):
     all_runs_xml.startDocument()
     all_runs_xml.startElement( 'all-test-runs', {} )
     
-    files = os.listdir( test_runs_dir )
+    utils.log( 'Unzipping new test runs...' )
+    files = glob.glob( os.path.join( test_runs_dir, '*.zip' ) )
+    for test_run in files:
+        try:
+            utils.log( '  Unzipping "%s" ...' % test_run )
+            zip_path = os.path.join( test_runs_dir, test_run )
+            unzip( zip_path, test_runs_dir )
+            utils.log( '  Removing "%s" ...' % test_run )
+            #os.unlink( zip_path )
+        except Exception, msg:
+            utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
+
+    
+    utils.log( 'Processing test runs...' )
+    files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
         try:
             utils.log( '  Loading "%s" in memory...' % test_run )
