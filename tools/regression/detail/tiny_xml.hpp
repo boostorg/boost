@@ -40,9 +40,10 @@ namespace boost
     typedef std::list< element_ptr  >     element_list;
     typedef std::list< attribute >        attribute_list;
 
-    struct element
-      : boost::noncopyable  // because of shared_ptr use
+    class element
+      : boost::noncopyable  // because deep copy sematics would be required
     {
+     public:
       std::string     name;
       attribute_list  attributes;
       element_list    elements;
