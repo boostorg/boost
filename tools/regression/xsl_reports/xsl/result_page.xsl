@@ -62,6 +62,9 @@
       <a href="#legend" class="legend-link">
         <xsl:variable name="test_type" select="./@test-type"/>
         <xsl:choose>
+          <xsl:when test="$test_type='run_pyd'">
+            <xsl:text>r</xsl:text>
+          </xsl:when>
           <xsl:when test="$test_type='run'">
             <xsl:text>r</xsl:text>
           </xsl:when>
@@ -252,20 +255,20 @@
                   <xsl:copy-of select="$test_header"/>
                   <xsl:call-template name="test_type_col"/>
 
-                  <xsl:for-each select="$lib_tests[ @test-name = $test_name ]">
+                  <xsl:for-each select="$toolsets">
                     <xsl:sort select="@toolset" order="ascending" />
-                    <xsl:variable name="toolset" select="@toolset" />
-
+                    <xsl:variable name="toolset" select="." />
+                    <xsl:variable name="test-result" select="$lib_tests[ @test-name = $test_name and @toolset=$toolset]"/>
                     <xsl:choose>
                       <xsl:when test="$mode='user'">
                         <xsl:call-template name="insert_cell_user">
-                          <xsl:with-param name="test_log" select="."/>
+                          <xsl:with-param name="test_log" select="$test-result"/>
                           <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
                         </xsl:call-template>
                       </xsl:when>
                       <xsl:when test="$mode='developer'">
                         <xsl:call-template name="insert_cell_developer">
-                          <xsl:with-param name="test_log" select="."/>
+                          <xsl:with-param name="test_log" select="$test-result"/>
                           <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
                         </xsl:call-template>
                       </xsl:when>
@@ -305,8 +308,23 @@
           <xsl:value-of select="'-new'"/>
        </xsl:if>
     </xsl:variable>
-    <td class="result-{$test_log/@result}-{$test_log/@status}{$is_new}">
+
+    <xsl:variable name="class">
       <xsl:choose>
+        <xsl:when test="not( $test_log )">
+          <xsl:text>result-missing</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat( 'result-', $test_log/@result, '-', $test_log/@status, $is_new )"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <td class="{$class}">
+      <xsl:choose>
+        <xsl:when test="not( $test_log )">
+          <xsl:text>missing</xsl:text>
+        </xsl:when> 
         <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
           <a href="{$log_link}" class="log-link">
             fail
@@ -324,6 +342,9 @@
           <xsl:text>pass</xsl:text>
         </xsl:otherwise>
       </xsl:choose>  
+      <xsl:if test="count( $test_log ) > 1" > 
+        <div class="conf-problem">conf.&#160;problem</div>
+      </xsl:if>
     </td>
   </xsl:template>
 
@@ -334,6 +355,9 @@
     
     <xsl:variable name="class">
       <xsl:choose>
+        <xsl:when test="not( $test_log )">
+          <xsl:text>result-missing</xsl:text>
+        </xsl:when>
         <xsl:when test="$test_log[@result='fail' and @status='unexpected']">
           <xsl:text>result-user-fail-unexpected</xsl:text>
         </xsl:when>
@@ -349,10 +373,14 @@
         </xsl:message>
       </xsl:otherwise>
     </xsl:choose>
+
   </xsl:variable>
 
     <td class="{$class}">
       <xsl:choose>
+        <xsl:when test="not( $test_log )">
+          missing
+        </xsl:when>
         <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
           <a href="{$log_link}" class="log-link">
             fail
@@ -367,6 +395,10 @@
           <xsl:text>pass</xsl:text>
         </xsl:otherwise>
       </xsl:choose>  
+
+      <xsl:if test="count( $test_log ) > 1" > 
+        <div class="conf-problem">conf.&#160;problem</div>
+      </xsl:if>
     </td>
   </xsl:template>
 
