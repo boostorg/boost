@@ -1,16 +1,17 @@
 th
 {
-   font-weight:      bold;
-   text-align:       center;
+   font-weight: bold;
+   text-align:  center;
 }
 
-.title
+a img{ border: 0.1em solid black; }
+
+.title, .refnamediv h2, .standalone-title
 {
    font-weight:   bold;
    font-size:     2pc;
    font-family:   Times New Roman;
    margin-bottom: 1pc;
-   text-align:    center;
 }
 
 .toc
@@ -19,9 +20,26 @@ th
    margin-right:  15%;
    margin-top:    1pc;
    margin-bottom: 0pc;
+   padding:       0.5pc;
 }
 
-div pre.programlisting, .refsynopsisdiv, pre.screen
+.boost-toc
+{
+   float:   right;
+   padding: 0.5pc;
+}
+
+.spirit-nav
+{
+   text-align: right;
+}
+
+.spirit-nav a
+{
+   padding-left: 0.5em;
+}
+
+div pre.programlisting, .refsynopsisdiv
 {
    margin-left:  3pc;
    margin-right: 3pc;
@@ -33,40 +51,46 @@ div pre.programlisting, .refsynopsisdiv, pre.screen
    font-size:   80%;
 }
 
-.table
+.title, .refnamediv h2
 {
    text-align: center;
+}
+
+.section .section .title, .chapter .section .title, .table .title
+{
+   text-align: left;
+}
+
+.informaltable table
+{
+   width: 100%;
 }
 
 @media screen
 {
    a{ color: blue; }
 
-   th, .title
+   th, .title, .refnamediv h2
    {
       background-color: lightskyblue;
    }
 
-   .section .title
-   {
-      background-color: #DDD;
-      text-align:       left;
-   }
-
-   .table .title
+   .section .section .title, .chapter .section .title, .table .title
    {
       background-color: white;
-      text-align:       left;
    }
 
-   .toc
+   .table table, div.informaltable table, .section-title
    {
-      border:           0.2em ridge lightcoral;
-      padding:          0.5pc;
-      background-color: #DDD;
+      background-color: #EEE;
    }
 
-   .programlisting, .table-programlisting, .screen
+   .table table tr td, div.informaltable table tr td
+   {
+      background-color: #CCC;
+   }
+
+   .programlisting, .table-programlisting
    {
       background-color: #EED;
       border:           0.2em ridge #EED;
@@ -88,16 +112,10 @@ div pre.programlisting, .refsynopsisdiv, pre.screen
       border:           0.1em outset #007F7F;
    }
 
-   .boost-headelem
+   .toc, .boost-toc
    {
-      color:       white;
-      font-family: Arial;
-      font-weight: bold;
-   }
-
-   .table table, div.informaltable table, .section-title
-   {
-      background-color: #EEE;
+      background-color: #DDD;
+      border:           0.2em ridge lightcoral;
    }
 
    table.boost-head tr td
@@ -105,26 +123,30 @@ div pre.programlisting, .refsynopsisdiv, pre.screen
       border: 0.1em inset #007F7F;
    }
 
-   table, td, th{ border: 0pc; }
-
-   .table table tr td, div.informaltable table tr td
+   .boost-headelem
    {
-      background-color: #CCC;
+      color:       white;
+      font-family: Arial;
+      font-weight: bold;
    }
 }
 
 @media print
 {
-   body
-   {
-      text-align: justify;
-   }
-
+   body{ text-align: justify; }
    a{ color: black; }
+   table{ border: 0pc; }
 
    .boost-head, table.boost-head tr td
    {
       border: 0em;
+   }
+
+   .toc{ border: 0.2em solid black; }
+
+   .table tr td, .table tr th
+   {
+      border: 0.1em solid black;
    }
 }
 
