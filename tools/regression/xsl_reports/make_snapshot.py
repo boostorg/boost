@@ -53,7 +53,7 @@ def cvs_export( working_dir, user, tag ):
     if tag != 'CVS-HEAD':
         command = 'export -r %s boost' % tag
     else:
-        command = 'export boost'
+        command = 'export -r HEAD boost'
 
     os.chdir( working_dir )
     retry( 
