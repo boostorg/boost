@@ -47,7 +47,7 @@ rule boost-test ( sources + : target-type : requirements * : test-name ? )
         result = [
             declare-local-target $(test-name)
             : $(source-files:R=$(BOOST_ROOT)) $(dependencies)  # sources 
-            : $(requirements) <include>$(BOOST_ROOT) # requirements
+            : $(requirements) <sysinclude>$(BOOST_ROOT) # requirements
             :             # default build
             : $(target-type)
         ] ;
