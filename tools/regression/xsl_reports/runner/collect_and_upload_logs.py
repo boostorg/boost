@@ -140,6 +140,10 @@ def collect_logs(
             utils.log( 'Could not find \'zip_cmd\' module in the script directory (%s).' % script_dir )
             raise Exception( 'Compressing failed!' )
         else:
+            if os.path.exists( archive_path ):
+                os.unlink( archive_path )
+                utils.log( 'Removing stale "%s".' % archive_path )
+                
             zip_cmd.main( results_file, archive_path )
             utils.log( 'Done compressing "%s".' % archive_path )
 
