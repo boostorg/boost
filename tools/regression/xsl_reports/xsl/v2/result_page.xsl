@@ -293,7 +293,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 </div>
 
                 <!-- library marks = library-unusable markup for toolsets in the report  -->
-                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[  meta:re_match( toolset/@name, $run_toolsets//toolset/@name ) ]"/>
+                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable/toolset[  meta:re_match( @name, $run_toolsets//toolset/@name ) ]/.."/>
                 <lmarks>
                     <xsl:copy-of select="$library_marks"/>
                 </lmarks>
@@ -436,13 +436,6 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="toolset"/>
         <xsl:param name="test_log"/>
         
-        <xsl:variable name="is_new">
-            <xsl:if test="$test_log/@is-new = 'yes' and $test_log/@status = 'unexpected' and $test_log/@result != 'success'">
-                <xsl:value-of select="'-new'"/>
-            </xsl:if>
-        </xsl:variable>
-
-        
         <xsl:variable name="class" select="concat( 'library-', meta:result_cell_class( $library, $toolset, $test_log ) )"/>
 
         <xsl:variable name="cell_link">
@@ -514,36 +507,43 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <td class="{$class}" title="{$test_log/@test-name}/{$toolset}">
         <xsl:choose>
+             <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'n/a'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
+            </xsl:when> 
+
             <xsl:when test="count( $test_log ) &lt; 1">
                 <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
             </xsl:when> 
  
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
-                    <xsl:call-template name="insert_test_result">
-                        <xsl:with-param name="result" select="'fail'"/>
-                        <xsl:with-param name="log_link" select="$cell_link"/>
-                    </xsl:call-template>
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'fail*'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:when>
 
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'unexpected'">
-                    <xsl:call-template name="insert_test_result">
-                        <xsl:with-param name="result" select="'fail'"/>
-                        <xsl:with-param name="log_link" select="$cell_link"/>
-                    </xsl:call-template>
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'fail'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:when>
 
             <xsl:when test="$test_log/@result = 'success' and $test_log/@status = 'unexpected'">
-                    <xsl:call-template name="insert_test_result">
-                        <xsl:with-param name="result" select="'pass'"/>
-                        <xsl:with-param name="log_link" select="$cell_link"/>
-                    </xsl:call-template>
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'pass'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:when>
 
             <xsl:otherwise>
-                    <xsl:call-template name="insert_test_result">
-                        <xsl:with-param name="result" select="'pass'"/>
-                        <xsl:with-param name="log_link" select="$cell_link"/>
-                    </xsl:call-template>
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'pass'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>  
         </td>

@@ -65,7 +65,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <xsl:variable name="expected_result">
             <xsl:choose>
-            <xsl:when test='count( $test_failures_markup ) > 0 or count( $test_failures_markup2 ) > 0'>
+            <xsl:when test="count( $test_failures_markup ) > 0 or count( $test_failures_markup2 ) > 0">
                 <xsl:text>fail</xsl:text>
             </xsl:when>
               
@@ -102,19 +102,19 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <xsl:variable name="notes">
 
-            <xsl:if test='count( $test_failures_markup ) > 0'>
+            <xsl:if test="count( $test_failures_markup ) > 0">
                 <xsl:for-each select="$test_failures_markup/note">
                 <xsl:copy-of select="."/>
                 </xsl:for-each>
             </xsl:if>
 
-            <xsl:if test='count( $test_failures_markup2 ) > 0'>
+            <xsl:if test="count( $test_failures_markup2 ) > 0">
                 <xsl:for-each select="$test_failures_markup2/note">
                 <xsl:copy-of select="."/>
                 </xsl:for-each>
             </xsl:if>
               
-            <xsl:if test='$expected_results_test_case'>
+            <xsl:if test="$expected_results_test_case and $expected_results_test_case/@result = 'fail'">
                 <note>This failure was present in the reference ("last-known-good") release.
                 </note>
             </xsl:if>
