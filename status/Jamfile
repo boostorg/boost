@@ -25,6 +25,7 @@ subinclude libs/io/test ;                # test-suite io
 subinclude libs/iterator/test ;          # test-suite iterator
 subinclude libs/math/test ;              # test-suite math
 subinclude libs/numeric/interval/test ;  # test-suite interval
+subinclude libs/multi_array/test ;       # test-suite multi_array
 subinclude libs/optional/test ;          # test-suite optional
 subinclude libs/python/test ;            # test-suite python
 subinclude libs/random/test ;            # test-suite random
@@ -253,45 +254,5 @@ subinclude libs/variant/test ;           # test-suite variant
                 <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
                 <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
           ]
-        ;
-
-
-    test-suite multi_array
-        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/boost_test_exec_monitor  ]
-          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/multi_array/test/resize.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ compile libs/multi_array/test/concept_checks.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
-          [ compile-fail libs/multi_array/test/fail_citerator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cparen.cpp ]
-          [ compile-fail libs/multi_array/test/fail_criterator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_csubarray.cpp ]
-          [ compile-fail libs/multi_array/test/fail_csubarray2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_csubarray3.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cview.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cview2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cview3.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cbracket.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cdata.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_citerator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cparen.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_criterator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_csubarray.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_csubarray2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_csubarray3.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cview.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
 }
