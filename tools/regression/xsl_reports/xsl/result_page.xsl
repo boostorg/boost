@@ -525,7 +525,7 @@
     </td>
   </xsl:template>
 
-  <xsl:template name="insert-test-line">
+  <xsl:template name="insert_test_line">
     <xsl:param name="library"/>    
     <xsl:param name="test_name"/>
     <xsl:param name="test_results"/>
@@ -597,7 +597,7 @@
               </xsl:choose>
           </xsl:variable>
           
-          <xsl:call-template name="insert-test-line">
+          <xsl:call-template name="insert_test_line">
               <xsl:with-param name="library" select="$library"/>
               <xsl:with-param name="test_results" select="$lib_tests[ @test-name = $test_name ]"/>
               <xsl:with-param name="toolsets" select="$toolsets"/>
