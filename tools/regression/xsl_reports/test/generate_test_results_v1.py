@@ -1,11 +1,11 @@
-import common
 import xml.sax.saxutils
+
+import common
 
 import os
 import time
 
 num_of_libs = 2
-num_of_runners = 3
 num_of_toolsets = 3
 num_of_tests = 10
 
@@ -17,61 +17,46 @@ def library_build_failed( library_idx ):
 def make_test_results():
     if not os.path.exists( tag ):
         os.makedirs( tag )
-    for i_runner in range( 0, num_of_runners ):
-        runner_id = "runner_%02d" % i_runner
-        g = xml.sax.saxutils.XMLGenerator( open( os.path.join( tag, runner_id + ".xml" ), "w" ) )
-        platform = "Win32"
-        g.startElement( "test-run", { "platform": platform
-                                      , "runner": runner_id
-                                      , "timestamp": time.strftime( "%a, %d %b %Y %H:%M:%S +0000"
-                                                                   , time.gmtime()) } )
+        
+    g = xml.sax.saxutils.XMLGenerator( open( os.path.join( tag, "test.xml" ), "w" ) )
+    platform = "Win32"
+    g.startElement( "test-results", {} )
 
-        g.startElement( "comment", {} )
-        g.characters( "<b>Runner</b> is who <i>running</i> does." )
-        g.endElement( "comment" )
-
-        for i_lib in range( 0, num_of_libs ):
-            for i_toolset in range( num_of_toolsets ):
-                if library_build_failed( i_lib ): test_result = "fail"
-                else:                             test_result = "success"
-                    
-                common.make_test_log( xml_generator = g
-                                      , library_idx = i_lib
-                                      , toolset_idx = i_toolset 
-                                      , test_name = ""
-                                      , test_type = "lib"
-                                      , test_result = test_result
-                                      , show_run_output = "false" )
-
+    for i_lib in range( 0, num_of_libs ):
+        for i_toolset in range( num_of_toolsets ):
+            if library_build_failed( i_lib ): test_result = "fail"
+            else:                             test_result = "success"
+            
+            common.make_test_log( xml_generator = g
+                                  , library_idx = i_lib
+                                  , toolset_idx = i_toolset 
+                                  , test_name = ""
+                                  , test_type = "lib"
+                                  , test_result = test_result
+                                  , show_run_output = "false" )
+            
     
-        for i_lib in range( 0, num_of_libs ):
-            library_name = "library_%02d" % i_lib
-            if num_of_runners - 1 == i_runner and  i_lib % 2: 
-                continue 
-                
-            for i_toolset in range( num_of_toolsets ):
-                toolset_name = "toolset_%02d" % ( i_toolset )
+    for i_lib in range( 0, num_of_libs ):
+        library_name = "library_%02d" % i_lib
 
-                if num_of_runners - 1 == i_runner and i_toolset % 2:
-                    continue
-                
-                for i_test in range( num_of_tests ):
-                    test_name = "test_%02d_%02d" % ( i_lib, i_test )
-                    test_result = ""
-                    test_type = "run"
-                    show_run_output = "false"
-                    
-                    if num_of_runners - 1 == i_runner and i_test % 2:
-                        continue
-                    
-                    if i_runner % 2: test_result = "success"
-                    else:             test_result = "fail"
+        for i_toolset in range( num_of_toolsets ):
+            toolset_name = "toolset_%02d" % ( i_toolset )
 
-                    if test_result == "success" and ( 0 == i_test % 5 ):
-                        show_run_output = "true"
-                        
-                    common.make_test_log( g, i_lib, i_toolset, test_name, test_type, test_result, show_run_output )
-        g.endElement( "test-run" )
+            for i_test in range( num_of_tests ):
+                test_name = "test_%02d_%02d" % ( i_lib, i_test )
+                test_result = ""
+                test_type = "run"
+                show_run_output = "false"
+
+                if i_lib % 2:  test_result = "success"
+                else:             test_result = "fail"
+
+                if test_result == "success" and ( 0 == i_test % 5 ):
+                    show_run_output = "true"
+
+                common.make_test_log( g, i_lib, i_toolset, test_name, test_type, test_result, show_run_output )
+
+    g.endElement( "test-results" )
 
 
 
@@ -96,6 +81,5 @@ def make_test_results():
 ## </test-log>
         
     
-make_test_results()
+make_test_results( )
 common.make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests  )
-
