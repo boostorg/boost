@@ -12,21 +12,29 @@
 
 import modules ;
 import set ;
+import stage ;
+
+constant BOOST_VERSION : 1.32.0 ;
 
 project boost
     : requirements <include>$(BOOST_ROOT)
       # disable auto-linking for all targets here,
       # primarily because it caused troubles with V2
       <define>BOOST_ALL_NO_LIB=1
-      <tag>@stage.add-variant
+      # Used to encode variant in target name. See the
+      # 'tag' rule below.
+      <tag>@$(__name__).tag
     : usage-requirements <include>$(BOOST_ROOT)
     : build-dir bin.v2  
     ;
 
-# The code hereselects the libraries that must be built and builds
+# The code here selects the libraries that must be built and builds
 # and creates two targets:
 # 'stage', which builds only libraries and placed them in one location
 # 'install', which places both libraries and headers in system location
+
+
+
 rule libraries-to-install ( existing-libraries * )
 {
    local argv = [ modules.peek : ARGV ] ;
@@ -70,7 +78,7 @@ rule libraries-to-install ( existing-libraries * )
 ARGV = [ modules.peek : ARGV ] ;
 
 # what kind of layout are we doing?
-local layout = [ MATCH "^--layout=(.*)" : $(ARGV) ] ;
+layout = [ MATCH "^--layout=(.*)" : $(ARGV) ] ;
 layout ?= versioned ;
 layout-$(layout) = true ;
 
@@ -118,26 +126,45 @@ libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
 libraries = [ libraries-to-install $(libraries) ] ;
 
 
-local rename-rule ;
-if $(layout) = versioned
+# This rule is called by Boost.Build to determine the name of 
+# target. We use it to encode build variant, compiler name and
+# boost version in the target name 
+rule tag ( name : type ? : property-set )
 {
-    rename-rule = stage.add-variant-and-compiler ;
-}
-else
-{
-    rename-rule = stage.add-variant ;
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
+    {        
+        if $(layout) = versioned
+        {
+            name = [ stage.add-variant-and-compiler $(name) 
+              : $(type) : $(property-set) ] ;
+            
+            if [ $(property-set).get <os> ] = NT
+            {
+                return $(name:B)_$(BOOST_VERSION)$(name:S) ;
+            }
+            else
+            {
+                return $(name:B)_$(BOOST_VERSION)$(name:S).$(BOOST_VERSION)  ;
+            }                                                  
+        }
+        else
+        {
+            return [ stage.add-variant-and-compiler $(name) 
+              : $(type) : $(property-set) ] ;
+        }        
+    }                   
 }
 
 # Install to system location.
 
 alias install : install-libs install-headers ;
 
-stage install-libs : libs/$(libraries)/build   
+install install-libs : libs/$(libraries)/build   
   : <so-version>1.32.0 
     <location>$(lib-locate) 
   ;
 
-stage install-headers : 
+install install-headers : 
   [ glob boost/compatibility/cpp_c_headers/c* ]
   [ glob boost/*.hpp boost/*/*.hpp *.ipp *.h *.inc ]
   :  
@@ -145,9 +172,8 @@ stage install-headers :
   ;  
 
 # Install just library.
-stage stage : libs/$(libraries)/build 
-  : <so-version>1.32.0 
-    <location>$(stage-locate)
+install stage : libs/$(libraries)/build 
+  : <location>$(stage-locate)
   ;
 
 explicit install install-libs install-headers stage ;        
