@@ -1155,19 +1155,10 @@ for more information.
                 <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
                 <note>The failures are caused by problems
                     with std::locale implementation</note>
             </mark-failure>
         </test>
-
-        <test name="unicode_test">
-            <mark-failure>
-                <toolset name="cw-8_3*"/>
-                <note>The test fails at runtime for unknown reason</note>
-            </mark-failure>
-        </test>
-
 
         <test name="options_description_test_dll">
              <mark-failure>
@@ -1208,7 +1199,16 @@ for more information.
                explicitly pass template arguments to member template function. The
                failure is serious and makes one of the primary interfaces
                unusable.
-             </note>
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="*_dll"/>
+            <toolset name="mingw-3*"/>
+            <note>
+                Due to unresearched issues, the tested functionality is not 
+                currently available for this particular configuration.
+            </note>
         </mark-expected-failures>
 
     </library>
@@ -1692,7 +1692,7 @@ for more information.
     <note id="24">
       Although the documentation from the Comeau website would make it appear
       that windows DLL's are supported using the --windows option,  after some
-      experimentation we have been, unsuccessful in making dll configurations
+      experimentation we have been unsuccessful in making dll configurations
       work correctly.
     </note>
 
@@ -1700,8 +1700,8 @@ for more information.
     <note id="25">
       The failure is caused by a runtime limitation. Locale support is only
       available with the static linked variant of the runtime. Generally
-      the dynamic linked variant is required when building dynamic modules
-      ,DLL, so, etc.
+      the dynamic linked variant is required when building dynamic modules, 
+      DLL, <code>so</code>, etc.
     </note>
 
     <note id="26">
