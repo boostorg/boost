@@ -199,8 +199,9 @@
       "../tools/build/jam_src/index.html">Boost.Jam</a>, an extension of the
       <a href="http://www.perforce.com/jam/jam.html">Perforce Jam</a>
       portable <i>make</i> replacement. You can either <a href=
-      "../tools/build/jam_src/index.html#installing">build this yourself</a>,
-      it's included with the distribution. Or obtain a <strong><a href=
+      "../tools/build/jam_src/index.html#building_bjam">build this
+      yourself</a>, it's included with the distribution. Or obtain a
+      <strong><a href=
       "http://sourceforge.net/project/showfiles.php?group_id=7586"><font size="4">
       prebuilt from SourceForge</font></a></strong>. To install Boost.Jam,
       copy the <tt>bjam</tt> executable to a location accessible in your
@@ -229,7 +230,15 @@
     variables which point to the toolset installation directories, either in
     the command shell environment or on the <code>bjam</code> command-line.
     These variables are used by the build system to locate the tools and
-    invoke the necessary setup.</li>
+    invoke the necessary setup. To set the variables on the <tt>bjam</tt>
+    command-line you use the "<tt>-s</tt>" option. For example:<br>
+    <br>
+    <tt>bjam "-sGCC_ROOT=/usr/local/gcc-3.3.2"</tt><br>
+    <br>
+    Some variables, like the toolset <tt>TOOLS</tt> variable, can accept
+    multiple values separated by spaces. Others, like the path above, can
+    contain spaces. For such circumstancesyou should use quotes appropriate
+    for your command interpreter.<br></li>
   </ol>
 
   <h3><a name="Tools">Supported Toolsets</a></h3>
@@ -560,8 +569,7 @@
       <tt>-sTOOLS=&lt;<i>toolsets</i>&gt;</tt></td>
 
       <td align="left" valign="top">The list of tools to compile with.
-      Usually only one is needed. You can specify more than one by separating
-      them with spaces.</td>
+      Usually only one is needed.</td>
     </tr>
 
     <tr>
@@ -681,7 +689,7 @@
 
   <table summary="" border="0" cellspacing="0" cellpadding="0" width="100%">
     <tr>
-      <td colspan="7">
+      <td colspan="11">
         <table summary="" border="0" cellspacing="2" cellpadding="2" bgcolor=
         "#CCCCCC">
           <tr>
@@ -697,7 +705,7 @@
       <td rowspan="7" valign="bottom" bgcolor="#CCCCCC"><tt><font size=
       "+1">lib</font></tt></td>
 
-      <td colspan="7">
+      <td colspan="11">
         <table summary="" border="0" cellspacing="2" cellpadding="2">
           <tr>
             <th>&middot; Library Name</th>
@@ -710,7 +718,7 @@
       <td rowspan="6" valign="bottom"><tt><font size=
       "+1">boost_date_time</font></tt></td>
 
-      <td colspan="6">
+      <td colspan="10">
         <table summary="" border="0" cellspacing="2" cellpadding="2" bgcolor=
         "#CCCCCC">
           <tr>
@@ -722,9 +730,12 @@
 
     <tr>
       <td rowspan="5" valign="bottom" bgcolor="#CCCCCC"><tt><font size=
-      "+1">-gcc</font></tt></td>
+      "+1">-</font></tt></td>
 
-      <td colspan="5">
+      <td rowspan="5" valign="bottom" bgcolor="#CCCCCC"><tt><font size=
+      "+1">gcc</font></tt></td>
+
+      <td colspan="8">
         <table summary="" border="0" cellspacing="2" cellpadding="2">
           <tr>
             <th>&middot; Threading</th>
@@ -734,10 +745,11 @@
     </tr>
 
     <tr>
-      <td rowspan="4" valign="bottom"><tt><font size=
-      "+1">-mt</font></tt></td>
+      <td rowspan="4" valign="bottom"><tt><font size="+1">-</font></tt></td>
 
-      <td colspan="4">
+      <td rowspan="4" valign="bottom"><tt><font size="+1">mt</font></tt></td>
+
+      <td colspan="6">
         <table summary="" border="0" cellspacing="2" cellpadding="2" bgcolor=
         "#CCCCCC">
           <tr>
@@ -749,9 +761,12 @@
 
     <tr>
       <td rowspan="3" valign="bottom" bgcolor="#CCCCCC"><tt><font size=
-      "+1">-d</font></tt></td>
+      "+1">-</font></tt></td>
 
-      <td colspan="3">
+      <td rowspan="3" valign="bottom" bgcolor="#CCCCCC"><tt><font size=
+      "+1">d</font></tt></td>
+
+      <td colspan="4">
         <table summary="" border="0" cellspacing="2" cellpadding="2">
           <tr>
             <th>&middot; Boost Version</th>
@@ -761,8 +776,10 @@
     </tr>
 
     <tr>
+      <td rowspan="2" valign="bottom"><tt><font size="+1">-</font></tt></td>
+
       <td rowspan="2" valign="bottom"><tt><font size=
-      "+1">-1_31</font></tt></td>
+      "+1">1_31</font></tt></td>
 
       <td colspan="2">
         <table summary="" border="0" cellspacing="2" cellpadding="2" bgcolor=
@@ -1104,7 +1121,7 @@
   <hr>
 
   <p>Revised <!--webbot bot="Timestamp" s-type="EDITED"
-                              s-format="%d %B, %Y" startspan -->
+                                s-format="%d %B, %Y" startspan -->
    17 November, 2003 
   <!--webbot bot="Timestamp" endspan i-checksum="13988" --></p>
 
