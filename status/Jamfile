@@ -329,6 +329,11 @@ include testing.jam ;
           [ run libs/tokenizer/simple_example_5.cpp ]
         ;
 
+    test-suite tuple
+        : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+	;
+
     test-suite type_traits
         : [ run libs/type_traits/tests/alignment_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
           [ run libs/type_traits/tests/arithmetic_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
