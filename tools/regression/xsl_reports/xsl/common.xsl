@@ -20,6 +20,8 @@
   extension-element-prefixes="func"
   version="1.0">
 
+  <xsl:variable name="output_directory" select="'output'"/>
+
   <xsl:template name="get_toolsets">
     <xsl:param name="toolsets"/>
     <xsl:param name="required-toolsets"/>
@@ -56,6 +58,16 @@
       <xsl:param name="toolset"/>
       
       <func:result select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $toolset or toolset/@name='*' ]"/>
+  </func:function>
+
+  <func:function name="meta:encode_path">
+      <xsl:param name="path"/>
+      <func:result select="translate( translate( $path, '/', '-' ), './', '-' )"/>
+  </func:function>
+
+  <func:function name="meta:output_file_path">
+      <xsl:param name="path"/>
+      <func:result select="concat( $output_directory, '/', meta:encode_path( $path ), '.html' )"/>
   </func:function>
 
   <xsl:template name="show_notes">
@@ -127,6 +139,7 @@
 
       </div>
   </xsl:template>
+
 
 
 </xsl:stylesheet>

@@ -194,8 +194,13 @@ def make_result_pages( test_results_file
                  )
 
     links = os.path.join( output_dir, "links.html"  )
+    
+    test_output_dir  = os.path.join( output_dir, "output"  )
+    if not os.path.exists(  test_output_dir ):
+        os.makedirs( test_output_dir )
+        
     if "l" in reports:        
-        log( "    Making -links file..." )
+        log( "    Making test output files..." )
         xslt_proc( extended_test_results
                    , xsl_path( "links_page.xsl" )
                    , links

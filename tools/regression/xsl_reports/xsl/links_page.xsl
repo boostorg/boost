@@ -16,7 +16,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
   xmlns:func="http://exslt.org/functions"
   xmlns:meta="http://www.meta-comm.com"
-  extension-element-prefixes="func"
+  xmlns:exsl="http://exslt.org/common"
+  extension-element-prefixes="func exsl"
   version="1.0">
 
   <xsl:import href="common.xsl"/>
@@ -66,6 +67,8 @@
               <td class="header-item-content">
                 Provides notes,  compiler, linker and run output of the
                 regression tests. 
+                
+                This file is not being used any more.
               </td>
             </tr>
           </table>
@@ -83,82 +86,96 @@
 
 
   <xsl:template match="test-log">
-    <div>
-      <xsl:choose>
-        <xsl:when test="@test-name != ''">
-          <xsl:variable name="test-anchor">
-            <xsl:value-of select="concat( @library, '-', @test-name, '-', @toolset )"/>
-          </xsl:variable>
-          <div class="log-test-title">
-            <a name="{$test-anchor}"><xsl:value-of select="concat( @library, ' - ', @test-name, ' / ', @toolset )"/></a>
+    <xsl:variable name="document_path" select="meta:output_file_path( @target-directory )"/>
+
+    <xsl:message>Writing document <xsl:value-of select="$document_path"/></xsl:message>
+
+    <exsl:document href="{$document_path}" 
+      method="html" 
+      doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
+      encoding="utf-8"
+      indent="yes">
+
+      <html>
+        <xsl:variable name="component">
+          <xsl:choose>
+            <xsl:when test="@test-name != ''">
+              <div class="log-test-title">
+                <xsl:value-of select="concat( @library, ' - ', @test-name, ' / ', @toolset )"/>
+              </div>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="@target-dir"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        
+        <head>
+          <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
+          <title>Boost regression - test run output: <xsl:value-of select="$component"/></title>
+        </head>
+
+        <body>
+          <div>
+            <div class="log-test-title">
+              Boost regression - test run output: <xsl:value-of select="$component"/>
           </div>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:variable name="test-anchor">
-            <xsl:value-of select="meta:path-to-anchor( @target-directory )"/>
-          </xsl:variable>
-          <div class="log-test-title">
-            <a name="{$test-anchor}"><xsl:value-of select="@target-directory"/></a>
-          </div>
-        </xsl:otherwise>
-      </xsl:choose>
+        
 
-    <xsl:if test="notes/note">
-      <p>
-        <div class="notes-title">Notes</div>
-        <xsl:call-template name="show_notes">
-            <xsl:with-param name="notes" select="notes/note"/>
-            <xsl:with-param name="explicit_markup" select="$explicit_markup"/>
-        </xsl:call-template>
-      </p>
-    </xsl:if>
+          <xsl:if test="notes/note">
+            <p>
+              <div class="notes-title">Notes</div>
+              <xsl:call-template name="show_notes">
+                <xsl:with-param name="notes" select="notes/note"/>
+                <xsl:with-param name="explicit_markup" select="$explicit_markup"/>
+              </xsl:call-template>
+            </p>
+          </xsl:if>
+          
+          <xsl:if test="compile">
+            <p>
+              <div class="log-compiler-output-title">Compiler output:</div>
+              <pre>
+                <xsl:copy-of select="compile/node()"/>
+              </pre>
+            </p>
+          </xsl:if>
+          
+          <xsl:if test="link">
+            <p>
+              <div class="log-linker-output-title">Linker output:</div>
+              <pre>
+                <xsl:copy-of select="link/node()"/>
+              </pre>
+            </p>
+          </xsl:if>
 
-    <xsl:if test="compile">
-      <p>
-        <div class="log-compiler-output-title">Compiler&#160;output:</div>
-        <pre>
-          <xsl:copy-of select="compile/node()"/>
-        </pre>
-      </p>
-    </xsl:if>
-
-    <xsl:if test="link">
-      <p>
-        <div class="log-linker-output-title">Linker&#160;output:</div>
-        <pre>
-          <xsl:copy-of select="link/node()"/>
-        </pre>
-      </p>
-    </xsl:if>
-
-    <xsl:if test="lib">
-      <p>
-        <div class="log-linker-output-title">Lib &#160;output:</div>
-        <p>
-          See <a href="#{meta:path-to-anchor( lib/node() )}">
-            <xsl:copy-of select="lib/node()"/>
-          </a>
-        </p>
-      </p>
-    </xsl:if>
-
-    <xsl:if test="run">
-      <p>
-        <div class="log-run-output-title">Run&#160;output:</div>
-        <pre>
-          <xsl:copy-of select="run/node()"/>
-        </pre>
-      </p>
-    </xsl:if>
-
-    </div>
-
+          <xsl:if test="lib">
+            <p>
+              <div class="log-linker-output-title">Lib output:</div>
+              <p>
+                See <a href="#{meta:encode_path( lib/node() )}">
+                <xsl:copy-of select="lib/node()"/>
+                </a>
+              </p>
+            </p>
+          </xsl:if>
+          
+          <xsl:if test="run">
+            <p>
+              <div class="log-run-output-title">Run output:</div>
+              <pre>
+                <xsl:copy-of select="run/node()"/>
+              </pre>
+            </p>
+          </xsl:if>
+          
+        </div>
+      </body>
+    </html>
+  </exsl:document>  
   </xsl:template>
 
-  <func:function name="meta:path-to-anchor">
-      <xsl:param name="path"/>
-      <func:result select="translate( $path, '/', '-' )"/>
-  </func:function>
-  
+
 
 </xsl:stylesheet>
