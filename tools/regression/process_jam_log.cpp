@@ -117,19 +117,21 @@ namespace
     ++start_pos;
     string::size_type end_pos( msg.find( '>', start_pos ) );
     first_dir += msg.substr( start_pos, end_pos - start_pos );
+    start_pos = first_dir.rfind( '!' );
     convert_path_separators( first_dir );
-    first_dir.insert( 6, "/bin" );
+    first_dir.insert( first_dir.find( '/', start_pos + 1), "/bin" );
+//std::cout << first_dir << std::endl;
 
     start_pos = msg.find( '<', end_pos );
     if ( start_pos == string::npos ) return;
     ++start_pos;
     end_pos = msg.find( '>', start_pos );
     second_dir += msg.substr( start_pos, end_pos - start_pos );
+    start_pos = second_dir.rfind( '!' );
     convert_path_separators( second_dir );
-    second_dir.insert( second_dir.find( "/build/" )+6, "/bin" );
+    second_dir.insert( second_dir.find( '/', start_pos + 1), "/bin" );
+//std::cout << second_dir << std::endl;
   }
-
-
 
 //  test_log hides database details  -----------------------------------------//
 
@@ -186,8 +188,8 @@ namespace
       pth /= "test_log.xml";
       fs::ofstream file( pth );
       if ( !file )
-        throw fs::filesystem_error( "Can't open output file: "
-        + pth.string(), fs::other_error );
+        throw fs::filesystem_error( "process_jam_long.cpp",
+          pth, "can't open output file" );
       xml::write( *m_root, file );
     }
 
@@ -228,6 +230,11 @@ namespace
     string  m_test_name;
     string  m_toolset;
 
+    // data needed to stop further compile action after a compile failure
+    // detected in the same target directory
+    string  m_previous_target_directory;
+    bool    m_compile_failed;
+
   public:
     ~message_manager() { /*assert( m_action_name.empty() );*/ }
 
@@ -242,6 +249,11 @@ namespace
       m_target_directory = target_directory;
       m_test_name = test_name;
       m_toolset = toolset;
+      if ( m_previous_target_directory != target_directory )
+      {
+        m_previous_target_directory = target_directory;
+        m_compile_failed = false;
+      }
     }
 
     void stop_message( const string & content )
@@ -262,30 +274,42 @@ namespace
       // a stop_message that was not preceeded by a matching start_message.
       assert( m_action_name == action_name );
       assert( m_target_directory == target_directory );
+      assert( result == "succeed" || result == "fail" );
 
-      test_log tl( target_directory, m_test_name, m_toolset );
-
-      // dependency removal
-      if ( action_name == "lib" )
+      // if test_log.xml entry needed, create it
+      if ( !m_compile_failed
+        || action_name != "compile"
+        || m_previous_target_directory != target_directory )
       {
-        tl.remove_action( "compile" );
-        tl.remove_action( "link" );
-        tl.remove_action( "run" );
-      }
-      else if ( action_name == "compile" )
-      {
-        tl.remove_action( "link" );
-        tl.remove_action( "run" );
-      }
-      else if ( action_name == "link" ) { tl.remove_action( "run" ); }
+        if ( action_name == "compile"
+          && result == "fail" ) m_compile_failed = true;
 
-      // dependency removal won't work right with random names, so assert
-      else { assert( action_name == "run" ); }
+        test_log tl( target_directory, m_test_name, m_toolset );
 
-      // add the stop_message action
-      tl.add_action( action_name, result, timestamp, content );
+        // dependency removal
+        if ( action_name == "lib" )
+        {
+          tl.remove_action( "compile" );
+          tl.remove_action( "link" );
+          tl.remove_action( "run" );
+        }
+        else if ( action_name == "compile" )
+        {
+          tl.remove_action( "link" );
+          tl.remove_action( "run" );
+          if ( result == "fail" ) m_compile_failed = true;
+        }
+        else if ( action_name == "link" ) { tl.remove_action( "run" ); }
+
+        // dependency removal won't work right with random names, so assert
+        else { assert( action_name == "run" ); }
+
+        // add the stop_message action
+        tl.add_action( action_name, result, timestamp, content );
+      }
 
       m_action_name = ""; // signal no pending action
+      m_previous_target_directory = target_directory;
     }
   };
 }
@@ -294,6 +318,20 @@ namespace
 
 int cpp_main( int argc, char ** argv )
 {
+  string boost_root_relative_initial;
+  fs::path boost_root( fs::initial_path() );
+  while ( !boost_root.empty()
+    && !fs::exists( boost_root / "libs" ) )
+  {
+    boost_root = boost_root.branch_path();
+    boost_root_relative_initial += "../";
+  }
+  if ( boost_root.empty() )
+  {
+    std::cout << "must be run from within the boost-root directory tree\n";
+    return 1;
+  }
+
   message_manager mgr;
 
   string line;
@@ -310,6 +348,7 @@ int cpp_main( int argc, char ** argv )
   {
 //      std::cout << line << "\n";
 
+    // create map of test-name to test-file-path
     if ( line.find( "(boost-test " ) == 0 )
     {
       string test_name, test_file_path;
@@ -326,6 +365,8 @@ int cpp_main( int argc, char ** argv )
       }
     }
 
+    // these actions represent both the start of a new action
+    // and the end of a failed action
     else if ( line.find( "C++-action " ) != string::npos
       || line.find( "vc-C++ " ) != string::npos
       || line.find( "C-action " ) != string::npos
@@ -347,6 +388,15 @@ int cpp_main( int argc, char ** argv )
       }
       content = "\n";
       capture_lines = true;
+    }
+
+    // these actions are only used to stop the previous action
+    else if ( line.find( "-Archive" ) != string::npos
+      || line.find( "MkDir" ) == 0 )
+    {
+      mgr.stop_message( content );
+      content.clear();
+      capture_lines = false;
     }
 
     else if ( line.find( "execute-test" ) != string::npos )
@@ -381,26 +431,31 @@ int cpp_main( int argc, char ** argv )
       }
     }
 
-    else if ( line.find( "...skipped <" ) != string::npos
-      && line.find( ".test for lack of " ) != string::npos )
+    // bjam indicates some prior dependency failed by a "...skipped" message
+    else if ( line.find( "...skipped <" ) != string::npos )
     {
       mgr.stop_message( content );
       content.clear();
-      capture_lines = true;
+      capture_lines = false;
 
-      string target_dir;
-      string lib_dir;
-
-      parse_skipped_msg( line, target_dir, lib_dir );
-
-      if ( target_dir != lib_dir ) // it's a lib problem
+      if ( line.find( ".exe for lack of " ) != string::npos )
       {
-        target_dir.insert( 0, "../" );
-        mgr.start_message( "lib", target_dir, 
-          test_name( target_dir ), toolset( target_dir ), content );
-        content = lib_dir;
-        mgr.stop_message( "lib", target_dir, "fail", timestamp(), content );
-        content = "\n";
+        capture_lines = true;
+
+        string target_dir;
+        string lib_dir;
+
+        parse_skipped_msg( line, target_dir, lib_dir );
+
+        if ( target_dir != lib_dir ) // it's a lib problem
+        {
+          target_dir.insert( 0, boost_root_relative_initial );
+          mgr.start_message( "lib", target_dir, 
+            test_name( target_dir ), toolset( target_dir ), content );
+          content = lib_dir;
+          mgr.stop_message( "lib", target_dir, "fail", timestamp(), content );
+          content = "\n";
+        }
       }
 
     }
