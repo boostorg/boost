@@ -174,7 +174,7 @@ def unpack_tarball( tarball_path, destination  ):
 
     if extension in ( ".tar.gz", ".tar.bz2" ):
         mode = os.path.splitext( extension )[1][1:]
-        tar = tarfile.open( tarball_path, 'r|%s' % mode )
+        tar = tarfile.open( tarball_path, 'r:%s' % mode )
         for tarinfo in tar:
             tar.extract( tarinfo, destination )        
             if sys.platform == 'win32' and not tarinfo.isdir():
