@@ -61,7 +61,7 @@ def upload_to_ftp( tag, result_file ):
         ftp.mkd( tag )
         ftp.cwd( tag )
 
-    result_file_reader = open( result_file, "r" )
+    result_file_reader = open( result_file, "rb" )
     ftp.storbinary( "STOR %s" % os.path.basename( result_file ), result_file_reader )
 
 
