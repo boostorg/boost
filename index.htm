@@ -23,7 +23,7 @@
                               CVS</a><br>
                            .&nbsp;<a href="more/license_info.html">License</a><br>
                            .&nbsp;<a href="more/getting_started.html">Getting Started</a><br>
-                           </A>.&nbsp;Regression Tests:<br>
+                           .&nbsp;Regression Tests:<br>
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="status/compiler_status.html">General 
                               Info</a><br>
                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://boost.sourceforge.net/regression-logs">Test 
@@ -119,13 +119,16 @@
                         </center>
                         <!-- Search Google -->
                         <h2><a name="Latest News">Latest News</a></h2>
-                        <p> ??? - Version 1.3?.?</p>
+
+                        <h3> ??? - Version 1.3?.?</h3>
                         <ul>
                           <li>Compose: This deprecated library has been removed.</li>
                         </ul>
-                        <p>January 26, 2004 - Version 1.31.0</p>
-                        <ul>
-                           <li>
+
+                        <h3>January 26, 2004 - Version 1.31.0</h3>
+                        
+
+                          <h4>New License</h4>
                               A unified <a href="more/license_info.html">Boost Software License</a> has been 
                               developed and will gradually replace the individual licenses for most Boost libraries. 
                               The new license offers better legal protection for both users and developers, 
@@ -135,79 +138,140 @@
                                  Berkman Center for Internet &amp; Society</a>, Harvard Law School. <a href="http://www.nixonpeabody.com/attorneys_detail1.asp?ID=121">
                                  Devin Smith</a>, attorney, <a href="http://www.nixonpeabody.com/default.asp">Nixon 
                                  Peabody LLP</a>, wrote the Boost License. Eva Chan, Harvard Law School, 
-                           contributed analysis of issues and drafts of various legal documents.<li>
+                           contributed analysis of issues and drafts of various legal documents.
+                              <blockquote>
+                                <b>Please Note:</b> Many of the Boost
+                                libraries are still using earlier
+                                licenses, though all conform to the <a
+                                href="more/lib_guide.htm#license">Boost
+                                License Requirements</a>. After this
+                                release we will begin an effort to
+                                move toward uniform use of the new
+                                license.
+                                </blockquote>
+
+                           <h4>Build and Installation</h4>
+                           <ul>
+                             <li>
                               New <a href="more/getting_started.html">Getting 
                               Started</a> procedures ease download and 
-                              installation, from Rene Rivera and others.<li>
+                              installation, from Rene Rivera and others.
+
+                             <li>
                               Improved support for libraries requiring
                               <a href="more/separate_compilation.html">separate 
                               compilation</a>, from John Maddock and others.
-                           <li>
-                              <a href="libs/utility/enable_if.html">enable_if</a> added - Selective inclusion 
-                              of function template overloads, from Jaakko Järvi, Jeremiah Willcock, and 
-                              Andrew Lumsdaine. This is an important new technique which exploits the <em>SFINAE</em>
+                           </ul>
+
+                          <h4>New Libraries</h4>
+                          <ul>
+                            <li>
+                              <a href="libs/utility/enable_if.html">enable_if</a>: Selective
+                              inclusion of function template overloads, from Jaakko Järvi, Jeremiah
+                              Willcock, and Andrew Lumsdaine. This is an important new technique
+                              which exploits the <em>SFINAE</em>
                            (substitution-failure-is-not-an-error) principle.&nbsp;
+
                            <li>
-                              <a href="libs/variant/index.html">Variant Library</a>
-                           added - Safe, generic, stack-based discriminated union container, from Eric 
-                           Friedman and Itay Maman.
+                              <a href="libs/variant/index.html">Variant Library</a>: Safe, generic,
+                           stack-based discriminated union container, from Eric Friedman and Itay
+                           Maman.
+                          </ul>
+
+                           <h4>Updated Libraries</h4>
+
+                           <ul>
+                             <li>
+                              <a href="libs/compose/index.htm">Compose</a>: This library has been
+                              deprecated and will be removed in a future release. Use <a
+                              href="libs/bind/bind.html">Bind</a> or <a
+                              href="libs/lambda/doc/index.html">Lambda</a> instead.
+                             </li>
+
+                           <li>
+                              <a href="libs/date_time/doc/index.html">Date Time Library:</a> A whole
+                              host of bug fixes, new features, and documentation
+                              improvements. See <a href="libs/date_time/doc/Changes.html"> Date Time
+                              Change History</a> for details.
+
                            <li>
                               <a href="libs/filesystem/doc/index.htm">Filesystem Library</a>: Several 
                            added functions, including improved checking for directory and file name 
                            portability.
+
                            <li>
-                              <a href="libs/iterator/doc/index.html">Iterator 
-                              Adaptors Library</a>: Major version upgrade, with 
-                              interface changes as proposed for the C++ TR, from 
-                              David Abrahams, Jeremy Siek, and Thomas Witt.<li>
+                             <a name="iterators_lib"></a>
+                              <a href="libs/iterator/doc/index.html">Iterator Library</a>: Major
+                              version upgrade, with interface as proposed for the C++ library TR,
+                              including an improved <code>iterator_adaptor</code> design plus
+                              several new components, from David Abrahams, Jeremy Siek, and
+                              Thomas Witt.
+
+                           <li>
+                              <a href="libs/multi_array/index.html">MultiArray</a>: The <tt>multi_array</tt> class
+                              template now provides an element-preserving resize operation as well as default
+                              construction (see the <a href="libs/multi_array/doc/reference.html">reference
+                                 manual</a> for more information).</li>
+
+                           <li><a href="libs/python/index.html">Python Library</a>:
+                             <ul>
+                               <li>Support for Python 2.3 and Intel C++ on Linux
+
+                               <li>Container <a href="libs/python/doc/v2/indexing.html">Indexing
+                                  Suite</a> added.
+
+                               <li>injected constructors and wrapped function objects.
+
+                               <li>wrapping static data members.
+
+                               <li><code>std::wstring</code> conversions.
+
+                               <li>Improved <a href="libs/python/doc/v2/args.html">keyword arguments</a>
+
+                               <li>Better error messages, including name demangling for GCC.
+
+                               <li>Simpler <a href="libs/python/doc/building.html">build procedure</a>.
+
+                               <li><i>...and more...</i></li>
+                             </ul>
+
+                           <li>
                               <a href="libs/random/index.html">Random Number Library</a>: 
                               Interface changed 
                               to match the C++ <a href="libs/random/wg21-proposal.html">TR proposal</a>, 
                            from Jens Maurer.
+
                            <LI>
                               <A href="libs/regex/doc/index.html">Regex</A>: Completely new matching 
                               algorithm is now much faster than before, plus a selection of <A href="libs/regex/doc/history.html">
                                  new features and enhancements</A>.
+
                            <li>
-                              <a href="libs/date_time/doc/index.html">Date Time Library:</a> A whole host of 
-                              bug fixes, new features, and documentation improvements. See <a href="libs/date_time/doc/Changes.html">
-                                 Date Time Change History</a>
-                           for details.
-                           <li>
-                              Compose: This library has been deprecated 
-                              and will be removed in a future release. Use <a href="libs/bind/bind.html">Bind</a>
-                              or <a href="libs/lambda/doc/index.html">Lambda</a>
-                           instead.
-                           <li>
-                              <a href="libs/multi_array/index.html">MultiArray</a>: The <tt>multi_array</tt> class 
-                              template now provides an element-preserving resize operation as well as default 
-                              construction (see the <a href="libs/multi_array/doc/reference.html">reference 
-                                 manual</a> for more information).</li>
-                           <li><a href="libs/test/index.html">Test Library</a>:
+                              <a href="libs/spirit/index.html">Boost.Spirit 1.8.0</a>:
                               <ul>
-                                 <li>
-                                 Free function template based test case </li>
-                                 <li>
-                                 Custom exception translators support in execution monitor and register_exception_translator added for unit test framework </li>
-                                 <li>
-                                 Added support for multi-module unit tests in automatic registration facility </li>
-                                 <li>
-                                 Floating point comparison algorithm reworked (Is not backward compatible!!!) </li>
-                                 <li>
-                                    Added support for custom users predicate returning both boolean result code and possibly error message </li>
-                                 <li>
-                                    Documentation structure rework and update</li>
+                                 <li>Multiple grammar start rules</li>
+                                 <li>Multiple Scanner rules (no more scanner business woes)</li>
+                                 <li>More dynamic parsers</li>
+                                 <li>Predefined actors</li>
+                                 <li>Numerous bug fixes and QOI stuff</li>
+                                 <li>Expanded testing and fixes for non-conforming compilers.</li>
+                                 <li><i>...and more...</i></li>
                               </ul>
-                              For complete list of changes see Test Library <a href="libs/test/doc/release_notes.html#v1_31_0">
-                                 release notes</a>
-                           <li>
-                              Expanded testing and fixes for non-conforming 
-                              compilers.</li>
-                           <li>
-                              Web site hosting now provided by
-                              <a href="http://www.sourceforge.net/">SourceForge</a>.</li>
+
+                            Starting from Spirit v1.8.0, ill conforming compilers will no longer be
+                            supported. If you are still using one of these older compilers,
+                            please use Spirit v1.6.x. See <a href="http://spirit.sf.net">Spirit's Site</a>
+                            for more details.
+                           </li>
+                           </ul>
+
+                        <h4>Site Update</h4>
+                        <ul>
+                          <li>Web site hosting now provided by
+                                <a href="http://www.sourceforge.net/">SourceForge</a>.
                         </ul>
-                        <p>August 19, 2003 - Version 1.30.2 (bugfix release)</p>
+                           
+                        <h3>August 19, 2003 - Version 1.30.2 (bugfix release)</h3>
                         <ul>
                            <li>
                               <a href="http://www.boost-consulting.com">Boost Consulting</a> is now hosting 
@@ -250,7 +314,8 @@
                               <a href="tools/regression/index.htm">regression/compiler_status.cpp</a>: 
                               backported fixes in error log links generation.</li>
                         </ul>
-                        <p>August 12, 2003 - <b>ALERT</b></p>
+
+                        <h3>August 12, 2003 - <b>ALERT</b></h3>
                         <p>
                         Significant problems were found in the 1.30.1 release, so it has been withdrawn 
                         from the website. These problems mostly take the form of missing files due to 
@@ -261,7 +326,7 @@
                               CVS</a> repository or the <a href="more/getting_started.html#CVS">CVS mirror</a>
                            at <a href="http://www.boost-consulting.com">Boost Consulting</a>
                         .
-                        <p>August 4, 2003 - Version 1.30.1 (bugfix release)</p>
+                        <h3>August 4, 2003 - Version 1.30.1 (bugfix release)</h3>
                         <p>Fixes were made to the following libraries:</p>
                         <ul>
                            <li>
@@ -337,7 +402,7 @@
                               </ul>
                            </li>
                         </ul>
-                        <p>March 19, 2003 - Version 1.30.0</p>
+                        <h3>March 19, 2003 - Version 1.30.0</h3>
                         <ul>
                            <li>
                               <a href="libs/filesystem/doc/index.htm">Filesystem Library</a>
@@ -416,7 +481,7 @@
                            <li>
                               Many fixes and enhancements to other libraries.</li>
                         </ul>
-                        <p>October 10, 2002 - Version 1.29.0</p>
+                        <h3>October 10, 2002 - Version 1.29.0</h3>
                         <ul>
                            <li>
                               <a href="libs/date_time/doc/index.html">Date-Time Library</a>
