@@ -52,13 +52,13 @@ namespace boost
       explicit element( const std::string & name ) : name(name) {}
     };
 
-    element_ptr parse( std::istream & in );
+    element_ptr parse( std::istream & in, const std::string & msg );
     // Precondition: stream positioned at either the initial "<"
     // or the first character after the initial "<".
     // Postcondition: stream positioned at the first character after final
     //  ">" (or eof).
     // Returns: an element_ptr to an element representing the parsed stream.
-    // Throws: std::string on syntax error.
+    // Throws: std::string on syntax error. msg appended to what() string.
 
     void write( const element & e, std::ostream & out );
 

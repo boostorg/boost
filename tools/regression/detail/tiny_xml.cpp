@@ -32,11 +32,13 @@ namespace
     return result;
   }
 
-  void eat_delim( char & c, std::istream & in, char delim )
+  void eat_delim( char & c, std::istream & in,
+                  char delim, const std::string & msg )
   {
     eat_whitespace( c, in );
     if ( c != delim )
-      throw (std::string("xml syntax error, expected ") + delim);
+      throw std::string("xml syntax error, expected ") + delim
+       + " (" + msg + ")";
     in.get( c );
   }
 
@@ -61,7 +63,7 @@ namespace boost
 
   //  parse  -----------------------------------------------------------------//
 
-    element_ptr parse( std::istream & in )
+    element_ptr parse( std::istream & in, const std::string & msg )
     {
       char c = 0;  // current character
       element_ptr e( new element );
@@ -78,8 +80,8 @@ namespace boost
         attribute a;
         a.name = get_name( c, in );
 
-        eat_delim( c, in, '=' );
-        eat_delim( c, in, '\"' );
+        eat_delim( c, in, '=', msg );
+        eat_delim( c, in, '\"', msg );
 
         a.value = get_value( c, in );
 
@@ -93,7 +95,7 @@ namespace boost
       while ( c == '<' )
       {
         if ( in.peek() == '/' ) break;
-        e->elements.push_back( parse( in ) );
+        e->elements.push_back( parse( in, msg ) );
         in.get( c ); // next after '>'
         eat_whitespace( c, in );
       }
@@ -112,13 +114,14 @@ namespace boost
       assert( c == '<' );
       in.get( c ); // next after '<'
 
-      eat_delim( c, in, '/' );
+      eat_delim( c, in, '/', msg );
       std::string end_name( get_name( c, in ) );
       if ( e->name != end_name )
-        throw (std::string("xml syntax error: beginning name ") +
-          e->name + " did not match end name " + end_name);
+        throw std::string("xml syntax error: beginning name ")
+          + e->name + " did not match end name " + end_name
+          + " (" + msg + ")";
 
-      eat_delim( c, in, '>' );
+      eat_delim( c, in, '>', msg );
       return e;
     }
 
