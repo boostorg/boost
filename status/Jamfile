@@ -11,21 +11,13 @@ SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
 include testing.jam ;
 include testsuites.jam ;
 
-# Note that the Compiler Status Report HTML generator scans
-# these rule invocations to find test type (compile, run, etc.)
-# That program is quite stupid and needs help, including test names
-# (if supplied) which are unambiguous, not the same as a .cpp file
-# name, and preceded and followed by a space. The .cpp file name must
-# be given on the same line as the test type.
-#
-# If the line with the test type includes the comment
-# "# compiler_status<always_show_run_output>" then
-# run output will be displayed even if the test passes.
-
-
 # Make tests run by default.
 DEPENDS all : test ;
 
+# Tests from Jamfiles in individual library test subdirectories
+subinclude libs/filesystem/test ;
+
+# Tests specified in this Jamfile
 {
     # look in BOOST_ROOT for sources first, just in this Jamfile
     local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
@@ -44,7 +36,7 @@ DEPENDS all : test ;
                 : #requirements
                 <threading>multi
           ]
-           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ] # compiler_status<always_show_run_output>
+           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
            [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
