@@ -1,0 +1,26 @@
+#
+# This is Boost Jamfile for Boost.Build V2.
+# Currently, known to work on Linux with gcc
+# 
+# To build Boost with it, run
+#
+#    bjam --v2 link=static
+#
+# from the top-level directory
+
+
+project boost
+    : requirements <include>.
+    ;
+    
+build-project libs/test/build ;
+build-project libs/date_time/build ;
+build-project libs/regex/build ;
+build-project libs/signals/build ;
+build-project libs/graph/build ;
+
+# Comment this out if you don't have Python2.2 installed
+build-project libs/python/build ;
+build-project libs/thread/build ;
+build-project libs/filesystem/build ;
+
