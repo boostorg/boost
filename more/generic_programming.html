@@ -157,11 +157,11 @@ namespace std {
     <h2><a name="type_generator">Type Generators</a></h2>
 
     <p>A <i>type generator</i> is a template whose only purpose is to
-    synthesize a single new type based on its template argument(s). The
-    generated type is usually expressed as a nested typedef named,
-    appropriately <tt>type</tt>. A type generator is usually used to
-    consolidate a complicated type expression into a simple one, as in
-    <tt>boost::<a href=
+    synthesize a single new type based on its template argument(s)<a
+    href="#1">[1]</a>. The generated type is usually expressed as a
+    nested typedef named, appropriately <tt>type</tt>. A type
+    generator is usually used to consolidate a complicated type
+    expression into a simple one, as in <tt>boost::<a href=
     "../libs/utility/filter_iterator.hpp">filter_iterator_generator</a></tt>,
     which looks something like this:
 
@@ -190,6 +190,7 @@ struct filter_iterator_generator {
 boost::filter_iterator_generator&lt;my_predicate,my_base_iterator&gt;::type
 </pre>
     </blockquote>
+
 
     <h2><a name="object_generator">Object Generators</a></h2>
 
@@ -286,6 +287,12 @@ void append_sequence(Container&amp; c, Iterator start, Iterator finish)
     <a href=
     "http://www.cs.rpi.edu/~wiseb/xrds/ovp2-3b.html#SECTION00015000000000000000">
     here</a>.
+
+    <h2>Notes</h2>
+
+    <a name="1">[1]</a> Type generators are a workaround for the lack
+    of ``templated typedefs'' in C++.
+
     <hr>
 
     <p>Revised 
