@@ -22,6 +22,7 @@ subinclude libs/filesystem/test ;        # test-suite filesystem
 subinclude libs/optional/test ;          # test-suite optional
 subinclude libs/regex/test ;             # test-suite regex
 subinclude libs/regex/example ;          # test-suite regex-examples
+subinclude libs/smart_ptr/test ;         # test-suite smart_ptr
 subinclude libs/static_assert ;          # test-suite static_assert
 subinclude libs/thread/test ;            # test-suite thread
 subinclude libs/type_traits/test ;       # test-suite type_traits
@@ -231,16 +232,6 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
     test-suite random
         : [ run libs/random/random_test.cpp  <lib>../libs/test/build/boost_test_exec_monitor ]
           [ run libs/random/random_demo.cpp ]
-        ;
-
-    test-suite smart_ptr
-        : [ run libs/smart_ptr/smart_ptr_test.cpp ]
-          [ run libs/smart_ptr/shared_ptr_basic_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
-          [ run libs/smart_ptr/shared_ptr_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
-          [ run libs/smart_ptr/weak_ptr_test.cpp ]
-          [ run libs/smart_ptr/shared_from_this_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
-          [ run libs/smart_ptr/get_deleter_test.cpp ]
-          [ compile-fail libs/smart_ptr/shared_ptr_assign_fail.cpp ]
         ;
 
     subinclude libs/test/test ;
