@@ -142,28 +142,45 @@ registered_xsltprocs = {   "msxsl": msxsl
                          , "libxslt": libxslt
                          }
 
-def xsl_path( xsl_file_name ):
-    return os.path.join( run_dir, "xsl", xsl_file_name ) 
+def map_path( path ):
+    return os.path.join( run_dir, path ) 
 
+def xsl_path( xsl_file_name ):
+    return map_path( os.path.join( "xsl", xsl_file_name ) )
 
 def make_result_pages( test_results_file
                        , expected_results_file
                        , source
                        , run_date
                        , comment_file
+                       , results_dir
                        , result_prefix
-                       , output_dir
                        , xslt_proc_name
                        ):
     log( "Producing the reports..." )
     __log__ = 1
+    
+    output_dir = os.path.join( results_dir, result_prefix )
+    if not os.path.exists( output_dir ):
+        os.makedirs( output_dir )
+        
     xslt_proc = registered_xsltprocs[ xslt_proc_name ]
+    
+    if comment_file != "":
+        comment_file = os.path.abspath( comment_file )
+        
+    if expected_results_file != "":
+        expected_results_file = os.path.abspath( expected_results_file )
+    else:
+        expected_results_file = os.path.abspath( map_path( "empty_expected_results.xml" ) )
+        
+    
     extended_test_results = os.path.join( output_dir, "extended_test_results.xml" )
     log( "    Merging with expected results..." )
     xslt_proc( test_results_file
                , xsl_path( "add_expected_results.xsl" )
                , extended_test_results
-               , { "expected_results_file": os.path.abspath( expected_results_file ) }
+               , { "expected_results_file": expected_results_file }
            )
 
     log( "    Making detailed reports..." )
@@ -171,12 +188,12 @@ def make_result_pages( test_results_file
         xslt_proc(  extended_test_results
                     , xsl_path( "result_page.xsl" )
                     , os.path.join( output_dir, "%s_%s" % ( mode, "result_page.html" ) )
-                    , { "links_file": result_prefix + "-links.html"
+                    , { "links_file": "../" + result_prefix + "-links.html"
                         , "mode": mode
                         , "source": source
                         , "run_date": run_date 
-                        , "comment_file": os.path.abspath( comment_file )
-                        , "expected_results_file": os.path.abspath( expected_results_file )
+                        , "comment_file": comment_file
+                        , "expected_results_file": expected_results_file
                         }
                     );
 
@@ -188,7 +205,7 @@ def make_result_pages( test_results_file
                     , { "mode" : mode 
                         , "source": source
                         , "run_date": run_date 
-                        , "comment_file": os.path.abspath( comment_file )
+                        , "comment_file": comment_file
                         }
                     );
     
@@ -201,26 +218,27 @@ def make_result_pages( test_results_file
     shutil.copyfile( xsl_path( "master.css" ),  os.path.join( output_dir, "master.css" ) )
 
 
-def build_experimental_reports( results_dir
+def build_experimental_reports( locate_root_dir
                                 , source
                                 , expected_results_file
                                 , comment_file
+                                , results_dir
                                 , result_file_prefix
                                 , xslt_proc_name
                                 ):
     ( run_date ) = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime() )
     test_results_file = os.path.join( results_dir, "test_results.xml" )
-    collect_test_logs( [ os.path.join( results_dir, "libs" ), os.path.join( results_dir, "status" ) ]
-                       , test_results_file
-                       )
+##    collect_test_logs( [ os.path.join( locate_root_dir, "libs" ), os.path.join( locate_root_dir, "status" ) ]
+##                       , test_results_file
+##                       )
 
     make_result_pages( test_results_file
                        , expected_results_file
                        , source
                        , run_date
                        , comment_file
-                       , result_file_prefix
                        , results_dir
+                       , result_file_prefix
                        , xslt_proc_name
                        )
 
@@ -230,22 +248,28 @@ def accept_args( args ):
                                                                      , "tag="
                                                                      , "expected-results="
                                                                      , "comment="
+                                                                     , "results-dir="
                                                                      , "results-prefix="
                                                                      , "xsltproc="
                                                                      , "help"
                                                                      ] )
-#    options = { "--expected-results": "" }
-    options = {}
+    options = { "--comment": ""
+                , "--expected-results": "" }
+    
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
     if ( options.has_key( "--help" ) or len( options.keys() ) == 0 ):
         usage()
         sys.exit( 1 )
 
+    if not options.has_key( "--results-dir" ):
+         options[ "--results-dir" ] = options[ "--locate-root" ]
+         
     return ( options[ "--locate-root" ]
              , options[ "--tag" ]
              , options[ "--expected-results" ]
              , options[ "--comment" ]
+             , options[ "--results-dir" ]
              , options[ "--results-prefix" ]
              , options[ "--xsltproc" ]
              )
@@ -253,11 +277,14 @@ def accept_args( args ):
 def usage():
     print "Usage: %s [options]" % os.path.basename( sys.argv[0] )
     print    """
-\t--locate-root       the regression results directory
+\t--locate-root       the same as --locate-root in compiler_status
 \t--tag               the tag for the results (i.e. "CVS main trunk")
 \t--expected-results  the file with the results to be compared with
 \t                    the current run 
 \t--comment           an html comment file (will be inserted in the reports)
+\t--results-dir       the directory containing -links.html, -fail.html
+\t                    files produced by compiler_status (by default the
+\t                    same as specified in --locate-root)
 \t--results-prefix    the prefix of -links.html, -fail.html
 \t                    files produced by compiler_status
 \t--xsltproc          the name of xslt processor (msxsl, xalan, libxslt)

@@ -165,8 +165,10 @@
                   <xsl:value-of select="$source"/>
                 </h1>
 
-                <b>Report Time: </b> <!--<xsl:value-of select="$run_date"/>-->
-                <xsl:copy-of select="document( $comment_file )"/>
+                <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+                <xsl:if test="$comment_file != ''">
+                  <xsl:copy-of select="document( $comment_file )"/>
+                </xsl:if>
               </td>
             </tr>
           </table>
@@ -252,13 +254,13 @@
                       <xsl:when test="$mode='user'">
                         <xsl:call-template name="insert_cell_user">
                           <xsl:with-param name="test_log" select="."/>
-                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '%20', $toolset )"/>
+                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
                         </xsl:call-template>
                       </xsl:when>
                       <xsl:when test="$mode='developer'">
                         <xsl:call-template name="insert_cell_developer">
                           <xsl:with-param name="test_log" select="."/>
-                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '%20', $toolset )"/>
+                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
                         </xsl:call-template>
                       </xsl:when>
                     </xsl:choose>
@@ -275,7 +277,6 @@
             <a href="{$mode}_summary_page.html" class="back-link">summary</a>
           </div>
         </xsl:for-each>
-        <div class="acknowledgement">Provided by <a href="http://www.meta-comm.com/engineering">MetaCommunications Engineering</a></div>
         <div>
           <a href="http://validator.w3.org/check/referer">
             <img border="0" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!" height="31" width="88"/>

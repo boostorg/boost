@@ -155,7 +155,9 @@
                   <xsl:value-of select="$source"/>
                 </h1>
                 <b>Report Time: </b> <xsl:value-of select="$run_date"/>
-                <xsl:copy-of select="document( $comment_file )"/>
+                <xsl:if test="$comment_file != ''">
+                  <xsl:copy-of select="document( $comment_file )"/>
+                </xsl:if>
               </td>
             </tr>
           </table>
@@ -215,7 +217,6 @@
             </xsl:for-each>
           </tbody>
         </table>
-	<div class="acknowledgement">Provided by <a href="http://www.meta-comm.com/engineering">MetaCommunications Engineering</a></div>
         <div>
           <a href="http://validator.w3.org/check/referer">
             <img border="0" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!" height="31" width="88"/>
