@@ -154,7 +154,9 @@ def unpack_tarball( tarball_path, destination ):
     tar = tarfile.open( tarball_path, 'r|bz2' )
     for tarinfo in tar:
         tar.extract( tarinfo, destination )        
-        if not tarinfo.isdir():
+        if sys.platform == 'win32' and not tarinfo.isdir():
+            # workaround what appears to be a Win32-specific bug in 'tarfile'
+            # (modification times for extracted files are not set properly)
             f = os.path.join( destination, tarinfo.name )
             os.chmod( f, stat.S_IWRITE )
             os.utime( f, ( tarinfo.mtime, tarinfo.mtime ) )
@@ -183,7 +185,7 @@ def cvs_command( user, command ):
     log( 'Executing CVS command "%s"' % cmd )
     rc = os.system( cmd )
     if rc != 0:
-        raise Exception( 'Cvs command "%s" failed with code %d' % ( cmd, rc ) )
+        raise Exception( 'CVS command "%s" failed with code %d' % ( cmd, rc ) )
 
 
 def cvs_checkout( user, tag, args ):
@@ -223,7 +225,7 @@ def format_time( t ):
 def timestamp():
     return format_time( 
           time.gmtime( os.stat( timestamp_path ).st_mtime )
-        )    
+        )
 
 
 def get_source( user, tag, proxy, args, **unused ):
@@ -501,6 +503,20 @@ def upload_logs(
     upload_logs( runner, tag, user )
 
 
+def update_itself( **unused ):
+    source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
+    log( 'Updating %s from %s...' % ( sys.argv[0], source )  )
+    log( '    Checking modification dates...' )    
+    if os.stat( sys.argv[0] ).st_mtime > os.stat( source ).st_mtime:
+        log( 'Warning: The current version of script appears to be newer than the source.' )
+        log( '         Update skipped.' )
+    else:
+        log( '    Saving a backup copy of the current script...' )
+        shutil.move( sys.argv[0], '%s~' % sys.argv[0] )
+        log( '    Replacing %s with a newer version...'% sys.argv[0] )
+        shutil.copy2( source, sys.argv[0] )
+
+
 def regression( 
           tag
         , runner
@@ -534,7 +550,8 @@ def regression(
         test( toolsets, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, args )
         upload_logs( tag, runner, user )
-
+        update_itself()
+        
         if mail:
             log( 'Sending report to "%s"' % mail )
             end_time = time.localtime()
@@ -553,6 +570,16 @@ def regression(
                 , '\n'.join( msg )
                 )
         raise
+
+
+def show_revision( **unused ):
+    modified = '$Date$'
+    revision = '$Revision$'
+
+    import re
+    re_keyword_value = re.compile( r'^\$\w+:\s+(.*)\s+\$$' )
+    print '\n\tResivion: %s' % re_keyword_value.match( revision ).group( 1 )
+    print '\tLast modified on: %s\n' % re_keyword_value.match( modified ).group( 1 )
 
 
 def accept_args( args ):
@@ -616,7 +643,9 @@ commands = {
     , 'test'            : test
     , 'collect-logs'    : collect_logs
     , 'upload-logs'     : upload_logs
+    , 'update-itself'   : update_itself
     , 'regression'      : regression
+    , 'show-revision'   : show_revision
     }
 
 def usage():
