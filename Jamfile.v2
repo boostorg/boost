@@ -8,6 +8,8 @@
 #
 # from the top-level directory
 
+import modules ;
+import set ;
 
 project boost
     : requirements <include>$(BOOST_ROOT)
@@ -15,18 +17,107 @@ project boost
       # primarily because it caused troubles with V2
       <define>BOOST_ALL_NO_LIB=1
     : usage-requirements <include>$(BOOST_ROOT)
-    : build-dir bin.v2	
+    : build-dir bin.v2  
     ;
+
+# The code hereselects the libraries that must be built and builds
+# and creates two targets:
+# 'stage', which builds only libraries and placed them in one location
+# 'install', which places both libraries and headers in system location
+rule libraries-to-install ( existing-libraries * )
+{
+   local argv = [ modules.peek : ARGV ] ;
+   local with-parameter = [ MATCH --with-(.*) : $(argv) ] ;
+   local without-parameter = [ MATCH --without-(.*) : $(argv) ] ;
+
+   # Do some checks
+   if $(with-parameter) && $(without-parameter)
+   {
+       ECHO "error: both --with-<library> and --without-<library> specified" ;
+       EXIT ;
+   }
+   
+   local wrong = [ set.difference $(with-parameter) : $(existing-libraries) ] ;
+   if $(wrong)
+   {
+       ECHO "error: wrong library name '$(wrong[1])' in the --with-<library> option." ;
+       EXIT ;
+   }
+   local wrong = [ set.difference $(without-parameter) : $(existing-libraries) ] ;
+   if $(wrong)
+   {
+       ECHO "error: wrong library name '$(wrong[1])' in the --without-<library> option." ;
+       EXIT ;
+   }
+
+   if $(with-parameter)
+   {
+       return [ set.intersection $(existing-libraries) : $(with-parameter) ] ;
+   }
+   else
+   {
+       return [ set.difference $(existing-libraries) : $(without-parameter) ] ;
+   }         
+}
+
+# The following is a copy of V1 logic. We don't yet support
+# selecting versioned/unversioned install and changing the build
+# directory.
+
+# possible stage only location
+local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
+stage-locate ?= stage ;
+
+# architecture independent files
+local boost-locate ;
+if ! $(with-stage)
+{
+    boost-locate = [ MATCH "^--prefix=(.*)" : $(ARGV) ] ;
+}
+else
+{
+    boost-locate = $(stage-locate) ;
+}
+
+if $(NT) { boost-locate ?= C:\\Boost ; }
+else if $(UNIX) { boost-locate ?= /usr/local ; }
+
+# architecture dependent files
+local exec-locate = [ MATCH "^--exec-prefix=(.*)" : $(ARGV) ] ;
+exec-locate ?= $(boost-locate) ;
+
+# object code libraries
+local lib-locate = [ MATCH "^--libdir=(.*)" : $(ARGV) ] ;
+lib-locate ?= $(exec-locate)/lib ;
+
+# where to build
+local all-locate = [ MATCH "^--builddir=(.*)" : $(ARGV) ] ;
+ALL_LOCATE_TARGET ?= $(all-locate) ;
+
+# source header files
+local include-locate = [ MATCH "^--includedir=(.*)" : $(ARGV) ] ;
+include-locate ?= $(boost-locate)/include ;
+
+# location of python
+local python-root = [ MATCH "^--with-python-root=(.*)" : $(ARGV) ] ;
+PYTHON_ROOT ?= $(python-root) ;
+
+
+# Select the libraries to install.
+libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
+libraries = [ libraries-to-install $(libraries) ] ;
+
+stage install : libs/$(libraries)/build : <so-version>1.32.0 ;
         
     
-build-project libs/test/build ;
-build-project libs/date_time/build ;
-build-project libs/regex/build ;
-build-project libs/signals/build ;
-build-project libs/graph/build ;
+#build-project libs/test/build ;
+#build-project libs/date_time/build ;
+#build-project libs/regex/build ;
+#build-project libs/signals/build ;
+#build-project libs/graph/build ;
 
 # Comment this out if you don't have Python2.2 installed
-build-project libs/python/build ;
-build-project libs/thread/build ;
-build-project libs/filesystem/build ;
-build-project libs/program_options/build ;
+#build-project libs/python/build ;
+#build-project libs/thread/build ;
+#build-project libs/filesystem/build ;
+#build-project libs/program_options/build ;
