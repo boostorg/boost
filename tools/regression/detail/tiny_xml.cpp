@@ -8,6 +8,7 @@
 
 #include "tiny_xml.hpp"
 #include <cassert>
+#include <cstring>
 
 namespace
 {
