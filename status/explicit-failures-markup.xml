@@ -1136,7 +1136,7 @@ for more information.
             <note author="Thorsten Ottosen"/>
         </mark-unusable>
         <mark-expected-failures>
-            <test name="array"/>
+            <test name="array_test"/>
             <toolset name="como-win32-4.3.3*"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="msvc"/>
@@ -1145,13 +1145,41 @@ for more information.
             <note refid="27" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="iterator_range"/>
+            <toolset name="cw- 8.3*"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <toolset name="tru64cxx65"/>
+            <note author="Thorsten Ottosen">
+                For most compilers this is due to problems
+                with built-in arrays (notably char arrays) and operator==()
+                and operator!=() for iterator_range. Thus, not using built-in arrays
+                fixes the problem.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="reversible_range_test"/>
+            <toolset name="vc7"/>
+            <toolset name="tru64cxx65"/>    
+            <note author="Thorsten Ottosen">
+                This test probably fails because it uses built-in arrays. So do expect these
+                functions to work in normal code.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="sub_range"/>
             <toolset name="vc8.0"/>
             <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc7"/>
+            <toolset name="cw- 8.3*"/> 
             <toolset name="tru64cxx65"/>
-            <note refid="6,27" author="Thorsten Ottosen"/>
+            <note refid="6" author="Thorsten Ottosen">
+                For most compilers this is due to problems
+                with built-in arrays (notably char arrays) and operator==()
+                and operator!=() for iterator_range. Thus, not using built-in arrays
+                fixes the problem.
+            </note>
         </mark-expected-failures>
     </library>
             
