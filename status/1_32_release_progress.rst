@@ -193,6 +193,8 @@ Vladimir Prus writes:
 Serialization
 /////////////
 
+Robert Ramey writes:
+
 I would very much like to see the serialization library in the 1.32 Release.
 However, I'm not sure it will be possible to make the posted schedule.
 
