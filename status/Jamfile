@@ -16,6 +16,8 @@ DEPENDS all : test ;
 
 # Tests from Jamfiles in individual library test subdirectories
 #  Please keep these in alphabetic order by test-suite name
+
+subinclude libs/bind/test ;              # test-suite bind
 subinclude libs/filesystem/test ;        # test-suite filesystem
 subinclude libs/optional/test ;          # test-suite optional
 subinclude libs/regex/test ;             # test-suite regex
@@ -29,13 +31,6 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
     # look in BOOST_ROOT for sources first, just in this Jamfile
     local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
     
-    test-suite "bind"
-        : [ run libs/bind/bind_test.cpp ]
-          [ run libs/bind/mem_fn_test.cpp ]
-          [ run libs/bind/mem_fn_void_test.cpp ]
-          [ run libs/bind/mem_fn_derived_test.cpp ]
-        ;
-
     test-suite config
         : [ run libs/config/test/config_test.cpp <lib>../libs/test/build/boost_test_exec_monitor
                 : #args
