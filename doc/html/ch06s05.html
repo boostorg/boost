@@ -1,0 +1,173 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Design Overview</title><link rel="stylesheet" href="reference.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.61.3"><link rel="home" href="index.html" title="The Boost C++ Libraries"><link rel="up" href="signals.html" title="Boost.Signals"><link rel="previous" href="ch06s04.html" title="Frequently Asked Questions"><link rel="next" href="ch06s06.html" title="Design Rationale"><link rel="chapter" href="libraries.html" title="The Boost C++ Libraries"><link rel="chapter" href="any.html" title="Boost.Any"><link rel="refentry" href="class.boost.bad_any_cast.html" title="Class bad_any_cast"><link rel="refentry" href="class.boost.any.html" title="Class any"><link rel="refentry" href="id2383300-bb.html" title="Function any_cast"><link rel="chapter" href="array.html" title="Boost.Array"><link rel="refentry" href="class.boost.array.html" title="Class template array"><link rel="chapter" href="function.html" title="Boost.Function"><link rel="refentry" href="class.boost.bad_function_call.html" title="Class bad_function_call"><link rel="refentry" href="class.boost.function_base.html" title="Class function_base"><link rel="refentry" href="class.boost.functionN.html" title="Class template functionN"><link rel="refentry" href="class.boost.function.html" title="Class template function"><link rel="chapter" href="ref.html" title="Boost.Ref"><link rel="refentry" href="class.boost.reference_wrapper.html" title="Class template reference_wrapper"><link rel="refentry" href="class.boost.is_reference_wrapper.html" title="Class template is_reference_wrapper"><link rel="refentry" href="class.boost.unwrap_reference.html" title="Class template unwrap_reference"><link rel="chapter" href="signals.html" title="Boost.Signals"><link rel="refentry" href="class.boost.signalN.html" title="Class template signalN"><link rel="refentry" href="class.boost.signal.html" title="Class template signal"><link rel="refentry" href="class.boost.slot.html" title="Class template slot"><link rel="refentry" href="class.boost.signals.trackable.html" title="Class trackable"><link rel="refentry" href="class.boost.signals.connection.html" title="Class connection"><link rel="refentry" href="class.boost.signals.scoped_connection.html" title="Class scoped_connection"><link rel="refentry" href="id2532119-bb.html" title="Function template visit_each"><link rel="refentry" href="class.boost.last_value.html" title="Class template last_value"><link rel="refentry" href="id2354683-bb.html" title="Class last_value&lt;void&gt;"><link rel="chapter" href="variant.html" title="Boost.Variant"><link rel="refentry" href="BOOST_VARIANT_LIMIT_TYPES.html" title="Macro BOOST_VARIANT_LIMIT_TYPES"><link rel="refentry" href="BOOST_VARIANT_ENUM_PARAMS.html" title="Macro BOOST_VARIANT_ENUM_PARAMS"><link rel="refentry" href="BOOST_VARIANT_ENUM_SHIFTED_PARAMS.html" title="Macro BOOST_VARIANT_ENUM_SHIFTED_PARAMS"><link rel="refentry" href="BOOST_VARIANT_NO_REFERENCE_SUPPORT.html" title="Macro BOOST_VARIANT_NO_REFERENCE_SUPPORT"><link rel="refentry" href="BOOST_VARIANT_NO_TYPE_SEQUENCE_SUPPORT.html" title="Macro BOOST_VARIANT_NO_TYPE_SEQUENCE_SUPPORT"><link rel="refentry" href="BOOST_VARIANT_NO_FULL_RECURSIVE_VARIANT_SUPPORT.html" title="Macro BOOST_VARIANT_NO_FULL_RECURSIVE_VARIANT_SUPPORT"><link rel="refentry" href="class.boost.variant.html" title="Class template variant"><link rel="refentry" href="id2518553-bb.html" title="Function template swap"><link rel="refentry" href="id2524211-bb.html" title="Function template operator&lt;&lt;"><link rel="refentry" href="class.boost.make_variant_over.html" title="Class template make_variant_over"><link rel="refentry" href="class.boost.make_recursive_variant.html" title="Class template make_recursive_variant"><link rel="refentry" href="class.boost.make_recursive_variant_over.html" title="Class template make_recursive_variant_over"><link rel="refentry" href="class.boost.recursive_wrapper.html" title="Class template recursive_wrapper"><link rel="refentry" href="class.boost.is_recursive_wrapper.html" title="Class template is_recursive_wrapper"><link rel="refentry" href="class.boost.unwrap_recursive_wrapper.html" title="Class template unwrap_recursive_wrapper"><link rel="refentry" href="class.boost.apply_visitor_delayed_t.html" title="Class template apply_visitor_delayed_t"><link rel="refentry" href="id2557051-bb.html" title="Function apply_visitor"><link rel="refentry" href="class.boost.bad_get.html" title="Class bad_get"><link rel="refentry" href="id2493238-bb.html" title="Function get"><link rel="refentry" href="class.boost.bad_visit.html" title="Class bad_visit"><link rel="refentry" href="class.boost.static_visitor.html" title="Class template static_visitor"><link rel="refentry" href="class.boost.visitor_ptr_t.html" title="Class template visitor_ptr_t"><link rel="refentry" href="id2544445-bb.html" title="Function template visitor_ptr"><link rel="chapter" href="boostbook.html" title="The BoostBook Documentation Format"><link rel="refentry" href="boostbook.dtd.class-specialization.html" title="
+          BoostBook element class-specialization"><link rel="refentry" href="boostbook.dtd.link-test.html" title="
+          BoostBook element link-test"><link rel="refentry" href="boostbook.dtd.link-fail-test.html" title="
+          BoostBook element link-fail-test"><link rel="refentry" href="boostbook.dtd.typedef.html" title="
+          BoostBook element typedef"><link rel="refentry" href="boostbook.dtd.static-constant.html" title="
+          BoostBook element static-constant"><link rel="refentry" href="boostbook.dtd.code.html" title="
+          BoostBook element code"><link rel="refentry" href="boostbook.dtd.destructor.html" title="
+          BoostBook element destructor"><link rel="refentry" href="boostbook.dtd.template-type-parameter.html" title="
+          BoostBook element template-type-parameter"><link rel="refentry" href="boostbook.dtd.description.html" title="
+          BoostBook element description"><link rel="refentry" href="boostbook.dtd.librarylist.html" title="
+          BoostBook element librarylist"><link rel="refentry" href="boostbook.dtd.library-reference.html" title="
+          BoostBook element library-reference"><link rel="refentry" href="boostbook.dtd.boostbook.html" title="
+          BoostBook element boostbook"><link rel="refentry" href="boostbook.dtd.union.html" title="
+          BoostBook element union"><link rel="refentry" href="boostbook.dtd.inherit.html" title="
+          BoostBook element inherit"><link rel="refentry" href="boostbook.dtd.template-varargs.html" title="
+          BoostBook element template-varargs"><link rel="refentry" href="boostbook.dtd.source.html" title="
+          BoostBook element source"><link rel="refentry" href="boostbook.dtd.function.html" title="
+          BoostBook element function"><link rel="refentry" href="boostbook.dtd.postconditions.html" title="
+          BoostBook element postconditions"><link rel="refentry" href="boostbook.dtd.compile-test.html" title="
+          BoostBook element compile-test"><link rel="refentry" href="boostbook.dtd.method.html" title="
+          BoostBook element method"><link rel="refentry" href="boostbook.dtd.snippet.html" title="
+          BoostBook element snippet"><link rel="refentry" href="boostbook.dtd.constructor.html" title="
+          BoostBook element constructor"><link rel="refentry" href="boostbook.dtd.namespace.html" title="
+          BoostBook element namespace"><link rel="refentry" href="boostbook.dtd.if-fails.html" title="
+          BoostBook element if-fails"><link rel="refentry" href="boostbook.dtd.free-function-group.html" title="
+          BoostBook element free-function-group"><link rel="refentry" href="boostbook.dtd.functionname.html" title="
+          BoostBook element functionname"><link rel="refentry" href="boostbook.dtd.librarycategory.html" title="
+          BoostBook element librarycategory"><link rel="refentry" href="boostbook.dtd.notes.html" title="
+          BoostBook element notes"><link rel="refentry" href="boostbook.dtd.data-member.html" title="
+          BoostBook element data-member"><link rel="refentry" href="boostbook.dtd.specialization.html" title="
+          BoostBook element specialization"><link rel="refentry" href="boostbook.dtd.union-specialization.html" title="
+          BoostBook element union-specialization"><link rel="refentry" href="boostbook.dtd.throws.html" title="
+          BoostBook element throws"><link rel="refentry" href="boostbook.dtd.template-arg.html" title="
+          BoostBook element template-arg"><link rel="refentry" href="boostbook.dtd.method-group.html" title="
+          BoostBook element method-group"><link rel="refentry" href="boostbook.dtd.requirement.html" title="
+          BoostBook element requirement"><link rel="refentry" href="boostbook.dtd.precondition.html" title="
+          BoostBook element precondition"><link rel="refentry" href="boostbook.dtd.paramtype.html" title="
+          BoostBook element paramtype"><link rel="refentry" href="boostbook.dtd.using-class.html" title="
+          BoostBook element using-class"><link rel="refentry" href="boostbook.dtd.run-test.html" title="
+          BoostBook element run-test"><link rel="refentry" href="boostbook.dtd.librarypurpose.html" title="
+          BoostBook element librarypurpose"><link rel="refentry" href="boostbook.dtd.copy-assignment.html" title="
+          BoostBook element copy-assignment"><link rel="refentry" href="boostbook.dtd.run-fail-test.html" title="
+          BoostBook element run-fail-test"><link rel="refentry" href="boostbook.dtd.template.html" title="
+          BoostBook element template"><link rel="refentry" href="boostbook.dtd.compile-fail-test.html" title="
+          BoostBook element compile-fail-test"><link rel="refentry" href="boostbook.dtd.returns.html" title="
+          BoostBook element returns"><link rel="refentry" href="boostbook.dtd.default.html" title="
+          BoostBook element default"><link rel="refentry" href="boostbook.dtd.parameter.html" title="
+          BoostBook element parameter"><link rel="refentry" href="boostbook.dtd.signature.html" title="
+          BoostBook element signature"><link rel="refentry" href="boostbook.dtd.overloaded-function.html" title="
+          BoostBook element overloaded-function"><link rel="refentry" href="boostbook.dtd.class.html" title="
+          BoostBook element class"><link rel="refentry" href="boostbook.dtd.librarycategorydef.html" title="
+          BoostBook element librarycategorydef"><link rel="refentry" href="boostbook.dtd.type.html" title="
+          BoostBook element type"><link rel="refentry" href="boostbook.dtd.enumvalue.html" title="
+          BoostBook element enumvalue"><link rel="refentry" href="boostbook.dtd.overloaded-method.html" title="
+          BoostBook element overloaded-method"><link rel="refentry" href="boostbook.dtd.programlisting.html" title="
+          BoostBook element programlisting"><link rel="refentry" href="boostbook.dtd.complexity.html" title="
+          BoostBook element complexity"><link rel="refentry" href="boostbook.dtd.purpose.html" title="
+          BoostBook element purpose"><link rel="refentry" href="boostbook.dtd.template-nontype-parameter.html" title="
+          BoostBook element template-nontype-parameter"><link rel="refentry" href="boostbook.dtd.library.html" title="
+          BoostBook element library"><link rel="refentry" href="boostbook.dtd.librarycategorylist.html" title="
+          BoostBook element librarycategorylist"><link rel="refentry" href="boostbook.dtd.using-namespace.html" title="
+          BoostBook element using-namespace"><link rel="refentry" href="boostbook.dtd.struct-specialization.html" title="
+          BoostBook element struct-specialization"><link rel="refentry" href="boostbook.dtd.struct.html" title="
+          BoostBook element struct"><link rel="refentry" href="boostbook.dtd.lib.html" title="
+          BoostBook element lib"><link rel="refentry" href="boostbook.dtd.enum.html" title="
+          BoostBook element enum"><link rel="refentry" href="boostbook.dtd.requires.html" title="
+          BoostBook element requires"><link rel="refentry" href="boostbook.dtd.effects.html" title="
+          BoostBook element effects"><link rel="refentry" href="boostbook.dtd.libraryname.html" title="
+          BoostBook element libraryname"><link rel="refentry" href="boostbook.dtd.libraryinfo.html" title="
+          BoostBook element libraryinfo"><link rel="refentry" href="boostbook.dtd.testsuite.html" title="
+          BoostBook element testsuite"><link rel="refentry" href="boostbook.dtd.header.html" title="
+          BoostBook element header"><link rel="refentry" href="boostbook.dtd.rationale.html" title="
+          BoostBook element rationale"><link rel="refentry" href="Assignable.html" title="Concept Assignable"><link rel="refentry" href="InputIterator.html" title="Concept InputIterator"><link rel="refentry" href="OutputIterator.html" title="Concept OutputIterator"><link rel="refentry" href="ForwardIterator.html" title="Concept ForwardIterator"><link rel="refentry" href="BidirectionalIterator.html" title="Concept BidirectionalIterator"><link rel="refentry" href="RandomAccessIterator.html" title="Concept RandomAccessIterator"><link rel="refentry" href="DefaultConstructible.html" title="Concept DefaultConstructible"><link rel="refentry" href="CopyConstructible.html" title="Concept CopyConstructible"><link rel="refentry" href="EqualityComparable.html" title="Concept EqualityComparable"><link rel="refentry" href="LessThanComparable.html" title="Concept LessThanComparable"><link rel="refentry" href="SignedInteger.html" title="Concept SignedInteger"><link rel="subsection" href="ch06s05.html#id2526153" title="Type Erasure"><link rel="subsection" href="ch06s05.html#id2526219" title="connection class"><link rel="subsection" href="ch06s05.html#id2526331" title="Slot Call Iterator"><link rel="subsection" href="ch06s05.html#id2526618" title="visit_each function template"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" border="1" cellpadding="2" bgcolor="#007F7F"><tr><td bgcolor="#FFFFFF"><img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td><td><a href="../../index.htm"><font color="#FFFFFF" size="4" face="Arial">Home</font></a></td><td><a href="libraries.html"><font color="#FFFFFF" size="4" face="Arial">Libraries</font></a></td><td><a href="../../people/people.htm"><font color="#FFFFFF" size="4" face="Arial">People</font></a></td><td><a href="../../more/faq.htm"><font color="#FFFFFF" size="4" face="Arial">FAQ</font></a></td><td><a href="../../more/index.htm"><font color="#FFFFFF" size="4" face="Arial">More</font></a></td></tr></table><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2526144"></a>Design Overview</h3></div></div><div></div></div><div class="toc"><dl><dt><a href="ch06s05.html#id2526153">Type Erasure</a></dt><dt><a href="ch06s05.html#id2526219">connection class</a></dt><dt><a href="ch06s05.html#id2526331">Slot Call Iterator</a></dt><dt><a href="ch06s05.html#id2526618">visit_each function template</a></dt></dl></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526153"></a>Type Erasure</h4></div></div><div></div></div><p>"Type erasure", where static type information is eliminated
+    by the use of dynamically dispatched interfaces, is used
+    extensively within the Boost.Signals library to reduce the amount
+    of code generated by template instantiation. Each signal must
+    manage a list of slots and their associated connections, along
+    with a <tt class="computeroutput">std::map</tt> to map from group identifiers to
+    their associated connections. However, instantiating this map for
+    every token type, and perhaps within each translation unit (for
+    some popular template instantiation strategies) increase compile
+    time overhead and space overhead.</p><p> To combat this so-called "template bloat", we use
+    Boost.Function and Boost.Any to store unknown types and
+    operations. Then, all of the code for handling the list of slots
+    and the mapping from slot identifiers to connections is factored
+    into the class <tt class="computeroutput">signal_base</tt>
+    that deals exclusively with the <tt class="computeroutput">any</tt> and
+    <tt class="computeroutput"><a href="class.boost.function.html" title="Class template function">function</a></tt> objects, hiding the
+    actual implementations using the well-known pimpl idiom. The
+    actual <tt class="computeroutput"><a href="class.boost.signalN.html" title="Class template signalN">signalN</a></tt> class templates
+    deal only with code that will change depending on the number of
+    arguments or which is inherently template-dependent (such as
+    connection).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526219"></a><tt class="computeroutput">connection</tt> class</h4></div></div><div></div></div><p> The <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> class is
+    central to the behavior of the Boost.Signals library. It is the
+    only entity within the Boost.Signals system that has knowledge of
+    all objects that are associated by a given connection. To be
+    specific, the <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> class
+    itself is merely a thin wrapper over a
+    <tt class="computeroutput">shared_ptr</tt> to a
+    <tt class="computeroutput">basic_connection</tt> object.</p><p><tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> objects are
+    stored by all participants in the Signals system: each
+    <tt class="computeroutput"><a href="class.boost.signals.trackable.html" title="Class trackable">trackable</a></tt> object contains a
+    list of <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> objects
+    describing all connections it is a part of; similarly, all signals
+    contain a set of pairs that define a slot. The pairs consist of a
+    slot function object (generally a Boost.Function object) and a
+    <tt class="computeroutput"><a href="class.boost.signals.connection.html" title="Class connection">connection</a></tt> object (that will
+    disconnect on destruction). Finally, the mapping from slot groups
+    to slots is based on the key value in a
+    <tt class="computeroutput">std::multimap</tt> (the stored data
+    in the <tt class="computeroutput">std::multimap</tt> is the
+    slot pair).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526331"></a>Slot Call Iterator</h4></div></div><div></div></div><p> The slot call iterator is conceptually a stack of iterator
+    adaptors that modify the behavior of the underlying iterator
+    through the list of slots. The following table describes the type
+    and behavior of each iterator adaptor required. Note that this is
+    only a conceptual model: the implementation collapses all these
+    layers into a single iterator adaptor because several popular
+    compilers failed to compile the implementation of the conceptual
+    model.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Iterator Adaptor</th><th align="left">Purpose</th></tr></thead><tbody><tr><td align="left"><p>Slot List Iterator</p></td><td align="left"><p>An iterator through the list of slots
+            connected to a signal. The <tt class="computeroutput">value_type</tt> of this
+            iterator will be
+            <tt class="computeroutput">std::pair&lt;any,
+            connection&gt;</tt>, where the
+            <tt class="computeroutput"><a href="class.boost.any.html" title="Class any">any</a></tt> contains an
+            instance of the slot function type.</p></td></tr><tr><td align="left"><p>Filter Iterator Adaptor</p></td><td align="left"><p>This filtering iterator adaptor filters out
+            slots that have been disconnected, so we never see a
+            disconnected slot in later stages.</p></td></tr><tr><td align="left"><p>Projection Iterator Adaptor</p></td><td align="left"><p>The projection iterator adaptor returns a
+            reference to the first member of the pair that constitutes
+            a connected slot (e.g., just the
+            <tt class="computeroutput"><a href="class.boost.any.html" title="Class any">boost::any</a></tt> object that
+            holds the slot function).</p></td></tr><tr><td align="left"><p>Transform Iterator Adaptor</p></td><td align="left"><p>This transform iterator adaptor performs an
+            <tt class="computeroutput"><a href="id2383300-bb.html" title="Function any_cast">any_cast</a></tt> to
+            extract a reference to the slot function with the
+            appropriate slot function type.</p></td></tr><tr><td align="left"><p>Transform Iterator Adaptor</p></td><td align="left"><p>This transform iterator adaptor calls the
+            function object returned by dereferencing the underlying
+            iterator with the set of arguments given to the signal
+            itself, and returns the result of that slot
+            call.</p></td></tr><tr><td align="left"><p>Input Caching Iterator Adaptor</p></td><td align="left"><p>This iterator adaptor caches the result of
+            dereferencing the underlying iterator. Therefore,
+            dereferencing this iterator multiple times will only
+            result in the underlying iterator being dereferenced once;
+            thus, a slot can only be called once but its result can be
+            used multiple times.</p></td></tr><tr><td align="left"><p>Slot Call Iterator</p></td><td align="left"><p>Iterates over calls to each slot.</p></td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2526618"></a><tt class="computeroutput">visit_each</tt> function template</h4></div></div><div></div></div><p> The <tt class="computeroutput"><a href="id2532119-bb.html" title="Function template visit_each">visit_each</a></tt>
+    function template is a mechanism for discovering objects that are
+    stored within another object. Function template
+    <tt class="computeroutput"><a href="id2532119-bb.html" title="Function template visit_each">visit_each</a></tt> takes three
+    arguments: an object to explore, a visitor function object that is
+    invoked with each subobject, and the <tt class="computeroutput">int</tt> 0. </p><p> The third parameter is merely a temporary solution to the
+    widespread lack of proper function template partial ordering. The
+    primary <tt class="computeroutput"><a href="id2532119-bb.html" title="Function template visit_each">visit_each</a></tt>
+    function template specifies this third parameter type to be
+    <tt class="computeroutput">long</tt>, whereas any user specializations must specify
+    their third parameter to be of type <tt class="computeroutput">int</tt>. Thus, even
+    though a broken compiler cannot tell the ordering between, e.g., a
+    match against a parameter <tt class="computeroutput">T</tt> and a parameter
+    <tt class="computeroutput">A&lt;T&gt;</tt>, it can determine that the conversion from
+    the integer 0 to <tt class="computeroutput">int</tt> is better than the conversion to
+    <tt class="computeroutput">long</tt>. The ordering determined by this conversion thus
+    achieves partial ordering of the function templates in a limited,
+    but successful, way. The following example illustrates the use of
+    this technique:</p><pre class="programlisting">
+template&lt;typename&gt; class A {};
+template&lt;typename T&gt; void foo(T, long);
+template&lt;typename T&gt; void foo(A&lt;T&gt;, int);
+A&lt;T&gt; at;
+foo(at, 0);
+</pre><p> In this example, we assume that our compiler can not tell
+    that <tt class="computeroutput">A&lt;T&gt;</tt> is a better match than
+    <tt class="computeroutput">T</tt>, and therefore assume that the function templates
+    cannot be ordered based on that parameter. Then the conversion
+    from 0 to <tt class="computeroutput">int</tt> is better than the conversion from 0 to
+    <tt class="computeroutput">long</tt>, and the second function template is
+    chosen. </p></div></div><table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr><td align="left"><small>Last revised: March 12, 2003 at 23:27:22 GMT</small></td><td align="right"><small>Copyright © 2001-2003 Douglas Gregor</small></td></tr></table><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch06s04.html"><img src="images/prev.png" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="signals.html"><img src="images/up.png" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="ch06s06.html"><img src="images/next.png" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Frequently Asked Questions </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a></td><td width="40%" align="right" valign="top"> Design Rationale</td></tr></table></div></body></html>
