@@ -36,7 +36,7 @@
 
   <!-- necessary indexes -->
   <xsl:key 
-    name="test_name_key" 
+    name="library_test_name_key" 
     match="test-log" 
     use="concat( @library, '&gt;@&lt;', @test-name )"/>
   <xsl:key 
@@ -44,7 +44,7 @@
     match="test-log" 
     use="@library"/>
   <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
-
+  <xsl:key name="test_name_key"  match="test-log" use="@test-name "/>
   <!-- -->
   <xsl:variable name="toolsets" select="//test-log[ generate-id(.) = generate-id( key('toolset_key',@toolset)[1] ) and @toolset != '' ]/@toolset"/>
   <xsl:variable name="libraries" select="//test-log[ generate-id(.) = generate-id( key('library_key',@library)[1] ) and @library != '' ]/@library"/>
@@ -186,6 +186,7 @@
               <xsl:variable name="library" select="."/>
               <xsl:variable name="current_row" select="//test-log[ @library=$library]"/>
 
+              <xsl:variable name="expected_test_count" select="count( $current_row[ generate-id(.) = generate-id( key('test_name_key',@test-name)[1] ) ] )"/>
               <xsl:variable name="library_header">
                 <td class="library-name">
                   <a href="{$mode}_result_page.html#{.}" class="library-link">
@@ -207,12 +208,14 @@
                       <xsl:call-template name="insert_cell_user">
                         <xsl:with-param name="current_cell" select="$current_cell"/>
                         <xsl:with-param name="library" select="$library"/>
+                        <xsl:with-param name="expected_test_count" select="$expected_test_count"/>
                       </xsl:call-template>
                     </xsl:when>
                     <xsl:when test="$mode='developer'">
                       <xsl:call-template name="insert_cell_developer">
                         <xsl:with-param name="current_cell" select="$current_cell"/>
                         <xsl:with-param name="library" select="$library"/>
+                        <xsl:with-param name="expected_test_count" select="$expected_test_count"/>
                       </xsl:call-template>
                     </xsl:when>
                   </xsl:choose>
@@ -236,8 +239,12 @@
 <xsl:template name="insert_cell_developer">
   <xsl:param name="current_cell"/>
   <xsl:param name="library"/>
+  <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose>
+      <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
+        <xsl:text>summary-missing</xsl:text>
+      </xsl:when>
       <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected' and @is-new='no'] )">
         <xsl:text>summary-fail-unexpected</xsl:text>
       </xsl:when>
@@ -255,6 +262,9 @@
   
   <td class="{$class}">
     <xsl:choose>
+      <xsl:when test="$class='summary-missing'">
+        <xsl:text>missing</xsl:text>
+      </xsl:when>
       <xsl:when test="$class='summary-fail-unexpected'">
         <a href="{$mode}_result_page.html#{$library}" class="log-link">
           <xsl:text>broken</xsl:text>
@@ -278,8 +288,12 @@
 <xsl:template name="insert_cell_user">
   <xsl:param name="current_cell"/>
   <xsl:param name="library"/>
+  <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose>
+      <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
+        <xsl:text>summary-missing</xsl:text>
+      </xsl:when>
       <xsl:when test="count( $current_cell[@result='fail' and @status='unexpected' ] )">
         <xsl:text>summary-user-fail-unexpected</xsl:text>
       </xsl:when>
@@ -301,16 +315,22 @@
   
   <td class="{$class}">
     <xsl:choose>
+      <xsl:when test="$class='summary-missing'">
+        <xsl:text>missing</xsl:text>
+      </xsl:when>
+
       <xsl:when test="$class='summary-user-fail-unexpected'">
         <a href="{$mode}_result_page.html#{$library}" class="log-link">
           <xsl:text>unexp.</xsl:text>
         </a>
       </xsl:when>
+
       <xsl:when test="$class='summary-user-fail-expected'">
         <a href="{$mode}_result_page.html#{$library}" class="log-link">
           <xsl:text>details</xsl:text>
         </a>
       </xsl:when>
+
       <xsl:otherwise>
         <xsl:text>&#160;</xsl:text>
       </xsl:otherwise>
