@@ -13,7 +13,7 @@ def system( commands ):
     rc = os.system( 'tmp.cmd' )
     return rc
 
-def checked_system( commands ):
+def checked_system( commands, valid_return_codes = [ 0 ] ):
     rc = system( commands ) 
-    if 0 != rc : raise failure_exception( rc )
+    if rc not in [ 0 ] + valid_return_codes: raise failure_exception( rc )
     return rc

@@ -63,7 +63,7 @@ def copy_comments( results_xml, comment_file ):
 
 def collect_and_upload_logs( 
           locate_root_dir
-        , runner
+        , runner_id
         , tag
         , platform
         , comment_file
@@ -71,7 +71,11 @@ def collect_and_upload_logs(
         , user
         ):
     
-    test_results_file =  '%s.xml' % runner
+    test_results_file =  '%s.xml' % runner_id
+    if not os.path.exists( test_results_file ):
+        utils.log( 'No test results found (%s); did nothing.' % test_results_file )
+        return
+    
     test_results_writer = open( test_results_file, "w" )
     utils.log( 'Collecting test logs into "%s"...' % test_results_file )
     
@@ -82,7 +86,7 @@ def collect_and_upload_logs(
         , { 
               "tag":        tag
             , "platform":   platform
-            , "runner":     runner
+            , "runner":     runner_id
             , "timestamp":  timestamp 
             }
         )

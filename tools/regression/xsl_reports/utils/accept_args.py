@@ -26,3 +26,5 @@ def accept_args( args_spec, args, options, usage ):
                 options[ '--%s' % m.group( 'name' ) ] = m.group( 'value' )
             else:
                 raise 'Invalid format of config line "%s"' % l
+
+    return rest_args
