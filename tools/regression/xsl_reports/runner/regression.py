@@ -484,7 +484,7 @@ Options:
 \t--toolsets      comma-separated list of toolsets to test with (optional)
 \t--mail          email address to send run notification to (optional)
 \t--proxy         HTTP proxy server address and port (e.g. 
-\t                http://www.someproxy.com:3128', optional)
+\t                'http://www.someproxy.com:3128', optional)
 ''' % '\n\t'.join( commands.keys() )
 
     print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )
