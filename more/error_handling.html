@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+    <title>Error and Exception Handling</title>
+
+    <h1>Error and Exception Handling</h1>
+
+    <h2>References</h2>
+
+    <p>The following paper is a good introduction to some of the issues of
+    writing robust generic components:
+
+    <blockquote>
+      <a href="generic_exception_safety.html">D. Abrahams: ``Exception Safety
+      in Generic Components''</a>, originally published in <a href=
+      "http://www.springer.de/cgi-bin/search_book.pl?isbn=3-540-41090-2">M.
+      Jazayeri, R. Loos, D. Musser (eds.): Generic Programming, Proc. of a
+      Dagstuhl Seminar, Lecture Notes on Computer Science 1766</a>
+    </blockquote>
+
+    <h2>Guidelines</h2>
+
+    <h3>When should I use exceptions?</h3>
+
+    <p>The simple answer is: ``whenever the semantic and performance
+    characteristics of exceptions are appropriate.''
+
+    <p>An oft-cited guideline is to ask yourself the question ``is this an
+    exceptional (or unexpected) situation?'' This guideline has an attractive
+    ring to it, but is usually a mistake. The problem is that one person's
+    ``exceptional'' is another's ``expected'': when you really look at the
+    terms carefully, the distinction evaporates and you're left with no
+    guideline. After all, if you check for an error condition, then in some
+    sense you expect it to happen, or the check is wasted code.
+
+    <p>A more appropriate question to ask is: ``do we want stack unwinding
+    here?'' Because actually handling an exception is likely to be
+    significantly slower than executing mainline code, you should also ask:
+    ``Can I afford stack unwinding here?'' For example, a desktop application
+    performing a long computation might periodically check to see whether the
+    user had pressed a cancel button. Throwing an exception could allow the
+    operation to be cancelled gracefully. On the other hand, it would probably
+    be inappropriate to throw and <i>handle</i> exceptions in the inner loop of
+    this computation because that would have a significant performance impact.
+
+    <h3>What About Programmer Errors?</h3>
+
+    <p>As a developer, if I have violated a precondition of a library I'm
+    using, I don't want stack unwinding. What I want is a core dump or the
+    equivalent - a way to inspect the state of the program at the exact point
+    where the problem was detected. That usually means <tt>assert()</tt> or
+    something like it.
+
+    <p>Sometimes it is neccessary to have resilient APIs which can stand up to
+    nearly any kind of client abuse, but there is usually a significant cost to
+    this approach. For example, it usually requires that each object used by a
+    client be tracked so that it can be checked for validity. If you need that
+    sort of protection, it can usually be provided as a layer on top of a
+    simpler API. Beware half-measures, though. An API which promises resilience
+    against some, but not all abuse is an invitation to disaster. Clients will
+    begin to rely on the protection and their expectations will grow to cover
+    unprotected parts of the interface.
+
+    <p><b>Note for Windows developers</b>: unfortunately, the native
+    exception-handling used by most Windows compilers actually throws an
+    exception when you use <tt>assert()</tt>. Actually, this is true of other
+    programmer errors such as segmentation faults and divide-by-zero errors.
+    One problem with this is that if you use JIT (Just In Time) debugging,
+    there will be collateral exception-unwinding before the debugger comes up.
+    Fortunately, there is a simple but little-known workaround, which is to use
+    the following incantation:
+
+    <blockquote>
+<pre>
+extern "C" void straight_to_debugger(unsigned int, EXCEPTION_POINTERS*)
+{
+    throw;
+}
+extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
+         = _set_se_translator(straight_to_debugger);
+</pre>
+    </blockquote>
+    <hr>
+
+    <p>&copy; Copyright David Abrahams 2001. Permission to copy, use, modify,
+    sell and distribute this document is granted provided this copyright notice
+    appears in all copies. This document is provided "as is" without express or
+    implied warranty, and with no claim as to its suitability for any purpose. 
+
+    <p>Revised 
+    <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->19 August, 2001<!--webbot bot="Timestamp" endspan i-checksum="34359" -->
