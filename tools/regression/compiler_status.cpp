@@ -412,27 +412,46 @@ const string & attribute_value( const xml::element & element,
     return result;
   }
 
-  //  do_notes  --------------------------------------------------------------//
+  //  add_notes --------------------------------------------------------------//
 
-  void do_notes( const string & key, string & sep, string & target )
+  void add_notes( const string & key, bool fail, string & sep, string & target )
   {
     notes_map::const_iterator itr = notes.lower_bound( key );
     if ( itr != notes.end() && itr->first == key )
     {
-      target += "<sup>";
       for ( ; itr != notes.end() && itr->first == key; ++itr )
       {
-        target += sep;
-        sep = ",";
-        target += "<a href=\"";
-        target += "#";
-        target += itr->second;
-        target += "\">";
-        target += itr->second;
-        target += "</a>";
+        string note_desc( itr->second[0] == '-'
+          ? itr->second.substr( 1 ) : itr->second );
+        if ( fail || itr->second[0] == '-' )
+        {
+          target += sep;
+          sep = ",";
+          target += "<a href=\"";
+          target += "#";
+          target += note_desc;
+          target += "\">";
+          target += note_desc;
+          target += "</a>";
+        }
       }
-      target += "</sup>";
     }
+  }
+
+  //  get_notes  -------------------------------------------------------------//
+
+  string get_notes( const string & toolset,
+                    const string & library, const string & test, bool fail )
+  {
+    string sep;
+    string target( "<sup>" );
+    add_notes( toolset + "/" + library + "/" + test, fail, sep, target ); 
+    add_notes( "*/" + library + "/" + test, fail, sep, target ); 
+    add_notes( toolset + "/" + library + "/*", fail, sep, target ); 
+    add_notes( "*/" + library + "/*", fail, sep, target );
+    if ( target == "<sup>" ) target.clear();
+    else target += "</sup>";
+    return target;
   }
 
   //  do_cell  ---------------------------------------------------------------//
@@ -500,22 +519,9 @@ const string & attribute_value( const xml::element & element,
     }
     else  target += pass ? pass_msg : fail_msg;
 
-    // if notes, generate the HTML
-    if ( !notes.empty() )
-    {
-      // test-specific notes
-      string key( toolset );
-      key += "/";
-      key += test_name;
-      string sep;
-      do_notes( key, sep, target );
-
-      // library-wide notes
-      key = toolset;
-      key += "/*";
-      key += lib_name;
-      do_notes( key, sep, target );
-    }
+    // if notes, generate the superscript HTML
+    if ( !notes.empty() ) 
+      target += get_notes( toolset, lib_name, test_name, !pass );
 
     target += "</td>";
     return (anything_generated != 0) || !pass;
