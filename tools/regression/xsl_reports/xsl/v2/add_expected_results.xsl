@@ -54,6 +54,7 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and ( @test-name=$test-name or @test-name='*' ) and @toolset = $toolset]"/>
         <xsl:variable name="test_failures_markup" select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]/mark-failure/toolset[ meta:re_match( @name, $toolset ) ]/.."/>
         <xsl:variable name="test_failures_markup2" select="$failures_markup//library[@name=$library]/mark-expected-failures/test[ meta:re_match( @name, $test-name ) ]/../toolset[ meta:re_match( @name, $toolset ) ]/.."/>
+
         <xsl:variable name="is_new">
             <xsl:choose>
                 <xsl:when test="$expected_results_test_case">
@@ -63,9 +64,11 @@ http://www.boost.org/LICENSE_1_0.txt)
             </xsl:choose>
         </xsl:variable>
 
+        <xsl:variable name="has_explicit_markup" select="count( $test_failures_markup ) > 0 or count( $test_failures_markup2 ) > 0"/>
+
         <xsl:variable name="expected_result">
             <xsl:choose>
-            <xsl:when test="count( $test_failures_markup ) > 0 or count( $test_failures_markup2 ) > 0">
+            <xsl:when test="$has_explicit_markup">
                 <xsl:text>fail</xsl:text>
             </xsl:when>
               
@@ -83,40 +86,79 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <xsl:variable name="status">
             <xsl:choose>
-            <xsl:when test="count( $test_failures_markup ) > 0 or count( $test_failures_markup2 ) > 0">
-                <xsl:choose>
-                <xsl:when test="$expected_result = $actual_result">expected</xsl:when>
-                <xsl:otherwise>unexpected</xsl:otherwise>
-                </xsl:choose>
-            </xsl:when>
-
-            <xsl:otherwise>
-                <xsl:choose>
-                <xsl:when test="$expected_result = $actual_result">expected</xsl:when>
-                <xsl:otherwise>unexpected</xsl:otherwise>
-                </xsl:choose>
-            </xsl:otherwise>
-              
+            <xsl:when test="$expected_result = $actual_result">expected</xsl:when>
+            <xsl:otherwise>unexpected</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
 
+        <xsl:variable name="unexpected_success" select="$status = 'unexpected' and $actual_result = 'success'"/>
+
         <xsl:variable name="notes">
+
+            <xsl:if test="$unexpected_success and $has_explicit_markup">
+                <note>
+                    <span class="auto-note">
+                    This test case was explicitly marked up in 
+                    <a href="http://cvs.sourceforge.net/viewcvs.py/boost/boost/status/explicit-failures-markup.xml">
+                    status/explicit-failures-markup.xml</a> file in the Boost CVS as "expected to fail",
+                    but is passing. Please consult the notes/output below for more details.
+                    </span>
+                </note>
+            </xsl:if>
+
+            <xsl:if test="$has_explicit_markup and count( $test_failures_markup2/note ) = 0 and count( $test_failures_markup/note ) = 0">
+                <xsl:choose>
+                <xsl:when test="$unexpected_success">
+                    <note>
+                        <span class="auto-note">
+                        No explanation was provided for this markup. Please contact the library 
+                        author(s)/maintainer(s) for more details.
+                        </span>
+                    </note>
+                </xsl:when>
+                <xsl:otherwise>
+                    <note>
+                        <span class="auto-note">
+                        This failure was explicitly marked as expected in 
+                        <a href="http://cvs.sourceforge.net/viewcvs.py/boost/boost/status/explicit-failures-markup.xml">
+                        status/explicit-failures-markup.xml</a> file in the Boost CVS. 
+                        Please contact the library author(s)/maintainer(s) for the explanation of this markup.
+                        </span>
+                    </note>
+                </xsl:otherwise>
+                </xsl:choose>
+            </xsl:if>
 
             <xsl:if test="count( $test_failures_markup ) > 0">
                 <xsl:for-each select="$test_failures_markup/note">
-                <xsl:copy-of select="."/>
+                    <xsl:copy-of select="."/>
                 </xsl:for-each>
             </xsl:if>
 
             <xsl:if test="count( $test_failures_markup2 ) > 0">
                 <xsl:for-each select="$test_failures_markup2/note">
-                <xsl:copy-of select="."/>
+                    <xsl:copy-of select="."/>
                 </xsl:for-each>
             </xsl:if>
-              
+
+
             <xsl:if test="$expected_results_test_case and $expected_results_test_case/@result = 'fail'">
-                <note>This failure was present in the reference ("last-known-good") release.
-                </note>
+                <xsl:choose>
+                <xsl:when test="$unexpected_success">
+                    <note>
+                        <span class="auto-note">
+                        This test case used to fail in the reference ("last-known-good") release.
+                        </span>
+                    </note>
+                </xsl:when>
+                <xsl:otherwise>
+                    <note>
+                        <span class="auto-note">
+                        This failure was present in the reference ("last-known-good") release.
+                        </span>
+                    </note>
+                </xsl:otherwise>
+                </xsl:choose>
             </xsl:if>
             
         </xsl:variable>
