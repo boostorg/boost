@@ -63,14 +63,13 @@
       <code>catch(...)</code>, see below.</li>
 
       <li>
-        <b><i>Don't</i> embed a std::string object</b> or any other
-        data member or base class whose copy constructor could throw
-        an exception.  That could lead to directly to std::terminate()
-        at the throw point. Similarly, it's a bad idea to use a base
-        or member whose ordinary constructor(s) might throw, because,
-        though not necessarily fatal to your program, you may report a
-        different exception than intended from a
-        <i>throw-expression</i> that includes construction such as:
+        <b><i>Don't</i> embed a std::string object</b> or any other data
+        member or base class whose copy constructor could throw an exception.
+        That could lead directly to std::terminate() at the throw point.
+        Similarly, it's a bad idea to use a base or member whose ordinary
+        constructor(s) might throw, because, though not necessarily fatal to
+        your program, you may report a different exception than intended from
+        a <i>throw-expression</i> that includes construction such as: 
 
         <blockquote>
 <pre>
@@ -95,31 +94,29 @@ throw some_exception();
       that you have a fallback in case the formatting code throws</li>
 
       <li><b>Don't worry <i>too</i> much about the <code>what()</code>
-      message</b>. It's nice to have a message that a programmer
-      stands a chance of figuring out, but you're very unlikely to be
-      able to compose a relevant and <i>user</i>-comprehensible error
-      message at the point an exception is thrown. Certainly,
-      internationalization is beyond the scope of the exception class
-      author.  <a href=
-      "../people/peter_dimov.htm">Peter Dimov</a> makes an excellent
-      argument that the proper use of a <code>what()</code> string is
-      to serve as a key into a table of error message formatters. Now
-      if only we could get standardized <code>what()</code> strings
-      for exceptions thrown by the standard library...</li>
-      
-      <li><b>Expose relevant information about the cause of the
-      error</b> in your exception class' public interface. A fixation
-      on the <code>what()</code> message is likely to mean that you
-      neglect to expose information someone might need in order to
-      make a coherent message for users.  For example, if your
-      exception reports a numeric range error, it's important to have
-      the actual numbers involved available <i>as numbers</i> in the
-      exception class' public interface where error reporting code can
-      do something intelligent with them.  If you only expose a
-      textual representation of those numbers in
-      the <code>what()</code> string, you will make life very
-      difficult for programmers who need to do something more
-      (e.g. subtraction) with them than dumb output.
+      message</b>. It's nice to have a message that a programmer stands a
+      chance of figuring out, but you're very unlikely to be able to compose
+      a relevant and <i>user</i>-comprehensible error message at the point an
+      exception is thrown. Certainly, internationalization is beyond the
+      scope of the exception class author. <a href=
+      "../people/peter_dimov.htm">Peter Dimov</a> makes an excellent argument
+      that the proper use of a <code>what()</code> string is to serve as a
+      key into a table of error message formatters. Now if only we could get
+      standardized <code>what()</code> strings for exceptions thrown by the
+      standard library...</li>
+
+      <li><b>Expose relevant information about the cause of the error</b> in
+      your exception class' public interface. A fixation on the
+      <code>what()</code> message is likely to mean that you neglect to
+      expose information someone might need in order to make a coherent
+      message for users. For example, if your exception reports a numeric
+      range error, it's important to have the actual numbers involved
+      available <i>as numbers</i> in the exception class' public interface
+      where error reporting code can do something intelligent with them. If
+      you only expose a textual representation of those numbers in the
+      <code>what()</code> string, you will make life very difficult for
+      programmers who need to do something more (e.g. subtraction) with them
+      than dumb output.</li>
 
       <li><b>Make your exception class immune to double-destruction</b> if
       possible. Unfortunately, several popular compilers occasionally cause
@@ -136,15 +133,15 @@ throw some_exception();
     where the problem was detected. That usually means <tt>assert()</tt> or
     something like it.</p>
 
-    <p>Sometimes it is necessary to have resilient APIs which can stand up
-    to nearly any kind of client abuse, but there is usually a significant
-    cost to this approach. For example, it usually requires that each object
-    used by a client be tracked so that it can be checked for validity. If
-    you need that sort of protection, it can usually be provided as a layer
-    on top of a simpler API. Beware half-measures, though. An API which
-    promises resilience against some, but not all abuse is an invitation to
-    disaster. Clients will begin to rely on the protection and their
-    expectations will grow to cover unprotected parts of the interface.</p>
+    <p>Sometimes it is necessary to have resilient APIs which can stand up to
+    nearly any kind of client abuse, but there is usually a significant cost
+    to this approach. For example, it usually requires that each object used
+    by a client be tracked so that it can be checked for validity. If you
+    need that sort of protection, it can usually be provided as a layer on
+    top of a simpler API. Beware half-measures, though. An API which promises
+    resilience against some, but not all abuse is an invitation to disaster.
+    Clients will begin to rely on the protection and their expectations will
+    grow to cover unprotected parts of the interface.</p>
 
     <p><b>Note for Windows developers</b>: unfortunately, the native
     exception-handling used by most Windows compilers actually throws an
@@ -187,27 +184,24 @@ extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
     usual safe assumptions that destructors and catch blocks have taken valid
     steps to ensure program invariants during unwinding. 
 
-    <p>I reluctantly concede this point to Hillel Y. Sims, who beat it
-    into me (&lt;wink&gt;): until all OSes are "fixed", if every
-    exception were derived from
-    <code>std::exception</code> and everyone substituted
+    <p>I reluctantly concede this point to Hillel Y. Sims, who beat it into
+    me (&lt;wink&gt;): until all OSes are "fixed", if every exception were
+    derived from <code>std::exception</code> and everyone substituted
     <code>catch(std::exception&amp;)</code> for <code>catch(...)</code>, the
-    world would be a better place. 
+    world would be a better place.</p>
 
-    <p>Sometimes, <code>catch(...)</code>, is still the most
-    appropriate pattern, in spite of bad interactions with OS/platform
-    design choices.  If you have no idea what kind of exception might
-    be thrown and you really <i>must</i> stop unwinding it's probably
-    still your best bet.  One obvious place where this occurs is at
-    language boundaries.
-
+    <p>Sometimes, <code>catch(...)</code>, is still the most appropriate
+    pattern, in spite of bad interactions with OS/platform design choices. If
+    you have no idea what kind of exception might be thrown and you really
+    <i>must</i> stop unwinding it's probably still your best bet. One obvious
+    place where this occurs is at language boundaries.</p>
     <hr>
 
-    <p>&copy; Copyright David Abrahams 2001-2003. Permission to copy,
-    use, modify, sell and distribute this document is granted provided
-    this copyright notice appears in all copies. This document is
-    provided "as is" without express or implied warranty, and with no
-    claim as to its suitability for any purpose.</p>
+    <p>&copy; Copyright David Abrahams 2001-2003. Permission to copy, use,
+    modify, sell and distribute this document is granted provided this
+    copyright notice appears in all copies. This document is provided "as is"
+    without express or implied warranty, and with no claim as to its
+    suitability for any purpose.</p>
 
     <p>Revised 
     <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
