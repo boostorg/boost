@@ -405,9 +405,7 @@
             <test name="zip_view"/>
             
             <toolset name="borland-5.6.4"/>
-            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
-                This failure is caused by a compiler bug without known workaround.
-            </note>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004" refid="26"/>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -421,9 +419,7 @@
             <test name="zip_view"/>
             
             <toolset name="mipspro"/>
-            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
-                This failure is caused by a compiler bug without known workaround.
-            </note>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004" refid="26"/>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -447,7 +443,7 @@
             <toolset name="mipspro"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004">
                 This is an advanced functionality that hasn't been ported to the deficient
-                compilers (yet). Patches are welcome.
+                compilers (yet). Patches are welcome!
             </note>
         </mark-expected-failures>
 
@@ -708,6 +704,7 @@ for more information.
         </test>
     </library>
 
+
     <!-- iterator -->
     <library name="iterator">
         <test name="interoperable_fail">
@@ -734,19 +731,7 @@ for more information.
                 </note>
             </mark-failure>
         </test>
-        <test name="indirect_iterator_member_types" corner-case="yes">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <note author="D. Abrahams">
-                    This failure is caused by a compiler bug.  The
-                    compiler tends to drop const-ness and as a result
-                    some indirect_iterators will have pointer and
-                    reference members of <code>T*</code> and <code>T&amp;</code> that should
-                    have been <code>T const*</code> and <code>T const&amp;</code>.
-                </note>
-            </mark-failure>
-        </test>
+
         <test name="is_convertible_fail" corner-case="yes">
             <mark-failure>
                 <toolset name="borland"/>
@@ -769,7 +754,32 @@ for more information.
                 </note>
             </mark-failure>
         </test>
+
+        <test name="indirect_iter_member_types" corner-case="yes"/>
+        
+        <mark-expected-failures>
+            <test name="indirect_iter_member_types"/>
+            <test name="pointee"/>
+            <toolset name="borland"/>
+            <toolset name="borland-5.6.4"/>
+            <note author="D. Abrahams">
+                This failure is caused by a compiler bug.  The
+                compiler tends to drop const-ness and as a result
+                some indirect_iterators will have pointer and
+                reference members of <code>T*</code> and <code>T&amp;</code> that should
+                have been <code>T const*</code> and <code>T const&amp;</code>.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="zip_iterator_test"/>
+            <toolset name="borland"/>
+            <toolset name="borland-5.6.4"/>
+            <note author="Aleksey Gurtovoy" date="19 Sep 2004" refid="26"/>
+        </mark-expected-failures>
+
     </library>
+
 
     <!-- math -->
     <library name="math">
@@ -1360,6 +1370,10 @@ for more information.
       ,DLL, so, etc.
     </note>
 
+    <note id="26">
+        This failure is caused by a compiler bug with no known workaround. 
+        Patches are welcome!
+    </note>
 
 </explicit-failures-markup>
 
