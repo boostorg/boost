@@ -1,18 +1,32 @@
+# Boost regression-testing Jamfile
+#  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
 subproject status ;
 
-gGENERATOR_FUNCTION(OBJ) = Object ;
+# ----------- Jam rules for testing; test invocations at bottom ----------------#
 
-rule boost-test # sources : type : suppress-fake-targets : requirements
+# boost-test sources : type : requirements [ : name ]
+#
+# Declares a test target. If name is not supplied, it is taken from the name of
+# the first source file, sans extension and directory path.
+#
+# type should be a target type (e.g. OBJ, DLL, LIB, EXE)
+rule boost-test
 {
     local result ;
     {
-        local requirements = $(4) ;
-        local suppress = $(3) ;
-        suppress ?= dummy ;
-        local $(suppress) = true ;
+        local requirements = $(3) ;
+        local name = $(4) ;
+        name ?= $(<[1]:D=:S=) ;
+
+        # Make sure that targets don't become part of "all"
+        local gSUPPRESS_FAKE_TARGETS = true ;
         
         result = [
-            declare-local-target $(<:D=:S=)
+            declare-local-target $(name)
             : $(<:R=$(BOOST_ROOT)) # sources
             : $(requirements) <include>$(BOOST_ROOT) # requirements
             :             # default build
@@ -21,19 +35,16 @@ rule boost-test # sources : type : suppress-fake-targets : requirements
     }
     Clean clean : $(result) ;
     type-DEPENDS test : $(result) ;
+    return result ;
 }
 
-rule compile # source-file : fail : requirements
-{
-    boost-test $(<) : OBJ : : $(3) ;
-}
+#######
 
-rule compile-fail # source-file : requirements
-{
-    boost-test $(<) : COMPILE_FAIL : gSUPPRESS_FAKE_TARGETS : $(2) ;
-}
-
-rule failed-test-file # test-file : fail-to-build-file
+# failed-test-file test-file : fail-to-build-file
+#
+# a utility rule which causes test-file to be built successfully, only if
+# fail-to-build-file fails to build. Used for expected-failure tests.
+rule failed-test-file
 {
     DEPENDS $(<) : $(>) ;
     FAIL_EXPECTED $(>) ;
@@ -46,29 +57,67 @@ actions failed-test-file
     echo building "$(>)" failed as expected > $(<)
 }
 
-rule declare-build-fail-test # test-type : dependency-type
+# declare-build-fail-test test-type : dependency-type
+#
+# A utility rule which declares test-type to be a target type which depends on
+# the /failed/ construction of a target of type dependency-type.
+rule declare-build-fail-test
 {
     gGENERATOR_FUNCTION($(<)) = fail-to-build ;
     gDEPENDENCY_TYPE($(<)) = $(>) ;
     SUF$(<) = .fail ;
 }
 
-rule fail-to-build # sources.test : sources : requirements
+# fail-to-build target.test : sources : requirements
+#
+# A target generator function for target types declared with
+# declare-build-fail-test, above.
+rule fail-to-build
 {
+    # Get the target type of the current target out of the build properties
     local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
+
+    # Get the type of target which will (hopefully) fail to build.
     local dependency-type = $(gDEPENDENCY_TYPE($(target-type))) ;
+
+    # Get the actual name of the target which should fail to build
     local fail-target = $(<[1]:S=$(SUF$(dependency-type))) ;
+
+    # Call dependency-type's generator function to (fail to) build the target
     local ignored = [
         $(gGENERATOR_FUNCTION($(dependency-type))) $(fail-target) : $(>) : $(3) ] ;
 
+    # Generator functions don't handle this job for us; perhaps they should.
     set-target-variables $(fail-target)
     
     # The .test file goes with the other subvariant targets
     MakeLocate $(<) : $(LOCATE_TARGET) ;
+
+    # Establish the dependency
     failed-test-file $(<) : $(fail-target) ;
 }
 
+### Rules for testing whether a file compiles ###
+
+# Establish the rule which generates targets of type "OBJ". Should really go
+# into basic build system, but wasn't needed 'till now.
+gGENERATOR_FUNCTION(OBJ) = Object ;
 declare-build-fail-test COMPILE_FAIL : OBJ ;
+
+# Test that the given source-file(s) compile
+rule compile # source-file : fail : requirements
+{
+    boost-test $(<) : OBJ : $(3) ;
+}
+
+# Test that the given source-file(s) fail to compile
+rule compile-fail # source-file : requirements
+{
+    boost-test $(<) : COMPILE_FAIL : $(2) ;
+}
+
+
+### Rules for testing whether a program runs ###
 
 gGENERATOR_FUNCTION(RUN_TEST) = run-test ;
 SUFRUN_TEST = .test ;
@@ -79,14 +128,20 @@ rule run-test # target : sources : requirements
     set-target-variables $(executable) ;
     
     # The .test file goes with the other subvariant targets
-    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    # normalization is a hack to get the slashes going the right way on Windoze
+    local normalized-locate = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
+    MakeLocate $(<) : $(normalized-locate) ;
+    
+    DEPENDS $(<) : $(executable) $(gRUN_TEST_INPUT_FILES) ;
     INPUT_FILES on $(<) = $(gRUN_TEST_INPUT_FILES) ;
     ARGS on $(<) = $(gRUN_TEST_ARGS) ;
     capture-run-output $(<) : $(executable) ;
 }
 actions capture-run-output bind INPUT_FILES
 {
-    $(>) $(ARGS) $(INPUT_FILES) > $(<)
+    $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
+    $(CP) $(<:S=.error) $(<)
+    $(RM) $(<:S=.error)
 }
 
 rule run # sources : args : input-files : requirements
@@ -94,13 +149,7 @@ rule run # sources : args : input-files : requirements
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    boost-test $(<) : RUN_TEST : : $(4) ;
-}
-
-declare-build-fail-test LINK_FAIL : EXE ;
-rule link-fail # sources : requirements
-{
-    boost-test $(<) : LINK_FAIL : gSUPPRESS_FAKE_TARGETS : $(2) ;
+    boost-test $(<) : RUN_TEST : $(4) ;
 }
 
 declare-build-fail-test RUN_FAIL : RUN_TEST ;
@@ -109,11 +158,21 @@ rule run-fail # sources : args : input-files : requirements
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    boost-test $(<) : RUN_FAIL : gSUPPRESS_FAKE_TARGETS : $(4) ;
+    boost-test $(<) : RUN_FAIL : $(4) ;
 }
 
-run libs/config/config_test.cpp ;
-run libs/config/limits_test.cpp ;
+### Rules for testing whether a program links
+
+declare-build-fail-test LINK_FAIL : EXE ;
+rule link-fail # sources : requirements
+{
+    boost-test $(<) : LINK_FAIL : $(2) ;
+}
+
+# ----------- Actual test invocations follow ----------------#
+
+run libs/config/test/config_test.cpp ;
+run libs/config/test/limits_test.cpp ;
 run libs/any/any_test.cpp ;
 run libs/array/array1.cpp ;
 compile libs/concept_check/concept_check_test.cpp ;
