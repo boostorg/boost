@@ -111,17 +111,17 @@ void invoke(std::string desc,
   switch (invoke_mode) {
   case 'C': // compile
     if (rs==0)
-      outfile << "<FONT COLOR=#008000>succeeded: compiled as expected</FONT>";
+      outfile << "<FONT COLOR=#008000>yes</FONT>";
     else
-      outfile << "<FONT COLOR=#800000>failed: did not compile</FONT>";
+      outfile << "<FONT COLOR=#800000>no: did not compile</FONT>";
     break;
   case 'F': // compile, fail expected
     if (rs==0)
       outfile
-        << "<FONT COLOR=#800000>failed: expected compiler error</FONT>";
+        << "<FONT COLOR=#800000>no: expected compiler error</FONT>";
     else
       outfile
-        << "<FONT COLOR=#008000>succeeded: compiler error as expected</FONT>";
+        << "<FONT COLOR=#008000>yes</FONT>";
     break;
   case 'R': // run
     if (rs==0) {
@@ -133,12 +133,12 @@ void invoke(std::string desc,
       rs = system(cmd_line.c_str());
       if (rs==0)
         outfile
-          << "<FONT COLOR=#008000>succeeded: built and ran</FONT>";
+          << "<FONT COLOR=#008000>yes</FONT>";
       else
-        outfile << "<FONT COLOR=#800000>failed: exited with code "
+        outfile << "<FONT COLOR=#800000>no: exited with code "
                 << rs << "</FONT>";
     } else
-      outfile << "<FONT COLOR=#800000>failed: did not compile</FONT>";
+      outfile << "<FONT COLOR=#800000>no: did not compile</FONT>";
     break;
   default:
     outfile << "scripting error";
