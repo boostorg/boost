@@ -185,12 +185,22 @@ extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
     system notification at a point where recovery is impossible look just
     like a C++ exception thrown from a reasonable place, invalidating the
     usual safe assumptions that destructors and catch blocks have taken valid
-    steps to ensure program invariants during unwinding. I reluctantly
-    concede this point to Hillel Y. Sims, who beat it into me (&lt;wink&gt;):
-    until all OSes are "fixed", if every exception were derived from
+    steps to ensure program invariants during unwinding. 
+
+    <p>I reluctantly concede this point to Hillel Y. Sims, who beat it
+    into me (&lt;wink&gt;): until all OSes are "fixed", if every
+    exception were derived from
     <code>std::exception</code> and everyone substituted
     <code>catch(std::exception&amp;)</code> for <code>catch(...)</code>, the
     world would be a better place. 
+
+    <p>Sometimes, <code>catch(...)</code>, is still the most
+    appropriate pattern, in spite of bad interactions with OS/platform
+    design choices.  If you have no idea what kind of exception might
+    be thrown and you really <i>must</i> stop unwinding it's probably
+    still your best bet.  One obvious place where this occurs is at
+    language boundaries.
+
     <hr>
 
     <p>&copy; Copyright David Abrahams 2001-2003. Permission to copy,
