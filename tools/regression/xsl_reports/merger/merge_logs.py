@@ -47,19 +47,40 @@ def download_test_runs( incoming_dir, tag, user ):
     
     download_from_ftp( destination_dir, tag )
 
-    
+
+def unzip_and_remove( zip_path, dir, unzip_func ):
+    try:
+        utils.log( '  Unzipping "%s" ...' % zip_path  )
+        unzip_func( zip_path, dir )
+        utils.log( '  Removing "%s" ...' % zip_path )
+        os.unlink( zip_path )
+    except Exception, msg:
+        utils.log( '  Skipping "%s" due to errors (%s)' % ( zip_path, msg ) )
+
 
 def unzip_test_runs( dir ):
-    files = glob.glob( os.path.join( dir, '*.zip' ) )
-    for test_run in files:
-        try:
-            utils.log( '  Unzipping "%s" ...' % test_run )
-            zip_path = os.path.join( dir, test_run )
-            utils.unzip( zip_path, dir )
-            utils.log( '  Removing "%s" ...' % test_run )
-            os.unlink( zip_path )
-        except Exception, msg:
-            utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
+    files_mask = os.path.join( dir, '*.zip' )
+
+    files = glob.glob( files_mask )
+    for f in files:
+        unzip_and_remove( f, dir, utils.unzip )
+        
+    files = glob.glob( files_mask )
+    if len( files ):
+        utils.log( 'Warning: Some files could not be unzipped using the built-in \'zipfile\' module.' )
+        utils.log( '         Trying to decompress them using a platform-specific utility...' )
+        try: import unzip_cmd
+        except ImportError:
+            utils.log( '  Could not find \'unzip_cmd\' module in the script directory.' )
+        else:
+            for f in files:
+                unzip_and_remove( f, dir, unzip_cmd.main )
+        
+        files = glob.glob( files_mask )
+        if len( files ):
+            utils.log( 'Warning: The following files have not been decompressed:' )
+            for f in files:
+                utils.log( '\t%s' % f )
 
 
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
