@@ -126,6 +126,17 @@ int main()
 
 <strong>Workaround:</strong> Enclose the offending <code>for</code>
 loops in another pair of curly braces.
+<p>
+Another possible workaround (brought to my attention by Vesa Karvonen)
+is this:
+<pre>
+#ifndef for
+#define for if (0) {} else for
+#endif
+</pre>
+
+Note that platform-specific inline functions in included headers might
+depend on the old-style <code>for</code> scoping.
 
 
 <h3>[inclass-member-init] In-class member initialization</h3>
