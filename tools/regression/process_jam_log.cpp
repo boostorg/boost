@@ -140,7 +140,7 @@ namespace
       : m_target_directory( target_directory )
     {
       fs::path pth( target_directory );
-      pth <<= "test_log.xml";
+      pth /= "test_log.xml";
       fs::ifstream file( pth );
       if ( !file )
       {
@@ -162,9 +162,11 @@ namespace
     ~test_log()
     {
       fs::path pth( m_target_directory );
-      pth <<= "test_log.xml";
+      pth /= "test_log.xml";
       fs::ofstream file( pth );
-      if ( !file ) throw fs::filesystem_error( pth.generic_path() );
+      if ( !file )
+        throw fs::filesystem_error( "Can't open output file: "
+        + pth.string(), fs::other_error );
       xml::write( *m_root, file );
     }
 
@@ -322,7 +324,7 @@ int cpp_main( int argc, char ** argv )
         capture_lines = false;
         content = "\n";
         fs::ifstream file( fs::path(target_dir)
-          << (test_name(target_dir) + ".output") );
+          / (test_name(target_dir) + ".output") );
         if ( file )
         {
           string ln;
