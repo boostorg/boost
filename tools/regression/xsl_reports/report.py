@@ -17,7 +17,10 @@ import time
 import inspect
 import getopt
 
-run_dir = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
+if __name__ == "__main__":
+    run_dir = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
+else:
+    run_dir = os.path.abspath( os.path.dirname( sys.modules[ __name__ ].__file__ ) )
 
 class failure_exception:
     def __init__( self, rc ):
@@ -183,12 +186,24 @@ def make_result_pages( test_results_file
                , { "expected_results_file": expected_results_file }
            )
 
+    links = os.path.join( output_dir, "links.html"  )
+    log( "    Making -links file..." )
+    xslt_proc( extended_test_results
+               , xsl_path( "links_page.xsl" )
+               , links
+               , {
+                 "source": source
+                 , "run_date": run_date 
+                 , "comment_file": comment_file
+                 }
+           )
+
     log( "    Making detailed reports..." )
     for mode in ( "developer", "user" ):
         xslt_proc(  extended_test_results
                     , xsl_path( "result_page.xsl" )
                     , os.path.join( output_dir, "%s_%s" % ( mode, "result_page.html" ) )
-                    , { "links_file": "../" + result_prefix + "-links.html"
+                    , { "links_file": "links.html"
                         , "mode": mode
                         , "source": source
                         , "run_date": run_date 
@@ -258,7 +273,7 @@ def accept_args( args ):
     
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
-    if ( options.has_key( "--help" ) or len( options.keys() ) == 0 ):
+    if ( options.has_key( "--help" ) or len( options.keys() ) == 2 ):
         usage()
         sys.exit( 1 )
 

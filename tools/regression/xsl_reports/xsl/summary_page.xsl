@@ -132,6 +132,12 @@
                       </td>
                     </tr>
                     <tr>
+                      <td><table><tr><td class="summary-fail-unexpected-new">broken</td></tr></table></td>
+                      <td class="legend-item">
+                        there are some failures on a newly added test or compiler
+                      </td>
+                    </tr>
+                    <tr>
                       <td><table><tr><td class="summary-fail-unexpected">broken</td></tr></table></td>
                       <td class="legend-item">
                         tests that the library author expects to pass are currently failing
@@ -232,8 +238,11 @@
   <xsl:param name="library"/>
   <xsl:variable name="class">
     <xsl:choose>
-      <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected'] )">
+      <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected' and @is-new='no'] )">
         <xsl:text>summary-fail-unexpected</xsl:text>
+      </xsl:when>
+      <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected' and @is-new='yes'] )">
+        <xsl:text>summary-fail-unexpected-new</xsl:text>
       </xsl:when>
       <xsl:when test="count( $current_cell[@result='success' and  @status='unexpected'] )">
         <xsl:text>summary-success-unexpected</xsl:text>
@@ -246,7 +255,7 @@
   
   <td class="{$class}">
     <xsl:choose>
-      <xsl:when test="$class='summary-fail-unexpected'">
+      <xsl:when test="$class='summary-fail-unexpected' or $class='summary-fail-unexpected-new' ">
         <a href="{$mode}_result_page.html#{$library}" class="log-link">
           <xsl:text>broken</xsl:text>
         </a>
@@ -266,7 +275,7 @@
   <xsl:param name="library"/>
   <xsl:variable name="class">
     <xsl:choose>
-      <xsl:when test="count( $current_cell[@result='fail' and @status='unexpected'] )">
+      <xsl:when test="count( $current_cell[@result='fail' and @status='unexpected' ] )">
         <xsl:text>summary-user-fail-unexpected</xsl:text>
       </xsl:when>
       <xsl:when test="count( $current_cell[ @result='fail'] )">
