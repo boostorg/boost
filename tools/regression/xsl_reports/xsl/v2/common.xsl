@@ -144,27 +144,25 @@
         <xsl:param name="pattern"/>
         <xsl:param name="text"/>
         
-        <func:result>
-            <xsl:choose>
-                <xsl:when test="not( contains( $pattern, '*' ) )">
-                    <xsl:value-of select="$text = $pattern"/>
-                </xsl:when>
-                <xsl:when test="$pattern = '*'">
-                    <xsl:value-of select="1 = 1"/>
-                </xsl:when>
-                <xsl:when test="substring( $pattern, 1, 1 ) = '*' and substring( $pattern, string-length($pattern), 1 ) = '*' ">
-                    <xsl:value-of select="contains( $text, substring( $pattern, 2, string-length($pattern) - 2 ) ) "/>
-                </xsl:when>
-                <xsl:when test="substring( $pattern, 1, 1 ) = '*'">
-                    <xsl:variable name="pattern_tail" select="substring( $pattern, 2, string-length($pattern) - 1 )"/>
-                    <xsl:value-of select="substring( $text, string-length($text) - string-length($pattern_tail) + 1, string-length($pattern_tail) ) = $pattern_tail"/>
-                </xsl:when>
-                <xsl:when test="substring( $pattern, string-length($pattern), 1 ) = '*' ">
-                    <xsl:variable name="pattern_head" select="substring( $pattern, 1, string-length($pattern) - 2 )"/>
-                    <xsl:value-of select="substring( $text, 1, string-length($pattern_head) ) = $pattern_head "/>
-                </xsl:when>
-            </xsl:choose>
-        </func:result>
+        <xsl:choose>
+            <xsl:when test="not( contains( $pattern, '*' ) )">
+                <func:result select="$text = $pattern"/>
+            </xsl:when>
+            <xsl:when test="$pattern = '*'">
+                <func:result select="1 = 1"/>
+            </xsl:when>
+            <xsl:when test="substring( $pattern, 1, 1 ) = '*' and substring( $pattern, string-length($pattern), 1 ) = '*' ">
+                <func:result select="contains( $text, substring( $pattern, 2, string-length($pattern) - 2 ) ) "/>
+            </xsl:when>
+            <xsl:when test="substring( $pattern, 1, 1 ) = '*'">
+                <xsl:variable name="pattern_tail" select="substring( $pattern, 2, string-length($pattern) - 1 )"/>
+                <func:result select="substring( $text, string-length($text) - string-length($pattern_tail) + 1, string-length($pattern_tail) ) = $pattern_tail"/>
+            </xsl:when>
+            <xsl:when test="substring( $pattern, string-length($pattern), 1 ) = '*' ">
+                <xsl:variable name="pattern_head" select="substring( $pattern, 1, string-length($pattern) - 2 )"/>
+                <func:result select="substring( $text, 1, string-length($pattern_head) ) = $pattern_head "/>
+            </xsl:when>
+        </xsl:choose>
     </func:function>
 
     <!-- path -->
