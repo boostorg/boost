@@ -87,13 +87,15 @@ logs, and committing fixes  to CVS.</p>
   <blockquote>
     <pre>[After fixed code is committed to main branch]
 cvs update -r RC_1_26_2 [switch to the release candidate branch]
-cvs update -j HEAD buggycode.hpp [merge changes from the trunk to the branch]
+cvs update -jmerged_to_1_26_2 -jHEAD buggycode.hpp [merge changes from the trunk to the branch]
  --&gt; RCS file: /cvsroot/boost/.../buggycode.hpp,v
  --&gt;    retrieving revision 1.4
  --&gt;    retrieving revision 1.6
  --&gt;    Merging differences between 1.4 and 1.6 into buggycode.hpp
 
 cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggycode.hpp
+cvs update -A [go back to main trunk]
+cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp [tag new merged point]
 
 [Repeat as needed]</pre>
   </blockquote>
@@ -104,18 +106,32 @@ cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggyc
     <p>After fixed code is committed to main branch, switch to the release 
     candidate branch:</p>
     <blockquote>
-    <p>Select file(s)</p>
+    <p>Select file(s) if not already selected.</p>
+    </blockquote>
+    <blockquote>
     <p>Modify | Update selection... | 
-    Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK</p>
+    Update settings | Sticky options | Retrieve rev/tag/branch: <code>RC_1_26_2</code> | OK</p>
     </blockquote>
       <p>Merge changes from main trunk into the release candidate branch:</p>
     <blockquote>
       <p>Modify | Update selection... | 
-    Update settings | Merge options | Only this rev/tag: HEAD | OK</p>
+    Update settings | Merge options | Only this rev/tag: <code>merged_to_1_26_2</code> 
+      | Plus with this rev/tag: <code>HEAD</code> | OK</p>
     </blockquote>
       <p>Commit merge results:</p>
     <blockquote>
       <p>Modify | Commit... | Enter log message: ... | OK</p>
+    </blockquote>
+      <p>Go back to main trunk:</p>
+    <blockquote>
+      <p>Modify | Update selection... | Update settings | Reset any sticky 
+      date/tag/-k options | OK</p>
+    </blockquote>
+      <p>Tag as new merge point:</p>
+    <blockquote>
+    <p>Modify | Create tag on selection... | Create tag settings | Enter the tag 
+    name to create: <code>merged_to_RC_1_26_2</code>, Overwrite existing tags 
+    with same name | OK.</p>
     </blockquote>
   </blockquote>
 </blockquote>
