@@ -89,7 +89,7 @@ def compile( program ):
     if compiler_arg == "*" or compiler_arg == "gcc":
       invoke( "GCC 2.95.2", 'g++ -Wall -pedantic -ftemplate-depth-30 -c -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "kcc":
-      invoke( "KCC 3.4g", 'KCC --strict_warnings -c -I' + path + ' ' + fullpath )
+      invoke( "KCC 3.4g", 'KCC --strict_warnings -I' + path + ' ' + fullpath )
 
 
 # ----------- BeOS5/Intel ------ #
