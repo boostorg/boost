@@ -41,6 +41,12 @@ test_tools=gcc
 #
 toolset=gcc
 
+#
+# "comment_path" is the path to an html-file describing the test environment.
+# The content of this file will be embedded in the status pages being produced.
+#
+comment_path=$boost_root/../regression_comment.html
+
 
 ### DEFAULTS ARE OK FOR THESE.
 
@@ -162,7 +168,7 @@ done
 #
 uname=`uname`
 echo generating html tables:
-$compiler_status $boost_root cs-$uname.html cs-$uname-links.html
+$compiler_status --comment $comment_path $boost_root cs-$uname.html cs-$uname-links.html
 if test $? != 0 ; then
     echo "Failed HTML result table generation."
     exit 256
