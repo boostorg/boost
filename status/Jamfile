@@ -138,6 +138,11 @@ rule run-test # target : sources : requirements
     INPUT_FILES on $(<) = $(gRUN_TEST_INPUT_FILES) ;
     ARGS on $(<) = $(gRUN_TEST_ARGS) ;
     capture-run-output $(<) : $(executable) ;
+    
+    if $(RUN_ALL_TESTS)
+    {
+        ALWAYS $(<) ;
+    }
 }
 actions capture-run-output bind INPUT_FILES
 {
@@ -261,7 +266,14 @@ run-fail libs/test/test/test_tools_fail2.cpp ;
 
 compile libs/timer/timer_test.cpp ;
 
-run libs/tokenizer/examples.cpp ;
+test-suite tokenizer
+    : [ run libs/tokenizer/examples.cpp ]
+      [ run libs/tokenizer/simple_example_1.cpp ]
+      [ run libs/tokenizer/simple_example_2.cpp ]
+      [ run libs/tokenizer/simple_example_3.cpp ]
+      [ run libs/tokenizer/simple_example_4.cpp ]
+      [ run libs/tokenizer/simple_example_5.cpp ]
+    ;
 
 test-suite type_traits
     : [ run libs/type_traits/tests/alignment_test.cpp ]
@@ -293,9 +305,9 @@ test-suite iterator_adaptors
       [ run libs/utility/iterator_adaptor_examples.cpp ]
       [ run libs/utility/counting_iterator_example.cpp ]
       [ run libs/utility/filter_iterator_example.cpp ]
-      [ run libs/utility/fun_out_iterator_example.cpp ]
+      [ run libs/utility/fun_out_iter_example.cpp ]
       [ run libs/utility/indirect_iterator_example.cpp ]
-      [ run libs/utility/projection_iterator_examples.cpp ]
+      [ run libs/utility/projection_iterator_example.cpp ]
       [ run libs/utility/reverse_iterator_example.cpp ]
       [ run libs/utility/transform_iterator_example.cpp ]
     ;
