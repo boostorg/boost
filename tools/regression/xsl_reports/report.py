@@ -233,9 +233,8 @@ def build_xsl_reports(
             , archive_name
             )
         
-        archive_path = os.path.join( results_dir, archive_name )
-        utils.sourceforge.upload( archive_path, upload_dir, user )
-        utils.sourceforge.untar( archive_path, user, background = True )
+        utils.sourceforge.upload( os.path.join( results_dir, archive_name ), upload_dir, user )
+        utils.sourceforge.untar( os.path.join( upload_dir, archive_name ), user, background = True )
 
 
 def accept_args( args ):
