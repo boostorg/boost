@@ -17,8 +17,6 @@
   </tr>
 </table>
 
-<p>
-
 <h1>Boost Download and Installation</h1>
 
 The boost libraries are intended for easy download and installation.
@@ -28,21 +26,22 @@ configuration tool.
 <h2>Download</h2>
 The boost libraries are available in various formats.  Most of the
 files are available through links from the individual library's
-documentation.  As many boost headers include other boost headers,
-installing one at a time is painful.  Therefore, archive formats have
-been prepared which contain all of boost in a single file.
+documentation. Since many boost headers include other boost headers,
+installing one at a time is painful.&nbsp; Downloading all of Boost as a single archive
+file (.zip or .tar.gz)&nbsp; is a lot easier.&nbsp; CVS access is also
+available.
 
-<h3>ZIP file</h3>
+<h3>.zip file</h3>
 
 The .zip format is widely supported by both free decoders and
-commercial commpress/archive utilities.  If you don't already have a
+commercial compress/archive utilities.  If you don't already have a
 .zip file decoder, download one from the
 <a href="http://www.info-zip.org/">Info-ZIP</a>
-web site.
+web site, which supplies versions for many operating systems.
 <p>
-Unix/Linux hints: boost_all.zip is built on a Win32 platform, so the
-line endings are wrong for Unix/Linux.  Use the -a option when
-unzipping with InfoZip for Unix/Linux friendly line endings.
+Text file line endings in the .zip file are as supplied by each library
+developer.&nbsp; This works fine for Windows, but not for Unix/Linux.&nbsp; The
+.tar.gz file supplies Unix/Linux friendly line endings.
 
 <ul>
 <li><a href="ftp://boost.sourceforge.net/pub/boost/release/">Latest version</a>
@@ -52,7 +51,11 @@ unzipping with InfoZip for Unix/Linux friendly line endings.
 <h3>.tar.gz file</h3>
 
 The .tar.gz format is widely supported on Unix/Linux platforms.  Some
-Windows compress/archive utilities can read the format as well.
+Windows compress/archive utilities can read the format as well.&nbsp; Because
+the gzip format compresses the archive as a single file rather than compressing
+each file individually, the .tar.gz file is smaller that the .zip file.
+<p>Text file line endings in the .tar.gz file have been converted to newlines
+for ease of use on Unix/Linux platforms.</p>
 
 <ul>
 <li><a href="ftp://boost.sourceforge.net/pub/boost/release/">Latest version</a>
@@ -79,7 +82,7 @@ cvs -d:pserver:anonymous@cvs.boost.sourceforge.net:/cvsroot/boost logout
 
 Read the manual for your CVS client for further information.
 <p>
-This access is read-only, if you are a library author and wish to have
+This access is read-only; if you are a library author and wish to have
 CVS write access, please contact one of the
 <a href="mailto:boost-owner@yahoogroups.com">moderators</a>.
  
@@ -97,8 +100,7 @@ Many boost libraries are implemented entirely within their header
 files.  The only preparation for their use is to add the path for the
 parent directory of the boost headers sub-directory to your compiler's
 list of <code>#include</code> search directories.
-
-<blockquote>
+<p>
 For example, using Windows 2000, if you have unzipped release 1.20.2
 from boost_all.zip into the top level directory of your C drive, for
 Borland, GCC, and Metrowerks compilers add '-Ic:/boost_1_20_2' to the
@@ -106,19 +108,20 @@ compiler command line, and for the Microsoft compiler add '/I
 "c:/boost_1_20_2"'.  For IDE's, add 'c:/boost_1_20_2' (or whatever you
 have renamed it to) to the search list using the appropriate GUI
 dialog.
-</blockquote>
 
 <p>
 A few boost libraries are implemented by separate source files, and
 thus require compilation on your system to link properly.  Boost does
-not currently have an overall "build" or "make" machanism in place.
+not currently have an overall "build" or "make" mechanism in place.
 Some of the individual libraries do include make and/or project files
 for various compilers, though.
 <p>
 
 <hr>
 
-2001-02-11 <a href="../people/jens_maurer.htm">Jens Maurer</a>
+Revised <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->14 March, 2001<!--webbot bot="Timestamp" endspan i-checksum="28773" -->
+<p>Written by&nbsp; <a href="../people/jens_maurer.htm">Jens Maurer</a>
+2001-02-11</p>
 
 </body>
 </html>
