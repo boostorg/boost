@@ -205,6 +205,13 @@ rule declare-build-fail-test ( test-type : dependency-type )
     SUF$(test-type) = $(BOOST_TEST_SUFFIX) ;
 }
 
+# A temporary measure in case people don't rebuild their Jam
+# executables. Define the builtin RMOLD if it's missing.
+if ! ( RMOLD in [ RULENAMES ] )
+{
+    rule RMOLD { }
+}
+
 # When the appropriate generator function is bound to the
 # test-file-generator argument, this is a target generator function
 # for target types declared with declare-build-succeed-test and
@@ -225,9 +232,13 @@ rule build-test ( test-file-generator test-file + : sources + : requirements * )
     # file.
     source-files on $(test-file) = $(sources) ;
     
+    # Make sure that the dependency is erased, so as not to give a
+    # false indication of success.
+    RMOLD $(dependency) ;
+    
     # Call dependency-type's generator function to attempt the build
     local ignored = [
-        $(gGENERATOR_FUNCTION($(dependency-type))) $(dependency) : $(>) : $(3) ] ;
+        $(gGENERATOR_FUNCTION($(dependency-type))) $(dependency) : $(sources) : $(requirements) ] ;
 
     # Generator functions don't handle this job for us; perhaps they should.
     set-target-variables $(dependency) ;
@@ -374,7 +385,7 @@ rule test-suite # pseudotarget-name : test-targets...
 }
 
 # ------------- Actual test invocations follow -----------------#
-
+    
 # Note that the Compiler Status Report HTML generator scans
 # these rule invocations to find test type. That program is
 # pretty stupid and needs help, including test names (if supplied)
@@ -634,4 +645,3 @@ run libs/utility/operators_test.cpp ;
 run libs/utility/tie_example.cpp ;
 
 run libs/utility/binary_search_test.cpp ;
-
