@@ -267,6 +267,8 @@ SUFRUN_TEST = .run ;
 rule run-test # target : sources : requirements
 {
     local executable = $(<:S=$(SUFEXE)) ; 
+    gTARGET_LIBS($(executable)) = $(gTARGET_LIBS($(<))) ;
+    gTARGET_DLLS($(executable)) = $(gTARGET_DLLS($(<))) ;
     executable-file $(executable) : $(>) : $(3) ;
     set-target-variables $(executable) ;
     
