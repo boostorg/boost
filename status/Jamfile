@@ -129,6 +129,13 @@ rule run-test # target : sources : requirements
     executable-file $(executable) : $(>) : $(3) ;
     set-target-variables $(executable) ;
     
+    # Ugly hack to get the pathes transferred. See the link rule in boost-base.jam.
+    RUN_PATH on $(<) = [ join $(gRUN_PATH($(executable))) $(RUN_PATH) : $(SPLITPATH) ] ;
+    if $(UNIX) 
+    {
+    	RUN_LD_LIBRARY_PATH on $(<) = [ join $(gRUN_LD_LIBRARY_PATH($(executable))) $(RUN_LD_LIBRARY_PATH) : $(SPLITPATH) ] ;
+    }
+
     # The .test file goes with the other subvariant targets
     # normalization is a hack to get the slashes going the right way on Windoze
     local LOCATE_TARGET = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
@@ -147,11 +154,29 @@ rule run-test # target : sources : requirements
 
 # The rule is just used for argument checking
 rule capture-run-output ( target : executable + ) { }
-actions capture-run-output bind INPUT_FILES
+if $(UNIX)  
 {
-    $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
-    $(CP) $(<:S=.error) $(<)
-    $(RM) $(<:S=.error)
+    actions capture-run-output bind INPUT_FILES
+    {
+        $(SHELL_SET)PATH=$(RUN_PATH) 
+    	$(SHELL_EXPORT)PATH
+    	$(SHELL_SET)LD_LIBRARY_PATH=$(RUN_LD_LIBRARY_PATH)
+    	$(SHELL_EXPORT)LD_LIBRARY_PATH
+        $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
+        $(CP) $(<:S=.error) $(<)
+        $(RM) $(<:S=.error)
+    }
+}
+else
+{
+    actions capture-run-output bind INPUT_FILES
+    {
+        $(SHELL_SET)PATH=$(RUN_PATH) 
+        $(SHELL_EXPORT)PATH
+        $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
+        $(CP) $(<:S=.error) $(<)
+        $(RM) $(<:S=.error)
+    }
 }
 
 rule run # sources : args : input-files : requirements
