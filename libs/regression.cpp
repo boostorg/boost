@@ -24,12 +24,12 @@
 
 // It is OK to use boost headers which contain entirely inline code.
 #include <boost/config.hpp>
-# ifdef BOOST_NO_STDC_NAMESPACE
+#ifdef BOOST_NO_STDC_NAMESPACE
     namespace std {
       using ::exit; using ::system; using ::strftime; using ::gmtime;
       using ::time; using ::time_t;
     }
-# endif
+#endif
 
 std::string get_host()
 {
@@ -61,6 +61,7 @@ std::string get_system_configuration()
     return "";
 
   std::string config = std::string(ut.sysname) + " " + ut.release;
+  config = config + " (CPU: " + ut.machine + ")";
   return config;
 }
 
@@ -81,6 +82,59 @@ std::string get_system_configuration()
 #else
 # error Please adapt for your platform
 #endif
+
+
+struct configuration
+{
+  std::string compiler_config_file, test_config_file;
+  std::string boostpath;
+  std::string html_output;
+  std::string compiler, test;
+
+  // defaults
+  configuration()
+    : compiler_config_file("compiler.cfg"), test_config_file("regression.cfg"),
+      boostpath(".."), html_output("cs-" + get_host() + ".html"),
+      compiler("*"), test("") { }
+};
+
+configuration parse_command_line(char **first, char **last)
+{
+  configuration cfg;
+  for( ; first != last; ++first) {
+    std::string arg = *first;
+    if(arg == "--config") {
+      cfg.compiler_config_file = *++first;
+    } else if(arg == "--tests") {
+      cfg.test_config_file = *++first;
+    } else if(arg == "--boost") {
+      cfg.boostpath = *++first;
+    } else if(arg == "-o" || arg == "--output") {
+      cfg.html_output = *++first;
+    } else if(arg == "--compiler") {
+      cfg.compiler = *++first;
+    } else if(arg.substr(0,1) == "-") {
+      std::cerr << "usage:  regression [-h | --help] [--config compiler.cfg]\n"
+		<< "    [--tests regression.cfg] [--boost path] [-o output.html] [--compiler <name>]\n"
+		<< "    [test]\n"
+		<< "  -h or --help    print this help message\n"
+		<< "  --config <file> compiler configuration file (default: compiler.cfg)\n"
+		<< "  --tests <file>  test configuration file (default: regression.cfg)\n"
+		<< "  --boost <path>  filesystem path to main boost directory (default: ..)\n"
+		<< "  -o <file>       name of output file (default: cs-OS.html)\n"
+		<< "  --compiler <name>  use only compiler <name> (default: *)\n"
+		<< "  test            a single test, including the action (compile, run, etc.)\n";
+      std::exit(1);
+    } else {
+      // add the rest of the command line to the "test" line
+      for( ; first != last; ++first)
+	cfg.test += std::string(*first) + " ";
+      break;
+    }
+  }
+  return cfg;
+}
+
 
 struct entry
 {
@@ -177,13 +231,14 @@ test_result link(std::string command, const std::string & boostpath,
 }
 
 test_result run(std::string command, const std::string & boostpath,
-		const std::string & file)
+		const std::string & file, const std::string & args)
 {
   std::string exename = "boosttmp.exe";
   replace(command, "%source", boostpath + "/" + file);
   if(execute(command)) {
-    return execute( (get_host() == "win32" ? "" : "./") + exename ) ?
-      run_ok : run_failed;
+    if(get_host() != "win32")
+      exename = "./" + exename;
+    return execute(exename + " " + args) ? run_ok : run_failed;
   } else {
     return link_failed;
   }
@@ -191,8 +246,9 @@ test_result run(std::string command, const std::string & boostpath,
 
 std::pair<test_result, test_result>
 run_test(const std::string & type, std::string compile_only_command,
-   std::string compile_link_command,
-	 const std::string & boostpath, const std::string & source)
+	 std::string compile_link_command,
+	 const std::string & boostpath, const std::string & source,
+	 const std::string & args)
 {
   replace(compile_only_command, "%include", boostpath);
   replace(compile_link_command, "%include", boostpath);
@@ -205,9 +261,9 @@ run_test(const std::string & type, std::string compile_only_command,
   else if(type == "link-fail")
     return std::make_pair(link(compile_link_command, boostpath, source), link_failed);
   else if(type == "run")
-    return std::make_pair(run(compile_link_command, boostpath, source), run_ok);
+    return std::make_pair(run(compile_link_command, boostpath, source, args), run_ok);
   else if(type == "run-fail")
-    return std::make_pair(run(compile_link_command, boostpath, source), run_failed);
+    return std::make_pair(run(compile_link_command, boostpath, source, args), run_failed);
   else
     return std::make_pair(unknown_type, ok);
 }
@@ -237,7 +293,9 @@ void do_tests(std::ostream & out,
       continue;
     }
     std::string type(l, 0, p);
-    std::string file(l, p+1, std::string::npos);  // 3rd arg to fix VC++ bug
+    sz_type end_filename = l.find(' ', p+1);
+    std::string file(l, p+1, end_filename-(p+1));
+    std::string args(l, end_filename+1, std::string::npos);
 
     std::cout << "*** " << file << " ***\n\n";
 
@@ -248,7 +306,7 @@ void do_tests(std::ostream & out,
     for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it) {
       std::cout << "** " << it->name << "\n";
       std::pair<test_result, test_result> result =
-        run_test(type, it->compile_only_command, it->compile_link_command, boostpath, file);
+        run_test(type, it->compile_only_command, it->compile_link_command, boostpath, file, args);
       if(result.first == unknown_type) {
         std::cerr << "Unknown test type " << type << ", skipped\n";
         continue;
@@ -265,25 +323,15 @@ void do_tests(std::ostream & out,
 
 int main(int argc, char * argv[])
 {
-//  std::vector<std::string> args(argv+1, argv+argc);
-// hack around VC++ lack of ctor taking iterator args
-  std::vector<std::string> args;
-  for ( const char ** ait = (const char **)(argv+1);
-        ait != (const char **)(argv+argc); ++ait)
-    args.push_back(std::string( *ait ));
-
-  if(args.size() < 3) {
-    std::cerr << argv[0]
-              << " usage: compiler-config test-config boost-path [compiler|* [[command] file]]\n";
-    std::exit(1);
-  }
-  std::string compiler = (args.size() >= 4 ? args[3] : "*");
+  configuration config = parse_command_line(argv+1, argv+argc);
     
   std::list<entry> l;
-  read_compiler_configuration(args[0], std::back_inserter(l));
+  read_compiler_configuration(config.compiler_config_file,
+			      std::back_inserter(l));
   std::string host = get_host();
   for(std::list<entry>::iterator it = l.begin(); it != l.end(); ) {
-    if(it->os == host && (compiler == "*" || it->identifier == compiler)) {
+    if(it->os == host && (config.compiler == "*" ||
+			  it->identifier == config.compiler)) {
       replace_environment(it->compile_only_command);
       replace_environment(it->compile_link_command);
       ++it;
@@ -292,16 +340,13 @@ int main(int argc, char * argv[])
     }
   }
 
-  std::string boostpath = args[2];
-
-  // if file argument present, write temporary test configuration file for do_tests
-  if(args.size() >= 5) { // file argument present 
-    std::ofstream tmp((args[1]="boosttmp.tmp").c_str());
-    if (args.size() >= 6) tmp << args[4] << " " << args[5] << std::endl; // command present
-    else tmp << "compile " << args[4] << std::endl; // command not present
+  // if explicit test requested, write temporary file for do_tests
+  if(config.test != "") {
+    std::ofstream tmp((config.test_config_file="boosttmp.tmp").c_str());
+    tmp << config.test << std::endl;
   }
 
-  std::ofstream out( ("cs-" + host + ".html").c_str() );
+  std::ofstream out( config.html_output.c_str() );
 
   char run_date[100];
   std::time_t ct;
@@ -319,7 +364,7 @@ int main(int argc, char * argv[])
       << "<p>\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
-  do_tests(out, l.begin(), l.end(), args[1], boostpath);
+  do_tests(out, l.begin(), l.end(), config.test_config_file, config.boostpath);
 
   out << "</table></p>\n<p>\n";
   if(host == "linux")
