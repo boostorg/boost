@@ -99,7 +99,9 @@
 
                           <tr>
                               <td colspan="2">
-                                  <div class="library-name"><xsl:value-of select="$library"/></div>
+                                  <div class="library-name">
+                                    <a href="developer_result_page.html#{$library}"><xsl:value-of select="$library"/></a>
+                                  </div>
                               </td>
                           </tr>
                           
@@ -110,15 +112,27 @@
                               <xsl:variable name="unexpected_toolsets" select="$library_tests[ @test-name = $test_name and not (meta:is_unusable( $explicit_markup, $library, @toolset )) ]/@toolset"/>
                               
                               <xsl:if test="count( $unexpected_toolsets ) > 0">
+                                <xsl:variable name="test_program"  select="$library_tests[@test-name = $test_name]/@test-program"/>
                                   <tr>
                                       <td class="test-name">
-                                          <xsl:value-of select="$test_name"/>:
+                                        <a href="../../{$test_program}" class="test-link">
+                                          <xsl:value-of select="$test_name"/>
+                                        </a>
                                       </td>
                                       <td>
                                           <xsl:for-each select="$unexpected_toolsets">
                                               <xsl:sort select="." order="ascending"/>
+                                              <xsl:variable name="toolset" select="."/>
+                                              <xsl:variable name="test_result" select="$library_tests[@test-name = $test_name and @toolset = $toolset]"/>
+
                                               <xsl:if test="position() > 1">,&#160;</xsl:if>
-                                              <xsl:value-of select="."/>
+                                              <xsl:variable name="log_link" select="meta:output_file_path( $test_result/@target-directory )"/>
+                                              <xsl:if test="$test_result/@is-new = 'yes'">
+                                                <xsl:text></xsl:text>
+                                              </xsl:if>
+                                              <a href="{$log_link}" class="log-link">
+                                                <xsl:value-of select="."/>
+                                              </a>
                                           </xsl:for-each>
                                       </td>
                                   </tr>
