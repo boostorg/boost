@@ -24,7 +24,7 @@
 Similar to the
 <a href="borland_cpp.html">portability hints for Borland C++</a>,
 this page provides hints on some language features of the Microsoft Visual C++
-version 6.0 servicepack 4 compiler.
+version 6.0 service pack 4 compiler.
 
 Each entry in the following list describes a particular issue,
 complete with sample source code to demonstrate the effect.
@@ -86,18 +86,18 @@ Trying to explicitly instantiate a function template leads to the
 wrong function being called silently.
 
 <pre>
-#include &lt;stdio.h>
+#include &lt;stdio.h&gt;
 
-template&lt;class T>
+template&lt;class T&gt;
 void f()
 {
-  printf("%d\n", sizeof(T));
+  printf(&quot;%d\n&quot;, sizeof(T));
 }
 
 int main()
 {
-  f&lt;double>();      // output: "1"
-  f&lt;char>();        // output: "1"
+  f&lt;double&gt;();      // output: &quot;1&quot;
+  f&lt;char&gt;();        // output: &quot;1&quot;
   return 0;
 }
 </pre>
@@ -134,7 +134,7 @@ not work.
 <pre>
 struct A
 {
-  static const int i = 5;      // "invalid syntax for pure virtual method"
+  static const int i = 5;      // &quot;invalid syntax for pure virtual method&quot;
 };
 </pre>
 
@@ -164,13 +164,13 @@ void g()
 A Template cannot be declared a friend of a class.
 
 <pre>
-template&lt;class T>
+template&lt;class T&gt;
 struct A {};
 
 struct B
 {
-  template&lt;class T>
-  friend struct A;     // "syntax error"
+  template&lt;class T&gt;
+  friend struct A;     // &quot;syntax error&quot;
 };
 </pre>
 
@@ -181,16 +181,16 @@ templates</h3>
 Defining member templates outside their enclosing class does not work.
 
 <pre>
-template&lt;class T>
+template&lt;class T&gt;
 struct A
 {
-  template&lt;class U>
+  template&lt;class U&gt;
   void f();
 };
 
-template&lt;class T>
-template&lt;class U>   // "syntax error"
-void A&lt;T>::f()      // "T: undeclared identifier"
+template&lt;class T&gt;
+template&lt;class U&gt;   // &quot;syntax error&quot;
+void A&lt;T&gt;::f()      // &quot;T: undeclared identifier&quot;
 {
 }
 </pre>
@@ -204,14 +204,14 @@ their enclosing class.
 Partial specialization of class templates does not work.
 
 <pre>
-template&lt;class T>
+template&lt;class T&gt;
 struct A {};
 
-template&lt;class T>
+template&lt;class T&gt;
 struct B {};
 
-template&lt;class T>
-struct A&lt;B&lt;T> > {};  // template class was already defined as a non-template
+template&lt;class T&gt;
+struct A&lt;B&lt;T&gt; &gt; {};  // template class was already defined as a non-template
 </pre>
 
 <strong>Workaround:</strong> In some situations where interface
@@ -219,17 +219,17 @@ does not matter, member class templates can simulate partial
 specialization.
 
 
-<h3>[template-value] Dependent emplate value parameters</h3>
+<h3>[template-value] Dependent template value parameters</h3>
 
 Template value parameters whose type depends on a previous template
 parameter provoke an internal compiler error if the correct syntax
 (with "typename") is used.
 
 <pre>
-template&lt;class T, typename T::result_type> // C1001: INTERNAL COMPILER ERROR: ms
+template&lt;class T, typename T::result_type&gt; // C1001: INTERNAL COMPILER ERROR: ms
 c1.cpp, line 1794
 struct B {};
- // (omit "typename" and it compiles)
+ // (omit &quot;typename&quot; and it compiles)
 
 </pre>
 
@@ -239,11 +239,21 @@ struct B {};
 The type <code>wchar_t</code> is not a built-in type.
 
 <pre>
-wchar_t x;  // "missing storage class or type identifier"
+wchar_t x;  // &quot;missing storage class or type identifier&quot;
 </pre>
 
 
-<p>
+<h2>
+Standard Library</h2>
+<h3>[clib-namespace] C library names in global namespace instead of std</h3>
+<p>Library names from the &lt;c...&gt; headers are in the global namespace
+instead of namespace std.<p><b>Workaround:</b>&nbsp; The header <a href="../libs/config/index.htm">boost/config.hpp</a>
+will define BOOST_NO_STDC_NAMESPACE. It can be used as follows:
+<pre># ifdef BOOST_NO_STDC_NAMESPACE
+    namespace std { using ::abs; using ::fabs; }
+# endif</pre>
+<p>Because std::size_t and std::ptrdiff_t are so commonly used, the workaround
+for these is already provided in boost/config.hpp.<p>&nbsp;
 <hr>
 
 2001-02-01 <a href="../people/jens_maurer.htm">Jens Maurer</a>
