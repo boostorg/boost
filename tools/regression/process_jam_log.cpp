@@ -345,15 +345,14 @@ int cpp_main( int argc, char ** argv )
                  "  locate-root is the same as the bjam ALL_LOCATE_TARGET\n"
                  "  parameter, if any. Default is boost-root.\n";
 
-  string boost_root_relative_initial;
-
   fs::path boost_root( fs::initial_path() );
+
   while ( !boost_root.empty()
     && !fs::exists( boost_root / "libs" ) )
   {
-    boost_root = boost_root.branch_path();
-    boost_root_relative_initial += "../";
+    boost_root /=  "..";
   }
+
   if ( boost_root.empty() )
   {
     std::cout << "must be run from within the boost-root directory tree\n";
@@ -363,6 +362,9 @@ int cpp_main( int argc, char ** argv )
   locate_root = argc > 1 
     ? fs::path( argv[1], fs::native )
     : boost_root;
+
+  std::cout << "boost_root: " << boost_root.string() << '\n'
+            << "locate_root: " << locate_root.string() << '\n';
 
   message_manager mgr;
 
@@ -484,7 +486,6 @@ int cpp_main( int argc, char ** argv )
 
         if ( target_dir != lib_dir ) // it's a lib problem
         {
-          target_dir.insert( 0, boost_root_relative_initial );
           mgr.start_message( "lib", target_dir, 
             test_name( target_dir ), toolset( target_dir ), content );
           content = lib_dir;
