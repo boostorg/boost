@@ -47,6 +47,8 @@ std::string get_host()
   return "win32";
 #elif defined __BEOS__
   return "beos";
+#elif defined __hpux
+  return "hpux";
 #else
 # error Please adapt for your platform
 #endif
@@ -413,20 +415,23 @@ int main(int argc, char * argv[])
 {
   configuration config = parse_command_line(argv+1, argv+argc);
     
-  std::list<entry> l;
+  std::list<entry> compilers;
   read_compiler_configuration(config.compiler_config_file,
-			      std::back_inserter(l));
+			      std::back_inserter(compilers));
   std::string host = get_host();
-  for(std::list<entry>::iterator it = l.begin(); it != l.end(); ) {
+  for(std::list<entry>::iterator it = compilers.begin(); it != compilers.end(); ) {
     if(it->os == host && (config.compiler == "*" ||
 			  it->identifier == config.compiler)) {
       replace_environment(it->compile_only_command);
       replace_environment(it->compile_link_command);
       ++it;
     } else {
-      it = l.erase(it);
+      it = compilers.erase(it);
     }
   }
+  
+  if(compilers.empty())
+     std::cerr << "You do not have any compatible compilers defined." << std::endl;  
 
   // if explicit test requested, write temporary file for do_tests
   if(config.test != "") {
@@ -458,7 +463,7 @@ int main(int argc, char * argv[])
       << "<p>\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
-  do_tests(out, l.begin(), l.end(), config.test_config_file, config.boostpath,
+  do_tests(out, compilers.begin(), compilers.end(), config.test_config_file, config.boostpath,
 	   previous_results, config.highlight_differences);
 
   out << "</table></p>\n<p>\n";
