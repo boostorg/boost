@@ -248,7 +248,7 @@ if  program_arg=="*":
   compile( "concept_check/concept_check_test.cpp")
   compile( "concept_check/class_concept_check_test.cpp")
   compile( "concept_check/concept_check_fail_expected.cpp")
-  compile( "concept_check/class_concept_check_fail_expected.cpp")
+  compile( "concept_check/class_concept_fail_expected.cpp")
   compile( "functional/function_test.cpp" )
   compile( "graph/test/graph.cpp" )
   compile( "integer/cstdint_test.cpp" )
