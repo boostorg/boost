@@ -141,8 +141,17 @@ include testing.jam ;
         ;
 
     test-suite format
-        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/test_exec_monitor
+              : # args
+              : # input files
+              : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
+            ]
+              
+          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/test_exec_monitor
+              : # args
+              : # input files
+              : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
+          ]
         ;
     
     test-suite function
