@@ -206,8 +206,8 @@ struct iterator_traits {
 
     <p>A technique that often goes hand in hand with traits classes is tag
     dispatching, which is a way of using function overloading to dispatch based
-    on properties of a type. A good example of this is the implementation of
-    the <a href=
+    on properties of a type. A good example of this is the implementation of the
+    <a href=
     "http://www.sgi.com/tech/stl/advance.html"><tt>std::advance()</tt></a>
     function in the C++ Standard Library, which increments an iterator
     <tt>n</tt> times. Depending on the kind of iterator, there are different
@@ -215,14 +215,16 @@ struct iterator_traits {
     <a href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">random
     access</a> (can jump forward and backward arbitrary distances), then the
     <tt>advance()</tt> function can simply be implemented with <tt>i += n</tt>,
-    and is very efficient: constant time. If the iterator is <a href=
+    and is very efficient: constant time. Other iterators must be
+    <tt>advance</tt>d in steps, making the operation linear in n. If the
+    iterator is <a href=
     "http://www.sgi.com/tech/stl/BidirectionalIterator.html">bidirectional</a>,
-    then it makes sense for <tt>n</tt> to be negative, we can decrement the
-    iterator <tt>n</tt> times.
+    then it makes sense for <tt>n</tt> to be negative, so we must decide whether
+    to increment or decrement the iterator.
 
     <p>The relation between tag dispatching and traits classes is that the
     property used for dispatching (in this case the <tt>iterator_category</tt>)
-    is accessed through a traits class. The main <tt>advance()</tt> function
+    is often accessed through a traits class. The main <tt>advance()</tt> function
     uses the <a href=
     "http://www.sgi.com/tech/stl/iterator_traits.html"><tt>iterator_traits</tt></a>
     class to get the <tt>iterator_category</tt>. It then makes a call the the
@@ -256,9 +258,9 @@ namespace std {
     void advance_dispatch(BidirectionalIterator&amp; i, Distance n, 
        <b>bidirectional_iterator_tag</b>) {
       if (n &gt;= 0)
-  while (n--) ++i;
+        while (n--) ++i;
       else
-  while (n++) --i;
+        while (n++) --i;
     }
 
     template &lt;class RandomAccessIterator, class Distance&gt;
