@@ -421,7 +421,7 @@ def bjam_command( toolsets ):
           )
     
     if not toolsets is None:
-        result += ' -sTOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' )
+        result += ' "-sTOOLS=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
 
     return result
 
