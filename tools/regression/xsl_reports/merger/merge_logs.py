@@ -155,16 +155,14 @@ def make_result_pages( test_results_file
                        , run_date
                        , comment_file
                        , results_dir
-                       , result_prefix
                        , xslt_proc_name
                        , reports
                        ):
     log( 'Producing the reports...' )
     __log__ = 1
     
-    output_dir = os.path.join( results_dir, result_prefix )
-    if not os.path.exists( output_dir ):
-        os.makedirs( output_dir )
+    if not os.path.exists( results_dir ):
+        os.makedirs( results_dir )
         
     xslt_proc = registered_xsltprocs[ xslt_proc_name ]
     
@@ -177,7 +175,7 @@ def make_result_pages( test_results_file
         expected_results_file = os.path.abspath( map_path( 'empty_expected_results.xml' ) )
         
 
-    extended_test_results = os.path.join( output_dir, 'extended_test_results.xml' )
+    extended_test_results = os.path.join( results_dir, 'extended_test_results.xml' )
     if 'x' in reports:    
         log( '    Merging with expected results...' )
         xslt_proc( test_results_file
@@ -186,11 +184,20 @@ def make_result_pages( test_results_file
                    , { 'expected_results_file': expected_results_file, 'failures_markup_file' : failures_markup_file }
                  )
 
-    links = os.path.join( output_dir, 'links.html' )
+    links = os.path.join( results_dir, 'links.html' )
     
-    makedirs( os.path.join( output_dir, 'output' ) )
+    makedirs( os.path.join( results_dir, 'output' ) )
     for mode in ( 'developer', 'user' ):
-        makedirs( os.path.join( output_dir, mode , 'output' ) )
+        makedirs( os.path.join( results_dir, mode , 'output' ) )
+
+    runners = os.path.join( results_dir, 'runners.html' )
+    
+    if "n" in reports:
+        log( '    Making runner comment files...' )
+        xslt_proc( extended_test_results
+                   , xsl_path( 'runners.xsl' )
+                   , runners
+                   )
         
     if 'l' in reports:        
         log( '    Making test output files...' )
@@ -205,7 +212,7 @@ def make_result_pages( test_results_file
                      }
                    )
 
-    issues = os.path.join( output_dir, 'developer', 'issues.html'  )
+    issues = os.path.join( results_dir, 'developer', 'issues.html'  )
     if 'i' in reports:
         log( '    Making issues list...' )
         xslt_proc( extended_test_results
@@ -224,7 +231,7 @@ def make_result_pages( test_results_file
             log( '    Making detailed %s  report...' % mode )
             xslt_proc(  extended_test_results
                         , xsl_path( 'result_page.xsl' )
-                        , os.path.join( output_dir, mode, 'index.html' )
+                        , os.path.join( results_dir, mode, 'index.html' )
                         , { 'links_file': 'links.html'
                             , 'mode': mode
                             , 'source': source
@@ -241,7 +248,7 @@ def make_result_pages( test_results_file
             log( '    Making summary %s  report...' % mode )
             xslt_proc(  extended_test_results
                         , xsl_path( 'summary_page.xsl' )
-                        , os.path.join( output_dir, mode, 'summary.html' )
+                        , os.path.join( results_dir, mode, 'summary.html' )
                         , { 'mode' : mode 
                             , 'source': source
                             , 'run_date': run_date 
@@ -254,12 +261,12 @@ def make_result_pages( test_results_file
         log( '    Generating expected_results ...' )
         xslt_proc( extended_test_results
                    , xsl_path( 'produce_expected_results.xsl' )
-                   , os.path.join( output_dir, 'expected_results.xml' )
+                   , os.path.join( results_dir, 'expected_results.xml' )
                    )
     
     shutil.copyfile( 
           xsl_path( 'html/master.css' )
-        , os.path.join( output_dir, 'master.css' )
+        , os.path.join( results_dir, 'master.css' )
         )
 
 def download_test_runs( destination, tag, user ):
