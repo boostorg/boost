@@ -237,8 +237,10 @@ if  program_arg=="*":
   compile( "utility/call_traits_test.cpp" )
   compile( "utility/cast_test.cpp" )
   compile( "utility/compressed_pair_test.cpp" )
+  compile( "utility/iterator_adaptor_test.cpp" )
   compile( "utility/iterators_test.cpp" )
   compile( "utility/operators_test.cpp" )
+  compile( "utility/tie_example.cpp" )
   compile( "utility/type_traits_test.cpp" )
 else:
   compile( program_arg )
