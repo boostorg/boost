@@ -50,7 +50,7 @@
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="mipspro"/>
             <note author="P.Droba">
-		The compiler does not support features that are essential for the library.
+		        The compiler does not support features that are essential for the library.
             </note>
         </mark-unusable>
     </library>
@@ -114,6 +114,7 @@
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="intel-8.0-linux"/>
+            <toolset name="intel-8.1-linux"/>
             <toolset name="gcc-3.4.1*"/>
             <toolset name="gcc-3.4.2*"/>
             <note refid="27" author="Thorsten Ottosen"/>
@@ -384,7 +385,6 @@
         <test name="dyn_bitset_unit_tests4">
             <mark-failure>
                 <toolset name="cw-9_3"/>
-                <toolset name="intel-8.0-linux"/>
                 <note author="Aleksey Gurtovoy" refid="2"/>
             </mark-failure>
         </test>
@@ -574,8 +574,8 @@
             <toolset name="borland-5_5_1"/>
             <note author="Alisdair Meredith" date="30 Jan 2004">
                 <p>
-                This library has never worked [on Borland 5.5.1 and 5.6.4], and the only tests that 'pass' are
-                compile-fail tests failing for the wrong reasons!
+                This library has never worked [on Borland 5.5.1 and 5.6.4], and the only tests 
+                that 'pass' are compile-fail tests failing for the wrong reasons!
                 </p>
             </note>
         </mark-unusable>
@@ -717,7 +717,7 @@ for more information.
             <toolset name="msvc*"/>
             <toolset name="vc7"/>
             <note author="Robert Ramey" refid="6">
-                msvc 6 compiler failure.  Sometimes can be worked around
+                msvc 6 compiler failure.  Sometimes can be worked around.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -763,7 +763,7 @@ for more information.
             <test name="test_shared_ptr*"/>
             <toolset name="cw*"/>
             <note author="Robert Ramey">
-                All tests that serialize derived pointers currently fail with Metrowerks Compilers
+                All tests that serialize derived pointers currently fail with Metrowerks compilers.
         </note>
         </mark-expected-failures>
     </library>
@@ -820,6 +820,7 @@ for more information.
             <test name="multi_pass_compile_tests"/>
             <test name="repeat_ast_tests*"/>
             <toolset name="intel-8.0-linux"/>
+            <toolset name="intel-8.1-linux"/>
             <note author="Aleksey Gurtovoy">
                 This failure is caused by a compiler bug that manifests itself in the
                 particular environment/hardware configuration the test has been run in.
@@ -836,7 +837,22 @@ for more information.
                 been fixed in the latest development "alpha".
             </note>
         </mark-expected-failures>
-
+        <mark-expected-failures>
+            <test name="escape_char_parser_tests*"/>
+            <toolset name="intel-7.1-linux"/>
+            <toolset name="intel-7.1-stdlib-default-linux"/>
+            <note author="Aleksey Gurtovoy" refid="19"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="escape_char_parser_tests*"/>
+            <toolset name="iw-7_1-vc6*"/>
+            <note author="Aleksey Gurtovoy" refid="28"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="chset_tests_tests*"/>
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <note author="Aleksey Gurtovoy" refid="28"/>
+        </mark-expected-failures>
     </library>
 
     <!-- function -->
@@ -1284,6 +1300,87 @@ for more information.
                 So technically GCC 2.x is usable if you're careful.
              </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="args.cpp"/>
+            <test name="auto_ptr.cpp"/>
+            <test name="back_reference.cpp"/>
+            <test name="ben_scott1.cpp"/>
+            <test name="bienstman1.cpp"/>
+            <test name="bienstman2.cpp"/>
+            <test name="bienstman3.cpp"/>
+            <test name="bienstman4.cpp"/>
+            <test name="bienstman5.cpp"/>
+            <test name="callbacks.cpp"/>
+            <test name="cltree.cpp"/>
+            <test name="const_argument.cpp"/>
+            <test name="crossmod_exception_a.cpp"/>
+            <test name="crossmod_exception_b.cpp"/>
+            <test name="data_members.cpp"/>
+            <test name="defaults.cpp"/>
+            <test name="dict.cpp"/>
+            <test name="docstring.cpp"/>
+            <test name="enum.cpp"/>
+            <test name="exception_translator.cpp"/>
+            <test name="extract.cpp"/>
+            <test name="implicit.cpp"/>
+            <test name="injected.cpp"/>
+            <test name="input_iterator.cpp"/>
+            <test name="int_map_indexing_suite.cpp"/>
+            <test name="iterator.cpp"/>
+            <test name="keywords.cpp"/>
+            <test name="list.cpp"/>
+            <test name="long.cpp"/>
+            <test name="m1.cpp"/>
+            <test name="m2.cpp"/>
+            <test name="map_indexing_suite.cpp"/>
+            <test name="minimal.cpp"/>
+            <test name="module_tail.cpp"/>
+            <test name="multi_arg_constructor.cpp"/>
+            <test name="nested.cpp"/>
+            <test name="object.cpp"/>
+            <test name="opaque.cpp"/>
+            <test name="operators.cpp"/>
+            <test name="pickle1.cpp"/>
+            <test name="pickle2.cpp"/>
+            <test name="pickle3.cpp"/>
+            <test name="pickle4.cpp"/>
+            <test name="polymorphism.cpp"/>
+            <test name="polymorphism2.cpp"/>
+            <test name="properties.cpp"/>
+            <test name="register_ptr.cpp"/>
+            <test name="return_arg.cpp"/>
+            <test name="shared_ptr.cpp"/>
+            <test name="slice.cpp"/>
+            <test name="staticmethod.cpp"/>
+            <test name="str.cpp"/>
+            <test name="test_builtin_converters.cpp"/>
+            <test name="test_pointer_adoption.cpp"/>
+            <test name="tuple.cpp"/>
+            <test name="vector_indexing_suite.cpp"/>
+            <test name="virtual_functions.cpp"/>
+            <toolset name="intel-7.1-linux"/>
+            <toolset name="intel-8.0-linux"/>
+            <note author="Aleksey Gurtovoy">
+                The library is <a href="http://article.gmane.org/gmane.comp.lib.boost.devel/110420">known to work</a> 
+                in this configuration. The failures are due to configuration issues of 
+                the particular testing environment these tests have been run in. The 
+                regression runners and library developers are aware of the problem and 
+                plan to fix it for the next release.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="builtin_convertors"/>
+            <test name="list"/>
+            <test name="operators"/>
+            <test name="pickle3"/>
+            <test name="pickle4"/>
+            <toolset name="gcc-3.4.2-linux"/>
+            <note author="Aleksey Gurtovoy">
+                The test is <a href="http://article.gmane.org/gmane.comp.lib.boost.devel/110671">known to work</a> 
+                in this configuration. The failures are due to configuration issues of 
+                the particular testing environment these tests have been run in.
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- random -->
@@ -1649,8 +1746,8 @@ for more information.
     </note>
 
     <note id="1">
-        The failure is caused by a problem in Boost code. The Boost developer is aware of
-        the problem and plans to fix it.
+        The failure is caused by a problem in Boost code. The Boost developers is aware of
+        the problem and plan to fix it.
     </note>
 
     <note id="2">
@@ -1736,7 +1833,6 @@ for more information.
       work correctly.
     </note>
 
-    <!-- R. Rivera -->
     <note id="25">
       The failure is caused by a runtime limitation. Locale support is only
       available with the static linked variant of the runtime. Generally
@@ -1749,10 +1845,15 @@ for more information.
         Patches are welcome!
     </note>
 
-    <!-- Thorsten Ottosen -->
     <note id="27" >
         This failure is caused by bugs in the standard library implementation and/or
         bugs in the compiler.
     </note>
+
+    <note id="28">
+        Unresearched failure, please contact library developers for more 
+        information about possible causes.
+    </note>
+
 
 </explicit-failures-markup>
