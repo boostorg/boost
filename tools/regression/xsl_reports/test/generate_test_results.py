@@ -4,8 +4,8 @@ import xml.sax.saxutils
 import os
 import time
 
-num_of_libs = 2
-num_of_runners = 3
+num_of_libs = 5
+num_of_runners = 5
 num_of_toolsets = 3
 num_of_tests = 10
 
@@ -28,7 +28,11 @@ def make_test_results():
     for i_runner in range( 0, num_of_runners ):
         runner_id = "runner_%02d" % i_runner
         g = xml.sax.saxutils.XMLGenerator( open( os.path.join( tag, runner_id + ".xml" ), "w" ) )
-        platform = "Win32"
+        if i_runner % 2:
+            platform = "Win32"
+        else:
+            platform = "Unix"
+            
         g.startElement( "test-run", { "platform": platform
                                       , "runner": runner_id
                                       , "timestamp": time.strftime( "%a, %d %b %Y %H:%M:%S +0000"
@@ -52,7 +56,8 @@ def make_test_results():
                                       , test_name = ""
                                       , test_type = "lib"
                                       , test_result = test_result
-                                      , show_run_output = "false" )
+                                      , show_run_output = "false"
+                                      , variant = None )
 
     
         for i_lib in range( 0, num_of_libs ):
@@ -80,8 +85,22 @@ def make_test_results():
 
                     if test_result == "success" and ( 0 == i_test % 5 ):
                         show_run_output = "true"
-                        
-                    common.make_test_log( g, i_lib, i_toolset, test_name, test_type, test_result, show_run_output )
+
+                    if i_toolset == 2:
+                        variants = [ "static-lib", "shared-lib" ]
+                    else:
+                        print i_toolset
+                        variants = [ None ]
+
+                    for variant in variants:
+                        common.make_test_log( xml_generator = g
+                                              , library_idx = i_lib
+                                              , toolset_idx = i_toolset
+                                              , test_name = test_name
+                                              , test_type = test_type
+                                              , test_result = test_result
+                                              , show_run_output = show_run_output
+                                              , variant = variant )
         g.endElement( "test-run" )
 
 

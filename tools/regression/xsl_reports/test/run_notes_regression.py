@@ -9,19 +9,16 @@ import merger
 import utils
 
 
-tag = "1_30_0"
+tag = "1_32_0"
 
-utils.makedirs( "results" )
+# utils.makedirs( "results" )
     
-all_xml_file = "results/all.xml"
-all_xml_writer = open( all_xml_file, "w" )
-merger.merge_test_runs( ".", tag, all_xml_writer, 1 )
-all_xml_writer.close()
+all_xml_file = "a.xml"
 
 report.make_result_pages( 
       test_results_file = os.path.abspath( all_xml_file )
     , expected_results_file = ""
-    , failures_markup_file = os.path.abspath( "explicit-failures-markup.xml" )
+    , failures_markup_file = os.path.abspath( "../../../../status/explicit-failures-markup.xml" )
     , tag = tag
     , run_date = "Today date"
     , comment_file = os.path.abspath( "comment.html" )

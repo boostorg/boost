@@ -4,31 +4,49 @@ def make_test_name( library_idx, test_idx ):
     return "test_%02d_%02d" % ( library_idx, test_idx )
 
 def make_library_name( library_idx ):
-    return "library_%02d" % library_idx
+    if library_idx % 4 in ( 0, 1 ):
+        return "library_%02d/%02d" % ( int( library_idx / 4 ) * 4, library_idx % 4 )
+    else:
+        return "library_%02d" % library_idx
 
 def make_toolset_name( toolset_idx ):
     return "toolset_%02d" % toolset_idx
 
-def make_library_target_directory( library_idx, toolset_idx ):
-    return "lib/%s/%s" % ( make_library_name( library_idx )
+def make_library_target_directory( library_idx, toolset_idx, variant = None ):
+    base = "lib/%s/%s" % ( make_library_name( library_idx )
                            , make_toolset_name( toolset_idx ) )
+    if variant is not None:
+        return "%s/%s" % ( base, variant )
+    else:
+        return base
 
-def make_test_target_directory( library_idx, toolset_idx, test_idx ):
-    return "%s/%s/%s" % ( make_library_name( library_idx )
+def make_test_target_directory( library_idx, toolset_idx, test_name, variant ):
+    base = "%s/%s/%s" % ( make_library_name( library_idx )
                           , make_toolset_name( toolset_idx )
-                          , make_test_name( test_idx ) )
+                          , test_name )
+    if variant is not None:
+        return "%s/%s" % ( base, variant )
+    else:
+        return base
 
 
-def make_test_log( xml_generator, library_idx, toolset_idx, test_name, test_type, test_result, show_run_output ):
+def make_test_log( xml_generator
+                   , library_idx
+                   , toolset_idx
+                   , test_name
+                   , test_type
+                   , test_result
+                   , show_run_output
+                   , variant ):
     library = make_library_name( library_idx )
     toolset_name = make_toolset_name( toolset_idx )
     
     target_directory = ""
 
     if test_type == "run":
-        target_directory = "%s/%s/%s" % ( library, toolset_name, test_name )
+        target_directory = make_test_target_directory( library_idx, toolset_idx, test_name, variant )
     if test_type == "lib":
-        target_directory = make_library_target_directory( library_idx, toolset_idx )
+        target_directory = make_library_target_directory( library_idx, toolset_idx, variant )
         
     xml_generator.startElement( "test-log", { "library": library
                                   , "test-name":  test_name
@@ -120,4 +138,8 @@ def make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests ):
             
         
     g.endElement( "explicit-failures-markup" )
+
+
+def make_expected_results( num_of_libs, num_of_toolsets, num_of_tests ):
+    pass
 
