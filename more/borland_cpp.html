@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -101,7 +102,7 @@ using namespace N;
 
 int main()
 {
-  &x;     // Ambiguous overload
+  &amp;x;     // Ambiguous overload
 }
 </pre>
 
@@ -119,7 +120,7 @@ class X { };
 
 namespace N
 {
-  // "cannot use template 'X<T>' without specifying specialization parameters"
+  // "cannot use template 'X&lt;T&gt;' without specifying specialization parameters"
   using ::X;
 };
 </pre>
@@ -136,10 +137,10 @@ template&lt;class T&gt;
 void f(T x)
 {
         x = 1;  // works
-        (void) &x;
+        (void) &amp;x;
         T y = 17;
-        y = 20;  // "Cannot modify a const object in function f<const int>(int)"
-        (void) &y;
+        y = 20;  // "Cannot modify a const object in function f&lt;const int&gt;(int)"
+        (void) &amp;y;
 }
 
 int main()
