@@ -224,7 +224,7 @@ def build_xsl_reports(
         )
 
     if v2 and upload:
-        upload_dir = 'regression-logs/incoming/all/'
+        upload_dir = 'regression-logs/'
         utils.log( 'Uploading v2 results into "%s" [connecting as %s]...' % ( upload_dir, user ) )
         
         archive_name = '%s.tar.gz' % result_file_prefix
