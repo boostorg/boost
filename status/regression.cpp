@@ -11,12 +11,14 @@
  * implied warranty.
  *
  * See http://www.boost.org for most recent version including documentation.
+ *
+ *  2001-01-22  added --diff option (Jens Maurer)
  */
 
 #include <iostream>
 #include <string>
 #include <list>
-#include <vector>
+#include <map>
 #include <cstdlib>
 #include <fstream>
 #include <utility>
@@ -91,12 +93,14 @@ struct configuration
   std::string compiler_config_file, test_config_file;
   std::string boostpath;
   std::string html_output;
+  bool note_differences;
   std::string compiler, test;
 
   // defaults
   configuration()
     : compiler_config_file("compiler.cfg"), test_config_file("regression.cfg"),
       boostpath(".."), html_output("cs-" + get_host() + ".html"),
+      note_differences(false),
       compiler("*"), test("") { }
 };
 
@@ -115,6 +119,8 @@ configuration parse_command_line(char **first, char **last)
     } else if(arg == "-o" || arg == "--output") {
       cfg.html_output = *++first;
       output_redirected = true;
+    } else if(arg == "--diff") {
+      cfg.note_differences = true;
     } else if(arg == "--compiler") {
       cfg.compiler = *++first;
     } else if(arg.substr(0,1) == "-") {
@@ -126,6 +132,7 @@ configuration parse_command_line(char **first, char **last)
 		<< "  --tests <file>  test configuration file (default: regression.cfg)\n"
 		<< "  --boost <path>  filesystem path to main boost directory (default: ..)\n"
 		<< "  -o <file>       name of output file (default: cs-OS.html)\n"
+		<< "  --diff          highlight differences in output file\n"
 		<< "  --compiler <name>  use only compiler <name> (default: *)\n"
 		<< "  test            a single test, including the action (compile, run, etc.)\n";
       std::exit(1);
@@ -212,6 +219,55 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
   }
 }
 
+const std::string pass_string = "Pass";
+const std::string fail_string = "<font color=\"#FF0000\">Fail</font>";
+
+// map test name to results, one character ("P" or "F") for each compiler
+typedef std::map<std::string, std::string> previous_results_type;
+
+previous_results_type read_previous_results(std::istream & is)
+{
+  previous_results_type result;
+  // finite state machine
+  enum { prefix, testname, command, testresult } status = prefix;
+  std::string line, current_test;
+  while(std::getline(is, line)) {
+    if(status == prefix) {
+      if(line.substr(0, 6) == "<table")
+	status = testname;
+    } else if(status == testname) {
+      if(line.substr(0, 6) == "<td><a") {
+	std::string::size_type pos = line.find(">", 5);
+	if(pos == std::string::npos || pos+1 >= line.size()) {
+	  std::cerr << "Line '" << line << "' has unknown format.";
+	  continue;
+	}
+	std::string::size_type pos_end = line.find("<", pos);
+	if(pos_end == std::string::npos) {
+	  std::cerr << "Line '" << line << "' has unknown format.";
+	  continue;
+	}	  
+	current_test = line.substr(pos+1, pos_end - (pos+1));
+	status = command;
+      } else if(line.substr(0, 8) == "</table>") {
+	break;
+      }
+    } else if(status == command) {
+      status = testresult;
+    } else if(status == testresult) {
+      if(line == "</tr>")
+	status = testname;
+      else if(line.find(pass_string) != std::string::npos)
+	result[current_test].append("P");
+      else if(line.find(fail_string) != std::string::npos)
+	result[current_test].append("F");
+      else
+	std::cerr << "Line '" << line << "' has unknown format.";
+    }
+  }
+  return result;
+}
+
 // run command (possibly needs portability adjustment)
 bool execute(const std::string & command)
 {
@@ -281,7 +337,8 @@ run_test(const std::string & type, std::string compile_only_command,
 template<class ForwardIterator>
 void do_tests(std::ostream & out,
 	      ForwardIterator firstcompiler, ForwardIterator lastcompiler,
-	      const std::string & testconfig, const std::string & boostpath)
+	      const std::string & testconfig, const std::string & boostpath,
+	      const previous_results_type& previous_results)
 {
   out << "<tr>\n"
       << "<td>Program</td>\n"
@@ -318,7 +375,13 @@ void do_tests(std::ostream & out,
         << "<td><a href=\"../" << file << "\">" << file << "</a></td>\n"
         << "<td>" << type << "</td>\n";
 
-    for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it) {
+    previous_results_type::const_iterator prev_iter =
+      previous_results.find(file);
+    std::string previous = (prev_iter == previous_results.end() ?
+			    "" : prev_iter->second);
+    std::string::size_type i = 0;
+
+    for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it, ++i) {
       std::cout << "** " << it->name << "\n";
       std::pair<test_result, test_result> result =
         run_test(type, it->compile_only_command, it->compile_link_command, boostpath, file, args);
@@ -326,8 +389,14 @@ void do_tests(std::ostream & out,
         std::cerr << "Unknown test type " << type << ", skipped\n";
         continue;
       }
+      bool pass = result.first == result.second;
+      char prev = (i < previous.size() ? previous[i] : ' ');
+      bool changed = (prev == 'F' && pass) || (prev == 'P' && !pass) || 
+	prev == ' ';
       out << "<td>"
-          << (result.first == result.second ? "Pass" : "<font color=\"#FF0000\">Fail</font>")
+	  << (changed ? "<font size=\"+3\"><em>" : "")
+          << (pass ? pass_string : fail_string)
+	  << (changed ? "</em></font>" : "")
           << "</td>" << std::endl;
       std::cout << (result.first == result.second ? "Pass" : "Fail") << "\n\n";
     }
@@ -361,6 +430,12 @@ int main(int argc, char * argv[])
     tmp << config.test << std::endl;
   }
 
+  previous_results_type previous_results;
+  if(config.note_differences) {
+    std::ifstream in(config.html_output.c_str());
+    previous_results = read_previous_results(in);
+  }
+
   std::ofstream out( config.html_output.c_str() );
 
   char run_date[100];
@@ -379,7 +454,8 @@ int main(int argc, char * argv[])
       << "<p>\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
-  do_tests(out, l.begin(), l.end(), config.test_config_file, config.boostpath);
+  do_tests(out, l.begin(), l.end(), config.test_config_file, config.boostpath,
+	   previous_results);
 
   out << "</table></p>\n<p>\n";
   if(host == "linux")
