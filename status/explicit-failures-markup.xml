@@ -19,20 +19,20 @@
     <mark-toolset name="borland-5.6.4" status="required"/>
     <mark-toolset name="cw-9.3" status="required"/>
     <mark-toolset name="cw-8.3" status="required"/>
-    <mark-toolset name="cwpro8" status="required"/>
     <mark-toolset name="msvc" status="required"/>
     <mark-toolset name="msvc-stlport" status="required"/>
     <mark-toolset name="vc7" status="required"/>
     <mark-toolset name="vc7.1" status="required"/>
     <mark-toolset name="vc8.0" status="required"/>
-    <mark-toolset name="mingw-3.4.1" status="required"/>
+    <mark-toolset name="mingw-3.4.2" status="required"/>
+    <mark-toolset name="mingw-3.3.1" status="required"/>
     <mark-toolset name="intel-win32-7.1-vc6" status="required"/>
     <mark-toolset name="intel-win32-7.1-vc6-stlport-4.5.3" status="required"/>
     <mark-toolset name="intel-win32-8.0" status="required"/>
     <mark-toolset name="gcc-2.95.3-linux" status="required"/>
     <mark-toolset name="gcc-2.95.3-stlport-4.5.3-linux" status="required"/>
     <mark-toolset name="gcc-3.3.3-linux" status="required"/>
-    <mark-toolset name="gcc-3.4.1-linux" status="required"/>
+    <mark-toolset name="gcc-3.4.2-linux" status="required"/>
     <mark-toolset name="intel-7.1-linux" status="required"/>
     <mark-toolset name="intel-8.0-linux" status="required"/>
 
@@ -151,7 +151,7 @@
     <library name="concept_check">
         <test name="class_concept_fail_expected">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
@@ -173,7 +173,7 @@
         </test>
         <test name="limits_test">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
@@ -210,7 +210,7 @@
             <mark-failure>
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="borland-5.6.4"/>
                 <toolset name="mingw"/>
                 <toolset name="mingw-3.4.1"/>
@@ -271,7 +271,7 @@
 		        <note author="B. Garst" refid="18,19"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="R. Rivera" refid="25"/>
             </mark-failure>
         </test>
@@ -450,7 +450,7 @@
             <test name="has_xxx"/>
             <test name="no_has_xxx"/>
             <test name="single_view"/>
-            <toolset name="cw-8.3"/>
+            <toolset name="cw-8.3*"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004">
                 This failure is caused by a deficient SFINAE implementation; the bug
                 was fixed in the next major compiler version (CodeWarrior 9.x).
@@ -746,7 +746,7 @@ for more information.
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="2"/>
             </mark-failure>
         </test>
@@ -759,7 +759,7 @@ for more information.
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="2"/>
             </mark-failure>
         </test>
@@ -772,7 +772,7 @@ for more information.
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="2"/>
             </mark-failure>
         </test>
@@ -949,7 +949,7 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="det"/>
-            <toolset name="cw-8.3"/>
+            <toolset name="cw-8.3*"/>
             <note author="Aleksey Gurtovoy" refid="2"/>
         </mark-expected-failures>        
     </library>
@@ -960,7 +960,7 @@ for more information.
         <mark-unusable>
             <toolset name="borland"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="cw-8.3"/>
+            <toolset name="cw-8.3*"/>
             <note author="M.Stevens" refid="2"/>
         </mark-unusable>
         <test name="test2">
@@ -1005,7 +1005,7 @@ for more information.
 
         <test name="unicode_test">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note>The test fails at runtime for unknown reason</note>
             </mark-failure>
         </test>
@@ -1028,7 +1028,7 @@ for more information.
 
         <test name="*dll">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note refid="18"/>
             </mark-failure>
         </test>
@@ -1117,9 +1117,7 @@ for more information.
         </test>
         <test name="random_test">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <toolset name="como-win32"/>
-                <toolset name="intel-win32"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
             <mark-failure>
@@ -1191,7 +1189,7 @@ for more information.
         </test>
         <test name="signal_test">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="2"/>
             </mark-failure>
             <mark-failure>
@@ -1214,7 +1212,7 @@ for more information.
     <library name="static_assert">
         <test name="static_assert_test_fail_8">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
@@ -1223,7 +1221,7 @@ for more information.
     <!-- test -->
     <library name="test">
         <test name="errors_handling_test">
-            <toolset name="como-win32"/>
+            <toolset name="*como-win32-4.3.3*"/>
             <note author="B. Dawes" refid="3"/>
         </test>
     </library>
@@ -1246,7 +1244,7 @@ for more information.
             <mark-failure>
                 <toolset name="mingw*"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="cw-9.3"/>
                 <toolset name="vc7"/>
                 <note author="Aleksey Gurtovoy" date="19 Sep 2004">
@@ -1339,7 +1337,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1350,7 +1348,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1361,7 +1359,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1372,7 +1370,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1383,7 +1381,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1394,7 +1392,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1405,7 +1403,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1416,7 +1414,7 @@ for more information.
             <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1432,7 +1430,7 @@ for more information.
         <test name="result_of_test">
             <mark-failure>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1465,7 +1463,7 @@ for more information.
         </test>
         <test name="variant_reference_test">
             <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
