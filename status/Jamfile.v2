@@ -32,6 +32,7 @@ build-project ../libs/function/test ;          # test-suite function
 build-project ../libs/iterator/test ;          # test-suite iterator
 build-project ../libs/math/test ;              # test-suite math
 build-project ../libs/numeric/interval/test ;  # test-suite interval
+build-project ../libs/numeric/ublas ;          # test-suite ublas
 build-project ../libs/optional/test ;          # test-suite optional
 build-project ../libs/random/test ;            # test-suite random
 build-project ../libs/regex/test ;             # test-suite regex
@@ -45,7 +46,7 @@ build-project ../libs/utility/test ;           # test-suite utility
 build-project ../libs/variant/test ;           # test-suite variant
 
 # Tests specified in this Jamfile
-{        
+        
     test-suite config
         : [ run libs/config/test/config_test.cpp test_exec_monitor
                 : #args
@@ -182,76 +183,6 @@ build-project ../libs/variant/test ;           # test-suite variant
         : [ run libs/tuple/test/tuple_test_bench.cpp test_exec_monitor ]
           [ run libs/tuple/test/io_test.cpp test_exec_monitor ]
     ;
-
-    ublas-requirements = 
-        # borland warns so often that successful compilation is prevented.
-        <toolset>borland:<cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-        <toolset>kylix:<cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-        ;
-
-    test-suite ublas
-        : [ run libs/numeric/ublas/test1/test1.cpp
-                libs/numeric/ublas/test1/test11.cpp
-                libs/numeric/ublas/test1/test12.cpp
-                libs/numeric/ublas/test1/test13.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-          [ run libs/numeric/ublas/test2/test2.cpp
-                libs/numeric/ublas/test2/test21.cpp
-                libs/numeric/ublas/test2/test22.cpp
-                libs/numeric/ublas/test2/test23.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-          [ run libs/numeric/ublas/test3/test3.cpp
-                libs/numeric/ublas/test3/test31.cpp
-                libs/numeric/ublas/test3/test32.cpp
-                libs/numeric/ublas/test3/test33.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-          [ run libs/numeric/ublas/test4/test4.cpp
-                libs/numeric/ublas/test4/test41.cpp
-                libs/numeric/ublas/test4/test42.cpp
-                libs/numeric/ublas/test4/test43.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-          [ run libs/numeric/ublas/test5/test5.cpp
-                libs/numeric/ublas/test5/test51.cpp
-                libs/numeric/ublas/test5/test52.cpp
-                libs/numeric/ublas/test5/test53.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-          [ run libs/numeric/ublas/test6/test6.cpp
-                libs/numeric/ublas/test6/test61.cpp
-                libs/numeric/ublas/test6/test62.cpp
-                libs/numeric/ublas/test6/test63.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-          [ run libs/numeric/ublas/concepts.cpp
-            : # args
-            : # input files
-            : # requirements
-            $(ublas-requirements) 
-          ]
-        ;
-    }
 
     test-suite multi_array
         : [ run libs/multi_array/test/constructors.cpp test_exec_monitor ]
