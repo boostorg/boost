@@ -18,6 +18,7 @@
     <table>
       <tr>
         <td>
+            <xsl:message>Writing runner document <xsl:value-of select="@runner"/></xsl:message>
           <a href="{@runner}.html"><xsl:value-of select="@runner"/></a>
           <exsl:document href="{@runner}.html"
             method="html" 
@@ -37,8 +38,6 @@
           </exsl:document>
         </td>     
       </tr>
-    </table>
-       <xsl:message>Writing document</xsl:message>
-    
+    </table>    
   </xsl:template>
 </xsl:stylesheet>

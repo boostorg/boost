@@ -16,7 +16,7 @@
   extension-element-prefixes="func"
   version="1.0">
 
-  <xsl:variable name="output_directory" select="'output'"/>
+    <xsl:variable name="output_directory" select="'output'"/>
 
   <func:function name="meta:test_structure">
     <xsl:param name="document"/>
@@ -28,7 +28,7 @@
         <xsl:for-each select="$runs">
           <run runner="{@runner}" timestamp="{@timestamp}">
             <comment><xsl:value-of select="comment"/></comment>
-            <xsl:variable name="not_ordered_toolsets" select="set:distinct( //test-log/@toolset )"/>
+            <xsl:variable name="not_ordered_toolsets" select="set:distinct( //test-log[ meta:is_test_log_a_test_case(.) ]/@toolset )"/>
             <xsl:for-each select="$not_ordered_toolsets">
               <xsl:sort select="." order="ascending"/>
               <xsl:variable name="toolset" select="."/>
@@ -95,6 +95,11 @@
       <func:result select="translate( translate( $path, '/', '-' ), './', '-' )"/>
   </func:function>
 
+    <func:function name="meta:toolset_name">
+        <xsl:param name="name"/>
+        <func:result select="$name"/>
+    </func:function>
+
   <func:function name="meta:output_file_path">
       <xsl:param name="path"/>
       <func:result select="concat( $output_directory, '/', meta:encode_path( $path ), '.html' )"/>
@@ -113,7 +118,7 @@
       <tr>
           <td colspan="{$colspan}">&#160;</td>
           <xsl:for-each select="$run_toolsets/runs/run">
-              <td colspan="{count(toolset)}" class="runner"><a href="{@runner}.html"><xsl:value-of select="@runner"/></a></td>
+              <td colspan="{count(toolset)}" class="runner"><a href="../{@runner}.html"><xsl:value-of select="@runner"/></a></td>
           </xsl:for-each>
       </tr>
 

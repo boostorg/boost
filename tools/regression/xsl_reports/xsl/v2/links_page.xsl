@@ -32,10 +32,10 @@
 
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
 
-    <xsl:template match="test-log">
-        <xsl:variable name="document_path" select="meta:output_file_path( @target-directory )"/>
+    <xsl:template match="test-log[ @result != 'success' or @show-run-output = 'yes' ]">
+        <xsl:variable name="document_path" select="meta:output_file_path( concat( ../@runner, '-', @target-directory ) )"/>
 
-        <xsl:message>Writing document <xsl:value-of select="$document_path"/></xsl:message>
+        <xsl:message>Writing log file document <xsl:value-of select="$document_path"/></xsl:message>
 
         <exsl:document href="{$document_path}" 
         method="html" 
@@ -101,7 +101,7 @@
                 <p>
                 <div class="log-linker-output-title">Lib output:</div>
                 <p>
-                    See <a href="{meta:encode_path( lib/node() )}.html">
+                    See <a href="{meta:encode_path( concat( ../@runner, '-',  lib/node() )  ) }.html">
                     <xsl:copy-of select="lib/node()"/>
                     </a>
                 </p>
