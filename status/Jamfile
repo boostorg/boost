@@ -461,17 +461,27 @@ test-suite static_assert
 run libs/test/example/test_tools_example.cpp ;
 
 run-fail libs/test/test/test_tools_fail2.cpp ;
+
+{
+    local threadmon ;
+    if $(NT)
+    {
+        threadmon = <dll>../libs/thread/build/boost_threadmon ;
+    }
     
-test-suite threads
-  : [
-    run libs/thread/test/test_thread.cpp <lib>../libs/thread/build/boost_thread 
-      <dll>../libs/thread/build/boost_threadmon
-      : #args
-      : #input-files
-      : #requirements
-        <threading>multi
-    ]
-  ;
+    test-suite threads
+      : [
+        run libs/thread/test/test_thread.cpp
+          <lib>../libs/thread/build/boost_thread 
+          $(threadmon)
+            : #args
+            : #input-files
+            : #requirements
+            <threading>multi
+      ]
+        ;
+}
+
 
 compile libs/timer/timer_test.cpp ;
 
