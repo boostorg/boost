@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.0: http://docutils.sourceforge.net/" />
+<title>Running Boost regression tests</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="running-boost-regression-tests">
+<h1 class="title">Running Boost regression tests</h1>
+<div class="section" id="requirements">
+<h1><a name="requirements">Requirements</a></h1>
+<ul class="simple">
+<li>Python 2.3</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h1><a name="installation">Installation</a></h1>
+<ul class="simple">
+<li>Download and unpack boostrap from
+<a class="reference" href="http://www.boost.org/status/bootstrap.py">http://www.boost.org/status/bootstrap.py</a> and put it in the directory
+where you want all the regression test files to be placed.</li>
+<li>Run bootstrap.py.</li>
+<li><strong>Optional</strong> If you already have bjam and process_jam_log you want
+to use just put them in the same directory with bootstrap.py file.</li>
+</ul>
+<p>The resulting directory will look like:</p>
+<pre class="literal-block">
+boost_regression/
+   bootstrap.py
+   bjam.exe
+</pre>
+</div>
+<div class="section" id="running-regression-tests">
+<h1><a name="running-regression-tests">Running regression tests</a></h1>
+<ul class="simple">
+<li>Run regression.py with the following parameters<ul>
+<li>... - the id of the runner.</li>
+<li>... - the tag identifies the CVS branch or tarball under test. The
+name of the tag is provided by the release manager</li>
+</ul>
+</li>
+</ul>
+<pre class="literal-block">
+boostrap.py --runner=metacomm --tag=CVS-HEAD
+</pre>
+<p>The regression run procedure will:</p>
+<ul class="simple">
+<li>Download the most recent tarball for the tag from <a class="reference" href="http://www.boost-consulting.com">http://www.boost-consulting.com</a></li>
+<li>Unpack it</li>
+<li>Build bjam and process_jam_log if needed. (process_jam_log is a
+utility, which extracts the test results from log file produced by
+Boost.Build)</li>
+<li>Run regression tests, process and collect the results</li>
+<li>Upload the results to <a class="reference" href="ftp://fx.meta-comm.com/boost-regression">ftp://fx.meta-comm.com/boost-regression</a>.</li>
+</ul>
+<p>The report merger process running on MetaCommunications site every 2 hours will merge all
+submitted test runs and publish them at <a class="reference" href="http://boost.sourceforge.net/regression-logs/developer">http://boost.sourceforge.net/regression-logs/developer</a></p>
+</div>
+</div>
+</body>
+</html>
