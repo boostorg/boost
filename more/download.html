@@ -1,0 +1,127 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Boost Download and Installation</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+
+<h1>Boost Download and Installation</h1>
+
+The boost libraries are intended for easy download and installation.
+However, unlike other packages, there is no global setup and
+configuration tool.
+
+<h2>Download</h2>
+The boost libraries are available in various formats.  Most of the
+files are available through links from the individual library's
+documentation. Since many boost headers include other boost headers,
+installing one at a time is painful.&nbsp; Downloading all of Boost as a single archive
+file (.zip or .tar.gz)&nbsp; is a lot easier.&nbsp; CVS access is also
+available.
+
+<h3>.zip file</h3>
+
+The .zip format is widely supported by both free decoders and
+commercial compress/archive utilities.  If you don't already have a
+.zip file decoder, download one from the
+<a href="http://www.info-zip.org/">Info-ZIP</a>
+web site, which supplies versions for many operating systems.
+<p>
+Text file line endings in the .zip file are as supplied by each library
+developer.&nbsp; This works fine for Windows, but not for Unix/Linux.&nbsp; The
+.tar.gz file supplies Unix/Linux friendly line endings.
+
+<ul>
+<li><a href="ftp://boost.sourceforge.net/pub/boost/release/">Latest version</a>
+</ul>
+
+
+<h3>.tar.gz file</h3>
+
+The .tar.gz format is widely supported on Unix/Linux platforms.  Some
+Windows compress/archive utilities can read the format as well.&nbsp; Because
+the gzip format compresses the archive as a single file rather than compressing
+each file individually, the .tar.gz file is smaller that the .zip file.
+<p>Text file line endings in the .tar.gz file have been converted to newlines
+for ease of use on Unix/Linux platforms.</p>
+
+<ul>
+<li><a href="ftp://boost.sourceforge.net/pub/boost/release/">Latest version</a>
+</ul>
+
+<h3>CVS archive</h3>
+
+For those who have CVS installed, the libraries are also available
+from the public CVS repository.  The general procedure for
+command-line clients is something like this:
+<blockquote>
+<code>
+cvs -d:pserver:anonymous@cvs.boost.sourceforge.net:/cvsroot/boost login
+</code>
+<br>
+[Hit &lt;return&gt; when it asks for a password]
+<br>
+<code>
+cvs -z3 -d:pserver:anonymous@cvs.boost.sourceforge.net:/cvsroot/boost checkout boost
+<br>
+cvs -d:pserver:anonymous@cvs.boost.sourceforge.net:/cvsroot/boost logout
+</code>
+</blockquote>
+
+Read the manual for your CVS client for further information.
+<p>
+This access is read-only; if you are a library author and wish to have
+CVS write access, please contact one of the
+<a href="mailto:boost-owner@yahoogroups.com">moderators</a>.
+ 
+
+<h3>WWW access to the CVS archive</h3>
+
+For access to individual files in the CVS archive, you can also use its
+<a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/boost/?cvsroot=boost">WWW interface</a>.
+
+
+
+<h2>Installation</h2>
+
+Many boost libraries are implemented entirely within their header
+files.  The only preparation for their use is to add the path for the
+parent directory of the boost headers sub-directory to your compiler's
+list of <code>#include</code> search directories.
+<p>
+For example, using Windows 2000, if you have unzipped release 1.20.2
+from boost_all.zip into the top level directory of your C drive, for
+Borland, GCC, and Metrowerks compilers add '-Ic:/boost_1_20_2' to the
+compiler command line, and for the Microsoft compiler add '/I
+"c:/boost_1_20_2"'.  For IDE's, add 'c:/boost_1_20_2' (or whatever you
+have renamed it to) to the search list using the appropriate GUI
+dialog.
+
+<p>
+A few boost libraries are implemented by separate source files, and
+thus require compilation on your system to link properly.  Boost does
+not currently have an overall "build" or "make" mechanism in place.
+Some of the individual libraries do include make and/or project files
+for various compilers, though.
+<p>
+
+<hr>
+
+Revised <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->14 March, 2001<!--webbot bot="Timestamp" endspan i-checksum="28773" -->
+<p>Written by&nbsp; <a href="../people/jens_maurer.htm">Jens Maurer</a>
+2001-02-11</p>
+
+</body>
+</html>
