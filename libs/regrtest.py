@@ -242,9 +242,13 @@ elif sys.platform == "sunos5":
 elif sys.platform == "osf1V5":
   if compiler_arg == "*" or compiler_arg == "cxx":
     f.write( "<td>Compaq C++<br>6.2-024</td>\n" )
+  if compiler_arg == "*" or compiler_arg == "cxx-clib":
+    f.write( "<td>Compaq C++<br>6.2-024<br>clib</td>\n" )
 elif sys.platform == "irix6":
   if compiler_arg == "*" or compiler_arg == "irixcc":
     f.write( "<td>SGI IRIX CC<br>7.3.1.1m</td>\n" )
+  if compiler_arg == "*" or compiler_arg == "irixcc-clib":
+    f.write( "<td>SGI IRIX CC<br>7.3.1.1m<br>clib</td>\n" )
 elif sys.platform == "beos":
   if compiler_arg == "*" or compiler_arg == "gcc":
     f.write( "<td>GNUPro<br>GCC&nbsp;2.9</td>\n" )
@@ -307,7 +311,7 @@ if sys.platform == "linux2":
   f.write( "<p>\nNotes: A hand-crafted &lt;limits&gt; Standard header has been applied to all configurations.\n" );
   f.write( "The tests were run on a GNU libc 2.2 system which has improved wide character support compared to previous versions.\n" )
 elif sys.platform == "osf1V5" or sys.platform == "irix6":
-  f.write( "<p>\nNote: For the -clib configuration, the missing &lt;cXXX&gt; headers have been supplied.\n" )
+  f.write( "<p>\nNote: For the 'clib' configuration, the missing new-style C library headers &lt;cXXX&gt; have been supplied.\n" )
 
 f.write( "</body>\n</html>\n" )
 
