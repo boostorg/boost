@@ -25,7 +25,10 @@
 // It is OK to use boost headers which contain entirely inline code.
 #include <boost/config.hpp>
 # ifdef BOOST_NO_STDC_NAMESPACE
-    namespace std { using ::exit; using ::system; using ::strftime; using ::gmtime; using ::time; }
+    namespace std {
+      using ::exit; using ::system; using ::strftime; using ::gmtime;
+      using ::time; using ::time_t;
+    }
 # endif
 
 std::string get_host()
@@ -37,16 +40,52 @@ std::string get_host()
 #elif defined __BEOS__
   return "beos";
 #else
-#error Please adapt for your platform
+# error Please adapt for your platform
 #endif
 }
 
+
+// retrieve precise system configuration as descriptive string
+#ifdef __unix__
+
+#include <sys/utsname.h>
+
+#define STRINGIFY(x) #x
+
+std::string get_system_configuration()
+{
+  utsname ut;
+  if(uname(&ut) < 0)
+    return "";
+
+  std::string config = std::string(ut.sysname) + " " + ut.release;
+  return config;
+}
+
+#elif defined _WIN32
+
+std::string get_system_configuration()
+{
+  return "Microsoft Windows 32bit";
+}
+
+#elif defined __BEOS__
+
+std::string get_system_configuration()
+{
+  return "BeOS";
+}
+
+#else
+# error Please adapt for your platform
+#endif
 
 struct entry
 {
   std::string os, identifier, name, compile_only_command, compile_link_command, html;
 };
 
+// replace the first %name in s with value
 void replace(std::string & s,
 	     const std::string & name, const std::string & value)
 {
@@ -55,6 +94,7 @@ void replace(std::string & s,
     s.replace(p, name.length(), value);
 }
 
+// replace all $XXX in s with the value of getenv("XXX")
 void replace_environment(std::string & s)
 {
   std::string::size_type end = 0;
@@ -79,6 +119,7 @@ void getstringline( std::ifstream & is, std::string & s )
       && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
 }
 
+// read the compiler configuration from file and push entry's to out
 template<class OutputIterator>
 void read_compiler_configuration(const std::string & file, OutputIterator out)
 {
@@ -105,6 +146,7 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
   }
 }
 
+// run command (possibly needs portability adjustment)
 bool execute(const std::string & command)
 {
   std::cout << command << std::endl; // fix: endl ensures cout ordering
@@ -259,7 +301,7 @@ int main(int argc, char * argv[])
   std::ofstream out( ("cs-" + host + ".html").c_str() );
 
   char run_date[100];
-  time_t ct;
+  std::time_t ct;
   std::time(&ct);
   std::strftime(run_date, sizeof(run_date), "%d %b %Y %H:%M GMT", std::gmtime(&ct)); 
 
@@ -267,15 +309,25 @@ int main(int argc, char * argv[])
       << "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
       << "<h1><img border border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\"></h1>\n"
       << "<h1>Compiler Status: " + host + "</h1>\n"
-      << "</p>\n"
+      << "\n"
       << "<p><b>Run Date:</b> " << run_date << "</p>\n"
+      << "<p><b>System Configuration:</b> " << get_system_configuration()
+      << "</p>\n"
       << "<p>\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
   do_tests(out, l.begin(), l.end(), args[1], boostpath);
 
-  out << "</table>\n";
+  out << "</table></p>\n<p>\n";
+  if(host == "linux")
+    out << "Notes: A hand-crafted &lt;limits&gt; Standard header has been\n"
+	<< "applied to all configurations.\n"
+	<< "The tests were run on a GNU libc 2.2 system which has improved\n"
+	<< "wide character support compared to previous versions.";
+  else if(host == "irix" || host == "tru64")
+    out << "Note: For the 'clib' configuration, the missing new-style C\n"
+	<< "library headers &lt;cXXX&gt; have been supplied.\n";
+
+  out << "</p>\n</body>\n</html>" << std::endl;
   return 0;
 }
-
-
