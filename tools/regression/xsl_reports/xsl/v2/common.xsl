@@ -14,6 +14,7 @@
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
     xmlns:str="http://exslt.org/strings"
+    xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func"
     exclude-result-prefixes="exsl func str meta"
@@ -23,9 +24,10 @@
 
     <func:function name="meta:test_structure">
         <xsl:param name="document"/>
+        <xsl:param name="release"/>
         <xsl:variable name="required_toolsets" select="$explicit_markup//mark-toolset[ @status='required' ]"/>
 
-        <xsl:variable name="runs" select="//test-run"/>
+        <xsl:variable name="runs" select="$document//test-run"/>
         <xsl:variable name="run_toolsets_f">
         <runs>
             <xsl:for-each select="$runs">
@@ -37,7 +39,7 @@
                     source="{@source}">
 
                     <comment><xsl:value-of select="comment"/></comment>
-                    <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) ]/@toolset )"/>
+                    <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) and meta:show_toolset( @toolset, $release ) ]/@toolset ) "/>
 
                     <xsl:variable name="not_ordered_toolsets_with_info_f">
                         <xsl:for-each select="$not_ordered_toolsets">
@@ -109,6 +111,57 @@
         <func:result select="$test_log/@result != 'success' and not( meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )) or $test_log/@show-run-output = 'true'"/>
     </func:function>
 
+    <func:function name="meta:show_toolset">
+        <xsl:param name="toolset"/>
+        <xsl:param name="release" select="'no'"/>
+        <func:result select="$release != 'yes' or meta:is_toolset_required( $toolset )"/>
+    </func:function>
+
+    <func:function name="meta:test_case_status">
+        <xsl:param name="test_log"/>
+        <xsl:param name="$explicit_markup"/>
+
+        <xsl:variable name="status">
+            <xsl:choose> 
+                 <xsl:when test="meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )">
+                     <xsl:text>unusable</xsl:text>
+                 </xsl:when>
+                 <xsl:when test="$test_log/@result='fail' and  $test_log/@status='unexpected' and $test_log/@is-new='no'">
+                     <xsl:text>fail-unexpected</xsl:text>
+                 </xsl:when>
+                 <xsl:when test="$test_log/@result='fail' and  $test_log/@status='unexpected' and $test_log/@is-new='yes'">
+                     <xsl:text>fail-unexpected-new</xsl:text>
+                 </xsl:when>
+                 <xsl:when test="$test_log/@result='success' and  $test_log/@status='unexpected'">
+                     <xsl:text>success-unexpected</xsl:text>
+                 </xsl:when>
+                 <xsl:when test="$test_log/@status='expected'">
+                     <xsl:text>expected</xsl:text>
+                 </xsl:when>
+                 <xsl:otherwise>
+                     <xsl:text>other</xsl:text>
+                 </xsl:otherwise>
+             </xsl:choose>
+         </xsl:variable>
+         <func:result select="$status"/>
+     </func:function>
+
+    <func:function name="meta:show_library">
+        <xsl:param name="library"/>
+        <xsl:param name="release" select="'no'"/>
+        <func:result select="$release != 'yes' or not( meta:is_library_beta( $library ) )"/>
+    </func:function>
+
+    <func:function name="meta:is_toolset_required">
+        <xsl:param name="toolset"/>
+        <func:result select="count( $explicit_markup/explicit-failures-markup/mark-toolset[ @name = $toolset and @status='required' ] ) > 0"/>
+    </func:function>
+
+    <func:function name="meta:is_library_beta">
+        <xsl:param name="library"/>
+        <func:result select="count( $explicit_markup/explicit-failures-markup/library[ @name = $library and @status='beta' ] ) > 0"/>
+    </func:function>
+
     <func:function name="meta:is_test_log_a_test_case">
         <xsl:param name="test_log"/>      
         <func:result select="$test_log/@test-type='compile' or $test_log/@test-type='compile_fail' or $test_log/@test-type='run' or $test_log/@test-type='run_pyd'"/>
@@ -144,7 +197,7 @@
         
         <tr>
             <td colspan="{$colspan}">&#160;</td>
-            <xsl:for-each select="$run_toolsets/runs/run">
+            <xsl:for-each select="$run_toolsets/runs/run[ count(toolset) > 0 ]">
                 <td colspan="{count(toolset)}" class="runner">
                     <a href="../{@runner}.html">
                         <xsl:value-of select="@runner"/>
@@ -158,7 +211,7 @@
 
         <tr>
             <td colspan="{$colspan}">&#160;</td>
-            <xsl:for-each select="$run_toolsets/runs/run">
+            <xsl:for-each select="$run_toolsets/runs/run[ count(toolset) > 0 ]">
                 <td colspan="{count(toolset)}" class="timestamp"><xsl:value-of select="@timestamp"/></td>
             </xsl:for-each>
             <td colspan="{$colspan}">&#160;</td>

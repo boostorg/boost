@@ -16,7 +16,7 @@ import utils
 import runner
 
 
-report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'x', 'i', 'n' ]
+report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'x', 'i', 'n', 'ddr', 'dsr' ]
 
 if __name__ == '__main__':
     run_dir = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
@@ -130,7 +130,7 @@ def make_result_pages(
                     , 'explicit_markup_file' :  failures_markup_file
                     }
                 )
-
+    
     for mode in ( 'developer', 'user' ):
         if mode[0] + 's' in reports:
             utils.log( '    Making summary %s  report...' % mode )
@@ -148,6 +148,42 @@ def make_result_pages(
                     }
                 )
 
+    if v2 and "ddr" in reports:
+        utils.log( '    Making detailed %s release report...' % mode )
+        utils.libxslt( 
+                  utils.log
+                , extended_test_results
+                , xsl_path( 'result_page.xsl', v2 )
+                , os.path.join( output_dir, "developer", 'index_release.html' )
+                , { 
+                      'links_file':             'links.html'
+                    , 'mode':                   "developer"
+                    , 'source':                 tag
+                    , 'run_date':               run_date 
+                    , 'comment_file':           comment_file
+                    , 'expected_results_file':  expected_results_file
+                    , 'explicit_markup_file' :  failures_markup_file
+                    , 'release':                "yes"
+                    }
+                )
+
+    if v2 and "dsr" in reports:
+        utils.log( '    Making summary %s release report...' % mode )
+        utils.libxslt(
+                  utils.log
+                , extended_test_results
+                , xsl_path( 'summary_page.xsl', v2 )
+                , os.path.join( output_dir, "developer", 'summary_release.html' )
+                , { 
+                      'mode' :                  "developer"
+                    , 'source':                 tag
+                    , 'run_date':               run_date 
+                    , 'comment_file':           comment_file
+                    , 'explicit_markup_file' :  failures_markup_file
+                    , 'release':                'yes'
+                    }
+                )
+        
     if 'e' in reports:
         utils.log( '    Generating expected_results ...' )
         utils.libxslt(

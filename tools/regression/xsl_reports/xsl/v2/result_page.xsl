@@ -34,6 +34,7 @@
     <xsl:param name="comment_file"/>
     <xsl:param name="expected_results_file"/>
     <xsl:param name="explicit_markup_file"/>
+    <xsl:param name="release"/>
 
     <!-- the author-specified expected test results -->
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
@@ -54,7 +55,7 @@
     <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
 
     <!-- runs / toolsets -->
-    <xsl:variable name="run_toolsets" select="meta:test_structure( / )"/>
+    <xsl:variable name="run_toolsets" select="meta:test_structure( /, $release )"/>
 
     <!-- libraries -->
     <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
@@ -89,14 +90,23 @@
           encoding="utf-8"
           indent="yes">
 
-          <runs>
-            <xsl:for-each select="$run_toolsets">
-              <xsl:copy-of select="."/>
-            </xsl:for-each>
-          </runs>
+            <debug>
+                <runs>
+                    <xsl:for-each select="$run_toolsets">
+                        <xsl:copy-of select="."/>
+                    </xsl:for-each>
+                </runs>
+            </debug>
+
         </exsl:document>
 
-        <xsl:variable name="index_path" select="'index_.html'"/>
+        <xsl:variable name="release_postfix">
+            <xsl:if test="$release='yes'">
+                <xsl:text>_release</xsl:text>
+            </xsl:if>
+        </xsl:variable>
+
+        <xsl:variable name="index_path" select="concat( 'index_', $release_postfix, '.html' )"/>
         
         <!-- Index page -->
         <head>
@@ -104,7 +114,7 @@
             <title>Boost regression: <xsl:value-of select="$source"/></title>
         </head>
         <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-            <frame name="tocframe" src="toc.html" scrolling="auto"/>
+            <frame name="tocframe" src="toc{$release_postfix}.html" scrolling="auto"/>
             <frame name="docframe" src="{$index_path}" scrolling="auto"/>
         </frameset>
 
@@ -168,7 +178,7 @@
         <!-- TOC -->
         <xsl:if test="$multiple.libraries">
             
-            <xsl:variable name="toc_path" select="'toc.html'"/>
+            <xsl:variable name="toc_path" select="concat( 'toc', $release_postfix, '.html' )"/>
             <xsl:message>Writing document <xsl:value-of select="$toc_path"/></xsl:message>
 
             <exsl:document href="{$toc_path}" 
@@ -200,7 +210,7 @@
                     <xsl:sort select="." order="ascending" />
                     <xsl:variable name="library_page" select="meta:encode_path(.)" />
                     <div class="toc-entry">
-                        <a href="{$library_page}.html" class="toc-entry" target="_top">
+                        <a href="{$library_page}{$release_postfix}.html" class="toc-entry" target="_top">
                             <xsl:value-of select="."/>
                         </a>
                     </div>
@@ -212,12 +222,12 @@
         </xsl:if> 
          
         <!-- Libraries -->
-        <xsl:for-each select="$libraries">
+        <xsl:for-each select="$libraries[ meta:show_library( ., $release )]">
             <xsl:sort select="." order="ascending" />
             <xsl:variable name="library" select="." />
             
-            <xsl:variable name="library_results" select="concat( meta:encode_path( $library ), '_.html' )"/>
-            <xsl:variable name="library_page" select="concat( meta:encode_path( $library ), '.html' )"/>
+            <xsl:variable name="library_results" select="concat( meta:encode_path( $library ), $release_postfix, '_.html' )"/>
+            <xsl:variable name="library_page" select="concat( meta:encode_path( $library ), $release_postfix, '.html' )"/>
 
             <!-- Library page -->
             <xsl:message>Writing document <xsl:value-of select="$library_page"/></xsl:message>
@@ -234,7 +244,7 @@
                     <title>Boost regression: <xsl:value-of select="$library"/>/<xsl:value-of select="$source"/></title>
                 </head>
                 <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-                <frame name="tocframe" src="toc.html" scrolling="auto"/>
+                <frame name="tocframe" src="toc{$release_postfix}.html" scrolling="auto"/>
                 <frame name="docframe" src="{$library_results}" scrolling="auto"/>
                 </frameset>
                 </html>
@@ -565,7 +575,7 @@
             </xsl:variable>
 
             
-            <xsl:if test="count( $test_result_for_toolset ) > 0 and $log_file != ''">
+            <xsl:if test="$release != 'yes' and count( $test_result_for_toolset ) > 0 and $log_file != '' ">
                 <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
                     <exsl:document href="{$log_file}"
                         method="html" 
