@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Boost Test Policies and Protocols</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+<h1>Boost Test Policies and Protocols</h1>
+<p>The Boost libraries are intended to be both reliable and portable.&nbsp;
+Every experienced programmer knows that means each library must be tested against a suitable number of test cases, on a wide range of platforms,
+and then tested again (regression tested) every time a change is made and before
+every release.&nbsp;</p>
+<p>&quot;Quality assurance based on a wide range of targeted tests&quot; as one
+of the key answers to <a href="http://users.comlab.ox.ac.uk/tony.hoare">C.A.R
+Hoare's</a> question
+<a href="http://users.comlab.ox.ac.uk/tony.hoare/icse18.html">&quot;How
+did software get so reliable without proof.&quot;</a></p>
+<h2>Regression test</h2>
+<p>Boost uses an automatic <a href="regression.html"> regression test suite</a> which generates HTML
+<a href="../status/compiler_status.html">compiler
+status tables</a>.</p>
+<h2>Test Policy</h2>
+<h3>Required</h3>
+<ul>
+  <li>Every Boost library should supply one or more suitable test programs to be
+    exercised by the Boost <a href="regression.html"> regression test suite</a>.&nbsp; In addition to
+    the usual compile-link-run tests expecting successful completion,
+    compile-only or compile-and-link-only tests may be performed, and success
+    for the test may be defined as failure of the steps.</li>
+  <li>Test program execution must report errors by returning a non-zero value.&nbsp; They
+    may also write to stdout or stderr, but that output should be relatively
+    brief.&nbsp; Regardless of other output, a non-zero return value is the only
+    way the regression test framework will recognize an error has
+    occurred.&nbsp;Note that test programs to be included in the status tables must
+    compile, link, and run quickly since the tests are executed many, many,
+    times.</li>
+  <li>Libraries with time consuming tests should be divided into a
+    fast-execution basic test program for the status tables, and a separate
+    full-coverage test program for exhaustive test cases.&nbsp; The basic test
+    should concentrate on compilation issues so that the status tables
+    accurately reflect the library's likelihood of correct compilation on a
+    platform.</li>
+  <li>If for any reason the usual test policies do not apply to a particular
+    library, an alternate test strategy must be implemented. &nbsp;&nbsp;</li>
+</ul>
+<h3>Optional</h3>
+<ul>
+  <li>Use the Boost Test Library for the construction of simple tests.</li>
+  <li>[Planned] Use the Boost Unit Test Library for the construction of more complex tests
+    and test suites.</li>
+  <li>The Boost Program Execution Library is also available for very simple
+    tests, but the Boost Test Library is much preferred even for very simple
+    tests.</li>
+</ul>
+<h2>Suggested Protocol for Fixing Bugs or Adding Features.</h2>
+<ul>
+  <li>First, add regression test cases that detects the bug or tests the
+    feature. Sometimes adding one case suggests similar untested cases, and they
+    are added too.</li>
+  <li>Second, for bugs, run the regression test and verify that the bug is now
+    detected.</li>
+  <li>Third, then, and only then, fix the bug or add the feature.</li>
+  <li>Finally, rerun the full regression tests - sometimes the change breaks
+    something else.</li>
+</ul>
+<h2>History</h2>
+<p>The current regression test program was developed by Jens Maurer in December,
+2000. The original regression test concept and program, including the automatic
+generation of HTML compiler status tables, was developed by Beman Dawes in June,
+2000.</p>
+<h2>Acknowledgements</h2>
+<p>Written by Beman Dawes. Jens Maurer, Paul Moore, Gary Powell and Jeremy Siek contributed helpful suggestions.</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->17 February, 2003<!--webbot bot="Timestamp" endspan i-checksum="40411" -->
+</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

@@ -1,0 +1,345 @@
+# Boost regression-testing Jamfile
+#  (C) Copyright David Abrahams 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+subproject status ;
+
+# bring in the rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+# Make tests run by default.
+DEPENDS all : test ;
+
+# Tests from Jamfiles in individual library test subdirectories
+#  Please keep these in alphabetic order by test-suite name
+
+subinclude libs/bind/test ;              # test-suite bind
+subinclude libs/date_time/test ;         # test-suite date_time
+subinclude libs/filesystem/test ;        # test-suite filesystem
+subinclude libs/format/test ;            # test-suite format
+subinclude libs/function/test ;          # test-suite function
+subinclude libs/math/test ;              # test-suite math
+subinclude libs/numeric/interval/test ;  # test-suite interval
+subinclude libs/optional/test ;          # test-suite optional
+subinclude libs/regex/test ;             # test-suite regex
+subinclude libs/regex/example ;          # test-suite regex-examples
+subinclude libs/signals/test ;           # test-suite signals
+subinclude libs/smart_ptr/test ;         # test-suite smart_ptr
+subinclude libs/static_assert ;          # test-suite static_assert
+subinclude libs/thread/test ;            # test-suite thread
+subinclude libs/type_traits/test ;       # test-suite type_traits
+ 
+
+# Tests specified in this Jamfile
+{
+    # look in BOOST_ROOT for sources first, just in this Jamfile
+    local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
+    
+    test-suite config
+        : [ run libs/config/test/config_test.cpp <lib>../libs/test/build/boost_test_exec_monitor
+                : #args
+                : #input-files
+                : #requirements
+                <threading>multi
+          ]
+           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
+           [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+        ;
+
+    run libs/any/any_test.cpp ;
+
+    test-suite array
+        : [ run libs/array/array1.cpp ]
+          [ run libs/array/array2.cpp ]
+          [ run libs/array/array3.cpp ]
+          [ run libs/array/array4.cpp ]
+          [ run libs/array/array5.cpp ]
+        ;
+
+    test-suite concept_check
+        : [ compile libs/concept_check/concept_check_test.cpp ]
+          [ compile libs/concept_check/class_concept_check_test.cpp ]
+          [ compile-fail libs/concept_check/concept_check_fail_expected.cpp ]
+          [ compile-fail libs/concept_check/class_concept_fail_expected.cpp ]
+        ;
+
+    test-suite conversion
+        : [ run libs/conversion/cast_test.cpp ]
+          [ run libs/conversion/lexical_cast_test.cpp ]
+        ;
+
+    run libs/crc/crc_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ;
+
+
+    test-suite disjoint_sets
+        : [ run libs/disjoint_sets/disjoint_set_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+        ;
+
+    test-suite dynamic_bitset
+        : [ run libs/dynamic_bitset/dyn_bitset_unit_tests1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests2.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+        ;
+
+    
+    run libs/functional/function_test.cpp ;
+
+    run libs/graph/test/graph.cpp ;
+
+
+    test-suite integer
+        : [ run libs/integer/cstdint_test.cpp ]
+          [ run libs/integer/integer_test.cpp ]
+          [ run libs/integer/integer_traits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+        ;
+
+    run 
+      libs/io/test/ios_state_test.cpp <lib>../libs/test/build/boost_test_exec_monitor   # sources
+      : # args
+      : # input-files
+      : <runtime-link>static # requirements (static runtime required by Metrowerks)
+      ;
+
+    test-suite lambda
+        : [ run libs/lambda/test/bind_tests_simple.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_advanced.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/bll_and_function.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/cast_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/constructor_tests.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/control_structures.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/exception_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/extending_rt_traits.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/is_instance_of_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/member_pointer_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/operator_tests_simple.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/phoenix_control_structures.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/switch_construct.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+        ;
+
+
+    run libs/pool/test/test_pool_alloc.cpp  <lib>../libs/test/build/boost_test_exec_monitor ;
+
+    test-suite preprocessor
+        : [ compile libs/preprocessor/test/arithmetic.cpp ]
+          [ compile libs/preprocessor/test/array.cpp ]
+          [ compile libs/preprocessor/test/comparison.cpp ]
+          [ compile libs/preprocessor/test/control.cpp ]
+          [ compile libs/preprocessor/test/debug.cpp ]
+          [ compile libs/preprocessor/test/facilities.cpp ]
+          [ compile libs/preprocessor/test/iteration.cpp ]
+          [ compile libs/preprocessor/test/list.cpp ]
+          [ compile libs/preprocessor/test/logical.cpp ]
+          [ compile libs/preprocessor/test/repetition.cpp ]
+          [ compile libs/preprocessor/test/selection.cpp ]
+          [ compile libs/preprocessor/test/slot.cpp ]
+          [ compile libs/preprocessor/test/tuple.cpp ]
+        ;
+
+    test-suite property_map
+        : [ compile libs/property_map/property_map_cc.cpp ]
+        ;
+
+    test-suite rational
+        : [ run libs/rational/rational_example.cpp ]
+          [ run libs/rational/rational_test.cpp ]
+        ;
+
+    test-suite random
+        : [ run libs/random/random_test.cpp  <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/random/random_demo.cpp ]
+        ;
+
+    subinclude libs/test/test ;
+    
+    compile libs/timer/timer_test.cpp ;
+
+    test-suite tokenizer
+        : [ run libs/tokenizer/examples.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/tokenizer/simple_example_1.cpp ]
+          [ run libs/tokenizer/simple_example_2.cpp ]
+          [ run libs/tokenizer/simple_example_3.cpp ]
+          [ run libs/tokenizer/simple_example_4.cpp ]
+          [ run libs/tokenizer/simple_example_5.cpp ]
+        ;
+
+    test-suite tuple
+        : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+    ;
+
+
+    test-suite iterator_adaptors
+        : [ run libs/utility/counting_iterator_test.cpp : # args
+            : # input files
+            : # requirements
+
+            # borland warns incorrectly in this case, so often that
+            # successful compilation is prevented.
+            <borland><*><cxxflags>"-w-8091 -w-8092"
+          ]
+
+          [ run libs/utility/iterator_adaptor_test.cpp ]
+          [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ]
+          [ compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ]
+          [ run libs/utility/transform_iterator_test.cpp ]
+          [ run libs/utility/indirect_iterator_test.cpp ]
+          [ run libs/utility/iter_traits_gen_test.cpp ]
+
+          [ run libs/utility/iterator_adaptor_examples.cpp ]
+          [ run libs/utility/counting_iterator_example.cpp ]
+          [ run libs/utility/filter_iterator_example.cpp ]
+          [ run libs/utility/fun_out_iter_example.cpp ]
+          [ run libs/utility/indirect_iterator_example.cpp ]
+          [ run libs/utility/projection_iterator_example.cpp ]
+          [ run libs/utility/reverse_iterator_example.cpp ]
+          [ run libs/utility/transform_iterator_example.cpp ]
+        ;
+
+    test-suite ublas
+        : [ run libs/numeric/ublas/test1/test1.cpp
+                libs/numeric/ublas/test1/test11.cpp
+                libs/numeric/ublas/test1/test12.cpp
+                libs/numeric/ublas/test1/test13.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test2/test2.cpp
+                libs/numeric/ublas/test2/test21.cpp
+                libs/numeric/ublas/test2/test22.cpp
+                libs/numeric/ublas/test2/test23.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test3/test3.cpp
+                libs/numeric/ublas/test3/test31.cpp
+                libs/numeric/ublas/test3/test32.cpp
+                libs/numeric/ublas/test3/test33.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test4/test4.cpp
+                libs/numeric/ublas/test4/test41.cpp
+                libs/numeric/ublas/test4/test42.cpp
+                libs/numeric/ublas/test4/test43.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test5/test5.cpp
+                libs/numeric/ublas/test5/test51.cpp
+                libs/numeric/ublas/test5/test52.cpp
+                libs/numeric/ublas/test5/test53.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test6/test6.cpp
+                libs/numeric/ublas/test6/test61.cpp
+                libs/numeric/ublas/test6/test62.cpp
+                libs/numeric/ublas/test6/test63.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/concepts.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+        ;
+
+
+    test-suite multi_array
+        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/boost_test_exec_monitor  ]
+          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ compile libs/multi_array/test/concept_checks.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
+          [ compile-fail libs/multi_array/test/fail_citerator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cparen.cpp ]
+          [ compile-fail libs/multi_array/test/fail_criterator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cbracket.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cdata.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_citerator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cparen.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_criterator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
+        ;
+
+    test-suite utility
+        : 
+            [ run libs/utility/iterator_traits_test.cpp ]
+            [ run libs/utility/iterators_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ compile-fail libs/utility/noncopyable_test.cpp ]
+            [ run libs/utility/numeric_traits_test.cpp ]
+            [ run libs/utility/operators_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ run libs/utility/tie_example.cpp ]
+            [ run libs/utility/binary_search_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ run libs/utility/call_traits_test.cpp : -u ]
+            [ compile-fail libs/utility/checked_delete_test.cpp ]
+            [ run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/boost_test_exec_monitor : -u ]
+            [ run libs/utility/addressof_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ run libs/utility/ref_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+        ;
+
+}
+
+
+
+
