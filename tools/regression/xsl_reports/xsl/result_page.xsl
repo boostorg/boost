@@ -351,7 +351,6 @@
 
                         <xsl:variable name="lib_corner_case_tests" select="meta:order_tests_by_name( $lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] ) " />
 
-                        <xsl:copy-of select="$lib_corner_case_tests"/>
                         <!-- general tests section -->
 
                         <xsl:call-template name="insert_test_section">

@@ -32,7 +32,7 @@
               <body>
                 <h1><xsl:value-of select="@runner"/></h1>
                 <hr></hr>
-                <xsl:copy-of select="exsl:node-set( comment/text() )"/>
+                <xsl:value-of select="comment/text()" disable-output-escaping="yes"/>
               </body>
             </html>
           </exsl:document>
@@ -40,4 +40,6 @@
       </tr>
     </table>    
   </xsl:template>
+
 </xsl:stylesheet>
+
