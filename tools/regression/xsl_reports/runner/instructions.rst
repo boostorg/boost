@@ -20,11 +20,13 @@ __ http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression
 
 
 * **Optional**: If you already have ``bjam`` and/or ``process_jam_log`` executables
-  you'd like to use, just put them in the same directory with ``regression.py``, e.g.::
+  you'd like to use, just put them in the same directory with ``regression.py``, e.g.:
 
-   my_boost_regressions/
-      regression.py
-      bjam.exe
+  .. parsed-literal::
+
+    my_boost_regressions/
+        regression.py
+        bjam\ *[.exe]*
 
 
 Running tests
