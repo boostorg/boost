@@ -704,8 +704,20 @@ for more information.
             </mark-failure>
         </test>
 
+        <test name="options_description_test_dll">
+             <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="intel-win32-7.1-vc6"/>
+                <note refid="23"/>
+            </mark-failure>
+        </test>
 
-
+        <test name="variable_map_test_dll">
+             <mark-failure>
+                <toolset name="intel-win32-7.1-vc6"/>
+                <note refid="23"/>
+            </mark-failure>
+        </test>
 
     </library>
 
@@ -1131,6 +1143,13 @@ for more information.
     <note id="22">
       No high precision clock for this platform
     </note>
+
+    <note id="23">
+      A bug in standard library prevents passing std::set from DLL to
+      application. A fixed &lt;tree&gt; header is available from 
+      http://www.dinkumware.com/vc_fixes.html
+    </note>
+
 
 </explicit-failures-markup>
 
