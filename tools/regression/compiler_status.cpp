@@ -608,15 +608,21 @@ const string & attribute_value( const xml::element & element,
     while( std::getline( jamfile, line ) )
     {
       string::size_type pos( line.find( "subinclude" ) );
+      if ( pos == string::npos )
+        pos = line.find( "build-project" );
       if ( pos != string::npos
         && line.find( '#' ) > pos )
       {
-        pos = line.find_first_not_of( " \t", pos+10 );
+        pos = line.find_first_not_of( " \t./", pos+10 );
         if ( pos == string::npos ) continue;
         string subinclude_bin_dir(
           line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
 //      std::cout << "subinclude: " << subinclude_bin_dir << '\n';
         fs::path subinclude_path( locate_root / "bin/boost" / subinclude_bin_dir );
+        if ( fs::exists( subinclude_path ) )
+          { do_rows_for_sub_tree( subinclude_path, results ); continue; }
+        subinclude_path = fs::path( locate_root / "bin" 
+                                    / subinclude_bin_dir / "bin" );
         if ( fs::exists( subinclude_path ) )
           { do_rows_for_sub_tree( subinclude_path, results ); continue; }
         subinclude_path = fs::path( locate_root / subinclude_bin_dir / "/bin" );
@@ -637,12 +643,20 @@ const string & attribute_value( const xml::element & element,
 
   void do_table()
   {
+    // Find test result locations, trying:
+    // - Boost.Build V1 location with ALL_LOCATE_TARGET
+    // - Boost.Build V2 location with top-lelve "build-dir" 
+    // - Boost.Build V1 location without ALL_LOCATE_TARGET
     fs::path bin_path( locate_root / "bin/boost/status" );
     if (!fs::exists(bin_path))
     {
-      string relative( fs::initial_path().string() );
-      relative.erase( 0, boost_root.string().size()+1 );
-      bin_path = fs::path( locate_root / relative / "bin" );
+      bin_path = locate_root / "bin/status/bin";
+      if (!fs::exists(bin_path))
+      {
+        string relative( fs::initial_path().string() );
+        relative.erase( 0, boost_root.string().size()+1 );
+        bin_path = fs::path( locate_root / relative / "bin" );
+      }
     }
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
