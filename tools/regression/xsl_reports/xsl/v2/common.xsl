@@ -254,6 +254,44 @@ http://www.boost.org/LICENSE_1_0.txt)
     </func:function>
 
 
+    <xsl:template name="insert_view_link">
+        <xsl:param name="page"/>
+        <xsl:param name="release"/>
+        <xsl:param name="class"/>
+
+        <xsl:choose>
+        <xsl:when test="$release='yes'">
+            <a href="{$page}.html" class="{$class}" target="_top">
+                <xsl:text>Full View</xsl:text>
+            </a>
+        </xsl:when>
+        <xsl:otherwise>
+            <a href="{$page}_release.html" class="{$class}" target="_top">
+                <xsl:text>Release View</xsl:text>
+            </a>
+        </xsl:otherwise>
+        </xsl:choose>
+
+    </xsl:template>
+
+
+    <xsl:template name="insert_page_links">
+        <xsl:param name="page"/>
+        <xsl:param name="release"/>
+
+        <div class="links">
+            <xsl:copy-of select="document( 'html/make_tinyurl.html' )"/>
+            <xsl:text>&#160;|&#160;</xsl:text>
+            <xsl:call-template name="insert_view_link">
+                <xsl:with-param name="page" select="$page"/>
+                <xsl:with-param name="class" select="''"/>
+                <xsl:with-param name="release" select="$release"/>
+            </xsl:call-template>
+        </div>
+
+    </xsl:template>
+
+
     <xsl:template name="insert_runners_rows">
         <xsl:param name="mode"/>
         <xsl:param name="top_or_bottom"/>
