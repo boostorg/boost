@@ -80,7 +80,22 @@ http://www.boost.org/LICENSE_1_0.txt)
         <tr valign="middle">
         <td class="head" colspan="2">test / toolset</td>
 
+        <!-- 
+             we need to select not all library notes, but only ones 
+             for toolsets present in the report
+             -->
         <xsl:variable name="all_library_notes" select="$library_marks/note"/>
+        <xsl:message terminate="yes">
+            !!!!!!!!!!!!!!!!!!!1
+        </xsl:message>
+        <exsl:document href="debug2.xml" 
+            method="xml" 
+            encoding="utf-8"
+            indent="yes">
+        <debug>
+            <xsl:copy-of select="$all_library_notes"/>
+        </debug>
+    </exsl:document>
         <xsl:for-each select="$toolsets/toolset">
             <xsl:variable name="toolset" select="@toolset"/>
 
@@ -317,6 +332,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <b>Report Time: </b> <xsl:value-of select="$run_date"/>
                 </div>
 
+                <!-- library markup = all library-unusable markup for toolsets included in the report -->
                 <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/>
 
                 <table border="0" cellspacing="0" cellpadding="0" class="library-table" summary="library results">
