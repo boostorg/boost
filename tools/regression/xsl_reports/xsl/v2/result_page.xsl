@@ -418,13 +418,13 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:when test="$log_link != ''">
                 <xsl:text>&#160;&#160;</xsl:text>
                 <a href="{$log_link}" class="log-link" target="_top">
-                    <xsl:value-of select="$result"/>
+                    <xsl:copy-of select="$result"/>
                 </a>
                 <xsl:text>&#160;&#160;</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:text>&#160;&#160;</xsl:text>
-                <xsl:value-of select="$result"/>
+                <xsl:copy-of select="$result"/>
                 <xsl:text>&#160;&#160;</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
@@ -520,7 +520,16 @@ http://www.boost.org/LICENSE_1_0.txt)
  
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
                 <xsl:call-template name="insert_test_result">
-                    <xsl:with-param name="result" select="'fail*'"/>
+                    <xsl:with-param name="result">
+                        <xsl:choose>
+                            <xsl:when test="$test_log/@expected-reason != ''">
+                                <xsl:text>fail?</xsl:text>
+                            </xsl:when> 
+                            <xsl:otherwise>
+                                <xsl:text>fail*</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:with-param>
                     <xsl:with-param name="log_link" select="$cell_link"/>
                 </xsl:call-template>
             </xsl:when>

@@ -93,6 +93,10 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <xsl:variable name="unexpected_success" select="$status = 'unexpected' and $actual_result = 'success'"/>
 
+        <xsl:variable name="expected_reason">
+            <xsl:value-of select="$test_failures_markup/@reason"/>
+        </xsl:variable>
+
         <xsl:variable name="notes">
 
             <xsl:if test="$unexpected_success and $has_explicit_markup">
@@ -165,6 +169,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <xsl:attribute name="result"><xsl:value-of select="$actual_result"/></xsl:attribute>
         <xsl:attribute name="expected-result"><xsl:value-of select="$expected_result"/></xsl:attribute>
+        <xsl:attribute name="expected-reason"><xsl:value-of select="$expected_reason"/></xsl:attribute>
         <xsl:attribute name="status"><xsl:value-of select="$status"/></xsl:attribute>
         <xsl:attribute name="is-new"><xsl:value-of select="$is_new"/></xsl:attribute>
         <xsl:element name="notes"><xsl:copy-of select="$notes"/></xsl:element>

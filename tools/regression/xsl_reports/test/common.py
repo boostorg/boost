@@ -108,23 +108,34 @@ def make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests ):
             g.endElement( "mark-unusable" )
 
         for i_test in range( 0, num_of_tests ):
-            if i_test > num_of_tests - 3:     corner_case_test = 1
-            else:                             corner_case_test = 0
-            
-            if i_test % 4 == 0:      explicitly_marked_test = 1
-            else:                    explicitly_marked_test = 0
 
-            if corner_case_test or explicitly_marked_test:
+            corner_case_test = 0
+            explicitly_marked_failure = 0
+            unresearched = 0
+
+            if i_test > num_of_tests - 3:     corner_case_test = 1
+            
+            if i_test % 3 == 0:
+                explicitly_marked_failure = 1
+                if i_test % 2 == 0:
+                    unresearched = 1
+
+            if corner_case_test or explicitly_marked_failure:
                 test_attrs = { "name": make_test_name( i_library, i_test ) }
                 if corner_case_test:
                     test_attrs[ "corner-case" ] = "yes"
                 g.startElement( "test", test_attrs )
-                if explicitly_marked_test:
-                    g.startElement( "mark-failure", {} )
+                if explicitly_marked_failure:
+                    failure_attrs = {}
+                    if unresearched: failure_attrs[ "reason" ] = "not-researched"
+                    
+                    g.startElement( "mark-failure", failure_attrs )
                     
                     g.startElement( "toolset", { "name": make_toolset_name( 1 ) } )
                     g.endElement( "toolset" )
                     g.startElement( "toolset", { "name": make_toolset_name( 0 ) } )
+                    g.endElement( "toolset" )
+                    g.startElement( "toolset", { "name": make_toolset_name( 2 ) } )
                     g.endElement( "toolset" )
 
                     g.startElement( "note", {  "author": "V. Annotated" } )

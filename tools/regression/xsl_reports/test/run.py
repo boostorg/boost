@@ -27,7 +27,7 @@ report.make_result_pages(
     , comment_file = os.path.abspath( "comment.html" )
     , results_dir = "results"
     , result_prefix = ""
-    , reports = [ "dd" ]
+    , reports = [ "x", "ds", "dd" ]
     , v2 = 1
     )
 
