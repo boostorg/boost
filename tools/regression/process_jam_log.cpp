@@ -36,7 +36,8 @@ namespace
   typedef std::map< string, test_info > test2info_map;  // key is test-name
   test2info_map test2info;
 
-  fs::path locate_root; // ALL_LOCATE_TARGET (or BOOST_ROOT if none)
+  fs::path boost_root;
+  fs::path locate_root; // ALL_LOCATE_TARGET (or boost_root if none)
 
 //  append_html  -------------------------------------------------------------//
 
@@ -178,8 +179,15 @@ namespace
           if ( start_pos != string::npos )
           {
             start_pos += 5;
+            string::size_type end_pos( info.file_path.find( '/', start_pos ) );
             library_name = info.file_path.substr( start_pos,
-              info.file_path.find( '/', start_pos )-start_pos );
+              end_pos - start_pos );
+
+            if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
+            {
+              library_name += info.file_path.substr( end_pos,
+                info.file_path.find( '/', end_pos+1 ) - end_pos );
+            }
           }
         }
         m_root.reset( new xml::element( "test-log" ) );
@@ -345,7 +353,7 @@ int cpp_main( int argc, char ** argv )
                  "  locate-root is the same as the bjam ALL_LOCATE_TARGET\n"
                  "  parameter, if any. Default is boost-root.\n";
 
-  fs::path boost_root( fs::initial_path() );
+  boost_root = fs::initial_path();
 
   while ( !boost_root.empty()
     && !fs::exists( boost_root / "libs" ) )
