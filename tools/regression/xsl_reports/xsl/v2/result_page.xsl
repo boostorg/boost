@@ -65,7 +65,7 @@
 
     <xsl:template name="test_type_col">
         <td class="test-type">
-        <a href="http://www.boost.org/status/compiler_status.html#Understanding" class="legend-link">
+        <a href="http://www.boost.org/status/compiler_status.html#Understanding" class="legend-link" target="_top">
             <xsl:variable name="test_type" select="./@test-type"/>
             <xsl:choose>
             <xsl:when test="$test_type='run_pyd'">      <xsl:text>r</xsl:text>  </xsl:when>
@@ -257,7 +257,7 @@
                 <body>
 
                 <h1 class="page-title">
-                    <a class="hover-link" name="{$library}" href="http://www.boost.org/libs/{$library}">
+                    <a class="hover-link" name="{$library}" href="http://www.boost.org/libs/{$library}" target="_top">
                         <xsl:value-of select="$library" />
                     </a>
                     <xsl:text>/</xsl:text>
@@ -536,7 +536,7 @@
 
         <xsl:variable name="test_header">
         <td class="test-name">
-            <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/{$test_program}" class="test-link">
+            <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/{$test_program}" class="test-link" target="_top">
                 <xsl:value-of select="$test_name"/>
             </a>
         </td>
