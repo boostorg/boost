@@ -66,19 +66,16 @@
 
 // Global variables
 
-std::string path, compiler_arg, program_arg, 
-  exe_suffix, exe_invoke_prefix = "./";
+std::string path, compiler_arg, program_arg, exe_suffix, exe_invoke_prefix;
 
 std::ofstream outfile;
-
-
 
 //-----------------------------------------------------------------------------
 std::string platform()
 {
-  char* os_ptr = getenv("OSTYPE");
+  char* os_ptr = getenv("OS");
   if (os_ptr == 0) {
-    std::cerr << "The \"OSTYPE\" environment variable is not defined" 
+    std::cerr << "The \"OS\" environment variable is not defined" 
               << std::endl;
     exit(1);
     return "unknown";
@@ -86,8 +83,10 @@ std::string platform()
     std::string os = os_ptr;
     if (os == "linux")
       return "linux";
-    else if (os == "solaris")
+    else if (os == "solaris2.7")
       return "sunos";
+    else if (os == "Windows_NT")
+      return "windows";
     else
       return "unknown";
   }
@@ -155,7 +154,7 @@ void compile(std::string program,
              std::string invoke_args,
              std::string program_name)
 {
-  std::string fullpath = path + "/libs/" + program;
+  std::string fullpath = path +  "/libs/" + program;
   std::cout << std::endl 
             << "*****" << program << "*****" << std::endl;
 
@@ -257,7 +256,7 @@ void compile(std::string program,
       invoke( "VC++ with MS library",
               "cl  -o " + program_name 
               + " " + msvc_flags
-              + " /I " + path + fullpath + " user32.lib", 
+              + " /I " + path + " " + fullpath + " user32.lib", 
               invoke_mode, invoke_args, program_name );
 
     if (compiler_arg=="*" || compiler_arg=="vcstlport") {
@@ -315,6 +314,14 @@ int main(int argc, char* argv[])
   if (platform() == "unkown") {
     std::cerr << "**** Error: unknown platform ****" << std::endl;
     return 1;
+  }
+
+  if (platform() == "windows") {
+    exe_suffix = ".exe";
+    exe_invoke_prefix = "";
+  } else {
+    exe_suffix = "";
+    exe_invoke_prefix = "./";
   }
 
   std::string filename = "cs-" + platform() + ".htm";
