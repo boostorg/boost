@@ -210,7 +210,7 @@ namespace
       }
 
       test_info info;
-      string library_name;
+      string library_name; // see "sublibs" comment below
       test2info_map::iterator itr( test2info.find( test_name ) );
       if ( itr != test2info.end() )
       {
@@ -223,6 +223,8 @@ namespace
           library_name = info.file_path.substr( start_pos,
             end_pos - start_pos );
 
+          // if a "sublibs" file exists, the library name includes the
+          // next level down directory name.
           if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
           {
             library_name += info.file_path.substr( end_pos,
