@@ -254,8 +254,8 @@ def build_experimental_reports( locate_root_dir
                                 , results_dir
                                 , result_file_prefix
                                 , xslt_proc_name
-                                , dont_collect_logs
-                                , reports
+                                , dont_collect_logs = 0
+                                , reports = [ "dd", "ud", "us", "ds", "l", "p", "x" ]
                                 ):
     ( run_date ) = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime() )
     test_results_file = os.path.join( results_dir, "test_results.xml" )
@@ -333,9 +333,9 @@ def usage():
 \t                    files produced by compiler_status
 \t--xsltproc          the name of xslt processor (msxsl, xalan, libxslt)
 
-                      The XSLT used in report generation uses exsl 
-                      (http:///www.exsl.org). Make sure that specified 
-                      processor supports it.
+\t                    The XSLT used in report generation uses exsl 
+\t                    (http:///www.exsl.org). Make sure that specified 
+\t                    processor supports it.
 
 The following options are useful in debugging:
 
