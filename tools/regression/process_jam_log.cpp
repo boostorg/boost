@@ -433,6 +433,7 @@ int cpp_main( int argc, char ** argv )
       || line.find( "vc-C++ " ) != string::npos
       || line.find( "C-action " ) != string::npos
       || line.find( "Cc-action " ) != string::npos
+      || line.find( "vc-Cc " ) != string::npos
       || line.find( "Link-action " ) != string::npos
       || line.find( "vc-Link " ) != string::npos )
     {
