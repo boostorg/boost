@@ -63,7 +63,7 @@ process_jam_log[ 'build_path_root' ] = os.path.join(
 
 process_jam_log[ 'build_cmd' ] = lambda toolset:'%s -sTOOLS=%s'% ( tool_path( bjam ), toolset )
 
-build_monitor_url = 'http://www.meta-comm.com/engineering/boost-regression/build_monitor.zip'
+build_monitor_url = 'http://www.meta-comm.com/engineering/resources/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
 
 utils = None
@@ -349,7 +349,7 @@ def download_if_needed( tool_name, tool_url, proxy ):
         log( 'Preinstalled "%s" is not found.' % path )
         log( '  Downloading from %s...' % tool_url )
         
-        zip_path = '%s.zip' % path
+        zip_path = '%s.zip' % os.path.splitext( path )[0]
         http_get( tool_url, zip_path, proxy )
 
         log( '  Unzipping %s...' % path )
