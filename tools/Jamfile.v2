@@ -1,0 +1,15 @@
+
+# Jamfile which builds all the tools.
+
+project 
+    : requirements <hardcode-dll-paths>true
+    ;
+
+stage tools
+    : bcp//bcp
+      inspect/build//inspect
+      regression/build//process_jam_log
+      regression/build//compiler_status
+    :
+    : release      
+    ;
