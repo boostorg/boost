@@ -261,6 +261,14 @@ def format_time( t ):
         , t
         )
 
+
+def refresh_timestamp():
+    if os.path.exists( timestamp_path ):
+       os. unlink( timestamp_path )
+
+    open( timestamp_path, 'w' ).close()
+
+
 def timestamp():
     return format_time( 
           time.gmtime( os.stat( timestamp_path ).st_mtime )
@@ -268,7 +276,7 @@ def timestamp():
 
 
 def get_source( user, tag, proxy, args, **unused ):
-    open( timestamp_path, 'w' ).close()
+    refresh_timestamp()
     log( 'Getting sources (%s)...' % timestamp() )
 
     if user is not None:
