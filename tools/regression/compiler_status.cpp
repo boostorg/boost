@@ -84,7 +84,7 @@ namespace
   // prefix for library and test hyperlink prefix
   string url_prefix_dir_view( "http://cvs.sourceforge.net/viewcvs.py/boost/boost" );
   string url_prefix_checkout_view( "http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost" );
-  string url_suffix_text_view( "?content-type=text%2Fplain&rev=HEAD" );
+  string url_suffix_text_view( "?view=markup&rev=HEAD" );
 
 //  build notes_bookmarks from notes HTML  -----------------------------------//
 
