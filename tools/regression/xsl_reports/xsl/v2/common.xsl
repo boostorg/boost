@@ -26,7 +26,7 @@
     <xsl:variable name="run_toolsets_f">
       <runs>
         <xsl:for-each select="$runs">
-          <run runner="{@runner}" timestamp="{@timestamp}">
+            <run runner="{@runner}" timestamp="{@timestamp}" platform="{@platform}">
             <comment><xsl:value-of select="comment"/></comment>
             <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) ]/@toolset )"/>
 
@@ -141,7 +141,7 @@
       <tr>
           <td colspan="{$colspan}">&#160;</td>
           <xsl:for-each select="$run_toolsets/runs/run">
-              <td colspan="{count(toolset)}" class="runner"><a href="../{@runner}.html"><xsl:value-of select="@runner"/></a></td>
+              <td colspan="{count(toolset)}" class="runner"><a href="../{@runner}.html"><xsl:value-of select="@runner"/></a>&#160;(<xsl:value-of select="@platform"/>)</td>
           </xsl:for-each>
       </tr>
 
