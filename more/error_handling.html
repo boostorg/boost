@@ -58,12 +58,40 @@
     <h3>How should I design my exception classes?</h3>
 
     <ol>
-      <li><b>Inherit from <code>std::exception</code></b>. Except in *very*
-      rare circumstances where you can't afford the cost of a virtual table,
+      <li><b>Derive your exception class
+      from <code>std::exception</code></b>. Except in *very* rare
+      circumstances where you can't afford the cost of a virtual
+      table,
       <code>std::exception</code> makes a reasonable exception base class,
       and when used universally, allows programmers to catch "everything"
       without resorting to <code>catch(...)</code>. For more about
-      <code>catch(...)</code>, see below.</li>
+      <code>catch(...)</code>, see below.  
+
+      <li><b>Use <i>virtual</i> inheritance.</b> This insight is due
+      to Andrew Koenig.  Using virtual inheritance from your
+      exception's base class(es) prevents ambiguity problems at the
+      catch-site in case someone throws an exception derived from
+      multiple bases which have a base class in common:
+
+<pre>
+#include &lt;iostream&gt;
+struct my_exc1 : std::exception { char const* what() throw(); };
+struct my_exc2 : std::exception { char const* what() throw(); };
+struct your_exc3 : my_exc1, my_exc2 {};
+
+int main()
+{
+   try { throw your_exc3(); }
+   catch(std::exception const&amp; e) {}
+   catch(...) { std::cout &lt;&lt; &quot;whoops!&quot; &lt;&lt; std::endl; }
+}
+</pre>
+
+The program above prints <code>&quot;whoops&quot;</code> because the
+C++ runtime can't resolve which <code>exception</code> instance to
+match in the first catch clause.
+
+      </li>
 
       <li>
         <b><i>Don't</i> embed a std::string object</b> or any other data
