@@ -9,6 +9,8 @@ subproject status ;
 # bring in the rules for testing
 SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
 include testing.jam ;
+SEARCH on testsuites.jam = . ;
+include testsuites.jam ;
 
 # Note that the Compiler Status Report HTML generator scans
 # these rule invocations to find test type (compile, run, etc.)
@@ -160,17 +162,6 @@ include testing.jam ;
           ]
         ;
     
-    test-suite function
-        : [ run libs/function/test/function_test.cpp ]
-          [ run libs/function/test/function_n_test.cpp ]
-          [ run libs/function/test/allocator_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/function/test/stateless_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/function/test/lambda_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ compile-fail libs/function/test/function_test_fail1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ compile-fail libs/function/test/function_test_fail2.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ compile libs/function/test/function_30.cpp ]
-        ; 
-
     run libs/functional/function_test.cpp ;
 
     run libs/graph/test/graph.cpp ;
