@@ -30,6 +30,7 @@ subinclude libs/logic/test ;               # test-suite logic
 subinclude libs/math/test ;                # test-suite math
 subinclude libs/numeric/interval/test ;    # test-suite interval
 subinclude libs/numeric/conversion/test ;  # test-suite interval
+subinclude libs/numeric/ublas ;            # test-suite uBLAS
 subinclude libs/multi_array/test ;         # test-suite multi_array
 subinclude libs/multi_index/test ;         # test-suite multi_index
 subinclude libs/optional/test ;            # test-suite optional
@@ -174,102 +175,5 @@ subinclude libs/variant/test ;             # test-suite variant
         : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
           [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
     ;
-
-    test-suite ublas
-        : [ run libs/numeric/ublas/test1/test1.cpp
-                libs/numeric/ublas/test1/test11.cpp
-                libs/numeric/ublas/test1/test12.cpp
-                libs/numeric/ublas/test1/test13.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/test2/test2.cpp
-                libs/numeric/ublas/test2/test21.cpp
-                libs/numeric/ublas/test2/test22.cpp
-                libs/numeric/ublas/test2/test23.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/test3/test3.cpp
-                libs/numeric/ublas/test3/test31.cpp
-                libs/numeric/ublas/test3/test32.cpp
-                libs/numeric/ublas/test3/test33.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/test4/test4.cpp
-                libs/numeric/ublas/test4/test41.cpp
-                libs/numeric/ublas/test4/test42.cpp
-                libs/numeric/ublas/test4/test43.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/test5/test5.cpp
-                libs/numeric/ublas/test5/test51.cpp
-                libs/numeric/ublas/test5/test52.cpp
-                libs/numeric/ublas/test5/test53.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/test6/test6.cpp
-                libs/numeric/ublas/test6/test61.cpp
-                libs/numeric/ublas/test6/test62.cpp
-                libs/numeric/ublas/test6/test63.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/test7/test7.cpp
-                libs/numeric/ublas/test7/test71.cpp
-                libs/numeric/ublas/test7/test72.cpp
-                libs/numeric/ublas/test7/test73.cpp
-            : # args
-            : # input files
-            : # requirements
-              # Enable interval trait definitions
-               <define>BOOST_UBLAS_USE_INTERVAL
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-          [ run libs/numeric/ublas/concepts.cpp
-            : # args
-            : # input files
-            : # requirements
-
-              # borland warns so often that successful compilation is prevented.
-                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-                <kylix><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
-          ]
-        ;
 }
 
