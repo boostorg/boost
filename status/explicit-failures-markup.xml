@@ -70,10 +70,18 @@
         <test name="config_test">
             <mark-failure>
                 <toolset name="intel-win32"/>
+                <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
 
+        <test name="config_link_test">
+            <mark-failure>
+                <toolset name="meta-como-win32-4.3.3b8-vc7"/>
+                <note author="J. Maddock" refid="3"/>
+            </mark-failure>
+        </test>
+        
         <test name="limits_test">
             <mark-failure>
                 <toolset name="cwpro8"/>
@@ -375,18 +383,30 @@
     <!-- regex -->
 
     <library name="regex">
-        <mark-unusable>
-            <toolset name="intel-win32"/>
-            <note author="B. Dawes" refid="10"/>
-        </mark-unusable>
-
-        <test name="*">
-            <mark-failure toolset="cwpro8" library="regex" test="*">
-                <note author="M.Bergal" date="11/29/2003">
-                    ICE. Has been reported to Metrowerks by Beman?.
-                </note>
+        <test name="regex_token_iterator_eg_2">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <note author="J. Maddock"/>
             </mark-failure>
-        </test>
+         </test>
+        <test name="posix_api_check">
+            <mark-failure>
+                <toolset name="meta-como-win32*"/>
+                <note author="J. Maddock"/>
+            </mark-failure>
+         </test>
+        <test name="regex_regress_dll">
+            <mark-failure>
+                <toolset name="meta-como-win32*"/>
+                <note author="J. Maddock"/>
+            </mark-failure>
+         </test>
+        <test name="regex_wide_regress_dll">
+            <mark-failure>
+                <toolset name="meta-como-win32*"/>
+                <note author="J. Maddock"/>
+            </mark-failure>
+         </test>
     </library>
 
     <!-- signals -->
