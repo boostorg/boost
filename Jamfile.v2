@@ -66,6 +66,11 @@ rule libraries-to-install ( existing-libraries * )
 
 ARGV = [ modules.peek : ARGV ] ;
 
+# what kind of layout are we doing?
+local layout = [ MATCH "^--layout=(.*)" : $(ARGV) ] ;
+layout ?= versioned ;
+layout-$(layout) = true ;
+
 # possible stage only location
 local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
 stage-locate ?= stage ;
@@ -109,9 +114,19 @@ PYTHON_ROOT ?= $(python-root) ;
 libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
 libraries = [ libraries-to-install $(libraries) ] ;
 
+local rename-rule ;
+if $(layout) = versioned
+{
+    rename-rule = stage.add-variant-and-compiler ;
+}
+else
+{
+    rename-rule = stage.add-variant ;
+}
+
 stage install : libs/$(libraries)/build 
   : <so-version>1.32.0 
-    <location>$(lib-locate)
+    <location>$(lib-locate) <tag>@$(rename-rule)
   ;
         
     
