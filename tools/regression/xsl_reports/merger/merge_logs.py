@@ -82,6 +82,9 @@ def unzip_test_runs( dir ):
             utils.log( 'Warning: The following files have not been decompressed:' )
             for f in files:
                 utils.log( '\t%s' % f )
+                zip_path = '%s.xml' % os.path.splitext( f )[0]
+                if os.path.exists( zip_path ):
+                    os.unlink( zip_path )
 
 
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
