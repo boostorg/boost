@@ -33,8 +33,9 @@
 
     <h2><a name="traits">Traits</a></h2>
 
-    <p>A traits class provides a way of associating information with another
-    type. For example, the class template <tt><a href=
+    <p>A traits class provides a way of associating information with a
+    compile-time entity (a type, integral constant, or address). For example,
+    the class template <tt><a href=
     "http://www.sgi.com/tech/stl/iterator_traits.html">std::iterator_traits&lt;T&gt;</a></tt>
     looks something like this:
 
@@ -61,7 +62,7 @@ struct iterator_traits {
     are specified for a particular type by (partially) specializing the traits
     template.
 
-    <p>For an in-depth description of <tt>std::type_traits</tt>, see <a href=
+    <p>For an in-depth description of <tt>std::iterator_traits</tt>, see <a href=
     "http://www.sgi.com/tech/stl/iterator_traits.html">this page</a> provided
     by SGI. Another very different expression of the traits idiom in the
     standard is <tt>std::numeric_limits&lt;T&gt;</tt> which provides constants
@@ -231,12 +232,14 @@ void append_sequence(Container&amp; c, Iterator start, Iterator finish)
 
     <h2><a name="policies">Policies Classes</a></h2>
 
-    <p>Policies classes are a simple idea we first saw described by <a href=
-    "mailto:andrewalex@hotmail.com">Andrei Alexandrescu</a>, but which we
-    snapped up and quickly applied in the <a href=
-    "../libs/utility/iterator_adaptors.htm">Iterator Adaptors</a> library. A
-    policies class is a template parameter used to transmit behaviors. A
-    detailed description by Andrei is available in <a href=
+    <p>A policies class is a template parameter used to transmit
+    behaviors. An example from the standard library is <tt>std::<a
+    href="http://www.dinkumware.com/htm_cpl/memory.html#allocator"></a></tt>,
+    which supplies memory management behaviors to standard <a
+    href="http://www.sgi.com/tech/stl/Container.html">containers</a>.
+
+    <p>Policies classes have been explored in detail by <a href=
+    "mailto:andrewalex@hotmail.com">Andrei Alexandrescu</a> in <a href=
     "http://www.cs.ualberta.ca/~hoover/cmput401/XP-Notes/xp-conf/Papers/7_3_Alexandrescu.pdf">
     this paper</a>. He writes:
 
@@ -257,7 +260,12 @@ void append_sequence(Container&amp; c, Iterator start, Iterator finish)
     from their granularity and orthogonality. Boost has probably diluted the
     distinction in the <a href="../libs/utility/iterator_adaptors.htm">Iterator
     Adaptors</a> library, where we transmit all of an adapted iterator's
-    behavior in a single policies class.
+    behavior in a single policies class. There is precedent for this, however:
+    <tt><a
+    href="http://www.dinkumware.com/htm_cpl/string2.html#char_traits">std::char_traits</a></tt>,
+    despite its name, acts as a policies class that determines the behaviors of
+    <a
+    href="http://www.dinkumware.com/htm_cpl/string2.html#basic_string">std::basic_string</a>.
 
     <h2><a name="adaptors">Adaptors</a></h2>
 
