@@ -144,6 +144,12 @@
                       </td>
                     </tr>
                     <tr>
+                      <td><table><tr><td class="result-fail-unexpected-new">fail</td></tr></table></td>
+                      <td class="legend-item">
+                        a failure on a newly added test or compiler
+                      </td>
+                    </tr>
+                    <tr>
                       <td><table><tr><td class="result-fail-unexpected">fail</td></tr></table></td>
                       <td>unexpected failure</td>
                     </tr>
@@ -294,7 +300,12 @@
     <xsl:param name="test_log"/>
     <xsl:param name="log_link"/>
     
-    <td class="result-{$test_log/@result}-{$test_log/@status}">
+    <xsl:variable name="is_new">
+       <xsl:if test="$test_log/@is-new = 'yes' and $test_log/@status = 'unexpected' and $test_log/@result != 'success'">
+          <xsl:value-of select="'-new'"/>
+       </xsl:if>
+    </xsl:variable>
+    <td class="result-{$test_log/@result}-{$test_log/@status}{$is_new}">
       <xsl:choose>
         <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
           <a href="{$log_link}" class="log-link">

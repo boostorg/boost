@@ -42,11 +42,11 @@
         </xsl:choose>                     
       </xsl:variable>
 
-      <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and @test-name=$test-name and @toolset = $toolset]"/>
+      <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and ( @test-name=$test-name or @test-name='*' ) and @toolset = $toolset]"/>
 
       <xsl:variable name="expected_result">
         <xsl:choose>
-          <xsl:when test="$expected_results_test_case">
+          <xsl:when test="$expected_results_test_case and $expected_results_test_case/@result = 'fail'">
             <xsl:text>fail</xsl:text>
           </xsl:when>
           <xsl:otherwise>success</xsl:otherwise>
@@ -60,14 +60,37 @@
         </xsl:choose>
       </xsl:variable>
 
-      <xsl:variable name="note">
-        <xsl:copy-of select="$expected_results_test_case/node()"/>
+      <xsl:variable name="is_new">
+         <xsl:choose>
+            <xsl:when test="$expected_results_test_case">
+               <xsl:text>no</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>yes</xsl:otherwise>
+         </xsl:choose>
+      </xsl:variable>
+
+      <xsl:variable name="notes">
+        <xsl:for-each select="$expected_results_test_case/note">
+          <xsl:choose>
+            <xsl:when test="@ref">
+              <xsl:variable name="note-ref">
+                <xsl:value-of select="@ref"/>
+              </xsl:variable>
+              <xsl:copy-of select="$expected_results//*/note[@id=$note-ref]"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:copy-of select="."/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
+        <!--        <xsl:copy-of select="$expected_results_test_case/node()"/>-->
       </xsl:variable>
 
       <xsl:attribute name="result"><xsl:value-of select="$actual_result"/></xsl:attribute>
       <xsl:attribute name="expected-result"><xsl:value-of select="$expected_result"/></xsl:attribute>
       <xsl:attribute name="status"><xsl:value-of select="$status"/></xsl:attribute>
-      <xsl:element name="note"><xsl:copy-of select="$note"/></xsl:element>
+      <xsl:attribute name="is-new"><xsl:value-of select="$is_new"/></xsl:attribute>
+      <xsl:element name="notes"><xsl:copy-of select="$notes"/></xsl:element>
       <xsl:apply-templates select="node()" />
     </xsl:element>
   </xsl:template>
