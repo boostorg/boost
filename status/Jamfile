@@ -20,6 +20,7 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
 subinclude libs/regex/test ;             # test-suite regex
 subinclude libs/regex/example ;          # test-suite regex-examples
 subinclude libs/static_assert ;    # test-suite static_assert
+subinclude libs/thread/test ;            # test-suite thread
 
 # Tests specified in this Jamfile
 {
@@ -247,53 +248,6 @@ subinclude libs/static_assert ;    # test-suite static_assert
 
     subinclude libs/test/test ;
     
-    {
-        local threadmon ;
-        local thread-sources ;
-        local thread-requirements ;
-
-        thread-sources = <dll>../libs/thread/build/boost_thread
-          <lib>../libs/test/build/boost_unit_test_framework
-        ;
-        
-        thread-requirements = <threading>multi ;
-
-        test-suite threads
-          : [ run libs/thread/test/test_thread.cpp $(thread-sources)
-                : #args
-                : #input-files
-                : $(thread-requirements)
-            ]
-            [ run libs/thread/test/test_mutex.cpp $(thread-sources)
-                : #args
-                : #input-files
-                : $(thread-requirements)
-            ]
-# 11/1/02 test_condition is hanging, requiring manual intervention
-#            [ run libs/thread/test/test_condition.cpp $(thread-sources)
-#                : #args
-#                : #input-files
-#                : $(thread-requirements)
-#            ]
-            [ run libs/thread/test/test_tss.cpp $(thread-sources)
-                : #args
-                : #input-files
-                : $(thread-requirements)
-            ]
-            [ run libs/thread/test/test_once.cpp $(thread-sources)
-                : #args
-                : #input-files
-                : $(thread-requirements)
-            ]
-            [ run libs/thread/test/test_xtime.cpp $(thread-sources)
-                : #args
-                : #input-files
-                : $(thread-requirements)
-            ]
-        ;
-    }
-
-
     compile libs/timer/timer_test.cpp ;
 
     test-suite tokenizer
