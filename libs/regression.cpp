@@ -104,7 +104,7 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
 
 bool execute(const std::string & command)
 {
-  std::cout << command << "\n";
+  std::cout << command << std::endl; // fix: endl ensures cout ordering
   return std::system(command.c_str()) == 0;
 }
 
@@ -181,6 +181,7 @@ void do_tests(std::ostream & out,
   while(f.good()) {
     std::string l;
     getstringline(f, l);
+    if (!f.good()) break;
     typedef std::string::size_type sz_type;
     sz_type p = l.find(' ');
     if(p == std::string::npos) {
@@ -197,12 +198,12 @@ void do_tests(std::ostream & out,
         << "<td>" << type << "</td>\n";
 
     for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it) {
-      std::cout << "** " << it->name << std::endl;
+      std::cout << "** " << it->name << "\n";
       std::pair<test_result, test_result> result =
-	run_test(type, it->compile_only_command, it->compile_link_command, boostpath, file);
+        run_test(type, it->compile_only_command, it->compile_link_command, boostpath, file);
       if(result.first == unknown_type) {
-	std::cerr << "Unknown test type " << type << ", skipped\n";
-	continue;
+        std::cerr << "Unknown test type " << type << ", skipped\n";
+        continue;
       }
       out << "<td>"
           << (result.first == result.second ? "Pass" : "<font color=\"#FF0000\">Fail</font>")
@@ -224,7 +225,8 @@ int main(int argc, char * argv[])
     args.push_back(std::string( *ait ));
 
   if(args.size() < 3) {
-    std::cerr << argv[0] << " usage: compiler-config test-config boost-path [compiler] [file]\n";
+    std::cerr << argv[0]
+              << " usage: compiler-config test-config boost-path [compiler|* [[command] file]]\n";
     std::exit(1);
   }
   std::string compiler = (args.size() >= 4 ? args[3] : "*");
@@ -244,11 +246,11 @@ int main(int argc, char * argv[])
 
   std::string boostpath = args[2];
 
-  if(args.size() >= 5) {
-    std::string cmd = l.front().compile_link_command;
-    replace(cmd, "%include", boostpath);
-    compile(cmd, boostpath, args[4]);
-    return 0;
+  // if file argument present, write temporary test configuration file for do_tests
+  if(args.size() >= 5) { // file argument present 
+    std::ofstream tmp((args[1]="boosttmp.tmp").c_str());
+    if (args.size() >= 6) tmp << args[4] << " " << args[5] << std::endl; // command present
+    else tmp << "compile " << args[4] << std::endl; // command not present
   }
 
   std::ofstream out( ("cs-" + host + ".html").c_str() );
