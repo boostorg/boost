@@ -64,6 +64,8 @@ rule libraries-to-install ( existing-libraries * )
 # selecting versioned/unversioned install and changing the build
 # directory.
 
+ARGV = [ modules.peek : ARGV ] ;
+
 # possible stage only location
 local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
 stage-locate ?= stage ;
@@ -79,8 +81,8 @@ else
     boost-locate = $(stage-locate) ;
 }
 
-if $(NT) { boost-locate ?= C:\\Boost ; }
-else if $(UNIX) { boost-locate ?= /usr/local ; }
+if [ modules.peek : NT ] { boost-locate ?= C:\\Boost ; }
+else if [ modules.peek : UNIX ] { boost-locate ?= /usr/local ; }
 
 # architecture dependent files
 local exec-locate = [ MATCH "^--exec-prefix=(.*)" : $(ARGV) ] ;
@@ -107,7 +109,10 @@ PYTHON_ROOT ?= $(python-root) ;
 libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
 libraries = [ libraries-to-install $(libraries) ] ;
 
-stage install : libs/$(libraries)/build : <so-version>1.32.0 ;
+stage install : libs/$(libraries)/build 
+  : <so-version>1.32.0 
+    <location>$(lib-locate)
+  ;
         
     
 #build-project libs/test/build ;
