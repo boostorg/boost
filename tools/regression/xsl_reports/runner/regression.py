@@ -121,7 +121,7 @@ def download_boost_tarball( destination, tag, proxy ):
     site = 'www.boost-consulting.com'
     tarball_name = 'boost.tar.bz2'
     tarball_path = os.path.join( destination, tarball_name )
-    return tarball_path
+
     log( "Downloading '%s' for tag %s from %s..."  % ( tarball_path, tag, site ) )
     if os.path.exists( tarball_path ):
         os.unlink( tarball_path )
