@@ -9,11 +9,13 @@ Requirements
 Installation
 ------------
 
-* Download and unpack boostrap from
+* Download and boostrap file from
   http://www.boost.org/status/bootstrap.py and put it in the directory
   where you want all the regression test files to be placed.
 
-* Run bootstrap.py. 
+* Run bootstrap.py. This will download Download the most recent
+  tarball for the tag from http://www.boost-consulting.com and unpack it 
+  in the subdirectory boost
 
 * **Optional** If you already have bjam and process_jam_log you want
   to use just put them in the same directory with bootstrap.py file.
@@ -21,6 +23,7 @@ Installation
 The resulting directory will look like::  
 
    boost_regression/
+      boost/
       bootstrap.py
       bjam.exe
       
@@ -40,10 +43,6 @@ Running regression tests
   boostrap.py --runner=metacomm --tag=CVS-HEAD
 
 The regression run procedure will:
-
-* Download the most recent tarball for the tag from http://www.boost-consulting.com
-
-* Unpack it 
 
 * Build bjam and process_jam_log if needed. (process_jam_log is a
   utility, which extracts the test results from log file produced by
