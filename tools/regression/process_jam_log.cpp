@@ -230,7 +230,7 @@ namespace
         }
       }
 
-      string library_name; // see "sublibs" comment below
+      string library_name;
       string::size_type pos = target_directory.find( "/libs/" );
       if ( pos != string::npos )
       {
@@ -245,7 +245,7 @@ namespace
       if ( itr != test2info.end() )
         info = itr->second;
       
-      if ( library_name.empty() )
+      if ( !info.file_path.empty() )
         library_name = test_path_to_library_name( info.file_path );
       
       if ( info.type.empty() )
