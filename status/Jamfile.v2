@@ -5,14 +5,16 @@
 #  warranty, and with no claim as to its suitability for any purpose.
 
 #  Status:
-#  Most tests declared in V1 status/Jamfile work. 
-#  io_test is commented out due to use of 'std::locale-support'.
+#  - std::locale-support usage is commented out.
 #  Two test suite have different names.
 #  <no-warn> in config test is commented out.
+#  One of the smart_ptr test is run only from invocation dir in V1, and not
+#  run in V2 at all.
 
 
 project status
     : source-location $(BOOST_ROOT) 
+    : requirements <hardcode-dll-paths>true  
     ;
     
 import testing ;    
@@ -23,6 +25,24 @@ alias test_exec_monitor : ../libs/test/build//boost_test_exec_monitor/<link>stat
 # Please keep these in alphabetic order by test-suite name
 build-project ../libs/bind/test ;              # test-suite bind
 build-project ../libs/conversion/test ;        # test-suite conversion
+build-project ../libs/date_time/test  ;        # test-suite date_time
+build-project ../libs/filesystem/test ;        # test-suite filesystem
+build-project ../libs/format/test ;            # test-suite format
+build-project ../libs/function/test ;          # test-suite function
+build-project ../libs/iterator/test ;          # test-suite iterator
+build-project ../libs/math/test ;              # test-suite math
+build-project ../libs/numeric/interval/test ;  # test-suite interval
+build-project ../libs/optional/test ;          # test-suite optional
+build-project ../libs/random/test ;            # test-suite random
+build-project ../libs/regex/test ;             # test-suite regex
+build-project ../libs/regex/example ;          # test-suite regex-examples
+build-project ../libs/signals/test ;           # test-suite signals
+build-project ../libs/smart_ptr/test ;         # test-suite smart_ptr
+build-project ../libs/static_assert ;          # test-suite static_assert
+build-project ../libs/thread/test ;            # test-suite thread
+build-project ../libs/type_traits/test ;       # test-suite type_traits
+build-project ../libs/utility/test ;           # test-suite utility
+build-project ../libs/variant/test ;           # test-suite variant
 
 # Tests specified in this Jamfile
 {        
@@ -65,7 +85,7 @@ build-project ../libs/conversion/test ;        # test-suite conversion
           [ compile-fail libs/concept_check/concept_check_fail_expected.cpp ]
           [ compile-fail libs/concept_check/class_concept_fail_expected.cpp ]
         ;
-	
+    
 
     run libs/crc/crc_test.cpp test_exec_monitor ;
 
@@ -92,14 +112,12 @@ build-project ../libs/conversion/test ;        # test-suite conversion
           [ run libs/integer/integer_traits_test.cpp test_exec_monitor ]
         ;
 
-    if $(0) {
     run 
       libs/io/test/ios_state_test.cpp test_exec_monitor   # sources
       : # args
       : # input-files
-      : std::locale-support
+#!!!  : std::locale-support
       ;
-    }
 
     test-suite lambda
         : [ run libs/lambda/test/algorithm_test.cpp test_exec_monitor ]
@@ -272,7 +290,7 @@ build-project ../libs/conversion/test ;        # test-suite conversion
           [ compile-fail libs/multi_array/test/fail_ref_cview.cpp ]
           [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
           [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
-        ;	
+        ;   
 
 
 
