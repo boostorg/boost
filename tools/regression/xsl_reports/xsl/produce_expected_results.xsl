@@ -13,9 +13,7 @@
   </xsl:template>
   
   <xsl:template match="test-log">
-    <xsl:if test="@result != 'success'">
-      <test-result library="{@library}" test-name="{@test-name}" toolset="{@toolset}" result="{@result}" />
-    </xsl:if>
+    <test-result library="{@library}" test-name="{@test-name}" toolset="{@toolset}" result="{@result}" />
   </xsl:template>
 
 </xsl:stylesheet>
