@@ -1,6 +1,7 @@
 Running Boost Regression Tests
 ==============================
 
+
 Requirements
 ------------
 
@@ -44,7 +45,7 @@ Running tests
   
   
   If you are interested in seeing all available options, run ``python regression.py``
-  or ``python regression.py --help``.
+  or ``python regression.py --help``. See also the `Advanced use`_ section below.
   
   **Note**: If you are behind a firewall/proxy server, everything should still "just work". 
   In the rare cases when it doesn't, you can explicitly specify the proxy server 
@@ -54,16 +55,6 @@ Running tests
 
      python regression.py --runner=Metacomm **--proxy=http://www.someproxy.com:3128**
 
-
-.. [#runnerid1] If you are running regressions interlacingly with a different 
-   set of compilers (e.g. for Intel in the morning and GCC at the end of the day), you need 
-   to provide a *different* runner id for each of these runs, e.g. ``your_name-intel``, and
-   ``your_name-gcc``.
-
-.. [#runnerid2] The limitations of the reports' format/medium impose a direct dependency
-   between the number of compilers you are testing with and the amount of space available 
-   for your runner id. If you are running regressions for a single compiler, please make 
-   sure to choose a short enough id that does not significantly disturb the reports' picture.
 
 Details
 -------
@@ -75,7 +66,7 @@ The regression run procedure will:
 
 * Build ``bjam`` and ``process_jam_log`` if needed. (``process_jam_log`` is an
   utility, which extracts the test results from the log file produced by 
-  Boost.Build)
+  Boost.Build).
 
 * Run regression tests, process and collect the results.
 
@@ -93,29 +84,89 @@ Advanced use
 Incremental runs
 ................
 
-You can run ``regression.py`` in *incremental mode* [#incremental]_ by simply passing 
-it an identically named command line flag:
+You can run ``regression.py`` in incremental mode [#incremental]_ by simply passing 
+it an identically named command-line flag:
 
 .. parsed-literal::
 
       python regression.py --runner=Metacomm **--incremental**
 
 
+Dealing with misbehaved tests/compilers
+.......................................
 
-Message dialogs/access violations
-.................................
+Depending on the environment/C++ runtime support library the test is compiled with, 
+a test failure/termination may cause an appearance of a dialog window, requiring
+human intervention to proceed. Moreover, the test (or even of the compiler itself)
+can fall into infinite loop, or simply run for too long. To allow ``regression.py`` 
+to take care of these obstacles, add the ``--monitored`` flag to the script 
+invocation:
 
-TODO
+.. parsed-literal::
 
-Getting source from CVS
-.......................
-
-TODO
+      python regression.py --runner=Metacomm **--monitored**
 
 
-.. [#incremental] By default the script runs in what is known as *full run mode*: on 
-   each script invocation all the files that were left in place by the previous run 
-   -- in particular, binaries for successfully built tests and libraries -- are 
-   deleted, and rebuilt once again from scratch. By contrast, in *incremental run* 
-   mode the already existing binaries are left intact, and only tests and libraries 
-   which source files has changed since the previous run are re-built and re-tested.
+That's it. Knowing your intentions, the script will be able to automatically deal 
+with the listed issues [#monitored]_.
+
+
+Getting sources from CVS
+........................
+
+If you already have a CVS client installed and configured, you might prefer to get
+the sources directly from the Boost CVS repository. To communicate this to the 
+script, you just need to pass it your SourceForge user ID using the ``--user`` 
+option; for instance:
+
+.. parsed-literal::
+
+      python regression.py --runner=Metacomm **--user=agurtovoy**
+
+You can also specify the user as ``anonymous``, requesting anonymous CVS access. 
+Note, though, that the files obtained this way tend to lag behind the actual CVS 
+state by several hours, sometimes up to twelve. By contrast, the tarball the script 
+downloads by default is at most one hour behind.
+
+
+Feedback
+--------
+
+Please send all comments/suggestions regarding this document and the testing procedure 
+itself to the `Boost developers list`__ (mailto:boost@lists.boost.org).
+
+__ mailto:boost@lists.boost.org.
+
+
+Notes
+-----
+
+.. [#runnerid1] If you are running regressions interlacingly with a different 
+   set of compilers (e.g. for Intel in the morning and GCC at the end of the day), you need 
+   to provide a *different* runner id for each of these runs, e.g. ``your_name-intel``, and
+   ``your_name-gcc``.
+
+.. [#runnerid2] The limitations of the reports' format/medium impose a direct dependency
+   between the number of compilers you are testing with and the amount of space available 
+   for your runner id. If you are running regressions for a single compiler, please make 
+   sure to choose a short enough id that does not significantly disturb the reports' layout.
+
+.. [#incremental] By default, the script runs in what is known as *full mode*: on 
+   each ``regression.py`` invocation all the files that were left in place by the 
+   previous run -- including the binaries for the successfully built tests and libraries 
+   -- are deleted, and everything is rebuilt once again from scratch. By contrast, in 
+   *incremental mode* the already existing binaries are left intact, and only the 
+   tests and libraries which source files has changed since the previous run are 
+   re-built and re-tested.
+
+   The main advantage of incremental runs is a significantly shorter turnaround time, 
+   but unfortunately they don't always produce reliable results. Some type of changes
+   to the codebase (changes to the bjam testing subsystem in particular)
+   often require switching to a full mode for one cycle in order to produce 
+   trustworthy reports. 
+   
+   As a general guideline, if you can afford it, testing in full mode is preferable.
+
+.. [#monitored] Note that at the moment this functionality is available only if you 
+   are running on a Windows platform. Contributions are welcome!
+   
