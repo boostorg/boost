@@ -38,10 +38,9 @@ namespace xml = boost::tiny_xml;
 using std::string;
 
 const string pass_msg( "Pass" );
-const string warn_msg( "<font color=\"#FF9900\"><i>Warn</i></font>" );
-const string fail_msg( "<font color=\"#FF0000\">"
-                      "<big><i>Fail</i></big>"
-                       "</font>" );
+const string warn_msg( "<i>Warn</i>" );
+const string fail_msg( "<font color=\"#FF0000\"><i>Fail</i></font>" );
+const string note_msg( "<br><i>Note</i>" );
 const string missing_residue_msg( "<i>Missing</i>" );
 
 const std::size_t max_compile_msg_size = 10000;
@@ -224,33 +223,46 @@ namespace
 //  element_content  ---------------------------------------------------------//
 
   const string & element_content(
-    const xml::element_ptr & root, const string & name )
+    const xml::element & root, const string & name )
   {
     static string empty_string;
-    xml::element_list::iterator itr;
-    for ( itr = root->elements.begin();
-          itr != root->elements.end() && (*itr)->name != name;
+    xml::element_list::const_iterator itr;
+    for ( itr = root.elements.begin();
+          itr != root.elements.end() && (*itr)->name != name;
           ++itr ) {}
-    return itr != root->elements.end() ? (*itr)->content : empty_string;
+    return itr != root.elements.end() ? (*itr)->content : empty_string;
   }
 
-//  find_attribute  ----------------------------------------------------------//
+//  find_element  ------------------------------------------------------------//
 
-const string & attribute_value( const xml::element_ptr & element,
+  const xml::element & find_element(
+    const xml::element & root, const string & name )
+  {
+    static xml::element empty_element;
+    xml::element_list::const_iterator itr;
+    for ( itr = root.elements.begin();
+          itr != root.elements.end() && (*itr)->name != name;
+          ++itr ) {}
+    return itr != root.elements.end() ? *((*itr).get()) : empty_element;
+  }
+
+//  attribute_value  ----------------------------------------------------------//
+
+const string & attribute_value( const xml::element & element,
                                 const string & attribute_name )
 {
   static const string empty_string;
-  xml::attribute_list::iterator atr;
-  for ( atr = element->attributes.begin();
-        atr != element->attributes.end() && atr->name != attribute_name;
+  xml::attribute_list::const_iterator atr;
+  for ( atr = element.attributes.begin();
+        atr != element.attributes.end() && atr->name != attribute_name;
         ++atr ) {}
-  return atr == element->attributes.end() ? empty_string : atr->value;
+  return atr == element.attributes.end() ? empty_string : atr->value;
 }
 
 //  generate_report  ---------------------------------------------------------//
 
   // return 0 if nothing generated, 1 otherwise, except 2 if compiler msgs
-  int generate_report( const xml::element_ptr & db,
+  int generate_report( const xml::element & db,
                        const string & test_name,
                        const string & toolset,
                        bool pass,
@@ -284,7 +296,7 @@ const string & attribute_value( const xml::element_ptr & element,
     }
 
     links_file << "<h2><a name=\""
-      << test_name << " " << toolset << "\">"
+      << test_name << "-" << toolset << "\">"
       << test_name << " / " << toolset << "</a></h2>\n";
 
     if ( !compile.empty() )
@@ -315,7 +327,7 @@ const string & attribute_value( const xml::element_ptr & element,
         if ( file )
         {
           xml::element_ptr db = xml::parse( file, pth.string() );
-          generate_report( db, lib_test_name, toolset, false );
+          generate_report( *db, lib_test_name, toolset, false );
         }
         else
         {
@@ -350,7 +362,9 @@ const string & attribute_value( const xml::element_ptr & element,
     }
 
     int anything_generated = 0;
+    bool note = false;
 
+    // create links file entry
     if ( !no_links )
     {
       fs::path pth( target_dir / "test_log.xml" );
@@ -364,13 +378,17 @@ const string & attribute_value( const xml::element_ptr & element,
         target += "</td>";
         return pass;
       }
-      xml::element_ptr db = xml::parse( file, pth.string() );
+      xml::element_ptr dbp = xml::parse( file, pth.string() );
+      const xml::element & db( *dbp );
+      note = attribute_value( find_element( db, "run" ), "result" ) == "note";
 
       // generate bookmarked report of results, and link to it
       anything_generated
-        = generate_report( db, test_name, toolset, pass, always_show_run_output );
+        = generate_report( db, test_name, toolset, pass,
+          always_show_run_output || note );
     }
 
+    // generate the status table cell
     target += "<td>";
     if ( anything_generated != 0 )
     {
@@ -378,10 +396,11 @@ const string & attribute_value( const xml::element_ptr & element,
       target += links_name;
       target += "#";
       target += test_name;
-      target += " ";
+      target += "-";
       target += toolset;
       target += "\">";
       target += pass ? (anything_generated < 2 ? pass_msg : warn_msg) : fail_msg;
+      if ( pass && note ) target += note_msg;
       target += "</a>";
     }
     else  target += pass ? pass_msg : fail_msg;
@@ -407,7 +426,8 @@ const string & attribute_value( const xml::element_ptr & element,
       fs::ifstream file( xml_file_path );
       if ( file )
       {
-        xml::element_ptr db = xml::parse( file, xml_file_path.string() );
+        xml::element_ptr dbp = xml::parse( file, xml_file_path.string() );
+        const xml::element & db( *dbp );
         test_path = attribute_value( db, "test-program" );
         lib_name = attribute_value( db, "library" );
         test_type = attribute_value( db, "test-type" );
