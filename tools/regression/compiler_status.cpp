@@ -233,7 +233,7 @@ namespace
           || line.find( search_name2 ) != string::npos ) )
         {
           if ( line.find( "# compiler_status<always_show_run_output>" )
-            != string::npos ) result.insert( 0, 1, '*' );
+            != string::npos ) result.insert( (std::string::size_type)0, (std::string::size_type)1, '*' );
           return result;
         }
       }
