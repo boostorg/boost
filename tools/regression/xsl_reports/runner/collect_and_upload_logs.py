@@ -6,6 +6,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import xml.sax.saxutils
+import zipfile
 
 import os.path
 import string
@@ -93,7 +94,14 @@ def collect_and_upload_logs(
     results_xml.endDocument()
     utils.log( 'Done writing "%s"...' % test_results_file )
 
-    upload_results_file( user, tag, test_results_file )
+    utils.log( 'Compressing "%s"...' % test_results_file )
+    
+    test_results_archive = os.path.splitext( test_results_file )[0] + ".zip"
+    z = zipfile.ZipFile( test_results_archive, "w", zipfile.ZIP_DEFLATED ) 
+    z.write( test_results_file, os.path.basename( test_results_file ) )
+    z.close()
+    
+    upload_results_file( user, tag, test_results_archive )
 
 
 def accept_args( args ):
