@@ -46,7 +46,6 @@ sub date_info
 	#print "<!-- $age_days days old -->\n";
 	my $age = "<font>";
 	if ($age_days <= 2) { }
-	elsif ($age_days <= 7) { $age = "<font color=\"#009900\">"; }
 	elsif ($age_days <= 14) { $age = "<font color=\"#FF9900\">"; }
 	else { $age = "<font color=\"#FF0000\">"; }
 	return $age.$_[0]."</font>";
@@ -68,7 +67,6 @@ sub age_info
 	#print "<!-- $age_days days old -->\n";
 	my $age = "<font>";
 	if ($age_days <= 2) { }
-	elsif ($age_days <= 7) { $age = "<font color=\"#009900\">"; }
 	elsif ($age_days <= 14) { $age = "<font color=\"#FF9900\">"; }
 	else { $age = "<font color=\"#FF0000\">"; }
 	if ($age_days <= 1) { $age = $age."today"; }
