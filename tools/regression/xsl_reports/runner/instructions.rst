@@ -1,4 +1,4 @@
-Running Boost regression tests
+Running Boost Regression Tests
 ==============================
 
 Requirements
@@ -9,49 +9,51 @@ Requirements
 Installation
 ------------
 
-* Download and boostrap file from
-  http://www.boost.org/status/bootstrap.py and put it in the directory
-  where you want all the regression test files to be placed.
+* Download regression driver ``regression.py`` from here__ (http://tinyurl.com/4fp4g)
+  and put it in the directory where you want all the regression 
+  test files to be placed.
 
-* Run bootstrap.py. This will download Download the most recent
-  tarball for the tag from http://www.boost-consulting.com and unpack it 
-  in the subdirectory boost
+__ http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression/xsl_reports/runner/regression.py
 
-* **Optional** If you already have bjam and process_jam_log you want
-  to use just put them in the same directory with bootstrap.py file.
 
-The resulting directory will look like::  
+* **Optional**: If you already have ``bjam`` and/or ``process_jam_log`` executables
+  you'd like to use, just put them in the same directory with ``regression.py``, e.g.::
 
-   boost_regression/
-      boost/
-      bootstrap.py
+   my_boost_regressions/
+      regression.py
       bjam.exe
-      
-      
-Running regression tests
-------------------------
 
-* Run regression.py with the following parameters 
 
-  * ... - the id of the runner. 
+Running tests
+-------------
 
-  * ... - the tag identifies the CVS branch or tarball under test. The
-    name of the tag is provided by the release manager
+* To start a regression run, simply run ``regression.py`` providing it with the 
+  only required option, runner id. For example::
+
+    python regression.py --runner=Metacomm
+
+  If you are interested in seeing all available options, run ``python regression.py``
+  or ``python regression.py --help``.
   
-::
 
-  boostrap.py --runner=metacomm --tag=CVS-HEAD
+Details
+-------
 
 The regression run procedure will:
 
-* Build bjam and process_jam_log if needed. (process_jam_log is a
-  utility, which extracts the test results from log file produced by
+* Download the most recent tarball from http://www.boost-consulting.com, 
+  unpack it in the subdirectory ``boost``.
+
+* Build ``bjam`` and ``process_jam_log`` if needed. (``process_jam_log`` is an
+  utility, which extracts the test results from the log file produced by 
   Boost.Build)
 
-* Run regression tests, process and collect the results
+* Run regression tests, process and collect the results.
 
 * Upload the results to ftp://fx.meta-comm.com/boost-regression.
 
 
-The report merger process running on MetaCommunications site every 2 hours will merge all
-submitted test runs and publish them at http://boost.sourceforge.net/regression-logs/developer
+The report merger process running on MetaCommunications site every 2 hours will 
+merge all submitted test runs and publish them at 
+http://boost.sourceforge.net/regression-logs/developer.
+
