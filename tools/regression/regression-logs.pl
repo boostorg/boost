@@ -18,8 +18,6 @@
 use FileHandle;
 use Time::Local;
 
-print "Content-type: text/html\r\n\r\n";
-
 # Generate an individual result item, Pass, Warn, and Fail columns.
 # Use as: result_info(html-color,result-count,total-count)
 #
