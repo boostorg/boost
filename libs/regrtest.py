@@ -13,6 +13,8 @@
 #             como  = Comeau C++
 #             vc    = Microsoft Visual C++
 #             vcstlport  = Microsoft Visual C++ with STLport library
+#             suncc = Sun's C++ compiler
+#             kcc = KAI C++ 3.4g
 #
 # Examples: regrtest
 #           regrtest
@@ -78,6 +80,17 @@ def compile( program ):
       invoke( "Comeau C++ 4.2.44 beta3", 'como -c -I' + path + ' ' + fullpath)
 #    if compiler_arg == "*" or compiler_arg == "occ":
 #      invoke( "OpenC++ 2.5.9", 'occ -c --regular-c++ -I' + path + ' ' + fullpath)
+
+# ----------- Solaris (Sun OS 5)/Sparc ------ #
+
+  elif sys.platform == "sunos5":
+    if compiler_arg == "*" or compiler_arg =="suncc":
+	invoke("Sun WorkShop 6 2000/04/07 C++ 5.1", 'CC -c -I' + path + ' ' + fullpath )
+    if compiler_arg == "*" or compiler_arg == "gcc":
+      invoke( "GCC 2.95.2", 'g++ -Wall -pedantic -ftemplate-depth-30 -c -I' + path + ' ' + fullpath )
+    if compiler_arg == "*" or compiler_arg == "kcc":
+      invoke( "KCC 3.4g", 'KCC --strict_warnings -c -I' + path + ' ' + fullpath )
+
 
 # ----------- BeOS5/Intel ------ #
 #
@@ -162,6 +175,8 @@ if len(sys.argv)>2:
 
 if sys.platform == "linux2":
   platform = "Linux/x86"
+elif sys.platform == "sunos5":
+  platform = "SunOS5/sparc"
 elif sys.platform == "beos":
   platform = "BeOS5/x86"
 elif sys.platform == "win32":
@@ -195,6 +210,13 @@ if sys.platform == "linux2":
     f.write( "<td>Comeau C++<br>4.2.44 beta3<br>STLport<br>4.0</td>\n" )
 #  if compiler_arg == "*" or compiler_arg == "occ":
 #    f.write( "<td>OpenC++<br>2.5.9</td>\n" )
+elif sys.platform == "sunos5":
+  if compiler_arg == "*" or compiler_arg == "suncc":
+    f.write( "<td>Sun C++<br>Sun WorkShop 6, C++ 5.1</td>\n" )
+  if compiler_arg == "*" or compiler_arg == "gcc":
+    f.write( "<td>GNU<br>GCC<br>2.95.2</td>\n" )
+  if compiler_arg == "*" or compiler_arg == "kcc":
+    f.write( "<td>KAI<br>KCC<br>3.4g</td>\n" )
 elif sys.platform == "beos":
   if compiler_arg == "*" or compiler_arg == "gcc":
     f.write( "<td>GNUPro<br>GCC&nbsp;2.9</td>\n" )
@@ -223,6 +245,12 @@ if  program_arg=="*":
   compile( "config/config_test.cpp" )
   compile( "array/array1.cpp" )
 #  compile( "compose/compose1.cpp" )
+  compile( "concept_check/concept_check_test.cpp")
+  compile( "concept_check/class_concept_check_test.cpp")
+  compile( "concept_check/stl_concept_check.cpp")
+  compile( "concept_check/stl_concept_convering.cpp")
+  compile( "concept_check/concept_check_fail_expected.cpp")
+  compile( "concept_check/class_concept_check_fail_expected.cpp")
   compile( "functional/function_test.cpp" )
   compile( "graph/test/graph.cpp" )
   compile( "integer/cstdint_test.cpp" )
