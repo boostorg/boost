@@ -222,15 +222,8 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
   }
 }
 
-std::string make_fail_string(const std::string & s)
-{
-  return "<font color=\"#FF0000\">" + s + "</font>";
-}
-
 const std::string pass_string = "Pass";
-const std::string fail_string = make_fail_string("Fail");
-const std::string compile_fail_string = make_fail_string("Compile Fail");
-const std::string run_fail_string = make_fail_string("Run Fail");
+const std::string fail_string = "<font color=\"#FF0000\">Fail</font>";
 
 // map test name to results, one character ("P" or "F") for each compiler
 typedef std::map<std::string, std::string> previous_results_type;
@@ -269,7 +262,7 @@ previous_results_type read_previous_results(std::istream & is)
 	status = testname;
       else if(line.find(pass_string) != std::string::npos)
 	result[current_test].append("P");
-      else if(line.find("Fail") != std::string::npos)
+      else if(line.find(fail_string) != std::string::npos)
 	result[current_test].append("F");
       else
 	std::cerr << "Line '" << line << "' has unknown format.";
@@ -411,18 +404,9 @@ void do_tests(std::ostream & out,
       bool changed = highlight_diff &&
 	((prev == 'F' && pass) || (prev == 'P' && !pass) || prev == ' ');
       out << "<td>"
-	  << (changed ? "<font size=\"+3\"><em>" : "");
-      if(pass) {
-	out << pass_string;
-      } else if(type == "run") {
-	if(result.first == run_failed)
-	  out << run_fail_string;
-	else
-	  out << compile_fail_string;
-      } else {
-	out << fail_string;
-      }
-      out << (changed ? "</em></font>" : "")
+	  << (changed ? "<font size=\"+3\"><em>" : "")
+          << (pass ? pass_string : fail_string)
+	  << (changed ? "</em></font>" : "")
           << "</td>" << std::endl;
       std::cout << (result.first == result.second ? "Pass" : "Fail") << "\n\n";
     }
