@@ -87,54 +87,93 @@ logs, and committing fixes  to CVS.</p>
     <li>Command Line CVS:</li>
   </ul>
   <blockquote>
-    <pre>[After fixed code is committed to main branch]
-cvs update -r RC_1_26_2 [switch to the release candidate branch]
-cvs update -j<a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a> -jHEAD buggycode.hpp [merge changes from trunk to branch]
+    <ul>
+      <li>Fixed code is committed to main branch <br>
+&nbsp;</li>
+      <li>Switch to the release candidate branch
+         <blockquote>
+           <code>cvs update -r RC_1_26_2</code></blockquote>
+      </li>
+      <li>Merge changes in a trunk since previous merge to branch
+      <blockquote>
+<pre>cvs update -j<a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a> -jHEAD buggycode.hpp
  --&gt; RCS file: /cvsroot/boost/.../buggycode.hpp,v
  --&gt;    retrieving revision 1.4
  --&gt;    retrieving revision 1.6
- --&gt;    Merging differences between 1.4 and 1.6 into buggycode.hpp
-
-cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggycode.hpp
-cvs update -A [go back to main trunk]
-cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp [tag new merged point]
-
-[Repeat as needed]</pre>
+ --&gt;    Merging differences between 1.4 and 1.6 into buggycode.hpp</pre>
+      </blockquote>
+      </li>
+      <li>Commit merged branch
+      <blockquote>
+<pre>cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggycode.hpp</pre>
+      </blockquote>
+      </li>
+      <li>Go back to main trunk
+      <blockquote>
+<pre>cvs update -A</pre>
+      </blockquote>
+      </li>
+      <li>Move tag to a new merged point
+      <blockquote>
+<pre>cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp</pre>
+      </blockquote>
+      </li>
+      <li>Repeat as needed
+      </li>
+    </ul>
   </blockquote>
   <ul>
     <li>WinCVS:</li>
   </ul>
   <blockquote>
-    <p>After fixed code is committed to main branch, switch to the release 
-    candidate branch:</p>
+    <ul>
+      <li>After fixed code is committed to main branch, switch to the release 
+    candidate branch:</li>
+    </ul>
     <blockquote>
+      <blockquote>
     <p>Select file(s) if not already selected.</p>
-    </blockquote>
-    <blockquote>
     <p>Modify | Update selection... | 
     Update settings | Sticky options | Retrieve rev/tag/branch: <code>RC_1_26_2</code> | OK</p>
+      </blockquote>
     </blockquote>
-      <p>Merge changes from main trunk into the release candidate branch:</p>
+    <ul>
+      <li>Merge changes from main trunk into the release candidate branch:</li>
+    </ul>
     <blockquote>
+      <blockquote>
       <p>Modify | Update selection... | 
     Update settings | Merge options | Only this rev/tag: <code>
       <a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a></code> 
       | Plus with this rev/tag: <code>HEAD</code> | OK</p>
+      </blockquote>
     </blockquote>
-      <p>Commit merge results:</p>
+      <ul>
+        <li>Commit merge results:</li>
+    </ul>
     <blockquote>
+      <blockquote>
       <p>Modify | Commit... | Enter log message: ... | OK</p>
+      </blockquote>
     </blockquote>
-      <p>Go back to main trunk:</p>
+      <ul>
+        <li>Go back to main trunk:</li>
+    </ul>
     <blockquote>
+      <blockquote>
       <p>Modify | Update selection... | Update settings | Reset any sticky 
       date/tag/-k options | OK</p>
+      </blockquote>
     </blockquote>
-      <p>Tag as new merge point:</p>
+      <ul>
+        <li>Tag as new merge point:</li>
+    </ul>
+    <blockquote>
     <blockquote>
     <p>Modify | Create tag on selection... | Create tag settings | Enter the tag 
     name to create: <code>merged_to_RC_1_26_2</code>, Overwrite existing tags 
     with same name | OK.</p>
+    </blockquote>
     </blockquote>
   </blockquote>
 </blockquote>
