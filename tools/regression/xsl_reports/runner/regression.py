@@ -7,7 +7,6 @@
 
 import urllib
 import tarfile
-import zipfile
 import socket
 import time
 import getopt
