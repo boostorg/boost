@@ -147,7 +147,8 @@ def ftp_task( site, site_path , destination ):
         result.close()
         m = time.mktime( find_by_name( source_content, source ).date )
         os.utime( os.path.join( destination, source ), ( m, m ) )
-        
+
+    f.quit()        
     
 
 
