@@ -38,7 +38,7 @@
         <div>
           <table border="0">
             <tr>
-              <td><img border="0" src="../c++boost.gif" width="277" height="86" alt="Boost logo"></img></td>
+              <td><img border="0" src="../../c++boost.gif" width="277" height="86" alt="Boost logo"></img></td>
               <td>
                 <h1 class="page-title">
                   <xsl:text>Regression Tests Log: </xsl:text>

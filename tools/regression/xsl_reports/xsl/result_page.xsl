@@ -232,7 +232,7 @@
         <div>
           <table border="0" summary="report header">
             <tr>
-              <td><img border="0" src="../c++boost.gif" width="277" height="86" alt="Boost logo"></img></td>
+              <td><img border="0" src="../../c++boost.gif" width="277" height="86" alt="Boost logo"></img></td>
               <td>
                 <h1 class="page-title">
                   <xsl:value-of select="$mode"/>
