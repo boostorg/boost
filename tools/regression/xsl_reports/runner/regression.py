@@ -274,7 +274,7 @@ def import_utils():
 
 def tool_path( name_or_spec ):
     if isinstance( name_or_spec, basestring ):
-        return os.path.join( regression_results, name_or_spec )
+        return os.path.join( regression_root, name_or_spec )
 
     if os.path.exists( name_or_spec[ 'path' ] ):
         return name_or_spec[ 'path' ]
@@ -329,6 +329,8 @@ def start_build_monitor():
         build_monitor = tool_path( 'build_monitor.exe' )
         if os.path.exists( build_monitor ):
             utils.system( [ 'start "" %s bjam.exe %d' % ( build_monitor, 3*60 ) ] )
+        else:
+            log( 'Warning: build monitor is not found at "%s"' % build_monitor )
 
 
 def stop_build_monitor():
