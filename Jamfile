@@ -117,7 +117,9 @@ install-subinclude
     [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ]
     : <exclude>$(without-libraries) ;
 
-if [ install-sources lib ]
+local lib-sources = [ install-sources lib ] ;
+
+if $(lib-sources)
 {
     local lib-build =
         debug release
@@ -125,18 +127,50 @@ if [ install-sources lib ]
         [ cond $(NT) : <runtime-link>static/dynamic ]
         <threading>single/multi
         ;
-    stage $(lib-locate:D=)
-        :
-            [ install-sources lib ]
-        :
-            <locate>$(lib-locate:D)
-            common-variant-tag
-            [ cond $(with-install) : <target>install : <target>all ]
-            [ cond $(with-stage) : <target>stage : <target>all ]
-        :
-            $(lib-build)
-            [ unless $(with-install) $(with-stage) : <suppress>true ]
+    local lib-target =
+        [ cond $(with-install) : install : all ]
+        [ cond $(with-stage) : stage : all ]
         ;
+    local lib-dest-files = [
+        stage $(lib-locate:D=)
+            :
+                $(lib-sources)
+            :
+                <locate>$(lib-locate:D)
+                common-variant-tag
+                <target>$(lib-target)
+            :
+                $(lib-build)
+                [ unless $(with-install) $(with-stage) : <suppress>true ]
+        ] ;
+    if ! $(gIN_LIB_INCLUDE)
+    {
+        local unversioned-files ;
+        if $(with-install) || $(with-stage)
+        {
+            if $(NT)
+            {
+            }
+            else if $(UNIX)
+            {
+                local so-version-files = [ MATCH "(.*[.]so[.0-9]+)" : $(lib-dest-files) ] ;
+                so-version-files ?= [ MATCH "(.*[.]so)" : $(lib-dest-files) ] ;
+                local version-files = $(so-version-files) [ MATCH "(.*[.]a)" : $(lib-dest-files) ] ;
+                local noversion-files ;
+                for local version-file in $(version-files)
+                {
+                    local noversion-file =
+                        [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(version-file) ]
+                        [ MATCH "(.*)-[0-9_]+([.]a)" : $(version-file) ] ;
+                    noversion-file = $(noversion-file[1])$(noversion-file[2]) ;
+                    MakeLocate $(noversion-file) : [ FDirName [ split-path $(lib-locate) ] ] ;
+                    HardLink $(noversion-file) : $(version-file) ;
+                    noversion-files += $(noversion-file) ;
+                }
+                declare-fake-targets $(lib-target) : $(noversion-files) ;
+            }
+        }
+    }
 }
 
 stage $(include-locate:D=)/boost-$(version-tag)
