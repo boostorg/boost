@@ -38,6 +38,8 @@
   <xsl:param name="expected_results_file"/>
   <xsl:param name="explicit_markup_file"/>
 
+  <xsl:variable name="output_directory" select="'output'"/>
+
   <!-- the author-specified expected test results -->
   <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
   <xsl:variable name="expected_results" select="document( $expected_results_file )" />
@@ -554,13 +556,13 @@
           <xsl:when test="$mode='user'">
             <xsl:call-template name="insert_cell_user">
               <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
-              <xsl:with-param name="log_link" select="concat( $links_file, '#', $library, '-', $test_name, '-', $toolset )"/>
+              <xsl:with-param name="log_link" select="meta:output_file_path( $test_result_for_toolset/@target-directory )"/>
             </xsl:call-template>
           </xsl:when>
           <xsl:when test="$mode='developer'">
             <xsl:call-template name="insert_cell_developer">
               <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
-              <xsl:with-param name="log_link" select="concat( $links_file, '#',  $library, '-', $test_name, '-', $toolset )"/>
+              <xsl:with-param name="log_link" select="meta:output_file_path( $test_result_for_toolset/@target-directory )"/>
             </xsl:call-template>
           </xsl:when>
         </xsl:choose>
