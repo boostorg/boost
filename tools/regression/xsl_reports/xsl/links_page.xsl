@@ -24,7 +24,7 @@
 
   <xsl:output method="html" 
     doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" 
-    encoding="utf-8" 
+     encoding="utf-8" 
     indent="yes"
     />
 
@@ -154,7 +154,7 @@
             <p>
               <div class="log-linker-output-title">Lib output:</div>
               <p>
-                See <a href="#{meta:encode_path( lib/node() )}">
+                See <a href="{meta:encode_path( lib/node() )}.html">
                 <xsl:copy-of select="lib/node()"/>
                 </a>
               </p>
