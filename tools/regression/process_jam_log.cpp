@@ -112,7 +112,7 @@ namespace
     string t( s );
     string::size_type pos = t.find( ".test/" );
     if ( pos == string::npos ) return "";
-	string::size_type pos_start = t.rfind( '/', pos ) + 1;
+    string::size_type pos_start = t.rfind( '/', pos ) + 1;
     return t.substr( pos_start, pos - pos_start );
   }
 
@@ -132,9 +132,19 @@ namespace
     ++start_pos;
     string::size_type end_pos( msg.find( '>', start_pos ) );
     first_dir += msg.substr( start_pos, end_pos - start_pos );
-    start_pos = first_dir.rfind( '!' );
-    convert_path_separators( first_dir );
-    first_dir.insert( first_dir.find( '/', start_pos + 1), "/bin" );
+    if ( first_dir[0] == '@' )
+    {
+      // new style build path, rooted build tree
+      convert_path_separators( first_dir );
+      first_dir.replace( 0, 1, "bin/" );
+    }
+    else
+    {
+      // old style build path, integrated build tree
+      start_pos = first_dir.rfind( '!' );
+      convert_path_separators( first_dir );
+      first_dir.insert( first_dir.find( '/', start_pos + 1), "/bin" );
+    }
 //std::cout << first_dir << std::endl;
 
     start_pos = msg.find( '<', end_pos );
@@ -142,9 +152,19 @@ namespace
     ++start_pos;
     end_pos = msg.find( '>', start_pos );
     second_dir += msg.substr( start_pos, end_pos - start_pos );
-    start_pos = second_dir.rfind( '!' );
-    convert_path_separators( second_dir );
-    second_dir.insert( second_dir.find( '/', start_pos + 1), "/bin" );
+    if ( second_dir[0] == '@' )
+    {
+      // new style build path, rooted build tree
+      convert_path_separators( second_dir );
+      second_dir.replace( 0, 1, "bin/" );
+    }
+    else
+    {
+      // old style build path, integrated build tree
+      start_pos = second_dir.rfind( '!' );
+      convert_path_separators( second_dir );
+      second_dir.insert( second_dir.find( '/', start_pos + 1), "/bin" );
+    }
 //std::cout << second_dir << std::endl;
   }
 
