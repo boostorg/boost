@@ -467,7 +467,7 @@ struct TestClass
         : p( ThisCanThrow(), new int( *rhs.p ) ) {} 
     const TestClass&amp; operator=( const TestClass&amp; rhs ) 
         { ThisCanThrow(); *p = *rhs.p; } 
-    bool operator==( const TestClass&amp; rhs ) 
+    bool operator==( const TestClass&amp; rhs ) const
         { ThisCanThrow(); return *p == *rhs.p; } 
     ...etc... 
     ~TestClass() { delete p; } 
