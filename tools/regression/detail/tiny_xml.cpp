@@ -28,7 +28,8 @@ namespace
       != 0 )
     {
       result += c;
-      in.get( c );
+      if(!in.get( c ))
+        throw std::string("xml: unexpected eof");
     }
     return result;
   }
@@ -69,8 +70,11 @@ namespace boost
       char c = 0;  // current character
       element_ptr e( new element );
 
-      in.get( c );
-      if ( c == '<' ) in.get( c );
+      if(!in.get( c ))
+        throw std::string("xml: unexpected eof");
+      if ( c == '<' )
+        if(!in.get( c ))
+          throw std::string("xml: unexpected eof");
 
       e->name = get_name( c, in );
       eat_whitespace( c, in );
@@ -89,7 +93,9 @@ namespace boost
         e->attributes.push_back( a );
         eat_whitespace( c, in );
       }
-      in.get( c ); // next after '>'
+      if(!in.get( c )) // next after '>'
+        throw std::string("xml: unexpected eof");
+
       eat_whitespace( c, in );
 
       // sub-elements
@@ -108,12 +114,14 @@ namespace boost
         while ( c != '<' )
         {
           e->content += c;
-          in.get( c );
+          if(!in.get( c ))
+            throw std::string("xml: unexpected eof");
         }
       }
 
       assert( c == '<' );
-      in.get( c ); // next after '<'
+      if(!in.get( c )) // next after '<'
+        throw std::string("xml: unexpected eof");
 
       eat_delim( c, in, '/', msg );
       std::string end_name( get_name( c, in ) );

@@ -167,50 +167,56 @@ namespace
     {
       fs::path pth( locate_root / target_directory / "test_log.xml" );
       fs::ifstream file( pth  );
-      if ( !file )
+      if ( file )   // existing file
       {
-        test_info info;
-        string library_name;
-        test2info_map::iterator itr( test2info.find( test_name ) );
-        if ( itr != test2info.end() )
+        try
         {
-          info = itr->second;
-          string::size_type start_pos( info.file_path.find( "libs/" ) );
-          if ( start_pos != string::npos )
-          {
-            start_pos += 5;
-            string::size_type end_pos( info.file_path.find( '/', start_pos ) );
-            library_name = info.file_path.substr( start_pos,
-              end_pos - start_pos );
+          m_root = xml::parse( file, pth.string() );
+          return;
+        }
+        catch(...)
+        {
+          // unable to parse existing XML file, fall through
+        }
+      }
 
-            if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
-            {
-              library_name += info.file_path.substr( end_pos,
-                info.file_path.find( '/', end_pos+1 ) - end_pos );
-            }
+      test_info info;
+      string library_name;
+      test2info_map::iterator itr( test2info.find( test_name ) );
+      if ( itr != test2info.end() )
+      {
+        info = itr->second;
+        string::size_type start_pos( info.file_path.find( "libs/" ) );
+        if ( start_pos != string::npos )
+        {
+          start_pos += 5;
+          string::size_type end_pos( info.file_path.find( '/', start_pos ) );
+          library_name = info.file_path.substr( start_pos,
+            end_pos - start_pos );
+
+          if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
+          {
+            library_name += info.file_path.substr( end_pos,
+              info.file_path.find( '/', end_pos+1 ) - end_pos );
           }
         }
-        m_root.reset( new xml::element( "test-log" ) );
-        m_root->attributes.push_back(
-          xml::attribute( "library", library_name ) );
-        m_root->attributes.push_back(
-          xml::attribute( "test-name", test_name ) );
-        m_root->attributes.push_back(
-          xml::attribute( "test-type", info.type ) );
-        m_root->attributes.push_back(
-          xml::attribute( "test-program", info.file_path ) );
-        m_root->attributes.push_back(
-          xml::attribute( "target-directory", target_directory ) );
-        m_root->attributes.push_back(
-          xml::attribute( "toolset", toolset ) );
-        m_root->attributes.push_back(
-          xml::attribute( "show-run-output",
-            info.always_show_run_output ? "true" : "false" ) );
       }
-      else // existing file
-      {
-        m_root = xml::parse( file, pth.string() );
-      }
+      m_root.reset( new xml::element( "test-log" ) );
+      m_root->attributes.push_back(
+        xml::attribute( "library", library_name ) );
+      m_root->attributes.push_back(
+        xml::attribute( "test-name", test_name ) );
+      m_root->attributes.push_back(
+        xml::attribute( "test-type", info.type ) );
+      m_root->attributes.push_back(
+        xml::attribute( "test-program", info.file_path ) );
+      m_root->attributes.push_back(
+        xml::attribute( "target-directory", target_directory ) );
+      m_root->attributes.push_back(
+        xml::attribute( "toolset", toolset ) );
+      m_root->attributes.push_back(
+        xml::attribute( "show-run-output",
+          info.always_show_run_output ? "true" : "false" ) );
     }
 
     ~test_log()
@@ -399,7 +405,7 @@ int cpp_main( int argc, char ** argv )
 
   while ( std::getline( std::cin, line ) )
   {
-//      std::cout << line << "\n";
+    //    std::cout << line << "\n";
 
     // create map of test-name to test-info
     if ( line.find( "boost-test(" ) == 0 )
@@ -495,7 +501,8 @@ int cpp_main( int argc, char ** argv )
       content.clear();
       capture_lines = false;
 
-      if ( line.find( ".exe for lack of " ) != string::npos )
+      if ( line.find( " for lack of " ) != string::npos
+        && line.find( ".run for lack of " ) == string::npos )
       {
         capture_lines = true;
 
