@@ -167,50 +167,56 @@ namespace
     {
       fs::path pth( locate_root / target_directory / "test_log.xml" );
       fs::ifstream file( pth  );
-      if ( !file )
+      if ( file )   // existing file
       {
-        test_info info;
-        string library_name;
-        test2info_map::iterator itr( test2info.find( test_name ) );
-        if ( itr != test2info.end() )
+        try
         {
-          info = itr->second;
-          string::size_type start_pos( info.file_path.find( "libs/" ) );
-          if ( start_pos != string::npos )
-          {
-            start_pos += 5;
-            string::size_type end_pos( info.file_path.find( '/', start_pos ) );
-            library_name = info.file_path.substr( start_pos,
-              end_pos - start_pos );
+          m_root = xml::parse( file, pth.string() );
+          return;
+        }
+        catch(...)
+        {
+          // unable to parse existing XML file, fall through
+        }
+      }
 
-            if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
-            {
-              library_name += info.file_path.substr( end_pos,
-                info.file_path.find( '/', end_pos+1 ) - end_pos );
-            }
+      test_info info;
+      string library_name;
+      test2info_map::iterator itr( test2info.find( test_name ) );
+      if ( itr != test2info.end() )
+      {
+        info = itr->second;
+        string::size_type start_pos( info.file_path.find( "libs/" ) );
+        if ( start_pos != string::npos )
+        {
+          start_pos += 5;
+          string::size_type end_pos( info.file_path.find( '/', start_pos ) );
+          library_name = info.file_path.substr( start_pos,
+            end_pos - start_pos );
+
+          if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
+          {
+            library_name += info.file_path.substr( end_pos,
+              info.file_path.find( '/', end_pos+1 ) - end_pos );
           }
         }
-        m_root.reset( new xml::element( "test-log" ) );
-        m_root->attributes.push_back(
-          xml::attribute( "library", library_name ) );
-        m_root->attributes.push_back(
-          xml::attribute( "test-name", test_name ) );
-        m_root->attributes.push_back(
-          xml::attribute( "test-type", info.type ) );
-        m_root->attributes.push_back(
-          xml::attribute( "test-program", info.file_path ) );
-        m_root->attributes.push_back(
-          xml::attribute( "target-directory", target_directory ) );
-        m_root->attributes.push_back(
-          xml::attribute( "toolset", toolset ) );
-        m_root->attributes.push_back(
-          xml::attribute( "show-run-output",
-            info.always_show_run_output ? "true" : "false" ) );
       }
-      else // existing file
-      {
-        m_root = xml::parse( file, pth.string() );
-      }
+      m_root.reset( new xml::element( "test-log" ) );
+      m_root->attributes.push_back(
+        xml::attribute( "library", library_name ) );
+      m_root->attributes.push_back(
+        xml::attribute( "test-name", test_name ) );
+      m_root->attributes.push_back(
+        xml::attribute( "test-type", info.type ) );
+      m_root->attributes.push_back(
+        xml::attribute( "test-program", info.file_path ) );
+      m_root->attributes.push_back(
+        xml::attribute( "target-directory", target_directory ) );
+      m_root->attributes.push_back(
+        xml::attribute( "toolset", toolset ) );
+      m_root->attributes.push_back(
+        xml::attribute( "show-run-output",
+          info.always_show_run_output ? "true" : "false" ) );
     }
 
     ~test_log()
@@ -260,13 +266,20 @@ namespace
     string  m_test_name;
     string  m_toolset;
 
+    bool    m_note;  // if true, run result set to "note"
+                     // set false by start_message()
+
     // data needed to stop further compile action after a compile failure
     // detected in the same target directory
     string  m_previous_target_directory;
     bool    m_compile_failed;
 
   public:
+    message_manager() : m_note(false) {}
     ~message_manager() { /*assert( m_action_name.empty() );*/ }
+
+    bool note() const { return m_note; }
+    void note( bool value ) { m_note = value; }
 
     void start_message( const string & action_name,
                       const string & target_directory,
@@ -279,6 +292,7 @@ namespace
       m_target_directory = target_directory;
       m_test_name = test_name;
       m_toolset = toolset;
+      m_note = false;
       if ( m_previous_target_directory != target_directory )
       {
         m_previous_target_directory = target_directory;
@@ -300,8 +314,9 @@ namespace
                      const string & content )
     // the only valid action_names are "compile", "link", "run", "lib"
     {
-      // my understanding of the jam output is that there should never be
+      // My understanding of the jam output is that there should never be
       // a stop_message that was not preceeded by a matching start_message.
+      // That understanding is built into message_manager code.
       assert( m_action_name == action_name );
       assert( m_target_directory == target_directory );
       assert( result == "succeed" || result == "fail" );
@@ -334,8 +349,10 @@ namespace
         // dependency removal won't work right with random names, so assert
         else { assert( action_name == "run" ); }
 
-        // add the stop_message action
-        tl.add_action( action_name, result, timestamp, content );
+        // add the "run" stop_message action
+        tl.add_action( action_name,
+          result == "succeed" && note() ? "note" : result,
+          timestamp, content );
       }
 
       m_action_name = ""; // signal no pending action
@@ -388,7 +405,7 @@ int cpp_main( int argc, char ** argv )
 
   while ( std::getline( std::cin, line ) )
   {
-//      std::cout << line << "\n";
+    //    std::cout << line << "\n";
 
     // create map of test-name to test-info
     if ( line.find( "boost-test(" ) == 0 )
@@ -399,12 +416,13 @@ int cpp_main( int argc, char ** argv )
       info.always_show_run_output
         = line.find( "\"always_show_run_output\"" ) != string::npos;
       info.type = line.substr( 11, line.find( ')' )-11 );
-      for (int i = 0; i!=info.type.size(); ++i )
+      for (unsigned int i = 0; i!=info.type.size(); ++i )
         { info.type[i] = std::tolower( info.type[i] ); }
       pos = line.find( ':' );
       info.file_path = line.substr( pos+3,
         line.find( "\"", pos+3 )-pos-3 );
       convert_path_separators( info.file_path );
+      if ( info.file_path.find( "libs/libs/" ) == 0 ) info.file_path.erase( 0, 5 );
       test2info.insert( std::make_pair( test_name, info ) );
 //      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
       continue;
@@ -416,6 +434,7 @@ int cpp_main( int argc, char ** argv )
       || line.find( "vc-C++ " ) != string::npos
       || line.find( "C-action " ) != string::npos
       || line.find( "Cc-action " ) != string::npos
+      || line.find( "vc-Cc " ) != string::npos
       || line.find( "Link-action " ) != string::npos
       || line.find( "vc-Link " ) != string::npos )
     {
@@ -469,7 +488,8 @@ int cpp_main( int argc, char ** argv )
           string ln;
           while ( std::getline( file, ln ) )
           {
-            append_html( ln, content );;
+            if ( ln.find( "<note>" ) != string::npos ) mgr.note( true );
+            append_html( ln, content );
             content += "\n";
           }
         }
@@ -483,7 +503,8 @@ int cpp_main( int argc, char ** argv )
       content.clear();
       capture_lines = false;
 
-      if ( line.find( ".exe for lack of " ) != string::npos )
+      if ( line.find( " for lack of " ) != string::npos
+        && line.find( ".run for lack of " ) == string::npos )
       {
         capture_lines = true;
 
