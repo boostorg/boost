@@ -54,7 +54,7 @@ std::string get_host()
   return "aix";
 #elif defined __MSL__ && __dest_os == __mac_os
   return "macos";
-#elif defined __MSL__ && __dest_os == __mac_os_x
+#elif defined __MSL__ && __dest_os == __mac_os_x || defined(__APPLE_CC__)
   return "macosx";
 #else
 # error Please adapt for your platform
@@ -92,7 +92,7 @@ std::string get_system_configuration()
   return "BeOS 5 Intel Edition";
 }
 
-#elif defined __MSL__ && (__dest_os == __mac_os || __dest_os == __mac_os_x)
+#elif defined __MSL__ && (__dest_os == __mac_os || __dest_os == __mac_os_x) || defined(__APPLE_CC__)
 
 std::string get_system_configuration()
 {
