@@ -29,21 +29,38 @@
           <run runner="{@runner}" timestamp="{@timestamp}">
             <comment><xsl:value-of select="comment"/></comment>
             <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) ]/@toolset )"/>
-            <xsl:for-each select="$not_ordered_toolsets">
-              <xsl:sort select="." order="ascending"/>
-              <xsl:variable name="toolset" select="."/>
-              <xsl:variable name="required">
-                <xsl:choose>
-                  <xsl:when test="count( $required_toolsets[ @name = $toolset ] ) > 0">yes</xsl:when>
-                    <xsl:otherwise>no</xsl:otherwise>
-                </xsl:choose>
-              </xsl:variable>
-              <toolset name="{$toolset}" required="{$required}"/>
+
+            <xsl:variable name="not_ordered_toolsets_with_info_f">
+                <xsl:for-each select="$not_ordered_toolsets">
+                    <xsl:sort select="." order="ascending"/>
+                    <xsl:variable name="toolset" select="."/>
+                    <xsl:variable name="required">
+                        <xsl:choose>
+                            <xsl:when test="count( $required_toolsets[ @name = $toolset ] ) > 0">yes</xsl:when>
+                            <xsl:otherwise>no</xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <xsl:variable name="required_sort_hint">
+                        <xsl:choose>
+                            <xsl:when test="$required = 'yes'">sort hint A</xsl:when>
+                            <xsl:otherwise>sort hint B</xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <toolset name="{$toolset}" required="{$required}" required_sort_hint="{$required_sort_hint}"/>
+                </xsl:for-each>
+            </xsl:variable>
+
+            <xsl:variable name="not_ordered_toolsets_with_info" select="exsl:node-set( $not_ordered_toolsets_with_info_f )"/>
+
+            <xsl:for-each select="$not_ordered_toolsets_with_info/toolset">
+                <xsl:sort select="concat( @required_sort_hint, '-', @name )" order="ascending"/>
+                <xsl:copy-of select="."/>
             </xsl:for-each>
           </run>
         </xsl:for-each>
       </runs>
     </xsl:variable>
+
     <func:result select="exsl:node-set( $run_toolsets_f )"/>
   </func:function>
 
