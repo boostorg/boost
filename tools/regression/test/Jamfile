@@ -1,0 +1,27 @@
+# Boost Regression Reporting test Jamfile
+
+#  (C) Copyright Beman Dawes 2003. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+subproject tools/regression/test ;
+
+# bring in rules for testing
+import testing ;
+
+# Make tests run by default.
+DEPENDS all : test ;
+
+{
+    # look in BOOST_ROOT for sources first, just in this Jamfile
+    local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
+    
+    run compile-fail.cpp ;
+    run run-fail.cpp ;
+    run run-note-fail.cpp ;
+    run run-note-pass.cpp ;
+    run run-note-warn.cpp ;
+    run run-pass.cpp ;
+    run run-pass-warn.cpp ;
+}
