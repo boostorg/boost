@@ -394,14 +394,43 @@
 
     <library name="program_options">
       <mark-unusable>
-        <toolset name="msvc"/>
         <toolset name="msvc-stlport"/>
-        <toolset name="vc7"/>
+      </mark-unusable>
 
+      <mark-unusable>
+        <toolset name="gcc-2.95.3-linux"/>
         <note>
-          The compilers have bugs which prevent the library from working.
+          The failure is caused by standard library deficiencies -- it lacks
+          basic_string class and the &lt;locale&gt; header.
         </note>
       </mark-unusable>
+
+      <test name="unicode_test">
+        <mark-failure>
+            <toolset name="intel-win32"/>
+        <note>The failures is caused by problems with std::locale implementation</note>
+        </mark-failure>         
+      </test>
+
+      <test name="unicode_test">
+        <mark-failure>
+            <toolset name="cwpro8"/>
+        <note>The test fails at runtime for unknown reason</note>
+        </mark-failure>         
+      </test>
+
+      <test name="variable_map_test">
+        <mark-failure>
+           <toolset name="msvc"/>
+           <toolset name="vc7"/>
+        <note>The failures is caused by compiler bug: it's not possible to
+           explicitly pass template arguments to member template function. The
+           failure is serious and makes one of the primary interfaces
+           unusable.</note>
+        </mark-failure>         
+      </test>
+
+
     </library>
 
     <!-- python -->
