@@ -26,21 +26,21 @@ include testing.jam ;
     local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
     
     test-suite "bind"
-        : [ run libs/bind/bind_test.cpp ]
+        : [ run libs/bind/bind_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
           [ run libs/bind/mem_fn_test.cpp ]
           [ run libs/bind/mem_fn_void_test.cpp ]
           [ run libs/bind/mem_fn_derived_test.cpp ]
         ;
 
     test-suite config
-        : [ run libs/config/test/config_test.cpp  <lib>../libs/test/build/test_exec_monitor
+        : [ run libs/config/test/config_test.cpp <lib>../libs/test/build/test_exec_monitor
                 : #args
                 : #input-files
                 : #requirements
                 <threading>multi
           ]
            [ run libs/config/test/config_info.cpp ] # compiler_status<always_show_run_output>
-           [ run libs/config/test/limits_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
+           [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
 
     run libs/any/any_test.cpp ;
@@ -59,7 +59,7 @@ include testing.jam ;
           [ run libs/conversion/lexical_cast_test.cpp ]
         ;
 
-    run libs/crc/crc_test.cpp ;
+    run libs/crc/crc_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     test-suite function
         : [ run libs/function/test/deprecated_syntax_test.cpp <lib>../libs/test/build/test_exec_monitor ]
@@ -90,20 +90,20 @@ include testing.jam ;
       ;
 
     test-suite lambda
-        : [ run libs/lambda/test/bind_tests_simple.cpp ]
-          [ run libs/lambda/test/bind_tests_advanced.cpp ]
-          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp ]
-          [ run libs/lambda/test/bll_and_function.cpp ]
-          [ run libs/lambda/test/cast_test.cpp ]
-          [ run libs/lambda/test/constructor_tests.cpp ]
-          [ run libs/lambda/test/control_structures.cpp ]
-          [ run libs/lambda/test/exception_test.cpp ]
-          [ run libs/lambda/test/extending_rt_traits.cpp ]
-          [ run libs/lambda/test/is_instance_of_test.cpp ]
-          [ run libs/lambda/test/member_pointer_test.cpp ]
-          [ run libs/lambda/test/operator_tests_simple.cpp ]
-          [ run libs/lambda/test/phoenix_control_structures.cpp ]
-          [ run libs/lambda/test/switch_construct.cpp ]
+        : [ run libs/lambda/test/bind_tests_simple.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_advanced.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/bll_and_function.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/cast_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/constructor_tests.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/control_structures.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/exception_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/extending_rt_traits.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/is_instance_of_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/member_pointer_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/operator_tests_simple.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/phoenix_control_structures.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/switch_construct.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
 
     test-suite math
@@ -113,7 +113,7 @@ include testing.jam ;
           [ run libs/math/special_functions/special_functions_test.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
 
-    run libs/pool/test/test_pool_alloc.cpp ;
+    run libs/pool/test/test_pool_alloc.cpp  <lib>../libs/test/build/test_exec_monitor ;
 
     test-suite rational
         : [ run libs/rational/rational_example.cpp ]
@@ -121,11 +121,11 @@ include testing.jam ;
         ;
 
     test-suite random
-        : [ run libs/random/random_test.cpp ]
+        : [ run libs/random/random_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
           [ run libs/random/random_demo.cpp ]
         ;
 
-    run libs/utility/ref_test.cpp ;
+    run libs/utility/ref_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     {
             local test-dir = $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)test$(SLASH)regress$(SLASH) ;
@@ -244,10 +244,6 @@ include testing.jam ;
           [ link-fail libs/static_assert/static_assert_test_fail_8.cpp ]
         ;
 
-    run libs/test/example/test_tools_example.cpp ;
-
-    run-fail libs/test/test/test_tools_fail2.cpp ;
-
     {
         local threadmon ;
         if $(NT)
@@ -285,7 +281,7 @@ include testing.jam ;
           [ run libs/type_traits/tests/arithmetic_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
           [ run libs/type_traits/tests/composite_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
           [ run libs/type_traits/tests/cv_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
-          [ run libs/type_traits/tests/function_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/function_traits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
           [ run libs/type_traits/tests/is_function_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
           [ run libs/type_traits/tests/is_convertible_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
           [ run libs/type_traits/tests/is_same_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
@@ -297,7 +293,7 @@ include testing.jam ;
 
     compile-fail libs/utility/checked_delete_test.cpp ;
 
-    run libs/utility/compressed_pair_test.cpp : -u ;
+    run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/test_exec_monitor : -u ;
 
     test-suite iterator_adaptors
         : [ run libs/utility/counting_iterator_test.cpp : # args
@@ -334,25 +330,25 @@ include testing.jam ;
 
     run libs/utility/numeric_traits_test.cpp ;
 
-    run libs/utility/operators_test.cpp ;
+    run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     run libs/utility/tie_example.cpp ;
 
     run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     test-suite multi_array
-        : [ run libs/multi_array/test/constructors.cpp ]
-          [ run libs/multi_array/test/access.cpp ]
-          [ run libs/multi_array/test/compare.cpp ]
-          [ run libs/multi_array/test/iterators.cpp ]
-          [ run libs/multi_array/test/slice.cpp ]
-          [ run libs/multi_array/test/assign.cpp ]
-          [ run libs/multi_array/test/index_bases.cpp ]
-          [ run libs/multi_array/test/storage_order.cpp ]
-          [ run libs/multi_array/test/reshape.cpp ]
-          [ run libs/multi_array/test/range1.cpp  ]
-          [ run libs/multi_array/test/idxgen1.cpp ]
-          [ run libs/multi_array/test/stl_interaction.cpp ]
+        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/test_exec_monitor  ]
+          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/test_exec_monitor ]
           [ compile libs/multi_array/test/concept_checks.cpp ]
           [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
           [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
