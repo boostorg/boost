@@ -14,6 +14,14 @@ tag = "1_30_0"
 def library_build_failed( library_idx ):
     return library_idx % 2
 
+def test_run_source( runner_idx ):
+    if runner_idx % 2: return "tarball"
+    else:              return "cvs head"
+
+def test_run_type( runner_idx ):
+    if runner_idx % 2: return "incremental"
+    else:              return "full"
+
 def make_test_results():
     if not os.path.exists( tag ):
         os.makedirs( tag )
@@ -24,7 +32,10 @@ def make_test_results():
         g.startElement( "test-run", { "platform": platform
                                       , "runner": runner_id
                                       , "timestamp": time.strftime( "%a, %d %b %Y %H:%M:%S +0000"
-                                                                   , time.gmtime()) } )
+                                                                   , time.gmtime())
+                                      , "source": test_run_source( i_runner )
+                                      , "run-type": test_run_type( i_runner )
+                                      } )
 
         g.startElement( "comment", {} )
         g.characters( "<b>Runner</b> is who <i>running</i> does." )
