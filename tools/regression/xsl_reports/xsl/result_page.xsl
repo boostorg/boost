@@ -373,7 +373,7 @@
 
             </tbody>
           </table>
-          <xsl:if test="count( $library_marks ) > 0 ">
+          <xsl:if test="count( $library_marks/note ) > 0 ">
             <table border="0" cellpadding="0" cellspacing="0" class="detail-library-notes" summary="library notes">
               <xsl:for-each select="$library_marks/note">
                 <tr class="detail-library-note">
