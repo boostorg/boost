@@ -7,6 +7,7 @@
 
 import httplib
 import tarfile
+import socket
 import time
 import getopt
 import glob
@@ -38,7 +39,7 @@ if sys.platform == 'win32':
 else:
     bjam_name = 'bjam'
     bjam_build_compiler = 'gcc'
-    bjam_make_cmd = 'build.sh' % bjam_build_compiler
+    bjam_make_cmd = './build.sh %s' % bjam_build_compiler
     bjam_location = ''
     process_jam_log_name = "process_jam_log"
     process_jam_log_toolset = 'gcc'
@@ -383,7 +384,7 @@ def regression(
         ):
 
     try:
-        mail_subject = "Boost regression for %s on %s \n" % ( tag, os.environ[ "COMPUTERNAME" ] )
+        mail_subject = "Boost regression for %s on %s \n" % ( tag, string.split(socket.gethostname(), '.')[0] )
         if incremental:
             update_source( user, tag, [] )
             setup( comment_file, [] )
