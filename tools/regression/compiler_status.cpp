@@ -34,6 +34,7 @@ namespace xml = boost::tiny_xml;
 #include <fstream>
 #include <ctime>
 #include <stdexcept>
+#include <cassert>
 
 using std::string;
 
@@ -137,15 +138,15 @@ namespace
     return;
   }
 
-//  extract test name from target directory string  --------------------------//
+//  extract object library name from target directory string  ----------------//
 
-  string extract_test_name( const string & s )
+  string extract_object_library_name( const string & s )
   {
     string t( s );
-    string::size_type pos = t.find( "/bin/" );
-    if ( pos != string::npos ) pos += 5;
+    string::size_type pos = t.find( "/build/" );
+    if ( pos != string::npos ) pos += 7;
     else return "";
-    return t.substr( pos, t.find( ".", pos ) - pos );
+    return t.substr( pos, t.find( "/", pos ) - pos );
   }
 
 //  find_file  ---------------------------------------------------------------//
@@ -381,14 +382,24 @@ const string & attribute_value( const xml::element & element,
     if ( !run.empty() )
       links_file << "<h3>Run output:</h3><pre>" << run << "</pre>\n";
 
-    static std::set< string > failed_lib_target_dirs;
+    // for an object library failure, generate a reference to the object
+    // library failure message, and (once only) generate the object
+    // library failure message itself
+    static std::set< string > failed_lib_target_dirs; // only generate once
     if ( !lib.empty() )
     {
       if ( lib[0] == '\n' ) lib.erase( 0, 1 );
-      string lib_test_name( extract_test_name( lib ) );
+      string object_library_name( extract_object_library_name( lib ) );
+
+      // changing the target directory naming scheme breaks
+      // extract_object_library_name()
+      assert( !object_library_name.empty() );
+      if ( object_library_name.empty() )
+        std::cerr << "Failed to extract object library name from " << lib << "\n";
+
       links_file << "<h3>Library build failure: </h3>\n"
-        "See <a href=\"#" << lib_test_name << "-" << toolset << "\">"
-        << lib_test_name << " / " << toolset << "</a>";
+        "See <a href=\"#" << object_library_name << "-" << toolset << "\">"
+        << object_library_name << " / " << toolset << "</a>";
 
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
       {
@@ -398,13 +409,13 @@ const string & attribute_value( const xml::element & element,
         if ( file )
         {
           xml::element_ptr db = xml::parse( file, pth.string() );
-          generate_report( *db, lib_test_name, toolset, false );
+          generate_report( *db, object_library_name, toolset, false );
         }
         else
         {
           links_file << "<h2><a name=\""
-            << lib_test_name << "-" << toolset << "\">"
-            << lib_test_name << " / " << toolset << "</a></h2>\n"
+            << object_library_name << "-" << toolset << "\">"
+            << object_library_name << " / " << toolset << "</a></h2>\n"
             "test_log.xml not found\n";
         }
       }
