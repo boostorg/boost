@@ -164,11 +164,13 @@ install install-libs : libs/$(libraries)/build
     <location>$(lib-locate) 
   ;
 
+local patterns = *.hpp *.ipp *.h *.inc ;
+local dirs = boost boost/* boost/*/* ;
 install install-headers : 
-  [ glob boost/compatibility/cpp_c_headers/c* ]
-  [ glob boost/*.hpp boost/*/*.hpp *.ipp *.h *.inc ]
+  [ glob $(dirs)/$(patterns) ]
   :  
   <location>$(include-locate)
+  <install-source-root>.
   ;  
 
 # Install just library.
