@@ -634,7 +634,7 @@ for more information.
         </test>
         <test name="*_warchive">
             <mark-failure>
-                <toolset name="mingw-3*"/>
+                <toolset name="mingw*"/>
                 <toolset name="gcc-2.95.3-linux"/>
                 <note author="Robert Ramey" date="20 Sep 2004" refid="19"/>
             </mark-failure>
@@ -652,7 +652,7 @@ for more information.
         </test>
         <test name="test_utf8_codecvt">
             <mark-failure>
-                <toolset name="mingw-3*"/>
+                <toolset name="mingw*"/>
                 <toolset name="gcc-2.95.3-linux"/>
             </mark-failure>
             <note author="Robert Ramey" date="20 Sep 2004" refid="19"/>
@@ -667,7 +667,16 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="*"/>
-            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <toolset name="msvc-stlport"/>
+            <note author="Robert Ramey">
+                This failure appears when STLPort is built and used as a DLL with msvc 6.
+                STLPort suggests that the next version of STLPort(5.0) will include a workaround
+                for this problem.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*"/>
+            <toolset name="gcc-2.95.3-stlport*"/>
             <note author="Aleksey Gurtovoy">
                 The library is known to work in this configuration <i>if compiled against
                 Spirit 1.6</i>. The latter is not provided by the particular testing 
