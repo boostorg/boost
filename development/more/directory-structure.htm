@@ -733,10 +733,127 @@ reconstituted and reformulated :-)</p>
 Garland, Lois Goldthwaite, Jens Maurer, Jeff Squyres, Gary Powell
 and Daryle Walker.</p>
 
-<p>&nbsp;</p>
+<p>
+<hr>
+<p>
 
-<p>&nbsp;</p>
+<h2 align="center">An Alternative Directory Structure</h2>
 
-<p>&nbsp;</p>
+<p align="center">By Jens Maurer</p>
+
+I favor the following structure, which puts different emphasis on the
+some of the requirements.
+
+<p>
+
+<table border="1">
+
+<tr>
+<th>Directory</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>Boost-root/include/boost/</td>
+<td>All entry-point boost headers, mainly these should be called
+"library-name.hpp".</td>
+</tr>
+
+<tr>
+<td>Boost-root/include/boost/.../</td>
+<td>Domain-specific subdirectory; the "..." can be empty or
+arbitrarily nested while observing the "optimally branched"
+requirement.</td>
+</tr>
+
+<tr>
+<td>Boost-root/include/boost/.../library-name/</td>
+<td>All domain-specific headers, all "expert-user" non-entry point
+headers.</td>
+</tr>
+
+<tr>
+<td>Boost-root/include/boost/.../library-name/detail/</td>
+<td>All implementation private headers.</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../</td>
+<td>Main directory for a given subdomain; the "..." can be empty or
+arbitrarily nested while observing the "optimally branched"
+requirement.  The "..." must correspond to some "..." in the header
+tree.  The directory should contain a "index.html" which links to all
+libraries and subdomains contained.</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/</td>
+<td>Main directory for a given library.</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/src/</td>
+<td>All mandatory source files for the library.</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/build/</td>
+<td>Temporary location for private build system, until the boost-wide
+integrated build becomes available.</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/config/</td>
+<td>Any private configuration code (for example, autoconf
+scripts).</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/doc/</td>
+<td>All documentation for the library.</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/test/</td>
+<td>All regression tests for the library, suitable for the regression
+test suite.  Due to test execution time constraints, not all of the tests
+may actually be added to "regression.cfg".</td>
+</tr>
+
+<tr>
+<td>Boost-root/libs/.../library-name/example/</td>
+<td>All example programs for "library-name". These may be either: a
+single (multi-file) example program, multiple single file example
+programs, or multiple sub-directories (one for each example
+program).</td>
+</tr>
+
+<tr>
+<td>Boost-root/tools/tool-name/</td>
+<td>Contains all files required to build and use the specified tool
+(makefile generators etc).</td>
+</tr>
+
+<tr>
+<td>Boost-root/build</td>
+<td>The boost build system (user front-end; tools go in the "tools"
+hierarchy).  Details still hazy.</td>
+</tr>
+
+<tr>
+<td>Boost-root/more/license.html</td>
+<td>A "generic" boost license that describes the minimal guarantee
+provided by all boost libraries.  This should get a prominent link on
+the main boost page.</td>
+</tr>
+
+</table>
+
+<p>
+Note that the "include" path component contains only one subdirectory
+"boost" and thus violates the "optimally branched" requirement.  It
+helps with discoverability, though, because people know what to expect
+under any directory named "include", i.e. header files.
+
 </body>
 </html>
