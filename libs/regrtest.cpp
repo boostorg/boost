@@ -113,12 +113,12 @@ void invoke(std::string desc,
     if (rs==0)
       outfile << "<FONT COLOR=#008000>yes</FONT>";
     else
-      outfile << "<FONT COLOR=#800000>no: did not compile</FONT>";
+      outfile << "<FONT COLOR=#800000>failed to compile</FONT>";
     break;
   case 'F': // compile, fail expected
     if (rs==0)
       outfile
-        << "<FONT COLOR=#800000>no: expected compiler error</FONT>";
+        << "<FONT COLOR=#800000>failed to cause error</FONT>";
     else
       outfile
         << "<FONT COLOR=#008000>yes</FONT>";
@@ -135,10 +135,10 @@ void invoke(std::string desc,
         outfile
           << "<FONT COLOR=#008000>yes</FONT>";
       else
-        outfile << "<FONT COLOR=#800000>no: exited with code "
+        outfile << "<FONT COLOR=#800000>exited with code "
                 << rs << "</FONT>";
     } else
-      outfile << "<FONT COLOR=#800000>no: did not compile</FONT>";
+      outfile << "<FONT COLOR=#800000>failed to compile</FONT>";
     break;
   default:
     outfile << "scripting error";
