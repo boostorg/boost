@@ -8,6 +8,8 @@
 import xml.sax.saxutils
 import zipfile
 import ftplib
+import time
+import stat
 
 import os.path
 import string
@@ -40,12 +42,6 @@ def collect_test_logs( input_dirs, test_results_writer ):
         utils.log( 'Walking directory "%s" ...' % input_dir )
         os.path.walk( input_dir, process_test_log_files, test_results_writer )
 
-
-def upload_to_sourceforge( user, tag, results_file ):
-    upload_dir = 'regression-logs/incoming/%s/' % tag
-    utils.log( 'Uploading test results file "%s" into "%s" [connecting as %s]...' % ( results_file, upload_dir, user ) )
-    
-    utils.sourceforge.upload( results_file, upload_dir, user )
 
 def upload_to_ftp( tag, results_file ):
     ftp_site = 'fx.meta-comm.com'
@@ -96,17 +92,24 @@ def collect_logs(
     test_results_writer = open( test_results_file, "w" )
     utils.log( 'Collecting test logs into "%s"...' % test_results_file )
     
+    if not os.path.exists( timestamp ):
+        t = time.gmtime()
+        utils.log( 'Warning: timestamp file "%s" does not exist' )
+        utils.log( 'Using current UTC time (%s)' % ( timestamp, t ) )
+    else:
+        t = time.gmtime( os.stat( timestamp ).st_mtime )
+    
     results_xml = xml.sax.saxutils.XMLGenerator( test_results_writer )
     results_xml.startDocument()
     results_xml.startElement( 
-          "test-run"
+          'test-run'
         , { 
-              "tag":        tag
-            , "platform":   platform
-            , "runner":     runner_id
-            , "timestamp":  timestamp 
-            , "source":     source
-            , "run-type":   run_type
+              'tag':        tag
+            , 'platform':   platform
+            , 'runner':     runner_id
+            , 'timestamp':  time.strftime( '%a, %d %b %Y %H:%M:%S +0000', t )     
+            , 'source':     source
+            , 'run-type':   run_type
             }
         )
     
@@ -127,10 +130,7 @@ def collect_logs(
 
 def upload_logs( runner_id, tag, user ):
     logs_archive = '%s.zip' % runner_id
-    if user is None or user == 'anonymous':
-        upload_to_ftp( tag, logs_archive )
-    else:
-        upload_to_sourceforge( user, tag, logs_archive )
+    upload_to_ftp( tag, logs_archive )
 
 
 def collect_and_upload_logs( 
@@ -173,10 +173,11 @@ def accept_args( args ):
     options = {
           '--tag' :         'CVS-HEAD'
         , '--platform' :    sys.platform
-        , '--user' :        None
         , '--comment' :     None
-        , '--source' :      ''
-        , '--run-type' :    ''
+        , '--timestamp' :   'timestamp'
+        , '--user' :        None
+        , '--source' :      'unknown'
+        , '--run-type' :    'unknown'
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -199,7 +200,8 @@ def usage():
     print    '''
 \t--locate-root   directory to to scan for 'test_log.xml' files
 \t--runner        runner ID (e.g. 'Metacomm')
-\t--timestamp     timestamp of the run
+\t--timestamp     path to a file which modification time will be used 
+\t                as a timestamp of the run ('timestamp' by default)
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--tag           the tag for the results ('CVS-HEAD' by default)
