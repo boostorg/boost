@@ -1,10 +1,146 @@
+#~ Copyright 2003, Rene Rivera.
+#~ Use, modification and distribution are subject to the
+#~ Boost Software License, Version 1.0. (See accompanying file
+#~ LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+if --help in $(ARGV)
+{
+    ECHO "
+Usage:
+    bjam [options] [install|stage]
+
+    * install               Installs to the configured location(s).
+    * stage                 Stages the build products only to common stage location.
+
+Options:
+    --help                  This message.
+    -sTOOLS=<toolsets>      Indicates the tools to build with.
+
+Locations:
+    --prefix=PREFIX         Install architecture independent files here.
+                            Default; C:\\Boost on Win32
+                            Default; /usr/local on Unix. Linux, etc.
+    --exec-prefix=EPREFIX   Install architecture dependent files here.
+                            Default; PREFIX
+    --libdir=DIR            Install libraries here.
+                            Default; EPREFIX/lib
+    --includedir=DIR        Install source headers here.
+                            Default; PREFIX/include
+    --builddir=DIR          Build in this location instead of building
+                            within the distribution tree. Recomended!
+    --stagedir=DIR          When staging only, stage to the location.
+                            Default; ./stage
+
+Features:
+    --without-<library>     Do not build, stage, or install the specified
+                            <library>. By default all libraries attempt to build.
+    --with-python-root[=PYTHON_ROOT]
+                            Build Boost.Python libraries with the Python
+                            devel packages located at PYTHON_ROOT.
+                            Default PYTHON_ROOT; C:\\tools\\python on Win32.
+                            Default PYTHON_ROOT; /usr/local on Unix, Linux, etc.
+                            Default PYTHON_ROOT; /usr on Cygwin.
+    --with-pydebug          Build Boost.Python libraries using the
+                            Python debug runtime.
+" ;
+    EXIT "" ;
+}
+
+local with-install = ;
+local with-stage = ;
+
+# build only, or build+install
+if install in $(ARGV)
+{
+    with-install = install ;
+    with-stage = ;
+}
+
+# stage only? (no install, only build and stage to a common dir)
+if stage in $(ARGV)
+{
+    with-stage = stage ;
+    with-install = ;
+}
+
+# possible stage only location
+local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
+stage-locate ?= stage ;
+
+# architecture independent files
+local boost-locate = [ unless $(with-stage) : [ MATCH "^--prefix=(.*)" : $(ARGV) ] : $(stage-locate) ] ;
+if $(NT) { boost-locate ?= C:\\Boost ; }
+else if $(UNIX) { boost-locate ?= /usr/local ; }
+
+# architecture dependent files
+local exec-locate = [ MATCH "^--exec-prefix=(.*)" : $(ARGV) ] ;
+exec-locate ?= $(boost-locate) ;
+
+# object code libraries
+local lib-locate = [ MATCH "^--libdir=(.*)" : $(ARGV) ] ;
+lib-locate ?= $(exec-locate)/lib ;
+
+# where to build
+local all-locate = [ MATCH "^--builddir=(.*)" : $(ARGV) ] ;
+ALL_LOCATE_TARGET ?= $(all-locate) ;
+
+# source header files
+local include-locate = [ MATCH "^--includedir=(.*)" : $(ARGV) ] ;
+include-locate ?= $(boost-locate)/include ;
+
+# location of python
+local python-root = [ MATCH "^--with-python-root=(.*)" : $(ARGV) ] ;
+PYTHON_ROOT ?= $(python-root) ;
+
+# variant for pydebug build
+local with-debug-python ;
+if --with-pydebug in $(ARGV)
+{
+    with-debug-python = debug-python ;
+}
+
+# libraries to disable building, etc.
+local without-libraries = [ MATCH "^--without-(.*)" : $(ARGV) ] ;
+
+#
 project-root ;
 
-# please order by name to ease maintenance
-subinclude libs/date_time/build ;
-subinclude libs/filesystem/build ;
-subinclude libs/python/build ;
-subinclude libs/regex/build ;
-subinclude libs/signals/build ;
-subinclude libs/test/build ;
-subinclude libs/thread/build ;
+# bring in the rules for python
+import python ;
+
+#
+local version-tag = [ MATCH "^([^.]+).([^.]+)" : $(BOOST_VERSION) ] ;
+version-tag = $(version-tag:J="_") ;
+
+#
+install-subinclude
+    [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ]
+    : <exclude>$(without-libraries) ;
+
+if [ install-sources lib ]
+{
+    stage $(lib-locate:D=)
+        :
+            [ install-sources lib ]
+        :
+            <locate>$(lib-locate:D)
+            common-variant-tag
+            [ cond $(with-install) : <target>install : <target>all ]
+            [ cond $(with-stage) : <target>stage : <target>all ]
+        :
+            debug release [ cond $(with-debug-python) : debug-python ] <threading>single/multi
+            [ unless $(with-install) $(with-stage) : <suppress>true ]
+        ;
+}
+
+stage $(include-locate:D=)/boost-$(version-tag)
+    :
+        [ glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* ]
+        [ glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp ]
+    :
+        <locate>$(include-locate:D)
+        <tree-subdirs>$(BOOST_ROOT)
+        [ cond $(with-install) : <target>install : <target>all ]
+    :
+        [ unless $(with-install) : <suppress>true ]
+    ;
