@@ -88,7 +88,7 @@
               <xsl:if test="@author">
                 <xsl:value-of select="@author"/><xsl:text> </xsl:text>
               </xsl:if>
-              <xsl:copy-of select="text()"/>
+              <xsl:copy-of select="node()"/>
             </div>
           </xsl:for-each>
         </div>
