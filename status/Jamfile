@@ -22,6 +22,10 @@ include testsuites.jam ;
 # "# compiler_status<always_show_run_output>" then
 # run output will be displayed even if the test passes.
 
+
+# Make tests run by default.
+DEPENDS all : test ;
+
 {
     # look in BOOST_ROOT for sources first, just in this Jamfile
     local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
@@ -40,7 +44,7 @@ include testsuites.jam ;
                 : #requirements
                 <threading>multi
           ]
-           [ run libs/config/test/config_info.cpp ] # compiler_status<always_show_run_output>
+           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ] # compiler_status<always_show_run_output>
            [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
@@ -237,7 +241,7 @@ include testsuites.jam ;
 
 
     {
-            local test-dir = $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)test$(SLASH)regress$(SLASH) ;
+            local test-dir = $(BOOST_ROOT)/libs/regex/test/regress/ ;
 
             local test-files = $(test-dir)tests.txt
             # dwa -- not sure if this is generally applicable
@@ -312,7 +316,7 @@ include testsuites.jam ;
             [ run libs/regex/example/timer/regex_timer.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)example$(SLASH)timer$(SLASH)input_script.txt
+                  $(BOOST_ROOT)/libs/regex/example/timer/input_script.txt
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -324,7 +328,7 @@ include testsuites.jam ;
             [ run libs/regex/example/jgrep/jgrep.cpp libs/regex/example/jgrep/main.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  -n boost/ $(BOOST_ROOT)$(SLASH)boost$(SLASH)regex.hpp
+                  -n boost/ $(BOOST_ROOT)/boost/regex.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -347,7 +351,7 @@ include testsuites.jam ;
            [ run libs/regex/example/snippets/partial_regex_grep.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
+                  $(BOOST_ROOT)/libs/regex/index.htm
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -371,7 +375,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_grep_example_1.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+                  $(BOOST_ROOT)/boost/rational.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -383,7 +387,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_grep_example_2.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+                  $(BOOST_ROOT)/boost/rational.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -395,7 +399,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_grep_example_3.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+                  $(BOOST_ROOT)/boost/rational.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -407,7 +411,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_grep_example_4.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+                  $(BOOST_ROOT)/boost/rational.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -431,7 +435,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_merge_example.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+                  $(BOOST_ROOT)/boost/rational.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -443,7 +447,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_search_example.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+                  $(BOOST_ROOT)/boost/rational.hpp
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -467,7 +471,7 @@ include testsuites.jam ;
             [ run libs/regex/example/snippets/regex_split_example_2.cpp
                <lib>../libs/regex/build/boost_regex
                :
-                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
+                  $(BOOST_ROOT)/libs/regex/index.htm
                :
                :
                   <define>BOOST_REGEX_NO_LIB=1
@@ -509,15 +513,10 @@ include testsuites.jam ;
         local thread-sources ;
         local thread-requirements ;
 
-        if $(NT)
-        {
-            threadmon = <dll>../libs/thread/build/boost_threadmon ;
-        }
-
-        thread-sources = <lib>../libs/thread/build/boost_thread
+        thread-sources = <dll>../libs/thread/build/boost_thread
           <lib>../libs/test/build/boost_unit_test_framework
-          $(threadmon)
         ;
+        
         thread-requirements = <threading>multi ;
 
         test-suite threads
