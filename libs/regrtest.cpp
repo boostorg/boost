@@ -33,8 +33,8 @@
 // running.
 //
 // Required environment variables:
-//    BOOST_PATH          The directory containing the "boost/" header file directory.
-//    OSTYPE              The operating system, should be one of ...
+//    BOOST_PATH  The directory containing the "boost/" header file directory.
+//    OS          The operating system, should be one of ...
 //    BOOST_STLPORT_PATH  The directory containing STLport headers
 //    BOOST_BCC55_PATH    The directory container Borland headers
 //
