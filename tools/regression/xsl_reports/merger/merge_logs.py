@@ -50,7 +50,11 @@ def unzip_test_runs( dir ):
 def merge_test_runs( incoming_dir, tag, writer ):
     test_runs_dir = os.path.join( incoming_dir, tag )
     
-    utils.log( 'Looking for test runs in the directory "%s"' % test_runs_dir )
+    utils.log( 'Removing stale XMLs in "%s"...' % test_runs_dir )
+    files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
+    for f in files:  
+       	utils.log( '  Removing "%s" ...' % f )
+        os.unlink( f )
 
     utils.log( 'Unzipping new test runs...' )
     unzip_test_runs( test_runs_dir )
