@@ -206,6 +206,33 @@
             <toolset name="intel-win32-7.1-vc6"/>
         </mark-unusable>
 
+        <test name="testdate_iterator">
+            <mark-failure>
+            <toolset name="intel-7.1-stdlib-default-linux"/>
+            <toolset name="intel-7.1-linux"/>
+	     <note author="J. Garland" refid="19,21"/>
+            </mark-failure>
+        </test>
+        <test name="testdate_iterator_dll">
+            <mark-failure>
+            <toolset name="intel-7.1-stdlib-default-linux"/>
+            <toolset name="intel-7.1-linux"/>
+		        <note author="J. Garland" refid="19,21"/>
+            </mark-failure>
+        </test>
+
+
+        <test name="testgeneric_period">
+            <mark-failure>
+            <toolset name="intel-7.1-stdlib-default-linux"/>
+            <toolset name="intel-7.1-linux"/>
+		        <note author="J. Garland">These are strange runtime failures for
+                           which there is no obvious explanation.  Later versions of the 
+                           Intel compiler (eg:8.0) seem to have resolved the issue.
+                        </note>
+            </mark-failure>
+        </test>
+
         <test name="testgreg_wstream">
             <mark-failure>
                 <toolset name="msvc"/>
@@ -251,8 +278,7 @@
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
-                <toolset name="mingw"/>
-                <toolset name="mingw-3.4.1"/>
+                <toolset name="mingw*"/>
 		        <note author="B. Garst" refid="18,19"/>
             </mark-failure>
         </test>
@@ -290,11 +316,14 @@
         		<note author="B. Garst" refid="18,20"/>
             </mark-failure>
         </test>
-        <!--<test name="testmicrosec_time_clock">
+        <test name="testmicrosec_time_clock">
             <mark-failure>
+            <toolset name="intel-7.1-stdlib-default-linux"/>
+            <toolset name="*como-win32-4.3.3*"/>
+            <toolset name="intel-7.1-linux"/>
 		        <note author="B. Garst" refid="22"/>
             </mark-failure>
-          </test> -->
+          </test>
         <test name="teststreams">
             <mark-failure>
                 <toolset name="gcc"/>
@@ -302,6 +331,7 @@
                 <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
+                <toolset name="cw-8.3*"/>
                 <toolset name="vc7"/>
 		        <toolset name="borland-5.6.4"/>
                 <toolset name="mingw-3*"/>
