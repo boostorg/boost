@@ -45,7 +45,13 @@ include testing.jam ;
 
     run libs/any/any_test.cpp ;
 
-    run libs/array/array1.cpp ;
+    test-suite array
+        : [ run libs/array/array1.cpp ]
+          [ run libs/array/array2.cpp ]
+          [ run libs/array/array3.cpp ]
+          [ run libs/array/array4.cpp ]
+          [ run libs/array/array5.cpp ]
+        ;
 
     test-suite concept_check
         : [ compile libs/concept_check/concept_check_test.cpp ]
