@@ -335,7 +335,8 @@ const string & attribute_value( const xml::element & element,
 
   // return 0 if nothing generated, 1 otherwise, except 2 if compiler msgs
   int generate_report( const xml::element & db,
-                       const string & test_name,
+                       const string & source_library_name,
+                       const string & test_name, // possibly object library name
                        const string & toolset,
                        bool pass,
                        bool always_show_run_output = false )
@@ -368,8 +369,8 @@ const string & attribute_value( const xml::element & element,
     }
 
     links_file << "<h2><a name=\""
-      << test_name << "-" << toolset << "\">"
-      << test_name << " / " << toolset << "</a></h2>\n";
+      << source_library_name << "-" << test_name << "-" << toolset << "\">"
+      << source_library_name << " - " << test_name << " - " << toolset << "</a></h2>\n";
 
     if ( !compile.empty() )
     {
@@ -398,8 +399,11 @@ const string & attribute_value( const xml::element & element,
         std::cerr << "Failed to extract object library name from " << lib << "\n";
 
       links_file << "<h3>Library build failure: </h3>\n"
-        "See <a href=\"#" << object_library_name << "-" << toolset << "\">"
-        << object_library_name << " / " << toolset << "</a>";
+        "See <a href=\"#"
+        << source_library_name << "-"
+        << object_library_name << "-" << toolset << "\">"
+        << source_library_name << " - "
+        << object_library_name << " - " << toolset << "</a>";
 
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
       {
@@ -409,13 +413,13 @@ const string & attribute_value( const xml::element & element,
         if ( file )
         {
           xml::element_ptr db = xml::parse( file, pth.string() );
-          generate_report( *db, object_library_name, toolset, false );
+          generate_report( *db, source_library_name, object_library_name, toolset, false );
         }
         else
         {
           links_file << "<h2><a name=\""
             << object_library_name << "-" << toolset << "\">"
-            << object_library_name << " / " << toolset << "</a></h2>\n"
+            << object_library_name << " - " << toolset << "</a></h2>\n"
             "test_log.xml not found\n";
         }
       }
@@ -509,7 +513,7 @@ const string & attribute_value( const xml::element & element,
 
       // generate bookmarked report of results, and link to it
       anything_generated
-        = generate_report( db, test_name, toolset, pass,
+        = generate_report( db, lib_name, test_name, toolset, pass,
           always_show_run_output || note );
     }
 
@@ -520,6 +524,8 @@ const string & attribute_value( const xml::element & element,
       target += "<a href=\"";
       target += links_name;
       target += "#";
+      target += lib_name;
+      target += "-";
       target += test_name;
       target += "-";
       target += toolset;
