@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-
     <!-- 
     The following online services can be used to validate collected test results:
 
@@ -14,7 +13,7 @@
             <xs:enumeration value="succeed"/>
         </xs:restriction>
     </xs:simpleType>
-    
+
     <xs:simpleType name="run_test_result">
         <xs:restriction base="xs:NMTOKEN">
             <xs:enumeration value="fail"/>
@@ -22,7 +21,7 @@
             <xs:enumeration value="note"/>
         </xs:restriction>
     </xs:simpleType>
-            
+
     <xs:simpleType name="test_type">
         <xs:restriction base="xs:NMTOKEN">
             <xs:enumeration value="compile"/>
@@ -30,10 +29,11 @@
             <xs:enumeration value="lib"/>
             <xs:enumeration value="pyd"/>
             <xs:enumeration value="run"/>
+            <xs:enumeration value="run_fail"/>
             <xs:enumeration value="run_pyd"/>
         </xs:restriction>
     </xs:simpleType>
-                        
+
     <xs:element name="compile">
         <xs:complexType>
             <xs:simpleContent>
@@ -66,7 +66,6 @@
             </xs:simpleContent>
         </xs:complexType>
     </xs:element>
-
 
     <xs:element name="run">
         <xs:complexType>
