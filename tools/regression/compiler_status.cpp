@@ -610,11 +610,12 @@ int cpp_main( int argc, char * argv[] ) // note name!
 
   if ( argc == 4 )
   {
-    links_name = argv[3];
-    links_file.open( fs::path( links_name, fs::native ) );
+    fs::path links_path( argv[3], fs::native );
+    links_name = links_path.leaf();
+    links_file.open( links_path );
     if ( !links_file )
     {
-      std::cerr << "Could not open links output file: " << links_name << std::endl;
+      std::cerr << "Could not open links output file: " << argv[3] << std::endl;
       return 1;
     }
   }
