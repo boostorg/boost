@@ -26,8 +26,12 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="mark-unusable" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="test" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="mark-expected-failures" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:sequence>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="test"/>
+                        <xs:element ref="mark-expected-failures"/>
+                    </xs:choice>
+                </xs:sequence>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required"/>
         </xs:complexType>
