@@ -241,9 +241,11 @@ namespace
       fs::path pth( locate_root / m_target_directory / "test_log.xml" );
       fs::ofstream file( pth );
       if ( !file )
-        throw fs::filesystem_error( "process_jam_long.cpp",
-          pth, "can't open output file" );
-      xml::write( *m_root, file );
+      {
+        std::cout << "*****Warning - can't open output file: "
+          << pth.string() << "\n";
+      }
+      else xml::write( *m_root, file );
     }
 
     const string & target_directory() const { return m_target_directory; }
@@ -453,6 +455,11 @@ int cpp_main( int argc, char ** argv )
         if ( info.file_path.find( "libs/libs/" ) == 0 ) info.file_path.erase( 0, 5 );
         test2info.insert( std::make_pair( test_name, info ) );
   //      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
+      }
+      else
+      {
+        std::cout << "*****Warning - missing test path: " << line << "\n"
+          << "  (Usually occurs when bjam doesn't know how to make a target)\n";
       }
       continue;
     }
