@@ -31,8 +31,8 @@
                <dd>
                   <dl class="index">
                      <dt><A href="#abi">Preventing Compiler ABI Clashes</A> <dt><A href="#dlls">Supporting 
-                              Windows Dll's</A> <dt><a href="#auto-link">
-                     Automatic Library Selection and Linking with auto_link.hpp</a> </dt>
+                              Windows Dll's</A> <dt><a href="#auto-link">Automatic Library Selection and Linking 
+                                 with auto_link.hpp</a> </dt>
                   </dl>
                   <dt><A href="#build_changes">Changes Affecting the Build System</A>
                      <dd>
@@ -253,8 +253,8 @@ BOOST_WHATEVER_DECL whatever get_whatever()
          size is often significantly smaller this way as well: i.e. you pay for what you 
          use and no more), but this is a subjective call, and some libraries may even 
          only be available in dynamic versions (Boost.threads for example).</P>
-      <h3><A name="auto-link"></A>Automatic Library Selection and Linking with
-      <a href="../boost/config/auto_link.hpp">auto_link.hpp</a></h3>
+      <h3><A name="auto-link"></A>Automatic Library Selection and Linking with <a href="../boost/config/auto_link.hpp">
+            auto_link.hpp</a></h3>
       <p>Many Windows compilers ship with multiple runtime libraries - for example 
          Microsoft Visual Studio .NET comes with 6 versions of the C and C++ runtime. It 
          is essential that the Boost library that the user links to is built against the 
@@ -287,13 +287,13 @@ libboost_regex-vc71-sgd-1_31.lib
          the name of the right library build variant gets embedded in the object file, 
          and as long as that library is in the linker search path, it will get pulled in 
          by the linker without any user intervention.</p>
-      <p>Automatic library selection and linking can be enabled for a Boost library by including the header 
-      &lt;boost/config/auto_link.hpp&gt;, after first defining BOOST_LIB_NAME and, if 
-      applicable, BOOST_DYN_LINK.</p>
+      <p>Automatic library selection and linking can be enabled for a Boost library by 
+         including the header &lt;boost/config/auto_link.hpp&gt;, after first defining 
+         BOOST_LIB_NAME and, if applicable, BOOST_DYN_LINK.</p>
       <pre>//
-// Automatically link to the correct build variant where possible.
-//
-#if !defined(BOOST_ALL_NO_LIB) &amp;&amp; !defined(BOOST_WHATEVER_NO_LIB)
+// Automatically link to the correct build variant where possible. 
+// 
+#if !defined(BOOST_ALL_NO_LIB) &amp;&amp; !defined(BOOST_WHATEVER_NO_LIB) &amp;&amp; !defined(BOOST_WHATEVER_SOURCE)
 //
 // Set the name of our library, this will get undef'ed by auto_link.hpp
 // once it's done with it:
@@ -313,8 +313,7 @@ libboost_regex-vc71-sgd-1_31.lib
 </pre>
       <P></P>
       <p>The library's user documentation should note that the feature can be disabled 
-      by defining 
-         either BOOST_ALL_NO_LIB or BOOST_WHATEVER_NO_LIB:</p>
+         by defining either BOOST_ALL_NO_LIB or BOOST_WHATEVER_NO_LIB:</p>
       <P>If for any reason you need to debug this feature, the header 
          &lt;boost/config/auto_link.hpp&gt; will output some helpful diagnostic messages 
          if you first define BOOST_LIB_DIAGNOSTIC.</P>
@@ -336,7 +335,7 @@ libboost_regex-vc71-sgd-1_31.lib
       # and auto-link features:
       common-variant-tag 
       # set include path for Boost headers:
-      <sysinclude>$(BOOST_ROOT)
+      &lt;sysinclude&gt;$(BOOST_ROOT)
    : 
       # list default build variants here
       debug release 
@@ -364,28 +363,29 @@ libboost_regex-vc71-sgd-1_31.lib
       # only build this for dynamic runtimes:
       &lt;runtime-link&gt;dynamic
       # set include path for Boost headers:
-      <sysinclude>$(BOOST_ROOT)
+      &lt;sysinclude&gt;$(BOOST_ROOT)
    : 
       # list default build variants here
       debug release 
-   ; </PRE>
+   ; 
+</PRE>
       <P>Now add an install target so that Boost.Install can find this library to 
          install:</P>
-      <pre>install whatever lib
-    : <dll>boost_whatever <lib>boost_whatever
+<pre>install whatever lib
+    : &lt;dll&gt;boost_whatever &lt;lib&gt;boost_whatever
     ;
 </pre>
       <P>Finally add a stage target that will copy the built libraries to a common 
          sub-directory (boost-root/stage/lib):</P>
-      <PRE>stage stage/lib : <lib>boost_whatever <dll>boost_whatever
+      <PRE>stage stage/lib : &lt;lib&gt;boost_whatever &lt;dll&gt;boost_whatever
     :
         # copy to a path rooted at BOOST_ROOT:
-        <locate>$(BOOST_ROOT)
+        &lt;locate&gt;$(BOOST_ROOT)
         # make sure the names of the libraries are correctly named:
         common-variant-tag
         # add this target to the "stage" and "all" psuedo-targets:
-        <target>stage
-        <target>all
+        &lt;target&gt;stage
+        &lt;target&gt;all
     :
         debug release
     ;
@@ -438,13 +438,15 @@ run
       </PRE>
       <HR>
       <p><A name="copyright"></A>Revised 
-         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->26 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
+         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan --> 
+         26 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
       <p><i>© Copyright John Maddock&nbsp;1998- 
-            <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%Y" startspan -->2003<!--webbot bot="Timestamp" endspan i-checksum="746" --></i></p>
+            <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%Y" startspan -->  2003<!--webbot bot="Timestamp" endspan i-checksum="746" --></i></p>
       <P><I>Use, modification and distribution are subject to the Boost Software License, 
             Version 1.0. (See accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a>
             or copy at <A href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</A>).</I></P>
-      <P><EM>The use of code snippets from this article does not require the reproduction of this copyright notice and license declaration; if you wish to provide attribution then please 
-            provide a link to this article.</EM></P>
+      <P><EM>The use of code snippets from this article does not require the reproduction 
+            of this copyright notice and license declaration; if you wish to provide 
+            attribution then please provide a link to this article.</EM></P>
    </body>
 </html>
