@@ -41,7 +41,7 @@ namespace boost
     typedef std::list< attribute >        attribute_list;
 
     class element
-      : boost::noncopyable  // because deep copy sematics would be required
+      : private boost::noncopyable  // because deep copy sematics would be required
     {
      public:
       std::string     name;
