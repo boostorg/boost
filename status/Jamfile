@@ -33,14 +33,14 @@ include testing.jam ;
         ;
 
     test-suite config
-        : [ run libs/config/test/config_test.cpp 
+        : [ run libs/config/test/config_test.cpp  <lib>../libs/test/build/test_exec_monitor
                 : #args
                 : #input-files
                 : #requirements
                 <threading>multi
           ]
            [ run libs/config/test/config_info.cpp ] # compiler_status<always_show_run_output>
-           [ run libs/config/test/limits_test.cpp ]
+           [ run libs/config/test/limits_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
         ;
 
     run libs/any/any_test.cpp ;
@@ -62,13 +62,13 @@ include testing.jam ;
     run libs/crc/crc_test.cpp ;
 
     test-suite function
-        : [ run libs/function/test/deprecated_syntax_test.cpp ]
-          [ run libs/function/test/function_test.cpp ]
-          [ run libs/function/test/function_n_test.cpp ]
-          [ run libs/function/test/allocator_test.cpp ]
-          [ run libs/function/test/stateless_test.cpp ]
-          [ compile-fail libs/function/test/function_test_fail1.cpp ]
-          [ compile-fail libs/function/test/function_test_fail2.cpp ]
+        : [ run libs/function/test/deprecated_syntax_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/function_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/function_n_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/allocator_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/stateless_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ compile-fail libs/function/test/function_test_fail1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ compile-fail libs/function/test/function_test_fail2.cpp <lib>../libs/test/build/test_exec_monitor ]
         ; 
 
     run libs/functional/function_test.cpp ;
@@ -78,12 +78,12 @@ include testing.jam ;
 
     test-suite integer
         : [ run libs/integer/cstdint_test.cpp ]
-          [ run libs/integer/integer_test.cpp ]
-          [ run libs/integer/integer_traits_test.cpp ]
+          [ run libs/integer/integer_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/integer/integer_traits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
 
     run 
-      libs/io/test/ios_state_test.cpp   # sources
+      libs/io/test/ios_state_test.cpp <lib>../libs/test/build/test_exec_monitor   # sources
       : # args
       : # input-files
       : <runtime-link>static # requirements (static runtime required by Metrowerks)
@@ -107,10 +107,10 @@ include testing.jam ;
         ;
 
     test-suite math
-        : [ run libs/math/test/common_factor_test.cpp ]
-          [ run libs/math/octonion/octonion_test.cpp ]
-          [ run libs/math/quaternion/quaternion_test.cpp ]
-          [ run libs/math/special_functions/special_functions_test.cpp ]
+        : [ run libs/math/test/common_factor_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/math/octonion/octonion_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/math/quaternion/quaternion_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/math/special_functions/special_functions_test.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
 
     run libs/pool/test/test_pool_alloc.cpp ;
@@ -138,6 +138,7 @@ include testing.jam ;
         test-suite regex
         : [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
                     <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/test/build/prg_exec_monitor
            : 
                     $(test-files)
            : 
@@ -149,6 +150,7 @@ include testing.jam ;
 
             [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
                     <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/test/build/prg_exec_monitor
             : 
                     $(test-files)
             : 
@@ -161,6 +163,7 @@ include testing.jam ;
 
             [ run libs/regex/test/c_compiler_checks/posix_api_check.c
                     <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/test/build/prg_exec_monitor
             : 
             : 
             : 
@@ -203,23 +206,29 @@ include testing.jam ;
 
     test-suite signals
         : [ run libs/signals/test/dead_slot_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
           [ run libs/signals/test/deletion_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
           [ run libs/signals/test/ordering_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
           [ run libs/signals/test/signal_n_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
           [ run libs/signals/test/signal_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
           [ run libs/signals/test/trackable_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
               <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
         ;
 
 
     test-suite smart_ptr
-        : [ run libs/smart_ptr/smart_ptr_test.cpp ]
-          [ run libs/smart_ptr/shared_ptr_test.cpp ]
+        : [ run libs/smart_ptr/smart_ptr_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/smart_ptr/shared_ptr_test.cpp <lib>../libs/test/build/test_exec_monitor ]
           [ compile-fail libs/smart_ptr/shared_ptr_assign_fail.cpp ]
         ;
 
@@ -272,16 +281,16 @@ include testing.jam ;
         ;
 
     test-suite type_traits
-        : [ run libs/type_traits/tests/alignment_test.cpp ]
-          [ run libs/type_traits/tests/arithmetic_traits_test.cpp ]
-          [ run libs/type_traits/tests/composite_traits_test.cpp ]
-          [ run libs/type_traits/tests/cv_traits_test.cpp ]
-          [ run libs/type_traits/tests/function_traits_test.cpp ]
-          [ run libs/type_traits/tests/is_function_test.cpp ]
-          [ run libs/type_traits/tests/is_convertible_test.cpp ]
-          [ run libs/type_traits/tests/is_same_test.cpp ]
-          [ run libs/type_traits/tests/object_type_traits_test.cpp ]
-          [ run libs/type_traits/tests/transform_traits_test.cpp ]
+        : [ run libs/type_traits/tests/alignment_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/arithmetic_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/composite_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/cv_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/function_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/is_function_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/is_convertible_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/is_same_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/object_type_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/transform_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
         ;
 
     run libs/utility/call_traits_test.cpp : -u ;
@@ -319,7 +328,7 @@ include testing.jam ;
 
     run libs/utility/iterator_traits_test.cpp ;
 
-    run libs/utility/iterators_test.cpp ;
+    run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     compile-fail libs/utility/noncopyable_test.cpp ;
 
@@ -329,7 +338,7 @@ include testing.jam ;
 
     run libs/utility/tie_example.cpp ;
 
-    run libs/utility/binary_search_test.cpp ;
+    run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
     test-suite multi_array
         : [ run libs/multi_array/test/constructors.cpp ]
