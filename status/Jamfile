@@ -250,15 +250,15 @@ declare-build-fail-test COMPILE_FAIL : OBJ ;
 declare-build-succeed-test COMPILE : OBJ ;
 
 # Test that the given source-file(s) compile
-rule compile # source-file : fail : requirements
+rule compile ( sources + : requirements * )
 {
-    return [ boost-test $(<) : COMPILE : $(3) ] ;
+    return [ boost-test $(sources) : COMPILE : $(requirements) ] ;
 }
 
 # Test that the given source-file(s) fail to compile
-rule compile-fail # source-file : requirements
+rule compile-fail ( sources + : requirements * )
 {
-    return [ boost-test $(<) : COMPILE_FAIL : $(2) ] ;
+    return [ boost-test $(sources) : COMPILE_FAIL : $(requirements) ] ;
 }
 
 
