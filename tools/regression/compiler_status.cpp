@@ -627,11 +627,38 @@ int cpp_main( int argc, char * argv[] ) // note name!
        << "\n</td>\n</table>\n<br>\n"
        ;
 
+  if ( !no_links )
+  {
+    links_file
+      << "<html>\n"
+         "<head>\n"
+         "<title>Boost Compiler Status Error Log</title>\n"
+         "</head>\n"
+         "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
+         "<table border=\"0\">\n"
+         "<tr>\n"
+         "<td><img border=\"0\" src=\"../c++boost.gif\" width=\"277\" "
+         "height=\"86\"></td>\n"
+         "<td>\n"
+         "<h1>Compiler Status: " + platform_desc( boost_root_dir ) + "</h1>\n"
+         "<b>Run Date:</b> "
+      << run_date
+      << "\n</td>\n</table>\n<br>\n"
+      ;
+  }
+
   do_table( boost_root_dir );
 
   report << "</body>\n"
           "</html>\n"
           ;
 
+  if ( !no_links )
+  {
+    links_file
+      << "</body>\n"
+         "</html>\n"
+         ;
+  }
   return 0;
 }
