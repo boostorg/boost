@@ -13,6 +13,8 @@
 
 #include <iostream>
 #include <string>
+#include <map>
+#include <utility> // for make_pair
 #include <ctime>
 
 using std::string;
@@ -24,6 +26,9 @@ namespace fs = boost::filesystem;
 
 namespace
 {
+  typedef std::map< string, string > test2prog_map;  // test_name, test_file_path
+  test2prog_map test2prog;
+
 //  append_html  -------------------------------------------------------------//
 
   void append_html( const string & src, string & target )
@@ -144,19 +149,35 @@ namespace
       fs::ifstream file( pth );
       if ( !file )
       {
+        string test_program, library_name;
+        test2prog_map::iterator itr( test2prog.find( test_name ) );
+        if ( itr != test2prog.end() )
+        {
+          test_program = itr->second;
+          string::size_type start_pos( test_program.find( "libs/" ) );
+          if ( start_pos != string::npos )
+          {
+            start_pos += 5;
+            library_name = test_program.substr( start_pos,
+              test_program.find( '/', start_pos )-start_pos );
+          }
+        }
         m_root.reset( new xml::element( "test-log" ) );
         m_root->attributes.push_back(
-          xml::attribute( "target-directory", target_directory ) );
+          xml::attribute( "library", library_name ) );
         m_root->attributes.push_back(
           xml::attribute( "test-name", test_name ) );
+        m_root->attributes.push_back(
+          xml::attribute( "test-program", test_program ) );
+        m_root->attributes.push_back(
+          xml::attribute( "target-directory", target_directory ) );
         m_root->attributes.push_back(
           xml::attribute( "toolset", toolset ) );
       }
       else // existing file
       {
-        m_root = xml::parse( file );
+        m_root = xml::parse( file, pth.string() );
       }
-//std::cout <<     m_root->elements.size() << std::endl;
     }
 
     ~test_log()
@@ -277,12 +298,35 @@ int cpp_main( int argc, char ** argv )
 
   string line;
   string content;
-  bool capture_lines;
+  bool capture_lines = false;
+
+  // This loop looks at lines for certain signatures, and accordingly:
+  //   * Calls start_message() to start capturing lines. (start_message() will
+  //     automatically call stop_message() if needed.)
+  //   * Calls stop_message() to stop capturing lines.
+  //   * Capture lines if line capture on.
 
   while ( std::getline( std::cin, line ) )
   {
-//std::cout << line << "\n";
-    if ( line.find( "C++-action " ) != string::npos
+//      std::cout << line << "\n";
+
+    if ( line.find( "(boost-test " ) == 0 )
+    {
+      string test_name, test_file_path;
+      string::size_type colon = line.find( ":" );
+      if ( colon != string::npos )
+      {
+        test_name = line.substr( 13, colon-15 );
+        test_file_path = line.substr( colon+3,
+          line.find( "\"", colon+3 )-colon-3 );
+        convert_path_separators( test_file_path );
+        test2prog.insert( std::make_pair( test_name, test_file_path ) );
+//        std::cout << test_name << ", " << test_file_path << "\n";
+        continue;
+      }
+    }
+
+    else if ( line.find( "C++-action " ) != string::npos
       || line.find( "vc-C++ " ) != string::npos
       || line.find( "C-action " ) != string::npos
       || line.find( "Cc-action " ) != string::npos
@@ -305,7 +349,7 @@ int cpp_main( int argc, char ** argv )
       capture_lines = true;
     }
 
-    else if ( line.find( "capture-run-output" ) != string::npos )
+    else if ( line.find( "execute-test" ) != string::npos )
     {
       if ( line.find( "...failed " ) != string::npos )
       {
@@ -361,7 +405,7 @@ int cpp_main( int argc, char ** argv )
 
     }
 
-    else if ( line.find( "succeeded-test" ) != string::npos
+    else if ( line.find( "**passed**" ) != string::npos
       || line.find( "failed-test-file " ) != string::npos
       || line.find( "command-file-dump" ) != string::npos )
     {
