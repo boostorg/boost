@@ -1,0 +1,72 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Boost Library Reuse</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+&nbsp;
+<h1>Boost Library reuse: cost versus benefit trade-offs</h1>
+<p>A Boost library <b>should not</b> use libraries other than Boost or the C++
+Standard Library.</p>
+<p>A Boost library <b>should</b> use other Boost Libraries or the C++ Standard
+Library, but only when the benefits outweigh the costs.&nbsp;</p>
+<p>The benefits of using components from other libraries may include clearer,
+more understandable code, reduced development and maintenance costs, and the
+assurance which comes from reusing well-known and trusted building blocks.</p>
+<p>The costs may include undesirable coupling between components, and added
+compilation and runtime costs.&nbsp; If the interface to the additional
+component is complex, using it may make code less readable, and thus actually
+increase development and maintenance costs.</p>
+<p>Negative effects of coupling become obvious when one library uses a second
+library which uses a third, and so on. The worst form of coupling requires the
+user understand each of the coupled libraries. Coupling may also reduce the
+portability of a library - even in case when all used libraries are
+self-sufficient (see example of questionable usage of &lt;iostream&gt; library
+below).</p>
+<p><b>Example where another boost component should certainly be used:</b>&nbsp;
+boost::noncopyable (in <a href="../boost/utility.hpp">boost/utility.hpp</a>) has
+considerable benefits; it simplifies code, improves readability, and signals
+intent.&nbsp; Costs are low as coupling is limited;&nbsp; noncopyable itself
+uses no other classes and its header includes only the lightweight headers
+&lt;boost/config.hpp&gt; and &lt;cstddef&gt;.&nbsp; There are no runtime costs
+at all. With costs so low and benefits so high, other boost libraries should use
+boost::noncopyable when the need arises except in exceptional circumstances.</p>
+<p><b>Example where a standard library component might possibly be used:</b>
+Providing diagnostic output as a debugging aid can be a nice feature for a
+library. Yet using Standard Library &lt;iostream&gt; can involves a lot of
+additional cost, particularly if &lt;iostream&gt; is unlikely to be use
+elsewhere in the application.&nbsp; In certain GUI or embedded applications,
+coupling to &lt;iostream&gt; would be a disqualification.&nbsp;&nbsp;&nbsp;
+Consider redesign of the boost library in question so that the user supplies the
+diagnostic output mechanism.</p>
+<p><b>Example where another boost component should not be used:</b>&nbsp; The
+boost dir_it library has considerable coupling and runtime costs, not to mention
+portability issues for unsupported operating systems.&nbsp; While completely
+appropriate when directory iteration is required, it would not be reasonable for
+another boost library to use dir_it just to check that a file is available
+before opening.&nbsp; C++ Standard Library file open functionality does this at
+lower cost.&nbsp; Don't use dir_it just for the sake of using a boost library.</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B %Y" startspan -->06 February 2001<!--webbot bot="Timestamp" endspan i-checksum="40613" --></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>
