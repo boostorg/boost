@@ -16,7 +16,10 @@ DEPENDS all : test ;
 
 # Tests from Jamfiles in individual library test subdirectories
 subinclude libs/filesystem/test ;
-subinclude libs/type_traits/test ;
+subinclude libs/type_traits/test ;       # test-suite type_traits
+subinclude libs/regex/test ;             # test-suite regex
+subinclude libs/regex/example ;          # test-suite regex-examples
+subinclude libs/static_assert ;    # test-suite static_assert
 
 # Tests specified in this Jamfile
 {
@@ -232,251 +235,6 @@ subinclude libs/type_traits/test ;
           [ run libs/random/random_demo.cpp ]
         ;
 
-
-    {
-            local test-dir = $(BOOST_ROOT)/libs/regex/test/regress/ ;
-
-            local test-files = $(test-dir)tests.txt
-            # dwa -- not sure if this is generally applicable
-            #  $(test-dir)test1252.txt
-            ;
-
-        test-suite regex
-        : [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
-                    <lib>../libs/regex/build/boost_regex 
-                    <lib>../libs/test/build/boost_prg_exec_monitor
-           : 
-                    $(test-files)
-           : 
-           : 
-                    <define>BOOST_REGEX_NO_LIB=1
-                    <define>BOOST_REGEX_STATIC_LINK=1
-           :
-                    regress ]
-
-            [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
-                    <lib>../libs/regex/build/boost_regex 
-                    <lib>../libs/test/build/boost_prg_exec_monitor
-            : 
-                    $(test-files)
-            : 
-            : 
-                    <define>BOOST_REGEX_NO_LIB=1
-                    <define>TEST_UNICODE=1
-                    <define>BOOST_REGEX_STATIC_LINK=1
-            :
-                    wregress ]
-
-            [ run libs/regex/test/c_compiler_checks/posix_api_check.c
-                    <lib>../libs/regex/build/boost_regex
-                    <lib>../libs/test/build/boost_prg_exec_monitor
-            : 
-            : 
-            : 
-                    <define>BOOST_REGEX_NO_LIB=1
-                    <define>BOOST_REGEX_STATIC_LINK=1
-            :
-                    posix_api_check_c ]
-
-            [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.c
-                    <lib>../libs/regex/build/boost_regex 
-            : 
-            : 
-            : 
-                    <define>BOOST_REGEX_NO_LIB=1
-                    <define>BOOST_REGEX_STATIC_LINK=1
-            :
-                    wide_posix_api_check_c ]
-
-            [ run libs/regex/test/c_compiler_checks/posix_api_check.cpp
-                    <lib>../libs/regex/build/boost_regex 
-            : 
-            : 
-            :
-                    <define>BOOST_REGEX_NO_LIB=1
-                    <define>BOOST_REGEX_STATIC_LINK=1
-            ]
-
-            [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
-                    <lib>../libs/regex/build/boost_regex
-            : 
-            : 
-            : 
-                    <define>BOOST_REGEX_NO_LIB=1
-                    <define>BOOST_REGEX_STATIC_LINK=1
-            ]
-
-            [ run libs/regex/example/timer/regex_timer.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/libs/regex/example/timer/input_script.txt
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_timer
-            ]
-
-            [ run libs/regex/example/jgrep/jgrep.cpp libs/regex/example/jgrep/main.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  -n boost/ $(BOOST_ROOT)/boost/regex.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  jgrep
-           ]
-
-           [ run libs/regex/example/snippets/credit_card_example.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  credit_card_example
-           ]
-
-           [ run libs/regex/example/snippets/partial_regex_grep.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/libs/regex/index.htm
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  partial_regex_grep
-           ]
-
-           [ run libs/regex/example/snippets/partial_regex_match.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  1234-5678-8765-4
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  partial_regex_match
-            ]
-
-            [ run libs/regex/example/snippets/regex_grep_example_1.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/boost/rational.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_grep_example_1
-            ]
-
-            [ run libs/regex/example/snippets/regex_grep_example_2.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/boost/rational.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_grep_example_2
-            ]
-
-            [ run libs/regex/example/snippets/regex_grep_example_3.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/boost/rational.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_grep_example_3
-            ]
-
-            [ run libs/regex/example/snippets/regex_grep_example_4.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/boost/rational.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_grep_example_4
-            ]
-
-            [ run libs/regex/example/snippets/regex_match_example.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  -auto
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_match_example
-            ]
-
-            [ run libs/regex/example/snippets/regex_merge_example.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/boost/rational.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_merge_example
-            ]
-
-            [ run libs/regex/example/snippets/regex_search_example.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/boost/rational.hpp
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_search_example
-            ]
-
-            [ run libs/regex/example/snippets/regex_split_example_1.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  -auto
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_split_example_1
-            ]
-
-            [ run libs/regex/example/snippets/regex_split_example_2.cpp
-               <lib>../libs/regex/build/boost_regex
-               :
-                  $(BOOST_ROOT)/libs/regex/index.htm
-               :
-               :
-                  <define>BOOST_REGEX_NO_LIB=1
-                  <define>BOOST_REGEX_STATIC_LINK=1
-               :
-                  regex_split_example_2
-            ]
-
-     ;
-
-    }
-
     test-suite smart_ptr
         : [ run libs/smart_ptr/smart_ptr_test.cpp ]
           [ run libs/smart_ptr/shared_ptr_basic_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
@@ -485,18 +243,6 @@ subinclude libs/type_traits/test ;
           [ run libs/smart_ptr/enable_shared_from_this_test.cpp : : : <gcc><*><cxxflags>-Wno-non-virtual-dtor ]
           [ run libs/smart_ptr/get_deleter_test.cpp ]
           [ compile-fail libs/smart_ptr/shared_ptr_assign_fail.cpp ]
-        ;
-
-    test-suite static_assert
-        : [ compile libs/static_assert/static_assert_test.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_1.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_2.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_3.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_4.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_5.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_6.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_7.cpp ]
-          [ compile-fail libs/static_assert/static_assert_test_fail_8.cpp ]
         ;
 
     subinclude libs/test/test ;
@@ -725,5 +471,7 @@ subinclude libs/type_traits/test ;
         ;
 
 }
+
+
 
 
