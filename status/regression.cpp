@@ -275,7 +275,10 @@ previous_results_type read_previous_results(std::istream & is)
 bool execute(const std::string & command)
 {
   std::cout << command << std::endl; // fix: endl ensures cout ordering
-  return std::system(command.c_str()) == 0;
+  int ret = std::system(command.c_str());
+  if(ret != 0)
+    std::cout << "Return code: " << ret << std::endl;
+  return ret == 0;
 }
 
 enum test_result {
@@ -471,7 +474,7 @@ int main(int argc, char * argv[])
   if(host == "linux")
     out << "Notes: A hand-crafted &lt;limits&gt; Standard header has been\n"
 	<< "applied to all configurations.\n"
-	<< "The tests were run on a GNU libc 2.2 system which has improved\n"
+	<< "The tests were run on a GNU libc 2.2.1 system which has improved\n"
 	<< "wide character support compared to previous versions.";
   else if(host == "irix" || host == "tru64")
     out << "Note: For the 'clib' configuration, the missing new-style C\n"
