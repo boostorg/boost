@@ -329,7 +329,7 @@ def test(
         if "test" in args:
             test_cmd = []
             if not toolsets is None:
-                test_cmd.append( 'set TOOLS=%s' % string.join( toolsets, ' ' ) )
+                test_cmd.append( 'set TOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' ) )
             test_cmd.append( 'set BOOST_ROOT=%s' % boost_root )
             test_cmd.append( '"%s" -d2 --dump-tests "-sALL_LOCATE_TARGET=%s" >>%s 2>&1'
                                       % (     bjam_path
