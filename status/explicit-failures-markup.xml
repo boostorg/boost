@@ -876,6 +876,7 @@ for more information.
                 <toolset name="intel-win32-7.1-vc6"/>
                 <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
                 <toolset name="msvc"/>
+                <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
                 <note>The failures are caused by problems 
                     with std::locale implementation</note>
@@ -915,17 +916,15 @@ for more information.
         <test name="*dll">
              <mark-failure>
                 <toolset name="*como-win32-4.3.3*"/>
-                <note>It is not clear how to make compiler accept __declspec
-                specifier needed for DLLs to work on windows. Adding of
-                --windows to the command line did not work.
-                </note>
+                <note refid="24"/>
             </mark-failure>
         </test>
 
         <mark-expected-failures>
             <test name="variable_map_test"/>
             <test name="variable_map_test_dll"/>
-            <toolset name="msvc"/>
+            <toolset name="msvc"/>            
+            <toolset name="msvc-stlport"/>            
             <note>
                The failures are caused by compiler bug: it's not possible to
                explicitly pass template arguments to member template function. The
