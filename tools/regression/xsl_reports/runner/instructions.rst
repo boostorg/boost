@@ -32,30 +32,29 @@ __ http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression
 Running tests
 -------------
 
-* To start a regression run, simply run ``regression.py`` providing it with the only
-  required option, runner id (something unique of your choice that will identify your 
-  results in the reports [#runnerid1]_, [#runnerid2]_). For example::
+To start a regression run, simply run ``regression.py`` providing it with the following
+two arguments:
 
-    python regression.py --runner=Metacomm
-  
-  You can specify a particular set of toolsets you want to test with by passing them as 
-  a comma-separated list using the ``--toolsets`` option:
-  
-  .. parsed-literal::
+- runner id (something unique of your choice that will identify your 
+  results in the reports [#runnerid1]_, [#runnerid2]_)
 
-     python regression.py --runner=Metacomm **--toolsets=gcc,vc7**
-  
-  
-  If you are interested in seeing all available options, run ``python regression.py``
-  or ``python regression.py --help``. See also the `Advanced use`_ section below.
-  
-  **Note**: If you are behind a firewall/proxy server, everything should still "just work". 
-  In the rare cases when it doesn't, you can explicitly specify the proxy server 
-  parameters through the ``--proxy`` option, e.g.:
+- a particular set of toolsets you want to test with [#toolsets]_.
 
-  .. parsed-literal::
+For example::
 
-     python regression.py --runner=Metacomm **--proxy=http://www.someproxy.com:3128**
+    python regression.py --runner=Metacomm --toolsets=gcc,vc7
+    
+
+If you are interested in seeing all available options, run ``python regression.py``
+or ``python regression.py --help``. See also the `Advanced use`_ section below.
+  
+**Note**: If you are behind a firewall/proxy server, everything should still "just work". 
+In the rare cases when it doesn't, you can explicitly specify the proxy server 
+parameters through the ``--proxy`` option, e.g.:
+
+.. parsed-literal::
+
+    python regression.py ... **--proxy=http://www.someproxy.com:3128**
 
 
 Details
@@ -63,7 +62,7 @@ Details
 
 The regression run procedure will:
 
-* Download the most recent tarball from http://www.boost-consulting.com, 
+* Download the most recent tarball from http://www.meta-comm.com/engineering/boost/snapshot/,
   unpack it in the subdirectory ``boost``.
 
 * Build ``bjam`` and ``process_jam_log`` if needed. (``process_jam_log`` is an
@@ -91,7 +90,7 @@ it an identically named command-line flag:
 
 .. parsed-literal::
 
-      python regression.py --runner=Metacomm **--incremental**
+      python regression.py ... **--incremental**
 
 
 Dealing with misbehaved tests/compilers
@@ -106,7 +105,7 @@ invocation:
 
 .. parsed-literal::
 
-      python regression.py --runner=Metacomm **--monitored**
+      python regression.py ... **--monitored**
 
 
 That's it. Knowing your intentions, the script will be able to automatically deal 
@@ -123,7 +122,7 @@ option; for instance:
 
 .. parsed-literal::
 
-      python regression.py --runner=Metacomm **--user=agurtovoy**
+      python regression.py ... **--user=agurtovoy**
 
 You can also specify the user as ``anonymous``, requesting anonymous CVS access. 
 Note, though, that the files obtained this way tend to lag behind the actual CVS 
@@ -148,7 +147,7 @@ operations:
 
 2. *Collecting and uploading logs* can be done any time after ``process_jam_log``' s
    run, and is as simple as an invocation of the local copy of
-   ``boost/tools/regression/xsl_reports/runner/collect_and_upload_logs.py``
+   ``$BOOST_ROOT/tools/regression/xsl_reports/runner/collect_and_upload_logs.py``
    script that was just obtained from the CVS with the rest of the sources.
    You'd need to provide ``collect_and_upload_logs.py`` with the following three
    arguments::
@@ -162,7 +161,7 @@ operations:
    ``/Volumes/stuff/users/alexy/boost_regressions/results`` directory,
    the  ``collect_and_upload_logs.py`` invocation might look like this::
 
-       python boost/tools/regression/xsl_reports/runner/collect_and_upload_logs.py 
+       python $BOOST_ROOT/tools/regression/xsl_reports/runner/collect_and_upload_logs.py 
           --locate-root=/Volumes/stuff/users/alexy/boost_regressions/results
           --runner=agurtovoy
           --timestamp=/Volumes/stuff/users/alexy/boost_regressions/timestamp
@@ -175,9 +174,9 @@ Feedback
 --------
 
 Please send all comments/suggestions regarding this document and the testing procedure 
-itself to the `Boost developers list`__ (mailto:boost@lists.boost.org).
+itself to the `Boost Testing list`__.
 
-__ mailto:boost@lists.boost.org.
+__ http://lists.boost.org/mailman/listinfo.cgi/boost-testing
 
 
 Notes
@@ -192,6 +191,9 @@ Notes
    between the number of compilers you are testing with and the amount of space available 
    for your runner id. If you are running regressions for a single compiler, please make 
    sure to choose a short enough id that does not significantly disturb the reports' layout.
+
+.. [#toolsets] If ``--toolsets`` option is not provided, the script will try to use the 
+   platform's default toolset (``gcc`` for most Unix-based systems).
 
 .. [#incremental] By default, the script runs in what is known as *full mode*: on 
    each ``regression.py`` invocation all the files that were left in place by the 
