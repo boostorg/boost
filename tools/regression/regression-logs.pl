@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 
-#~ Copyright (C) 2003, Rene Rivera.
-#~ Use, modification and distribution is subject to the Boost Software
-#~ License Version 1.0. (See accompanying file LICENSE-1.0 or
-#~ http://www.boost.org/LICENSE-1.0)
+#~ Copyright 2003, Rene Rivera.
+#~ Use, modification and distribution are subject to the Boost Software
+#~ License Version 1.0. (See accompanying file LICENSE_1_0.txt or
+#~ http://www.boost.org/LICENSE_1_0.txt)
 
 use FileHandle;
 use Time::Local;
@@ -13,15 +13,18 @@ use Time::Local;
 sub percent_value
 {
     my ($count,$total) = @_;
-    return int (($count/$total)*100+0.5);
+    my $percent = int (($count/$total)*100+0.5);
+    if ($count > 0 && $percent == 0) { $percent = 1; }
+    if ($count < $total && $percent == 100) { $percent = 99; }
+    return $percent;
 }
 
 # Generate item html for the pass column.
 #
 sub result_info_pass
 {
-    my ($color,$pass,$warn,$fail) = @_;
-    my $percent = 100-percent_value($fail,$pass+$warn+$fail);
+    my ($color,$pass,$warn,$fail,$missing) = @_;
+    my $percent = 100-percent_value($fail+$missing,$pass+$warn+$fail+$missing);
     return "<font color=\"$color\"><font size=\"+1\">$percent%</font><br>($warn&nbsp;warnings)</font>";
 }
 
@@ -29,8 +32,8 @@ sub result_info_pass
 #
 sub result_info_fail
 {
-    my ($color,$pass,$warn,$fail) = @_;
-    my $percent = percent_value($fail,$pass+$warn+$fail);
+    my ($color,$pass,$warn,$fail,$missing) = @_;
+    my $percent = percent_value($fail+$missing,$pass+$warn+$fail+$missing);
     return "<font color=\"$color\"><font size=\"+1\">$percent%</font><br>($fail)</font>";
 }
 
@@ -48,11 +51,11 @@ sub date_info
     my $age = time-$test_t;
     my $age_days = $age/(60*60*24);
     #print "<!-- $age_days days old -->\n";
-    my $age = "<font>";
+    my $age_html = "<font>";
     if ($age_days <= 2) { }
-    elsif ($age_days <= 14) { $age = "<font color=\"#FF9900\">"; }
-    else { $age = "<font color=\"#FF0000\">"; }
-    return $age.$_[0]."</font>";
+    elsif ($age_days <= 14) { $age_html = "<font color=\"#FF9900\">"; }
+    else { $age_html = "<font color=\"#FF0000\">"; }
+    return $age_html.$_[0]."</font>";
 }
 
 # Generate an age string based on the run date.
@@ -69,23 +72,25 @@ sub age_info
     my $age = time-$test_t;
     my $age_days = $age/(60*60*24);
     #print "<!-- $age_days days old -->\n";
-    my $age = "<font>";
+    my $age_html = "<font>";
     if ($age_days <= 2) { }
-    elsif ($age_days <= 14) { $age = "<font color=\"#FF9900\">"; }
-    else { $age = "<font color=\"#FF0000\">"; }
-    if ($age_days <= 1) { $age = $age."today"; }
-    elsif ($age_days <= 2) { $age = $age."yesterday"; }
-    elsif ($age_days < 14) { my $days = int $age_days; $age = $age.$days." days"; }
-    elsif ($age_days < 7*8) { my $weeks = int $age_days/7; $age = $age.$weeks." weeks"; }
-    else { my $months = int $age_days/28; $age = $age.$months." months"; }
-    return $age."</font>";
+    elsif ($age_days <= 14) { $age_html = "<font color=\"#FF9900\">"; }
+    else { $age_html = "<font color=\"#FF0000\">"; }
+    if ($age_days <= 1) { $age_html = $age_html."today"; }
+    elsif ($age_days <= 2) { $age_html = $age_html."yesterday"; }
+    elsif ($age_days < 14) { my $days = int $age_days; $age_html = $age_html.$days." days"; }
+    elsif ($age_days < 7*8) { my $weeks = int $age_days/7; $age_html = $age_html.$weeks." weeks"; }
+    else { my $months = int $age_days/28; $age_html = $age_html.$months." months"; }
+    return $age_html."</font>";
 }
 
 #~ foreach my $k (sort keys %ENV)
 #~ {
     #~ print "<!-- $k = $ENV{$k} -->\n";
 #~ }
-opendir LOGS, "$ENV{PWD}";
+my $logdir = "$ENV{PWD}";
+#~ my $logdir = "C:\\CVSROOTs\\Boost\\boost\\status";
+opendir LOGS, "$logdir";
 my @logs = grep /.*links[^.]*\.html$/, readdir LOGS;
 closedir LOGS;
 my @bgcolor = ( "bgcolor=\"#EEEEFF\"", "" );
@@ -105,7 +110,7 @@ foreach $l (sort { lc($a) cmp lc($b) } @logs)
     $log =~ s/-links//s;
     my ($spec) = ($log =~ /cs-([^\.]+)/);
     my $fh = new FileHandle;
-    if ($fh->open("<$ENV{PWD}/$log"))
+    if ($fh->open("<$logdir/$log"))
     {
         my $content = join('',$fh->getlines());
         $fh->close;
@@ -119,23 +124,45 @@ foreach $l (sort { lc($a) cmp lc($b) } @logs)
         $compilers =~ s/<\/td>//g;
         my @compiler = ($compilers =~ /<td>(.*)$/gim);
         my $count = @compiler;
-        my @results = ($content =~ /(>Pass<|>Warn<|>Fail<)/gi);
+        my @results = ($content =~ /(>Pass<|>Warn<|>Fail<|>Missing<)/gi);
         my $test_count = (scalar @results)/$count;
         my @pass = map { 0 } (1..$count);
         my @warn = map { 0 } (1..$count);
         my @fail = map { 0 } (1..$count);
+        my @missing = map { 0 } (1..$count);
         my @total = map { 0 } (1..$count);
+        #~ print "<!-- ",
+            #~ "pass = ",join(',',@pass)," ",
+            #~ "warn = ",join(',',@warn)," ",
+            #~ "fail = ",join(',',@fail)," ",
+            #~ "missing = ",join(',',@missing)," ",
+            #~ "total = ",join(',',@total)," ",
+            #~ " -->\n";
         for my $t (1..$test_count)
         {
+            my $r0 = (($t-1)*$count);
+            my $r1 = (($t-1)*$count+$count-1);
             my @r = @results[(($t-1)*$count)..(($t-1)*$count+$count-1)];
+            #~ print "<!-- ",
+                #~ "result = ",join(',',@r)," ",
+                #~ "range = ",$r0,"..",$r1," (",(scalar @results),")",
+                #~ " -->\n";
             for my $c (1..$count)
             {
                 if ($r[$c-1] =~ /Pass/i) { ++$pass[$c-1]; }
                 elsif ($r[$c-1] =~ /Warn/i) { ++$warn[$c-1]; }
                 elsif ($r[$c-1] =~ /Fail/i) { ++$fail[$c-1]; }
+                elsif ($r[$c-1] =~ /Missing/i) { ++$missing[$c-1]; }
                 ++$total[$c-1];
             }
         }
+        #~ print "<!-- ",
+            #~ "pass = ",join(',',@pass)," ",
+            #~ "warn = ",join(',',@warn)," ",
+            #~ "fail = ",join(',',@fail)," ",
+            #~ "missing = ",join(',',@missing)," ",
+            #~ "total = ",join(',',@total)," ",
+            #~ " -->\n";
         for my $comp (1..(scalar @compiler))
         {
             my @lines = split(/<br>/,$compiler[$comp-1]);
@@ -147,8 +174,8 @@ foreach $l (sort { lc($a) cmp lc($b) } @logs)
             "<td rowspan=\"$count\" valign=\"top\">",$run_date,"</td>\n",
             "<td rowspan=\"$count\" valign=\"top\">",age_info($run_date),"</td>\n",
             "<td valign=\"top\" ",$bgcolor[$row],">",$compiler[0],"</td>\n",
-            "<td valign=\"top\" ",$bgcolor[$row],">",result_info_pass("#000000",$pass[0],$warn[0],$fail[0]),"</td>\n",
-            "<td valign=\"top\" ",$bgcolor[$row],">",result_info_fail("#FF0000",$pass[0],$warn[0],$fail[0]),"</td>\n",
+            "<td valign=\"top\" ",$bgcolor[$row],">",result_info_pass("#000000",$pass[0],$warn[0],$fail[0],$missing[0]),"</td>\n",
+            "<td valign=\"top\" ",$bgcolor[$row],">",result_info_fail("#FF0000",$pass[0],$warn[0],$fail[0],$missing[0]),"</td>\n",
             "</tr>\n";
         $row = ($row+1)%2;
         foreach my $c (1..($count-1))
@@ -156,8 +183,8 @@ foreach $l (sort { lc($a) cmp lc($b) } @logs)
             print
                 "<tr>\n",
                 "<td valign=\"top\" ",$bgcolor[$row],">",$compiler[$c],"</td>\n",
-                "<td valign=\"top\" ",$bgcolor[$row],">",result_info_pass("#000000",$pass[$c],$warn[$c],$fail[$c]),"</td>\n",
-                "<td valign=\"top\" ",$bgcolor[$row],">",result_info_fail("#FF0000",$pass[$c],$warn[$c],$fail[$c]),"</td>\n",
+                "<td valign=\"top\" ",$bgcolor[$row],">",result_info_pass("#000000",$pass[$c],$warn[$c],$fail[$c],$missing[$c]),"</td>\n",
+                "<td valign=\"top\" ",$bgcolor[$row],">",result_info_fail("#FF0000",$pass[$c],$warn[$c],$fail[$c],$missing[$c]),"</td>\n",
                 "</tr>\n";
             $row = ($row+1)%2;
         }
