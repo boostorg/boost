@@ -126,16 +126,16 @@ def http_get( source_url, destination, proxy ):
 
 
 def download_boost_tarball( destination, tag, proxy ):
-    site = 'www.boost-consulting.com'
-    tarball_name = 'boost.tar.bz2'
+    tarball_name = 'boost-%s.tar.bz2' % tag
     tarball_path = os.path.join( destination, tarball_name )
+    tarball_url = 'http://www.meta-comm.com/engineering/boost/snapshot/%s' % tarball_name
 
-    log( "Downloading '%s' for tag %s from %s..."  % ( tarball_path, tag, site ) )
+    log( 'Downloading "%s" to "%s"...'  % ( tarball_url, os.path.dirname( tarball_path ) ) )
     if os.path.exists( tarball_path ):
         os.unlink( tarball_path )
 
     http_get(
-          'http://%s/%s' % ( site, tarball_name ) # ignore tag for now
+          tarball_url
         , tarball_path
         , proxy
         )
@@ -148,8 +148,9 @@ def unpack_tarball( tarball_path, destination ):
     old_boost_dirs =  glob.glob( os.path.join( destination, 'boost-*' ) )
 
     for old_boost_dir in old_boost_dirs:
-        log( 'Deleting old directory %s.' % old_boost_dir ) 
-        rmtree( old_boost_dir )
+        if old_boost_dir != tarball_path:
+            log( 'Deleting old directory %s.' % old_boost_dir ) 
+            rmtree( old_boost_dir )
 
     log( 'Unpacking boost tarball ("%s")...' % tarball_path )
     tar = tarfile.open( tarball_path, 'r|bz2' )
