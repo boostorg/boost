@@ -234,6 +234,7 @@ if  program_arg=="*":
   compile( "regex/demo/regress/regex_test.cpp" )
   compile( "regex/demo/regress/wregex_test.cpp" )
   compile( "smart_ptr/smart_ptr_test.cpp" )
+  compile( "static_assert/static_assert_test.cpp" )
 #  compile( "utility/algo_opt_examples.cpp" )
   compile( "utility/call_traits_test.cpp" )
   compile( "utility/cast_test.cpp" )
@@ -252,6 +253,7 @@ if sys.platform == "linux2":
 f.write( "</body>\n</html>\n" )
 
 # end
+
 
 
 
