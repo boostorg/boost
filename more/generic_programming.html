@@ -213,9 +213,9 @@ struct iterator_traits {
 
     <h2><a name="tag_dispatching">Tag Dispatching</a></h2>
 
-    <p>A technique that often goes hand in hand with traits classes is tag
-    dispatching, which is a way of using function overloading to dispatch
-    based on properties of a type. A good example of this is the
+    <p>Tag dispatching is a way of using function overloading to
+    dispatch based on properties of a type, and is often used hand in
+    hand with traits classes. A good example of this synergy is the
     implementation of the <a href=
     "http://www.sgi.com/tech/stl/advance.html"><tt>std::advance()</tt></a>
     function in the C++ Standard Library, which increments an iterator
@@ -307,7 +307,7 @@ namespace std {
     <h2><a name="type_generator">Type Generators</a></h2>
 
     <p><b>Note:</b> The <i>type generator</i> concept has largely been
-    superseded by the more-refined notion of a <a href=
+    superseded by the more refined notion of a <a href=
     "../libs/mpl/doc/ref/Metafunction.html"><i>metafunction</i></a>. See
     <i><a href="http://www.boost-consulting.com/mplbook">C++ Template
     Metaprogramming</a></i> for an in-depth discussion of metafunctions.</p>
@@ -415,20 +415,20 @@ void tweak_all_widgets2(int arg)
 
     <p>Policy classes have been explored in detail by <a href=
     "http://www.moderncppdesign.com/">Andrei Alexandrescu</a> in <a href=
-    "http://www.cs.ualberta.ca/~hoover/cmput401/XP-Notes/xp-conf/Papers/7_3_Alexandrescu.pdf">
-    this paper</a>. He writes:</p>
+    "http://www.informit.com/articles/article.asp?p=167842">this chapter</a>
+    of his book, <i>Modern C++ Design</i>. He writes:</p>
 
     <blockquote>
-      <p>Policy classes are implementations of punctual design choices. They
-      are inherited from, or contained within, other classes. They provide
-      different strategies under the same syntactic interface. A class using
-      policies is templated having one template parameter for each policy it
-      uses. This allows the user to select the policies needed.</p>
+      <p>In brief, policy-based class design fosters assembling a class with
+      complex behavior out of many little classes (called policies), each of
+      which takes care of only one behavioral or structural aspect. As the
+      name suggests, a policy establishes an interface pertaining to a
+      specific issue. You can implement policies in various ways as long as
+      you respect the policy interface.</p>
 
-      <p>The power of policy classes comes from their ability to combine
-      freely. By combining several policy classes in a template class with
-      multiple parameters, one achieves combinatorial behaviors with a linear
-      amount of code.</p>
+      <p>Because you can mix and match policies, you can achieve a
+      combinatorial set of behaviors by using a small core of elementary
+      components.</p>
     </blockquote>
 
     <p>Andrei's description of policy classes suggests that their power is
@@ -460,15 +460,15 @@ void tweak_all_widgets2(int arg)
     express or implied warranty, and with no claim as to its suitability for
     any purpose. 
     <!--  LocalWords:  HTML html charset gif alt htm struct SGI namespace std libs
-             -->
+                     -->
      
     <!--  LocalWords:  InputIterator BidirectionalIterator RandomAccessIterator pdf
-             -->
+                     -->
      
     <!--  LocalWords:  typename Alexandrescu templated Andrei's Abrahams memcpy int
-             -->
+                     -->
      <!--  LocalWords:  const OutputIterator iostream pre cpl
-             -->
+                     -->
     </p>
   </body>
 </html>
