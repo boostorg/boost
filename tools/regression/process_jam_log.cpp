@@ -125,6 +125,27 @@ namespace
         ? pos : s.find( "/", pos )) - pos_start );
   }
 
+  string test_path_to_library_name( string const& path )
+  {
+    std::string result;
+    string::size_type start_pos( path.find( "libs/" ) );
+    if ( start_pos != string::npos )
+    {
+      start_pos += 5;
+      string::size_type end_pos( path.find( '/', start_pos ) );
+      result = path.substr( start_pos, end_pos - start_pos );
+
+      // if a "sublibs" file exists, the library name includes the
+      // next level down directory name.
+      if ( fs::exists( ( boost_root / "libs" ) / result / "sublibs" ) )
+      {
+        result += path.substr( end_pos, path.find( '/', end_pos+1 ) - end_pos );
+      }
+    }
+
+    return result;
+  }
+  
   // the format of paths is really kinky, so convert to normal form
   //   first path is missing the leading "..\".
   //   first path is missing "\bin" after "status".
@@ -209,47 +230,35 @@ namespace
         }
       }
 
-      test_info info;
       string library_name; // see "sublibs" comment below
-      test2info_map::iterator itr( test2info.find( test_name ) );
+      string::size_type pos = target_directory.find( "/libs/" );
+      if ( pos != string::npos )
+      {
+        pos += 6;
+        library_name
+          = target_directory.substr( pos,
+              target_directory.find( "/", pos ) - pos );
+      }
+
+      test_info info;
+      test2info_map::iterator itr( test2info.find( library_name + "/" + test_name ) );
       if ( itr != test2info.end() )
-      {
         info = itr->second;
-        string::size_type start_pos( info.file_path.find( "libs/" ) );
-        if ( start_pos != string::npos )
-        {
-          start_pos += 5;
-          string::size_type end_pos( info.file_path.find( '/', start_pos ) );
-          library_name = info.file_path.substr( start_pos,
-            end_pos - start_pos );
-
-          // if a "sublibs" file exists, the library name includes the
-          // next level down directory name.
-          if ( fs::exists( boost_root / "libs" / library_name / "sublibs" ) )
-          {
-            library_name += info.file_path.substr( end_pos,
-              info.file_path.find( '/', end_pos+1 ) - end_pos );
-          }
-        }
-      }
-
-      if ( library_name.empty() )
-      {
-        string::size_type pos = target_directory.find( "/libs/" );
-        if ( pos != string::npos )
-        {
-          pos += 6;
-          library_name
-            = target_directory.substr( pos,
-                target_directory.find( "/", pos ) - pos );
-        }
-      }
       
-      if ( info.type.empty()
-        && (target_directory.find( ".lib/" ) != string::npos
-          || target_directory.find( ".dll/" ) != string::npos) )
-        { info.type = "lib"; }
-
+      if ( library_name.empty() )
+        library_name = test_path_to_library_name( info.file_path );
+      
+      if ( info.type.empty() )
+      {
+        if ( target_directory.find( ".lib/" ) != string::npos
+          || target_directory.find( ".dll/" ) != string::npos )
+        {
+          info.type = "lib";
+        }
+        else if ( target_directory.find( ".pyd/" ) != string::npos )
+          info.type = "pyd";
+      }
+  
       m_root.reset( new xml::element( "test-log" ) );
       m_root->attributes.push_back(
         xml::attribute( "library", library_name ) );
@@ -502,6 +511,8 @@ int cpp_main( int argc, char ** argv )
           line.find( "\"", pos+3 )-pos-3 );
         convert_path_separators( info.file_path );
         if ( info.file_path.find( "libs/libs/" ) == 0 ) info.file_path.erase( 0, 5 );
+        if ( test_name.find( "/" ) == string::npos )
+            test_name = "/" + test_name;
         test2info.insert( std::make_pair( test_name, info ) );
   //      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
       }
