@@ -1,6 +1,7 @@
 
 import os
 import string
+import sys
 
 class failure_exception:
     def __init__( self, rc ):
