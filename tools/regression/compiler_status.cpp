@@ -561,12 +561,15 @@ const string & attribute_value( const xml::element_ptr & element,
 
 int cpp_main( int argc, char * argv[] ) // note name!
 {
+  fs::path comment_path;
   while ( argc > 1 && *argv[1] == '-' )
   {
     if ( argc > 2 && std::strcmp( argv[1], "--compiler" ) == 0 )
-    { specific_compiler = argv[2]; --argc; ++argv; }
+      { specific_compiler = argv[2]; --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--locate-root" ) == 0 )
-    { locate_root = fs::path( argv[2], fs::native ); --argc; ++argv; }
+      { locate_root = fs::path( argv[2], fs::native ); --argc; ++argv; }
+    else if ( argc > 2 && std::strcmp( argv[1], "--comment" ) == 0 )
+      { comment_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
@@ -586,6 +589,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "           --no-warn           Warnings not reported if test passes\n"
       "           --locate-root path  Path to ALL_LOCATE_TARGET for bjam;\n"
       "                               default boost-root.\n"
+      "           --comment path      Path to file containing HTML\n"
+      "                               to be copied into status-file.\n"
       "example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n";
     return 1;
   }
@@ -640,8 +645,22 @@ int cpp_main( int argc, char * argv[] ) // note name!
           "<h1>Compiler Status: " + platform_desc() + "</h1>\n"
           "<b>Run Date:</b> "
        << run_date
-       << "\n</td>\n</table>\n<br>\n"
+       << "\n"
        ;
+
+  if ( !comment_path.empty() )
+  {
+    fs::ifstream comment_file( comment_path );
+    if ( !comment_file )
+    {
+      std::cerr << "Could not open \"--comment\" input file: " << comment_path.string() << std::endl;
+      return 1;
+    }
+    char c;
+    while ( comment_file.get( c ) ) { report.put( c ); }
+  }
+
+  report << "</td>\n</table>\n<br>\n";
 
   if ( !no_links )
   {
