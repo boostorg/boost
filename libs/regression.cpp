@@ -197,7 +197,7 @@ void do_tests(std::ostream & out,
     std::cout << "*** " << file << " ***\n\n";
 
     out << "<tr>\n"
-        << "<td><a href=\"" << file << "\">" << file << "</a></td>\n"
+        << "<td><a href=\"../" << file << "\">" << file << "</a></td>\n"
         << "<td>" << type << "</td>\n";
 
     for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it) {
