@@ -521,27 +521,30 @@
 
             <!-- Write log file -->
             <xsl:variable name="test_result_for_toolset" select="$test_results[ @toolset = $toolset and ../@runner=$runner ]"/>
+
             <xsl:variable name="log_file" select="meta:output_file_path( concat( $test_result_for_toolset/../@runner, '-', $test_result_for_toolset/@target-directory ) )"/>
 
-            <xsl:if test="count( $test_result_for_toolset ) > 0">
-                <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
-                <exsl:document href="{$log_file}"
-                    method="html" 
-                    doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
-                    encoding="utf-8"
-                    indent="yes">
-                    
-                    <html>
-                        <head>
-                            <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
-                            <!--<title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>-->
-                        </head>
-                        <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-                            <frame name="tocframe" src="../toc.html" scrolling="auto"/>
-                            <frame name="docframe" src="../../{$log_file}" scrolling="auto"/>
-                        </frameset>
-                    </html>
-                </exsl:document>
+            <xsl:if test="meta:show_output( $test_result_for_toolset )">
+                <xsl:if test="count( $test_result_for_toolset ) > 0">
+                    <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
+                    <exsl:document href="{$log_file}"
+                        method="html" 
+                        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
+                        encoding="utf-8"
+                        indent="yes">
+                        
+                        <html>
+                            <head>
+                                <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
+                                <!--<title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>-->
+                            </head>
+                            <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
+                                <frame name="tocframe" src="../toc.html" scrolling="auto"/>
+                                <frame name="docframe" src="../../{$log_file}" scrolling="auto"/>
+                            </frameset>
+                        </html>
+                    </exsl:document>
+                </xsl:if>
             </xsl:if>
 
             <!-- Insert cell -->
