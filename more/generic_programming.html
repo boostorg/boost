@@ -22,6 +22,10 @@
     <h2>Table of Contents</h2>
 
     <ul>
+      <li><a href="#introduction">Introduction</a>
+
+      <li><a href="#concept">The Anatomy of a Concept</a>
+
       <li><a href="#traits">Traits</a>
 
       <li><a href="#tag_dispatching">Tag Dispatching</a>
@@ -34,6 +38,137 @@
 
       <li><a href="#adaptors">Adaptors</a>
     </ul>
+
+
+
+    <h2><a name="introduction">Introduction</a></h2>
+
+    <p>Generic programming is about generalizing software components
+    so that they can be easily reused in a wide variety of situations.
+    In C++, class and function templates are particularly effective
+    mechanisms for generic programming because they make the
+    generalization possible without sacrificing efficiency. 
+   
+    <p>As a simple example of generic programming, we will look at how
+    one might generalize the <tt>memcpy()</tt> function of the 
+    C standard library. An implementation of <tt>memcpy()</tt>
+    might look like the following: 
+<p>
+<blockquote>
+<pre>
+void* memcpy(void* region1, const void* region2, size_t n)
+{
+  const char* first = (const char*)region2;
+  const char* last = ((const char*)region2) + n;
+  char* result = (char*)region1;
+  while (first != last)
+    *result++ = *first++;
+  return result;
+}
+</pre>
+</blockquote>
+    The <tt>memcpy()</tt> function is already generalized to some
+    extent by the use of <tt>void*</tt> so that the function can be
+    used to copy arrays of different kinds of data. But what if the
+    data we would like to copy is not in an array? Perhaps it is in a
+    linked list. Can we generalize the notion of copy to any sequence
+    of elements? Looking at the body of <tt>memcpy()</tt>, the
+    function's <b><i>minimal requirements</i></b> are that it needs to
+    to <i>traverse</i> through the sequence using some sort of
+    pointer, <i>access</i> elements pointed to, <i>write</i> the
+    elements to the destination, and <i>compare</i> pointers to know
+    when to stop.  The C++ standard library groups requirements such
+    as these into <b><i>concepts</i></b>, in this case the <a
+    href="http://www.sgi.com/tech/stl/InputIterator.html"> Input
+    Iterator</a> concept (for <tt>region2</tt>) and the <a
+    href="http://www.sgi.com/tech/stl/OutputIterator.html"> Output
+    Iterator</a> concept (for <tt>region1</tt>).
+
+    <p>If we rewrite the <tt>memcpy()</tt> as a function template, and
+    use the <a href="http://www.sgi.com/tech/stl/InputIterator.html">
+    Input Iterator</a> and <a
+    href="http://www.sgi.com/tech/stl/OutputIterator.html"> Output
+    Iterator</a> concepts to describe the requirements on the template
+    parameters, we can implement a highly reusable <tt>copy()</tt>
+    function in the following way:
+<p>
+<blockquote>
+<pre>
+template &lt;typename InputIterator, typename OutputIterator&gt;
+OutputIterator
+copy(InputIterator first, InputIterator last, OutputIterator result)
+{
+  while (first != last)
+    *result++ = *first++;
+  return result;
+}
+</pre>
+</blockquote>
+
+    <p>Using the generic <tt>copy()</tt> function, we can now copy
+    elements from any kind of sequence, including a linked list that
+    exports iterators such as <tt>std::list</tt>.
+<p>
+<blockquote>
+<pre>
+#include &lt;list&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main()
+{
+  const int N = 3;
+  std::vector&lt;int&gt; region1(N);
+  std::list&lt;int&gt; region2;
+
+  region2.push_back(1);
+  region2.push_back(0);
+  region2.push_back(3);
+  
+  std::copy(region2.begin(), region2.end(), region1.begin());
+
+  for (int i = 0; i &lt; N; ++i)
+    std::cout &lt;&lt; region1[i] &lt;&lt; " ";
+  std::cout &lt;&lt; std::endl;
+}
+</pre>
+</blockquote>
+
+
+    <h2><a name="concept">Anatomy of a Concept</a></h2>
+
+    A <b><i>concept</i></b> is a set requirements, where the
+    requirements consist of valid expressions, associated types,
+    invariants, and complexity guarantees. A type that satisfies the
+    set of requirements is said to <b><i>model</i></b> the concept.  A
+    concept can extend the requirements of another concept, which is
+    called <b><i>refinement</i></b>.
+
+    <ul>
+       <li><b>Valid Expressions</b> are C++ expressions which must compile
+	 successfully for the objects involved in the expression to be
+	 considered <i>models</i> of the concept.
+
+      <li><b>Associated Types</b> are types that are related to the
+	modeling type in that they participate in one or more of the
+	valid expressions. Typically associated types can be accessed
+	either through typedefs nested within a class definition for
+	the modeling type, or they are accessed through a <a
+	href="#traits">traits class</a>.
+
+      <li><b>Invariants</b> are run-time characteristics of the
+	objects that must always be true, that is, the functions involving
+	the objects must preserve these characteristics. The invariants
+	often take the form of pre-conditions and post-conditions.
+
+      <li><b>Complexity Guarantees</b> are maximum limits on how long
+	the execution of one of the valid expressions will take, or how
+	much of various resources its computation will use.
+    </ul>
+
+    <p>The concepts used in the C++ Standard Library are documented at
+    the <a href="http://www.sgi.com/tech/stl/table_of_contents.html">
+    SGI STL site</a>.
 
     <h2><a name="traits">Traits</a></h2>
 
@@ -308,7 +443,9 @@ void append_sequence(Container&amp; c, Iterator start, Iterator finish)
  -->
 <!--  LocalWords:  InputIterator BidirectionalIterator RandomAccessIterator pdf
  -->
-<!--  LocalWords:  typename Alexandrescu templated Andrei's Abrahams
+<!--  LocalWords:  typename Alexandrescu templated Andrei's Abrahams memcpy int
  -->
 </body>
 </html>
+<!--  LocalWords:  const OutputIterator iostream pre cpl
+ -->
