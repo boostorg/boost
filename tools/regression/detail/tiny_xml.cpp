@@ -1,10 +1,7 @@
 //  tiny XML sub-set tools implementation  -----------------------------------//
 
-//  (C) Copyright Beman Dawes 2002. Permission to copy,
-//  use, modify, sell and distribute this software is granted provided this
-//  copyright notice appears in all copies. This software is provided "as is"
-//  without express or implied warranty, and with no claim as to its
-//  suitability for any purpose.
+//  (C) Copyright Beman Dawes 2002.
+//  See accompanying license for terms and conditions of use.
 
 #include "tiny_xml.hpp"
 #include <cassert>
