@@ -1,0 +1,97 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Boost Header policy</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="Microsoft Border" content="none, default">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+<h1>Boost Header Policy</h1>
+<p>Header files are the place where a library comes into contact with user code
+and other libraries.&nbsp; To co-exist peacefully and productively, headers must
+be &quot;good neighbors&quot;.</p>
+<p>Here are the standards for namespace boost headers.&nbsp;&nbsp;&nbsp; Many of
+these are also reasonable guidelines for general use.
+<ul>
+  <li>Headers should have a .hpp (lowercase) filename extension.&nbsp;</li>
+  <li>Wrap the header in #ifndef guards so that multiple inclusion is
+    benign.&nbsp; Use a naming convention that minimizes the chance of clashes
+    with macro names from other's code.&nbsp; The <a href="#Sample header">sample
+    header</a> uses the Boost convention of all uppercase letters, with the
+    header name prefixed by the namespace name, and suffixed with HPP, separated
+    by underscores.</li>
+  <li>Wrap the header contents in a namespace to prevent global namespace
+    pollution. The namespace approach to pollution control is strongly preferred
+    to older approaches such as adding funny prefixes to global names.&nbsp;
+    Libraries which are designed to work well with other Boost libraries should
+    be placed namespace <tt>boost</tt>.</li>
+
+  <li>Make sure that a translation unit consisting of just the
+  contents of the header file will compile successfully.
+
+  <li>Place the header file in a sub-directory to prevent conflict with
+    identically named header files in other libraries.&nbsp; The parent
+    directory is added to the compiler's include search path.&nbsp; Then both
+    your code and user code specifies the sub-directory in <tt>#include</tt>
+    directives.&nbsp; Thus the header <a href="#Sample header">sample header</a>&nbsp;
+    would be included by <tt>#include &lt;boost/furball.hpp&gt;</tt></li>
+  <li>The preferred ordering for class definitions is public members, protected
+    members, and finally private members.</li>
+  <li>Include the boost/config.hpp <a href="../libs/config/config.htm">configuration
+    header</a> if there is a need to deal with compiler or platform
+    configuration issues.</li>
+</ul>
+<h2><a name="Sample header"></a>Sample Header</h2>
+<pre><tt>//&nbsp; Boost general library furball.hpp header file&nbsp; ---------------------------//
+
+//&nbsp; (C) Copyright Your Name 1998. Permission to copy, use, modify, sell and
+//&nbsp; distribute this software is granted provided this copyright notice appears
+//&nbsp; in all copies. This software is provided &quot;as is&quot; without express or implied
+//&nbsp; warranty, and with no claim as to its suitability for any purpose.
+
+//&nbsp; See http://www.boost.org for updates, documentation, and revision history.
+
+#ifndef BOOST_FURBALL_HPP
+#define BOOST_FURBALL_HPP
+
+namespace boost {
+
+//&nbsp; Furball class declaration&nbsp; -----------------------------------------------//
+
+&nbsp; class furball
+  {
+    public: 
+&nbsp;     void throw_up();
+    private:
+      int whatever;
+&nbsp;&nbsp;};&nbsp; // furball
+
+} // namespace
+
+#endif&nbsp; // BOOST_FURBALL_HPP</tt></pre>
+<h2>Coding Style</h2>
+<p>The alert reader will have noticed that the <a href="#Sample header">sample
+header</a> employs a certain coding style for indentation, positioning braces,
+commenting ending braces, and similar formatting issues.&nbsp; These stylistic
+issues are viewed as personal preferences and are not part of the Boost Header
+Policy.</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->18 September, 2001<!--webbot bot="Timestamp" endspan i-checksum="39344" --></p>
+
+</body>
+
+</html>

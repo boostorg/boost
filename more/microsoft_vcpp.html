@@ -1,0 +1,318 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Portability Hints: Microsoft Visual C++ 6.0 SP4</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+
+<p>
+
+<h1>Portability Hints: Microsoft Visual C++ 6.0 SP4</h1>
+
+Similar to the
+<a href="borland_cpp.html">portability hints for Borland C++</a>,
+this page provides hints on some language features of the Microsoft Visual C++
+version 6.0 service pack 4 compiler.  A list of
+acknowledged deficiencies can be found at the
+<a href="http://support.microsoft.com/support/kb/articles/q243/4/51.asp">Microsoft support site</a>.
+<p>
+
+Each entry in the following list describes a particular issue,
+complete with sample source code to demonstrate the effect.
+Most sample code herein has been verified to compile with gcc 2.95.2
+and Comeau C++ 4.2.44.
+
+
+<h2>Preprocessor symbol</h2>
+
+The preprocessor symbol <code>_MSC_VER</code> is defined for all
+Microsoft C++ compilers.  Its value is the internal version number of the
+compiler interpreted as a decimal number.  Since a few other compilers
+also define this symbol, boost provides the symbol
+<code>BOOST_MSVC</code>, which is defined in
+<a href="../boost/config.hpp">boost/config.hpp</a>
+to the value of _MSC_VER if and only if the compiler is really
+Microsoft Visual C++.
+
+The following table lists some known values.
+<p>
+
+<table border="1">
+<tr>
+<th>Compiler</th>
+<th><code>BOOST_MSVC</code> value</th>
+</tr>
+
+<tr>
+<td>Microsoft Visual C++ 6.0 (up to SP4)</td>
+<td>1200</td>
+</tr>
+
+</table>
+
+
+<h2>Core Language</h2>
+
+<h3>[chained using] Chaining <code>using</code>-declarations</h3>
+
+Chaining <code>using</code>-declarations does not work.
+<pre>
+void f();
+
+namespace N {
+  using ::f;
+}
+
+void g()
+{
+  using N::f;  // C2873: 'f': the symbol cannot be used in a using-declaration
+}
+</pre>
+
+
+<h3>[explicit-instantiation] Explicit function template
+instantiation</h3>
+
+Trying to explicitly instantiate a function template leads to the
+wrong function being called silently.
+
+<pre>
+#include &lt;stdio.h&gt;
+
+template&lt;class T&gt;
+void f()
+{
+  printf(&quot;%d\n&quot;, sizeof(T));
+}
+
+int main()
+{
+  f&lt;double&gt;();      // output: &quot;1&quot;
+  f&lt;char&gt;();        // output: &quot;1&quot;
+  return 0;
+}
+</pre>
+
+
+<h3>[for-scoping] Scopes of definitions in for-loops</h3>
+
+The scope of variable definitions in <code>for</code> loops should be
+local to the loop's body, but it is instead local to the enclosing
+block.
+
+
+<pre>
+int main()
+{
+  for(int i = 0; i &lt; 5; ++i)
+   ;
+  for(int i = 0; i &lt; 5; ++i)  // C2374: 'i': Redefinition; multiple initialization
+   ;
+  return 0;
+}
+</pre>
+
+<strong>Workaround:</strong> Enclose the offending <code>for</code>
+loops in another pair of curly braces.
+<p>
+Another possible workaround (brought to my attention by Vesa Karvonen)
+is this:
+<pre>
+#ifndef for
+#define for if (0) {} else for
+#endif
+</pre>
+
+Note that platform-specific inline functions in included headers might
+depend on the old-style <code>for</code> scoping.
+
+
+<h3>[inclass-member-init] In-class member initialization</h3>
+
+In-class member initialization, required to implement a
+Standard-conforming <code>std::numeric_limits</code> template, does
+not work.
+
+<pre>
+struct A
+{
+  static const int i = 5;      // &quot;invalid syntax for pure virtual method&quot;
+};
+</pre>
+
+<strong>Workaround:</strong> Either use an enum (which has incorrect
+type, but can be used in compile-time constant expressions), or define
+the value out-of-line (which allows for the correct type, but prohibits
+using the constant in compile-time constant expressions).  See
+<a href="int_const_guidelines.htm">Coding Guidelines for Integral Constant Expressions</a>
+for guidelines how to define member constants portably in boost
+libraries.
+
+
+<h3>[koenig-lookup] Argument-dependent lookup</h3>
+
+Argument-dependent lookup, also called Koenig lookup, works for
+overloaded operators, but not for ordinary functions.  No
+additional namespaces induced from the argument types seem to be
+considered.  
+
+<pre>
+namespace N {
+  struct A {};
+  void f(A);
+}
+
+void g()
+{
+  N::A a;
+  f(a);     // 'f': undeclared identifier
+}
+</pre>
+
+
+<h3>[template-friend] Templates as friends</h3>
+
+A Template cannot be declared a friend of a class.
+
+<pre>
+template&lt;class T&gt;
+struct A {};
+
+struct B
+{
+  template&lt;class T&gt;
+  friend struct A;     // &quot;syntax error&quot;
+};
+</pre>
+
+
+<h3>[member-template-outofline] Out-of-line definitions of member
+templates</h3>
+
+Defining member templates outside their enclosing class does not work.
+
+<pre>
+template&lt;class T&gt;
+struct A
+{
+  template&lt;class U&gt;
+  void f();
+};
+
+template&lt;class T&gt;
+template&lt;class U&gt;   // &quot;syntax error&quot;
+void A&lt;T&gt;::f()      // &quot;T: undeclared identifier&quot;
+{
+}
+</pre>
+
+<strong>Workaround:</strong> Define member templates in-line within
+their enclosing class.
+
+
+<h3>[partial-spec] Partial specialization</h3>
+
+Partial specialization of class templates does not work.
+
+<pre>
+template&lt;class T&gt;
+struct A {};
+
+template&lt;class T&gt;
+struct B {};
+
+template&lt;class T&gt;
+struct A&lt;B&lt;T&gt; &gt; {};  // template class was already defined as a non-template
+</pre>
+
+<strong>Workaround:</strong> In some situations where interface
+does not matter, class member templates can simulate partial
+specialization.
+
+
+<h3>[template-value] Dependent template value parameters</h3>
+
+Template value parameters whose type depends on a previous template
+parameter provoke an internal compiler error if the correct syntax
+(with "typename") is used.
+
+<pre>
+template&lt;class T, typename T::result_type&gt; // C1001: INTERNAL COMPILER ERROR: msc1.cpp, line 1794
+struct B {};
+ // (omit &quot;typename&quot; and it compiles)
+
+</pre>
+
+<strong>Workaround:</strong> Leave off the "typename" keyword.  That makes
+the program non-conforming, though.
+
+
+<h3>[wchar_t] <code>wchar_t</code> is not built-in</h3>
+
+The type <code>wchar_t</code> is not a built-in type.
+
+<pre>
+wchar_t x;  // &quot;missing storage class or type identifier&quot;
+</pre>
+
+<strong>Workaround:</strong> When using Microsoft Visual C++, the
+header
+<a href="../boost/config.hpp">boost/config.hpp</a>
+includes <code>&lt;cstddef></code>, which defines
+<code>wchar_t</code> as a typedef for <code>unsigned
+short</code>. Note that this means that the compiler does not regard
+<code>wchar_t</code> and <code>unsigned short</code> as distinct
+types, as is required by the standard, and so ambiguities may emanate
+when overloading on <code>wchar_t</code>.  The macro
+<code>BOOST_NO_INTRINSIC_WCHAR_T</code> is defined in this situation.
+
+
+<h3>[delete-const-pointer] Deleting <code>const X *</code> does not work</h3>
+
+Trying to delete a pointer to a cv-qualified type gives an error:
+<pre>
+void f()
+{
+  const int *p = new int(5);
+  delete p;        // C2664: cannot convert from "const int *" to "void *"
+}
+</pre>
+
+<strong>Workaround:</strong> Define the function
+<pre>
+inline void operator delete(const void *p) throw()
+{ operator delete(const_cast&lt;void*>(p)); }
+</pre>
+and similar functions for the other cv-qualifier combinations, for
+operator delete[], and for the <code>std::nothrow</code> variants.
+
+
+
+<h2>Standard Library</h2>
+
+<h3>[clib-namespace] C library names in global namespace instead of std</h3>
+<p>Library names from the &lt;c...&gt; headers are in the global namespace
+instead of namespace std.<p><b>Workaround:</b>&nbsp; The header <a href="../libs/config/config.htm">boost/config.hpp</a>
+will define BOOST_NO_STDC_NAMESPACE. It can be used as follows:
+<pre># ifdef BOOST_NO_STDC_NAMESPACE
+    namespace std { using ::abs; using ::fabs; }
+# endif</pre>
+<p>Because std::size_t and std::ptrdiff_t are so commonly used, the workaround
+for these is already provided in boost/config.hpp.<p>&nbsp;
+<hr>
+
+2001-05-04 <a href="../people/jens_maurer.htm">Jens Maurer</a>
+</body>
+</html>
