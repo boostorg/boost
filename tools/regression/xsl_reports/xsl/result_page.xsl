@@ -287,7 +287,7 @@
             </a>
           </div>
 
-          <xsl:variable name="library_marks" select="$explicit_markup//mark-library[ @name = $library ]"/>
+          <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable"/>
 
           <table border="0" cellspacing="0" cellpadding="0" class="detail-table" summary="library results">
 
@@ -310,11 +310,12 @@
               <xsl:variable name="lib_tests" select="//test-log[@library = $library]" />
               <xsl:variable name="lib_unique_test_names" 
                 select="$lib_tests[ generate-id(.) = generate-id( key('test_name_key', concat( @library, '&gt;@&lt;', @test-name ) ) ) ]" />
-              <xsl:variable name="lib_corner_case_tests_markup" select="$explicit_markup//mark-test[ @as='corner case' and @library = $library ]"/>
-              
-              <xsl:variable name="lib_general_tests" select="$lib_unique_test_names[ not( @test-name = $lib_corner_case_tests_markup/@test )  ]"/>
 
-              <xsl:variable name="lib_corner_case_tests" select="$lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@test ] " />
+              <xsl:variable name="lib_corner_case_tests_markup" select="$explicit_markup//library[ @name = $library ]/test[ @corner-case='yes' ]"/>
+              
+              <xsl:variable name="lib_general_tests" select="$lib_unique_test_names[ not( @test-name = $lib_corner_case_tests_markup/@name )  ]"/>
+
+              <xsl:variable name="lib_corner_case_tests" select="$lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] " />
             
               <xsl:for-each select="$lib_general_tests">
                 <xsl:variable name="test_name" select="./@test-name"/>
@@ -406,6 +407,10 @@
                         </xsl:when>
                       </xsl:choose>
                     </span>
+                    <xsl:if test="@refid">
+                        <xsl:variable name="refid" select="@refid"/>
+                        <xsl:copy-of select="$explicit_markup//note[ $refid = @id ]/node()"/>
+                    </xsl:if>
                     <xsl:copy-of select="node()"/>
                   </td>
                 </tr>
@@ -446,7 +451,7 @@
         <xsl:when test="not( $test_log )">
           <xsl:text>detail-missing</xsl:text>
         </xsl:when>
-        <xsl:when test="$explicit_markup//mark-library[ @name=$test_log/@library and ( @toolset = $test_log/@toolset or toolset/@name = $test_log/@toolset )  ]">
+        <xsl:when test="$explicit_markup//library[ @name=$test_log/@library ]/mark-unusable[ @toolset = $test_log/@toolset or toolset/@name = $test_log/@toolset ]">
           <xsl:text>detail-unusable</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -493,7 +498,7 @@
         <xsl:when test="not( $test_log )">
           <xsl:text>detail-missing</xsl:text>
         </xsl:when>
-        <xsl:when test="$explicit_markup//mark-library[ @name=$test_log/@library and ( @toolset = $test_log/@toolset or toolset/@name = $test_log/@toolset )  ]">
+        <xsl:when test="$explicit_markup//library[ @name=$test_log/@library ]/test/mark-library[ @toolset = $test_log/@toolset or toolset/@name = $test_log/@toolset ]">
           <xsl:text>detail-unusable</xsl:text>
         </xsl:when>
         <xsl:when test="$test_log[@result='fail' and @status='unexpected']">

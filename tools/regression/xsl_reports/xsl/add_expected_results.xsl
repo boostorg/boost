@@ -45,7 +45,7 @@
       </xsl:variable>
 
       <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and ( @test-name=$test-name or @test-name='*' ) and @toolset = $toolset]"/>
-      <xsl:variable name="failures_markup" select="$failures_markup//*/mark-failure[ @library=$library and ( @test = $test-name or @test = '*' ) and ( @toolset = $toolset or @toolset = '*' ) ]"/>
+      <xsl:variable name="failures_markup" select="$failures_markup//library[@name=$library]/test[@name = $test-name or @name = '*']/mark-failure[  ( toolset/@name = $toolset or toolset/@name = '*' ) ]"/>
       <xsl:variable name="is_new">
          <xsl:choose>
             <xsl:when test="$expected_results_test_case">
@@ -55,7 +55,7 @@
          </xsl:choose>
       </xsl:variable>
 
-
+      
       <xsl:variable name="expected_result">
         <xsl:choose>
           <xsl:when test='count( $failures_markup ) &gt; 0'>
@@ -74,7 +74,6 @@
         </xsl:choose>
       </xsl:variable>
 
-      <!--      <a><xsl:value-of select="count( $failures_markup )"/></a> -->
       <xsl:variable name="status">
         <xsl:choose>
           <xsl:when test="count( $failures_markup ) &gt; 0">
@@ -111,6 +110,7 @@
       <xsl:attribute name="expected-result"><xsl:value-of select="$expected_result"/></xsl:attribute>
       <xsl:attribute name="status"><xsl:value-of select="$status"/></xsl:attribute>
       <xsl:attribute name="is-new"><xsl:value-of select="$is_new"/></xsl:attribute>
+      <!--<a><xsl:value-of select="count( $failures_markup )"/></a>-->
       <xsl:element name="notes"><xsl:copy-of select="$notes"/></xsl:element>
 
 
