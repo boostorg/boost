@@ -13,11 +13,10 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
-    xmlns:str="http://exslt.org/strings"
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
-    exclude-result-prefixes="set str meta"
+    exclude-result-prefixes="exsl set meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
@@ -272,7 +271,7 @@
                 <!--                <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $not_ordered_toolsets ]"/> -->
                 <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable"/>
 
-                <table border="0" cellspacing="0" cellpadding="0" class="library-table" summary="library results">
+                <table border="0" cellspacing="0" cellpadding="0" class="library-table" width="1%" summary="Library results">
 
                     <thead>
                       <xsl:call-template name="insert_runners_rows">
@@ -314,14 +313,6 @@
 
                         <xsl:variable name="lib_corner_case_tests" select="meta:order_tests_by_name( $lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] ) " />
 
-                        <!-- debug section -->
-
-                        <lib_unique_test_names>
-                          <xsl:for-each select="$lib_unique_test_names">
-                            <test name="{@test-name}"/>
-                          </xsl:for-each>
-                        </lib_unique_test_names>
-   
 
                         <!-- general tests section -->
 
@@ -392,18 +383,24 @@
 
         <xsl:choose>
             <xsl:when test="$log_link != ''">
+                <xsl:text>&#160;&#160;</xsl:text>
                 <a href="{$log_link}" class="log-link" target="_top">
                     <xsl:value-of select="$result"/>
                 </a>
+                <xsl:text>&#160;&#160;</xsl:text>
             </xsl:when>
             <xsl:otherwise>
+                <xsl:text>&#160;&#160;</xsl:text>
                 <xsl:value-of select="$result"/>
+                <xsl:text>&#160;&#160;</xsl:text>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
     <!-- report developer status -->
     <xsl:template name="insert_cell_developer">
+        <xsl:param name="library"/>
+        <xsl:param name="toolset"/>
         <xsl:param name="test_log"/>
         <xsl:param name="log_link"/>
         
@@ -415,11 +412,11 @@
 
         <xsl:variable name="class">
         <xsl:choose>
+            <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
+                <xsl:text>library-unusable</xsl:text>
+            </xsl:when>
             <xsl:when test="not( $test_log )">
                 <xsl:text>library-missing</xsl:text>
-            </xsl:when>
-            <xsl:when test="meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )">
-                <xsl:text>library-unusable</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="concat( 'library-', $test_log/@result, '-', $test_log/@status, $is_new )"/>
@@ -430,7 +427,7 @@
         <td class="{$class}">
         <xsl:choose>
             <xsl:when test="not( $test_log )">
-                <xsl:text/>
+                <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
             </xsl:when> 
  
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
@@ -469,16 +466,18 @@
 
     <!-- report user status -->
     <xsl:template name="insert_cell_user">
+        <xsl:param name="library"/>
+        <xsl:param name="toolset"/>
         <xsl:param name="test_log"/>
         <xsl:param name="log_link"/>
         
         <xsl:variable name="class">
         <xsl:choose>
+            <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
+            <xsl:text>library-unusable</xsl:text>
+            </xsl:when>
             <xsl:when test="not( $test_log )">
             <xsl:text>library-missing</xsl:text>
-            </xsl:when>
-            <xsl:when test="meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )">
-            <xsl:text>library-unusable</xsl:text>
             </xsl:when>
             <xsl:when test="$test_log[@result='fail' and @status='unexpected']">
             <xsl:text>library-user-fail-unexpected</xsl:text>
@@ -591,12 +590,16 @@
             <xsl:choose>
             <xsl:when test="$mode='user'">
                 <xsl:call-template name="insert_cell_user">
+                <xsl:with-param name="library" select="$library"/>
+                <xsl:with-param name="toolset" select="$toolset"/>
                 <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
                 <xsl:with-param name="log_link" select="$log_file"/>
                 </xsl:call-template>
             </xsl:when>
             <xsl:when test="$mode='developer'">
                 <xsl:call-template name="insert_cell_developer">
+                <xsl:with-param name="library" select="$library"/>
+                <xsl:with-param name="toolset" select="$toolset"/>
                 <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
                 <xsl:with-param name="log_link" select="$log_file"/>
                 </xsl:call-template>

@@ -16,6 +16,7 @@
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
+    exclude-result-prefixes="exsl func set meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
@@ -104,7 +105,7 @@
 
             <!-- summary table -->
 
-            <table border="0" cellspacing="0" cellpadding="0" class="summary-table">
+            <table border="0" cellspacing="0" cellpadding="0" width="1%" class="summary-table" summary="Overall summary">
 
             <thead>
                 <xsl:call-template name="insert_runners_rows">
@@ -217,7 +218,7 @@
         <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
             <xsl:text>summary-unusable</xsl:text>
         </xsl:when>
-        <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
+        <xsl:when test="count( $current_cell ) = 0">
             <xsl:text>summary-missing</xsl:text>
         </xsl:when>
         <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected' and @is-new='no'] )">
@@ -243,25 +244,29 @@
     <td class="{$class}">
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
+            <xsl:text>&#160;&#160;</xsl:text>
             <a href="{$library_page}.html" class="log-link" target="_top">
-            <xsl:text>n/a</xsl:text>
+                <xsl:text>n/a</xsl:text>
             </a>          
+            <xsl:text>&#160;&#160;</xsl:text>
         </xsl:when>
         <xsl:when test="$class='summary-missing'">
-            <xsl:text>missing</xsl:text>
+            <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
         </xsl:when>
         <xsl:when test="$class='summary-fail-unexpected'">
             <a href="{$library_page}.html" class="log-link" target="_top">
-            <xsl:text>broken</xsl:text>
+                <xsl:text>broken</xsl:text>
             </a>
         </xsl:when>
         <xsl:when test="$class='summary-fail-unexpected-new' ">
+            <xsl:text>&#160;&#160;</xsl:text>
             <a href="{$library_page}.html" class="log-link" target="_top">
-            <xsl:text>fail</xsl:text>
+                <xsl:text>fail</xsl:text>
             </a>
+            <xsl:text>&#160;&#160;</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:text>OK</xsl:text>
+            <xsl:text>&#160;&#160;OK&#160;&#160;</xsl:text>
         </xsl:otherwise>
         </xsl:choose>
     </td>

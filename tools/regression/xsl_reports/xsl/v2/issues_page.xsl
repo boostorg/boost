@@ -16,6 +16,7 @@
     xmlns:meta="http://www.meta-comm.com"
     xmlns:set="http://exslt.org/sets"
     extension-element-prefixes="func exsl"
+    exclude-result-prefixes="set meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
