@@ -94,16 +94,31 @@ throw some_exception();
       that you have a fallback in case the formatting code throws</li>
 
       <li><b>Don't worry <i>too</i> much about the <code>what()</code>
-      message</b>. It's nice to have a message that a programmer stands a
-      chance of figuring out, but you're very unlikely to be able to compose
-      a relevant and <i>user</i>-comprehensible error message at the point an
-      exception is thrown. Certainly, internationalization is beyond the
-      scope of the exception class author. <a href=
-      "../people/peter_dimov.htm">Peter Dimov</a> makes an excellent argument
-      that the proper use of a <code>what()</code> string is to serve as a
-      key into a table of error messages. Now if only we could get
-      standardized <code>what()</code> strings for exceptions thrown by the
-      standard library...</li>
+      message</b>. It's nice to have a message that a programmer
+      stands a chance of figuring out, but you're very unlikely to be
+      able to compose a relevant and <i>user</i>-comprehensible error
+      message at the point an exception is thrown. Certainly,
+      internationalization is beyond the scope of the exception class
+      author.  <a href=
+      "../people/peter_dimov.htm">Peter Dimov</a> makes an excellent
+      argument that the proper use of a <code>what()</code> string is
+      to serve as a key into a table of error message formatters. Now
+      if only we could get standardized <code>what()</code> strings
+      for exceptions thrown by the standard library...</li>
+      
+      <li><b>Expose relevant information about the cause of the
+      error</b> in your exception class' public interface. A fixation
+      on the <code>what()</code> message is likely to mean that you
+      neglect to expose information someone might need in order to
+      make a coherent message for users.  For example, if your
+      exception reports a numeric range error, it's important to have
+      the actual numbers involved available <i>as numbers</i> in the
+      exception class' public interface where error reporting code can
+      do something intelligent with them.  If you only expose a
+      textual representation of those numbers in
+      the <code>what()</code> string, you will make life very
+      difficult for programmers who need to do something more
+      (e.g. subtraction) with them than dumb output.
 
       <li><b>Make your exception class immune to double-destruction</b> if
       possible. Unfortunately, several popular compilers occasionally cause
