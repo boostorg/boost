@@ -107,6 +107,7 @@ namespace
   {
     string::size_type pos = s.find( ".test/" );
     if ( pos == string::npos ) pos = s.find( ".dll/" );
+    if ( pos == string::npos ) pos = s.find( ".so/" );
     if ( pos == string::npos ) pos = s.find( ".lib/" );
     if ( pos == string::npos ) pos = s.find( ".pyd/" );
     return pos;
@@ -248,7 +249,9 @@ namespace
       if ( info.type.empty() )
       {
         if ( target_directory.find( ".lib/" ) != string::npos
-          || target_directory.find( ".dll/" ) != string::npos )
+          || target_directory.find( ".dll/" ) != string::npos 
+          || target_directory.find( ".so/" ) != string::npos 
+          )
         {
           info.type = "lib";
         }
