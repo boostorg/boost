@@ -263,7 +263,7 @@ previous_results_type read_previous_results(std::istream & is)
   std::string line, current_test;
   while(std::getline(is, line)) {
     if(status == prefix) {
-      if(line.substr(0, 6) == "<table")
+      if(line.substr(0, 17) == "<table border=\"1\"")
         status = testname;
     } else if(status == testname) {
       if(line.substr(0, 6) == "<td><a") {
