@@ -162,7 +162,6 @@
                 <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
                 <toolset name="mingw"/>
                 <toolset name="mingw-3.4.1"/>
                 <toolset name="meta-como-win32-4.3.3-vc7"/>
@@ -170,6 +169,10 @@
                 <toolset name="como-win32-4.3.3-vc7.1"/>
                 <toolset name="meta-como-win32-4.3.3-msvc"/>
 		<note author="B. Garst" refid="18,19"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <note author="R. Rivera" refid="25"/>
             </mark-failure>
         </test>
         <test name="testday_dll">
@@ -1323,6 +1326,14 @@ for more information.
       that windows DLL's are supported using the --windows option,  after some 
       experimentation we have been, unsuccessful in making dll configurations 
       work correctly.  
+    </note>
+    
+    <!-- R. Rivera -->
+    <note id="25">
+      The failure is caused by a runtime limitation. Locale support is only
+      available with the static linked variant of the runtime. Generally
+      the dynamic linked variant is required when building dynamic modules
+      ,DLL, so, etc.
     </note>
 
 
