@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 #endif
 
 // It is OK to use boost headers which contain entirely inline code.
