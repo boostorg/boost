@@ -96,7 +96,11 @@ std::string get_system_configuration()
 
 std::string get_system_configuration()
 {
-  return "Mac OS";
+#if __dest_os == _mac_os
+  return "Mac OS 9";
+#else
+  return "Mac OS X";
+#endif
 }
 
 #else
