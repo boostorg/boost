@@ -294,9 +294,6 @@ http://www.boost.org/LICENSE_1_0.txt)
 
                 <!-- library marks = library-unusable markup for toolsets in the report  -->
                 <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable/toolset[  meta:re_match( @name, $run_toolsets//toolset/@name ) ]/.."/>
-                <lmarks>
-                    <xsl:copy-of select="$library_marks"/>
-                </lmarks>
 
                 <table border="0" cellspacing="0" cellpadding="0" class="library-table" width="1%" summary="Library results">
 
