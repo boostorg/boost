@@ -315,7 +315,7 @@ bool execute(const std::string & command)
   } else {
     int status;
     struct rusage usage;
-    int result = wait4(pid, &status, 0, &usage);
+    int result = wait3(&status, 0, &usage);
     if(WIFEXITED(status))
       ret = WEXITSTATUS(status);
     else if(WIFSIGNALED(status))
