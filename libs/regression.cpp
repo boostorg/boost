@@ -20,11 +20,12 @@
 #include <cstdlib>
 #include <fstream>
 #include <utility>
+#include <ctime>
 
 // It is OK to use boost headers which contain entirely inline code.
 #include <boost/config.hpp>
 # ifdef BOOST_NO_STDC_NAMESPACE
-    namespace std { using ::exit; using ::system; }
+    namespace std { using ::exit; using ::system; using ::strftime; using ::gmtime; using ::time; }
 # endif
 
 std::string get_host()
@@ -255,11 +256,17 @@ int main(int argc, char * argv[])
 
   std::ofstream out( ("cs-" + host + ".html").c_str() );
 
+  char run_date[100];
+  time_t ct;
+  std::time(&ct);
+  std::strftime(run_date, sizeof(run_date), "%d %b %Y %H:%M GMT", std::gmtime(&ct)); 
+
   out << "<html>\n<head>\n<title>\nCompiler Status: " + host + "\n</title>\n</head>\n"
       << "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
       << "<h1><img border border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\"></h1>\n"
       << "<h1>Compiler Status: " + host + "</h1>\n"
       << "</p>\n"
+      << "<p><b>Run Date:</b> " << run_date << "</p>\n"
       << "<p>\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
