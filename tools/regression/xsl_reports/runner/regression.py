@@ -5,7 +5,10 @@
 # (See accompanying file LICENSE_1_0.txt or copy at 
 # http://www.boost.org/LICENSE_1_0.txt)
 
+import httplib
+import tarfile
 import time
+import getopt
 import glob
 import shutil
 import os.path
@@ -14,15 +17,14 @@ import traceback
 import string
 import sys
 
-boost_root = os.path.abspath( os.path.dirname( sys.argv[0] ) )
-while os.path.basename( boost_root ) != 'boost': 
-    boost_root = os.path.dirname( boost_root )
-
-regression_root = os.path.dirname( boost_root )
+regression_root = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 regression_results = os.path.join( regression_root, 'results' )
 regression_log = os.path.join( regression_results, 'bjam.log' )
 
-timestamp = None
+boost_root = os.path.join( regression_root, 'boost' )
+xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
+comment_path = os.path.join( regression_root, 'comment.html' )
+timestamp_path = os.path.join( boost_root, 'timestamp' )
 
 if sys.platform == 'win32': 
     bjam_name = 'bjam.exe'
@@ -42,25 +44,47 @@ else:
 bjam_path = os.path.join( regression_root, bjam_name )
 process_jam_log_path = os.path.join( regression_root, process_jam_log_name )
 
+def stdlog( message ):
+    sys.stderr.write( '# %s\n' % message )
+    sys.stderr.flush()
+
+log = stdlog
+utils = None
+
+
 
 def tool_path( name ):
     return os.path.join( regression_results, name )
 
-
-def check_environment():
-    try:
-        utils.check_existance( 'gzip' )
-        utils.check_existance( 'tar' )
-    except Exception, msg:
-        raise '\nPrerequisites check failed: %s' % msg
+def rmtree( path ):
+    if os.path.exists( path ):
+        if sys.platform == 'win32':
+            os.system( 'del /f /s /q "%s"' % path )
+            shutil.rmtree( path )
+        else:
+            os.system( 'rm -f -r "%s"' % path )
 
 
 def cleanup( args ):
-    utils.log( 'Cleaning up "%s" directory ...' % boost_root )
-    utils.rmtree( boost_root )
+    log( 'Cleaning up "%s" directory ...' % boost_root )
+    rmtree( boost_root )
     
-    utils.log( 'Cleaning up "%s" directory ...' % regression_results )
-    utils.rmtree( regression_results )
+    log( 'Cleaning up "%s" directory ...' % regression_results )
+    rmtree( regression_results )
+
+
+def http_get( site, source, destination ):
+    h = httplib.HTTPConnection( site )
+    h.request( 'GET', source )
+    
+    response = h.getresponse()
+    f = open( destination, 'wb' )
+    while True:
+        data = response.read( 16*1024 )
+        if len( data ) == 0: break
+        f.write( data )
+
+    f.close()
 
 
 def download_boost_tarball( destination, tag ):
@@ -68,12 +92,11 @@ def download_boost_tarball( destination, tag ):
     tarball_name = 'boost.tar.bz2'
     tarball_path = os.path.join( destination, tarball_name )
 
-    utils.log( "Downloading '%s' for tag %s from %s "  % ( tarball_path, tag, site ) )
-    return tarball_path
+    log( "Downloading '%s' for tag %s from %s "  % ( tarball_path, tag, site ) )
     if os.path.exists( tarball_path ):
         os.unlink( tarball_path )
 
-    utils.http_get(
+    http_get(
           site
         , '/%s' % tarball_name # ignore tag for now
         , tarball_path
@@ -83,40 +106,43 @@ def download_boost_tarball( destination, tag ):
 
 
 def unpack_tarball( tarball_path, destination ):
-    utils.log( 'Looking for old unpacked archives...' )
+    log( 'Looking for old unpacked archives...' )
     old_boost_dirs =  glob.glob( os.path.join( destination, 'boost-*' ) )
 
     for old_boost_dir in old_boost_dirs:
-        utils.log( 'Deleting old directory %s.' % old_boost_dir ) 
-        utils.rmtree( old_boost_dir )
+        log( 'Deleting old directory %s.' % old_boost_dir ) 
+        rmtree( old_boost_dir )
 
-    utils.log( 'Unpacking boost tarball ("%s")' % tarball_path )
-    utils.untar( tarball_path )
+    log( 'Unpacking boost tarball ("%s")...' % tarball_path )
+    tar = tarfile.open( tarball_path, 'r|bz2' )
+    for tarinfo in tar:
+        tar.extract(tarinfo)
+    tar.close()
+
     boost_dir = glob.glob( os.path.join( destination, 'boost-*' ) )[0]
-    utils.log( '    Unpacked into directory "%s"' % boost_dir )
+    log( '    Unpacked into directory "%s"' % boost_dir )
     
     if os.path.exists( boost_root ):
-        utils.log( 'Deleting "%s" directory...' % boost_root )
-        shutil.rmtree( boost_root )
+        log( 'Deleting "%s" directory...' % boost_root )
+        rmtree( boost_root )
 
-    utils.log( 'Renaming "%s" into "%s"' % ( boost_dir, boost_root ) )
+    log( 'Renaming "%s" into "%s"' % ( boost_dir, boost_root ) )
     os.rename( boost_dir, boost_root )
 
 
 def get_source( user, tag, args ):
-    __log__ = 1; utils.log( "Getting sources ..." )
+    log( "Getting sources ..." )
 
-    global timestamp
-    timestamp = time.gmtime()
     if user is not None:
         boost_cvs_checkout( user, tag )
     else:
-        tarball_path = download_boost_tarball( regression_root, tag )
-        unpack_tarball( tarball_path, regression_root )
+        #tarball_path = download_boost_tarball( regression_root, tag )
+        #unpack_tarball( tarball_path, regression_root )
+        open( timestamp_path, 'w' ).close()
 
 
 def update_source( args ):
-    __log__ = 1; log( "Getting sources ..." ) 
+    log( "Getting sources ..." ) 
     get_source_method = { "cvs": boost_cvs_update
                           , "directory": get_source_directory
                           }
@@ -128,19 +154,19 @@ def update_source( args ):
 def build_bjam_if_needed():    
     global bjam_path
     if os.path.exists( bjam_path ):
-        utils.log( 'Found preinstalled "%s"; will use it.' % bjam_path )
+        log( 'Found preinstalled "%s"; will use it.' % bjam_path )
         return
     
-    utils.log( 'Preinstalled "%s" is not found; building one...' % bjam_path )
+    log( 'Preinstalled "%s" is not found; building one...' % bjam_path )
 
-    utils.log( 'Locating bjam source directory...' )
+    log( 'Locating bjam source directory...' )
     bjam_source_dir = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
     
     if os.path.exists( bjam_source_dir ):
-        utils.log( 'Found bjam source directory "%s"' % bjam_source_dir )
-        utils.log( 'Building bjam using \"%s\"...' % bjam_build_compiler )
+        log( 'Found bjam source directory "%s"' % bjam_source_dir )
+        log( 'Building bjam using \"%s\"...' % bjam_build_compiler )
             
-        utils.log( "Building bjam (%s)" % bjam_make_cmd )
+        log( "Building bjam (%s)" % bjam_make_cmd )
         utils.system( [ 
               'cd %s' % bjam_source_dir
             , bjam_make_cmd 
@@ -152,24 +178,24 @@ def build_bjam_if_needed():
     if not os.path.exists( bjam_path ):
         raise 'Failed to find bjam (\"%s\") after build.' % bjam_path
 
-    utils.log( 'Bjam succesfully built in "%s" directory' % bjam_path )
+    log( 'Bjam succesfully built in "%s" directory' % bjam_path )
 
 
 def build_process_jam_log_if_needed():
     global process_jam_log_path
     if os.path.exists( process_jam_log_path ):
-        utils.log( 'Found preinstalled "%s"; will use it.' % process_jam_log_path )
+        log( 'Found preinstalled "%s"; will use it.' % process_jam_log_path )
         return
     
-    utils.log( 'Preinstalled "%s" is not found; building one.' % process_jam_log_path )
+    log( 'Preinstalled "%s" is not found; building one.' % process_jam_log_path )
     
     process_jam_log_source_dir = os.path.join( boost_root, 'tools', 'regression', 'build' )
 
-    utils.log( 'Locating proces_jam_log source directory...' )
+    log( 'Locating proces_jam_log source directory...' )
     if os.path.exists( process_jam_log_source_dir ):
-        utils.log( 'Found proces_jam_log source directory "%s"' % process_jam_log_source_dir )
+        log( 'Found proces_jam_log source directory "%s"' % process_jam_log_source_dir )
 
-        utils.log( 'Building process_jam_log using toolset "%s"' % process_jam_log_toolset )
+        log( 'Building process_jam_log using toolset "%s"' % process_jam_log_toolset )
         utils.system( [ 
               'cd %s' % process_jam_log_source_dir
             , '%s -sTOOLS=%s' % ( bjam_path, process_jam_log_toolset )
@@ -186,10 +212,22 @@ def build_process_jam_log_if_needed():
     if not os.path.exists( process_jam_log_path ):
         raise 'Failed to find process_jam_log ("%s") after build.' % process_jam_log_path
     
-    utils.log( 'Process_jam_log succesfully built in "%s" directory' % process_jam_log_path )
+    log( 'Process_jam_log succesfully built in "%s" directory' % process_jam_log_path )
 
 
-def setup( args ):
+
+def setup( comment_file, args ):
+    sys.path.append( xsl_reports_dir )
+    import utils as utils_module
+    global utils    
+    utils = utils_module
+    
+    if comment_file is None:
+        log( 'Comment file "%s" not found; creating default comment.' % comment_path )
+        f = open( comment_path, 'w' )
+        f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
+        f.close()
+    
     if not 'no-bjam' in args:
         build_bjam_if_needed()
     
@@ -212,7 +250,7 @@ def stop_build_monitor():
 
 
 def process_bjam_log():
-    utils.log( 'Getting test case results out of "%s"...' % regression_log )
+    log( 'Getting test case results out of "%s"...' % regression_log )
     utils.checked_system( [ 
         "%s %s <%s" % (  
               process_jam_log_path
@@ -221,7 +259,7 @@ def process_bjam_log():
             )
         ] )
     
-    os.rename( regression_log, '%s.processed' % regression_log )
+    #os.rename( regression_log, '%s.processed' % regression_log )
 
 
 def test( 
@@ -236,7 +274,7 @@ def test(
         cd = os.getcwd()
         os.chdir( os.path.join( boost_root, 'status' ) )
 
-        utils.log( 'Making "%s" directory...' % regression_results )
+        log( 'Making "%s" directory...' % regression_results )
         utils.makedirs( regression_results )
 
         results_libs = os.path.join( regression_results, 'libs' )
@@ -276,16 +314,22 @@ def upload(
         , comment_file
         , args
         ):
-    global timestamp
     import runner
-
+    
+    if comment_file is not None:
+        global comment_path
+        comment_path = os.path.join( regression_root, comment_file )
+    
     runner.collect_and_upload_logs( 
           regression_results
         , runner_id
         , tag
         , platform
-        , comment_file
-        , time.strftime("%a, %d %b %Y %H:%M:%S +0000", timestamp )
+        , comment_path
+        , time.strftime( 
+              "%a, %d %b %Y %H:%M:%S +0000"
+            , time.gmtime( os.stat( timestamp_path ).st_mtime )
+            )
         , user
         )
 
@@ -302,34 +346,32 @@ def regression(
         , args = []
         ):
 
-    check_environment()
-
     try:
         mail_subject = "Boost regression for %s on %s \n" % ( tag, os.environ[ "COMPUTERNAME" ] )
         if incremental:
             update_source( user )
-            setup( [ "bjam", "build" ] )
+            setup( comment_file, [] )
         else:
-            cleanup( args )
-            get_source( user, tag, args )
-            setup( args )
+            #cleanup( args )
+            get_source( user, tag, [] )
+            setup( comment_file, [] )
 
-        test( toolsets, args )
-        upload( tag, runner, platform, user, comment_file, args )
+        test( toolsets, [] )
+        upload( tag, runner, platform, user, comment_file, [] )
 
         if mail:
-            utils.log( 'Sending report to "%s"' % mail )
+            log( 'Sending report to "%s"' % mail )
             utils.send_mail( mail, mail_subject + ' completed successfully.' )
     except:
         if mail:
-            utils.log( 'Sending report to "%s"' % mail )
+            log( 'Sending report to "%s"' % mail )
             msg = regression_log + [ "" ] + apply( traceback.format_exception, sys.exc_info() ) 
             utils.send_mail( mail, mail_subject + ' failed.', '\n'.join( msg ) )
         raise
 
 
 def accept_args( args ):
-    args_spec = [ 
+    args_spec = [
           'tag='
         , 'runner='
         , 'platform='
@@ -342,14 +384,22 @@ def accept_args( args ):
         ]
     
     options = {
-          '--platform' :    sys.platform
+          '--tag' :         'CVS-HEAD'
+        , '--platform' :    sys.platform
         , '--user' :        None
-        , '--comment' :     'comment.html'
+        , '--comment' :     None
         , '--toolsets' :    None
         , '--mail' :        None
         }
     
-    other_args = utils.accept_args( args_spec, args, options, usage )
+    defaults_num = len( options )
+
+    ( option_pairs, other_args ) = getopt.getopt( args, '', args_spec )
+    map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
+
+    if ( options.has_key( '--help' ) or len( options.keys() ) == defaults_num ):
+        usage()
+        sys.exit( 1 )
 
     return ( 
           options[ '--tag' ]
@@ -375,15 +425,15 @@ commands = {
     }
 
 def usage():
-    print 'Usage: %s command [options|@response-file]' % os.path.basename( sys.argv[0] )
+    print 'Usage: %s [command] options' % os.path.basename( sys.argv[0] )
     print    '''
 Commands:
 \t%s
 
 Options:
 
-\t--tag                 the tag for the results (e.g. 'CVS-HEAD')
 \t--runner              runner ID (e.g. 'Metacomm')
+\t--tag                 the tag for the results ('CVS-HEAD' by default)
 \t--comment             an html comment file (will be inserted in the reports, 
 \t                      'comment.html' by default)
 \t--incremental         do incremental run (do not remove previous binaries)
@@ -392,25 +442,14 @@ Options:
 \t--mail                email address to send run notification to (optional)
 ''' % '\n\t'.join( commands.keys() )
 
-    print 'Example:\n\t%s regression --tag=CVS-HEAD --runner=Metacomm' \
-        % os.path.basename( sys.argv[0] )
+    print 'Example:\n\t%s --runner=Metacomm' % os.path.basename( sys.argv[0] )
 
 
-def main():
-    if len(sys.argv) < 2:
-        usage()
-        sys.exit( 1 )
-
-    command = sys.argv[1];
-    commands[ command ]( *accept_args( sys.argv[ 2: ] ) );
-
-
-if __name__ != '__main__':  import utils
+if len(sys.argv) > 1 and sys.argv[1] in commands:
+    command = sys.argv[1]
+    args = sys.argv[ 2: ]
 else:
-    # in absense of relative import...
-    xsl_path = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
-    while os.path.basename( xsl_path ) != 'xsl_reports': xsl_path = os.path.dirname( xsl_path )
-    sys.path.append( xsl_path )
-
-    import utils
-    main()
+    command = 'regression'
+    args = sys.argv[ 1: ]
+    
+commands[ command ]( *accept_args( args ) )
