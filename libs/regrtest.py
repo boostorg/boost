@@ -248,7 +248,7 @@ if  program_arg=="*":
   compile( "concept_check/concept_check_test.cpp")
   compile( "concept_check/class_concept_check_test.cpp")
   compile( "concept_check/stl_concept_check.cpp")
-  compile( "concept_check/stl_concept_convering.cpp")
+  compile( "concept_check/stl_concept_covering.cpp")
   compile( "concept_check/concept_check_fail_expected.cpp")
   compile( "concept_check/class_concept_check_fail_expected.cpp")
   compile( "functional/function_test.cpp" )
