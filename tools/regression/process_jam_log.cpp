@@ -443,12 +443,16 @@ int cpp_main( int argc, char ** argv )
       for (unsigned int i = 0; i!=info.type.size(); ++i )
         { info.type[i] = std::tolower( info.type[i] ); }
       pos = line.find( ':' );
-      info.file_path = line.substr( pos+3,
-        line.find( "\"", pos+3 )-pos-3 );
-      convert_path_separators( info.file_path );
-      if ( info.file_path.find( "libs/libs/" ) == 0 ) info.file_path.erase( 0, 5 );
-      test2info.insert( std::make_pair( test_name, info ) );
-//      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
+      // the rest of line is missing if bjam didn't know how to make target
+      if ( pos + 1 != line.size() )
+      {
+        info.file_path = line.substr( pos+3,
+          line.find( "\"", pos+3 )-pos-3 );
+        convert_path_separators( info.file_path );
+        if ( info.file_path.find( "libs/libs/" ) == 0 ) info.file_path.erase( 0, 5 );
+        test2info.insert( std::make_pair( test_name, info ) );
+  //      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
+      }
       continue;
     }
 
