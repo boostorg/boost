@@ -25,7 +25,7 @@ regression_log = os.path.join( regression_results, 'bjam.log' )
 boost_root = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
 comment_path = os.path.join( regression_root, 'comment.html' )
-timestamp_path = os.path.join( boost_root, 'timestamp' )
+timestamp_path = os.path.join( boost_root, 'boost' )
 
 cvs_ext_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
@@ -46,7 +46,15 @@ else:
     process_jam_log_toolset = 'gcc'
 
 bjam_path = os.path.join( regression_root, bjam_name )
+bjam_source_dir = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
+bjam_build_path = os.path.join( bjam_source_dir, bjam_location, bjam_name )
+
 process_jam_log_path = os.path.join( regression_root, process_jam_log_name )
+process_jam_log_source_dir = os.path.join( boost_root, 'tools', 'regression', 'build' )
+process_jam_log_build_path = os.path.join( 
+          boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
+        , process_jam_log_name, process_jam_log_toolset, 'release', process_jam_log_name
+        )
 
 utils = None
 
@@ -79,7 +87,7 @@ def retry( f, args, max_attempts=2, sleep_secs=10 ):
             time.sleep( sleep_secs )
 
 
-def cleanup( args ):
+def cleanup( args, **unused ):
     log( 'Cleaning up "%s" directory ...' % boost_root )
     rmtree( boost_root )
     
@@ -179,8 +187,6 @@ def get_source( user, tag, proxy, args, **unused ):
         tarball_path = download_boost_tarball( regression_root, tag, proxy )
         unpack_tarball( tarball_path, regression_root )
 
-    open( timestamp_path, 'w' ).close()
-
 
 def update_source( user, tag, proxy, args, **unused ):
     if user is not None:
@@ -197,10 +203,7 @@ def build_bjam_if_needed():
         return
     
     log( 'Preinstalled "%s" is not found; building one...' % bjam_path )
-
-    log( 'Locating bjam source directory...' )
-    bjam_source_dir = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
-    
+    log( 'Locating bjam source directory...' )    
     if os.path.exists( bjam_source_dir ):
         log( 'Found bjam source directory "%s"' % bjam_source_dir )
         log( 'Building bjam using \"%s\"...' % bjam_build_compiler )
@@ -213,11 +216,10 @@ def build_bjam_if_needed():
     else:
         raise 'Could not find bjam source directory \"%s\"' % bjam_source_dir
 
-    bjam_path = os.path.join( bjam_source_dir, bjam_location, bjam_name )
-    if not os.path.exists( bjam_path ):
-        raise 'Failed to find bjam (\"%s\") after build.' % bjam_path
+    if not os.path.exists( bjam_build_path ):
+        raise 'Failed to find bjam (\"%s\") after build.' % bjam_build_path
 
-    log( 'Bjam succesfully built in "%s" directory' % bjam_path )
+    log( 'Bjam succesfully built in "%s" directory' % bjam_build_path )
 
 
 def build_process_jam_log_if_needed():
@@ -226,10 +228,7 @@ def build_process_jam_log_if_needed():
         log( 'Found preinstalled "%s"; will use it.' % process_jam_log_path )
         return
     
-    log( 'Preinstalled "%s" is not found; building one.' % process_jam_log_path )
-    
-    process_jam_log_source_dir = os.path.join( boost_root, 'tools', 'regression', 'build' )
-
+    log( 'Preinstalled "%s" is not found; building one.' % process_jam_log_path )    
     log( 'Locating proces_jam_log source directory...' )
     if os.path.exists( process_jam_log_source_dir ):
         log( 'Found proces_jam_log source directory "%s"' % process_jam_log_source_dir )
@@ -242,16 +241,11 @@ def build_process_jam_log_if_needed():
 
     else:
         raise 'Could not find process_jam_log source directory "%s"' % process_jam_log_source_dir
-
-    process_jam_log_path = os.path.join( 
-          boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
-        , process_jam_log_name, process_jam_log_toolset, 'release', process_jam_log_name
-        )
     
-    if not os.path.exists( process_jam_log_path ):
-        raise 'Failed to find process_jam_log ("%s") after build.' % process_jam_log_path
+    if not os.path.exists( process_jam_log_build_path ):
+        raise 'Failed to find process_jam_log ("%s") after build.' % process_jam_log_build_path
     
-    log( 'Process_jam_log succesfully built in "%s" directory' % process_jam_log_path )
+    log( 'Process_jam_log succesfully built in "%s" directory' % process_jam_log_build_path )
 
 
 def import_utils():
@@ -269,11 +263,8 @@ def setup(
         ):
     import_utils()
     
-    if not 'no-bjam' in args:
-        build_bjam_if_needed()
-    
-    if not 'no-process_jam_log' in args:
-        build_process_jam_log_if_needed()
+    build_bjam_if_needed()
+    build_process_jam_log_if_needed()
 
 
 def tool_path( name ):
@@ -293,8 +284,13 @@ def stop_build_monitor():
             utils.system( [ '%s build_monitor' %  tool_path( 'pskill.exe' ) ] )
 
 
-def process_bjam_log():
+def process_jam_log():
     log( 'Getting test case results out of "%s"...' % regression_log )
+
+    global process_jam_log_path
+    if not os.path.exists( process_jam_log_path ):
+        process_jam_log_path = process_jam_log_build_path
+
     utils.checked_system( [ 
         "%s %s <%s" % (  
               process_jam_log_path
@@ -330,6 +326,10 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
+            global bjam_path
+            if not os.path.exists( bjam_path ):
+                bjam_path = bjam_build_path
+
             test_cmd = []
             if not toolsets is None:
                 test_cmd.append( 'set TOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' ) )
@@ -341,10 +341,11 @@ def test(
                                             )
                                       )
 
-            utils.checked_system( test_cmd, [ 1 ] )
+            log( 'Starting tests (%s)...' % test_cmd )
+            utils.system( test_cmd )
 
         if "process" in args:
-            process_bjam_log()
+            process_jam_log()
 
         os.chdir( cd )
     finally:
