@@ -10,7 +10,7 @@ my $first = 2;
 
 print "<html>\n<head>\n<title>\nCompile Times</title>\n</head>\n\n";
 print "<body bgcolor=\"#ffffff\" text=\"#000000\">\n";
-print "<img border=\"0\" src=\"c++boost.gif\" width=\"277\" height=\"86\">";
+print "<img border=\"0\" src=\"boost.png\" width=\"277\" height=\"86\">";
 print "<p>\n";
 print "Compile time for each successful regression test in seconds.\n";
 print "<p>\n";

@@ -172,7 +172,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             </head>
             <body>
 
-                <img border="0" src="../../../c++boost.gif" width="277" height="86" align="right" alt="Boost logo"></img>
+                <img border="0" src="../../../boost.png" width="277" height="86" align="right" alt="Boost logo"></img>
 
                 <h1 class="page-title">
                     <xsl:value-of select="$mode"/>
