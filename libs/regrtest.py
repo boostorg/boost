@@ -104,7 +104,7 @@ def compile( program ):
 
 #John Maddock says use /Zm400 switch; it increases compiler memory
     if compiler_arg=="*" or compiler_arg=="vc":
-      invoke( "VC++ with MS library", 'cl /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
+      invoke( "VC++ with MS library", 'cl /c /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
     if compiler_arg=="*" or compiler_arg=="vcstlport":
       stl=os.environ["BOOST_STLPORT_PATH"]
       invoke( "VC++ with STLport library", 'cl /c /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + stl + '" /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
