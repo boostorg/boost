@@ -103,13 +103,65 @@
     <!-- date_time -->
     <library name="date_time">
         <mark-unusable>
-            <toolset name="intel-win32"/>
-            <note author="B. Dawes" refid="10"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
+            <toolset name="intel-win32-7.1-vc6"/>
         </mark-unusable>
+
+        <test name="testfacet">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="cwpro8"/>
+                <toolset name="borland"/>
+                <toolset name="mingw"/>
+                <toolset name="gcc"/>
+		<note author="B. Garst" refid="18,19"/>
+            </mark-failure>
+        </test>
+        <test name="testgreg_wstream">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="borland"/>
+                <toolset name="mingw"/>
+                <toolset name="gcc"/>
+		<note author="B. Garst" refid="19,21"/>
+            </mark-failure>
+        </test>
+        <test name="testparse_date">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <toolset name="gcc"/>
+		<note author="B. Garst" refid="18,20"/>
+            </mark-failure>
+        </test>
         <test name="testmicrosec_time_clock">
             <mark-failure>
                 <toolset name="gcc"/>
-                <note author="B. Dawes" refid="14"/>
+		<toolset name="borland"/>
+		<toolset name="mingw"/>
+		<note author="B. Garst" refid="22"/>
+            </mark-failure>
+        </test>
+        <test name="teststreams">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <toolset name="cwpro8"/>
+		<toolset name="borland"/>
+		<toolset name="mingw"/>
+                <toolset name="gcc"/>
+		<note author="B. Garst" refid="18,19,20"/>
+            </mark-failure>
+        </test>
+        <test name="testtime_wstream">
+            <mark-failure>
+                <toolset name="msvc"/>
+		<toolset name="borland"/>
+		<toolset name="mingw"/>
+                <toolset name="gcc"/>
+                <toolset name=""/>
+		<note author="B. Garst" refid="19,21,22"/>
             </mark-failure>
         </test>
         <test name="*">
@@ -900,6 +952,26 @@ for more information.
 
     <note id="17">
         This compiler's bugs are not supported by the library.
+    </note>
+
+    <note id="18">
+      Locales missing or adequately supported by this compiler
+    </note>
+
+    <note id="19">
+      Missing or inadequate wchar/wstring/wstream support for this compiler
+    </note>
+
+    <note id="20">
+      No std iterator traits for this compiler
+    </note>
+
+    <note id="21">
+      Library has limited input/output support due to compiler inadequacies
+    </note>
+
+    <note id="22">
+      No high precision clock for this platform
     </note>
 
 </explicit-failures-markup>
