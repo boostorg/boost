@@ -5,6 +5,6 @@ from checked_system import *
 from libxslt import *
 from log import *
 from makedirs import *
+from tar import *
 
 import sourceforge
-
