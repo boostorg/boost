@@ -8,7 +8,8 @@
 #
 # Compilers:  bcc   = Borland 5.5.1
 #             cw    = Metrowerks CodeWarrior
-#             gcc   = GNU GCC/egcs
+#             gcc   = GNU GCC
+#             gcc-stlport  = GNU GCC with STLport library
 #             como  = Comeau C++
 #             vc    = Microsoft Visual C++
 #             vcstlport  = Microsoft Visual C++ with STLport library
@@ -72,7 +73,7 @@ def compile( program ):
     if compiler_arg == "*" or compiler_arg == "gcc-stlport":
       invoke( "GCC 2.95.2 STLport 4.0", 'g++ -V 2.95.2-stlport -c -ftemplate-depth-30 -I' + path + ' ' + fullpath )
 #    if compiler_arg == "*" or compiler_arg == "gcc-exp":
-#      invoke( "GCC pre-2.96 experimental", '/opt/exp/gcc/bin/g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
+#      invoke( "GCC pre-2.97 experimental", '/opt/exp/gcc/bin/g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "como":
       invoke( "Comeau C++ 4.2.44 beta3", 'como -c -I' + path + ' ' + fullpath)
 #    if compiler_arg == "*" or compiler_arg == "occ":
@@ -82,8 +83,8 @@ def compile( program ):
 #
 # currently this compiler fails so many tests that it may not be worth while
 # reporting the results: most of these are as a result of broken C++ standard
-# libraries and a non-standard <climits>, problems that the forthcomming gcc3 should fix (STLPort does 
-# not build on this platform).
+# libraries and a non-standard <climits>, problems that the forthcoming
+# gcc3 should fix (STLPort does not build on this platform).
 #
   elif sys.platform == "beos":
     if compiler_arg=="*" or compiler_arg=="gcc":
@@ -189,7 +190,7 @@ if sys.platform == "linux2":
   if compiler_arg == "*" or compiler_arg == "gcc-stlport":
     f.write( "<td>GNU<br>GCC<br>2.95.2<br>STLport<br>4.0</td>\n" )
 #  if compiler_arg == "*" or compiler_arg == "gcc-exp":
-#    f.write( "<td>GNU<br>GCC<br>pre-2.96 experimental</td>\n" )
+#    f.write( "<td>GNU<br>GCC<br>pre-2.97 experimental</td>\n" )
   if compiler_arg == "*" or compiler_arg == "como":
     f.write( "<td>Comeau C++<br>4.2.44 beta3<br>STLport<br>4.0</td>\n" )
 #  if compiler_arg == "*" or compiler_arg == "occ":
