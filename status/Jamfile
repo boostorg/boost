@@ -33,14 +33,14 @@ include testing.jam ;
         ;
 
     test-suite config
-        : [ run libs/config/test/config_test.cpp <lib>../libs/test/build/test_exec_monitor
+        : [ run libs/config/test/config_test.cpp <lib>../libs/test/build/boost_test_exec_monitor
                 : #args
                 : #input-files
                 : #requirements
                 <threading>multi
           ]
            [ run libs/config/test/config_info.cpp ] # compiler_status<always_show_run_output>
-           [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+           [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
     run libs/any/any_test.cpp ;
@@ -65,64 +65,64 @@ include testing.jam ;
           [ run libs/conversion/lexical_cast_test.cpp ]
         ;
 
-    run libs/crc/crc_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+    run libs/crc/crc_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ;
 
     test-suite date_time
         : [ run libs/date_time/test/testgregorian_calendar.cpp
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testdate.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testdate_duration.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testdate_iterator.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testfacet.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testformatters.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testgenerators.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testgreg_cal.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testgreg_day.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]          
           [ run libs/date_time/test/gregorian/testgreg_month.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/gregorian/testparse_date.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testc_local_adjustor.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testclock.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testdst_rules.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testduration.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testiterator.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testparse_time.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testperiod.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/posix_time/testtime.cpp
-	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+        <lib>../libs/date_time/build/boost_date_time
             : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
           [ run libs/date_time/test/testint_adapter.cpp ]
           [ run libs/date_time/test/testtime_resolution_traits.cpp ]
@@ -131,29 +131,29 @@ include testing.jam ;
         ;
 
     test-suite disjoint_sets
-        : [ run libs/disjoint_sets/disjoint_set_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/disjoint_sets/disjoint_set_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
     test-suite dynamic_bitset
-        : [ run libs/dynamic_bitset/dyn_bitset_unit_tests1.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/dynamic_bitset/dyn_bitset_unit_tests2.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/dynamic_bitset/dyn_bitset_unit_tests1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests2.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
     test-suite format
-        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/test_exec_monitor
+        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/boost_test_exec_monitor
               : # args
               : # input files
               : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
             ]
               
-          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/test_exec_monitor
+          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/boost_test_exec_monitor
               : # args
               : # input files
               : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
           ]
 
-          [ run libs/format/test/format_test_wstring.cpp <lib>../libs/test/build/test_exec_monitor
+          [ run libs/format/test/format_test_wstring.cpp <lib>../libs/test/build/boost_test_exec_monitor
               : # args
               : # input files
               : <runtime-link>static # uses locale; metrowerks toolsets don't have a locale in the dynamic library
@@ -163,11 +163,11 @@ include testing.jam ;
     test-suite function
         : [ run libs/function/test/function_test.cpp ]
           [ run libs/function/test/function_n_test.cpp ]
-          [ run libs/function/test/allocator_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/function/test/stateless_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/function/test/lambda_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ compile-fail libs/function/test/function_test_fail1.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ compile-fail libs/function/test/function_test_fail2.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/allocator_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/function/test/stateless_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/function/test/lambda_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ compile-fail libs/function/test/function_test_fail1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ compile-fail libs/function/test/function_test_fail2.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
           [ compile libs/function/test/function_30.cpp ]
         ; 
 
@@ -179,41 +179,41 @@ include testing.jam ;
     test-suite integer
         : [ run libs/integer/cstdint_test.cpp ]
           [ run libs/integer/integer_test.cpp ]
-          [ run libs/integer/integer_traits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/integer/integer_traits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
     run 
-      libs/io/test/ios_state_test.cpp <lib>../libs/test/build/test_exec_monitor   # sources
+      libs/io/test/ios_state_test.cpp <lib>../libs/test/build/boost_test_exec_monitor   # sources
       : # args
       : # input-files
       : <runtime-link>static # requirements (static runtime required by Metrowerks)
       ;
 
     test-suite lambda
-        : [ run libs/lambda/test/bind_tests_simple.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/bind_tests_advanced.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/bll_and_function.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/cast_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/constructor_tests.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/control_structures.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/exception_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/extending_rt_traits.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/is_instance_of_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/member_pointer_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/operator_tests_simple.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/phoenix_control_structures.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/lambda/test/switch_construct.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/lambda/test/bind_tests_simple.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_advanced.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/bll_and_function.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/cast_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/constructor_tests.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/control_structures.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/exception_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/extending_rt_traits.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/is_instance_of_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/member_pointer_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/operator_tests_simple.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/phoenix_control_structures.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/lambda/test/switch_construct.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
     test-suite math
-        : [ run libs/math/test/common_factor_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/math/octonion/octonion_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/math/quaternion/quaternion_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/math/special_functions/special_functions_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/math/test/common_factor_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/math/octonion/octonion_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/math/quaternion/quaternion_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/math/special_functions/special_functions_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
-    run libs/pool/test/test_pool_alloc.cpp  <lib>../libs/test/build/test_exec_monitor ;
+    run libs/pool/test/test_pool_alloc.cpp  <lib>../libs/test/build/boost_test_exec_monitor ;
 
     test-suite preprocessor
         : [ compile libs/preprocessor/test/arithmetic.cpp ]
@@ -241,7 +241,7 @@ include testing.jam ;
         ;
 
     test-suite random
-        : [ run libs/random/random_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/random/random_test.cpp  <lib>../libs/test/build/boost_test_exec_monitor ]
           [ run libs/random/random_demo.cpp ]
         ;
 
@@ -256,8 +256,8 @@ include testing.jam ;
 
         test-suite regex
         : [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
-                    <lib>../libs/test/build/prg_exec_monitor
+                    <lib>../libs/regex/build/boost_regex 
+                    <lib>../libs/test/build/boost_prg_exec_monitor
            : 
                     $(test-files)
            : 
@@ -268,8 +268,8 @@ include testing.jam ;
                     regress ]
 
             [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
-                    <lib>../libs/test/build/prg_exec_monitor
+                    <lib>../libs/regex/build/boost_regex 
+                    <lib>../libs/test/build/boost_prg_exec_monitor
             : 
                     $(test-files)
             : 
@@ -281,8 +281,8 @@ include testing.jam ;
                     wregress ]
 
             [ run libs/regex/test/c_compiler_checks/posix_api_check.c
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB)
-                    <lib>../libs/test/build/prg_exec_monitor
+                    <lib>../libs/regex/build/boost_regex
+                    <lib>../libs/test/build/boost_prg_exec_monitor
             : 
             : 
             : 
@@ -292,7 +292,7 @@ include testing.jam ;
                     posix_api_check_c ]
 
             [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.c
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/regex/build/boost_regex 
             : 
             : 
             : 
@@ -302,7 +302,7 @@ include testing.jam ;
                     wide_posix_api_check_c ]
 
             [ run libs/regex/test/c_compiler_checks/posix_api_check.cpp
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/regex/build/boost_regex 
             : 
             : 
             :
@@ -311,7 +311,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
-                    <lib>../libs/regex/build/boost_regex$(SUFLIB)
+                    <lib>../libs/regex/build/boost_regex
             : 
             : 
             : 
@@ -320,7 +320,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/timer/regex_timer.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)example$(SLASH)timer$(SLASH)input_script.txt
                :
@@ -332,7 +332,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/jgrep/jgrep.cpp libs/regex/example/jgrep/main.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   -n boost/ $(BOOST_ROOT)$(SLASH)boost$(SLASH)regex.hpp
                :
@@ -344,7 +344,7 @@ include testing.jam ;
            ]
 
            [ run libs/regex/example/snippets/credit_card_example.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                :
                :
@@ -355,7 +355,7 @@ include testing.jam ;
            ]
 
            [ run libs/regex/example/snippets/partial_regex_grep.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
                :
@@ -367,7 +367,7 @@ include testing.jam ;
            ]
 
            [ run libs/regex/example/snippets/partial_regex_match.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   1234-5678-8765-4
                :
@@ -379,7 +379,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_grep_example_1.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
                :
@@ -391,7 +391,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_grep_example_2.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
                :
@@ -403,7 +403,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_grep_example_3.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
                :
@@ -415,7 +415,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_grep_example_4.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
                :
@@ -427,7 +427,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_match_example.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   -auto
                :
@@ -439,7 +439,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_merge_example.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
                :
@@ -451,7 +451,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_search_example.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
                :
@@ -463,7 +463,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_split_example_1.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   -auto
                :
@@ -475,7 +475,7 @@ include testing.jam ;
             ]
 
             [ run libs/regex/example/snippets/regex_split_example_2.cpp
-               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               <lib>../libs/regex/build/boost_regex
                :
                   $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
                :
@@ -492,23 +492,23 @@ include testing.jam ;
 
     test-suite signals
         : [ run libs/signals/test/dead_slot_test.cpp
-              <lib>../libs/test/build/test_exec_monitor
-              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+              <lib>../libs/test/build/boost_test_exec_monitor
+              <lib>../libs/signals/build/boost_signals ]
           [ run libs/signals/test/deletion_test.cpp
-              <lib>../libs/test/build/test_exec_monitor
-              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+              <lib>../libs/test/build/boost_test_exec_monitor
+              <lib>../libs/signals/build/boost_signals ]
           [ run libs/signals/test/ordering_test.cpp
-              <lib>../libs/test/build/test_exec_monitor
-              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+              <lib>../libs/test/build/boost_test_exec_monitor
+              <lib>../libs/signals/build/boost_signals ]
           [ run libs/signals/test/signal_n_test.cpp 
-              <lib>../libs/test/build/test_exec_monitor 
-              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+              <lib>../libs/test/build/boost_test_exec_monitor 
+              <lib>../libs/signals/build/boost_signals ]
           [ run libs/signals/test/signal_test.cpp 
-              <lib>../libs/test/build/test_exec_monitor 
-              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+              <lib>../libs/test/build/boost_test_exec_monitor 
+              <lib>../libs/signals/build/boost_signals ]
           [ run libs/signals/test/trackable_test.cpp 
-              <lib>../libs/test/build/test_exec_monitor 
-              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+              <lib>../libs/test/build/boost_test_exec_monitor 
+              <lib>../libs/signals/build/boost_signals ]
         ;
 
 
@@ -535,7 +535,7 @@ include testing.jam ;
         ;
 
     subinclude libs/test/test ;
-	
+    
     {
         local threadmon ;
         local thread-sources ;
@@ -547,7 +547,7 @@ include testing.jam ;
         }
 
         thread-sources = <lib>../libs/thread/build/boost_thread
-          <lib>../libs/test/build/unit_test_framework
+          <lib>../libs/test/build/boost_unit_test_framework
           $(threadmon)
         ;
         thread-requirements = <threading>multi ;
@@ -591,7 +591,7 @@ include testing.jam ;
     compile libs/timer/timer_test.cpp ;
 
     test-suite tokenizer
-        : [ run libs/tokenizer/examples.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/tokenizer/examples.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
           [ run libs/tokenizer/simple_example_1.cpp ]
           [ run libs/tokenizer/simple_example_2.cpp ]
           [ run libs/tokenizer/simple_example_3.cpp ]
@@ -600,9 +600,9 @@ include testing.jam ;
         ;
 
     test-suite tuple
-        : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-	;
+        : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+    ;
 
 
     test-suite iterator_adaptors
@@ -711,18 +711,18 @@ include testing.jam ;
 
 
     test-suite multi_array
-        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/test_exec_monitor  ]
-          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/test_exec_monitor ]
+        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/boost_test_exec_monitor  ]
+          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
           [ compile libs/multi_array/test/concept_checks.cpp ]
           [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
           [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
@@ -750,21 +750,21 @@ include testing.jam ;
 
     test-suite utility
         : 
-	        [ run libs/utility/iterator_traits_test.cpp ]
-			[ run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-		    [ compile-fail libs/utility/noncopyable_test.cpp ]
-		    [ run libs/utility/numeric_traits_test.cpp ]
-		    [ run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-		    [ run libs/utility/tie_example.cpp ]
-		    [ run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-		    [ run libs/utility/call_traits_test.cpp : -u ]
-		    [ compile-fail libs/utility/checked_delete_test.cpp ]
-		    [ run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/test_exec_monitor : -u ]
-		    [ run libs/utility/addressof_test.cpp <lib>../libs/test/build/test_exec_monitor ]
-			[ run libs/utility/ref_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+            [ run libs/utility/iterator_traits_test.cpp ]
+            [ run libs/utility/iterators_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ compile-fail libs/utility/noncopyable_test.cpp ]
+            [ run libs/utility/numeric_traits_test.cpp ]
+            [ run libs/utility/operators_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ run libs/utility/tie_example.cpp ]
+            [ run libs/utility/binary_search_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ run libs/utility/call_traits_test.cpp : -u ]
+            [ compile-fail libs/utility/checked_delete_test.cpp ]
+            [ run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/boost_test_exec_monitor : -u ]
+            [ run libs/utility/addressof_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+            [ run libs/utility/ref_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
 
-	{
+    {
 
     rule type-traits-run ( sources + )
     {
@@ -775,7 +775,7 @@ include testing.jam ;
 
              # dependencies
              <lib>../libs/type_traits/test/type_traits_init 
-   		     <lib>../libs/test/build/unit_test_framework 
+             <lib>../libs/test/build/boost_unit_test_framework 
          :  # additional args
             --report_level=detailed --build_info=yes --log_level=messages
          :  # test-files
@@ -784,7 +784,7 @@ include testing.jam ;
          :  # test name
         ] ;
     }
-		
+        
 test-suite type_traits :
 
 [ type-traits-run ../libs/type_traits/test/add_const_test.cpp ]
@@ -838,10 +838,10 @@ test-suite type_traits :
 [ type-traits-run ../libs/type_traits/test/tricky_incomplete_type_test.cpp ]
 [ type-traits-run ../libs/type_traits/test/tricky_partial_specialization_test.cpp ]
 [ type-traits-run ../libs/type_traits/test/type_with_alignment_test.cpp ]
-			
+            
 ; # type traits suite
 
-	} # type traits sub rules...
+    } # type traits sub rules...
 
 }
 
