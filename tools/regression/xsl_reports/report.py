@@ -153,6 +153,7 @@ def xsl_path( xsl_file_name ):
 
 def make_result_pages( test_results_file
                        , expected_results_file
+                       , failures_markup_file
                        , source
                        , run_date
                        , comment_file
@@ -183,7 +184,7 @@ def make_result_pages( test_results_file
     xslt_proc( test_results_file
                , xsl_path( "add_expected_results.xsl" )
                , extended_test_results
-               , { "expected_results_file": expected_results_file }
+               , { "expected_results_file": expected_results_file, "failures_markup_file" : failures_markup_file }
            )
 
     links = os.path.join( output_dir, "links.html"  )
@@ -236,6 +237,7 @@ def make_result_pages( test_results_file
 def build_experimental_reports( locate_root_dir
                                 , source
                                 , expected_results_file
+                                , failures_markup_file
                                 , comment_file
                                 , results_dir
                                 , result_file_prefix
@@ -249,6 +251,7 @@ def build_experimental_reports( locate_root_dir
 
     make_result_pages( test_results_file
                        , expected_results_file
+                       , failures_markup_file
                        , source
                        , run_date
                        , comment_file
@@ -262,6 +265,7 @@ def accept_args( args ):
     ( option_pairs, rest_args ) = getopt.getopt( sys.argv[1:], "", [ "locate-root="
                                                                      , "tag="
                                                                      , "expected-results="
+                                                                     , "failures-markup="
                                                                      , "comment="
                                                                      , "results-dir="
                                                                      , "results-prefix="
@@ -269,11 +273,12 @@ def accept_args( args ):
                                                                      , "help"
                                                                      ] )
     options = { "--comment": ""
-                , "--expected-results": "" }
+                , "--expected-results": ""
+                , "--failures-markup": "" }
     
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
-    if ( options.has_key( "--help" ) or len( options.keys() ) == 2 ):
+    if ( options.has_key( "--help" ) or len( options.keys() ) == 3 ):
         usage()
         sys.exit( 1 )
 
@@ -283,6 +288,7 @@ def accept_args( args ):
     return ( options[ "--locate-root" ]
              , options[ "--tag" ]
              , options[ "--expected-results" ]
+             , options[ "--failures-markup" ]
              , options[ "--comment" ]
              , options[ "--results-dir" ]
              , options[ "--results-prefix" ]
@@ -295,7 +301,8 @@ def usage():
 \t--locate-root       the same as --locate-root in compiler_status
 \t--tag               the tag for the results (i.e. "CVS main trunk")
 \t--expected-results  the file with the results to be compared with
-\t                    the current run 
+\t                    the current run
+\t--failures-markup   the file with the failures markup
 \t--comment           an html comment file (will be inserted in the reports)
 \t--results-dir       the directory containing -links.html, -fail.html
 \t                    files produced by compiler_status (by default the

@@ -81,7 +81,15 @@
         <div class="log-notes-title">Notes:</div>
         <div class="log-notes">
           <xsl:for-each select="notes/note">
-            <xsl:copy-of select="."/>
+            <div>
+              <xsl:if test="@date">
+                <xsl:value-of select="@date"/><xsl:text> </xsl:text>
+              </xsl:if>
+              <xsl:if test="@author">
+                <xsl:value-of select="@author"/><xsl:text> </xsl:text>
+              </xsl:if>
+              <xsl:copy-of select="text()"/>
+            </div>
           </xsl:for-each>
         </div>
       </p>
