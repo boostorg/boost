@@ -230,15 +230,7 @@ namespace
         }
       }
 
-      string library_name;
-      string::size_type pos = target_directory.find( "/libs/" );
-      if ( pos != string::npos )
-      {
-        pos += 6;
-        library_name
-          = target_directory.substr( pos,
-              target_directory.find( "/", pos ) - pos );
-      }
+      string library_name( test_path_to_library_name( target_directory ) );
 
       test_info info;
       test2info_map::iterator itr( test2info.find( library_name + "/" + test_name ) );
