@@ -157,14 +157,14 @@ operations:
         --timestamp     path to a file which modification time will be used 
                         as a timestamp of the run ("timestamp" by default)
 
-   For example, assuming that the run's resulting  binaries are in 
-   ``/Volumes/stuff/users/alexy/boost_regressions/results`` directory,
-   the  ``collect_and_upload_logs.py`` invocation might look like this::
+   For example, assuming that the run's resulting  binaries are in the
+   ``$BOOST_ROOT/bin`` directory (the default Boost.Build setup), the 
+   ``collect_and_upload_logs.py`` invocation might look like this::
 
        python $BOOST_ROOT/tools/regression/xsl_reports/runner/collect_and_upload_logs.py 
-          --locate-root=/Volumes/stuff/users/alexy/boost_regressions/results
-          --runner=agurtovoy
-          --timestamp=/Volumes/stuff/users/alexy/boost_regressions/timestamp
+          --locate-root=$BOOST_ROOT/bin
+          --runner=Metacomm
+          --timestamp=timestamp
 
 
 __ http://www.boost.org/regression-logs/developer/
