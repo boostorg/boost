@@ -195,6 +195,7 @@ if  program_arg=="*":
   compile( "array/array1.cpp" )
 #  compile( "compose/compose1.cpp" )
   compile( "functional/function_test.cpp" )
+  compile( "graph/test/graph.cpp" )
   compile( "integer/cstdint_test.cpp" )
   compile( "integer/integer_test.cpp" )
   compile( "integer/integer_traits_test.cpp" )
