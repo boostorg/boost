@@ -27,7 +27,8 @@ xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports'
 comment_path = os.path.join( regression_root, 'comment.html' )
 timestamp_path = os.path.join( boost_root, 'timestamp' )
 
-cvs_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+cvs_ext_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 
 if sys.platform == 'win32': 
     bjam_name = 'bjam.exe'
@@ -149,7 +150,11 @@ def unpack_tarball( tarball_path, destination ):
 
 
 def cvs_command( user, command ):
-    cmd = cvs_command_line % { 'user': user, 'command': command }
+    if user == 'anonymous':
+        cmd = cvs_pserver_command_line % { 'user': user, 'command': command }
+    else:
+        cmd = cvs_ext_command_line % { 'user': user, 'command': command }
+    
     log( 'Executing CVS command "%s"' % cmd )
     rc = os.system( cmd )
     if rc != 0:
