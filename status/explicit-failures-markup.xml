@@ -77,15 +77,63 @@
 
     <!-- assign -->
     <library name="assign">
-        <test name="multi_index_container">
-            <mark-failure>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="gcc-2.95.3*"/>
-                <note refid="2"/>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="array"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note author="Thorsten Ottosen" >
+                The test would (most likely) compile and run properly if the workaround
+                syntax .to_container( c ) was applied to all list_of() expressions.
+            </note>
+         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="email_example"/>
+            <toolset name="gcc-2.95.3*"/>
+            <note refid="27" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="list_inserter"/>
+            <toolset name="vc7"/>
+            <note refid="6" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="list_of"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note author="Thorsten Ottosen" >
+                The test would (most likely) compile and run properly if the workaround
+                syntax .to_container( c ) was applied to all list_of() expressions.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>        
+            <test name="multi_index_container"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="intel-8.0-linux"/>
+            <toolset name="gcc-3.4.1*"/>
+            <toolset name="gcc-3.4.2*"/>
+            <note refid="27" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="multi_index_container"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <toolset name="mipspro"/>
+            <toolset name="tru64cxx65"/>
+            <note author="Thorsten Ottosen" >
+                The test would (most likely) compile and run properly if the workaround
+                syntax .to_container( c ) was applied to all list_of() expressions.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="my_vector_example"/>
+            <toolset name="gcc-2.95.3*"/>
+            <note refid="27" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
     </library>
-
 
     <!-- bind-->
     <library name="bind">
@@ -1071,6 +1119,35 @@ for more information.
         </test>
     </library>
 
+    <!-- range -->
+    <library name="range">
+        <mark-unusable>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="mipspro"/>
+            <note author="Thorsten Ottosen"/>
+        </mark-unusable>
+        <mark-expected-failures>
+            <test name="array"/>
+            <toolset name="como-win32-4.3.3*"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note refid="27" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="sub_range"/>
+            <toolset name="vc8.0"/>
+            <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <toolset name="tru64cxx65"/>
+            <note refid="6,27" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
+    </library>
+            
+
+            
     <!-- regex -->
     <library name="regex">
         <test name="regex_token_iterator_eg_2">
@@ -1496,6 +1573,12 @@ for more information.
     <note id="26">
         This failure is caused by a compiler bug with no known workaround. 
         Patches are welcome!
+    </note>
+
+    <!-- Thorsten Ottosen -->
+    <note id="27" >
+        This failure is caused by bugs in the standard library implementation and/or
+        bugs in the compiler. 
     </note>
 
 </explicit-failures-markup>
