@@ -130,7 +130,7 @@ loops in another pair of curly braces.
 
 <h3>[inclass-member-init] In-class member initialization</h3>
 
-In-class member initialization, require to implement a
+In-class member initialization, required to implement a
 Standard-conforming <code>std::numeric_limits</code> template, does
 not work.
 
@@ -141,6 +141,10 @@ struct A
 };
 </pre>
 
+<strong>Workaround:</strong> Either use an enum (which has incorrect
+type, but can be used in compile-time constant expressions), or define
+the value out-of-line (which allows for the correct type, but prohibits
+using the constant in compile-time constant expressions).
 
 <h3>[koenig-lookup] Argument-dependent lookup</h3>
 
@@ -235,6 +239,9 @@ struct B {};
 
 </pre>
 
+<strong>Workaround:</strong> Leave off the "typename" keyword.  That makes
+the program non-conforming, though.
+
 
 <h3>[wchar_t] <code>wchar_t</code> is not built-in</h3>
 
@@ -247,7 +254,7 @@ wchar_t x;  // &quot;missing storage class or type identifier&quot;
 <strong>Workaround:</strong> When using Microsoft Visual C++, the
 header
 <a href="../boost/config.hpp">boost/config.hpp</a>
-includes <code>&lt;cstddef></code>, which defines defines
+includes <code>&lt;cstddef></code>, which defines
 <code>wchar_t</code> as a typedef for <code>unsigned
 short</code>. Note that this means that the compiler does not see
 <code>wchar_t</code> and <code>unsigned short</code> as distinct
