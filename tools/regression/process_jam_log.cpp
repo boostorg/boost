@@ -444,9 +444,15 @@ int cpp_main( int argc, char ** argv )
     --argc; ++argv;
   }
 
-  locate_root = argc > 1 
-    ? fs::path( argv[1], fs::native )
-    : boost_root;
+  if (argc > 1)
+  {
+      locate_root = fs::path( argv[1], fs::native );
+      --argc; ++argv;
+  } 
+  else
+  {
+      locate_root = boost_root;
+  }
 
   std::cout << "boost_root: " << boost_root.string() << '\n'
             << "locate_root: " << locate_root.string() << '\n';
@@ -457,13 +463,23 @@ int cpp_main( int argc, char ** argv )
   string content;
   bool capture_lines = false;
 
+  std::istream* input;
+  if (argc > 1)
+  {
+      input = new std::ifstream(argv[1]);
+  }
+  else
+  {
+      input = &std::cin;
+  }
+
   // This loop looks at lines for certain signatures, and accordingly:
   //   * Calls start_message() to start capturing lines. (start_message() will
   //     automatically call stop_message() if needed.)
   //   * Calls stop_message() to stop capturing lines.
   //   * Capture lines if line capture on.
 
-  while ( std::getline( std::cin, line ) )
+  while ( std::getline( *input, line ) )
   {
     if ( echo ) std::cout << line << "\n";
 
@@ -507,7 +523,10 @@ int cpp_main( int argc, char ** argv )
       || line.find( "Link-action " ) != string::npos
       || line.find( "vc-Link " ) != string::npos 
       || line.find( ".compile.") != string::npos
-      || line.find( ".link") != string::npos
+      || ( line.find( ".link") != string::npos &&
+           // .linkonce is present in gcc linker messages about
+           // unresolved symbols. We don't have to parse those
+           line.find( ".linkonce" ) == string::npos )
     )
     {
       string action( ( line.find( "Link-action " ) != string::npos
@@ -616,5 +635,7 @@ int cpp_main( int argc, char ** argv )
   }
 
   mgr.stop_message( content );
+  if (input != &std::cin)
+      delete input;
   return 0;
 }
