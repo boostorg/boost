@@ -26,6 +26,8 @@ xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports'
 comment_path = os.path.join( regression_root, 'comment.html' )
 timestamp_path = os.path.join( boost_root, 'timestamp' )
 
+cvs_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+
 if sys.platform == 'win32': 
     bjam_name = 'bjam.exe'
     bjam_build_compiler = 'vc7'
@@ -56,13 +58,28 @@ utils = None
 def tool_path( name ):
     return os.path.join( regression_results, name )
 
+
 def rmtree( path ):
     if os.path.exists( path ):
         if sys.platform == 'win32':
-            os.system( 'del /f /s /q "%s"' % path )
+            os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
             shutil.rmtree( path )
         else:
             os.system( 'rm -f -r "%s"' % path )
+
+
+def retry( f, args, max_attempts=2, sleep_secs=10 ):
+    for attempts in range( max_attempts, -1, -1 ):
+        try:
+            return f( *args )
+        except Exception, msg:
+            log( '%s failed with message "%s"' % ( f.__name__, msg ) )
+            if attempts == 0: 
+                log( 'Giving up.' )
+                raise
+
+            log( 'Retrying (%d more attempts).' % attempts )
+            time.sleep( sleep_secs )
 
 
 def cleanup( args ):
@@ -130,25 +147,46 @@ def unpack_tarball( tarball_path, destination ):
     os.rename( boost_dir, boost_root )
 
 
+def cvs_command( user, command ):
+    cmd = cvs_command_line % { 'user': user, 'command': command }
+    log( 'Executing CVS command "%s"' % cmd )
+    rc = os.system( cmd )
+    if rc != 0:
+        raise Exception( 'Cvs command "%s" failed with code %d' % ( cmd, rc ) )
+
+
+def cvs_checkout( user, tag, args ):
+    if tag != 'CVS-HEAD':
+        command = 'checkout -r %s boost' % tag
+    else:
+        command = 'checkout boost'
+    
+    os.chdir( regression_root )
+    retry( 
+         cvs_command
+       , ( user, command )
+       , max_attempts=5
+       )
+
+
 def get_source( user, tag, args ):
     log( "Getting sources ..." )
 
     if user is not None:
-        boost_cvs_checkout( user, tag )
+        cvs_checkout( user, tag, args )
     else:
-        #tarball_path = download_boost_tarball( regression_root, tag )
-        #unpack_tarball( tarball_path, regression_root )
-        open( timestamp_path, 'w' ).close()
+        tarball_path = download_boost_tarball( regression_root, tag )
+        unpack_tarball( tarball_path, regression_root )
+
+    open( timestamp_path, 'w' ).close()
 
 
-def update_source( args ):
-    log( "Getting sources ..." ) 
-    get_source_method = { "cvs": boost_cvs_update
-                          , "directory": get_source_directory
-                          }
-    log( "    Source type: %s" % config.source.source_type )
-    get_source_method[ config.source.source_type ]( args )
-
+def update_source( user, tag, args ):
+    if user is not None:
+        log( 'Updating sources...' )
+        cvs_update( user, tag, args )
+    else:
+        get_source( user, tag, args )
 
 
 def build_bjam_if_needed():    
@@ -259,8 +297,6 @@ def process_bjam_log():
             )
         ] )
     
-    #os.rename( regression_log, '%s.processed' % regression_log )
-
 
 def test( 
           toolsets
@@ -281,9 +317,9 @@ def test(
         results_status = os.path.join( regression_results, 'status' )
         
         if "clean" in args:
-            utils.rmtree( results_libs )
-            utils.rmtree( results_status )
-                
+            rmtree( results_libs )
+            rmtree( results_status )
+
         if "test" in args:
             test_cmd = []
             if not toolsets is None:
@@ -349,10 +385,10 @@ def regression(
     try:
         mail_subject = "Boost regression for %s on %s \n" % ( tag, os.environ[ "COMPUTERNAME" ] )
         if incremental:
-            update_source( user )
+            update_source( user, tag, [] )
             setup( comment_file, [] )
         else:
-            #cleanup( args )
+            cleanup( args )
             get_source( user, tag, [] )
             setup( comment_file, [] )
 
