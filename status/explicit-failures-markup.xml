@@ -1,40 +1,23 @@
-<explicit-failures-markup>
+<explicit-failures-markup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="explicit-failures.xsd">
+    <!-- 
+    The following online services can be used to validate your changes to this file:
 
-  <!-- Toolsets -->
-
-  <mark-toolset name="borland-5.6.4" status="required">
-    <title></title>
-    <description></description>
-  </mark-toolset>
-
-  <mark-toolset name="cwpro8" status="required">
-    <title></title>
-    <description></description>
-  </mark-toolset>
-
-  <mark-toolset name="msvc" status="required">
-    <title></title>
-    <description></description>
-  </mark-toolset>
-
-  <mark-toolset name="msvc-stlport" status="required">
-    <title></title>
-    <description></description>
-  </mark-toolset>
-
-  <mark-toolset name="vc7" status="required">
-    <title></title>
-    <description></description>
-  </mark-toolset>
-
-  <mark-toolset name="vc7.1" status="required">
-    <title></title>
-    <description></description>
-  </mark-toolset>
+        - http://apps.gotdotnet.com/xmltools/xsdvalidator/
+        - http://tools.decisionsoft.com/schemaValidate.html
+    -->
+    
+    <!-- /////////////// Toolsets /////////////// -->
+    <mark-toolset name="borland-5.6.4" status="required"/>
+    <mark-toolset name="cwpro8" status="required"/>
+    <mark-toolset name="msvc" status="required"/>
+    <mark-toolset name="msvc-stlport" status="required"/>
+    <mark-toolset name="vc7" status="required"/>
+    <mark-toolset name="vc7.1" status="required"/>
 
 
-  <!-- Libraries -->
+    <!-- /////////////// Libraries /////////////// -->
 
+    <!-- array -->
     <library name="array">
         <test name="array3">
             <mark-failure>
@@ -45,7 +28,6 @@
                 <note refid="3"/>
             </mark-failure>
         </test>
-
         <test name="array4">
             <mark-failure>
                 <toolset name="borland"/>
@@ -57,6 +39,7 @@
         </test>
     </library>
 
+    <!-- concept_check -->
     <library name="concept_check">
         <test name="class_concept_fail_expected">
             <mark-failure>
@@ -66,6 +49,7 @@
         </test>
     </library>
 
+    <!-- config -->
     <library name="config">
         <test name="config_test">
             <mark-failure>
@@ -74,14 +58,12 @@
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
-
         <test name="config_link_test">
             <mark-failure>
                 <toolset name="meta-como-win32-4.3.3-vc7"/>
                 <note author="J. Maddock" refid="3"/>
             </mark-failure>
         </test>
-        
         <test name="limits_test">
             <mark-failure>
                 <toolset name="cwpro8"/>
@@ -90,28 +72,27 @@
         </test>
     </library>
 
+    <!-- date_time -->
     <library name="date_time">
         <mark-unusable>
             <toolset name="intel-win32"/>
             <note author="B. Dawes" refid="10"/>
         </mark-unusable>
-
         <test name="testmicrosec_time_clock">
             <mark-failure>
                 <toolset name="gcc"/>
                 <note author="B. Dawes" refid="14"/>
             </mark-failure>
         </test>
-
         <test name="*">
             <mark-failure>
                 <toolset name="intel-win32"/>
                 <note refid="10"/>
             </mark-failure>
         </test>
-
     </library>
 
+    <!-- graph -->
     <library name="graph">
         <mark-unusable>
             <toolset name="borland-5.6.4"/>
@@ -125,37 +106,37 @@
         </test>
     </library>
 
-  <library name="lambda">
-    <mark-unusable>
-      <toolset name="msvc"/>
-      <toolset name="msvc-stlport"/>
-      <toolset name="borland"/>
-      <toolset name="borland-5.6.4"/>
-      <toolset name="borland-5.5.1"/>
-      <toolset name="vc7"/>
+    <!-- lambda -->
+    <library name="lambda">
+        <mark-unusable>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="borland"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5.5.1"/>
+            <toolset name="vc7"/>
+            <note>
+                TBD: Explain why it is not usable 
+            </note>
+        </mark-unusable>
+    </library>
 
-      <note>
-        TBD: Explain why it is not usable 
-      </note>
-    </mark-unusable>
-  </library>
+    <!-- multi_array -->
+    <library name="multi_array">
+        <mark-unusable>
+            <toolset name="borland"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5.5.1"/>
+            <note author="Alisdair Meredith" date="30 Jan 2004">
+                <p>
+                This library has never worked [on Borland 5.5.1 and 5.6.4], and the only tests that 'pass' are
+                compile-fail tests failing for the wrong reasons!
+                </p>
+            </note>
+        </mark-unusable>
+    </library>
 
-  <library name="multi_array">
-    <mark-unusable>
-      <toolset name="borland"/>
-      <toolset name="borland-5.6.4"/>
-      <toolset name="borland-5.5.1"/>
-
-      <note author="Alisdair Meredith" date="30 Jan 2004">
-        <p>
-        This library has never worked [on Borland 5.5.1 and 5.6.4], and the only tests that 'pass' are
-        compile-fail tests failing for the wrong reasons!
-        </p>
-      </note>
-    </mark-unusable>
-  </library>
-
-
+    <!-- spirit -->
     <library name="spirit">
         <mark-unusable>
             <toolset name="msvc"/>
@@ -165,214 +146,187 @@
             <toolset name="vc7"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
-      <note>
-          <p>
-            Historically, Spirit supported a lot of compilers, including (to some
-            extent) poorly conforming compilers such as VC6. Spirit v1.6.x will be
-            the last release that will support older poorly conforming compilers.
-            Starting from Spirit v1.8.0, ill conforming compilers will not be       
-            supported. If you are still using one of these older compilers, you can
-            still use Spirit v1.6.x.
-          </p>
-
-          <p>
-            The reason why Spirit v1.6.x worked on old non-conforming compilers is
-            that the authors laboriously took the trouble of searching for
-            workarounds to make these compilers happy. The process takes a lot of
-            time and energy, especially when one encounters the dreaded ICE or
-            "Internal Compiler Error". Sometimes searching for a single workaround
-            takes days or even weeks. Sometimes, there are no known workarounds. This
-            stifles progress a lot. And, as the library gets more progressive and
-            takes on more advanced C++ techniques, the difficulty is escalated to
-            even new heights.
-          </p>
-
-          <p>           
-            Spirit v1.6.x will still be supported. Maintenance and bug fixes will
-            still be applied. There will still be active development for the back-
-            porting of new features introduced in Spirit v1.8.0 (and Spirit 1.9.0)
-            to lesser able compilers; hopefully, fueled by contributions from the
-            community. For instance, there is already a working AST tree back-port
-            for VC6 and VC7 by Peder Holt.
-          </p>
-
-      </note>
+            <note>
+                <p>
+                Historically, Spirit supported a lot of compilers, including (to some
+                extent) poorly conforming compilers such as VC6. Spirit v1.6.x will be
+                the last release that will support older poorly conforming compilers.
+                Starting from Spirit v1.8.0, ill conforming compilers will not be       
+                supported. If you are still using one of these older compilers, you can
+                still use Spirit v1.6.x.
+                </p>
+                <p>
+                The reason why Spirit v1.6.x worked on old non-conforming compilers is
+                that the authors laboriously took the trouble of searching for
+                workarounds to make these compilers happy. The process takes a lot of
+                time and energy, especially when one encounters the dreaded ICE or
+                "Internal Compiler Error". Sometimes searching for a single workaround
+                takes days or even weeks. Sometimes, there are no known workarounds. This
+                stifles progress a lot. And, as the library gets more progressive and
+                takes on more advanced C++ techniques, the difficulty is escalated to
+                even new heights.
+                </p>
+                <p>
+                Spirit v1.6.x will still be supported. Maintenance and bug fixes will
+                still be applied. There will still be active development for the back-
+                porting of new features introduced in Spirit v1.8.0 (and Spirit 1.9.0)
+                to lesser able compilers; hopefully, fueled by contributions from the
+                community. For instance, there is already a working AST tree back-port
+                for VC6 and VC7 by Peder Holt.
+                </p>
+            </note>
         </mark-unusable>
     </library>
 
+    <!-- function -->
+    <library name="function">
+        <test name="allocator_test">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B.Dawes" refid="5"/>
+            </mark-failure>
+        </test>
+        <test name="contains_test">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="msvc-stlport"/>
+            </mark-failure>
+        </test>
+        <test name="function_arith_cxx98">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+        </test>
+        <test name="function_ref_cxx98">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+        </test>
+        <test name="lambda_test">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="cwpro8"/>
+                <note author="B. Dawes" refid="2"/>
+            </mark-failure>
+        </test>
+        <test name="lib_function_test">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="cwpro8"/>
+                <note author="B. Dawes" refid="2"/>
+            </mark-failure>
+        </test>
+        <test name="mem_fun_cxx98">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="cwpro8"/>
+                <note author="B. Dawes" refid="2"/>
+            </mark-failure>
+        </test>
+        <test name="std_bind_cxx98">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+        </test>
+        <test name="std_bind_portable">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <note author="B. Dawes" refid="5"/>
+            </mark-failure>
+        </test>
+        <test name="sum_avg_cxx98">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+        </test>
+    </library>
 
-  <!-- function -->
-
-  <library name="function">
-
-    <test name="allocator_test">
-        <mark-failure>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-
-            <note author="B.Dawes" refid="5"/>
-        </mark-failure>
-    </test>
-
-    <test name="contains_test">
-        <mark-failure>
-            <toolset name="msvc"/>
-	    <toolset name="msvc-stlport"/>
-        </mark-failure>
-    </test>
-
-    <test name="function_arith_cxx98">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-    </test>
-
-    <test name="function_ref_cxx98">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-    </test>
-
-    <test name="lambda_test">
-        <mark-failure>
-           <toolset name="borland"/>
-           <toolset name="borland-5.6.4"/>
-           <toolset name="msvc"/>
-           <toolset name="vc7"/>
-           <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-
-        <mark-failure>
-            <toolset name="cwpro8"/>
-            <note author="B. Dawes" refid="2"/>
-        </mark-failure> 
-    </test>
-
-    <test name="lib_function_test">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-
-        <mark-failure>
-            <toolset name="cwpro8"/>
-            <note author="B. Dawes" refid="2"/>
-        </mark-failure> 
-    </test>
-
-    <test name="mem_fun_cxx98">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-
-        <mark-failure>
-            <toolset name="cwpro8"/>
-            <note author="B. Dawes" refid="2"/>
-        </mark-failure> 
-    </test>
-
-    <test name="std_bind_cxx98">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-    </test>
-
-    <test name="std_bind_portable">
-        <mark-failure>
-            <toolset name="msvc"/>
-            <note author="B. Dawes" refid="5"/>
-        </mark-failure>
-    </test>
-
-    <test name="sum_avg_cxx98">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="3"/>
-        </mark-failure> 
-    </test>
-
-  </library>
-
-
-  <!-- iterator -->
-
-  <library name="iterator">
-    <test name="interoperable_fail">
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note author="B. Dawes" refid="2"/>
-        </mark-failure>
-
-        <mark-failure>
-            <toolset name="gcc"/>
-            <note refid="3"/>
-        </mark-failure>
-
-        <mark-failure> 
-            <toolset name="*"/>
-            <note author="D. Abrahams">
-            This failure is caused by a compiler bug.  Templated operators
-            which combine different iterators built with iterator_facade or
-            iterator_adaptor be present in an overload set even when those
-            iterators are not interoperable.  The usual result is that error
-            messages generated by illegal use of these operators will be of
-            lower quality.
-            </note>
-        </mark-failure>
-    </test>
-
-    <test name="is_convertible_fail" corner-case="yes" >
-        <mark-failure>
-            <toolset name="borland"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-            <note refid="2"/>
-        </mark-failure>
-
-        <mark-failure>
-          <toolset name="*"/>
-            <note author="D. Abrahams">
-                This failure is caused by a compiler bug.
-                <code>is_convertible&lt;T,U&gt;::value</code> may be true for unrelated
-                iterators <code>T</code> and <code>U</code>
-                (including many of the Boost specialized adaptors) which use
-                <code>enable_if_convertible</code> to restrict the applicability
-                of converting constructors, even when <code>T</code> is not
-                convertible to <code>U</code> because instantiating the
-                conversion will cause a compilation failure.
-            </note>
-        </mark-failure>
-    </test>
-  </library>
+    <!-- iterator -->
+    <library name="iterator">
+        <test name="interoperable_fail">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="B. Dawes" refid="2"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="gcc"/>
+                <note refid="3"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="*"/>
+                <note author="D. Abrahams">
+                    This failure is caused by a compiler bug.  Templated operators
+                    which combine different iterators built with iterator_facade or
+                    iterator_adaptor be present in an overload set even when those
+                    iterators are not interoperable.  The usual result is that error
+                    messages generated by illegal use of these operators will be of
+                    lower quality.
+                </note>
+            </mark-failure>
+        </test>
+        <test name="is_convertible_fail" corner-case="yes">
+            <mark-failure>
+                <toolset name="borland"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note refid="2"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="*"/>
+                <note author="D. Abrahams">
+                    This failure is caused by a compiler bug.
+                    <code>is_convertible&lt;T,U&gt;::value</code> may be true for unrelated
+                    iterators <code>T</code> and <code>U</code>
+                    (including many of the Boost specialized adaptors) which use
+                    <code>enable_if_convertible</code> to restrict the applicability
+                    of converting constructors, even when <code>T</code> is not
+                    convertible to <code>U</code> because instantiating the
+                    conversion will cause a compilation failure.
+                </note>
+            </mark-failure>
+        </test>
+    </library>
 
     <!-- math -->
-
     <library name="math">
         <test name="quaternion_mult_incl_test">
             <mark-failure>
@@ -383,7 +337,6 @@
     </library>
 
     <!-- numeric/interval -->
-
     <library name="numeric/interval">
         <mark-unusable>
             <toolset name="borland"/>
@@ -408,55 +361,49 @@
                 </note>
             </mark-failure>
         </test>
-    </library> 
+    </library>
 
     <!-- program_options -->
-
     <library name="program_options">
-      <mark-unusable>
-        <toolset name="msvc-stlport"/>
-      </mark-unusable>
-
-      <mark-unusable>
-        <toolset name="gcc-2.95.3-linux"/>
-        <note>
-          The failure is caused by standard library deficiencies -- it lacks
-          basic_string class and the &lt;locale&gt; header.
-        </note>
-      </mark-unusable>
-
-      <test name="unicode_test">
-        <mark-failure>
-            <toolset name="intel-win32-7.1-vc6"/>
-            <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
-            <toolset name="msvc"/>
-            <toolset name="vc7"/>
-        <note>The failures are caused by problems with std::locale implementation</note>
-        </mark-failure>         
-      </test>
-
-      <test name="unicode_test">
-        <mark-failure>
-            <toolset name="cwpro8"/>
-        <note>The test fails at runtime for unknown reason</note>
-        </mark-failure>         
-      </test>
-
-      <test name="variable_map_test">
-        <mark-failure>
-           <toolset name="msvc"/>
-        <note>The failures are caused by compiler bug: it's not possible to
-           explicitly pass template arguments to member template function. The
-           failure is serious and makes one of the primary interfaces
-           unusable.</note>
-        </mark-failure>         
-      </test>
-
-
+        <mark-unusable>
+            <toolset name="msvc-stlport"/>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="gcc-2.95.3-linux"/>
+            <note>
+                The failure is caused by standard library deficiencies -- it lacks
+                basic_string class and the &lt;locale&gt; header.
+            </note>
+        </mark-unusable>
+        <test name="unicode_test">
+            <mark-failure>
+                <toolset name="intel-win32-7.1-vc6"/>
+                <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note>The failures are caused by problems with std::locale implementation</note>
+            </mark-failure>
+        </test>
+        <test name="unicode_test">
+            <mark-failure>
+                <toolset name="cwpro8"/>
+                <note>The test fails at runtime for unknown reason</note>
+            </mark-failure>
+        </test>
+        <test name="variable_map_test">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <note>
+                    The failures are caused by compiler bug: it's not possible to
+                    explicitly pass template arguments to member template function. The
+                    failure is serious and makes one of the primary interfaces
+                    unusable.
+                </note>
+            </mark-failure>
+        </test>
     </library>
 
     <!-- python -->
-
     <library name="python">
         <mark-unusable>
             <toolset name="borland"/>
@@ -468,14 +415,12 @@
     </library>
 
     <!-- random -->
-
     <library name="random">
         <mark-unusable>
             <toolset name="msvc"/>
             <toolset name="vc7"/>
             <note author="B. Dawes" refid="10"/>
         </mark-unusable>
-
         <test name="random_test">
             <mark-failure>
                 <toolset name="cwpro8"/>
@@ -492,36 +437,34 @@
     </library>
 
     <!-- regex -->
-
     <library name="regex">
         <test name="regex_token_iterator_eg_2">
             <mark-failure>
                 <toolset name="msvc"/>
                 <note author="J. Maddock"/>
             </mark-failure>
-         </test>
+        </test>
         <test name="posix_api_check">
             <mark-failure>
                 <toolset name="meta-como-win32-4.3.3-vc7"/>
                 <note author="J. Maddock"/>
             </mark-failure>
-         </test>
+        </test>
         <test name="regex_regress_dll">
             <mark-failure>
                 <toolset name="meta-como-win32-4.3.3-vc7"/>
                 <note author="J. Maddock"/>
             </mark-failure>
-         </test>
+        </test>
         <test name="regex_wide_regress_dll">
             <mark-failure>
                 <toolset name="meta-como-win32-4.3.3-vc7"/>
                 <note author="J. Maddock"/>
             </mark-failure>
-         </test>
+        </test>
     </library>
 
     <!-- signals -->
-
     <library name="signals">
         <test name="signal_test">
             <mark-failure>
@@ -539,7 +482,6 @@
     </library>
 
     <!-- static_assert -->
-
     <library name="static_assert">
         <test name="static_assert_test_fail_8">
             <toolset name="cwpro8"/>
@@ -548,7 +490,6 @@
     </library>
 
     <!-- test -->
-
     <library name="test">
         <test name="errors_handling_test">
             <toolset name="como-win32"/>
@@ -556,9 +497,7 @@
         </test>
     </library>
 
-
     <!-- thread -->
-
     <library name="thread">
         <mark-unusable>
             <toolset name="gcc"/>
@@ -568,19 +507,16 @@
             <toolset name="como-win32"/>
             <note author="B. Dawes" refid="10"/>
         </mark-unusable>
-
         <test name="test_mutex">
             <mark-failure>
-                <toolset name="vc7"/>            
+                <toolset name="vc7"/>
                 <note author="B. Dawes" refid="0"/>
                 <note author="B. Dawes" refid="6"/>
             </mark-failure>
         </test>
-
     </library>
 
     <!-- tuple -->
-
     <library name="tuple">
         <test name="io_test">
             <toolset name="intel-win32"/>
@@ -589,61 +525,52 @@
     </library>
 
     <!-- type_traits -->
-
     <library name="type_traits">
         <test name="function_traits_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
         <test name="remove_bounds_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
         <test name="remove_const_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
         <test name="remove_cv_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
         <test name="remove_pointer_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
         <test name="remove_reference_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
         <test name="remove_volatile_test">
-            <markup-failure>
-                <toolset name="msvc"/>             
-                <toolset name="vc7"/>             
-            </markup-failure>
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+            </mark-failure>
         </test>
-
     </library>
 
     <!-- utility -->
-
     <library name="utility">
         <test name="enable_if_constructors">
             <mark-failure>
@@ -654,8 +581,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_dummy_arg_disambiguation">
             <mark-failure>
                 <toolset name="borland"/>
@@ -665,8 +591,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_lazy">
             <mark-failure>
                 <toolset name="borland"/>
@@ -676,8 +601,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_lazy_test">
             <mark-failure>
                 <toolset name="borland"/>
@@ -687,8 +611,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_member_templates">
             <mark-failure>
                 <toolset name="borland"/>
@@ -698,8 +621,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_namespace_disambiguation">
             <mark-failure>
                 <toolset name="borland"/>
@@ -709,8 +631,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_no_disambiguation">
             <mark-failure>
                 <toolset name="borland"/>
@@ -720,8 +641,7 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="enable_if_partial_specializations">
             <mark-failure>
                 <toolset name="borland"/>
@@ -731,109 +651,104 @@
                 <toolset name="vc7"/>
                 <note refid="3"/>
             </mark-failure>
-        </test>        
-
+        </test>
         <test name="fun_out_iter_example">
             <mark-failure>
                 <toolset name="como-win32"/>
                 <note author="B. Dawes" refid="4"/>
             </mark-failure>
         </test>
-    
     </library>
-
     <library name="variant">
         <test name="recursive_variant_test">
-            <markup-failure>
+            <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
                 <toolset name="como-win32"/>
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
                 <note refid="3"/>
-            </markup-failure>
+            </mark-failure>
         </test>
-
         <test name="variant_test1">
-            <markup-failure>
+            <mark-failure>
                 <toolset name="borland"/>
                 <toolset name="borland-5.6.4"/>
                 <note refid="2"/>
-            </markup-failure>
+            </mark-failure>
         </test>
-
         <test name="variant_reference_test">
-            <markup-failure>
+            <mark-failure>
                 <toolset name="cwpro8"/>
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
                 <note refid="3"/>
-            </markup-failure>
-            <markup-failure>
+            </mark-failure>
+            <mark-failure>
                 <toolset name="intel-win32"/>
                 <note refid="2"/>
-            </markup-failure>
+            </mark-failure>
         </test>
-
     </library>
 
+    <!-- /////////////// Standard note definitions /////////////// -->
+    <note id="0">
+        This test fails only intermittently.
+    </note>
 
+    <note id="1">
+        The failure is caused by a problem in Boost code. The Boost developer is aware of 
+        the problem and plans to fix it.
+    </note>
 
-  <!-- Standard note definitions -->
+    <note id="2">
+        The failure is caused by a compiler bug.
+    </note>
 
-  <note id="0">
-    This test fails only intermittently.
-  </note>  
+    <note id="3">
+        The failure is caused by a compiler bug, which has been reported to the compiler 
+        supplier (or is already known to them).
+    </note>
 
-  <note id="1">
-    The failure is caused by a problem in Boost code. The Boost developer is aware of the problem and plans to fix it.
-  </note>
+    <note id="4">
+        The failure is caused by a standard library bug.
+    </note>
 
-  <note id="2">
-    The failure is caused by a compiler bug.
-  </note>
+    <note id="5">
+        The failure is caused by a standard library bug, which has been reported to the 
+        standard library supplier (or is already known to them).
+    </note>
 
-  <note id="3">
-    The failure is caused by a compiler bug, which has been reported to the compiler supplier (or is already known to them).
-  </note>
+    <note id="6">
+        The failure is probably caused by the test code, harness, or configuration. Thus 
+        it may not affect users of the library.
+    </note>
 
-  <note id="4">
-    The failure is caused by a standard library bug.
-  </note>
+    <note id="9">
+        The failure is serious and likely to prevent all use of this Boost library with this compiler.
+    </note>
 
-  <note id="5">
-    The failure is caused by a standard library bug, which has been reported to the standard library supplier (or is already known to them).
-  </note>
+    <note id="10">
+        The failure is serious and likely to prevent all use of this Boost library with this 
+        compiler. The failure is caused by a compiler bug, which has been reported to the compiler 
+        supplier (or is already known to them).
+    </note>
 
-  <note id="6">
-    The failure is probably caused by the test code, harness, or configuration. Thus it may not affect users of the library.
-  </note>
+    <note id="14">
+        The failure is caused by a platform API bug.
+    </note>
 
-  <note id="9">
-    The failure is serious and likely to prevent all use of this Boost library with this compiler.
-  </note>
+    <note id="15">
+        The failure is caused by a platform API bug, which has been reported to the platform API 
+        supplier (or is already known to them).
+    </note>
 
-  <note id="10">
-    The failure is serious and likely to prevent all use of this Boost library with this compiler. The failure is caused by a compiler bug, which has been reported to the compiler supplier (or is already known to them).
-  </note>
+    <note id="16">
+        The failure is not serious and will not affect most users. The library degrades gracefully.
+    </note>
 
-  <note id="14">
-    The failure is caused by a platform API bug.
-  </note>
-
-  <note id="15">
-    The failure is caused by a platform API bug, which has been reported to the platform API supplier (or is already known to them).
-  </note>
-
-  <note id="16">
-    The failure is not serious and will not affect most users. The library degrades gracefully.
-  </note>
-
-  <note id="17">
-    This compiler's bugs are not supported by the library.
-  </note>
-
+    <note id="17">
+        This compiler's bugs are not supported by the library.
+    </note>
 
 </explicit-failures-markup>
-
-
