@@ -7,12 +7,12 @@
 
 # Transitional - allows us to use this Jamrules file with the new Jambase under
 # development
-BOOST_ROOT ?= $(gPROJECT_ROOT) ;
+path-global BOOST_ROOT : $(gPROJECT_ROOT) ;
 
 # Establish this as the root of the boost installation. Most targets will want
 # $(BOOST_ROOT) in their #include path.  $(gTOP) is the name of the variable
 # containing the path from the invocation directory to the project root.
-BOOST_ROOT ?= $($(gTOP)) ;
+path-global BOOST_ROOT : $($(gTOP)) ;
 
 # Tell the build system where to find the rest of the build
 # system installation (e.g. toolset descriptions, variants)
