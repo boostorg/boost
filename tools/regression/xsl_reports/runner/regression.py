@@ -620,7 +620,7 @@ def accept_args( args ):
         , '--platform'      : sys.platform
         , '--user'          : None
         , '--comment'       : None
-        , '--bjam-options'  : None
+        , '--bjam-options'  : ''
         , '--toolsets'      : None
         , '--bjam-toolset'  : None
         , '--pjl-toolset'   : None
