@@ -96,9 +96,9 @@ class make_tarballs( utils.step_controller ):
         
         self.make_docs( os.path.abspath( exported_dir ) )
 
-        if self.start_step( "win.make_readonly", "Making all files readonly" ):
+        if self.start_step( "win.make_readonly", "Making all files writable" ):
             os.chdir( temp_win )
-            utils.checked_system( [ "attrib /S +R *.*" ] )
+            utils.checked_system( [ "attrib /S -R *.*" ] )
             self.finish_step( "win.make_readonly" )
         
         zip_name = "boost_%s.zip" % release_version
@@ -211,7 +211,8 @@ class make_tarballs( utils.step_controller ):
                                 , win_build_dir )
 
         if self.start_step( "unix.make_readonly", "Making all files readonly" ):
-            utils.checked_system( [ "chmod -R a-w+r %s" % temp_unix ] )
+            utils.checked_system( [ "chmod -R a-w+r,u+w %s" % temp_unix ] )
+            utils.checked_system( [ "lfind %s -type d -exec chmod u+w {} ;" % temp_unix ] )
             self.finish_step( "unix.make_readonly" )
 
         gz_archive_name = "boost_%s" % release_version + ".tar.gz"
@@ -231,9 +232,9 @@ class make_tarballs( utils.step_controller ):
     def remove_x_permission( self, directory ):
         for i in os.walk( directory ):
             for f in i[1]:
-                os.system( "chmod a=xr %s" % os.path.join( i[0], f ) )
+                os.system( "chmod a=xr,u=rwx %s" % os.path.join( i[0], f ) )
             for f in i[2]:
-                os.system( "chmod a=r %s" % os.path.join( i[0], f ) )
+                os.system( "chmod a=r,u=rw %s" % os.path.join( i[0], f ) )
         
     def copy_docs_to_unix( self, unix_boost_directory, win_boost_directory ):
         if self.start_step( "unix.copy_docs", "Copying docs to unix copy" ):
