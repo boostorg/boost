@@ -305,7 +305,15 @@ compile-fail libs/utility/checked_delete_test.cpp ;
 run libs/utility/compressed_pair_test.cpp : -u ;
 
 test-suite iterator_adaptors
-    : [ run libs/utility/counting_iterator_test.cpp ]
+    : [ run libs/utility/counting_iterator_test.cpp : # args
+        : # input files
+        : # requirements
+        
+        # borland warns incorrectly in this case, so often that
+        # successful compilation is prevented.
+        <borland><*><cxxflags>"-w-8091 -w-8092"
+      ]
+        
       [ run libs/utility/iterator_adaptor_test.cpp ] 
       [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ] 
       [ compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ]
