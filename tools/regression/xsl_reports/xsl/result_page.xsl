@@ -13,6 +13,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
+    xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
     version="1.0">
@@ -49,10 +50,6 @@
         name="test_name_key" 
         match="test-log" 
         use="concat( @library, '&gt;@&lt;', @test-name )"/>
-    <xsl:key 
-        name="library_key" 
-        match="test-log" 
-        use="@library"/>
     <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
 
     <!-- toolsets -->
@@ -71,7 +68,8 @@
     <xsl:variable name="ordered_toolsets" select="exsl:node-set( $ordered_toolsets_fragment )"/>
 
     <!-- libraries -->
-    <xsl:variable name="libraries" select="//test-log[ @library != '' and generate-id(.) = generate-id( key('library_key',@library)[1] )  ]/@library"/>
+    <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
+    <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
     <xsl:template name="insert_toolsets_row">
         <xsl:param name="library"/>
@@ -134,6 +132,9 @@
             <xsl:when test="$test_type='run_fail'">     <xsl:text>rf</xsl:text> </xsl:when>
             <xsl:when test="$test_type='compile'">      <xsl:text>c</xsl:text>  </xsl:when>
             <xsl:when test="$test_type='compile_fail'"> <xsl:text>cf</xsl:text> </xsl:when>
+            <xsl:otherwise>
+                <xsl:message terminate="yes">Incorrect test type "<xsl:value-of select="$test_type"/>"</xsl:message>
+            </xsl:otherwise>
             </xsl:choose>
         </a>
         </td>
@@ -334,7 +335,7 @@
 
                     <tbody>
                         <!-- lib_tests = test_log* -->
-                        <xsl:variable name="lib_tests" select="//test-log[@library = $library]" /> 
+                        <xsl:variable name="lib_tests" select="$test_case_logs[@library = $library]" /> 
 
                         <!-- lib_unique_test_names = test_log* -->
                         <xsl:variable name="lib_unique_test_names" 

@@ -13,7 +13,9 @@
   </xsl:template>
   
   <xsl:template match="test-log">
-    <test-result library="{@library}" test-name="{@test-name}" toolset="{@toolset}" result="{@result}" />
+    <xsl:if test="meta:is_test_log_a_test_case(.)">
+        <test-result library="{@library}" test-name="{@test-name}" toolset="{@toolset}" result="{@result}" />
+    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

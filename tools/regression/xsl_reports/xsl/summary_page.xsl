@@ -13,6 +13,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
+    xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
     version="1.0">
@@ -39,10 +40,6 @@
         name="library_test_name_key" 
         match="test-log" 
         use="concat( @library, '&gt;@&lt;', @test-name )"/>
-    <xsl:key 
-        name="library_key" 
-        match="test-log" 
-        use="@library"/>
     <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
     <xsl:key name="test_name_key"  match="test-log" use="@test-name "/>
 
@@ -63,7 +60,8 @@
         
     <!-- libraries -->
 
-    <xsl:variable name="libraries" select="//test-log[ generate-id(.) = generate-id( key('library_key',@library)[1] ) and @library != '' ]/@library"/>
+    <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
+    <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
     <xsl:variable name="sorted_libraries_output">
         <xsl:for-each select="$libraries">
@@ -132,12 +130,12 @@
             </tfoot>
           
             <tbody>
-                <xsl:variable name="test_logs" select="//test-log"/>
+                <xsl:variable name="test_logs" select="$test_case_logs"/>
 
                 <!-- for each library -->
                 <xsl:for-each select="$sorted_libraries">
                 <xsl:variable name="library" select="."/>
-                <xsl:variable name="current_row" select="$test_logs[ @library=$library ]"/>
+                <xsl:variable name="current_row" select="$test_logs[ @library=$library]"/>
 
                 <xsl:variable name="expected_test_count" select="count( $current_row[ generate-id(.) = generate-id( key('test_name_key',@test-name)[1] ) ] )"/>
                 <xsl:variable name="library_header">
@@ -293,9 +291,9 @@
         </xsl:when>
         <xsl:otherwise>
             <xsl:message terminate="yes">
-            Unknown status
-            <xsl:copy-of select="$current_cell">
-            </xsl:copy-of>
+                Unknown status
+                <xsl:copy-of select="$current_cell">
+                </xsl:copy-of>
             </xsl:message>
         </xsl:otherwise>
         </xsl:choose>
