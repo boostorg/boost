@@ -60,15 +60,18 @@
             
             <head>
             <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
-            <title>Boost regression - test run output: <xsl:value-of select="$component"/></title>
+            <title>Test output: <xsl:value-of select="$component"/></title>
             </head>
 
             <body>
             <div>
                 <div class="log-test-title">
-                Boost regression - test run output: <xsl:value-of select="$component"/>
+                Test output: <xsl:value-of select="$component"/>
             </div>
             
+            <div>
+                <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+            </div>
 
             <xsl:if test="notes/note">
                 <p>
@@ -82,7 +85,8 @@
               
             <xsl:if test="compile">
                 <p>
-                <div class="log-compiler-output-title">Compiler output:</div>
+                <div class="log-compiler-output-title">Compiler output [<xsl:value-of select="@timestamp"/>]:
+                </div>
                 <pre>
                     <xsl:copy-of select="compile/node()"/>
                 </pre>
@@ -91,7 +95,7 @@
               
             <xsl:if test="link">
                 <p>
-                <div class="log-linker-output-title">Linker output:</div>
+                <div class="log-linker-output-title">Linker output [<xsl:value-of select="@timestamp"/>]:</div>
                 <pre>
                     <xsl:copy-of select="link/node()"/>
                 </pre>
@@ -100,7 +104,7 @@
 
             <xsl:if test="lib">
                 <p>
-                <div class="log-linker-output-title">Lib output:</div>
+                <div class="log-linker-output-title">Lib output [<xsl:value-of select="@timestamp"/>]:</div>
                 <p>
                     See <a href="{meta:encode_path( concat( ../@runner, '-',  lib/node() )  ) }.html">
                     <xsl:copy-of select="lib/node()"/>
@@ -111,7 +115,7 @@
               
             <xsl:if test="run">
                 <p>
-                <div class="log-run-output-title">Run output:</div>
+                <div class="log-run-output-title">Run output [<xsl:value-of select="@timestamp"/>]:</div>
                 <pre>
                     <xsl:copy-of select="run/node()"/>
                 </pre>
