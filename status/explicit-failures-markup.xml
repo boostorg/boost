@@ -362,6 +362,33 @@
         </test>
     </library>
 
+    <!-- numeric/interval -->
+
+    <library name="numeric/interval">
+        <mark-unusable>
+            <toolset name="borland"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="msvc"/>
+            <toolset name="vc7"/>
+            <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
+        </mark-unusable>
+        <test name="test_float">
+            <mark-failure>
+                <toolset name="borland-5.5.1"/>
+                <toolset name="intel-win32-7.1-vc6"/>
+                <note author="G. Melquiond">
+                    This test ensures the inclusion property of interval
+                    arithmetic is available for built-in floating-point types
+                    <code>float</code> and <code>double</code>. If the test
+                    fails, <code>interval&lt;float&gt;</code> and
+                    <code>interval&lt;double&gt;</code> should not be used
+                    on this compiler/platform since there will be no
+                    numerical guarantee.
+                </note>
+            </mark-failure>
+        </test>
+    </library>
+
     <!-- python -->
 
     <library name="python">
