@@ -25,6 +25,15 @@
 #include <utility>
 #include <ctime>
 
+#ifdef __unix
+#include <cstring>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#endif
+
 // It is OK to use boost headers which contain entirely inline code.
 #include <boost/config.hpp>
 #ifdef BOOST_NO_STDC_NAMESPACE
@@ -292,7 +301,35 @@ previous_results_type read_previous_results(std::istream & is)
 bool execute(const std::string & command)
 {
   std::cout << command << std::endl; // fix: endl ensures cout ordering
+#ifdef __unix
+  int ret = 0;
+  pid_t pid = fork();
+  if(pid == -1) {
+    ret = 1;
+    std::cout << "ERROR: cannot fork: " << std::strerror(errno) << std::endl;
+  } else if(pid == 0) {
+    // child context
+    execl("/bin/sh", "sh", "-c", command.c_str(), 0);
+    std::cout << "ERROR: cannot execl: " << std::strerror(errno) << std::endl;
+    std::exit(1);
+  } else {
+    int status;
+    struct rusage usage;
+    int result = wait4(pid, &status, 0, &usage);
+    if(WIFEXITED(status))
+      ret = WEXITSTATUS(status);
+    else if(WIFSIGNALED(status))
+      ret = 1000+WTERMSIG(status);
+    std::cout << "CPU time: "
+              << usage.ru_utime.tv_sec + usage.ru_utime.tv_usec/1e6
+              << " s user, "
+              << usage.ru_stime.tv_sec + usage.ru_stime.tv_usec/1e6
+              << " s system"
+              << std::endl;
+  }
+#else
   int ret = std::system(command.c_str());
+#endif
   if(ret != 0)
     std::cout << "Return code: " << ret << std::endl;
   return ret == 0;
