@@ -774,16 +774,7 @@ for more information.
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <note refid="2"/>
         </mark-unusable>
-        <test name="unicode_test">
-            <mark-failure>
-                <toolset name="intel-win32-7.1-vc6"/>
-                <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-                <note>The failures are caused by problems with std::locale implementation</note>
-            </mark-failure>
-        </test>
-        <test name="unicode_test_dll">
+        <test name="unicode_test*">
             <mark-failure>
                 <toolset name="intel-win32-7.1-vc6"/>
                 <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
@@ -821,56 +812,6 @@ for more information.
             </mark-failure>
         </test>
 
-
-        <test name="cmdline_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="options_description_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="parsers_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="parsers_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="positional_options_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="unicode_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="variable_map_test_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-        <test name="winmain_dll">
-            <mark-failure>
-                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
-                <note refid="18"/>
-            </mark-failure>
-        </test>
-
         <test name="options_description_test_dll">
              <mark-failure>
                 <toolset name="msvc"/>
@@ -883,6 +824,23 @@ for more information.
              <mark-failure>
                 <toolset name="intel-win32-7.1-vc6"/>
                 <note refid="23"/>
+            </mark-failure>
+        </test>
+
+        <test name="*dll">
+            <mark-failure>
+                <toolset name="cwpro8"/><toolset name="cw-8.3"/>
+                <note refid="18"/>
+            </mark-failure>
+        </test>
+
+        <test name="*dll">
+             <mark-failure>
+                <toolset name="como-win32-4.3.3-vc7"/>
+                <note>It is not clear how to make compiler accept __declspec
+                specifier needed for DLLs to work on windows. Adding of
+                --windows to the command line did not work.
+                </note>
             </mark-failure>
         </test>
 
