@@ -14,7 +14,10 @@
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:exsl="http://exslt.org/common"
   version="1.0">
+
+  <xsl:import href="common.xsl"/>
 
   <xsl:output method="html" 
     doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" 
@@ -22,10 +25,14 @@
     indent="yes"
     />
 
+
   <xsl:param name="mode"/>
   <xsl:param name="source"/>
   <xsl:param name="run_date"/>
   <xsl:param name="comment_file"/>
+  <xsl:param name="explicit_markup_file"/>
+
+  <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
 
   <xsl:variable name="alternate_mode">
     <xsl:choose>
@@ -45,21 +52,36 @@
     use="@library"/>
   <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
   <xsl:key name="test_name_key"  match="test-log" use="@test-name "/>
-  <!-- -->
+
+  <!-- toolsets -->
+
   <xsl:variable name="toolsets" select="//test-log[ generate-id(.) = generate-id( key('toolset_key',@toolset)[1] ) and @toolset != '' ]/@toolset"/>
+
+  <xsl:variable name="required_toolsets" select="$explicit_markup//mark-toolset[ @status='required' ]"/>
+
+  <xsl:variable name="sorted_toolset_fragment">
+    <xsl:call-template name="get_toolsets">
+      <xsl:with-param name="toolsets" select="$toolsets"/>
+      <xsl:with-param name="required_toolsets" select="$required_toolsets"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="sorted_toolsets" select="exsl:node-set( $sorted_toolset_fragment )"/>
+    
+  <!-- libraries -->
+
   <xsl:variable name="libraries" select="//test-log[ generate-id(.) = generate-id( key('library_key',@library)[1] ) and @library != '' ]/@library"/>
 
-  <xsl:template name="toolsets_row">
-    <tr>
-      <td class="head">library / toolset</td>
-      <xsl:for-each select="$toolsets">
+  <xsl:variable name="sorted_libraries_output">
+      <xsl:for-each select="$libraries">
         <xsl:sort select="." order="ascending" />
-        <td class="toolset-name"><xsl:value-of select="."/></td>
+        <library><xsl:copy-of select="."/></library>
       </xsl:for-each>
-      <td class="head">toolset / library</td>
-    </tr>
-  </xsl:template>
+  </xsl:variable>
 
+  <xsl:variable name="sorted_libraries" select="exsl:node-set( $sorted_libraries_output )/library/@library"/>
+
+  
   <xsl:template match="/">
     <html>
       <head>
@@ -86,20 +108,26 @@
                 <td class="header-item-content">
                   <table border="0" class="legend-table">
                     <tr>
-                      <td><table><tr><td class="summary-user-success">&#160;</td></tr></table></td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-user-success">&#160;</td></tr></table></td>
                       <td class="legend-item">all library tests are passing</td>
                     </tr>
                     <tr>
-                      <td><table><tr><td class="summary-user-fail-expected">details</td></tr></table></td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-user-fail-expected">details</td></tr></table></td>
                       <td class="legend-item">
                         there are some known failures in the tests, see the detailed report
                       </td>
                     </tr>
                     <tr>
-                      <td><table><tr><td class="summary-user-fail-unexpected">unexp.</td></tr></table></td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-user-fail-unexpected">unexp.</td></tr></table></td>
                       <td class="legend-item">
                         some tests that the library author expects to pass are currently failing,
                         see the detailed report
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-unusable">unusable</td></tr></table></td>
+                      <td class="legend-item">
+                        the library author marked it as unusable on particular platform/toolset
                       </td>
                     </tr>
                   </table>
@@ -121,26 +149,34 @@
                 <td class="header-item-content">
                   <table border="0" class="legend-table">
                     <tr>
-                      <td><table><tr><td class="summary-expected">OK</td></tr></table></td>
-                      <td class="legend-item">all expected tests pass</td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-expected">OK</td></tr></table></td>
+                      <td class="legend-item">
+                        all expected tests pass
+                      </td>
                     </tr>
                     <tr>
-                      <td><table><tr><td class="summary-success-unexpected">OK</td></tr></table></td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-success-unexpected">OK</td></tr></table></td>
                       <td class="legend-item">
                         all expected tests pass, and some other tests that were expected to fail 
                         unexpectedly pass as well
                       </td>
                     </tr>
                     <tr>
-                      <td><table><tr><td class="summary-fail-unexpected-new">fail</td></tr></table></td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-fail-unexpected-new">fail</td></tr></table></td>
                       <td class="legend-item">
                         there are some failures on the newly added tests/compiler(s)
                       </td>
                     </tr>
                     <tr>
-                      <td><table><tr><td class="summary-fail-unexpected">broken</td></tr></table></td>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-fail-unexpected">broken</td></tr></table></td>
                       <td class="legend-item">
                         tests that the library author expects to pass are currently failing
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><table width="100%"><tr class="summary-row-single"><td class="summary-unusable">unusable</td></tr></table></td>
+                      <td class="legend-item">
+                        the library author marked it as unusable on particular platform/toolset
                       </td>
                     </tr>
                   </table>
@@ -174,40 +210,67 @@
 
         <!-- summary table -->
 
-        <table border="1" cellspacing="0" cellpadding="0" class="summary-table">
+        <table border="0" cellspacing="0" cellpadding="0" class="summary-table">
 
-          <thead><xsl:call-template name="toolsets_row"/></thead>
-          <tfoot><xsl:call-template name="toolsets_row"/></tfoot>
+          <thead>
+            <xsl:call-template name="insert_toolsets_row">
+              <xsl:with-param name="toolsets" select="$sorted_toolsets"/>
+            </xsl:call-template>
+          </thead>
+
+          <tfoot>
+            <xsl:call-template name="insert_toolsets_row">
+              <xsl:with-param name="toolsets" select="$sorted_toolsets"/>
+            </xsl:call-template>
+          </tfoot>
       
           <tbody>
+            <xsl:variable name="test_logs" select="//test-log"/>
+
             <!-- for each library -->
-            <xsl:for-each select="$libraries">
-              <xsl:sort select="." order="ascending" />
+            <xsl:for-each select="$sorted_libraries">
               <xsl:variable name="library" select="."/>
-              <xsl:variable name="current_row" select="//test-log[ @library=$library]"/>
+              <xsl:variable name="current_row" select="$test_logs[ @library=$library ]"/>
 
               <xsl:variable name="expected_test_count" select="count( $current_row[ generate-id(.) = generate-id( key('test_name_key',@test-name)[1] ) ] )"/>
               <xsl:variable name="library_header">
                 <td class="library-name">
                   <a href="{$mode}_result_page.html#{.}" class="library-link">
-                    <xsl:value-of select="."/>
+                    <xsl:value-of select="$library"/>
                   </a>
                 </td>
               </xsl:variable>
 
-              <tr class="summary-row">
+              <xsl:variable name="line_mod">
+                <xsl:choose>
+                  <xsl:when test="1 = last()">
+                    <xsl:text>-single</xsl:text>
+                  </xsl:when>
+                  <xsl:when test="generate-id( . ) = generate-id( $sorted_libraries[1] )">
+                    <xsl:text>-first</xsl:text>
+                  </xsl:when>
+                  <xsl:when test="generate-id( . ) = generate-id( $sorted_libraries[ last() ] )">
+                    <xsl:text>-last</xsl:text>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:text></xsl:text>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+
+
+              <tr class="summary-row{$line_mod}">
                 <xsl:copy-of select="$library_header"/>
 
-                <xsl:for-each select="$toolsets">
-                  <xsl:sort select="." order="ascending" />
-                  <xsl:variable name="toolset" select="."/>
-
+                <xsl:for-each select="$sorted_toolsets/toolset">
+                  <xsl:variable name="toolset" select="@toolset"/>
                   <xsl:variable name="current_cell" select="$current_row[ @toolset=$toolset ]"/>
                   <xsl:choose>
                     <xsl:when test="$mode='user'">
                       <xsl:call-template name="insert_cell_user">
                         <xsl:with-param name="current_cell" select="$current_cell"/>
                         <xsl:with-param name="library" select="$library"/>
+                        <xsl:with-param name="toolset" select="$toolset"/>
                         <xsl:with-param name="expected_test_count" select="$expected_test_count"/>
                       </xsl:call-template>
                     </xsl:when>
@@ -215,6 +278,7 @@
                       <xsl:call-template name="insert_cell_developer">
                         <xsl:with-param name="current_cell" select="$current_cell"/>
                         <xsl:with-param name="library" select="$library"/>
+                        <xsl:with-param name="toolset" select="$toolset"/>
                         <xsl:with-param name="expected_test_count" select="$expected_test_count"/>
                       </xsl:call-template>
                     </xsl:when>
@@ -239,9 +303,13 @@
 <xsl:template name="insert_cell_developer">
   <xsl:param name="current_cell"/>
   <xsl:param name="library"/>
+  <xsl:param name="toolset"/>
   <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
-    <xsl:choose>
+    <xsl:choose> 
+      <xsl:when test="$explicit_markup//mark-library[ @name = $library and @as='unusable' and (@toolset=$toolset or toolset/@name=$toolset)]">
+        <xsl:text>summary-unusable</xsl:text>
+      </xsl:when>
       <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
         <xsl:text>summary-missing</xsl:text>
       </xsl:when>
@@ -257,11 +325,19 @@
       <xsl:when test="count( $current_cell[@status='expected'] )">
         <xsl:text>summary-expected</xsl:text>
       </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="count( $current_cell )"/>
+      </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
   
   <td class="{$class}">
     <xsl:choose>
+      <xsl:when test="$class='summary-unusable'">
+        <a href="{$mode}_result_page.html#{$library}" class="log-link">
+          <xsl:text>unusable</xsl:text>
+        </a>          
+      </xsl:when>
       <xsl:when test="$class='summary-missing'">
         <xsl:text>missing</xsl:text>
       </xsl:when>
@@ -288,9 +364,13 @@
 <xsl:template name="insert_cell_user">
   <xsl:param name="current_cell"/>
   <xsl:param name="library"/>
+  <xsl:param name="toolset"/>
   <xsl:param name="expected_test_count"/>
   <xsl:variable name="class">
     <xsl:choose>
+      <xsl:when test="$explicit_markup//mark-library[ @name = $library and @as='unusable' and (@toolset=$toolset or toolset/@name=$toolset)]">
+        <xsl:text>summary-unusable</xsl:text>
+      </xsl:when>
       <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
         <xsl:text>summary-missing</xsl:text>
       </xsl:when>
@@ -315,6 +395,12 @@
   
   <td class="{$class}">
     <xsl:choose>
+      <xsl:when test="$class='summary-unusable'">
+        <a href="{$mode}_result_page.html#{$library}" class="log-link">
+          <xsl:text>unusable</xsl:text>
+        </a>          
+      </xsl:when>
+
       <xsl:when test="$class='summary-missing'">
         <xsl:text>missing</xsl:text>
       </xsl:when>
@@ -337,6 +423,30 @@
     </xsl:choose>
   </td>
   
+</xsl:template>
+
+<xsl:template name="insert_toolsets_row">
+  <xsl:param name="toolsets"/>
+  <tr>
+    <td class="head">library / toolset</td>
+    
+    <xsl:for-each select="$toolsets/toolset">
+      <xsl:variable name="class">
+        <xsl:choose>
+          <xsl:when test="@required='yes'">
+            <xsl:text>required-toolset-name</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>toolset-name</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      
+      <td class="{$class}"><xsl:value-of select="@toolset"/></td>
+    </xsl:for-each>
+
+    <td class="head">toolset / library</td>
+  </tr>
 </xsl:template>
 
 </xsl:stylesheet>

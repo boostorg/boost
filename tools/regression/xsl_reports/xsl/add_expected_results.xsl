@@ -45,8 +45,7 @@
       </xsl:variable>
 
       <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and ( @test-name=$test-name or @test-name='*' ) and @toolset = $toolset]"/>
-      <xsl:variable name="failures_markup" select="$failures_markup//*/mark[ @library=$library and ( @test = $test-name or @test = '*' ) and ( @toolset = $toolset or @toolset = '*' ) ]"/>
-
+      <xsl:variable name="failures_markup" select="$failures_markup//*/mark-failure[ @library=$library and ( @test = $test-name or @test = '*' ) and ( @toolset = $toolset or @toolset = '*' ) ]"/>
       <xsl:variable name="is_new">
          <xsl:choose>
             <xsl:when test="$expected_results_test_case">
