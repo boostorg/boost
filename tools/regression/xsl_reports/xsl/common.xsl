@@ -61,16 +61,14 @@
   <xsl:template name="show_notes">
       <xsl:param name="explicit_markup"/>
       <xsl:param name="notes"/>
-        <div class="log-notes">
-          <xsl:for-each select="notes/note">
+        <div class="notes">
+          <xsl:for-each select="$notes">
             <div>
-              <xsl:if test="@refid">
                 <xsl:variable name="refid" select="@refid"/>
                 <xsl:call-template name="show_note">
                     <xsl:with-param name="note" select="."/>
                     <xsl:with-param name="reference" select="$explicit_markup//note[ $refid = @id ]"/>
                 </xsl:call-template>
-              </xsl:if>
             </div>
           </xsl:for-each>
         </div>
