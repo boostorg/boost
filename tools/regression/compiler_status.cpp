@@ -207,6 +207,11 @@ namespace
     {
       if ( fs::is_directory( *itr ) )
       {
+        // SunCC creates an internal subdirectory everywhere it writes
+        // object files.  This confuses the target_directory() algorithm.
+        // This patch ignores the SunCC internal directory. Jens Maurer
+        if ( (*itr).leaf() == "SunWS_cache" ) continue;
+
         if ( child.empty() ) child = *itr;
         else
         {
