@@ -13,9 +13,11 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
+    xmlns:str="http://exslt.org/strings"
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func exsl"
+    exclude-result-prefixes="set str meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
@@ -103,7 +105,7 @@
 
             <xsl:variable name="toolset_notes" select="exsl:node-set( $toolset_notes_fragment )/*"/>
 
-            <td class="{$class}"><xsl:value-of select="$toolset"/>
+            <td class="{$class}"><xsl:value-of select="meta:toolset_name( $toolset )"/>
             <xsl:if test="count( $toolset_notes ) > 0">
                 <span class="super">
                     <xsl:for-each select="$toolset_notes">
