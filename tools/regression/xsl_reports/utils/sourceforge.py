@@ -11,6 +11,6 @@ def download( source, destination, user ):
 
 def upload( source, destination, user ):
     utils.checked_system( [ 
-          'rsync -v -r -z --progress %(source)s %(user)s@shell.sourceforge.net:%(site_dir)s/%(dest)s'
+          'rsync -v -r -z --progress localhost:/%(source)s %(user)s@shell.sourceforge.net:%(site_dir)s/%(dest)s'
                 % { 'user': user, 'site_dir': site_dir, 'source': source, 'dest': destination }
         ] )

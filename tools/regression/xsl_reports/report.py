@@ -16,7 +16,7 @@ import utils
 import runner
 
 
-report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'x', 'i' ]
+report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'x', 'i', 'n' ]
 
 if __name__ == '__main__':
     run_dir = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
@@ -27,8 +27,12 @@ else:
 def map_path( path ):
     return os.path.join( run_dir, path ) 
 
-def xsl_path( xsl_file_name ):
-    return map_path( os.path.join( 'xsl', xsl_file_name ) )
+
+def xsl_path( xsl_file_name, v2 = 0 ):
+    if v2:
+        return map_path( os.path.join( 'xsl/v2', xsl_file_name ) )
+    else:
+        return map_path( os.path.join( 'xsl', xsl_file_name ) )
 
 
 def make_result_pages( 
@@ -41,6 +45,7 @@ def make_result_pages(
         , results_dir
         , result_prefix
         , reports
+        , v2
         ):
 
     utils.log( 'Producing the reports...' )
@@ -64,7 +69,7 @@ def make_result_pages(
         utils.libxslt( 
               utils.log
             , test_results_file
-            , xsl_path( 'add_expected_results.xsl' )
+            , xsl_path( 'add_expected_results.xsl', v2 )
             , extended_test_results
             , { 'expected_results_file': expected_results_file, 'failures_markup_file' : failures_markup_file }
             )
@@ -80,7 +85,7 @@ def make_result_pages(
         utils.libxslt( 
               utils.log
             , extended_test_results
-            , xsl_path( 'links_page.xsl' )
+            , xsl_path( 'links_page.xsl', v2 )
             , links
             , {
                   'source':                 source
@@ -97,7 +102,7 @@ def make_result_pages(
         utils.libxslt( 
               utils.log
             , extended_test_results
-            , xsl_path( 'issues_page.xsl' )
+            , xsl_path( 'issues_page.xsl', v2 )
             , issues
             , {
                   'source':                 source
@@ -113,7 +118,7 @@ def make_result_pages(
             utils.libxslt( 
                   utils.log
                 , extended_test_results
-                , xsl_path( 'result_page.xsl' )
+                , xsl_path( 'result_page.xsl', v2 )
                 , os.path.join( output_dir, mode, 'index.html' )
                 , { 
                       'links_file':             'links.html'
@@ -132,7 +137,7 @@ def make_result_pages(
             utils.libxslt(
                   utils.log
                 , extended_test_results
-                , xsl_path( 'summary_page.xsl' )
+                , xsl_path( 'summary_page.xsl', v2 )
                 , os.path.join( output_dir, mode, 'summary.html' )
                 , { 
                       'mode' :                  mode 
@@ -148,10 +153,19 @@ def make_result_pages(
         utils.libxslt(
               utils.log
             , extended_test_results
-            , xsl_path( 'produce_expected_results.xsl' )
+            , xsl_path( 'produce_expected_results.xsl', v2 )
             , os.path.join( output_dir, 'expected_results.xml' )
             )
-    
+
+    if v2 and 'n' in reports:
+        utils.log( '    Making runner comment files...' )
+        utils.libxslt(
+              utils.log
+            , extended_test_results
+            , xsl_path( 'runners.xsl', v2 )
+            , os.path.join( output_dir, 'runners.html' )
+            )
+
     shutil.copyfile(
           xsl_path( 'html/master.css' )
         , os.path.join( output_dir, 'master.css' )
@@ -168,6 +182,9 @@ def build_xsl_reports(
         , result_file_prefix
         , dont_collect_logs = 0
         , reports = report_types
+        , v2 = 0
+        , user = None
+        , upload = False
         ):
 
     ( run_date ) = time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime() )
@@ -175,13 +192,23 @@ def build_xsl_reports(
     test_results_file = os.path.join( results_dir, 'test_results.xml' )
     bin_boost_dir = os.path.join( locate_root_dir, 'bin', 'boost' )
 
-    utils.log( '  dont_collect_logs: %s' % dont_collect_logs )
-    if not dont_collect_logs:
-        f = open( test_results_file, 'w+' )
-        f.write( '<tests>\n' )
-        runner.collect_test_logs( [ bin_boost_dir ], f )
-        f.write( '</tests>\n' )
-        f.close()
+    if v2:
+        import merger
+        merger.merge_logs(
+              source
+            , user
+            , results_dir
+            , test_results_file
+            , dont_collect_logs
+            )
+    else:
+        utils.log( '  dont_collect_logs: %s' % dont_collect_logs )
+        if not dont_collect_logs:
+            f = open( test_results_file, 'w+' )
+            f.write( '<tests>\n' )
+            runner.collect_test_logs( [ bin_boost_dir ], f )
+            f.write( '</tests>\n' )
+            f.close()
 
     make_result_pages( 
           test_results_file
@@ -193,7 +220,18 @@ def build_xsl_reports(
         , results_dir
         , result_file_prefix
         , reports
+        , v2
         )
+
+    if v2 and upload:
+        upload_dir = 'regression-logs/incoming/all/'
+        utils.log( 'Uploading v2 results into "%s" [connecting as %s]...' % ( upload_dir, user ) )
+        
+        utils.sourceforge.upload( 
+              os.path.join( results_dir, result_file_prefix, '*' )
+            , upload_dir
+            , user
+            )
 
 
 def accept_args( args ):
@@ -207,6 +245,9 @@ def accept_args( args ):
         , 'results-prefix='
         , 'dont-collect-logs'
         , 'reports='
+        , 'v2'
+        , 'user='
+        , 'upload'
         , 'help'
         ]
         
@@ -214,13 +255,19 @@ def accept_args( args ):
           '--comment': ''
         , '--expected-results': ''
         , '--failures-markup': ''
-        , '--reports' : string.join( report_types, ',' )
+        , '--reports': string.join( report_types, ',' )
+        , '--tag': None
+        , '--user': None
+        , 'upload': False
         }
     
     utils.accept_args( args_spec, args, options, usage )
     if not options.has_key( '--results-dir' ):
          options[ '--results-dir' ] = options[ '--locate-root' ]
 
+    if options.has_key( '--v2' ) and not options.has_key( '--results-prefix' ):
+        options[ '--results-prefix' ] = 'all'
+        
     return ( 
           options[ '--locate-root' ]
         , options[ '--tag' ]
@@ -231,23 +278,33 @@ def accept_args( args ):
         , options[ '--results-prefix' ]
         , options.has_key( '--dont-collect-logs' )
         , options[ '--reports' ].split( ',' )
+        , options.has_key( '--v2' )
+        , options[ '--user' ]
+        , options.has_key( '--upload' )
         )
 
 
 def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
-\t--locate-root       the same as --locate-root in compiler_status
-\t--tag               the tag for the results (i.e. 'CVS main trunk')
-\t--expected-results  the file with the results to be compared with
-\t                    the current run
-\t--failures-markup   the file with the failures markup
-\t--comment           an html comment file (will be inserted in the reports)
-\t--results-dir       the directory containing -links.html, -fail.html
-\t                    files produced by compiler_status (by default the
-\t                    same as specified in --locate-root)
-\t--results-prefix    the prefix of -links.html, -fail.html
-\t                    files produced by compiler_status
+\t--locate-root         the same as --locate-root in compiler_status
+\t--tag                 the tag for the results (i.e. 'CVS-HEAD')
+\t--expected-results    the file with the results to be compared with
+\t                      the current run
+\t--failures-markup     the file with the failures markup
+\t--comment             an html comment file (will be inserted in the reports)
+\t--results-dir         the directory containing -links.html, -fail.html
+\t                      files produced by compiler_status (by default the
+\t                      same as specified in --locate-root)
+\t--results-prefix      the prefix of -links.html, -fail.html
+\t                      files produced by compiler_status
+\t--v2                  v2 reports (combine multiple runners results into a 
+\t                      single set of reports)
+
+The following options are valid only for v2 reports:
+
+\t--user                SourceForge user name for a shell account
+\t--upload              upload v2 reports to SourceForge 
 
 The following options are useful in debugging:
 
