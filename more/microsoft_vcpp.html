@@ -267,8 +267,30 @@ types, as is required by the standard, and so ambiguities may emanate
 when overloading on <code>wchar_t</code>.  The macro
 <code>BOOST_NO_INTRINSIC_WCHAR_T</code> is defined in this situation.
 
-<h2>
-Standard Library</h2>
+
+<h3>[delete-const-pointer] Deleting <code>const X *</code> does not work</h3>
+
+Trying to delete a pointer to a cv-qualified type gives an error:
+<pre>
+void f()
+{
+  const int *p = new int(5);
+  delete p;        // C2664: cannot convert from "const int *" to "void *"
+}
+</pre>
+
+<strong>Workaround:</strong> Define the function
+<pre>
+inline void operator delete(const void *p) throw()
+{ operator delete(const_cast&lt;void*>(p)); }
+</pre>
+and similar functions for the other cv-qualifier combinations, for
+operator delete[], and for the <code>std::nothrow</code> variants.
+
+
+
+<h2>Standard Library</h2>
+
 <h3>[clib-namespace] C library names in global namespace instead of std</h3>
 <p>Library names from the &lt;c...&gt; headers are in the global namespace
 instead of namespace std.<p><b>Workaround:</b>&nbsp; The header <a href="../libs/config/index.htm">boost/config.hpp</a>
