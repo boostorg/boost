@@ -120,7 +120,7 @@ def collect_and_upload_logs(
     z.write( test_results_file, os.path.basename( test_results_file ) )
     z.close()
     
-    if user is None:
+    if user is None or user == 'anonymous':
         upload_to_ftp( tag, test_results_archive )
     else:
         upload_to_sourceforge( user, tag, test_results_archive )
