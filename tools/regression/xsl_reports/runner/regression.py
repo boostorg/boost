@@ -40,7 +40,7 @@ if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
     bjam[ 'build_cmd' ] = lambda toolset: 'build.bat %s' % toolset
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
-    process_jam_log[ 'default_toolset' ] = 'vc7.1'
+    process_jam_log[ 'default_toolset' ] = 'vc-7_1'
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
@@ -63,7 +63,7 @@ process_jam_log[ 'build_path_root' ] = os.path.join(
 
 process_jam_log[ 'build_cmd' ] = lambda toolset:'%s -sTOOLS=%s'% ( tool_path( bjam ), toolset )
 
-build_monitor_url = 'http://www.meta-comm.com/engineering/boost-regression/build_monitor.zip'
+build_monitor_url = 'http://www.meta-comm.com/engineering/resources/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
 
 utils = None
@@ -349,7 +349,7 @@ def download_if_needed( tool_name, tool_url, proxy ):
         log( 'Preinstalled "%s" is not found.' % path )
         log( '  Downloading from %s...' % tool_url )
         
-        zip_path = '%s.zip' % path
+        zip_path = '%s.zip' % os.path.splitext( path )[0]
         http_get( tool_url, zip_path, proxy )
 
         log( '  Unzipping %s...' % path )
@@ -591,7 +591,13 @@ def regression(
             tag = b[ 0: b.find( '.' ) ]
             log( 'Tag: "%s"' % tag  )
             
-            unpack_tarball( local, regression_root )
+            if not os.path.isdir( local ):
+                unpack_tarball( local, regression_root )
+            else:
+                if b != 'boost':
+                    log( 'Renaming "%s" into "%s"' % ( local, boost_root ) )
+                    os.rename( local, boost_root )
+                    
         else:
             if incremental:
                 update_source( user, tag, proxy, [] )
