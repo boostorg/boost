@@ -123,9 +123,23 @@ def msxsl( xml_file, xsl_file, output_file, parameters = None ):
     log( transform_command )
     os.system( transform_command )    
 
+def libxslt( xml_file, xsl_file, output_file, parameters = None ):
+    transform_command = "xsltproc"
+    transform_command = transform_command + ' -o ' + "%s" % output_file
+
+    if parameters is not None:
+         for i in parameters: 
+              transform_command = transform_command + ' --param %s "\'%s\'" ' % ( i, parameters[ i ] )
+
+    transform_command = transform_command + ' "%s" ' % xsl_file
+    transform_command = transform_command + ' "%s" ' % xml_file
+    log( transform_command )
+    os.system( transform_command )    
+
 
 registered_xsltprocs = {   "msxsl": msxsl
                          , "xalan": xalan
+                         , "libxslt": libxslt
                          }
 
 def xsl_path( xsl_file_name ):
@@ -246,7 +260,7 @@ def usage():
 \t--comment           an html comment file (will be inserted in the reports)
 \t--results-prefix    the prefix of -links.html, -fail.html
 \t                    files produced by compiler_status
-\t--xsltproc          the name of xslt processor (msxsl, xalan)
+\t--xsltproc          the name of xslt processor (msxsl, xalan, libxslt)
     """
 
 def main():
