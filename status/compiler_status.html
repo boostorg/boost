@@ -1,0 +1,238 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<title>Boost Compiler Status Report</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" cellpadding="2" bgcolor="#007F7F">
+    <tr>
+        <td bgcolor="#FFFFFF"><img src="../c++boost.gif"
+        alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+        <td><a href="../index.htm"><font color="#FFFFFF" size="4"
+        face="Arial">Home</font></a></td>
+        <td><a href="../libs/libraries.htm"><font color="#FFFFFF"
+        size="4" face="Arial">Libraries</font></a></td>
+        <td><a href="../people/people.htm"><font color="#FFFFFF"
+        size="4" face="Arial">People</font></a></td>
+        <td><a href="../more/faq.htm"><font color="#FFFFFF"
+        size="4" face="Arial">FAQ</font></a></td>
+        <td><a href="../more/index.htm"><font color="#FFFFFF"
+        size="4" face="Arial">More</font></a></td>
+    </tr>
+</table>
+
+<h1>Compiler Status Tables</h1>
+
+<p><a href="http://boost.sourceforge.net/regression-logs/">Compiler Status 
+Summary</a> (on SourceForge) of Boost regression test results.<br>
+<a href="#Introduction">Introduction</a><br>
+<a href="#Understanding">Understanding the Tables</a><br>
+<a href="#Acknowledgements">Acknowledgements</a></p>
+
+<h2><a name="Introduction">Introduction</a></h2>
+
+<p>Will all Boost libraries work with your compiler?&nbsp;
+Unfortunately, the answer is &quot;it depends&quot;. See the
+<a href="http://boost.sourceforge.net/regression-logs/">Compiler Status Summary</a> 
+to see exactly what works and what doesn't.</p>
+
+<p>Boost libraries rely on modern C++ features such as templates
+and the C++ Standard Library.&nbsp; Most modern compilers support
+those major features fairly well. But even today, years after the
+adoption of the C++ Standard, some compilers still don't support
+important minor features like partial template specialization.</p>
+
+<p>Boost library authors often expend a great deal of effort
+trying to work around compiler deficiencies.&nbsp; Nevertheless,
+some libraries will not compile at all with certain compilers or
+may have crippled functionality.&nbsp; Even if the current
+release of a compiler supports a boost library, older versions of
+the compiler may not work properly.</p>
+
+<p>Boost releases are run through <a href="../more/regression.html">regression 
+tests</a> which
+automatically generates Compiler Status Tables for various
+platforms. Unless otherwise indicated, the C++ Standard Library
+implementation is the one shipped with the compiler.</p>
+
+<p><b>Warnings:</b></p>
+
+<ul>
+  <li>These tables are not a good indication of a
+particular compiler's compliance with the C++ Standard.&nbsp; The
+Boost libraries often contain workarounds which mask compiler
+deficiencies.<br>
+&nbsp;</li>
+  <li>Some regression tests are run only occasionally, and so are relatively 
+  out-of-date.&nbsp; Check the date for each table.</li>
+</ul>
+
+<p><a name="quick-reference"></a>The
+<a href="http://boost.sourceforge.net/regression-logs/">Compiler Status Summary</a> 
+includes table summaries for specific releases, as well as table summaries for 
+recent <a href="../more/download.html#CVS">CVS</a> snapshots. Release tables are 
+identified by the release number appended to the table name. CVS snapshot tables 
+do not have a release number appended.</p>
+
+<p>The <a href="../more/download.html#CVS">CVS</a> 
+code is being updated several times a day, so it may contain bug fixes, compiler 
+workarounds, new features, and even whole new libraries. It may be unstable, 
+however.</p>
+
+<h2><a name="Understanding">Understanding</a> the Tables</h2>
+
+<p>A table might look like this:</p>
+
+<blockquote>
+    <p><b>Run Date:</b> 21 Sep 2001 15:31 GMT</p>
+    <p><b>System Configuration:</b> Microsoft Windows 32bit&nbsp; </p>
+    <table border="1" cellpadding="5" cellspacing="0">
+<tbody>        <tr>
+            <td>Program</td>
+            <td>Test<br>
+            Type</td>
+            <td>BelchFire<br>
+            Rev 5280</td>
+            <td>WorkHorse<br>
+            5.3</td>
+        </tr>
+        <tr>
+            <td>libs/foo/test/foo_test.cpp</td>
+            <td>compile</td>
+            <td>Pass</td>
+            <td>Pass</td>
+        </tr>
+        <tr>
+            <td>libs/bar/bar_test.cpp</td>
+            <td>run</td>
+            <td><u><font color="#FF0000">Fail</font></u></td>
+            <td>Pass</td>
+        </tr>
+</tbody>    </table>
+</blockquote>
+
+<p>The <i>Run Date</i> is important because the regression tests
+which create the status tables are run asynchronously, and thus
+may not represent the most current Boost release.</p>
+
+<p>The <i>Program</i> column identifies the actual source file
+for the test.&nbsp; Each row in the table represents a different
+test.</p>
+
+<p>The <a name="test-type"><i>Test Type</i></a> column identifies
+the type of test performed:</p>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <td><b>Test Type</b></td>
+        <td><b>Action</b></td>
+        <td><b>Required to </b><b><i>Pass</i></b></td>
+        <td><b>Description and Use</b></td>
+    </tr>
+    <tr>
+        <td>compile</td>
+        <td>compile only</td>
+        <td>Compiler returns 0.</td>
+        <td>Verify that a source file will compile correctly, but
+        without any attempt to link or execute.&nbsp; Used when
+        factors such as possible object library unavailability
+        make a run test impractical.</td>
+    </tr>
+    <tr>
+        <td>compile-fail</td>
+        <td>compile only</td>
+        <td>Compiler must return non-zero.</td>
+        <td>Verify that a source file fails to compile. Used to
+        verify that an expected compile-time error was detected.</td>
+    </tr>
+    <tr>
+        <td>link</td>
+        <td>compile, link</td>
+        <td>Both compiler &amp; linker return 0.</td>
+        <td>Verify that a source file will compile and link
+        correctly, but without any attempt to execute the result.&nbsp;
+        Used when factors such as possible data file
+        unavailability make a run test impractical.</td>
+    </tr>
+    <tr>
+        <td>link-fail</td>
+        <td>compile, link</td>
+        <td>Either the compiler or linker must return non-zero.</td>
+        <td>Verify that a source file fails to compile and link.
+        Used to verify that error detect which depends on
+        unresolved externals works correctly.</td>
+    </tr>
+    <tr>
+        <td>run</td>
+        <td>compile, link, execute</td>
+        <td>Compiler, linker, and executable must all return 0.</td>
+        <td>Verify that a source file compiles, links, and the
+        resulting program executes correctly (as indicated by a
+        zero return code.)&nbsp; This is the primary test type
+        for most uses.</td>
+    </tr>
+    <tr>
+        <td>run-fail</td>
+        <td>compile, link, execute</td>
+        <td>Both compiler and linker must return 0, and the
+        executable must return non-zero.</td>
+        <td>Verify that a source file compiles and links
+        correctly, and that execution of the resulting program
+        detects some error.&nbsp; Used to verify runtime error
+        detection code works properly.</td>
+    </tr>
+</table>
+
+<p>Each remaining column in the table represents the individual
+compiler indicated. Unless otherwise indicated, the C++ Standard
+Library implementation is the one shipped with the compiler. A <i>Pass</i>
+entry indicates success for the indicated <i>Test Type</i>, while
+a <font color="#FF0000"><i>Fail</i></font> entry indicates
+failure. See <i>Required to Pass</i> in the above table for specifics.</p>
+
+<p>When possible, <font color="#FF0000"><i>Fail</i></font> entries are linked to 
+error messages indicating the reason for the failure. Note that the web page 
+containing error messages may be as much as one megabyte in size.</p>
+
+<h2><a name="Acknowledgements">Acknowledgements</a></h2>
+
+<p>The compiler status tables have been prepared with resources
+donated by a number of individuals, educational institutions, and
+companies. Boost would like to thank them for their support. </p>
+
+<ul>
+    <li><a href="http://www.borland.com/"><img border="0" src="borland_logo.gif" align="center" width="70" height="33">Borland</a>, 
+    California, USA</li>
+    <li><a href="http://www.intel.com/software/products"><img
+        src="intel_logo.gif" align="center" border="0" width="72"
+        height="36">Intel Corporation</a>, California, USA </li>
+    <li><a href="http://www.kai.com/"><img src="kai_logo.gif"
+        align="center" border="0" width="60" height="25"> KAI
+        Software</a>, Illinois, USA<br>
+        </li>
+    <li><a href="http://www.hp.com/">Hewlett-Packard Company</a>,
+        USA</li>
+    <li><a href="http://www.lbl.gov">Lawrence Berkeley National
+        Laboratory</a>, California, USA</li>
+    <li><a href="http://www.nd.edu/">University of Notre Dame</a>,
+        Indiana, USA</li>
+</ul>
+
+<p>Note, however, that Boost does not endorse any product or
+service, nor does Boost guarantee that some or all of its
+libraries work with any of the products or services mentioned
+above. </p>
+
+<hr>
+
+<p>Revised 
+<!--webbot bot="Timestamp" s-type="EDITED"
+s-format="%d %B %Y" startspan -->04 February 2003<!--webbot bot="Timestamp" endspan i-checksum="40865" --></p>
+</body>
+</html>
