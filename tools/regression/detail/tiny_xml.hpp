@@ -1,7 +1,8 @@
 //  tiny XML sub-set tools  --------------------------------------------------//
 
-//  (C) Copyright Beman Dawes 2002.
-//  See accompanying license for terms and conditions of use.
+//  (C) Copyright Beman Dawes 2002.  Distributed under the Boost
+//  Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  Provides self-contained tools for this XML sub-set:
 //
