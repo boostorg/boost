@@ -3,62 +3,306 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.3.0: http://docutils.sourceforge.net/" />
-<title>Running Boost regression tests</title>
-<link rel="stylesheet" href="default.css" type="text/css" />
+<meta name="generator" content="Docutils 0.3.4: http://docutils.sourceforge.net/" />
+<title>Running Boost Regression Tests</title>
+<style type="text/css"><!--
+
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:date: $Date$
+:version: $Revision$
+:copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+*/
+
+body {
+    background-color: #fffff5;
+}
+
+.first {
+  margin-top: 0 }
+
+.last {
+  margin-bottom: 0 }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dd {
+  margin-bottom: 0.5em }
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.attention, div.caution, div.danger, div.error, div.hint,
+div.important, div.note, div.tip, div.warning, div.admonition {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.hint p.admonition-title, div.important p.admonition-title,
+div.note p.admonition-title, div.tip p.admonition-title,
+div.admonition p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em }
+
+div.footer, div.header {
+  font-size: smaller }
+
+div.sidebar {
+  margin-left: 1em ;
+  border: medium outset ;
+  padding: 0em 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr {
+  width: 75% }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.line-block {
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.option-argument {
+  font-style: italic }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+table {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.citation {
+  border-left: solid thin gray ;
+  padding-left: 0.5ex }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.footnote {
+  border-left: solid thin black ;
+  padding-left: 0.5ex }
+
+td, th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+th.docinfo-name, th.field-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap }
+
+h1 tt, h2 tt, h3 tt, h4 tt, h5 tt, h6 tt {
+  font-size: 100% }
+
+tt {
+  background-color: #eeeeee }
+
+ul.auto-toc {
+  list-style-type: none }
+
+--></style>
 </head>
 <body>
+<h1 class="title">Running Boost Regression Tests</h1>
 <div class="document" id="running-boost-regression-tests">
-<h1 class="title">Running Boost regression tests</h1>
 <div class="section" id="requirements">
-<h1><a name="requirements">Requirements</a></h1>
+<h2><a name="requirements">Requirements</a></h2>
 <ul class="simple">
 <li>Python 2.3</li>
 </ul>
 </div>
 <div class="section" id="installation">
-<h1><a name="installation">Installation</a></h1>
+<h2><a name="installation">Installation</a></h2>
 <ul class="simple">
-<li>Download and unpack boostrap from
-<a class="reference" href="http://www.boost.org/status/bootstrap.py">http://www.boost.org/status/bootstrap.py</a> and put it in the directory
-where you want all the regression test files to be placed.</li>
-<li>Run bootstrap.py.</li>
-<li><strong>Optional</strong> If you already have bjam and process_jam_log you want
-to use just put them in the same directory with bootstrap.py file.</li>
+<li>Download regression driver <tt class="literal"><span class="pre">regression.py</span></tt> from <a class="reference" href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression/xsl_reports/runner/regression.py">here</a> (<a class="reference" href="http://tinyurl.com/4fp4g">http://tinyurl.com/4fp4g</a>)
+and put it in the directory where you want all the regression 
+test files to be placed.</li>
 </ul>
-<p>The resulting directory will look like:</p>
+<ul>
+<li><p class="first"><strong>Optional</strong>: If you already have <tt class="literal"><span class="pre">bjam</span></tt> and/or <tt class="literal"><span class="pre">process_jam_log</span></tt> executables
+you'd like to use, just put them in the same directory with <tt class="literal"><span class="pre">regression.py</span></tt>, e.g.:</p>
 <pre class="literal-block">
-boost_regression/
-   bootstrap.py
+my_boost_regressions/
+   regression.py
    bjam.exe
 </pre>
-</div>
-<div class="section" id="running-regression-tests">
-<h1><a name="running-regression-tests">Running regression tests</a></h1>
-<ul class="simple">
-<li>Run regression.py with the following parameters<ul>
-<li>... - the id of the runner.</li>
-<li>... - the tag identifies the CVS branch or tarball under test. The
-name of the tag is provided by the release manager</li>
-</ul>
 </li>
 </ul>
+</div>
+<div class="section" id="running-tests">
+<h2><a name="running-tests">Running tests</a></h2>
+<ul>
+<li><p class="first">To start a regression run, simply run <tt class="literal"><span class="pre">regression.py</span></tt> providing it with the 
+only required option, runner id. For example:</p>
 <pre class="literal-block">
-boostrap.py --runner=metacomm --tag=CVS-HEAD
+python regression.py --runner=Metacomm
 </pre>
+<p>If you are interested in seeing all available options, run <tt class="literal"><span class="pre">python</span> <span class="pre">regression.py</span></tt>
+or <tt class="literal"><span class="pre">python</span> <span class="pre">regression.py</span> <span class="pre">--help</span></tt>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="details">
+<h2><a name="details">Details</a></h2>
 <p>The regression run procedure will:</p>
 <ul class="simple">
-<li>Download the most recent tarball for the tag from <a class="reference" href="http://www.boost-consulting.com">http://www.boost-consulting.com</a></li>
-<li>Unpack it</li>
-<li>Build bjam and process_jam_log if needed. (process_jam_log is a
-utility, which extracts the test results from log file produced by
+<li>Download the most recent tarball from <a class="reference" href="http://www.boost-consulting.com">http://www.boost-consulting.com</a>, 
+unpack it in the subdirectory <tt class="literal"><span class="pre">boost</span></tt>.</li>
+<li>Build <tt class="literal"><span class="pre">bjam</span></tt> and <tt class="literal"><span class="pre">process_jam_log</span></tt> if needed. (<tt class="literal"><span class="pre">process_jam_log</span></tt> is an
+utility, which extracts the test results from the log file produced by 
 Boost.Build)</li>
-<li>Run regression tests, process and collect the results</li>
+<li>Run regression tests, process and collect the results.</li>
 <li>Upload the results to <a class="reference" href="ftp://fx.meta-comm.com/boost-regression">ftp://fx.meta-comm.com/boost-regression</a>.</li>
 </ul>
-<p>The report merger process running on MetaCommunications site every 2 hours will merge all
-submitted test runs and publish them at <a class="reference" href="http://boost.sourceforge.net/regression-logs/developer">http://boost.sourceforge.net/regression-logs/developer</a></p>
+<p>The report merger process running on MetaCommunications site every 2 hours will 
+merge all submitted test runs and publish them at 
+<a class="reference" href="http://boost.sourceforge.net/regression-logs/developer">http://boost.sourceforge.net/regression-logs/developer</a>.</p>
 </div>
+</div>
+<hr class="footer" />
+<div class="footer">
+<a class="reference" href="instructions.rst">View document source</a>.
+Generated on: 2004-07-20 12:40 UTC.
+Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
 </div>
 </body>
 </html>
