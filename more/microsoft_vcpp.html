@@ -67,7 +67,7 @@ The following table lists some known values.
 
 <h3>[chained using] Chaining <code>using</code>-declarations</h3>
 
-Chaining <code>using</code>-declarations do not work.
+Chaining <code>using</code>-declarations does not work.
 <pre>
 void f();
 
@@ -144,7 +144,11 @@ struct A
 <strong>Workaround:</strong> Either use an enum (which has incorrect
 type, but can be used in compile-time constant expressions), or define
 the value out-of-line (which allows for the correct type, but prohibits
-using the constant in compile-time constant expressions).
+using the constant in compile-time constant expressions).  See
+<a href="int_const_guidelines.htm">Coding Guidelines for Integral Constant Expressions</a>
+for guidelines how to define member constants portably in boost
+libraries.
+
 
 <h3>[koenig-lookup] Argument-dependent lookup</h3>
 
@@ -223,7 +227,7 @@ struct A&lt;B&lt;T&gt; &gt; {};  // template class was already defined as a non-
 </pre>
 
 <strong>Workaround:</strong> In some situations where interface
-does not matter, member class templates can simulate partial
+does not matter, class member templates can simulate partial
 specialization.
 
 
@@ -257,7 +261,7 @@ header
 <a href="../boost/config.hpp">boost/config.hpp</a>
 includes <code>&lt;cstddef></code>, which defines
 <code>wchar_t</code> as a typedef for <code>unsigned
-short</code>. Note that this means that the compiler does not see
+short</code>. Note that this means that the compiler does not regard
 <code>wchar_t</code> and <code>unsigned short</code> as distinct
 types, as is required by the standard, and so ambiguities may emanate
 when overloading on <code>wchar_t</code>.  The macro
@@ -276,6 +280,6 @@ will define BOOST_NO_STDC_NAMESPACE. It can be used as follows:
 for these is already provided in boost/config.hpp.<p>&nbsp;
 <hr>
 
-2001-02-01 <a href="../people/jens_maurer.htm">Jens Maurer</a>
+2001-05-04 <a href="../people/jens_maurer.htm">Jens Maurer</a>
 </body>
 </html>
