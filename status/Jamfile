@@ -69,7 +69,7 @@ rule boost-test ( sources + : target-type : requirements * : test-name ? )
 
 BOOST_TEST_SUFFIX ?= .test ;
 
-# a utility rule which causes test-file to be built successfully, only if
+# a utility rule which causes test-file to be built successfully only if
 # dependency fails to build. Used for expected-failure tests.
 rule failed-test-file ( test-file : dependency + )
 {
@@ -79,8 +79,8 @@ rule failed-test-file ( test-file : dependency + )
     TEMPORARY $(dependency) ;
 }
 
-# a utility rule which causes test-file to be built successfully, only if
-# dependency builds. Used for expected-failure tests.
+# a utility rule which causes test-file to be built successfully only if
+# dependency builds. Used for expected-success tests.
 rule succeeded-test-file ( test-file : dependency + )
 {
     catenate-output-on-failure $(test-file) : $(dependency[1]) ;
@@ -205,7 +205,9 @@ rule declare-build-fail-test ( test-type : dependency-type )
     SUF$(test-type) = $(BOOST_TEST_SUFFIX) ;
 }
 
-# A target generator function for target types declared with
+# When the appropriate generator function is bound to the
+# test-file-generator argument, this is a target generator function
+# for target types declared with declare-build-succeed-test and
 # declare-build-fail-test, above.
 rule build-test ( test-file-generator test-file + : sources + : requirements * )
 {
