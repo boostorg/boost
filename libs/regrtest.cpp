@@ -60,6 +60,7 @@
 #include <stdlib.h> // for getenv()
 #include <time.h>   // for ctime()
 #include <stdio.h>  // for sscanf()
+#include <string.h> // for strtok()
 
 // Enumerated Types
 
@@ -392,16 +393,26 @@ int main(int argc, char* argv[])
     std::string filelist = "regrtest_files.txt";
     std::ifstream regr_files(filelist.c_str());
     if (regr_files) {
-      std::string line;
-      while (std::getline(regr_files, line)) {
-        char* program_buf = new char[line.size()];
-	char mode;
-	char* arg_buf = new char[line.size()];
-        sscanf(line.c_str(), "%s %c %s", program_buf, &mode, arg_buf);
-        compile(program_buf, mode, arg_buf,
-                "regress" + exe_suffix);
-	delete program_buf;
-	delete arg_buf;
+      const int max_line = 1000;
+      char line[max_line];
+      while (regr_files.getline(line, max_line)) {
+        char *program_ptr, *mode_ptr, *arg_ptr;
+	program_ptr = strtok(line, " ");
+	if (program_ptr == 0) {
+	  std::cerr << "file format error, no program file name" << std::endl;
+	  return -1;
+	}
+	mode_ptr = strtok(0, " \n");
+	if (mode_ptr == 0) {
+	  std::cerr << "file format error, no mode character" << std::endl;
+	  return -1;
+	}
+	arg_ptr = strtok(0, " \n");
+	char* empty_string = "";
+	if (arg_ptr == 0)
+	  arg_ptr = empty_string;
+
+        compile(program_ptr, *mode_ptr, arg_ptr, "regress" + exe_suffix);
       }
     } else {
       std::cerr << "Could not open regression test file list: " 
