@@ -79,9 +79,17 @@ def compile( program ):
 #      invoke( "OpenC++ 2.5.9", 'occ -c --regular-c++ -I' + path + ' ' + fullpath)
 
 # ----------- BeOS5/Intel ------ #
+#
+# currently this compiler fails so many tests that it may not be worth while
+# reporting the results: most of these are as a result of broken C++ standard
+# libraries and a non-standard <climits>, problems that the forthcomming gcc3 should fix (STLPort does 
+# not build on this platform).
+#
   elif sys.platform == "beos":
     if compiler_arg=="*" or compiler_arg=="gcc":
-      invoke( "GNU GCC", "c++ -ftemplate-depth-30 -pedantic -Wall -I" + path + "  " + fullpath )
+      invoke( "GNU GCC", "c++ -ftemplate-depth-30 -Wall -I" + path + "  " + fullpath )
+    if compiler_arg=="*" or compiler_arg=="gcc-sgi":
+      invoke( "GNU GCC", "c++ -ftemplate-depth-30 -Wall -I/boot/home/config/stlport/stl330 -I" + path + "  " + fullpath )
 
 # ----------  Windows ---------- #
 
@@ -189,6 +197,8 @@ if sys.platform == "linux2":
 elif sys.platform == "beos":
   if compiler_arg == "*" or compiler_arg == "gcc":
     f.write( "<td>GNUPro<br>GCC<br>2.9</td>\n" )
+  if compiler_arg == "*" or compiler_arg == "gcc-sgi":
+    f.write( "<td>GNUPro<br>GCC<br>2.9<br>SGI<br>STL<br>3.3</td>\n" )
 else:
 #  if compiler_arg=="*" or compiler_arg=="bcc54":
 #    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
@@ -236,4 +246,5 @@ else:
 f.write( "</table>\n</body>\n</html>\n"  )
 
 # end
+
 
