@@ -22,6 +22,8 @@
 
     <xsl:variable name="output_directory" select="'output'"/>
 
+    <!-- structural -->
+
     <func:function name="meta:test_structure">
         <xsl:param name="document"/>
         <xsl:param name="release"/>
@@ -85,47 +87,6 @@
         <func:result select="exsl:node-set( $run_toolsets_f )"/>
     </func:function>
 
-    <xsl:template name="get_toolsets">
-        <xsl:param name="toolsets"/>
-        <xsl:param name="required-toolsets"/>
-        
-        <xsl:variable name="toolset_output">
-        <xsl:for-each select="$toolsets">
-            <xsl:variable name="toolset" select="."/>
-            <xsl:element name="toolset">
-            <xsl:attribute name="toolset"><xsl:value-of select="$toolset"/></xsl:attribute>
-            <xsl:choose>
-                <xsl:when test="$required_toolsets[ $toolset = @name ]">
-                <xsl:attribute name="required">yes</xsl:attribute>
-                <xsl:attribute name="sort">a</xsl:attribute>
-                </xsl:when>
-                <xsl:otherwise>
-                <xsl:attribute name="required">no</xsl:attribute>
-                <xsl:attribute name="sort">z</xsl:attribute>
-                </xsl:otherwise>
-            </xsl:choose>
-            </xsl:element>
-        </xsl:for-each>
-        </xsl:variable>
-    
-        <xsl:for-each select="exsl:node-set( $toolset_output )/toolset">
-            <xsl:sort select="concat( @sort, ' ', @toolset)" order="ascending"/>
-            <xsl:copy-of select="."/>
-        </xsl:for-each>
-    
-    </xsl:template>
-
-    <func:function name="meta:show_output">
-        <xsl:param name="explicit_markup"/>     
-        <xsl:param name="test_log"/>     
-        <func:result select="$test_log/@result != 'success' and not( meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )) or $test_log/@show-run-output = 'true'"/>
-    </func:function>
-
-    <func:function name="meta:show_toolset">
-        <xsl:param name="toolset"/>
-        <xsl:param name="release" select="'no'"/>
-        <func:result select="$release != 'yes' or meta:is_toolset_required( $toolset )"/>
-    </func:function>
 
     <func:function name="meta:test_case_status">
         <xsl:param name="test_log"/>
@@ -156,12 +117,6 @@
          <func:result select="$status"/>
      </func:function>
 
-    <func:function name="meta:show_library">
-        <xsl:param name="library"/>
-        <xsl:param name="release" select="'no'"/>
-        <func:result select="$release != 'yes' or not( meta:is_library_beta( $library ) )"/>
-    </func:function>
-
     <func:function name="meta:is_toolset_required">
         <xsl:param name="toolset"/>
         <func:result select="count( $explicit_markup/explicit-failures-markup/mark-toolset[ @name = $toolset and @status='required' ] ) > 0"/>
@@ -185,6 +140,8 @@
         <func:result select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $toolset or toolset/@name='*' ]"/>
     </func:function>
 
+    <!-- path -->
+
     <func:function name="meta:encode_path">
         <xsl:param name="path"/>
         <func:result select="translate( translate( $path, '/', '-' ), './', '-' )"/>
@@ -193,6 +150,82 @@
     <func:function name="meta:output_file_path">
         <xsl:param name="path"/>
         <func:result select="concat( $output_directory, '/', meta:encode_path( $path ), '.html' )"/>
+    </func:function>
+
+    <func:function name="meta:log_file_path">
+        <xsl:param name="test_log"/>
+        <func:result>
+            <xsl:choose>
+                <xsl:when test="meta:show_output( $explicit_markup, $test_log )">
+                    <xsl:value-of select="meta:output_file_path( concat( $test_log/../@runner, '-', $test_log/@target-directory ) )"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text></xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+        </func:result>
+    </func:function>
+
+    <!-- presentation -->
+
+    <func:function name="meta:show_library">
+        <xsl:param name="library"/>
+        <xsl:param name="release" select="'no'"/>
+        <func:result select="$release != 'yes' or not( meta:is_library_beta( $library ) )"/>
+    </func:function>
+
+    <func:function name="meta:show_output">
+        <xsl:param name="explicit_markup"/>     
+        <xsl:param name="test_log"/>     
+        <func:result select="$test_log/@result != 'success' and not( meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )) or $test_log/@show-run-output = 'true'"/>
+    </func:function>
+
+    <func:function name="meta:show_toolset">
+        <xsl:param name="toolset"/>
+        <xsl:param name="release" select="'no'"/>
+        <func:result select="$release != 'yes' or meta:is_toolset_required( $toolset )"/>
+    </func:function>
+
+    <func:function name="meta:result_cell_class">
+        <xsl:param name="library"/>
+        <xsl:param name="toolset"/>
+        <xsl:param name="test_logs"/>
+
+        <func:result>
+            <xsl:choose>
+                <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
+                    <xsl:text>unusable</xsl:text>
+                </xsl:when>
+                
+                <xsl:when test="count( $test_logs ) &lt; 1">
+                    <xsl:text>missing</xsl:text>
+                </xsl:when>
+                
+                <xsl:when test="count( $test_logs[@result='fail' and  @status='unexpected' and @is-new='no'] )">
+                    <xsl:text>fail-unexpected</xsl:text>
+                </xsl:when>
+                
+                <xsl:when test="count( $test_logs[@result='fail' and  @status='unexpected' and @is-new='yes'] )">
+                    <xsl:text>fail-unexpected-new</xsl:text>
+                </xsl:when>
+
+                <xsl:when test="count( $test_logs[@result='fail'] )">
+                    <xsl:text>fail-expected</xsl:text>
+                </xsl:when>
+                
+                <xsl:when test="count( $test_logs[@result='success' and  @status='unexpected'] )">
+                    <xsl:text>success-unexpected</xsl:text>
+                </xsl:when>
+                
+                <xsl:when test="count( $test_logs[@status='expected'] )">
+                    <xsl:text>success-expected</xsl:text>
+                </xsl:when>
+                
+                <xsl:otherwise>
+                    <xsl:text>unknown</xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+        </func:result>
     </func:function>
 
     <xsl:template name="insert_platforms_row">

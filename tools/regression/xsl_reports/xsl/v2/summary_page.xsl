@@ -221,36 +221,12 @@
 
     <!-- report developer status -->
     <xsl:template name="insert_cell_developer">
-    <xsl:param name="current_cell"/>
-    <xsl:param name="library"/>
-    <xsl:param name="toolset"/>
-    <xsl:param name="expected_test_count"/>
+        <xsl:param name="current_cell"/>
+        <xsl:param name="library"/>
+        <xsl:param name="toolset"/>
+        <xsl:param name="expected_test_count"/>
 
-    <xsl:variable name="class">
-        <xsl:choose> 
-        <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
-            <xsl:text>summary-unusable</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell ) = 0">
-            <xsl:text>summary-missing</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected' and @is-new='no'] )">
-            <xsl:text>summary-fail-unexpected</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[@result='fail' and  @status='unexpected' and @is-new='yes'] )">
-            <xsl:text>summary-fail-unexpected-new</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[@result='success' and  @status='unexpected'] )">
-            <xsl:text>summary-success-unexpected</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[@status='expected'] )">
-            <xsl:text>summary-expected</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:value-of select="count( $current_cell )"/>
-        </xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
+    <xsl:variable name="class" select="concat( 'summary-', meta:result_cell_class( $library, $toolset, $current_cell ) )"/>
       
     <xsl:variable name="library_page" select="meta:encode_path( $library )" />
 
