@@ -92,6 +92,7 @@ def collect_and_upload_logs(
 
     results_xml.endElement( "test-run" )
     results_xml.endDocument()
+    test_results_writer.close()
     utils.log( 'Done writing "%s"...' % test_results_file )
 
     utils.log( 'Compressing "%s"...' % test_results_file )
