@@ -258,7 +258,6 @@ def import_utils():
     global utils    
     if utils is None:
         sys.path.append( xsl_reports_dir )
-        print sys.path
         import utils as utils_module
         utils = utils_module
 
@@ -269,12 +268,6 @@ def setup(
         , **unused
         ):
     import_utils()
-    
-    if comment is None:
-        log( 'Comment file "%s" not found; creating default comment.' % comment_path )
-        f = open( comment_path, 'w' )
-        f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
-        f.close()
     
     if not 'no-bjam' in args:
         build_bjam_if_needed()
@@ -369,8 +362,13 @@ def upload(
         ):    
     import_utils()
 
-    if comment is not None:
-        global comment_path
+    global comment_path
+    if comment is None:
+        log( 'Comment file "%s" not found; creating default comment.' % comment_path )
+        f = open( comment_path, 'w' )
+        f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
+        f.close()
+    else:    
         comment_path = os.path.join( regression_root, comment )
     
     from runner import collect_and_upload_logs 
