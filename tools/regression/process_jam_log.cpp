@@ -460,10 +460,14 @@ int cpp_main( int argc, char ** argv )
       || line.find( "Cc-action " ) != string::npos
       || line.find( "vc-Cc " ) != string::npos
       || line.find( "Link-action " ) != string::npos
-      || line.find( "vc-Link " ) != string::npos )
+      || line.find( "vc-Link " ) != string::npos 
+      || line.find( ".compile.") != string::npos
+      || line.find( ".link") != string::npos
+    )
     {
       string action( ( line.find( "Link-action " ) != string::npos
-        || line.find( "vc-Link " ) != string::npos )
+        || line.find( "vc-Link " ) != string::npos 
+        || line.find( ".link") != string::npos)
         ? "link" : "compile" );
       if ( line.find( "...failed " ) != string::npos )
         mgr.stop_message( action, target_directory( line ),
@@ -487,7 +491,8 @@ int cpp_main( int argc, char ** argv )
       capture_lines = false;
     }
 
-    else if ( line.find( "execute-test" ) != string::npos )
+    else if ( line.find( "execute-test" ) != string::npos 
+             || line.find( "testing.capture-output" ) != string::npos )
     {
       if ( line.find( "...failed " ) != string::npos )
       {
