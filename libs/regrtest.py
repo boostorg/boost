@@ -182,7 +182,7 @@ else:
   if compiler_arg=="gcc":
    f.write( "<td>GNU<br>GCC<br>2.95.2<br>STLport<br>4.0 beta 8</td>\n" )
   if compiler_arg=="*" or compiler_arg=="cw":
-    f.write( "<td>Metrowerks<br>CodeWarrior<br>5.3</td>\n" )
+    f.write( "<td>Metrowerks<br>CodeWarrior<br>6.0</td>\n" )
   if compiler_arg=="*" or compiler_arg=="vc":
     f.write( "<td>Microsoft<br>VC++<br>6.0 SP4</td>\n" )
   if compiler_arg=="*" or compiler_arg=="vcstlport":
