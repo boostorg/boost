@@ -227,11 +227,15 @@ def build_xsl_reports(
         upload_dir = 'regression-logs/incoming/all/'
         utils.log( 'Uploading v2 results into "%s" [connecting as %s]...' % ( upload_dir, user ) )
         
-        utils.sourceforge.upload( 
+        archive_name = '%s.tar.gz' % result_file_prefix
+        utils.tar( 
               os.path.join( results_dir, result_file_prefix )
-            , upload_dir
-            , user
+            , archive_name
             )
+        
+        archive_path = os.path.join( results_dir, archive_name )
+        utils.sourceforge.upload( archive_path, upload_dir, user )
+        utils.sourceforge.untar( archive_path, user, background = True )
 
 
 def accept_args( args ):

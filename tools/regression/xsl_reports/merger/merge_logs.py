@@ -52,7 +52,7 @@ def merge_test_runs( incoming_dir, tag, writer ):
             zip_path = os.path.join( test_runs_dir, test_run )
             unzip( zip_path, test_runs_dir )
             utils.log( '  Removing "%s" ...' % test_run )
-            #os.unlink( zip_path )
+            os.unlink( zip_path )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
