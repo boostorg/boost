@@ -305,12 +305,19 @@
                   If you want to call <code>std::min()</code> or <code>std::max()</code>:<br>&nbsp;
                   <ul>
                      <li>
-                        Use <code>(std::min)(a,b)</code> if you do not require argument-dependent
-                        look-up.</li>&nbsp;
+                        If you do not require argument-dependent look-up, use <code>(std::min)(a,b)</code>.
+                     </li>&nbsp;
                      <li>
-                        Use <code>boost::std_min(a,b)</code> if you do require argument-dependent look-up.
-                        <code>boost::std_min()</code> delegates to <code>std::min()</code>.</li>&nbsp;
-                  </ul>
+                        If you do require argument-dependent look-up, you should:<br>&nbsp;
+                        <ul>
+                           <li><code>#include &lt;boost/minmax.hpp&gt;</code></li>&nbsp;
+                           <li>Use <code>BOOST_USING_STD_MIN();</code> to bring <code>std::min()</code> into
+                               the current scope.</li>&nbsp;
+                           <li>Use <code>min BOOST_PREVENT_MACRO_SUBSTITUTION (a,b);</code> to make an
+                               argument-dependent call to <code>min(a,b)</code>.</li>&nbsp;
+                        </ul>
+                     </li>
+                  </ul>&nbsp;
                </li>
                <li>
                   If you want to call <code>std::numeric_limits&lt;int&gt;::max()</code>, use
@@ -324,7 +331,7 @@
                   If you want to declare or define a function or a member function named <code>min</code>
                   or <code>max</code>, then you must use the <code>BOOST_PREVENT_MACRO_SUBSTITUTION</code>
                   macro. Instead of writing <code>int min() { return 0; }</code> you should write
-                  <code>int min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }</code>This is true
+                  <code>int min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }</code> This is true
                   regardless if the function is a free (namespace scope) function, a member function or a
                   static member function, and it applies for the function declaration as well as the
                   function definition.<br>&nbsp;
@@ -369,7 +376,7 @@
                <td>If any build files.</td>
             </tr>
             <tr>
-               <td>doc</td>
+               <td><code>doc</code></td>
                <td>Documentation (HTML) files.</td>
                <td>If several doc files.</td>
             </tr>
