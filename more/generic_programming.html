@@ -20,6 +20,8 @@
     <ul>
       <li><a href="#traits">Traits</a>
 
+      <li><a href="#tag_dispatching">Tag Dispatching</a>
+
       <li><a href="#type_generator">Type Generators</a>
 
       <li><a href="#object_generator">Object Generators</a>
@@ -64,6 +66,88 @@ struct iterator_traits {
     by SGI. Another very different expression of the traits idiom in the
     standard is <tt>std::numeric_limits&lt;T&gt;</tt> which provides constants
     describing the range and capabilities of numeric types.
+
+    <h2><a name="tag_dispatching">Tag Dispatching</a></h2>
+
+    <p>
+     A technique that often goes hand in hand with traits classes is
+     tag dispatching, which is a way of using function overloading to
+     dispatch based on properties of a type. A good example of this is
+     the implementation of the <a
+     href="http://www.sgi.com/tech/stl/advance.html"><tt>std::advance()</tt></a>
+     function in the C++ Standard Library, which increments an
+     iterator <tt>n</tt> times. Depending on the kind of iterator,
+     there are different optimizations that can be applied in the
+     implementation. If the iterator is <a
+     href="http://www.sgi.com/tech/stl/RandomAccessIterator.html">random
+     access</a> (can jump forward and backward arbitrary distances),
+     then the <tt>advance()</tt> function can simply be implemented
+     with <tt>i += n</tt>, and is very efficient: constant time. If
+     the iterator is <a
+     href="http://www.sgi.com/tech/stl/BidirectionalIterator.html">bidirectional</a>,
+     then it makes sense for <tt>n</tt> to be negative, we can
+     decrement the iterator <tt>n</tt> times.
+     </p>
+     <p>
+     The relation between tag dispatching and traits classes is
+     that the property used for dispatching (in this case the
+     <tt>iterator_category</tt>) is accessed through a traits class.
+     The main <tt>advance()</tt> function uses the <a
+     href="http://www.sgi.com/tech/stl/iterator_traits.html"><tt>iterator_traits</tt></a>
+     class to get the <tt>iterator_category</tt>. It then makes a call
+     the the overloaded <tt>advance_dispatch()</tt> function. 
+     The
+     appropriate <tt>advance_dispatch()</tt> is selected by the
+     compiler based on whatever type the <tt>iterator_category</tt>
+     resolves to, either <a
+     href="http://www.sgi.com/tech/stl/input_iterator_tag.html">
+     <tt>input_iterator_tag</tt></a>, <a
+     href="http://www.sgi.com/tech/stl/bidirectional_iterator_tag.html">
+     <tt>bidirectional_iterator_tag</tt></a>, or <a
+     href="http://www.sgi.com/tech/stl/random_access_iterator_tag.html">
+     <tt>random_access_iterator_tag</tt></a>.  A <b><i>tag</i></b> is
+     simply a class whose only purpose is to convey some property for
+     use in tag dispatching and similar techniques. Refer to <a
+     href="http://www.sgi.com/tech/stl/iterator_tags.html">this
+     page</a> for a more detailed description of iterator tags.
+     </p>
+    <blockquote>
+<pre>
+namespace std {
+  struct input_iterator_tag { };
+  struct bidirectional_iterator_tag { };
+  struct random_access_iterator_tag { };
+
+  namespace detail {
+    template &lt;class InputIterator, class Distance&gt;
+    void advance_dispatch(InputIterator&amp; i, Distance n, <b>input_iterator_tag</b>) {
+      while (n--) ++i;
+    }
+
+    template &lt;class BidirectionalIterator, class Distance&gt;
+    void advance_dispatch(BidirectionalIterator&amp; i, Distance n, 
+		   <b>bidirectional_iterator_tag</b>) {
+      if (n &gt;= 0)
+	while (n--) ++i;
+      else
+	while (n++) --i;
+    }
+
+    template &lt;class RandomAccessIterator, class Distance&gt;
+    void advance_dispatch(RandomAccessIterator&amp; i, Distance n, 
+		   <b>random_access_iterator_tag</b>) {
+      i += n;
+    }
+  }
+
+  template &lt;class InputIterator, class Distance&gt;
+  void advance(InputIterator&amp; i, Distance n) {
+    typename <b>iterator_traits&lt;InputIterator&gt;::iterator_category</b> category;
+    detail::advance_dispatch(i, n, <b>category</b>);
+  }
+}
+</pre>
+    </blockquote>
 
     <h2><a name="type_generator">Type Generators</a></h2>
 
@@ -202,3 +286,9 @@ void append_sequence(Container&amp; c, Iterator start, Iterator finish)
     appears in all copies. This document is provided "as is" without express or
     implied warranty, and with no claim as to its suitability for any purpose.
 
+<!--  LocalWords:  HTML html charset gif alt htm struct SGI namespace std libs
+ -->
+<!--  LocalWords:  InputIterator BidirectionalIterator RandomAccessIterator pdf
+ -->
+<!--  LocalWords:  typename Alexandrescu templated Andrei's Abrahams
+ -->
