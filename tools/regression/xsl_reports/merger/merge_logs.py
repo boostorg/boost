@@ -73,15 +73,13 @@ def unzip_test_runs( dir ):
 
 
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
-    def __init__( self, out=None, encoding="iso-8859-1" ):
-        xml.sax.saxutils.XMLGenerator.__init__( self, out, encoding )
-        self.no_more_start_documents_ = 0
+    document_started = 0
         
     def startDocument(self):
-        if not self.no_more_start_documents_:
+        if not self.document_started:
             xml.sax.saxutils.XMLGenerator.startDocument( self )
-            self.no_more_start_documents_ = 1
-    
+            self.document_started = 1
+
 
 def merge_test_runs( incoming_dir, tag, writer, dont_collect_logs ):
     test_runs_dir = os.path.join( incoming_dir, tag )
@@ -99,6 +97,7 @@ def merge_test_runs( incoming_dir, tag, writer, dont_collect_logs ):
     all_runs_xml = xmlgen( writer )
     all_runs_xml.startDocument()
     all_runs_xml.startElement( 'all-test-runs', {} )
+
     utils.log( 'Processing test runs...' )
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
