@@ -63,17 +63,19 @@ def upload_to_ftp( tag, results_file ):
 
 
 def copy_comments( results_xml, comment_file ):
-    results_xml.startElement( "comment", {} )
+    results_xml.startElement( 'comment', {} )
 
-    utils.log( 'Reading comments file "%s"...' % comment_file )
-    f = open( comment_file, 'r' )
-    try:
-        comments = f.read()
-    finally:
-        f.close()
-        
-    results_xml.characters( comments )
-    results_xml.endElement( "comment" )
+    if os.path.exists( comment_file ):
+        utils.log( 'Reading comments file "%s"...' % comment_file )
+        f = open( comment_file, 'r' )
+        try:
+            results_xml.characters( f.read() )
+        finally:
+            f.close()    
+    else:
+        utils.log( 'Warning: comment file "%s" is not found.' % comment_file )
+ 
+    results_xml.endElement( 'comment' )
 
 
 def collect_logs( 
@@ -141,6 +143,8 @@ def collect_and_upload_logs(
         , comment_file
         , timestamp
         , user
+        , source
+        , run_type
         ):
     
     collect_logs( 
@@ -151,6 +155,8 @@ def collect_and_upload_logs(
         , comment_file
         , timestamp
         , user
+        , source
+        , run_type
         )
     
     upload_logs( runner_id, tag, user )
@@ -173,11 +179,11 @@ def accept_args( args ):
     options = {
           '--tag' :         'CVS-HEAD'
         , '--platform' :    sys.platform
-        , '--comment' :     None
+        , '--comment' :     'comment.html'
         , '--timestamp' :   'timestamp'
         , '--user' :        None
-        , '--source' :      'unknown'
-        , '--run-type' :    'unknown'
+        , '--source' :      'CVS'
+        , '--run-type' :    'full'
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -198,17 +204,17 @@ def accept_args( args ):
 def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
-\t--locate-root   directory to to scan for 'test_log.xml' files
-\t--runner        runner ID (e.g. 'Metacomm')
+\t--locate-root   directory to to scan for "test_log.xml" files
+\t--runner        runner ID (e.g. "Metacomm")
 \t--timestamp     path to a file which modification time will be used 
-\t                as a timestamp of the run ('timestamp' by default)
+\t                as a timestamp of the run ("timestamp" by default)
 \t--comment       an HTML comment file to be inserted in the reports
-\t                ('comment.html' by default)
-\t--tag           the tag for the results ('CVS-HEAD' by default)
+\t                ("comment.html" by default)
+\t--tag           the tag for the results ("CVS-HEAD" by default)
 \t--user          SourceForge user name for a shell account (optional)
-\t--source        where Boost sources came from (e.g. CVS, tarball, 
-\t                anonymous CVS)
-\t--run-type      "incremental" or "full" (optional)
+\t--source        where Boost sources came from (e.g. "CVS", "tarball",
+\t                "anonymous CVS"; "CVS" by default)
+\t--run-type      "incremental" or "full" ("full" by default)
 '''
     
 def main():
