@@ -52,6 +52,10 @@ std::string get_host()
   return "hpux";
 #elif defined __IBMCPP__
   return "aix";
+#elif defined __MSL__ && __dest_os == __mac_os
+  return "macos";
+#elif defined __MSL__ && __dest_os == __mac_os_x
+  return "macosx";
 #else
 # error Please adapt for your platform
 #endif
@@ -86,6 +90,13 @@ std::string get_system_configuration()
 std::string get_system_configuration()
 {
   return "BeOS 5 Intel Edition";
+}
+
+#elif defined __MSL__ && (__dest_os == __mac_os || __dest_os == __mac_os_x)
+
+std::string get_system_configuration()
+{
+  return "Mac OS";
 }
 
 #else
