@@ -190,7 +190,7 @@ def update_source( user, tag, proxy, args, **unused ):
         get_source( user, tag, proxy, args )
 
 
-def build_bjam_if_needed():    
+def build_bjam_if_needed():
     global bjam_path
     if os.path.exists( bjam_path ):
         log( 'Found preinstalled "%s"; will use it.' % bjam_path )
@@ -351,7 +351,7 @@ def test(
         stop_build_monitor()
 
 
-def upload( 
+def collect_logs( 
           tag
         , runner
         , platform
@@ -359,7 +359,7 @@ def upload(
         , comment
         , args
         , **unused
-        ):    
+        ):
     import_utils()
 
     global comment_path
@@ -368,11 +368,11 @@ def upload(
         f = open( comment_path, 'w' )
         f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
         f.close()
-    else:    
+    else: 
         comment_path = os.path.join( regression_root, comment )
     
-    from runner import collect_and_upload_logs 
-    collect_and_upload_logs( 
+    from runner import collect_logs
+    collect_logs( 
           regression_results
         , runner
         , tag
@@ -384,6 +384,17 @@ def upload(
             )
         , user
         )
+        
+
+def upload_logs( 
+          tag
+        , runner
+        , user
+        , **unused
+        ):
+    import_utils()
+    from runner import upload_logs
+    upload_logs( runner, tag, user )
 
 
 def regression( 
@@ -410,7 +421,8 @@ def regression(
             setup( comment, [] )
 
         test( toolsets, [] )
-        upload( tag, runner, platform, user, comment, [] )
+        collect_logs( tag, runner, platform, user, comment, args )
+        upload_logs( tag, runner, user )
 
         if mail:
             log( 'Sending report to "%s"' % mail )
@@ -457,16 +469,16 @@ def accept_args( args ):
         sys.exit( 1 )
 
     return {
-          'tag':  options[ '--tag' ]
-        , 'runner': options[ '--runner' ]
-        , 'platform': options[ '--platform']
-        , 'user':    options[ '--user' ]
-        , 'comment': options[ '--comment' ]
-        , 'toolsets': options[ '--toolsets' ]
-        , 'incremental': options.has_key( '--incremental' )
-        , 'mail': options[ '--mail' ]
-        , 'proxy': options[ '--proxy' ]
-        , 'args': other_args
+          'tag':            options[ '--tag' ]
+        , 'runner':         options[ '--runner' ]
+        , 'platform':       options[ '--platform']
+        , 'user':           options[ '--user' ]
+        , 'comment':        options[ '--comment' ]
+        , 'toolsets':       options[ '--toolsets' ]
+        , 'incremental':    options.has_key( '--incremental' )
+        , 'mail':           options[ '--mail' ]
+        , 'proxy':          options[ '--proxy' ]
+        , 'args':           other_args
         }
 
 
@@ -476,7 +488,8 @@ commands = {
     , 'update-source'   : update_source
     , 'setup'           : setup
     , 'test'            : test
-    , 'upload'          : upload
+    , 'collect-logs'    : collect_logs
+    , 'upload-logs'     : upload_logs
     , 'regression'      : regression
     }
 

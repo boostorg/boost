@@ -79,7 +79,7 @@ def copy_comments( results_xml, comment_file ):
     results_xml.endElement( "comment" )
 
 
-def collect_and_upload_logs( 
+def collect_logs( 
           locate_root_dir
         , runner_id
         , tag
@@ -115,15 +115,40 @@ def collect_and_upload_logs(
 
     utils.log( 'Compressing "%s"...' % test_results_file )
     
-    test_results_archive = os.path.splitext( test_results_file )[0] + ".zip"
-    z = zipfile.ZipFile( test_results_archive, "w", zipfile.ZIP_DEFLATED ) 
+    z = zipfile.ZipFile( '%s.zip' % runner_id, 'w', zipfile.ZIP_DEFLATED ) 
     z.write( test_results_file, os.path.basename( test_results_file ) )
     z.close()
-    
+
+
+def upload_logs( runner_id, tag, user ):
+    logs_archive = '%s.zip' % runner_id
     if user is None or user == 'anonymous':
-        upload_to_ftp( tag, test_results_archive )
+        upload_to_ftp( tag, logs_archive )
     else:
-        upload_to_sourceforge( user, tag, test_results_archive )
+        upload_to_sourceforge( user, tag, logs_archive )
+
+
+def collect_and_upload_logs( 
+          locate_root_dir
+        , runner_id
+        , tag
+        , platform
+        , comment_file
+        , timestamp
+        , user
+        ):
+    
+    collect_logs( 
+          locate_root_dir
+        , runner_id
+        , tag
+        , platform
+        , comment_file
+        , timestamp
+        , user
+        )
+    
+    upload_logs( runner_id, tag, user )
 
 
 def accept_args( args ):
