@@ -5,7 +5,7 @@
 # (See accompanying file LICENSE_1_0.txt or copy at 
 # http://www.boost.org/LICENSE_1_0.txt)
 
-import httplib
+import urllib
 import tarfile
 import socket
 import time
@@ -48,17 +48,12 @@ else:
 bjam_path = os.path.join( regression_root, bjam_name )
 process_jam_log_path = os.path.join( regression_root, process_jam_log_name )
 
-def stdlog( message ):
-    sys.stderr.write( '# %s\n' % message )
-    sys.stderr.flush()
-
-log = stdlog
 utils = None
 
 
-
-def tool_path( name ):
-    return os.path.join( regression_results, name )
+def log( message ):
+    sys.stderr.write( '# %s\n' % message )
+    sys.stderr.flush()
 
 
 def rmtree( path ):
@@ -92,35 +87,35 @@ def cleanup( args ):
     rmtree( regression_results )
 
 
-def http_get( site, source, destination ):
-    h = httplib.HTTPConnection( site )
-    h.request( 'GET', source )
-    
-    response = h.getresponse()
+def http_get( source_url, destination, proxies ):
+    src = urllib.urlopen( source_url, proxies = proxies )
     f = open( destination, 'wb' )
     while True:
-        data = response.read( 16*1024 )
+        data = src.read( 16*1024 )
         if len( data ) == 0: break
         f.write( data )
 
     f.close()
+    src.close()
 
 
-def download_boost_tarball( destination, tag ):
-    site = 'boost-consulting.com'
+def download_boost_tarball( destination, tag, proxy ):
+    site = 'www.boost-consulting.com'
     tarball_name = 'boost.tar.bz2'
     tarball_path = os.path.join( destination, tarball_name )
 
-    log( "Downloading '%s' for tag %s from %s "  % ( tarball_path, tag, site ) )
+    log( "Downloading '%s' for tag %s from %s..."  % ( tarball_path, tag, site ) )
     if os.path.exists( tarball_path ):
         os.unlink( tarball_path )
 
+    if proxy is None: proxies = None
+    else:             proxies = { 'http' : proxy }
     http_get(
-          site
-        , '/%s' % tarball_name # ignore tag for now
+          'http://%s/%s' % ( site, tarball_name ) # ignore tag for now
         , tarball_path
+        , proxies
         )
-        
+
     return tarball_path
 
 
@@ -175,24 +170,24 @@ def cvs_checkout( user, tag, args ):
        )
 
 
-def get_source( user, tag, args ):
+def get_source( user, tag, proxy, args ):
     log( "Getting sources ..." )
 
     if user is not None:
         cvs_checkout( user, tag, args )
     else:
-        tarball_path = download_boost_tarball( regression_root, tag )
+        tarball_path = download_boost_tarball( regression_root, tag, proxy )
         unpack_tarball( tarball_path, regression_root )
 
     open( timestamp_path, 'w' ).close()
 
 
-def update_source( user, tag, args ):
+def update_source( user, tag, proxy, args ):
     if user is not None:
         log( 'Updating sources...' )
         cvs_update( user, tag, args )
     else:
-        get_source( user, tag, args )
+        get_source( user, tag, proxy, args )
 
 
 def build_bjam_if_needed():    
@@ -278,6 +273,9 @@ def setup( comment_file, args ):
     if not 'no-process_jam_log' in args:
         build_process_jam_log_if_needed()
 
+
+def tool_path( name ):
+    return os.path.join( regression_results, name )
 
 def start_build_monitor():
     if sys.platform == 'win32':
@@ -385,17 +383,18 @@ def regression(
         , toolsets
         , incremental
         , mail = None
+        , proxy = None
         , args = []
         ):
 
     try:
         mail_subject = "Boost regression for %s on %s \n" % ( tag, string.split(socket.gethostname(), '.')[0] )
         if incremental:
-            update_source( user, tag, [] )
+            update_source( user, tag, proxy, [] )
             setup( comment_file, [] )
         else:
             cleanup( args )
-            get_source( user, tag, [] )
+            get_source( user, tag, proxy, [] )
             setup( comment_file, [] )
 
         test( toolsets, [] )
@@ -421,6 +420,7 @@ def accept_args( args ):
         , 'comment='
         , 'toolsets='
         , 'mail='
+        , 'proxy='
         , 'incremental'
         , 'help'
         ]
@@ -432,6 +432,7 @@ def accept_args( args ):
         , '--comment' :     None
         , '--toolsets' :    None
         , '--mail' :        None
+        , '--proxy' :       None
         }
     
     defaults_num = len( options )
@@ -452,6 +453,7 @@ def accept_args( args ):
         , options[ '--toolsets' ]
         , options.has_key( '--incremental' )
         , options[ '--mail' ]
+        , options[ '--proxy' ]
         , other_args
         )
 
@@ -467,24 +469,26 @@ commands = {
     }
 
 def usage():
-    print 'Usage: %s [command] options' % os.path.basename( sys.argv[0] )
+    print 'Usage:\n\t%s [command] options' % os.path.basename( sys.argv[0] )
     print    '''
 Commands:
 \t%s
 
 Options:
-
-\t--runner              runner ID (e.g. 'Metacomm')
-\t--tag                 the tag for the results ('CVS-HEAD' by default)
-\t--comment             an html comment file (will be inserted in the reports, 
-\t                      'comment.html' by default)
-\t--incremental         do incremental run (do not remove previous binaries)
-\t--user                SourceForge user name for a shell/CVS account (optional)
-\t--toolsets            comma-separated list of toolsets to test with (optional)
-\t--mail                email address to send run notification to (optional)
+\t--runner        runner ID (e.g. 'Metacomm')
+\t--tag           the tag for the results ('CVS-HEAD' by default)
+\t--comment       an html comment file (will be inserted in the reports, 
+\t                'comment.html' by default)
+\t--incremental   do incremental run (do not remove previous binaries)
+\t--user          SourceForge user name for a shell/CVS account (optional)
+\t--toolsets      comma-separated list of toolsets to test with (optional)
+\t--mail          email address to send run notification to (optional)
+\t--proxy         HTTP proxy server address and port (e.g. 
+\t                http://www.someproxy.com:3128', optional)
 ''' % '\n\t'.join( commands.keys() )
 
-    print 'Example:\n\t%s --runner=Metacomm' % os.path.basename( sys.argv[0] )
+    print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )
+    print 'For more documentation, see http://tinyurl.com/4f2zp\n'
 
 
 if len(sys.argv) > 1 and sys.argv[1] in commands:
