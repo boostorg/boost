@@ -39,17 +39,20 @@ process_jam_log = {}
 
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
-    bjam[ 'build_cmd' ] = 'build.bat %s'
+    bjam[ 'build_cmd' ] = lambda toolset: 'build.bat %s' % toolset
     bjam[ 'location' ] = 'bin.ntx86'
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
+    process_jam_log[ 'default_toolset' ] = 'vc7.1'
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
-    bjam[ 'build_cmd' ] = './build.sh %s'
+    bjam[ 'build_cmd' ] = lambda toolset:'./build.sh %s' % toolset
     bjam[ 'location' ] = ''
     process_jam_log[ 'name' ] = 'process_jam_log'
+    process_jam_log[ 'default_toolset' ] = 'gcc'
     patch_boost_name = './patch_boost'
 
+bjam[ 'default_toolset' ] = ''
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
 bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
 bjam[ 'build_path' ] = os.path.join( bjam[ 'source_dir' ], bjam[ 'location' ], bjam[ 'name' ] )
@@ -60,6 +63,8 @@ process_jam_log[ 'build_path_root' ] = os.path.join(
       boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
     , process_jam_log[ 'name' ]
     )
+
+process_jam_log[ 'build_cmd' ] = lambda toolset:'%s -sTOOLS=%s'% ( tool_path( bjam ), toolset )
 
 build_monitor_url = 'http://www.meta-comm.com/engineering/boost-regression/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
@@ -243,21 +248,37 @@ def update_source( user, tag, proxy, args, **unused ):
         get_source( user, tag, proxy, args )
 
 
-def build_if_needed( tool ):
+def build_if_needed( tool, toolset, toolsets ):
     if os.path.exists( tool[ 'path' ] ):
         log( 'Found preinstalled "%s"; will use it.' % tool[ 'path' ] )
         return
-    
+
     log( 'Preinstalled "%s" is not found; building one...' % tool[ 'path' ] )
+
+    if toolset is None:
+        if toolsets is not None:
+            toolset = string.split( toolsets, ',' )[0]
+        else:
+            toolset = tool[ 'default_toolset' ]
+            log( 'Warning: No bootstrap toolset for "%s" was specified.' % tool[ 'name' ] )
+            log( '         Using default toolset for the platform (%s).' % toolset )
+
     if os.path.exists( tool[ 'source_dir' ] ):
         log( 'Found "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
-        log( 'Building "%s" (%s)...' % ( tool[ 'name'], tool[ 'build_cmd' ] ) )
+        build_cmd = tool[ 'build_cmd' ]( toolset )
+        log( 'Building "%s" (%s)...' % ( tool[ 'name'], build_cmd ) )
         utils.system( [ 
               'cd %s' % tool[ 'source_dir' ]
-            , tool[ 'build_cmd' ]
+            , build_cmd
             ] )
     else:
         raise 'Could not find "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
+
+    if not tool.has_key( 'build_path' ):
+        tool[ 'build_path' ] = os.path.join(
+              tool[ 'build_path_root' ]
+            , toolset, 'release', tool[ 'name' ]
+            )
 
     if not os.path.exists( tool[ 'build_path' ] ):
         raise 'Failed to find "%s" after build.' % tool[ 'build_path' ]
@@ -327,27 +348,8 @@ def setup(
         log( 'Found patch file "%s". Executing it.' % patch_boost_name )
         utils.system( [ patch_boost_name ] )
 
-    bjam[ 'build_cmd' ] = bjam[ 'build_cmd' ] % bjam_toolset
-    build_if_needed( bjam )
-
-    if not os.path.exists( process_jam_log[ 'path' ] ):
-        if pjl_toolset is None:
-            if toolsets is not None:
-                pjl_toolset = string.split( toolsets, ',' )[0]
-            else:
-                if sys.platform == 'win32': pjl_toolset = 'vc7.1'
-                else:                       pjl_toolset = 'gcc'
-                log( 'Warning: No bootstrap toolset for "process_jam_log" was specified.' )
-                log( '         Using default toolset for the platform (%s).' % pjl_toolset )
-
-        process_jam_log[ 'build_cmd' ] = '%s -sTOOLS=%s'% ( tool_path( bjam ), pjl_toolset )
-        process_jam_log[ 'build_path' ] = os.path.join( 
-              process_jam_log[ 'build_path_root' ]
-            , pjl_toolset, 'release', process_jam_log[ 'name' ]
-            )
-
-    build_if_needed( process_jam_log )
-        
+    build_if_needed( bjam, bjam_toolset, toolsets )
+    build_if_needed( process_jam_log, pjl_toolset, toolsets )
     
     if monitored:
         if sys.platform == 'win32':
@@ -616,7 +618,7 @@ def accept_args( args ):
         , '--user'          : None
         , '--comment'       : None
         , '--toolsets'      : None
-        , '--bjam-toolset'  : ''
+        , '--bjam-toolset'  : None
         , '--pjl-toolset'   : None
         , '--timeout'       : 5
         , '--mail'          : None
