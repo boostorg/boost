@@ -86,7 +86,7 @@ def compile( program ):
 #      invoke( "Borland C++ 5.4 up2", "\"" + bcc54_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
     if compiler_arg=="*" or compiler_arg=="bcc":
       bcc55_path=os.environ["BOOST_BCC55_PATH"]
-      invoke( "Borland C++ 5.5.1", "\"" + bcc55_path + "/bcc32\" -I" + path + " -c -j10 -q " + fullpath )
+      invoke( "Borland C++ 5.5.1", "\"" + bcc55_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
 
     # GCC 2.95.2 is looping on some tests, so only invoke if asked for by name
     #if compiler_arg=="*" or compiler_arg=="gcc":
@@ -95,11 +95,11 @@ def compile( program ):
       invoke( "GNU GCC", "c++ -ftemplate-depth-30 -I" + path + " -IC:/stl/STLport-4.0b8/stlport  " + fullpath + "  c:/stl/STLport-4.0b8/lib/libstlport_gcc.a" )
 
     if compiler_arg=="*" or compiler_arg=="cw":
-      invoke( "Metrowerks CodeWarrior", "mwcc -nolink -maxerrors 10 -cwd source -I- -I" + path + " " + fullpath )
+      invoke( "Metrowerks CodeWarrior", "mwcc -maxerrors 10 -cwd source -I- -I" + path + " " + fullpath )
 
 #John Maddock says use /Zm400 switch; it increases compiler memory
     if compiler_arg=="*" or compiler_arg=="vc":
-      invoke( "VC++ with MS library", 'cl /c /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
+      invoke( "VC++ with MS library", 'cl /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
     if compiler_arg=="*" or compiler_arg=="vcstlport":
       stl=os.environ["BOOST_STLPORT_PATH"]
       invoke( "VC++ with STLport library", 'cl /c /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + stl + '" /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
