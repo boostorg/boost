@@ -35,10 +35,10 @@
 
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
 
-    <xsl:template match="test-log">
+    <xsl:template match="test-log[ meta:show_output( $explicit_markup, . ) ]">
         <xsl:variable name="document_path" select="meta:output_file_path( @target-directory )"/>
 
-        <xsl:message>Writing document <xsl:value-of select="$document_path"/></xsl:message>
+        <xsl:message>Writing log file document <xsl:value-of select="$document_path"/></xsl:message>
 
         <exsl:document href="{$document_path}" 
         method="html" 

@@ -50,6 +50,12 @@
 
     </xsl:template>
 
+  <func:function name="meta:show_output">
+      <xsl:param name="explicit_markup"/>     
+      <xsl:param name="test_log"/>     
+      <func:result select="$test_log/@result != 'success' and not( meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )) or $test_log/@show-run-output = 'true'"/>
+  </func:function>
+
     <func:function name="meta:is_test_log_a_test_case">
         <xsl:param name="test_log"/>      
         <func:result select="$test_log/@test-type='compile' or $test_log/@test-type='compile_fail' or $test_log/@test-type='run' or $test_log/@test-type='run_pyd'"/>
