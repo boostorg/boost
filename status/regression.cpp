@@ -235,8 +235,8 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
   }
 }
 
-const std::string pass_string = "Pass";
-const std::string fail_string = "<font color=\"#FF0000\">Fail</font>";
+std::string pass_string = "Pass";
+std::string fail_string = "<font color=\"#FF0000\">Fail</font>";
 
 // map test name to results, one character ("P" or "F") for each compiler
 typedef std::map<std::string, std::string> previous_results_type;
