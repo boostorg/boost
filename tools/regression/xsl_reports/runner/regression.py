@@ -7,6 +7,7 @@
 
 import urllib
 import tarfile
+import zipfile
 import socket
 import time
 import getopt
@@ -65,6 +66,8 @@ process_jam_log[ 'build_path' ] = os.path.join(
         , 'release', process_jam_log[ 'name' ]
         )
 
+build_monitor_url = 'http://www.meta-comm.com/engineering/boost-regression/build_monitor.zip'
+pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
 
 utils = None
 
@@ -105,8 +108,12 @@ def cleanup( args, **unused ):
     rmtree( regression_results )
 
 
-def http_get( source_url, destination, proxies ):
+def http_get( source_url, destination, proxy ):
+    if proxy is None: proxies = None
+    else:             proxies = { 'http' : proxy }
+
     src = urllib.urlopen( source_url, proxies = proxies )
+
     f = open( destination, 'wb' )
     while True:
         data = src.read( 16*1024 )
@@ -126,12 +133,10 @@ def download_boost_tarball( destination, tag, proxy ):
     if os.path.exists( tarball_path ):
         os.unlink( tarball_path )
 
-    if proxy is None: proxies = None
-    else:             proxies = { 'http' : proxy }
     http_get(
           'http://%s/%s' % ( site, tarball_name ) # ignore tag for now
         , tarball_path
-        , proxies
+        , proxy
         )
         
     return tarball_path
@@ -282,8 +287,36 @@ def tool_path( name_or_spec ):
         return name_or_spec[ 'build_path' ]
 
 
+def download_if_needed( tool_name, tool_url, proxy ):
+    path = tool_path( tool_name )
+    if not os.path.exists( path ):
+        log( 'Preinstalled "%s" is not found.' % path )
+        log( '  Downloading from %s...' % tool_url )
+        
+        zip_path = '%s.zip' % path
+        http_get( tool_url, zip_path, proxy )            
+
+        log( '  Unzipping %s...' % path )
+        utils.unzip( zip_path, os.path.dirname( path ) )
+
+        log( '  Removing %s...' % zip_path )
+        os.unlink( zip_path )
+        log( 'Done.' )
+
+
+def setup_monitor(
+          proxy
+        , args
+        , **unused
+        ):
+    import_utils()
+    
+
+
 def setup(
           comment
+        , monitored
+        , proxy
         , args
         , **unused
         ):
@@ -301,6 +334,14 @@ def setup(
         )
 
     build_if_needed( process_jam_log )
+    
+    if monitored:
+        if sys.platform == 'win32':
+            download_if_needed( 'build_monitor.exe', build_monitor_url, proxy )
+            download_if_needed( 'pskill.exe', pskill_url, proxy )
+        else:
+            log( 'Warning: test monitoring is not supported on this platform (yet).' )
+            log( '         Please consider contributing this piece!' )
 
 
 def bjam_set_commands( toolsets ):
@@ -324,19 +365,19 @@ def install( toolsets, **unused ):
     utils.system( install_cmd )
 
 
-def start_build_monitor():
+def start_build_monitor( timeout ):
     if sys.platform == 'win32':
-        build_monitor = tool_path( 'build_monitor.exe' )
-        if os.path.exists( build_monitor ):
-            utils.system( [ 'start "" %s bjam.exe %d' % ( build_monitor, 3*60 ) ] )
+        build_monitor_path = tool_path( 'build_monitor.exe' )
+        if os.path.exists( build_monitor_path ):
+            utils.system( [ 'start "" %s bjam.exe %d' % ( build_monitor_path, timeout*60 ) ] )
         else:
-            log( 'Warning: build monitor is not found at "%s"' % build_monitor )
+            log( 'Warning: build monitor is not found at "%s"' % build_monitor_path )
 
 
 def stop_build_monitor():
     if sys.platform == 'win32':
-        build_monitor = tool_path( 'build_monitor.exe' )
-        if os.path.exists( build_monitor ):
+        build_monitor_path = tool_path( 'build_monitor.exe' )
+        if os.path.exists( build_monitor_path ):
             utils.system( [ '%s build_monitor' %  tool_path( 'pskill.exe' ) ] )
 
 
@@ -354,6 +395,8 @@ def run_process_jam_log():
 
 def test( 
           toolsets
+        , monitored
+        , timeout
         , args
         , **unused
         ):
@@ -363,7 +406,9 @@ def test(
     import_utils()
 
     try:
-        start_build_monitor()
+        if monitored:
+            start_build_monitor( timeout )
+
         cd = os.getcwd()
         os.chdir( os.path.join( boost_root, 'status' ) )
 
@@ -394,7 +439,8 @@ def test(
 
         os.chdir( cd )
     finally:
-        stop_build_monitor()
+        if monitored:
+            stop_build_monitor()
 
 
 def collect_logs( 
@@ -463,6 +509,8 @@ def regression(
         , comment
         , toolsets
         , incremental
+        , monitored
+        , timeout
         , mail = None
         , proxy = None
         , args = []
@@ -477,13 +525,13 @@ def regression(
 
         if incremental:
             update_source( user, tag, proxy, [] )
-            setup( comment, [] )
+            setup( comment, monitored, proxy, [] )
         else:
             cleanup( args )
             get_source( user, tag, proxy, [] )
-            setup( comment, [] )
+            setup( comment, monitored, proxy, [] )
 
-        test( toolsets, [] )
+        test( toolsets, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, args )
         upload_logs( tag, runner, user )
 
@@ -515,9 +563,11 @@ def accept_args( args ):
         , 'user='
         , 'comment='
         , 'toolsets='
+        , 'timeout='
         , 'mail='
         , 'proxy='
         , 'incremental'
+        , 'monitored'
         , 'help'
         ]
     
@@ -527,6 +577,7 @@ def accept_args( args ):
         , '--user' :        None
         , '--comment' :     None
         , '--toolsets' :    None
+        , '--timeout' :     5
         , '--mail' :        None
         , '--proxy' :       None
         }
@@ -548,6 +599,8 @@ def accept_args( args ):
         , 'comment':        options[ '--comment' ]
         , 'toolsets':       options[ '--toolsets' ]
         , 'incremental':    options.has_key( '--incremental' )
+        , 'monitored':      options.has_key( '--monitored' )
+        , 'timeout':        options[ '--timeout' ]
         , 'mail':           options[ '--mail' ]
         , 'proxy':          options[ '--proxy' ]
         , 'args':           other_args
@@ -578,6 +631,10 @@ Options:
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
+\t--monitored     do a monitored run
+\t--timeout       specifies the timeout, in minutes, for a single test
+\t                run/compilation (enforced only in monitored runs, 5 by 
+\t                default)
 \t--user          SourceForge user name for a shell/CVS account (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
 \t--mail          email address to send run notification to (optional)
