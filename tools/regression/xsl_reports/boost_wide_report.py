@@ -156,9 +156,15 @@ def sync_dirs( file_mask, source_dir, destination_dir, timestamp, do_sync ):
     files = glob.glob( os.path.join( source_dir, file_mask ) )
     for src in files:
         dst = os.path.join( destination_dir, os.path.basename( src ) )
-        utils.log( '    "%s" <-> "%s"' % ( src, dst ) )
-        if not os.path.exists( dst ) or timestamp( src ) > timestamp( dst ):
+        if not os.path.exists( dst ):
+            utils.log( '    "%s" <-> "%s" [doesn\'t exist]' % ( src, dst ) )
             do_sync( src )
+        else:
+            src_timestamp = timestamp( src )
+            dst_timestamp = timestamp( dst )
+            utils.log( '    "%s" [%s] <-> "%s" [%s]' % ( src, src_timestamp, dst, dst_timestamp ) )
+            if timestamp( src ) != timestamp( dst ):
+                do_sync( src )
 
 
 def sync_archives_task( source_dir, processed_dir, unzip_func ):
