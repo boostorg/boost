@@ -96,8 +96,8 @@ def collect_logs(
     
     if not os.path.exists( timestamp ):
         t = time.gmtime()
-        utils.log( 'Warning: timestamp file "%s" does not exist' )
-        utils.log( 'Using current UTC time (%s)' % ( timestamp, t ) )
+        utils.log( 'Warning: timestamp file "%s" does not exist'% timestamp )
+        utils.log( 'Using current UTC time (%s)' % t )
     else:
         t = time.gmtime( os.stat( timestamp ).st_mtime )
     
