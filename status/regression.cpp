@@ -28,8 +28,8 @@
 #ifdef __unix
 #include <cstring>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/types.h>
-#include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 #endif
