@@ -62,7 +62,7 @@
     <!-- libraries -->
     <xsl:variable name="libraries" select="//test-log[ @library != '' and generate-id(.) = generate-id( key('library_key',@library)[1] )  ]/@library"/>
 
-    <xsl:variable name="unexpected_test_cases" select="//test-log[ @status='unexpected' and @result='fail' and @toolset = $required_toolset_names]"/>
+    <xsl:variable name="unexpected_test_cases" select="//test-log[ @status='unexpected' and @result='fail' and @toolset = $required_toolset_names and meta:is_test_log_a_test_case(.)]"/>
 
     <func:function name="meta:get_library_tests">
         <xsl:param name="tests"/>
