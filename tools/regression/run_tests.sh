@@ -95,7 +95,7 @@ if test ! -d $boost_root ; then
 fi
 if test $cvs_update == yes ; then
     echo fetching Boost:
-    echo "/1 :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost A" | cat $HOME/.cvspass | sort | uniq > $HOME/.cvspass
+    echo "/1 :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost A" | cat $HOME/.cvspass - | sort | uniq > $HOME/.cvspass
     cd `dirname $boost_root`
     if test -f boost/CVS/Root ; then
         cvs -z3 -d `cat $boost_dir/CVS/Root` co -d $boost_dir boost
