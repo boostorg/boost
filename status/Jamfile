@@ -333,12 +333,12 @@ else
 
 declare-build-fail-test RUN_FAIL : RUN_TEST ;
 declare-build-succeed-test RUN : RUN_TEST ;
-rule run # sources : args : input-files : requirements
+rule run ( sources + : args * : input-files * : requirements * : name ? )
 {
-    local gRUN_TEST_ARGS = $(2) ;
-    local gRUN_TEST_INPUT_FILES = $(3) ;
-    SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    return [ boost-test $(<) : RUN : $(4) ] ;
+    local gRUN_TEST_ARGS = $(args) ;
+    local gRUN_TEST_INPUT_FILES = $(input-files) ;
+    SEARCH on $(input-files) = $(LOCATE_SOURCE) ;
+    return [ boost-test $(sources) : RUN : $(requirements) : $(name) ] ;
 }
 
 rule run-fail # sources : args : input-files : requirements
