@@ -37,21 +37,17 @@ cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot
 bjam = {}
 process_jam_log = {}
 
-if sys.platform == 'win32': 
+if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
-    bjam[ 'toolset/compiler' ] = 'vc7'
-    bjam[ 'build_cmd' ] = 'build.bat %s' % bjam[ 'toolset/compiler' ]
+    bjam[ 'build_cmd' ] = 'build.bat %s'
     bjam[ 'location' ] = 'bin.ntx86'
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
-    process_jam_log[ 'toolset/compiler' ] = 'vc7.1'
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
-    bjam[ 'toolset/compiler' ] = 'gcc'
-    bjam[ 'build_cmd' ] = './build.sh %s' % bjam[ 'toolset/compiler' ]
+    bjam[ 'build_cmd' ] = './build.sh %s'
     bjam[ 'location' ] = ''
-    process_jam_log[ 'name' ] = "process_jam_log"
-    process_jam_log[ 'toolset/compiler' ] = 'gcc'
+    process_jam_log[ 'name' ] = 'process_jam_log'
     patch_boost_name = './patch_boost'
 
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
@@ -60,11 +56,10 @@ bjam[ 'build_path' ] = os.path.join( bjam[ 'source_dir' ], bjam[ 'location' ], b
 
 process_jam_log[ 'path' ] = os.path.join( regression_root, process_jam_log[ 'name' ] )
 process_jam_log[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'regression', 'build' )
-process_jam_log[ 'build_path' ] = os.path.join( 
-          boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
-        , process_jam_log[ 'name' ], process_jam_log[ 'toolset/compiler' ]
-        , 'release', process_jam_log[ 'name' ]
-        )
+process_jam_log[ 'build_path_root' ] = os.path.join( 
+      boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
+    , process_jam_log[ 'name' ]
+    )
 
 build_monitor_url = 'http://www.meta-comm.com/engineering/boost-regression/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
@@ -220,7 +215,7 @@ def format_time( t ):
     return time.strftime( 
           '%a, %d %b %Y %H:%M:%S +0000'
         , t
-        )    
+        )
 
 def timestamp():
     return format_time( 
@@ -255,24 +250,23 @@ def build_if_needed( tool ):
     
     log( 'Preinstalled "%s" is not found; building one...' % tool[ 'path' ] )
     if os.path.exists( tool[ 'source_dir' ] ):
-        log( 'Found %s source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
-        log( 'Building %s using \"%s\"...' % ( tool[ 'name'], tool[ 'toolset/compiler' ] ) )            
-        log( '%s' % tool[ 'build_cmd' ] )
+        log( 'Found "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
+        log( 'Building "%s" (%s)...' % ( tool[ 'name'], tool[ 'build_cmd' ] ) )
         utils.system( [ 
               'cd %s' % tool[ 'source_dir' ]
             , tool[ 'build_cmd' ]
             ] )
     else:
-        raise 'Could not find %s source directory \"%s\"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
+        raise 'Could not find "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
 
     if not os.path.exists( tool[ 'build_path' ] ):
-        raise 'Failed to find (\"%s\") after build.' % tool[ 'build_path' ]
+        raise 'Failed to find "%s" after build.' % tool[ 'build_path' ]
 
     log( '%s succesfully built in "%s" directory' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
 
 
 def import_utils():
-    global utils    
+    global utils
     if utils is None:
         sys.path.append( xsl_reports_dir )
         import utils as utils_module
@@ -285,8 +279,19 @@ def tool_path( name_or_spec ):
 
     if os.path.exists( name_or_spec[ 'path' ] ):
         return name_or_spec[ 'path' ]
-    else:
+
+    if name_or_spec.has_key( 'build_path' ):
         return name_or_spec[ 'build_path' ]
+
+    build_path_root = name_or_spec[ 'build_path_root' ]
+    log( 'Searching for "%s" in "%s"...' % ( name_or_spec[ 'name' ], build_path_root ) )
+    for root, dirs, files in os.walk( build_path_root ):
+        if name_or_spec[ 'name' ] in files:
+            return os.path.join( root, name_or_spec[ 'name' ] )
+    
+    raise Exception( 'Cannot find "%" in any of the following locations:\n%s' % (
+          '\n'.join( [ name_or_spec[ 'path' ], build_path_root ] )
+        ) )
 
 
 def download_if_needed( tool_name, tool_url, proxy ):
@@ -296,7 +301,7 @@ def download_if_needed( tool_name, tool_url, proxy ):
         log( '  Downloading from %s...' % tool_url )
         
         zip_path = '%s.zip' % path
-        http_get( tool_url, zip_path, proxy )            
+        http_get( tool_url, zip_path, proxy )
 
         log( '  Unzipping %s...' % path )
         utils.unzip( zip_path, os.path.dirname( path ) )
@@ -306,17 +311,11 @@ def download_if_needed( tool_name, tool_url, proxy ):
         log( 'Done.' )
 
 
-def setup_monitor(
-          proxy
-        , args
-        , **unused
-        ):
-    import_utils()
-    
-
-
 def setup(
           comment
+        , toolsets
+        , bjam_toolset
+        , pjl_toolset
         , monitored
         , proxy
         , args
@@ -328,29 +327,42 @@ def setup(
         log( 'Found patch file "%s". Executing it.' % patch_boost_name )
         utils.system( [ patch_boost_name ] )
 
+    bjam[ 'build_cmd' ] = bjam[ 'build_cmd' ] % bjam_toolset
     build_if_needed( bjam )
 
-    process_jam_log[ 'build_cmd' ] = '%s -sTOOLS=%s'% (
-          tool_path( bjam )
-        , process_jam_log[ 'toolset/compiler' ]
-        )
+    if not os.path.exists( process_jam_log[ 'path' ] ):
+        if pjl_toolset is None:
+            if toolsets is not None:
+                pjl_toolset = string.split( toolsets, ',' )[0]
+            else:
+                if sys.platform == 'win32': pjl_toolset = 'vc7.1'
+                else:                       pjl_toolset = 'gcc'
+                log( 'Warning: No bootstrap toolset for "process_jam_log" was specified.' )
+                log( '         Using default toolset for the platform (%s).' % pjl_toolset )
+
+        process_jam_log[ 'build_cmd' ] = '%s -sTOOLS=%s'% ( tool_path( bjam ), pjl_toolset )
+        process_jam_log[ 'build_path' ] = os.path.join( 
+              process_jam_log[ 'build_path_root' ]
+            , pjl_toolset, 'release', process_jam_log[ 'name' ]
+            )
 
     build_if_needed( process_jam_log )
+        
     
     if monitored:
         if sys.platform == 'win32':
             download_if_needed( 'build_monitor.exe', build_monitor_url, proxy )
             download_if_needed( 'pskill.exe', pskill_url, proxy )
         else:
-            log( 'Warning: test monitoring is not supported on this platform (yet).' )
+            log( 'Warning: Test monitoring is not supported on this platform (yet).' )
             log( '         Please consider contributing this piece!' )
 
 
-def bjam_set_commands( toolsets ):
-    result = []
+def bjam_command( toolsets ):
+    result = '"%s"' % tool_path( bjam )
     if not toolsets is None:
-        result.append( 'set TOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' ) )
-    result.append( 'set BOOST_ROOT=%s' % boost_root )
+        result += ' "-sTOOLS=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
+    result += ' "-sBOOST_ROOT=%s"' % boost_root
     return result
 
 
@@ -361,10 +373,9 @@ def install( toolsets, **unused ):
     log( 'Making "%s" directory...' % regression_results )
     utils.makedirs( regression_results )
     
-    install_cmd = bjam_set_commands( toolsets )
-    install_cmd.append( '"%s" -d2 install >>%s 2>&1' % ( tool_path( bjam ), install_log ) )
+    install_cmd = '%s -d2 install >>%s 2>&1' % ( bjam_command( toolsets ), install_log )
     log( 'Installing libraries (%s)...' % install_cmd )
-    utils.system( install_cmd )
+    utils.system( [ install_cmd ] )
 
 
 def start_build_monitor( timeout ):
@@ -373,7 +384,7 @@ def start_build_monitor( timeout ):
         if os.path.exists( build_monitor_path ):
             utils.system( [ 'start /belownormal %s bjam.exe %d' % ( build_monitor_path, timeout*60 ) ] )
         else:
-            log( 'Warning: build monitor is not found at "%s"' % build_monitor_path )
+            log( 'Warning: Build monitor is not found at "%s"' % build_monitor_path )
 
 
 def stop_build_monitor():
@@ -425,16 +436,14 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
-            test_cmd = bjam_set_commands( toolsets )
-            test_cmd.append( '"%s" -d2 --dump-tests "-sALL_LOCATE_TARGET=%s" >>%s 2>&1'
-                                      % (     tool_path( bjam )
-                                            , regression_results
-                                            , regression_log
-                                            )
-                                      )
+            test_cmd = '%s -d2 --dump-tests "-sALL_LOCATE_TARGET=%s" >>%s 2>&1' % (
+                  bjam_command( toolsets )
+                , regression_results
+                , regression_log
+                )
 
             log( 'Starting tests (%s)...' % test_cmd )
-            utils.system( test_cmd )
+            utils.system( [ test_cmd ] )
 
         if "process" in args:
             run_process_jam_log()
@@ -506,14 +515,14 @@ def upload_logs(
 def update_itself( **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
     log( 'Updating %s from %s...' % ( sys.argv[0], source )  )
-    log( '    Checking modification dates...' )    
+    log( '    Checking modification dates...' )
     if os.stat( sys.argv[0] ).st_mtime > os.stat( source ).st_mtime:
         log( 'Warning: The current version of script appears to be newer than the source.' )
         log( '         Update skipped.' )
     else:
         log( '    Saving a backup copy of the current script...' )
         shutil.move( sys.argv[0], '%s~' % sys.argv[0] )
-        log( '    Replacing %s with a newer version...'% sys.argv[0] )
+        log( '    Replacing %s with a newer version...' % sys.argv[0] )
         shutil.copy2( source, sys.argv[0] )
 
 
@@ -524,6 +533,8 @@ def regression(
         , user
         , comment
         , toolsets
+        , bjam_toolset
+        , pjl_toolset
         , incremental
         , monitored
         , timeout
@@ -541,12 +552,11 @@ def regression(
 
         if incremental:
             update_source( user, tag, proxy, [] )
-            setup( comment, monitored, proxy, [] )
         else:
             cleanup( args )
             get_source( user, tag, proxy, [] )
-            setup( comment, monitored, proxy, [] )
 
+        setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
         test( toolsets, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, args )
         upload_logs( tag, runner, user )
@@ -590,6 +600,8 @@ def accept_args( args ):
         , 'user='
         , 'comment='
         , 'toolsets='
+        , 'bjam-toolset='
+        , 'pjl-toolset='
         , 'timeout='
         , 'mail='
         , 'proxy='
@@ -599,14 +611,16 @@ def accept_args( args ):
         ]
     
     options = {
-          '--tag' :         'CVS-HEAD'
-        , '--platform' :    sys.platform
-        , '--user' :        None
-        , '--comment' :     None
-        , '--toolsets' :    None
-        , '--timeout' :     5
-        , '--mail' :        None
-        , '--proxy' :       None
+          '--tag'           : 'CVS-HEAD'
+        , '--platform'      : sys.platform
+        , '--user'          : None
+        , '--comment'       : None
+        , '--toolsets'      : None
+        , '--bjam-toolset'  : ''
+        , '--pjl-toolset'   : None
+        , '--timeout'       : 5
+        , '--mail'          : None
+        , '--proxy'         : None
         }
     
     defaults_num = len( options )
@@ -619,18 +633,20 @@ def accept_args( args ):
         sys.exit( 1 )
 
     return {
-          'tag':            options[ '--tag' ]
-        , 'runner':         options[ '--runner' ]
-        , 'platform':       options[ '--platform']
-        , 'user':           options[ '--user' ]
-        , 'comment':        options[ '--comment' ]
-        , 'toolsets':       options[ '--toolsets' ]
-        , 'incremental':    options.has_key( '--incremental' )
-        , 'monitored':      options.has_key( '--monitored' )
-        , 'timeout':        options[ '--timeout' ]
-        , 'mail':           options[ '--mail' ]
-        , 'proxy':          options[ '--proxy' ]
-        , 'args':           other_args
+          'tag'             : options[ '--tag' ]
+        , 'runner'          : options[ '--runner' ]
+        , 'platform'        : options[ '--platform']
+        , 'user'            : options[ '--user' ]
+        , 'comment'         : options[ '--comment' ]
+        , 'toolsets'        : options[ '--toolsets' ]
+        , 'bjam_toolset'    : options[ '--bjam-toolset' ]
+        , 'pjl_toolset'     : options[ '--pjl-toolset' ]
+        , 'incremental'     : options.has_key( '--incremental' )
+        , 'monitored'       : options.has_key( '--monitored' )
+        , 'timeout'         : options[ '--timeout' ]
+        , 'mail'            : options[ '--mail' ]
+        , 'proxy'           : options[ '--proxy' ]
+        , 'args'            : other_args
         }
 
 
@@ -666,6 +682,9 @@ Options:
 \t                default)
 \t--user          SourceForge user name for a shell/CVS account (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
+\t--bjam-toolset  bootstrap toolset for 'bjam' executable (optional)
+\t--pjl-toolset   bootstrap toolset for 'process_jam_log' executable
+\t                (optional)
 \t--mail          email address to send run notification to (optional)
 \t--proxy         HTTP proxy server address and port (e.g. 
 \t                'http://www.someproxy.com:3128', optional)
