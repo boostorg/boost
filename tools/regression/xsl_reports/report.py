@@ -1,4 +1,4 @@
-# (C) Copyright MetaCommunications, Inc. 2003.
+# (C) Copyright MetaCommunications, Inc. 2003-2004.
 #
 # Permission to use, copy, modify, distribute and sell this software
 # and its documentation for any purpose is hereby granted without fee, 
@@ -16,6 +16,8 @@ import string
 import time
 import inspect
 import getopt
+
+report_types = [ "us", "ds", "ud", "dd", "l", "p", "x", "i" ]
 
 if __name__ == "__main__":
     run_dir = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
@@ -276,7 +278,7 @@ def build_experimental_reports( locate_root_dir
                                 , result_file_prefix
                                 , xslt_proc_name
                                 , dont_collect_logs = 0
-                                , reports = [ "dd", "ud", "us", "ds", "l", "p", "x", "i" ]
+                                , reports = report_types
                                 ):
     ( run_date ) = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime() )
     test_results_file = os.path.join( results_dir, "test_results.xml" )
@@ -316,7 +318,7 @@ def accept_args( args ):
     options = { "--comment": ""
                 , "--expected-results": ""
                 , "--failures-markup": ""
-                , "--reports" : "dd,ud,us,ds,l,p,x,i" }
+                , "--reports" : string.join( report_types, "," ) }
     
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
