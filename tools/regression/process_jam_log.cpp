@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <map>
 #include <utility> // for make_pair
 #include <ctime>
@@ -382,7 +383,7 @@ namespace
 int cpp_main( int argc, char ** argv )
 {
   if ( argc <= 1 )
-    std::cout << "Usage: bjam [bjam-args] | process_jam_log [locate-root]\n"
+    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [locate-root]\n"
                  "  locate-root is the same as the bjam ALL_LOCATE_TARGET\n"
                  "  parameter, if any. Default is boost-root.\n";
 
@@ -398,6 +399,13 @@ int cpp_main( int argc, char ** argv )
   {
     std::cout << "must be run from within the boost-root directory tree\n";
     return 1;
+  }
+
+  bool echo = false;
+  if ( argc > 1 && std::strcmp( argv[1], "--echo" ) == 0 )
+  {
+    echo = true;
+    --argc; ++argv;
   }
 
   locate_root = argc > 1 
@@ -421,7 +429,7 @@ int cpp_main( int argc, char ** argv )
 
   while ( std::getline( std::cin, line ) )
   {
-    //    std::cout << line << "\n";
+    if ( echo ) std::cout << line << "\n";
 
     // create map of test-name to test-info
     if ( line.find( "boost-test(" ) == 0 )
