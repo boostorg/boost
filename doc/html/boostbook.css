@@ -1,26 +1,102 @@
-th
+/*=============================================================================
+    Copyright (c) 2002 2004 Joel de Guzman, Eric Niebler, Rene Rivera
+    http://spirit.sourceforge.net/
+
+    Use, modification and distribution is subject to the Boost Software
+    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+    http://www.boost.org/LICENSE_1_0.txt)
+=============================================================================*/
+
+/* CSS based on w3c documentation which I like a lot, and the classic Spirit
+documentation. */
+
+/* Body defaults */
+body 
 {
-   font-weight: bold;
-   text-align:  center;
+    padding: 2em 1em 2em 1em;
+    margin: 1em 1em 1em 1em;
+    font-family: sans-serif;
 }
 
-a img{ border: 0.1em solid black; }
-
-.title, .refnamediv h2, .standalone-title
+/* Paragraphs */
+p 
 {
-   font-weight:   bold;
-   font-size:     2pc;
-   font-family:   Times New Roman;
-   margin-bottom: 1pc;
+    text-align: justify;
 }
 
+pre.synopsis
+{
+    margin: 1pc 4% 0pc 4%;
+    padding: 0.5pc 0.5pc 0.5pc 0.5pc;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 { text-align: left; margin-top: 2pc; }
+h1 { font: 170% sans-serif }
+h2 { font: bold 140% sans-serif }
+h3 { font: 120% sans-serif }
+h4 { font: bold 100% sans-serif }
+h5 { font: italic 100% sans-serif }
+h6 { font: italic 100% sans-serif }
+
+/* Unordered lists */
+ul 
+{
+    text-align: justify;
+}
+
+/* Links */
+a
+{
+    text-decoration: none; /* no underline */
+}
+
+a:hover
+{
+    text-decoration: underline;
+}
+
+/* Top page title */
+title, h1.title, h2.title, h3.title,
+       h4.title, h5.title, h6.title,
+       .refentrytitle
+{
+    font-weight:   bold;
+    font-size:     2pc;
+    margin-bottom: 1pc;
+}
+
+/* Spirit style navigation */
+.spirit-nav
+{
+    text-align: right;
+}
+
+.spirit-nav a
+{
+    color: white;
+    padding-left: 0.5em;
+}
+
+.spirit-nav img
+{
+    border-width: 0px;
+}
+
+/* Program listing box */
+.programlisting, .screen
+{
+    display: block;
+    margin-left:  4%;
+    margin-right: 4%;
+    padding: 0.5pc 0.5pc 0.5pc 0.5pc;
+}
+
+/* Table of contents */
 .toc
 {
-   margin-left:   15%;
-   margin-right:  15%;
-   margin-top:    1pc;
-   margin-bottom: 0pc;
-   padding:       0.5pc;
+   margin: 1pc 4% 0pc 4%;
+   padding: 0.5pc 0.5pc 0.5pc 0.5pc;
 }
 
 .boost-toc
@@ -29,158 +105,239 @@ a img{ border: 0.1em solid black; }
    padding: 0.5pc;
 }
 
-.spirit-nav
+/* Tables */
+.table-title, div.table p.title
 {
-   text-align: right;
+    margin-left: 4%;
+    padding-right: 0.5em; 
+    padding-left: 0.5em;
+    font-size: 120%;
 }
 
-.spirit-nav a
+.informaltable table, .table table
 {
-   padding-left: 0.5em;
+    width: 92%;
+    margin-left: 4%;
+    margin-right: 4%;
 }
 
-div pre.programlisting, .refsynopsisdiv
+div.informaltable table, div.table table
 {
-   margin-left:  3pc;
-   margin-right: 3pc;
+    padding: 4px 4px 4px 4px;
 }
 
-.computeroutput, .command
+div.informaltable table tr td, div.table table tr td
 {
-   font-family: Lucida Console;
-   font-size:   80%;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    text-align: justify;
 }
 
-.title, .refnamediv h2
+div.informaltable table tr th, div.table table tr th
 {
-   text-align: center;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    border: 1pt solid white;
 }
 
-.section .section .title, .chapter .section .title, .table .title
+/* inlined images */
+.inlinemediaobject
 {
-   text-align: left;
-}
-
-.informaltable table
-{
-   width: 100%;
-}
-
-i.firstterm
-{
-   font-style: normal;
-   font-weight: bold;
+    padding: 0.5em 0.5em 0.5em 0.5em;
 }
 
 /* tone down the title of Parameter lists */
 div.variablelist p.title
 {
-   font-weight: bold;
-   font-size: 100%;
-   text-align: left;
-   background-color: white;
+    font-weight: bold;
+    font-size: 100%;
+    text-align: left;
 }
 
 /* tabularize parameter lists */
 div.variablelist dl dt
 {
-   float: left;
-   clear: left;
-   font-style: italic;
+    float: left;
+    clear: left;
+    display: block;
+    font-style: italic;
 }
 
 div.variablelist dl dd
 {
-   padding-left: 8pc;
+    display: block;
+    clear:   right;
+    padding-left: 8pc;
+}
+
+/* title of books and articles in bibliographies */
+span.title
+{
+    font-style: italic;
+}
+
+/* tips, notes and warnings done in Spirit style */
+div.tip, div.note, div.warning
+{
+    position: relative;
+    padding: 0.5em;
+    border: 0.5pt solid white;
+}
+
+div.tip .title, div.note .title, div.warning .title
+{
+    display: block;
+    font: bold xx-small sans-serif;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: -4em;
+    top: 0em;
+    height: 25px;
+    width: 24px;
+    text-indent: 32px;
+    overflow: hidden;
+    z-index: 2;
+}
+
+div.tip .title
+{
+    background: url(images/tip.png);
+}
+
+div.note .title
+{
+    background: url(images/note.png);
+}
+
+div.warning .title
+{
+    background: url(images/caution.png);
 }
 
 @media screen
 {
-   a{ color: blue; }
+    a
+    {
+        color: #005a9c;
+    }
 
-   th, .title, .refnamediv h2
-   {
-      background-color: lightskyblue;
-   }
+    a:visited
+    {
+        color: #9c5a9c;
+    }
 
-   span.title 
-   {
-     background-color: white;
-     font-size: 100%;
-     font-weight: normal;
-   }
+    /* Syntax Highlighting */
+    .keyword        { color: #0000AA; font-weight: bold; }
+    .identifier     {}
+    .special        { color: #707070; }
+    .preprocessor   { color: #402080; font-weight: bold; }
+    .char           { color: teal; }
+    .comment        { color: #800000; }
+    .string         { color: teal; }
+    .number         { color: teal; }
+    .copyright      { color: #666666; font-size: small; }
+    .white_bkd      { background-color: #FFFFFF; }
+    .dk_grey_bkd    { background-color: #999999; }
 
-   .section .section .title, .chapter .section .title, .table .title
-   {
-      background-color: white;
-   }
+    pre.synopsis
+    {
+        background-color: #f3f3f3;
+    }
 
-   .table table, div.informaltable table, .section-title
-   {
-      background-color: #EEE;
-   }
+    .programlisting, .screen
+    {
+        background-color: #f3f3f3;
+    }
 
-   .table table tr td, div.informaltable table tr td
-   {
-      background-color: #CCC;
-   }
+    /* Table of contents */
+    .toc
+    {
+        background-color: #f3f3f3;
+    }
 
-   .programlisting, .table-programlisting
-   {
-      background-color: #EED;
-      border:           0.2em ridge #EED;
-      padding:          1pc;
-   }
+    div.informaltable table tr td, div.table table tr td
+    {
+        background-color: #F3F3F3;
+        border: 1pt solid white;
+    }
 
-   .refsynopsisdiv
-   {
-      background-color: lightskyblue;
-      border:           0.2em ridge cyan;
-      padding:          1pc;
-      font-family:      Courier, Lucida Console;
-   }
+    div.informaltable table tr th, div.table table tr th
+    {
+        background-color: #e4e4e4;
+    }
 
-   .boost-head
-   {
-      background-color: #007F7F;
-      border:           0.1em outset #007F7F;
-   }
+    div.tip, div.note, div.warning
+    {
+        background-color: #F3F3F3;
+    }
 
-   .toc, .boost-toc
-   {
-      background-color: #DDD;
-      border:           0.2em ridge lightcoral;
-   }
-
-   table.boost-head tr td
-   {
-      border: 0.1em inset #007F7F;
-   }
-
-   .boost-headelem
-   {
-      color:       white;
-      font-family: Arial;
-      font-weight: bold;
-   }
+    span.highlight
+    {
+        color: #00A000;
+    }
 }
 
 @media print
 {
-   body{ text-align: justify; }
-   a{ color: black; }
-   table{ border: 0pc; }
+    a
+    {
+        color: black;
+    }
 
-   .boost-head, table.boost-head tr td
-   {
-      border: 0em;
-   }
+    a:visited
+    {
+        color: black;
+    }
 
-   .toc{ border: 0.2em solid black; }
+    .spirit-nav
+    {
+        display: none;
+    }
 
-   .table tr td, .table tr th
-   {
-      border: 0.1em solid black;
-   }
+    /* Syntax Highlighting */
+    .keyword
+    {
+        font-weight: bold;
+    }
+
+    pre.synopsis
+    {
+        border: 1px solid gray;
+    }
+
+    .programlisting, .screen
+    {
+        border: 1px solid gray;
+    }
+
+    /* Table of contents */
+    .toc
+    {
+        border: 1px solid gray;
+    }
+
+    .informaltable table, .table table
+    {
+        border: 1px solid gray;
+        border-collapse: collapse;
+    }
+
+    div.informaltable table tr td, div.table table tr td
+    {
+        border: 1px solid gray;
+    }
+
+    div.informaltable table tr th, div.table table tr th
+    {
+        border: 1px solid gray;
+    }
+
+    div.tip, div.note, div.warning
+    {
+        border: 1px solid gray;
+    }
+
+    span.highlight
+    {
+        font-weight: bold;
+    }
 }
-
