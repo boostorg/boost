@@ -101,6 +101,7 @@ struct configuration
 configuration parse_command_line(char **first, char **last)
 {
   configuration cfg;
+  bool output_redirected = false;
   for( ; first != last; ++first) {
     std::string arg = *first;
     if(arg == "--config") {
@@ -111,6 +112,7 @@ configuration parse_command_line(char **first, char **last)
       cfg.boostpath = *++first;
     } else if(arg == "-o" || arg == "--output") {
       cfg.html_output = *++first;
+      output_redirected = true;
     } else if(arg == "--compiler") {
       cfg.compiler = *++first;
     } else if(arg.substr(0,1) == "-") {
@@ -131,6 +133,11 @@ configuration parse_command_line(char **first, char **last)
 	cfg.test += std::string(*first) + " ";
       break;
     }
+  }
+  if(cfg.test != "" && !output_redirected) {
+    std::cerr << "Error: Please specify the HTML output file explicitly\n"
+	      << "(using \"--output file\") when running a single test only.\n";
+    std::exit(1);
   }
   return cfg;
 }
