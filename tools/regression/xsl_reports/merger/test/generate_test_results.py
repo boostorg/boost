@@ -15,7 +15,6 @@ def make_test_results():
     for i_runner in range( 0, number_of_runners ):
         runner_id = "runner_%02d" % i_runner
         g = xml.sax.saxutils.XMLGenerator( open( os.path.join( "1_30_0", runner_id + ".xml" ), "w" ) )
-        g.startElement( "all-test-runs", {} )
         platform = "Win32"
         g.startElement( "test-run", { "platform": platform, "runner": runner_id } )
         for i_lib in range( 0, number_of_libs ):
