@@ -8,96 +8,233 @@ subproject status ;
 
 # ----------- Jam rules for testing; test invocations at bottom ----------------#
 
-# boost-test sources : type : requirements [ : name ]
+#######################################################################################
+# Tests generate a number of files reflecting their status in the subvariant-directory
 #
+# <test-name>.test -    a marker so that Jam knows when it needs to be
+#                       rebuilt.  It will contain the paths from this
+#                       directory to the source files used for the test
+#
+# <test-name>.success - present only if the test last succeeded. 
+#                       Contains the string "succeeded"
+#
+# <test-name>.failure - present only if the test last failed. Contains the string
+#                       "failed".
+#
+# <test-name>.output -  contains the output of the test if it was a run test.
+#######################################################################################
+
+
+
 # Declares a test target. If name is not supplied, it is taken from the name of
 # the first source file, sans extension and directory path.
 #
 # type should be a target type (e.g. OBJ, DLL, LIB, EXE)
 #
 # RETURNS the name(s) of the generated test target(s).
-rule boost-test
+rule boost-test ( sources + : target-type : requirements * : test-name ? )
 {
     local result ;
     {
-        local requirements = $(3) ;
-        local name = $(4) ;
-        name ?= $(<[1]:D=:S=) ;
+        # manufacture a test name if none supplied explicitly
+        test-name ?= $(sources[1]:D=:S=) ;
 
         # Make sure that targets don't become part of "all"
         local gSUPPRESS_FAKE_TARGETS = true ;
         
         result = [
-            declare-local-target $(name)
-            : $(<:R=$(BOOST_ROOT)) # sources
+            declare-local-target $(test-name)
+            : $(sources:R=$(BOOST_ROOT)) # sources
             : $(requirements) <include>$(BOOST_ROOT) # requirements
             :             # default build
-            : $(>)     # target type
+            : $(target-type)
         ] ;
     }
+    
     Clean clean : $(result) ;
-    type-DEPENDS $(<:B:S=) : $(result) ;
+    
+    # make NOTFILE targets of the same base name as the sources which can
+    # be used to build a single test.
+    type-DEPENDS $(sources:B:S=) : $(result) ;
+    
+    # The NOTFILE target called "test" builds all tests
     type-DEPENDS test : $(result) ;
+    
     return $(result) ;
 }
 
 #######
 
-# failed-test-file test-file : fail-to-build-file
-#
+BOOST_TEST_SUFFIX ?= .test ;
+
 # a utility rule which causes test-file to be built successfully, only if
-# fail-to-build-file fails to build. Used for expected-failure tests.
-rule failed-test-file
+# dependency fails to build. Used for expected-failure tests.
+rule failed-test-file ( test-file : dependency + )
 {
-    DEPENDS $(<) : $(>) ;
-    FAIL_EXPECTED $(>) ;
-}
-# to avoid building the test-file when it's actually up-to-date,
-# we need to put something in place of the thing it depends on.
-actions failed-test-file
-{
-    echo building "$(>)" failed as expected > $(>)
-    echo building "$(>)" failed as expected > $(<)
+    catenate-output-on-failure $(test-file) : $(dependency[1]) ;
+    DEPENDS $(test-file) : $(dependency) ;
+    NOCARE $(dependency) ;
+    TEMPORARY $(dependency) ;
 }
 
-# declare-build-fail-test test-type : dependency-type
-#
-# A utility rule which declares test-type to be a target type which depends on
-# the /failed/ construction of a target of type dependency-type.
-rule declare-build-fail-test
+# a utility rule which causes test-file to be built successfully, only if
+# dependency builds. Used for expected-failure tests.
+rule succeeded-test-file ( test-file : dependency + )
 {
-    gGENERATOR_FUNCTION($(<)) = fail-to-build ;
-    gDEPENDENCY_TYPE($(<)) = $(>) ;
-    SUF$(<) = .fail ;
+    catenate-output-on-failure $(test-file) : $(dependency[1]) ;
+    DEPENDS $(test-file) : $(dependency) ;
+    NOCARE $(dependency) ;
+    TEMPORARY $(dependency) ;
 }
 
-# fail-to-build target.test : sources : requirements
-#
+rule catenate-output-on-failure ( test-file : dependency )
+{
+    if $(gTEST_OUTPUT_FILE($(dependency)))
+    {
+        output-file on $(test-file) = $(gTEST_OUTPUT_FILE($(dependency))) ;
+    }
+}
+
+if $(NT)
+{
+    CATENATE1 = "if exist \"" ;
+    CATENATE2 = "\" ( type \"" ;
+    CATENATE3 = "\"
+ECHO ****************************************************** )" ;
+    
+    actions failed-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > $(<:S=.test)
+        if EXIST "$(>)". (
+          if EXIST "$(<:S=.success)". del /f/q "$(<:S=.success)".
+          echo "failed" > "$(<:S=.failure)"
+            
+          echo *
+          echo ***************** failed above test: $(<:B:S=) ********************
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo *
+        ) ELSE (
+          if EXIST "$(<:S=.failure)". del /f/q "$(<:S=.failure)".
+          echo succeeded > "$(<:S=.success)"
+        )
+    }
+
+    actions succeeded-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > $(<:S=.test)
+        if EXIST "$(>)". (
+          if EXIST "$(<:S=.failure)". del /f/q "$(<:S=.failure)".
+          echo succeeded > "$(<:S=.success)"
+        ) ELSE (
+          if EXIST "$(<:S=.success)". del /f/q "$(<:S=.success)".
+          echo failed > "$(<:S=.failure)"
+            
+          echo *
+          echo ***************** failed above test: $(<:B:S=) ********************
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo *
+        )
+    }
+}
+else
+{
+    CATENATE = "cat " ;
+    CATENATE1 = "if [ -a \"" ;
+    CATENATE2 = "\" ] ; then
+      cat \"" ;
+    CATENATE3 = "\" ; echo ******************************************************
+      fi" ;
+    
+    actions failed-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > $(<:S=.test)
+        if [ -a "$(>)" ] ; then
+          if [ -a "$(<:S=.success)" ] ; then
+                $(RM) "$(<:S=.success)"
+          fi
+          echo "failed" > $(<:S=.failure)
+          echo "*"
+          echo "***************** failed above test: $(<:B:S=) ********************"
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo "*"
+        else
+          if [ -a "$(<:S=.failure)" ] ; then
+                $(RM) "$(<:S=.failure)"
+          fi
+          echo "succeeded" > "$(<:S=.success)" 
+        fi
+    }
+
+    actions succeeded-test-file bind output-file source-files
+    {
+        echo "$(source-files)" > "$(<:S=.test)"
+        if [ -a "$(>)" ] ; then
+          if [ -a "$(<:S=.failure)" ] ; then
+                $(RM) "$(<:S=.failure)"
+          fi
+          echo "succeeded" > "$(<:S=.success)"
+        else
+          if [ -a "$(<:S=.success)" ] ; then
+                $(RM) "$(<:S=.success)" 
+          fi
+          echo "failed" > "$(<:S=.failure)"
+          echo "*"
+          echo "***************** failed above test: $(<:B:S=) ********************"
+          $(CATENATE1)$(output-file)$(CATENATE2)$(output-file)$(CATENATE3)
+          echo "*"
+        fi
+    }
+}
+
+rule declare-build-succeed-test ( test-type : dependency-type )
+{
+    gGENERATOR_FUNCTION($(test-type)) = build-test succeeded-test-file ;
+    gDEPENDENCY_TYPE($(test-type)) = $(dependency-type) ;
+    SUF$(test-type) = $(BOOST_TEST_SUFFIX) ;
+}
+
+# A utility rule which declares test-type to be a target type which
+# depends on the /failed/ construction of a target of type
+# dependency-type.
+rule declare-build-fail-test ( test-type : dependency-type )
+{
+    gGENERATOR_FUNCTION($(test-type)) = build-test failed-test-file ;
+    gDEPENDENCY_TYPE($(test-type)) = $(dependency-type) ;
+    SUF$(test-type) = $(BOOST_TEST_SUFFIX) ;
+}
+
 # A target generator function for target types declared with
 # declare-build-fail-test, above.
-rule fail-to-build
+rule build-test ( test-file-generator test-file + : sources + : requirements * )
 {
     # Get the target type of the current target out of the build properties
     local target-type = [ get-values <target-type> : $(gBUILD_PROPERTIES) ] ;
 
-    # Get the type of target which will (hopefully) fail to build.
+    # Get the type of target to attempt to build; the outcome of this
+    # attempt determines the result of the test.
     local dependency-type = $(gDEPENDENCY_TYPE($(target-type))) ;
+    
+    # Get the actual name of the target to attempt to build
+    local dependency = $(test-file[1]:S=$(SUF$(dependency-type))) ;
 
-    # Get the actual name of the target which should fail to build
-    local fail-target = $(<[1]:S=$(SUF$(dependency-type))) ;
-
-    # Call dependency-type's generator function to (fail to) build the target
+    # record the source file names so we can put them in the .test
+    # file.
+    source-files on $(test-file) = $(sources) ;
+    
+    # Call dependency-type's generator function to attempt the build
     local ignored = [
-        $(gGENERATOR_FUNCTION($(dependency-type))) $(fail-target) : $(>) : $(3) ] ;
+        $(gGENERATOR_FUNCTION($(dependency-type))) $(dependency) : $(>) : $(3) ] ;
 
     # Generator functions don't handle this job for us; perhaps they should.
-    set-target-variables $(fail-target)
+    set-target-variables $(dependency) ;
     
     # The .test file goes with the other subvariant targets
-    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.test) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.success) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.failure) : $(LOCATE_TARGET) ;
 
-    # Establish the dependency
-    failed-test-file $(<) : $(fail-target) ;
+    # Generate the test file
+    $(test-file-generator) $(test-file) : $(dependency) ;
 }
 
 ### Rules for testing whether a file compiles ###
@@ -106,11 +243,12 @@ rule fail-to-build
 # into basic build system, but wasn't needed 'till now.
 gGENERATOR_FUNCTION(OBJ) = Object ;
 declare-build-fail-test COMPILE_FAIL : OBJ ;
+declare-build-succeed-test COMPILE : OBJ ;
 
 # Test that the given source-file(s) compile
 rule compile # source-file : fail : requirements
 {
-    return [ boost-test $(<) : OBJ : $(3) ] ;
+    return [ boost-test $(<) : COMPILE : $(3) ] ;
 }
 
 # Test that the given source-file(s) fail to compile
@@ -123,20 +261,13 @@ rule compile-fail # source-file : requirements
 ### Rules for testing whether a program runs ###
 
 gGENERATOR_FUNCTION(RUN_TEST) = run-test ;
-SUFRUN_TEST = .test ;
+SUFRUN_TEST = .run ;
 rule run-test # target : sources : requirements
 {
     local executable = $(<:S=$(SUFEXE)) ; 
     executable-file $(executable) : $(>) : $(3) ;
     set-target-variables $(executable) ;
     
-    # Ugly hack to get the pathes transferred. See the link rule in boost-base.jam.
-    RUN_PATH on $(<) = [ join $(gRUN_PATH($(executable))) $(RUN_PATH) : $(SPLITPATH) ] ;
-    if $(UNIX) 
-    {
-    	RUN_LD_LIBRARY_PATH on $(<) = [ join $(gRUN_LD_LIBRARY_PATH($(executable))) $(RUN_LD_LIBRARY_PATH) : $(SPLITPATH) ] ;
-    }
-
     # The .test file goes with the other subvariant targets
     # normalization is a hack to get the slashes going the right way on Windoze
     local LOCATE_TARGET = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
@@ -154,41 +285,60 @@ rule run-test # target : sources : requirements
 }
 
 # The rule is just used for argument checking
-rule capture-run-output ( target : executable + ) { }
+rule capture-run-output ( target : executable + )
+{
+    gTEST_OUTPUT_FILE($(target)) = $(target:S=.output) ;
+    INCLUDES $(target) : $(target:S=.output) ;
+    MakeLocate $(test-file:S=.failure) : $(LOCATE_TARGET) ;
+    MakeLocate $(test-file:S=.output) : $(LOCATE_TARGET) ;
+    capture-run-output1 $(target) : $(executable) ;
+}
+
+rule capture-run-output1 ( target : executable )
+{
+    output-file on $(target) = $(target:S=.output) ;
+    local targets = $(target) $(target:S=.output) ;
+    
+    RUN_PATH on $(targets) = [ join $(gRUN_PATH($(executable))) : $(SPLITPATH) ] ;
+    if $(UNIX) 
+    {
+    	RUN_LD_LIBRARY_PATH on $(targets) = [ join $(gRUN_LD_LIBRARY_PATH($(executable))) : $(SPLITPATH) ] ;
+    }
+}
+
+
+
 if $(UNIX)  
 {
-    actions capture-run-output bind INPUT_FILES
+    actions capture-run-output1 bind INPUT_FILES output-file
     {
-        $(SHELL_SET)PATH=$(RUN_PATH) 
+        $(SHELL_SET)PATH=$(RUN_PATH):$PATH
     	$(SHELL_EXPORT)PATH
-    	$(SHELL_SET)LD_LIBRARY_PATH=$(RUN_LD_LIBRARY_PATH)
+    	$(SHELL_SET)LD_LIBRARY_PATH=$(RUN_LD_LIBRARY_PATH):$LD_LIBRARY_PATH
     	$(SHELL_EXPORT)LD_LIBRARY_PATH
-        $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
-        $(CP) $(<:S=.error) $(<)
-        $(RM) $(<:S=.error)
+        $(>) $(ARGS) $(INPUT_FILES) > $(output-file) 2>&1 && $(CP) $(output-file) $(<[1])
     }
 }
 else
 {
-    actions capture-run-output bind INPUT_FILES
+    actions capture-run-output1 bind INPUT_FILES output-file
     {
-        $(SHELL_SET)PATH=$(RUN_PATH) 
+        $(SHELL_SET)PATH=$(RUN_PATH);%PATH%
         $(SHELL_EXPORT)PATH
-        $(>) $(ARGS) $(INPUT_FILES) > $(<:S=.error)
-        $(CP) $(<:S=.error) $(<)
-        $(RM) $(<:S=.error)
+        $(>) $(ARGS) $(INPUT_FILES) > $(output-file) 2>&1 && $(CP) $(output-file) $(<[1])
     }
 }
 
+declare-build-fail-test RUN_FAIL : RUN_TEST ;
+declare-build-succeed-test RUN : RUN_TEST ;
 rule run # sources : args : input-files : requirements
 {
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    return [ boost-test $(<) : RUN_TEST : $(4) ] ;
+    return [ boost-test $(<) : RUN : $(4) ] ;
 }
 
-declare-build-fail-test RUN_FAIL : RUN_TEST ;
 rule run-fail # sources : args : input-files : requirements
 {
     local gRUN_TEST_ARGS = $(2) ;
