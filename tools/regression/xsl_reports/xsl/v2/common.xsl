@@ -253,15 +253,6 @@
         </func:result>
     </func:function>
 
-    <xsl:template name="insert_platforms_row">
-        <xsl:variable name="colspan">
-            <xsl:choose>
-                <xsl:when test="$mode = 'summary'">1</xsl:when>
-                <xsl:when test="$mode = 'details'">2</xsl:when>
-            </xsl:choose>
-        </xsl:variable>
-
-    </xsl:template>
 
     <xsl:template name="insert_runners_rows">
         <xsl:param name="mode"/>
@@ -279,9 +270,11 @@
             <tr>
                 <td colspan="{$colspan}">&#160;</td>
                 <xsl:for-each select="$run_toolsets/platforms/platform">
-                    <td colspan="{count(./runs/run/toolset)}" class="runner">
-                        <xsl:value-of select="@name"/>
-                    </td>
+                    <xsl:if test="count(./runs/run/toolset) &gt; 0">
+                        <td colspan="{count(./runs/run/toolset)}" class="runner">
+                            <xsl:value-of select="@name"/>
+                        </td>
+                    </xsl:if>
                 </xsl:for-each>
                 <td colspan="{$colspan}">&#160;</td>
             </tr>
@@ -311,9 +304,11 @@
             <tr>
                 <td colspan="{$colspan}">&#160;</td>
                 <xsl:for-each select="$run_toolsets/platforms/platform">
-                    <td colspan="{count(./runs/run/toolset)}" class="runner">
-                        <xsl:value-of select="@name"/>
-                    </td>
+                    <xsl:if test="count(./runs/run/toolset) &gt; 0">
+                        <td colspan="{count(./runs/run/toolset)}" class="runner">
+                            <xsl:value-of select="@name"/>
+                        </td>
+                    </xsl:if>
                 </xsl:for-each>
                 <td colspan="{$colspan}">&#160;</td>
             </tr>
