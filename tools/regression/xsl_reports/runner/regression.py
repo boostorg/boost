@@ -40,7 +40,7 @@ if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
     bjam[ 'build_cmd' ] = lambda toolset: 'build.bat %s' % toolset
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
-    process_jam_log[ 'default_toolset' ] = 'vc7.1'
+    process_jam_log[ 'default_toolset' ] = 'vc-7_1'
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
