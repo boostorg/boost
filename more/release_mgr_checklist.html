@@ -191,7 +191,7 @@ plan is to replace them with more generic procedures over time.</p>
   <li>Complete the SourceForge
   <a href="http://sourceforge.net/docman/display_doc.php?docid=6445&group_id=1#createrelease">
   release procedure</a>.<ul>
-  <li>Admin | Edit Packages: Add Release for package name boost</li>
+  <li>Admin | File Releases | Add Release for package name boost</li>
   <li>New release name: 1.21.2 | create this release</li>
   <li>Step 1: paste in release notes (in HTML). <b>Be sure to note difference 
   between .zip and .gz/bz2 files.</b> Submit/Refresh</li>
@@ -204,33 +204,34 @@ plan is to replace them with more generic procedures over time.</p>
 </ul>
   </li>
   <li><i><b>Consider putting up a temporary &quot;Update in progress&quot; root/index.html 
-  during site update</b></i><br>
-&nbsp;</li>
-  <li>Update the web site using WS_FTP Pro (64.226.201.52).<ul>
-  <li>Start keep_isdn_awake</li>
-  <li>Local system: c:\boost\boost_n.n.n</li>
-  <li>Tools | Synchronize | Control file name:<ul>
-  <li>boost_people (use &quot;Test script only&quot; first to verify all is working.)</li>
-  <li>boost_more</li>
-  <li>boost_status</li>
-  <li>boost_tools</li>
-  <li>boost_doc</li>
-  <li>boost_libs</li>
-  <li>boost_boost</li>
-</ul>
-  </li>
-  <li>Connection: boost</li>
-  <li>Update the root director (drag and drop files and directories) [Do the root directory last!&nbsp; This requested by users who happened to 
-  connect during site updates.]</li>
-  <li>Top level directory seems to copy files unnecessarily. Doesn't happened in 
-  when whole sub-dir is drag and dropped.<br>
-  At end of a file transfer, it is not unusual for there to be a 30-45 second 
-  hang. This is not a sign of failure.</li>
-  <li>Inspect  index, etc dates</li>
-  <li>Disconnect.</li>
-  <li>Stop keep_isdn_awake<br>
-&nbsp;</li>
-</ul>
+  during site update<br>
+&nbsp;</b></i></li>
+  <li>Update the web site:<pre>cd ...\boost_1_28_0
+tar -cf site.tar *
+bzip2 -k site.tar
+
+dir site.tar.bz2
+pscp site.tar.bz2 beman_dawes@shell1.sourceforge.net:/home/groups/b/bo/boost/htdocs/
+
+keep_idsn_awake in another window.
+
+c:\bgd\util\putty\plink.exe beman_dawes@shell.sourceforge.net
+cd /home/groups/b/bo/boost/htdocs
+pwd
+ls -l site.tar.bz2
+
+rm -fr boost
+rm -fr doc
+rm -fr libs
+rm -fr more
+rm -fr people
+rm -fr status
+rm -fr tools
+bunzip2 -kc site.tar.bz2 | tar -x 
+ls
+exit
+
+stop keep_isdn_awake</pre>
   </li>
   <li>Check actual <a href="http://www.boost.org">www.boost.org</a> site with 
   browser. Look at a bunch of files that should have been updated to make sure 
@@ -257,7 +258,7 @@ plan is to replace them with more generic procedures over time.</p>
 </ul>
 <hr>
 <p>Revised:
-<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->26 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->04 February, 2004<!--webbot bot="Timestamp" endspan i-checksum="40405" --></p>
 <p>© Copyright Beman Dawes 2001</p>
 
 <p>Use, modification, and distribution are subject to the Boost Software License, 
