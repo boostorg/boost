@@ -260,13 +260,13 @@
                       <xsl:when test="$mode='user'">
                         <xsl:call-template name="insert_cell_user">
                           <xsl:with-param name="test_log" select="."/>
-                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, ' ', $toolset )"/>
+                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
                         </xsl:call-template>
                       </xsl:when>
                       <xsl:when test="$mode='developer'">
                         <xsl:call-template name="insert_cell_developer">
                           <xsl:with-param name="test_log" select="."/>
-                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, ' ', $toolset )"/>
+                          <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
                         </xsl:call-template>
                       </xsl:when>
                     </xsl:choose>
