@@ -3,6 +3,7 @@ from accept_args import *
 from char_translation_table import *
 from check_existance import *
 from checked_system import *
+from ftp import *
 from libxslt import *
 from log import *
 from makedirs import *
