@@ -68,13 +68,13 @@ def compile( program ):
 
   if sys.platform == "linux2": 
     if compiler_arg == "*" or compiler_arg == "gcc":
-      invoke( "GCC 2.95.2", 'g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
+      invoke( "GCC 2.95.2", 'g++ -ftemplate-depth-30 -c -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "gcc-stlport":
-      invoke( "GCC 2.95.2 STLport 4.0", 'g++ -V 2.95.2-stlport -ftemplate-depth-30 -I' + path + ' ' + fullpath )
+      invoke( "GCC 2.95.2 STLport 4.0", 'g++ -V 2.95.2-stlport -c -ftemplate-depth-30 -I' + path + ' ' + fullpath )
 #    if compiler_arg == "*" or compiler_arg == "gcc-exp":
 #      invoke( "GCC pre-2.96 experimental", '/opt/exp/gcc/bin/g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "como":
-      invoke( "Comeau C++ 4.2.44 beta3", 'como -I' + path + ' ' + fullpath)
+      invoke( "Comeau C++ 4.2.44 beta3", 'como -c -I' + path + ' ' + fullpath)
 
 # ----------  Windows ---------- #
 
