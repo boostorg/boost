@@ -85,9 +85,34 @@
       <html>
           <head>
               <link rel="stylesheet" type="text/css" href="master.css" title="master" />
-              <title>Boost not resolved issues: <xsl:value-of select="$source"/></title>
+              <title>Boost regression - unresolved issues: <xsl:value-of select="$source"/></title>
           </head>
           <body>
+              <!-- header -->
+              <div>
+                <table border="0">
+                  <tr>
+                    <td><img border="0" src="../../c++boost.gif" width="277" height="86" alt="Boost logo"></img></td>
+                    <td>
+                      <h1 class="page-title">
+                        <xsl:text>Unresolved Issues: </xsl:text>
+                        <xsl:value-of select="$source"/>
+                      </h1>
+
+                      <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+                    </td>
+                  </tr>
+                </table>
+                <table border="0" class="header-table">
+                  <tr>
+                    <td class="header-item">Purpose</td>
+                    <td class="header-item-content">
+                      Provides a list of current unresolved test failures. 
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
               <table>
                   <xsl:for-each select="$libraries">
                       <xsl:sort select="." order="ascending"/>
@@ -112,27 +137,34 @@
                               <xsl:variable name="unexpected_toolsets" select="$library_tests[ @test-name = $test_name and not (meta:is_unusable( $explicit_markup, $library, @toolset )) ]/@toolset"/>
                               
                               <xsl:if test="count( $unexpected_toolsets ) > 0">
-                                <xsl:variable name="test_program"  select="$library_tests[@test-name = $test_name]/@test-program"/>
+                                  <xsl:variable name="test_program"  select="$library_tests[@test-name = $test_name]/@test-program"/>
                                   <tr>
                                       <td class="test-name">
-                                        <a href="../../{$test_program}" class="test-link">
-                                          <xsl:value-of select="$test_name"/>
-                                        </a>
+                                          <a href="../../{$test_program}" class="test-link">
+                                              <xsl:value-of select="$test_name"/>
+                                          </a>
                                       </td>
                                       <td>
                                           <xsl:for-each select="$unexpected_toolsets">
                                               <xsl:sort select="." order="ascending"/>
                                               <xsl:variable name="toolset" select="."/>
                                               <xsl:variable name="test_result" select="$library_tests[@test-name = $test_name and @toolset = $toolset]"/>
-
-                                              <xsl:if test="position() > 1">,&#160;</xsl:if>
                                               <xsl:variable name="log_link" select="meta:output_file_path( $test_result/@target-directory )"/>
-                                              <xsl:if test="$test_result/@is-new = 'yes'">
-                                                <xsl:text></xsl:text>
-                                              </xsl:if>
-                                              <a href="{$log_link}" class="log-link">
-                                                <xsl:value-of select="."/>
-                                              </a>
+                                              <xsl:variable name="class">
+                                                  <xsl:choose>
+                                                      <xsl:when test="$test_result/@is-new = 'yes'">
+                                                           <xsl:text>issue-new</xsl:text>
+                                                      </xsl:when>
+                                                      <xsl:otherwise>
+                                                           <xsl:text>issue</xsl:text>
+                                                      </xsl:otherwise>
+                                                  </xsl:choose>
+                                              </xsl:variable>
+                                              <span class="{$class}">
+                                                  <a href="{$log_link}" class="log-link">
+                                                      <xsl:value-of select="."/>
+                                                  </a>
+                                              </span>
                                           </xsl:for-each>
                                       </td>
                                   </tr>
