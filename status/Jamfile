@@ -246,23 +246,47 @@ include testing.jam ;
 
     {
         local threadmon ;
+        local thread-sources ;
+        local thread-requirements ;
+
         if $(NT)
         {
             threadmon = <dll>../libs/thread/build/boost_threadmon ;
         }
 
+        thread-sources = <lib>../libs/thread/build/boost_thread
+          <lib>../libs/test/build/unit_test_framework
+          $(threadmon)
+        ;
+        thread-requirements = <threading>multi ;
+
         test-suite threads
-          : [
-            run libs/thread/test/test_thread.cpp
-              <lib>../libs/thread/build/boost_thread
-              <lib>../libs/test/build/unit_test_framework
-              $(threadmon)
+          : [ run libs/thread/test/test_thread.cpp $(thread-sources)
                 : #args
                 : #input-files
-                : #requirements
-                <threading>multi
-          ]
-            ;
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_mutex.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_condition.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_tss.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_once.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+        ;
     }
 
 
