@@ -56,7 +56,7 @@
         </xsl:variable>
 
         <xsl:variable name="expected_results_test_case" select="$expected_results//*/test-result[ @library=$library and ( @test-name=$test-name or @test-name='*' ) and @toolset = $toolset]"/>
-        <xsl:variable name="failures_markup" select="$failures_markup//library[@name=$library]/test[meta:re_match(@name, $test-name)]/mark-failure[  ( toolset/@name = $toolset or toolset/@name = '*' ) ]"/>
+        <xsl:variable name="failures_markup" select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]/mark-failure[ meta:re_match( toolset/@name, $toolset ) ]"/>
         <xsl:variable name="is_new">
             <xsl:choose>
                 <xsl:when test="$expected_results_test_case">
