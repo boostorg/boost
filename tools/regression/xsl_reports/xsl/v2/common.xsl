@@ -17,7 +17,7 @@ http://www.boost.org/LICENSE_1_0.txt)
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func"
-    exclude-result-prefixes="exsl func str meta"
+    exclude-result-prefixes="exsl func str set meta"
     version="1.0">
 
     <xsl:variable name="output_directory" select="'output'"/>
@@ -200,9 +200,12 @@ http://www.boost.org/LICENSE_1_0.txt)
     </func:function>
 
     <func:function name="meta:show_output">
-        <xsl:param name="explicit_markup"/>     
-        <xsl:param name="test_log"/>     
-        <func:result select="$test_log/@result != 'success' and not( meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset )) or $test_log/@show-run-output = 'true'"/>
+        <xsl:param name="explicit_markup"/>
+        <xsl:param name="test_log"/>
+        <func:result select="( $test_log/@result != 'success' or $test_log/@show-run-output = 'true' or
+                                $test_log/@result = 'success'  and $test_log/@status = 'unexpected' )
+                            and not( meta:is_unusable( $explicit_markup, $test_log/@library, $test_log/@toolset ) )
+                            "/>
     </func:function>
 
     <func:function name="meta:show_toolset">

@@ -85,7 +85,7 @@ http://www.boost.org/LICENSE_1_0.txt)
               
             <xsl:if test="compile">
                 <p>
-                <div class="log-compiler-output-title">Compiler output [<xsl:value-of select="@timestamp"/>]:
+                <div class="log-compiler-output-title">Compiler output [<xsl:value-of select="compile/@timestamp"/>]:
                 </div>
                 <pre>
                     <xsl:copy-of select="compile/node()"/>
@@ -95,7 +95,7 @@ http://www.boost.org/LICENSE_1_0.txt)
               
             <xsl:if test="link">
                 <p>
-                <div class="log-linker-output-title">Linker output [<xsl:value-of select="@timestamp"/>]:</div>
+                <div class="log-linker-output-title">Linker output [<xsl:value-of select="link/@timestamp"/>]:</div>
                 <pre>
                     <xsl:copy-of select="link/node()"/>
                 </pre>
@@ -104,7 +104,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
             <xsl:if test="lib">
                 <p>
-                <div class="log-linker-output-title">Lib output [<xsl:value-of select="@timestamp"/>]:</div>
+                <div class="log-linker-output-title">Lib output [<xsl:value-of select="lib/@timestamp"/>]:</div>
                 <p>
                     See <a href="{meta:encode_path( concat( ../@runner, '-',  lib/node() )  ) }.html">
                     <xsl:copy-of select="lib/node()"/>
@@ -115,7 +115,7 @@ http://www.boost.org/LICENSE_1_0.txt)
               
             <xsl:if test="run">
                 <p>
-                <div class="log-run-output-title">Run output [<xsl:value-of select="@timestamp"/>]:</div>
+                <div class="log-run-output-title">Run output [<xsl:value-of select="run/@timestamp"/>]:</div>
                 <pre>
                     <xsl:copy-of select="run/node()"/>
                 </pre>
