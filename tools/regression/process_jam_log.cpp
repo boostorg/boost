@@ -410,7 +410,7 @@ int cpp_main( int argc, char ** argv )
       info.always_show_run_output
         = line.find( "\"always_show_run_output\"" ) != string::npos;
       info.type = line.substr( 11, line.find( ')' )-11 );
-      for (int i = 0; i!=info.type.size(); ++i )
+      for (unsigned int i = 0; i!=info.type.size(); ++i )
         { info.type[i] = std::tolower( info.type[i] ); }
       pos = line.find( ':' );
       info.file_path = line.substr( pos+3,
