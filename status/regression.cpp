@@ -12,6 +12,7 @@
  *
  * See http://www.boost.org for most recent version including documentation.
  *
+ *  2001-01-23  made it compile with Borland (David Abrahams)
  *  2001-01-22  added --diff option (Jens Maurer)
  */
 
@@ -384,7 +385,7 @@ void do_tests(std::ostream & out,
     previous_results_type::const_iterator prev_iter =
       previous_results.find(file);
     std::string previous = (prev_iter == previous_results.end() ?
-			    "" : prev_iter->second);
+			    std::string("") : prev_iter->second);
     std::string::size_type i = 0;
 
     for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it, ++i) {
