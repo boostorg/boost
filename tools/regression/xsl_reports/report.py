@@ -34,7 +34,7 @@ def log_level():
  
 
 def stdlog( message ):
-    sys.stderr.write( '# ' + '    ' * log_level() +  message + '\n' );
+    sys.stderr.write( '# ' + '    ' * log_level() +  message + '\n' )
     sys.stderr.flush()
 
 log = stdlog
@@ -54,31 +54,28 @@ def checked_system( commands ):
     return rc
 
 
-def set_char( str, index, char ):
-    return str[ 0 : index ] + char + str[ index + 1: ]
+def chr_or_question_mark( c ):
+    if chr(c) in string.printable and c < 128 and c not in ( 0x09, 0x0b, 0x0c ):
+        return chr(c)
+    else:
+        return '?'
+
+char_translation_table = string.maketrans( 
+      ''.join( map( chr, range(0, 256) ) )
+    , ''.join( map( chr_or_question_mark, range(0, 256) ) )
+    )
 
 
 def process_xml_file( input_file, output_file ):
     log( 'Processing test log "%s"' % input_file )
     
     f = open( input_file, 'r' )
-    xml = f.readlines();
+    xml = f.readlines()
     f.close()
     
-    ascii_chars = ''.join(map(chr, range(0,128)))
-    nonascii_chars = ''.join(map(chr, range(128,256)))
-    translated_ascii_chars = ''.join( map( lambda x: '?', range(128,256)))
-    for i in string.printable:
-        if ( ord( i ) < 128 and ord(i) not in ( 12, ) ):
-            translated_ascii_chars = set_char( translated_ascii_chars, ord(i), i )
-        
-    translated_nonascii_chars = ''.join( map( lambda x: '?', range(128,256) ) )
-    
-    mask_nonascii_translation_table = string.maketrans( ascii_chars + nonascii_chars
-                                                        , translated_ascii_chars + translated_nonascii_chars
-                                                        )
     for i in range( 0, len(xml)):
-        xml[i] = string.translate( xml[i], mask_nonascii_translation_table )
+        xml[i] = string.translate( xml[i], char_translation_table )
+
     output_file.writelines( xml )
 
 
@@ -92,10 +89,10 @@ def collect_test_logs( input_dirs, output_file ):
     __log__ = 1
     log( 'Collecting test logs ...' )
     f = open( output_file, 'w+' )
-    f.write( '<tests>\n' );
+    f.write( '<tests>\n' )
     for input_dir in input_dirs:
-        os.path.walk( input_dir, process_test_log_files, f );
-    f.write( '</tests>\n' );
+        os.path.walk( input_dir, process_test_log_files, f )
+    f.write( '</tests>\n' )
     f.close()
 
 
@@ -242,7 +239,7 @@ def make_result_pages( test_results_file
                             , 'expected_results_file': expected_results_file
                             , 'explicit_markup_file' : failures_markup_file
                             }
-                        );
+                        )
 
 
     for mode in ( 'developer', 'user' ):
@@ -257,7 +254,7 @@ def make_result_pages( test_results_file
                             , 'comment_file': comment_file
                             , 'explicit_markup_file' : failures_markup_file
                             }
-                        );
+                        )
 
     if 'e' in reports:
         log( '    Generating expected_results ...' )
