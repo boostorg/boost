@@ -70,7 +70,7 @@ def compile( program ):
     if compiler_arg == "*" or compiler_arg == "gcc-stlport":
       invoke( "GCC 2.95.2 STLport 4.0b8", 'g++ -V 2.95.2-stlport -ftemplate-depth-30 -I' + path + ' ' + fullpath )
 #    if compiler_arg == "*" or compiler_arg == "gcc-exp":
-#      invoke( "GCC 2.96-xxx experimental", '/opt/exp/gcc/bin/gcc -ftemplate-depth-30 -I' + path + ' ' + fullpath )
+#      invoke( "GCC pre-2.96 experimental", '/opt/exp/gcc/bin/g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
   else:
     if compiler_arg=="*" or compiler_arg=="bcc54":
       bcc54_path=os.environ["BOOST_BCC54_PATH"]
@@ -165,7 +165,7 @@ if sys.platform == "linux2":
   if compiler_arg == "*" or compiler_arg == "gcc-stlport":
     f.write( "<td>GNU<br>GCC<br>2.95.2<br>STLport<br>4.0 beta 8</td>\n" )
 #  if compiler_arg == "*" or compiler_arg == "gcc-exp":
-#    f.write( "<td>GNU<br>GCC<br>2.96-xxx experimental</td>\n" )
+#    f.write( "<td>GNU<br>GCC<br>pre-2.96 experimental</td>\n" )
 else:
   if compiler_arg=="*" or compiler_arg=="bcc54":
     f.write( "<td>Borland<br>BCC<br>5.4</td>\n" )
