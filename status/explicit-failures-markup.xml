@@ -1,35 +1,128 @@
 <explicit-failures-markup>
-  <mark toolset="cwpro8" library="regex" test="*">
+
+  <!-- Toolsets -->
+
+  <mark-toolset name="borland-5.6.4" status="required">
+    <title></title>
+    <description></description>
+  </mark-toolset>
+
+  <mark-toolset name="cwpro8" status="required">
+    <title></title>
+    <description></description>
+  </mark-toolset>
+
+  <mark-toolset name="msvc" status="required">
+    <title></title>
+    <description></description>
+  </mark-toolset>
+
+  <mark-toolset name="msvc-stlport" status="required">
+    <title></title>
+    <description></description>
+  </mark-toolset>
+
+  <mark-toolset name="vc7" status="required">
+    <title></title>
+    <description></description>
+  </mark-toolset>
+
+  <mark-toolset name="vc7.1" status="required">
+    <title></title>
+    <description></description>
+  </mark-toolset>
+
+
+  <!-- Libraries -->
+
+  <mark-library name="lambda" as="unusable">
+      <toolset name="msvc"/>
+      <toolset name="msvc-stlport"/>
+
+      <note>
+        TBD: Explain why it is not usable 
+      </note>
+  </mark-library>
+
+  <mark-library name="spirit" as="unusable">
+      <toolset name="msvc"/>
+      <toolset name="msvc-stlport"/>
+      <toolset name="borland-5.5.1"/>
+      <toolset name="borland-5.6.4"/>
+      <toolset name="vc7"/>
+      <note>
+          <p>
+            Historically, Spirit supported a lot of compilers, including (to some
+            extent) poorly conforming compilers such as VC6. Spirit v1.6.x will be
+            the last release that will support older poorly conforming compilers.
+            Starting from Spirit v1.8.0, ill conforming compilers will not be       
+            supported. If you are still using one of these older compilers, you can
+            still use Spirit v1.6.x.
+          </p>
+
+          <p>
+            The reason why Spirit v1.6.x worked on old non-conforming compilers is
+            that the authors laboriously took the trouble of searching for
+            workarounds to make these compilers happy. The process takes a lot of
+            time and energy, especially when one encounters the dreaded ICE or
+            "Internal Compiler Error". Sometimes searching for a single workaround
+            takes days or even weeks. Sometimes, there are no known workarounds. This
+            stifles progress a lot. And, as the library gets more progressive and
+            takes on more advanced C++ techniques, the difficulty is escalated to
+            even new heights.
+          </p>
+
+          <p>           
+            Spirit v1.6.x will still be supported. Maintenance and bug fixes will
+            still be applied. There will still be active development for the back-
+            porting of new features introduced in Spirit v1.8.0 (and Spirit 1.9.0)
+            to lesser able compilers; hopefully, fueled by contributions from the
+            community. For instance, there is already a working AST tree back-port
+            for VC6 and VC7 by Peder Holt.
+          </p>
+
+      </note>
+  </mark-library>
+
+  <!-- Failures -->
+
+  <mark-failure toolset="cwpro8" library="regex" test="*">
     <note author="M.Bergal" date="11/29/2003">
        ICE. Has been reported to Metrowerks by Beman?.
     </note>
-  </mark>
+  </mark-failure>
 
-  <mark library="concept_check" test="class_concept_fail_expected" toolset="cwpro8">
+  <mark-failure library="concept_check" test="class_concept_fail_expected" toolset="cwpro8">
     <note author="B.Dawes">
       The failure is caused by a compiler bug, which has been reported to the compiler supplier (or is already known to them).
     </note>
-  </mark>
+  </mark-failure>
 
-  <mark library="config" test="limits_test" toolset="cwpro8">
+  <mark-failure library="config" test="limits_test" toolset="cwpro8">
     <note author="B.Dawes">
       The failure is caused by a compiler bug, which has been reported to the compiler supplier (or is already known to them).
     </note>
-  </mark>
+  </mark-failure>
 
-  <mark library="function" test="allocator_test" toolset="msvc">
+  <mark-failure library="function" test="allocator_test" toolset="msvc">
     <note author="B.Dawes">
       The failure is caused by a standard library bug, which has been reported to the standard library supplier (or is already known to them).
     </note>
-  </mark>
+  </mark-failure>
   
-  <mark library="function" test="allocator_test" toolset="vc7">
+  <mark-failure library="function" test="allocator_test" toolset="vc7">
     <note author="B.Dawes">
       The failure is caused by a standard library bug, which has been reported to the standard library supplier (or is already known to them).
     </note>
-  </mark>
+  </mark-failure>
 
-  <mark library="iterator" test="interoperable_fail" toolset="*">
+   
+  <mark-failure library="function" test="lambda_test" toolset="vc7">
+    <note refid="3"/>
+  </mark-failure>  
+
+
+  <mark-failure library="iterator" test="interoperable_fail" toolset="*">
     <note author="D. Abrahams">
       This failure is caused by a compiler bug.  Templated operators
       which combine different iterators built with iterator_facade or
@@ -38,9 +131,9 @@
       messages generated by illegal use of these operators will be of
       lower quality.
     </note>
-  </mark>
+  </mark-failure>
 
-  <mark library="iterator" test="is_convertible_fail" toolset="*">
+  <mark-failure library="iterator" test="is_convertible_fail" toolset="*">
     <note author="D. Abrahams">
       This failure is caused by a compiler bug.
       <code>is_convertible&lt;T,U&gt;::value</code> may be true for unrelated
@@ -51,6 +144,63 @@
       convertible to <code>U</code> because instantiating the
       conversion will cause a compilation failure.
     </note>
-  </mark>
+  </mark-failure>
+
+  <mark-test library="iterator" test="is_convertible_fail" as="corner case"/>
+
+  <!-- Standard note definitions -->
+
+  <note id="0">
+    This test fails only intermittently.
+  </note>  
+
+  <note id="1">
+    The failure is caused by a problem in Boost code. The Boost developer is aware of the problem and plans to fix it.
+  </note>
+
+  <note id="2">
+    The failure is caused by a compiler bug.
+  </note>
+
+  <note id="3">
+    The failure is caused by a compiler bug, which has been reported to the compiler supplier (or is already known to them).
+  </note>
+
+  <note id="4">
+    The failure is caused by a standard library bug.
+  </note>
+
+  <note id="5">
+    The failure is caused by a standard library bug, which has been reported to the standard library supplier (or is already known to them).
+  </note>
+
+  <note id="6">
+    The failure is probably caused by the test code, harness, or configuration. Thus it may not affect users of the library.
+  </note>
+
+  <note id="9">
+    The failure is serious and likely to prevent all use of this Boost library with this compiler.
+  </note>
+
+  <note id="10">
+    The failure is serious and likely to prevent all use of this Boost library with this compiler. The failure is caused by a compiler bug, which has been reported to the compiler supplier (or is already known to them).
+  </note>
+
+  <note id="14">
+    The failure is caused by a platform API bug.
+  </note>
+
+  <note id="15">
+    The failure is caused by a platform API bug, which has been reported to the platform API supplier (or is already known to them).
+  </note>
+
+  <note id="16">
+    The failure is not serious and will not affect most users. The library degrades gracefully.
+  </note>
+
+  <note id="17">
+    This compiler's bugs are not supported by the library.
+  </note>
+
 
 </explicit-failures-markup>
