@@ -16,8 +16,13 @@ certainly only actually included as a platform specific workaround.</p>
 implementation details.</p>
 <p>C++ Standard Library headers included by other Standard Library headers are
 not shown since such dependencies are an artifact of a particular Standard
-Library implementation and cannot be relied upon.&nbsp;</p>
-<p><b>Run Date:</b> 18 Nov 2000 14:17 GMT</p>
+Library implementation and cannot be relied upon.</p>
+<p>Which headers are included by a given boost header is also an implementation
+detail and subject to change at any time.  The Header Dependencies Table is
+useful only for determining which headers are currently included by a given
+boost header.  Just as with the standard library, if your program uses components
+from any boost header, that header should specifically be included.</p>
+<p><b>Run Date:</b> 10 Dec 2000 15:13 GMT</p>
 <p>
 <table border="1" cellspacing="0" cellpadding="5">
 <tr>
@@ -80,6 +85,28 @@ typeinfo&nbsp;</td>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/detail/type_traits.hpp">boost/detail/type_traits.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;climits<br>
 <a href="../boost/detail/ob_compressed_pair.hpp">boost/detail/ob_compressed_pair.hpp</a>&nbsp;</td>
+</tr>
+<tr>
+<td valign="top"><a href="../boost/concept_archetype.hpp">boost/concept_archetype.hpp</a></td>
+<td><a href="../boost/config.hpp">boost/config.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
+&nbsp;&nbsp;&nbsp;&nbsp;iterator<br>
+<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
+functional&nbsp;</td>
+</tr>
+<tr>
+<td valign="top"><a href="../boost/concept_check.hpp">boost/concept_check.hpp</a></td>
+<td><a href="../boost/config.hpp">boost/config.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
+&nbsp;&nbsp;&nbsp;&nbsp;iterator<br>
+<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
+<a href="../boost/pending/limits.hpp">boost/pending/limits.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;float.h<br>
+&nbsp;&nbsp;&nbsp;&nbsp;limits<br>
+&nbsp;&nbsp;&nbsp;&nbsp;limits.h<br>
+utility&nbsp;</td>
 </tr>
 <tr>
 <td valign="top"><a href="../boost/config.hpp">boost/config.hpp</a></td>
@@ -153,7 +180,8 @@ functional&nbsp;</td>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/graph/detail/incidence_iterator.hpp">boost/graph/detail/incidence_iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;utility<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/graph/graph_concepts.hpp">boost/graph/graph_concepts.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/concept_checks.hpp">boost/pending/concept_checks.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/concept_check.hpp">boost/concept_check.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/limits.hpp">boost/pending/limits.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float.h<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits<br>
@@ -167,7 +195,6 @@ functional&nbsp;</td>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stdlib.h<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/graph/properties.hpp">boost/graph/properties.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/operators.hpp">boost/operators.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/integer_range.hpp">boost/pending/integer_range.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/detail/int_iterator.hpp">boost/pending/detail/int_iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iostream<br>
@@ -228,22 +255,23 @@ iterator&nbsp;</td>
 </tr>
 <tr>
 <td valign="top"><a href="../boost/graph/graph_concepts.hpp">boost/graph/graph_concepts.hpp</a></td>
-<td><a href="../boost/config.hpp">boost/config.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
-&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
-&nbsp;&nbsp;&nbsp;&nbsp;iterator<br>
-<a href="../boost/graph/graph_traits.hpp">boost/graph/graph_traits.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/utility.hpp">boost/utility.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;utility<br>
-<a href="../boost/graph/properties.hpp">boost/graph/properties.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/property.hpp">boost/pending/property.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/ct_if.hpp">boost/pending/ct_if.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/detail/property.hpp">boost/pending/detail/property.hpp</a><br>
-<a href="../boost/pending/concept_checks.hpp">boost/pending/concept_checks.hpp</a><br>
+<td><a href="../boost/concept_check.hpp">boost/concept_check.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iterator<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/limits.hpp">boost/pending/limits.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float.h<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits.h<br>
+&nbsp;&nbsp;&nbsp;&nbsp;utility<br>
+<a href="../boost/config.hpp">boost/config.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
+<a href="../boost/graph/graph_traits.hpp">boost/graph/graph_traits.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/utility.hpp">boost/utility.hpp</a><br>
+<a href="../boost/graph/properties.hpp">boost/graph/properties.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/property.hpp">boost/pending/property.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/ct_if.hpp">boost/pending/ct_if.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/detail/property.hpp">boost/pending/detail/property.hpp</a><br>
 <a href="../boost/property_map.hpp">boost/property_map.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/cstddef.hpp">boost/pending/cstddef.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stddef.h&nbsp;</td>
@@ -268,7 +296,8 @@ iterator&nbsp;</td>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/detail/property.hpp">boost/pending/detail/property.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;utility<br>
 <a href="../boost/property_map.hpp">boost/property_map.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/concept_checks.hpp">boost/pending/concept_checks.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/concept_check.hpp">boost/concept_check.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/limits.hpp">boost/pending/limits.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float.h<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits<br>
@@ -292,7 +321,8 @@ iterator&nbsp;</td>
 &nbsp;&nbsp;&nbsp;&nbsp;limits<br>
 &nbsp;&nbsp;&nbsp;&nbsp;limits.h<br>
 <a href="../boost/property_map.hpp">boost/property_map.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/concept_checks.hpp">boost/pending/concept_checks.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/concept_check.hpp">boost/concept_check.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/cstddef.hpp">boost/pending/cstddef.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stddef.h<br>
 iosfwd&nbsp;</td>
@@ -361,15 +391,16 @@ iosfwd&nbsp;</td>
 </tr>
 <tr>
 <td valign="top"><a href="../boost/property_map.hpp">boost/property_map.hpp</a></td>
-<td><a href="../boost/config.hpp">boost/config.hpp</a><br>
-&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
-&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
-<a href="../boost/pending/concept_checks.hpp">boost/pending/concept_checks.hpp</a><br>
+<td><a href="../boost/concept_check.hpp">boost/concept_check.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/iterator.hpp">boost/iterator.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="../boost/pending/limits.hpp">boost/pending/limits.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float.h<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limits.h<br>
 &nbsp;&nbsp;&nbsp;&nbsp;utility<br>
+<a href="../boost/config.hpp">boost/config.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
 <a href="../boost/pending/cstddef.hpp">boost/pending/cstddef.hpp</a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;stddef.h<br>
 iterator&nbsp;</td>
@@ -502,6 +533,13 @@ locale&nbsp;</td>
 cstddef<br>
 functional<br>
 memory&nbsp;</td>
+</tr>
+<tr>
+<td valign="top"><a href="../boost/static_assert.hpp">boost/static_assert.hpp</a></td>
+<td><a href="../boost/config.hpp">boost/config.hpp</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstddef<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cstdlib<br>
+&nbsp;&nbsp;&nbsp;&nbsp;iterator&nbsp;</td>
 </tr>
 <tr>
 <td valign="top"><a href="../boost/timer.hpp">boost/timer.hpp</a></td>

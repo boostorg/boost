@@ -30,17 +30,24 @@ Submission Process</a> page for a description of the process involved.</p>
 rejected, it must meets these requirements:</p>
 <ul>
   <li>The license must meet the <a href="#License">license requirements</a>
-    below. Restricted licenses like the GPL and LGPL are not acceptable. The
-    copyright <a href="#Ownership">ownership</a> must be clear.<br>
+    below. Restricted licenses like the GPL and LGPL are not acceptable.
+  </li>
+  <li>The
+    copyright <a href="#Ownership">ownership</a> must be clear.
   </li>
   <li>The library must be generally useful and not restricted to a narrow
-    problem domain.<br>
+    problem domain.
   </li>
   <li>The library must meet the <a href="#Portability">portability requirements</a>
-    below.&nbsp;<br>
+    below.&nbsp;
   </li>
   <li>The library must come reasonably close to meeting the <a href="#Guidelines">Guidelines</a>
-    below.<br>
+    below.
+    <ul>
+    <li><a href="#Design and Programming">Design and Programming</a></li>
+    <li><a href="#Directory structure">Directory Structure</a></li>
+    <li><a href="#Documentation">Documentation</a></li>
+    </ul>
   </li>
   <li>The author must be willing to participate in discussions on the mailing
     list, and to refine the library accordingly.</li>
@@ -51,17 +58,19 @@ making a submission. It has been noted, however, that submissions which begin
 embarrassingly.</p>
 <h3 align="left"><a name="License">License</a> requirements</h3>
 <ul>
-  <li>Must be simple to read and understand.<br>
+  <li>Must be simple to read and understand.
   </li>
   <li>Must grant permission to copy, use and modify the software for any use
-    (commercial and non-commercial) for no fee.<br>
+    (commercial and non-commercial) for no fee.
   </li>
   <li>Must require that the license appear on all copies of the software source
-    code.<br>
+    code.
   </li>
   <li>Must not require that the license appear with executables or other binary
-    uses of the library.&nbsp;&nbsp; Must not require that the source code be
-    available for execution or other binary uses of the library.<br>
+    uses of the library.
+  </li>
+  <li>Must not require that the source code be
+    available for execution or other binary uses of the library.
   </li>
   <li>May restrict the use of the name and description of the library to the
     standard version found on the Boost web site.</li>
@@ -70,17 +79,17 @@ embarrassingly.</p>
 <ul>
   <li>
     <p align="left">A library's interface must portable and not restricted to a
-    particular compiler or operating system.<br>
+    particular compiler or operating system.
   </li>
   <li>
     <p align="left">A library's implementation must if possible be portable and
     not restricted to a particular compiler or operating system.&nbsp; If a
     portable implementation is not possible, non-portable constructions are
-    acceptable if reasonably easy to port to other environments.<br>
+    acceptable if reasonably easy to port to other environments.
   </li>
   <li>
-    <p align="left">There is no requirement that a library run on all C++
-    compilers.&nbsp;&nbsp;<br>
+    <p align="left">There is no requirement that a library run on C++ compilers
+    which do not conform to the ISO standard.&nbsp;
   </li>
   <li>
     <p align="left">There is no requirement that a library run on any particular
@@ -110,7 +119,7 @@ Boost.org won't accept libraries without clear copyright information.</p>
 <p align="left">Please use these guidelines as a checklist for preparing the
 content a library submission.&nbsp; Not every guideline applies to every
 library, but a reasonable effort to comply is expected.</p>
-<h3>Design and Programming</h3>
+<h3><a name="Design and Programming">Design and Programming</a></h3>
 <ul>
   <li>Aim for ISO Standard C++. Than means making effective use of the standard
     features of the language, and avoiding non-standard compiler extensions. It
@@ -177,7 +186,50 @@ library, but a reasonable effort to comply is expected.</p>
     </ul>
   </li>
 </ul>
-<h3>Documentation</h3>
+<h3><a name="Directory structure">Directory Structure</a></h3>
+<ul>
+  <li>All libraries have at their highest level a primary directory named for
+    the particular library. The primary directory may have sub-directories.</li>
+  <li>For very simple libraries implemented entirely within the library header,
+    all files go in the primary directory (except headers, which go in the boost
+    header directory).</li>
+</ul>
+<blockquote>
+  <p><b>Boost standard sub-directory names</b></p>
+  <table border="1" cellpadding="5">
+    <tr>
+      <td><b>Sub-directory</b></td>
+      <td><b>Contents</b></td>
+      <td><b>Required</b></td>
+    </tr>
+    <tr>
+      <td><code>build</code></td>
+      <td>Library build files such as make files or IDE project files.</td>
+      <td>If any build files.</td>
+    </tr>
+    <tr>
+      <td>doc</td>
+      <td>Documentation (HTML) files.</td>
+      <td>If several doc files.</td>
+    </tr>
+    <tr>
+      <td><code>example</code></td>
+      <td>Sample program files.</td>
+      <td>If several sample files.</td>
+    </tr>
+    <tr>
+      <td><code>src</code></td>
+      <td>Source files which must be compiled to build the library.&nbsp;</td>
+      <td>If any source files.</td>
+    </tr>
+    <tr>
+      <td><code>test</code></td>
+      <td>Regression or other test programs or scripts.</td>
+      <td>If several test files.</td>
+    </tr>
+  </table>
+</blockquote>
+<h3><a name="Documentation">Documentation</a></h3>
 <p>Even the simplest library needs some documentation; the amount should be
 proportional to the need.&nbsp; The documentation should assume the readers have
 a basic knowledge of C++, but are not necessarily experts.</p>
@@ -207,6 +259,7 @@ C++ programmer to use the library successfully?</p>
 </ul>
 <h2>Rationale</h2>
 <p>Rationale for some of the requirements and guidelines follows.</p>
+<hr>
 <h3><a name="Exception-specification">Exception-specification</a> rationale</h3>
 <p>Exception specifications [ISO 15.4] are sometimes coded to indicate what
 exceptions may be thrown, or because the programmer hopes they will improved
@@ -280,7 +333,7 @@ suggestion.&nbsp; Major contributions are usually acknowledged in the
 documentation, while minor fixes are often mentioned in comments within the code
 itself.</p>
 <hr>
-<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->10 November, 2000<!--webbot bot="Timestamp" endspan i-checksum="39349" --></p>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->08 December, 2000<!--webbot bot="Timestamp" endspan i-checksum="38516" --></p>
 
 </body>
 
