@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Tutorial</title><link rel="stylesheet" href="reference.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.60.1"><link rel="home" href="index.html" title="The Boost C++ Libraries"><link rel="up" href="signals.html" title="Boost.Signals"><link rel="previous" href="signals.html" title="Boost.Signals"><link rel="next" href="signals.reference.html" title="Reference"><link rel="chapter" href="any.html" title="Boost.Any"><link rel="refentry" href="class.boost.bad_any_cast.html" title="Class bad_any_cast"><link rel="refentry" href="class.boost.any.html" title="Class any"><link rel="refentry" href="id2827840.html" title="Function any_cast"><link rel="chapter" href="function.html" title="Boost.Function"><link rel="refentry" href="id2837192.html" title="Class bad_function_call"><link rel="refentry" href="class.boost.function_base.html" title="Class function_base"><link rel="refentry" href="class.boost.functionN.html" title="Class template functionN"><link rel="refentry" href="class.boost.function.html" title="Class template function"><link rel="chapter" href="ref.html" title="Boost.Ref"><link rel="refentry" href="id2833212.html" title="Class template reference_wrapper"><link rel="refentry" href="id2695148.html" title="Class template is_reference_wrapper"><link rel="refentry" href="id2695230.html" title="Class template unwrap_reference"><link rel="chapter" href="signals.html" title="Boost.Signals"><link rel="refentry" href="class.boost.signalN.html" title="Class template signalN"><link rel="refentry" href="class.boost.signal.html" title="Class template signal"><link rel="refentry" href="class.boost.slot.html" title="Class template slot"><link rel="refentry" href="id2852290.html" title="Class trackable"><link rel="refentry" href="id2890015.html" title="Class connection"><link rel="refentry" href="id2877648.html" title="Class scoped_connection"><link rel="refentry" href="id2905241.html" title="Function template visit_each"><link rel="refentry" href="class.boost.last_value.html" title="Class template last_value"><link rel="refentry" href="id2830650.html" title="Class last_value&lt;void&gt;"><link rel="subsection" href="ch04s02.html#id2888202" title="How to Read this Tutorial"><link rel="subsection" href="ch04s02.html#id2888275" title="Compatibility Note"><link rel="subsection" href="ch04s02.html#id2888425" title="Hello, World! (Beginner)"><link rel="subsection" href="ch04s02.html#id2888584" title="Calling multiple slots"><link rel="subsection" href="ch04s02.html#id2889063" title="Passing values to and from slots"><link rel="subsection" href="ch04s02.html#id2890060" title="Connection Management"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table border="1" cellpadding="2" bgcolor="#007F7F"><tr><td bgcolor="#FFFFFF"><img src="../../c%2B%2Bboost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td><td><a href="../../index.htm"><font color="#FFFFFF" size="4" face="Arial">Home</font></a></td><td><a href="../../libs/libraries.htm"><font color="#FFFFFF" size="4" face="Arial">Libraries</font></a></td><td><a href="../../people/people.htm"><font color="#FFFFFF" size="4" face="Arial">People</font></a></td><td><a href="../../more/faq.htm"><font color="#FFFFFF" size="4" face="Arial">FAQ</font></a></td><td><a href="../../more/index.htm"><font color="#FFFFFF" size="4" face="Arial">More</font></a></td></tr></table><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2888195"></a>Tutorial</h2></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2888202"></a>How to Read this Tutorial</h3></div></div><div></div></div><p>This tutorial is not meant to be read linearly. Its top-level
+structure roughly separates different concepts in the library
+(e.g., handling calling multiple slots, passing values to and from
+slots) and in each of these concepts the basic ideas are presented
+first and then more complex uses of the library are described
+later. Each of the sections is marked <span class="emphasis"><em>Beginner</em></span>,
+<span class="emphasis"><em>Intermediate</em></span>, or <span class="emphasis"><em>Advanced</em></span> to help guide the
+reader. The <span class="emphasis"><em>Beginner</em></span> sections include information that all
+library users should know; one can make good use of the Signals
+library after having read only the <span class="emphasis"><em>Beginner</em></span> sections. The
+<span class="emphasis"><em>Intermediate</em></span> sections build on the <span class="emphasis"><em>Beginner</em></span>
+sections with slightly more complex uses of the library. Finally,
+the <span class="emphasis"><em>Advanced</em></span> sections detail very advanced uses of the
+Signals library, that often require a solid working knowledge of
+the <span class="emphasis"><em>Beginner</em></span> and <span class="emphasis"><em>Intermediate</em></span> topics; most users
+will not need to read the <span class="emphasis"><em>Advanced</em></span> sections.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2888275"></a>Compatibility Note</h3></div></div><div></div></div><p>Boost.Signals has two syntactical forms: the preferred form and
+the compatibility form. The preferred form fits more closely with the
+C++ language and reduces the number of separate template parameters
+that need to be considered, often improving readability; however, the
+preferred form is not supported on all platforms due to compiler
+bugs. The compatible form will work on all compilers supported by
+Boost.Signals. Consult the table below to determine which syntactic
+form to use for your compiler. Users of Boost.Function, please note
+that the preferred syntactic form in Signals is equivalent to that of
+Function's preferred syntactic form.</p><p>If your compiler does not appear in this list, please try the
+preferred syntax and report your results to the Boost list so that
+we can keep this table up-to-date.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><div class="itemizedlist"><ul type="disc"><li><p>GNU C++ 2.95.x, 3.0.x, 3.1.x</p></li><li><p>Comeau C++ 4.2.45.2</p></li><li><p>SGI MIPSpro 7.3.0</p></li><li><p>Intel C++ 5.0, 6.0</p></li><li><p>Compaq's cxx 6.2</p></li></ul></div></td><td align="left"><div class="itemizedlist"><ul type="disc"><li><p><span class="emphasis"><em>Any compiler supporting the preferred syntax</em></span></p></li><li><p>Microsoft Visual C++ 6.0, 7.0</p></li><li><p>Borland C++ 5.5.1</p></li><li><p>Sun WorkShop 6 update 2 C++ 5.3</p></li><li><p>Metrowerks CodeWarrior 8.1</p></li></ul></div></td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2888425"></a>Hello, World! (Beginner)</h3></div></div><div></div></div><p>The following example writes &quot;Hello, World!&quot; using signals and
+slots. First, we create a signal <tt class="computeroutput">sig</tt>, a signal that
+takes no arguments and has a void return value. Next, we connect
+the <tt class="computeroutput">hello</tt> function object to the signal using the
+<tt class="computeroutput">connect</tt> method. Finally, use the signal
+<tt class="computeroutput">sig</tt> like a function to call the slots, which in turns
+invokes <tt class="computeroutput">HelloWorld::operator()</tt> to print &quot;Hello,
+World!&quot;.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+struct HelloWorld 
+{
+  void operator()() const 
+  { 
+    std::cout &lt;&lt; &quot;Hello, World!&quot; &lt;&lt; std::endl;
+  } 
+};
+
+// ...
+
+// Signal with no arguments and a void return value
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;void ()&gt; sig;
+
+// Connect a HelloWorld slot
+HelloWorld hello;
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(hello);
+
+// Call all of the slots
+sig();
+</pre></td><td align="left"><pre class="programlisting">
+struct HelloWorld 
+{
+  void operator()() const 
+  { 
+    std::cout &lt;&lt; &quot;Hello, World!&quot; &lt;&lt; std::endl;
+  } 
+};
+
+// ...
+
+// Signal with no arguments and a void return value
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal0</a>&lt;void&gt; sig;
+
+// Connect a HelloWorld slot
+HelloWorld hello;
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(hello);
+
+// Call all of the slots
+sig();
+</pre></td></tr></tbody></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2888584"></a>Calling multiple slots</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2888590"></a>Connecting multiple slots (Beginner)</h4></div></div><div></div></div><p>Calling a single slot from a signal isn't very interesting, so
+we can make the Hello, World program more interesting by splitting
+the work of printing &quot;Hello, World!&quot; into two completely separate
+slots. The first slot will print &quot;Hello&quot; and may look like
+this:</p><pre class="programlisting">
+struct Hello 
+{
+  void operator()() const
+  {
+    std::cout &lt;&lt; &quot;Hello&quot;;
+  }
+};
+</pre><p>The second slot will print &quot;, World!&quot; and a newline, to complete
+the program. The second slot may look like this:</p><pre class="programlisting">
+struct World
+{
+  void operator()() const
+  {
+    std::cout &lt;&lt; &quot;, World!&quot; &lt;&lt; std::endl;
+  }
+};
+</pre><p>Like in our previous example, we can create a signal
+<tt class="computeroutput">sig</tt> that takes no arguments and has a
+<tt class="computeroutput">void</tt> return value. This time, we connect both a
+<tt class="computeroutput">hello</tt> and a <tt class="computeroutput">world</tt> slot to the same
+signal, and when we call the signal both slots will be called.</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;void ()&gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(Hello());
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(World());
+
+sig();
+</pre></td><td align="left"><pre class="programlisting">
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal0</a>&lt;void&gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(Hello());
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(World());
+
+sig();
+</pre></td></tr></tbody></table></div><p>Now, if you compile and run this program, you might see
+something strange. It is possible that the output will look like
+this:</p><pre class="programlisting">
+  , World!
+Hello
+</pre><p>The underlying reason is that the ordering of signals isn't
+guaranteed. The signal is free to call either the
+<tt class="computeroutput">Hello</tt> slot or the <tt class="computeroutput">World</tt> slot first, but
+every slot will be called unless something bad (e.g., an exception)
+occurs. Read on to learn how to control the ordering so that
+&quot;Hello, World!&quot; always prints as expected.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2888807"></a>Ordering slot call groups (Intermediate)</h4></div></div><div></div></div><p>Slots are free to have side effects, and that can mean that some
+slots will have to be called before others. The Boost.Signals
+library allows slots to be placed into groups that are ordered in
+some way. For our Hello, World program, we want &quot;Hello&quot; to be
+printed before &quot;, World!&quot;, so we put &quot;Hello&quot; into a group that must
+be executed before the group that &quot;, World!&quot; is in. To do this, we
+can supply an extra parameter at the beginning of the
+<tt class="computeroutput">connect</tt> call that specifies the group. Group values
+are, by default, <tt class="computeroutput">int</tt>s, and are ordered by the integer
+&lt; relation. Here's how we construct Hello, World:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;void ()&gt; sig;
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(0, Hello());
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(1, World());
+sig();
+</pre></td><td align="left"><pre class="programlisting">
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal0</a>&lt;void&gt; sig;
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(0, Hello());
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(1, World());
+sig();
+</pre></td></tr></tbody></table></div><p>This program will correctly print &quot;Hello, World!&quot;, because the
+<tt class="computeroutput">Hello</tt> object is in group 0, which precedes group 1
+where the <tt class="computeroutput">World</tt> object resides.</p><p>The group parameter is, in fact, optional. We omitted it in the
+first Hello, World example because it was unnecessary when all of
+the slots are independent. So what happens if we mix calls to
+connect that use the group parameter and those that don't? The
+&quot;unnamed&quot; slots (i.e., those that have been connected without
+specifying a group name) go into a separate group that is special
+in that it follows all other groups. So if we add a new slot to our
+example like this:</p><pre class="programlisting">
+struct GoodMorning
+{
+  void operator()() const
+  {
+    std::cout &lt;&lt; &quot;... and good morning!&quot; &lt;&lt; std::endl;
+  }
+};
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(GoodMorning());
+</pre><p>... we will get the result we wanted:</p><pre class="programlisting">
+Hello, World!
+... and good morning!
+</pre><p>The last interesting point with groups of slots is the behavior
+when multiple slots are connected in the same group. Within groups,
+calls to slots are unordered: if we connect slots <tt class="computeroutput">A</tt>
+and <tt class="computeroutput">B</tt> to the same signal with the same group name,
+either <tt class="computeroutput">A</tt> or <tt class="computeroutput">B</tt> will be called first (but
+both will be called). This is the same behavior we saw before with
+the second version of Hello, World, where the slots could be called
+in the wrong order, mangling the output.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2889063"></a>Passing values to and from slots</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2889069"></a>Slot Arguments (Beginner)</h4></div></div><div></div></div><p>Signals can propagate arguments to each of the slots they call.
+For instance, a signal that propagates mouse motion events might
+want to pass along the new mouse coordinates and whether the mouse
+buttons are pressed.</p><p>As an example, we'll create a signal that passes two
+<tt class="computeroutput">float</tt> arguments to its slots. Then we'll create a few
+slots that print the results of various arithmetic operations on
+these values.</p><pre class="programlisting">
+void print_sum(float x, float y)
+{
+  std::cout &lt;&lt; &quot;The sum is &quot; &lt;&lt; x+y &lt;&lt; std::endl;
+}
+
+void print_product(float x, float y)
+{
+  std::cout &lt;&lt; &quot;The product is &quot; &lt;&lt; x*y &lt;&lt; std::endl;
+}
+
+void print_difference(float x, float y)
+{
+  std::cout &lt;&lt; &quot;The difference is &quot; &lt;&lt; x-y &lt;&lt; std::endl;
+}
+
+void print_quotient(float x, float y)
+{
+  std::cout &lt;&lt; &quot;The quotient is &quot; &lt;&lt; x/y &lt;&lt; std::endl;
+}
+</pre><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;void (float, float)&gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_difference);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_quotient);
+
+sig(5, 3);
+</pre></td><td align="left"><pre class="programlisting">
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal2</a>&lt;void, float, float&gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_difference);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;print_quotient);
+
+sig(5, 3);
+</pre></td></tr></tbody></table></div><p>This program will print out something like the following,
+although the ordering of the lines may differ:</p><pre class="programlisting">
+The sum is 8
+The difference is 2
+The product is 15
+The quotient is 1.66667
+</pre><p>So any values that are given to <tt class="computeroutput">sig</tt> when it is
+called like a function are passed to each of the slots. We have to
+declare the types of these values up front when we create the
+signal. The type <tt class="computeroutput"><a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;void (float,
+float)&gt;</tt> means that the signal has a <tt class="computeroutput">void</tt>
+return value and takes two <tt class="computeroutput">float</tt> values. Any slot
+connected to <tt class="computeroutput">sig</tt> must therefore be able to take two
+<tt class="computeroutput">float</tt> values.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2889329"></a>Signal Return Values (Advanced)</h4></div></div><div></div></div><p>Just as slots can receive arguments, they can also return
+values. These values can then be returned back to the caller of the
+signal through a <span class="emphasis"><em>combiner</em></span>. The combiner is a mechanism
+that can take the results of calling slots (there many be no
+results or a hundred; we don't know until the program runs) and
+coalesces them into a single result to be returned to the caller.
+The single result is often a simple function of the results of the
+slot calls: the result of the last slot call, the maximum value
+returned by any slot, or a container of all of the results are some
+possibilities.</p><p>We can modify our previous arithmetic operations example
+slightly so that the slots all return the results of computing the
+product, quotient, sum, or difference. Then the signal itself can
+return a value based on these results to be printed:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+float compute_product(float x, float y) { return x*y; }
+float compute_quotient(float x, float y) { return x/y; }
+float compute_sum(float x, float y) { return x+y; }
+float compute_difference(float x, float y) { return x-y; }
+
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;float (float x, float y)&gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_quotient);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_difference);
+
+std::cout &lt;&lt; sig(5, 3) &lt;&lt; std::endl;
+</pre></td><td align="left"><pre class="programlisting">
+float compute_product(float x, float y) { return x*y; }
+float compute_quotient(float x, float y) { return x/y; }
+float compute_sum(float x, float y) { return x+y; }
+float compute_difference(float x, float y) { return x-y; }
+
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal2</a>&lt;float, float, float&gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_quotient);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_difference);
+
+std::cout &lt;&lt; sig(5, 3) &lt;&lt; std::endl;
+</pre></td></tr></tbody></table></div><p>This example program will output either <tt class="computeroutput">8</tt>,
+<tt class="computeroutput">1.6667</tt>, <tt class="computeroutput">15</tt>, or <tt class="computeroutput">2</tt>, depending
+on the order that the signals are called. This is because the
+default behavior of a signal that has a return type
+(<tt class="computeroutput">float</tt>, the first template argument given to the
+<tt class="computeroutput"><a href="class.boost.signal.html" title="Class template signal">boost::signal</a></tt> class template) is to call all slots and
+then return the result returned by the last slot called. This
+behavior is admittedly silly for this example, because slots have
+no side effects and the result is essentially randomly chosen from
+the slots.</p><p>A more interesting signal result would be the maximum of the
+values returned by any slot. To do this, we create a custom
+combiner that looks like this:</p><pre class="programlisting">
+template&lt;typename T&gt;
+struct maximum
+{
+  typedef T result_type;
+
+  template&lt;typename InputIterator&gt;
+  T operator()(InputIterator first, InputIterator last) const
+  {
+    // If there are no slots to call, just return the
+    // default-constructed value
+    if (first == last)
+      return T();
+
+    T max_value = *first++;
+    while (first != last) {
+      if (max_value &lt; *first)
+        max_value = *first;
+      ++first;
+    }
+  
+    return max_value;
+  }
+};
+</pre><p>The <tt class="computeroutput">maximum</tt> class template acts as a function
+object. Its result type is given by its template parameter, and
+this is the type it expects to be computing the maximum based on
+(e.g., <tt class="computeroutput">maximum&lt;float&gt;</tt> would find the maximum
+<tt class="computeroutput">float</tt> in a sequence of <tt class="computeroutput">float</tt>s). When a
+<tt class="computeroutput">maximum</tt> object is invoked, it is given an input
+iterator sequence <tt class="computeroutput">[first, last)</tt> that includes the
+results of calling all of the slots. <tt class="computeroutput">maximum</tt> uses this
+input iterator sequence to calculate the maximum element, and
+returns that maximum value.</p><p>We actually use this new function object type by installing it
+as a combiner for our signal. The combiner template argument
+follows the signal's calling signature:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;float (float x, float y), 
+              maximum&lt;float&gt; &gt; sig;
+</pre></td><td align="left"><pre class="programlisting">
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal2</a>&lt;float, float, float, 
+               maximum&lt;float&gt; &gt; sig;
+</pre></td></tr></tbody></table></div><p>Now we can connect slots that perform arithmetic functions and
+use the signal:</p><pre class="programlisting">
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_quotient);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_difference);
+
+std::cout &lt;&lt; sig(5, 3) &lt;&lt; std::endl;
+</pre><p>The output of this program will be <tt class="computeroutput">15</tt>, because
+regardless of the order in which the slots are called, the product
+of 5 and 3 will be larger than the quotient, sum, or
+difference.</p><p>In other cases we might want to return all of the values
+computed by the slots together, in one large data structure. This
+is easily done with a different combiner:</p><pre class="programlisting">
+template&lt;typename Container&gt;
+struct aggregate_values
+{
+  typedef Container result_type;
+
+  template&lt;typename InputIterator&gt;
+  Container operator()(InputIterator first, InputIterator last) const
+  {
+    return Container(first, last);
+  }
+};
+</pre><p>
+Again, we can create a signal with this new combiner: 
+</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+<a href="class.boost.signal.html" title="Class template signal">boost::signal</a>&lt;float (float, float), 
+              aggregate_values&lt;std::vector&lt;float&gt; &gt; &gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_quotient);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_difference);
+
+std::vector&lt;float&gt; results = sig(5, 3);
+std::copy(results.begin(), results.end(), 
+          std::ostream_iterator&lt;float&gt;(cout, &quot; &quot;));
+</pre></td><td align="left"><pre class="programlisting">
+<a href="class.boost.signalN.html" title="Class template signalN">boost::signal2</a>&lt;float, float, float,
+               aggregate_values&lt;std::vector&lt;float&gt; &gt; &gt; sig;
+
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_quotient);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_product);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_sum);
+sig.<a href="class.boost.signalN.html#id2841744">connect</a>(&amp;compute_difference);
+
+std::vector&lt;float&gt; results = sig(5, 3);
+std::copy(results.begin(), results.end(), 
+          std::ostream_iterator&lt;float&gt;(cout, &quot; &quot;));
+</pre></td></tr></tbody></table></div><p>The output of this program will contain 15, 8, 1.6667, and 2
+(but not necessarily in that order). It is interesting here that
+the first template argument for the <tt class="computeroutput">signal</tt> class,
+<tt class="computeroutput">float</tt>, is not actually the return type of the signal.
+Instead, it is the return type used by the connected slots and will
+also be the <tt class="computeroutput">value_type</tt> of the input iterators passed
+to the combiner. The combiner itself is a function object and its
+<tt class="computeroutput">result_type</tt> member type becomes the return type of the
+signal.</p><p>The input iterators passed to the combiner transform dereference
+operations into slot calls. Combiners therefore have the option to
+invoke only some slots until some particular criterion is met. For
+instance, in a distributed computing system, the combiner may ask
+each remote system whether it will handle the request. Only one
+remote system needs to handle a particular request, so after a
+remote system accepts the work we do not want to ask any other
+remote systems to perform the same task. Such a combiner need only
+check the value returned when dereferencing the iterator, and
+return when the value is acceptable. The following combiner returns
+the first non-NULL pointer to a <tt class="computeroutput">FulfilledRequest</tt> data
+structure, without asking any later slots to fulfill the
+request:</p><pre class="programlisting">
+struct DistributeRequest {
+  typedef FulfilledRequest* result_type;
+
+  template&lt;typename InputIterator&gt;
+  result_type operator()(InputIterator first, InputIterator last) const
+  {
+    while (first != last) {
+      if (result_type fulfilled = *first)
+        return fulfilled;
+      ++first;
+    }
+    return 0;
+  }
+};
+</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2890060"></a>Connection Management</h3></div></div><div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2890066"></a>Disconnecting Slots (Beginner)</h4></div></div><div></div></div><p>Slots aren't expected to exist indefinately after they are
+connected. Often slots are only used to receive a few events and
+are then disconnected, and the programmer needs control to decide
+when a slot should no longer be connected.</p><p>The entry point for managing connections explicitly is the
+<tt class="computeroutput"><a href="id2890015.html" title="Class connection">boost::signals::connection</a></tt> class. The
+<tt class="computeroutput"><a href="id2890015.html" title="Class connection">connection</a></tt> class uniquely represents the connection
+between a particular signal and a particular slot. The
+<tt class="computeroutput"><a href="id2890015.html#id2893725">connected</a>()</tt> method checks if the signal and slot are
+still connected, and the <tt class="computeroutput"><a href="id2890015.html#id2908738">disconnect()</a></tt> method
+disconnects the signal and slot if they are connected before it is
+called. Each call to the signal's <tt class="computeroutput">connect()</tt> method
+returns a connection object, which can be used to determine if the
+connection still exists or to disconnect the signal and slot.</p><pre class="programlisting">
+boost::signals::connection c = sig.<a href="class.boost.signalN.html#id2841744">connect</a>(HelloWorld());
+if (c.<a href="class.boost.signalN.html#id2841744">connect</a>ed()) {
+<span class="emphasis"><em>// c is still connected to the signal</em></span>
+  sig(); <span class="emphasis"><em>// Prints &quot;Hello, World!&quot;</em></span>
+}
+
+c.disconnect(); <span class="emphasis"><em>// Disconnect the HelloWorld object</em></span>
+assert(!c.<a href="class.boost.signalN.html#id2841744">connect</a>ed()); <span class="emphasis"><em>c isn't connected any more</em></span>
+
+sig(); <span class="emphasis"><em>// Does nothing: there are no connected slots</em></span>
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2890208"></a>Scoped connections (Intermediate)</h4></div></div><div></div></div><p>The <tt class="computeroutput">boost::signals::scoped_connection</tt> class
+references a signal/slot connection that will be disconnected when
+the <tt class="computeroutput">scoped_connection</tt> class goes out of scope. This
+ability is useful when a connection need only be temporary,
+e.g.,</p><pre class="programlisting">
+{
+  boost::signals::scoped_connection c = sig.<a href="class.boost.signalN.html#id2841744">connect</a>(ShortLived());
+  sig(); <span class="emphasis"><em>// will call ShortLived function object</em></span>
+}
+sig(); <span class="emphasis"><em>// ShortLived function object no longer connected to sig</em></span>
+</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2890264"></a>Automatic connection management (Intermediate)</h4></div></div><div></div></div><p>Boost.Signals can automatically track the lifetime of objects
+involved in signal/slot connections, including automatic
+disconnection of slots when objects involved in the slot call are
+destroyed. For instance, consider a simple news delivery service,
+where clients connect to a news provider that then sends news to
+all connected clients as information arrives. The news delivery
+service may be constructed like this: </p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+class NewsItem { /* ... */ };
+
+boost::signal&lt;void (const NewsItem&amp; latestNews)&gt; deliverNews;
+</pre></td><td align="left"><pre class="programlisting">
+class NewsItem { /* ... */ };
+
+boost::signal1&lt;void, const NewsItem&amp;&gt; deliverNews;
+</pre></td></tr></tbody></table></div><p>Clients that wish to receive news updates need only connect a
+function object that can receive news items to the
+<tt class="computeroutput">deliverNews</tt> signal. For instance, we may have a
+special message area in our application specifically for news,
+e.g.,:</p><pre class="programlisting">
+struct NewsMessageArea : public MessageArea
+{
+public:
+  // ...
+
+  void displayNews(const NewsItem&amp; news) const
+  {
+    messageText = news.text();
+    update();
+  }
+};
+
+// ...
+NewsMessageArea newsMessageArea = new NewsMessageArea(/* ... */);
+// ...
+deliverNews.<a href="class.boost.signalN.html#id2841744">connect</a>(boost::bind(&amp;NewsMessageArea::displayNews, 
+                                newsMessageArea, _1));
+</pre><p>However, what if the user closes the news message area,
+destroying the <tt class="computeroutput">newsMessageArea</tt> object that
+<tt class="computeroutput">deliverNews</tt> knows about? Most likely, a segmentation
+fault will occur. However, with Boost.Signals one need only make
+<tt class="computeroutput">NewsMessageArea</tt> <span class="emphasis"><em>trackable</em></span>, and the slot
+involving <tt class="computeroutput">newsMessageArea</tt> will be disconnected when
+<tt class="computeroutput">newsMessageArea</tt> is destroyed. The
+<tt class="computeroutput">NewsMessageArea</tt> class is made trackable by deriving
+publicly from the <tt class="computeroutput">boost::signals::trackable</tt> class,
+e.g.:</p><pre class="programlisting">
+struct NewsMessageArea : public MessageArea, public boost::signals::trackable
+{
+  // ...
+};
+</pre><p>At this time there is a significant limitation to the use of
+<tt class="computeroutput">trackable</tt> objects in making slot connections: function
+objects built using Boost.Bind are understood, such that pointers
+or references to <tt class="computeroutput">trackable</tt> objects passed to
+<tt class="computeroutput">boost::bind</tt> will be found and tracked.</p><p><span class="bold"><b>Warning</b></span>: User-defined function objects and function
+objects from other libraries (e.g., Boost.Function or Boost.Lambda)
+do not implement the required interfaces for <tt class="computeroutput">trackable</tt>
+object detection, and <span class="emphasis"><em>will silently ignore any bound trackable
+objects</em></span>. Future versions of the Boost libraries will address
+this limitation.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2890510"></a>When can disconnections occur? (Intermediate)</h4></div></div><div></div></div><p>Signal/slot disconnections occur when any of these conditions
+occur:</p><div class="itemizedlist"><ul type="disc"><li><p>The connection is explicitly disconnected via the connection's
+<tt class="computeroutput">disconnect</tt> method directly, or indirectly via the
+signal's <tt class="computeroutput">disconnect</tt> method or
+<tt class="computeroutput">scoped_connection</tt>'s destructor.</p></li><li><p>A <tt class="computeroutput">trackable</tt> object bound to the slot is
+destroyed.</p></li><li><p>The signal is destroyed.</p></li></ul></div><p>These events can occur at any time without disrupting a signal's
+calling sequence. If a signal/slot connection is disconnected at
+any time during a signal's calling sequence, the calling sequence
+will still continue but will not invoke the disconnected slot.
+Additionally, a signal may be destroyed while it is in a calling
+sequence, and which case it will complete its slot call sequence
+but may not be accessed directly.</p><p>Signals may be invoked recursively (e.g., a signal A calls a
+slot B that invokes signal A...). The disconnection behavior does
+not change in the recursive case, except that the slot calling
+sequence includes slot calls for all nested invocations of the
+signal.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="id2890595"></a>Passing slots (Intermediate)</h4></div></div><div></div></div><p>Slots in the Boost.Signals library are created from arbitrary
+function objects, and therefore have no fixed type. However, it is
+commonplace to require that slots be passed through interfaces that
+cannot be templates. Slots can be passed via the
+<tt class="computeroutput">slot_type</tt> for each particular signal type and any
+function object compatible with the signature of the signal can be
+passed to a <tt class="computeroutput">slot_type</tt> parameter. For instance:</p><div class="informaltable"><table border="1"><colgroup><col><col></colgroup><thead><tr><th align="left">Preferred syntax</th><th align="left">Portable syntax</th></tr></thead><tbody><tr><td align="left"><pre class="programlisting">
+class Button 
+{
+  typedef boost::signal&lt;void (int x, int y)&gt; OnClick;
+
+public:
+  void doOnClick(const OnClick::slot_type&amp; slot);
+
+private:
+  OnClick onClick;
+};
+
+void Button::doOnClick(const OnClick::slot_type&amp; slot)
+{
+  onClick.<a href="class.boost.signalN.html#id2841744">connect</a>(slot);
+}
+
+void printCoordinates(long x, long y)
+{
+  std::cout &lt;&lt; &quot;(&quot; &lt;&lt; x &lt;&lt; &quot;, &quot; &lt;&lt; y &lt;&lt; &quot;)\n&quot;;
+}
+
+void f(Button&amp; button)
+{
+  button.doOnClick(&amp;printCoordinates);
+}
+</pre></td><td align="left"><pre class="programlisting">
+class Button 
+{
+  typedef <a href="class.boost.signalN.html" title="Class template signalN">boost::signal2</a>&lt;void, int x, int y&gt; OnClick;
+
+public:
+  void doOnClick(const OnClick::slot_type&amp; slot);
+
+private:
+  OnClick onClick;
+};
+
+void Button::doOnClick(const OnClick::slot_type&amp; slot)
+{
+  onClick.<a href="class.boost.signalN.html#id2841744">connect</a>(slot);
+}
+
+void printCoordinates(long x, long y)
+{
+  std::cout &lt;&lt; &quot;(&quot; &lt;&lt; x &lt;&lt; &quot;, &quot; &lt;&lt; y &lt;&lt; &quot;)\n&quot;;
+}
+
+void f(Button&amp; button)
+{
+  button.doOnClick(&amp;printCoordinates);
+}
+</pre></td></tr></tbody></table></div><p>The <tt class="computeroutput">doOnClick</tt> method is now functionally equivalent
+to the <tt class="computeroutput">connect</tt> method of the <tt class="computeroutput">onClick</tt>
+signal, but the details of the <tt class="computeroutput">doOnClick</tt> method can be
+hidden in an implementation detail file.</p></div></div></div><table width="100%"><tr><td align="left"><small></small></td><td align="right"><small>Copyright © 2001-2003 Douglas Gregor</small></td></tr></table><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="signals.html"><img src="images/prev.png" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="signals.html"><img src="images/up.png" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="signals.reference.html"><img src="images/next.png" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Boost.Signals </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a></td><td width="40%" align="right" valign="top"> Reference</td></tr></table></div></body></html>
