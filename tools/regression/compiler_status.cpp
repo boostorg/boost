@@ -25,10 +25,11 @@
 namespace fs = boost::filesystem;
 namespace xml = boost::tiny_xml;
 
-#include <cstdlib>  // for abort
+#include <cstdlib>  // for abort, exit
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -40,7 +41,7 @@ using std::string;
 const string pass_msg( "Pass" );
 const string warn_msg( "<i>Warn</i>" );
 const string fail_msg( "<font color=\"#FF0000\"><i>Fail</i></font>" );
-const string note_msg( "<br><i>Note</i>" );
+const string note_msg( "<sup>*</sup>" );
 const string missing_residue_msg( "<i>Missing</i>" );
 
 const std::size_t max_compile_msg_size = 10000;
@@ -66,9 +67,39 @@ namespace
   fs::ofstream links_file;
   string links_name;
 
+  string notes_file;
+  fs::path notes_map_path;
+  typedef std::multimap< string, string > notes_map; // key is test_name-toolset,
+                                                // value is note bookmark
+  notes_map notes;
+
   string specific_compiler; // if running on one toolset only
 
   const string empty_string;
+
+//  build notes_bookmarks from notes HTML  -----------------------------------//
+
+  void build_notes_bookmarks()
+  {
+    if ( notes_map_path.empty() ) return;
+    fs::ifstream notes_map_file( notes_map_path );
+    if ( !notes_map_file )
+    {
+      std::cerr << "Could not open --notes-map input file: " << notes_map_path.string() << std::endl;
+      std::exit( 1 );
+    }
+    string line;
+    while( std::getline( notes_map_file, line ) )
+    {
+      string::size_type pos = 0;
+      if ( (pos = line.find( ',', pos )) == string::npos ) continue;
+      string key(line.substr( 0, pos ) );
+      string bookmark( line.substr( pos+1 ) );
+
+//      std::cout << "inserting \"" << key << "\",\"" << bookmark << "\"\n";
+      notes.insert( std::make_pair( key, bookmark ) );
+    }
+  }
 
 //  relative path between two paths  -----------------------------------------//
 
@@ -348,9 +379,34 @@ const string & attribute_value( const xml::element & element,
     return result;
   }
 
-  //  do_cell  -----------------------------------------------------------------//
+  //  do_notes  --------------------------------------------------------------//
 
-  bool do_cell( const fs::path & test_dir,
+  void do_notes( const string & key, string & sep, string & target )
+  {
+    notes_map::const_iterator itr = notes.lower_bound( key );
+    if ( itr != notes.end() && itr->first == key )
+    {
+      target += "<sup>";
+      for ( ; itr != notes.end() && itr->first == key; ++itr )
+      {
+        target += sep;
+        sep = ",";
+        target += "<a href=\"";
+        target += notes_file;
+        target += "#";
+        target += itr->second;
+        target += "\">";
+        target += itr->second;
+        target += "</a>";
+      }
+      target += "</sup>";
+    }
+  }
+
+  //  do_cell  ---------------------------------------------------------------//
+
+  bool do_cell( const string & lib_name,
+    const fs::path & test_dir,
     const string & test_name,
     const string & toolset,
     string & target,
@@ -395,7 +451,7 @@ const string & attribute_value( const xml::element & element,
           always_show_run_output || note );
     }
 
-    // generate the status table cell
+    // generate the status table cell pass/warn/fail HTML
     target += "<td>";
     if ( anything_generated != 0 )
     {
@@ -407,10 +463,29 @@ const string & attribute_value( const xml::element & element,
       target += toolset;
       target += "\">";
       target += pass ? (anything_generated < 2 ? pass_msg : warn_msg) : fail_msg;
-      if ( pass && note ) target += note_msg;
       target += "</a>";
+      if ( pass && note ) target += note_msg;
     }
     else  target += pass ? pass_msg : fail_msg;
+
+    // if notes, generate the HTML
+    if ( !notes.empty() )
+    {
+      // test-specific notes
+      string key( test_name );
+      key += "-";
+      key += toolset;
+      string sep;
+      do_notes( key, sep, target );
+
+      // library-wide notes
+      key = "*";
+      key += lib_name;
+      key += "-";
+      key += toolset;
+      do_notes( key, sep, target );
+    }
+
     target += "</td>";
     return (anything_generated != 0) || !pass;
   }
@@ -462,7 +537,7 @@ const string & attribute_value( const xml::element & element,
     for ( std::vector<string>::const_iterator itr=toolsets.begin();
       itr != toolsets.end(); ++itr )
     {
-      anything_to_report |= do_cell( test_dir, test_name, *itr, target,
+      anything_to_report |= do_cell( lib_name, test_dir, test_name, *itr, target,
         always_show_run_output );
     }
 
@@ -597,6 +672,10 @@ int cpp_main( int argc, char * argv[] ) // note name!
       { locate_root = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--comment" ) == 0 )
       { comment_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
+    else if ( argc > 2 && std::strcmp( argv[1], "--notes" ) == 0 )
+      { notes_file = argv[2]; --argc; ++argv; }
+    else if ( argc > 2 && std::strcmp( argv[1], "--notes-map" ) == 0 )
+      { notes_map_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
@@ -618,7 +697,14 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "                               default boost-root.\n"
       "           --comment path      Path to file containing HTML\n"
       "                               to be copied into status-file.\n"
-      "example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n";
+      "           --notes file        HTML notes filename; no path information.\n"
+      "           --notes-map path    Path to file of test-toolset,n lines, where\n"
+      "                               n is number of note bookmark in --notes file.\n"
+      "Example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n"
+      "Note: Only the leaf of the links-file path and --notes file string are\n"
+      "used in status-file HTML links. Thus for browsing, status-file,\n"
+      "links-file, and --notes file must all be in the same directory.\n"
+      ;
     return 1;
   }
 
@@ -652,6 +738,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
     }
   }
   else no_links = true;
+
+  build_notes_bookmarks();
 
   char run_date[128];
   std::time_t tod;
