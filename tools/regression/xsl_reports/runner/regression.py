@@ -265,8 +265,9 @@ def tool_path( name_or_spec ):
         if name_or_spec[ 'name' ] in files:
             return os.path.join( root, name_or_spec[ 'name' ] )
     
-    raise Exception( 'Cannot find "%" in any of the following locations:\n%s' % (
-          '\n'.join( [ name_or_spec[ 'path' ], build_path_root ] )
+    raise Exception( 'Cannot find "%s" in any of the following locations:\n%s' % (
+          name_or_spec[ 'name' ]
+        , '\n'.join( [ name_or_spec[ 'path' ], build_path_root ] )
         ) )
 
 
