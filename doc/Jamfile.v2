@@ -1,0 +1,14 @@
+project boost/doc ;
+import boostbook : boostbook ;
+
+# The <dependency> below allows Boost.Build to see Doxygen
+# main target, which is necessary to correctly build
+# documentation
+boostbook doc : src/boost.xml 
+    : 
+     <dependency>../libs/program_options/doc//autodoc.xml 
+     <dependency>../libs/algorithm/string/doc//autodoc.xml
+     <dependency>../libs/logic/doc//reference.xml
+     <xsl:param>boost.libraries=../../libs/libraries.htm
+
+    ;
