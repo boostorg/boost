@@ -1,0 +1,251 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Portability Hints: Microsoft Visual C++ 6.0 SP4</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+
+<p>
+
+<h1>Portability Hints: Microsoft Visual C++ 6.0 SP4</h1>
+
+Similar to the
+<a href="borland_cpp.html">portability hints for Borland C++</a>,
+this page provides hints on some language features of the Microsoft Visual C++
+version 6.0 servicepack 4 compiler.
+
+Each entry in the following list describes a particular issue,
+complete with sample source code to demonstrate the effect.
+Most sample code herein has been verified to compile with gcc 2.95.2
+and Comeau C++ 4.2.44.
+
+
+<h2>Preprocessor symbol</h2>
+
+The preprocessor symbol <code>_MSC_VER</code> is defined for all
+Microsoft C++ compilers.  Its value is the internal version number of the
+compiler interpreted as a decimal number.  Since a few other compilers
+also define this symbol, boost provides the symbol
+<code>BOOST_MSVC</code> defined in
+<a href="../boost/config.hpp">boost/config.hpp</a>
+to the value of _MSC_VER if and only if the compiler is really
+Microsoft Visual C++.
+
+The following table lists some known values.
+<p>
+
+<table border="1">
+<tr>
+<th>Compiler</th>
+<th><code>BOOST_MSVC</code> value</th>
+</tr>
+
+<tr>
+<td>Microsoft Visual C++ 6.0 SP4</td>
+<td>1200</td>
+</tr>
+
+</table>
+
+
+<h2>Core Language</h2>
+
+<h3>[chained using] Chaining <code>using</code>-declarations</h3>
+
+Chaining <code>using</code>-declarations do not work.
+<pre>
+void f();
+
+namespace N {
+  using ::f;
+}
+
+void g()
+{
+  using N::f;  // C2873: 'f': the symbol cannot be used in a using-declaration
+}
+</pre>
+
+
+<h3>[explicit-instantiation] Explicit function template
+instantiation</h3>
+
+Trying to explicitly instantiate a function template leads to the
+wrong function being called silently.
+
+<pre>
+#include &lt;stdio.h>
+
+template&lt;class T>
+void f()
+{
+  printf("%d\n", sizeof(T));
+}
+
+int main()
+{
+  f&lt;double>();      // output: "1"
+  f&lt;char>();        // output: "1"
+  return 0;
+}
+</pre>
+
+
+<h3>[for-scoping] Scopes of definitions in for-loops</h3>
+
+The scope of variable definitions in <code>for</code> loops should be
+local to the loop's body, but it is instead local to the enclosing
+block:
+
+
+<pre>
+int main()
+{
+  for(int i = 0; i &lt; 5; ++i)
+   ;
+  for(int i = 0; i &lt; 5; ++i)  // C2374: 'i': Redefinition; multiple initialization
+   ;
+  return 0;
+}
+</pre>
+
+<strong>Workaround:</strong> Enclose the offending <code>for</code>
+loops in another pair of curly braces.
+
+
+<h3>[inclass-member-init] In-class member initialization</h3>
+
+In-class member initialization, require to implement a
+Standard-conforming <code>std::numeric_limits</code> template, does
+not work.
+
+<pre>
+struct A
+{
+  static const int i = 5;      // "invalid syntax for pure virtual method"
+};
+</pre>
+
+
+<h3>[koenig-lookup] Argument-dependent lookup</h3>
+
+Argument-dependent lookup, also called Koenig lookup, does not work.
+No additional namespace induced from the argument types seem to be
+considered.
+
+<pre>
+namespace N {
+  struct A {};
+  void f(A);
+}
+
+void g()
+{
+  N::A a;
+  f(a);     // 'f': undeclared identifier
+}
+</pre>
+
+
+<h3>[template-friend] Templates as friends</h3>
+
+A Template cannot be declared a friend of a class.
+
+<pre>
+template&lt;class T>
+struct A {};
+
+struct B
+{
+  template&lt;class T>
+  friend struct A;     // "syntax error"
+};
+</pre>
+
+
+<h3>[member-template-outofline] Out-of-line definitions of member
+templates</h3>
+
+Defining member templates outside their enclosing class does not work.
+
+<pre>
+template&lt;class T>
+struct A
+{
+  template&lt;class U>
+  void f();
+};
+
+template&lt;class T>
+template&lt;class U>   // "syntax error"
+void A&lt;T>::f()      // "T: undeclared identifier"
+{
+}
+</pre>
+
+<strong>Workaround:</strong> Define member templates in-line within
+their enclosing class.
+
+
+<h3>[partial-spec] Partial specialization</h3>
+
+Partial specialization of class templates does not work.
+
+<pre>
+template&lt;class T>
+struct A {};
+
+template&lt;class T>
+struct B {};
+
+template&lt;class T>
+struct A&lt;B&lt;T> > {};  // template class was already defined as a non-template
+</pre>
+
+<strong>Workaround:</strong> In some situations where interface
+does not matter, member class templates can simulate partial
+specialization.
+
+
+<h3>[template-value] Dependent emplate value parameters</h3>
+
+Template value parameters whose type depends on a previous template
+parameter provoke an internal compiler error if the correct syntax
+(with "typename") is used.
+
+<pre>
+template&lt;class T, typename T::result_type> // C1001: INTERNAL COMPILER ERROR: ms
+c1.cpp, line 1794
+struct B {};
+ // (omit "typename" and it compiles)
+
+</pre>
+
+
+<h3>[wchar_t] <code>wchar_t</code> is not built-in</h3>
+
+The type <code>wchar_t</code> is not a built-in type.
+
+<pre>
+wchar_t x;  // "missing storage class or type identifier"
+</pre>
+
+
+<p>
+<hr>
+
+2001-02-01 <a href="../people/jens_maurer.htm">Jens Maurer</a>
+</body>
+</html>
