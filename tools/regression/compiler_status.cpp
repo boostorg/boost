@@ -150,6 +150,7 @@ namespace
     string t( s );
     string::size_type pos = t.find( "/build/" );
     if ( pos != string::npos ) pos += 7;
+    else if ( (pos = t.find( "/test/" )) != string::npos ) pos += 6;
     else return "";
     return t.substr( pos, t.find( "/", pos ) - pos );
   }
