@@ -61,6 +61,12 @@ include testing.jam ;
 
     run libs/crc/crc_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
+    test-suite dynamic_bitset
+        : [ run libs/dynamic_bitset/dyn_bitset_unit_tests1.cpp ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests2.cpp ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp ]
+        ;
+
     test-suite function
         : [ run libs/function/test/deprecated_syntax_test.cpp <lib>../libs/test/build/test_exec_monitor ]
           [ run libs/function/test/function_test.cpp <lib>../libs/test/build/test_exec_monitor ]
