@@ -476,8 +476,8 @@ int main(int argc, char * argv[])
   if(host == "linux")
     out << "Notes: A hand-crafted &lt;limits&gt; Standard header has been\n"
 	<< "applied to all configurations.\n"
-	<< "The tests were run on a GNU libc 2.2.1 system which has improved\n"
-	<< "wide character support compared to previous versions.";
+	<< "The tests were run on a GNU libc 2.2.2 system which has improved\n"
+	<< "wide character support compared to 2.1.x and earlier versions.";
   else if(host == "irix" || host == "tru64")
     out << "Note: For the 'clib' configuration, the missing new-style C\n"
 	<< "library headers &lt;cXXX&gt; have been supplied.\n";
