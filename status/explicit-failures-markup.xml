@@ -1,8 +1,12 @@
-<explicit-failures-markup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="explicit-failures.xsd">
+<explicit-failures-markup 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="explicit-failures.xsd"
+    >
+
     <!-- 
     The following online services can be used to validate your changes to this file:
 
-        - http://apps.gotdotnet.com/xmltools/xsdvalidator/  
+        - http://apps.gotdotnet.com/xmltools/xsdvalidator/
 
      When using the gotdotnet tool you need to provide both the explicit-failures-markup.xml 
      file as the XML document and the explicit-failures.xsd as the schema document.  Use the
@@ -329,6 +333,88 @@
         </mark-failure>
       </test>
     </library>
+
+
+    <!-- MPL -->
+    <library name="mpl">
+
+        <mark-expected-failures>
+            <test name="as_sequence"/>
+            <test name="is_sequence"/>
+            <test name="has_xxx"/>
+            <test name="no_has_xxx"/>
+            <test name="single_view"/>
+            <toolset name="cw-8.3"/>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
+                This failure is caused by a deficient SFINAE implementation; the bug
+                was fixed in the next major compiler version (CodeWarrior 9.x).
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="is_sequence"/>
+            <test name="as_sequence"/>            
+            <toolset name="borland-5.6.4"/>
+            <toolset name="gcc-2.95.3*"/>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
+                This failure is caused by a deficient SFINAE implementation.
+            </note>
+        </mark-expected-failures>
+        
+        <mark-expected-failures>
+            <test name="always"/>
+            <test name="multiset"/>
+            <test name="zip_view"/>
+            
+            <toolset name="borland-5.6.4"/>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
+                This failure is caused by a compiler bug without known workaround.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="assert"/>
+            <test name="at"/>
+            <test name="back"/>
+            <test name="front"/>
+            <test name="has_xxx"/>
+            <test name="multiset"/>
+            <test name="no_has_xxx"/>
+            <test name="zip_view"/>
+            
+            <toolset name="mipspro"/>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
+                This failure is caused by a compiler bug without known workaround.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="quote"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="msvc*"/>
+            <toolset name="mipspro"/>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
+                This failure is caused by a lack of compiler support for template template 
+                parameters.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="map"/>
+            <test name="set"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="msvc*"/>
+            <toolset name="vc7"/>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="mipspro"/>
+            <note author="Aleksey Gurtovoy" date="17 Sep 2004">
+                This is an advanced functionality that hasn't been ported to the deficient
+                compilers (yet). Patches are welcome.
+            </note>
+        </mark-expected-failures>
+
+    </library>
+
 
     <!-- multi_array -->
     <library name="multi_array">
