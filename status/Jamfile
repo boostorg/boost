@@ -1128,6 +1128,18 @@ include testing.jam ;
 			]
 				
 				
+		[ run $(TYPE_TRAIT_PATH)is_polymorphic_test.cpp
+   			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
+   			<lib>$(TEST_LIB_PATH)unit_test_framework 
+			:
+				--report_level=detailed --build_info=yes --log_level=messages
+			: 
+			:
+				<sysinclude>$(BOOST_ROOT)
+			:
+			]
+			
+
 		[ run $(TYPE_TRAIT_PATH)is_reference_test.cpp
    			<lib>$(TYPE_TRAIT_PATH)type_traits_init 
    			<lib>$(TEST_LIB_PATH)unit_test_framework 
@@ -1349,4 +1361,5 @@ include testing.jam ;
 	}
 
 }
+
 
