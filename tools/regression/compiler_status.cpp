@@ -120,9 +120,9 @@ namespace
 
     // the gcc config_info "Detected Platform" sometimes reports "cygwin", so
     // prefer any of the other compilers.
-    if ( find_file( boost_root_dir << "status/bin/config_info.test",
+    if ( find_file( boost_root_dir / "status/bin/config_info.test",
       "config_info.output", dot_output_path, "gcc" )
-      || find_file( boost_root_dir << "status/bin/config_info.test",
+      || find_file( boost_root_dir / "status/bin/config_info.test",
       "config_info.output", dot_output_path ) )
     {
       fs::ifstream file( dot_output_path );
@@ -150,8 +150,8 @@ namespace
   {
     string result;
     fs::path dot_output_path;
-    if ( find_file( boost_root_dir << "status/bin/config_info.test"
-      << compiler_name, "config_info.output", dot_output_path ) )
+    if ( find_file( boost_root_dir / "status/bin/config_info.test"
+      / compiler_name, "config_info.output", dot_output_path ) )
     {
       fs::ifstream file( dot_output_path );
       if ( file )
@@ -177,8 +177,8 @@ namespace
     const string & compiler_name )
   {
     string result;
-    fs::path tools_path( boost_root_dir << "tools/build" << compiler_name
-      + "-tools.jam" );
+    fs::path tools_path( boost_root_dir / "tools/build" / (compiler_name
+      + "-tools.jam") );
     fs::ifstream file( tools_path );
     if ( file )
     {
@@ -253,14 +253,14 @@ namespace
     {
       if ( fs::is_directory( *itr ) )
       {
-        if ( child.is_null() ) child = *itr;
+        if ( child.empty() ) child = *itr;
         else throw std::runtime_error(
           string( "two target possibilities found: \"" )
-            + child.generic_path() + "\" and \""
-            + (*itr).generic_path() + "\"" );
+            + child.string() + "\" and \""
+            + (*itr).string() + "\"" );
       }
     }
-    if ( child.is_null() ) return root; // this dir has no children
+    if ( child.empty() ) return root; // this dir has no children
     return target_directory( child );
   }
 
@@ -340,7 +340,7 @@ namespace
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
       {
         failed_lib_target_dirs.insert( lib );
-        fs::ifstream file( boost_root_dir << lib << "test_log.xml" );
+        fs::ifstream file( boost_root_dir / lib / "test_log.xml" );
         if ( file )
         {
           xml::element_ptr db = xml::parse( file );
@@ -367,13 +367,13 @@ namespace
     bool always_show_run_output )
   // return true if any results except pass_msg
   {
-    fs::path target_dir( target_directory( test_dir << toolset ) );
+    fs::path target_dir( target_directory( test_dir / toolset ) );
     bool pass = false;
 
     // missing jam residue
-    if ( fs::exists( target_dir << (test_name + ".success") ) ) pass = true;
-    else if ( !fs::exists( target_dir << (test_name + ".failure") )
-      && !fs::exists( target_dir << "test_log.xml" ) )
+    if ( fs::exists( target_dir / (test_name + ".success") ) ) pass = true;
+    else if ( !fs::exists( target_dir / (test_name + ".failure") )
+      && !fs::exists( target_dir / "test_log.xml" ) )
     {
       target += "<td>" + missing_residue_msg + "</td>";
       return true;
@@ -383,11 +383,11 @@ namespace
 
     if ( !no_links )
     {
-      fs::ifstream file( target_dir << "test_log.xml" );
+      fs::ifstream file( target_dir / "test_log.xml" );
       if ( !file ) // missing jam_log.xml
       {
         std::cerr << "Missing jam_log.xml in target \""
-          << target_dir.generic_path() << "\"\n";
+          << target_dir.string() << "\"\n";
         target += "<td>";
         target += pass ? pass_msg : fail_msg;
         target += "</td>";
@@ -462,22 +462,22 @@ namespace
 
     // find the library documentation path
     string lib_docs_path( "../libs/" + lib_name + "/" );
-    fs::path cur_lib_docs_path( boost_root_dir << "libs" << lib_name );
-    if ( fs::exists( cur_lib_docs_path << "index.htm" ) )
+    fs::path cur_lib_docs_path( boost_root_dir / "libs" / lib_name );
+    if ( fs::exists( cur_lib_docs_path / "index.htm" ) )
       lib_docs_path += "index.htm";
-    else if ( fs::exists( cur_lib_docs_path << "index.html" ) )
+    else if ( fs::exists( cur_lib_docs_path / "index.html" ) )
       lib_docs_path += "index.html";
-    else if ( fs::exists( cur_lib_docs_path << "doc/index.htm" ) )
+    else if ( fs::exists( cur_lib_docs_path / "doc/index.htm" ) )
       lib_docs_path += "doc/index.htm";
-    else if ( fs::exists( cur_lib_docs_path << "doc/index.html" ) )
+    else if ( fs::exists( cur_lib_docs_path / "doc/index.html" ) )
       lib_docs_path += "doc/index.html";
-    else if ( fs::exists( cur_lib_docs_path << (lib_name + ".htm") ) )
+    else if ( fs::exists( cur_lib_docs_path / (lib_name + ".htm") ) )
       lib_docs_path += lib_name + ".htm";
-    else if ( fs::exists( cur_lib_docs_path << (lib_name + ".html") ) )
+    else if ( fs::exists( cur_lib_docs_path / (lib_name + ".html") ) )
       lib_docs_path += lib_name + ".html";
-    else if ( fs::exists( cur_lib_docs_path << "doc" << (lib_name + ".htm") ) )
+    else if ( fs::exists( cur_lib_docs_path / "doc" / (lib_name + ".htm") ) )
       lib_docs_path += lib_name + ".htm";
-    else if ( fs::exists( cur_lib_docs_path << "doc" << (lib_name + ".html") ) )
+    else if ( fs::exists( cur_lib_docs_path / "doc" / (lib_name + ".html") ) )
       lib_docs_path += lib_name + ".html";
 
     // generate the library name, test name, and test type table data
@@ -540,8 +540,8 @@ namespace
 
   void do_table( const fs::path & boost_root_dir )
   {
-//    fs::path build_dir( boost_root_dir << "status" << "bin" );
-    fs::path build_dir( fs::initial_directory() << "bin" );
+//    fs::path build_dir( boost_root_dir / "status" / "bin" );
+    fs::path build_dir( fs::initial_path() / "bin" );
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
      
@@ -551,11 +551,12 @@ namespace
       "<td><a href=\"compiler_status.html#test-type\">Test Type</a></td>\n";
 
     fs::directory_iterator itr( build_dir );
+    while ( itr != end_itr && !fs::is_directory( *itr ) ) ++itr; // bypass chaff
     if ( itr != end_itr )
     {
       fs::directory_iterator compiler_itr( *itr );
       if ( specific_compiler.empty() )
-        std::clog << "Using " << itr->generic_path() << " to determine compilers\n";
+        std::clog << "Using " << itr->string() << " to determine compilers\n";
       for (; compiler_itr != end_itr; ++compiler_itr )
       {
         if ( fs::is_directory( *compiler_itr )  // check just to be sure
@@ -617,12 +618,12 @@ int cpp_main( int argc, char * argv[] ) // note name!
     return 1;
   }
 
-  boost_root_dir = fs::path( argv[1], fs::system_specific );
-  fs::path jamfile_path( fs::initial_directory() << "Jamfile" );
+  boost_root_dir = fs::path( argv[1], fs::native );
+  fs::path jamfile_path( fs::initial_path() / "Jamfile" );
   jamfile.open( jamfile_path );
   if ( !jamfile )
   {
-    std::cerr << "Could not open Jamfile: " << jamfile_path.file_path() << std::endl;
+    std::cerr << "Could not open Jamfile: " << jamfile_path.native_file_string() << std::endl;
     return 1;
   }
 
