@@ -475,12 +475,11 @@ int main(int argc, char * argv[])
 
   out << "<html>\n<head>\n<title>\nCompiler Status: " + host + "\n</title>\n</head>\n"
       << "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
-      << "<h1><img border border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\"></h1>\n"
+      << "<img border border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\" align=\"left\">\n"
       << "<h1>Compiler Status: " + host + "</h1>\n"
       << "\n"
-      << "<p><b>Run Date:</b> " << run_date << "</p>\n"
-      << "<p><b>System Configuration:</b> " << get_system_configuration()
-      << "</p>\n"
+      << "<p><b>System Configuration:</b> " << get_system_configuration() << "<br>\n"
+      << "<b>Run Date:</b> " << run_date << "</p>\n"
       << "<p>\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
