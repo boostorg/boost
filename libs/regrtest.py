@@ -7,7 +7,7 @@
 # Default: regrtest * *
 #
 # Compilers:  bcc54 = Borland 5.4
-#             bcc55 = Borland 5.5
+#             bcc55 = Borland 5.5.1
 #             cw    = Metrowerks CodeWarrior
 #             gcc   = GNU GCC/egcs
 #             vc    = Microsoft Visual C++
@@ -74,10 +74,10 @@ def compile( program ):
   else:
     if compiler_arg=="*" or compiler_arg=="bcc54":
       bcc54_path=os.environ["BOOST_BCC54_PATH"]
-      invoke( "Borland C++ 5.4", "\"" + bcc54_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
+      invoke( "Borland C++ 5.4 up2", "\"" + bcc54_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
     if compiler_arg=="*" or compiler_arg=="bcc55":
       bcc55_path=os.environ["BOOST_BCC55_PATH"]
-      invoke( "Borland C++ 5.5", "\"" + bcc55_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
+      invoke( "Borland C++ 5.5.1", "\"" + bcc55_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
 
     # GCC 2.95.2 is looping on some tests, so only invoke if asked for by name
     #if compiler_arg=="*" or compiler_arg=="gcc":
@@ -86,7 +86,7 @@ def compile( program ):
       invoke( "GNU GCC", "c++ -ftemplate-depth-30 -I" + path + " -IC:/stl/STLport-4.0b8/stlport  " + fullpath + "  c:/stl/STLport-4.0b8/lib/libstlport_gcc.a" )
 
     if compiler_arg=="*" or compiler_arg=="cw":
-      invoke( "Metrowerks CodeWarrior", "mwcc -maxerrors 10 -I- -I" + path + " " + fullpath )
+      invoke( "Metrowerks CodeWarrior", "mwcc -maxerrors 10 -cwd source -I- -I" + path + " " + fullpath )
 
 #John Maddock says use /Zm400 switch; it increases compiler memory
     if compiler_arg=="*" or compiler_arg=="vc":
@@ -168,9 +168,9 @@ if sys.platform == "linux2":
 #    f.write( "<td>GNU<br>GCC<br>pre-2.96 experimental</td>\n" )
 else:
   if compiler_arg=="*" or compiler_arg=="bcc54":
-    f.write( "<td>Borland<br>BCC<br>5.4</td>\n" )
+    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
   if compiler_arg=="*" or compiler_arg=="bcc55":
-    f.write( "<td>Borland<br>BCC<br>5.5</td>\n" )
+    f.write( "<td>Borland<br>BCC<br>5.5.1</td>\n" )
 
   # GCC 2.95.2 is looping on some tests, so only invoke if asked for by name
   #if compiler_arg=="*" or compiler_arg=="gcc":
