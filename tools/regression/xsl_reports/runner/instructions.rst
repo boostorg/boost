@@ -50,7 +50,7 @@ Running tests
 
     python regression.py --runner=Metacomm --proxy=http://www.someproxy.com:3128
 
-.. [#runnerid] Note that if you are running regressions interlacingly with a different 
+.. [#runnerid] If you are running regressions interlacingly with a different 
    set of compilers (e.g. for Intel in the morning and GCC at the end of the day), you need 
    to provide a *different* runner id for each of these runs, e.g. ``your_name-intel``, and
    ``your_name-gcc``.
