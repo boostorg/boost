@@ -97,13 +97,17 @@ def compile( program ):
 
   elif sys.platform == "osf1V5":
     if compiler_arg=="*" or compiler_arg=="cxx":
-      invoke( "Compaq C++", "cxx -std strict_ansi  -D__USE_STD_IOSTREAM -I" + path + "  " + fullpath ) 
+      invoke( "Compaq C++", "cxx -std strict_ansi -D__USE_STD_IOSTREAM -I" + path + " -c " + fullpath ) 
+    if compiler_arg=="*" or compiler_arg=="cxx-clib":
+      invoke( "Compaq C++ with <cXXX> headers", "cxx -std strict_ansi -D__USE_STD_IOSTREAM -I$HOME/include -I" + path + " -c " + fullpath )
 
 # ---------- IRIX ---------------#
 
   elif sys.platform == "irix6":
-    if compiler_arg=="*" or compiler_args=="irixcc":
-      invoke( "IRIX CC", "CC -LANG:std -I" + path + " " + fullpath )
+    if compiler_arg=="*" or compiler_arg=="irixcc":
+      invoke( "IRIX CC", "CC -LANG:std -I" + path + " -c " + fullpath )
+    if compiler_arg=="*" or compiler_arg=="irixcc-clib":
+      invoke( "IRIX CC with <cXXX> headers", "CC -LANG:std -I$HOME/include -I" + path + " -c " + fullpath )
 
 
 # ----------- BeOS5/Intel ------ #
@@ -298,8 +302,13 @@ else:
   compile( program_arg )
 
 f.write( "</table>\n" );
+
 if sys.platform == "linux2":
-  f.write( "<p>\nNote: A hand-crafted &lt;limits&gt; Standard header has been applied to all configurations.\n" )
+  f.write( "<p>\nNotes: A hand-crafted &lt;limits&gt; Standard header has been applied to all configurations.\n" );
+  f.write( "The tests were run on a GNU libc 2.2 system which has improved wide character support compared to previous versions.\n" )
+elif sys.platform == "osf1V5" or sys.platform == "irix6":
+  f.write( "<p>\nNote: For the -clib configuration, the missing &lt;cXXX&gt; headers have been supplied.\n" )
+
 f.write( "</body>\n</html>\n" )
 
 # end
