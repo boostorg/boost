@@ -102,11 +102,8 @@ namespace
   string toolset( const string & s )
   {
     string t( s );
-    string::size_type pos = t.find( "/bin/" );
-    if ( pos != string::npos ) pos += 5;
-    else return "";
-    pos = t.find( "/", pos );
-    if ( pos != string::npos ) pos += 1;
+    string::size_type pos = t.find( ".test/" );
+    if ( pos != string::npos ) pos += 6;
     else return "";
     return t.substr( pos, t.find( "/", pos ) - pos );
   }
@@ -114,10 +111,10 @@ namespace
   string test_name( const string & s )
   {
     string t( s );
-    string::size_type pos = t.find( "/bin/" );
-    if ( pos != string::npos ) pos += 5;
-    else return "";
-    return t.substr( pos, t.find( ".", pos ) - pos );
+    string::size_type pos = t.find( ".test/" );
+    if ( pos == string::npos ) return "";
+	string::size_type pos_start = t.rfind( '/', pos ) + 1;
+    return t.substr( pos_start, pos - pos_start );
   }
 
   // the format of paths is really kinky, so convert to normal form

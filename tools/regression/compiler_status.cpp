@@ -178,7 +178,11 @@ namespace
 
     // the gcc config_info "Detected Platform" sometimes reports "cygwin", so
     // prefer any of the other compilers.
-    if ( find_file( locate_root / "status/bin/config_info.test",
+    if ( find_file( locate_root / "bin/boost/status/config_info.test",
+      "config_info.output", dot_output_path, "gcc" )
+      || find_file( locate_root / "bin/boost/status/config_info.test",
+      "config_info.output", dot_output_path )
+      || find_file( locate_root / "status/bin/config_info.test",
       "config_info.output", dot_output_path, "gcc" )
       || find_file( locate_root / "status/bin/config_info.test",
       "config_info.output", dot_output_path ) )
@@ -207,7 +211,9 @@ namespace
   {
     string result;
     fs::path dot_output_path;
-    if ( find_file( locate_root / "status/bin/config_info.test"
+    if ( find_file( locate_root / "bin/boost/status/config_info.test"
+      / compiler_name, "config_info.output", dot_output_path )
+      || find_file( locate_root / "status/bin/config_info.test"
       / compiler_name, "config_info.output", dot_output_path ) )
     {
       fs::ifstream file( dot_output_path );
@@ -611,7 +617,10 @@ const string & attribute_value( const xml::element & element,
         string subinclude_bin_dir(
           line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
 //      std::cout << "subinclude: " << subinclude_bin_dir << '\n';
-        fs::path subinclude_path( locate_root / subinclude_bin_dir / "/bin" );
+        fs::path subinclude_path( locate_root / "bin/boost" / subinclude_bin_dir );
+        if ( fs::exists( subinclude_path ) )
+          { do_rows_for_sub_tree( subinclude_path, results ); continue; }
+        subinclude_path = fs::path( locate_root / subinclude_bin_dir / "/bin" );
         if ( fs::exists( subinclude_path ) )
           { do_rows_for_sub_tree( subinclude_path, results ); }
       }
@@ -629,9 +638,13 @@ const string & attribute_value( const xml::element & element,
 
   void do_table()
   {
-    string relative( fs::initial_path().string() );
-    relative.erase( 0, boost_root.string().size()+1 );
-    fs::path bin_path( locate_root / relative / "bin" );
+    fs::path bin_path( locate_root / "bin/boost/status" );
+    if (!fs::exists(bin_path))
+    {
+      string relative( fs::initial_path().string() );
+      relative.erase( 0, boost_root.string().size()+1 );
+      bin_path = fs::path( locate_root / relative / "bin" );
+    }
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
 
