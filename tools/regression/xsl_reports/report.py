@@ -228,7 +228,7 @@ def build_xsl_reports(
         utils.log( 'Uploading v2 results into "%s" [connecting as %s]...' % ( upload_dir, user ) )
         
         utils.sourceforge.upload( 
-              os.path.join( results_dir, result_file_prefix, '*' )
+              os.path.join( results_dir, result_file_prefix )
             , upload_dir
             , user
             )

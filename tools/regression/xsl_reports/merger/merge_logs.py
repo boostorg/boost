@@ -15,7 +15,7 @@ def download_test_runs( destination, tag, user ):
     utils.log( 'Downloading test runs for tag "%s" [connecting as %s]...' % ( tag, user ) )
 
     utils.sourceforge.download( 
-          'regression-logs/incoming/%s/*' % tag
+          'regression-logs/incoming/%s/' % tag
         , os.path.join( destination, tag )
         , user
         )
