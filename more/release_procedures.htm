@@ -86,6 +86,7 @@ logs, and committing fixes  to CVS.</p>
   </ul>
   <blockquote>
     <pre>[After fixed code is committed to main branch]
+cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp [tag new merged point]
 cvs update -r RC_1_26_2 [switch to the release candidate branch]
 cvs update -j HEAD buggycode.hpp [merge changes from the trunk to the branch]
  --&gt; RCS file: /cvsroot/boost/.../buggycode.hpp,v
@@ -101,17 +102,23 @@ cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggyc
     <li>WinCVS:</li>
   </ul>
   <blockquote>
-    <p>After fixed code is committed to main branch, switch to the release 
-    candidate branch:</p>
+    <p>After fixed code is committed to main branch, tag as the new merged 
+    point:</p>
     <blockquote>
-    <p>Select file(s)</p>
+    <p>Select file(s) if not already selected.</p>
+    <p>Modify | Create tag on selection... | Create tag settings | Enter the tag 
+    name to create: <code>merged_to_RC_1_26_2</code>, Overwrite existing tags 
+    with same name | OK.</p>
+    </blockquote>
+    <p>Switch to the release candidate branch:</p>
+    <blockquote>
     <p>Modify | Update selection... | 
-    Update settings | Sticky options | Retrieve rev/tag/branch: RC_1_26_2 | OK</p>
+    Update settings | Sticky options | Retrieve rev/tag/branch: <code>RC_1_26_2</code> | OK</p>
     </blockquote>
       <p>Merge changes from main trunk into the release candidate branch:</p>
     <blockquote>
       <p>Modify | Update selection... | 
-    Update settings | Merge options | Only this rev/tag: HEAD | OK</p>
+    Update settings | Merge options | Only this rev/tag: <code>HEAD</code> | OK</p>
     </blockquote>
       <p>Commit merge results:</p>
     <blockquote>
