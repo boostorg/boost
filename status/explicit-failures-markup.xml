@@ -1,20 +1,20 @@
-<explicit-failures-markup 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<explicit-failures-markup
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="explicit-failures.xsd"
     >
 
-    <!-- 
+    <!--
     The following online services can be used to validate your changes to this file:
 
         - http://apps.gotdotnet.com/xmltools/xsdvalidator/
 
-     When using the gotdotnet tool you need to provide both the explicit-failures-markup.xml 
+     When using the gotdotnet tool you need to provide both the explicit-failures-markup.xml
      file as the XML document and the explicit-failures.xsd as the schema document.  Use the
      browse buttons to select them from your local hard drive.
 
         - http://tools.decisionsoft.com/schemaValidate.html
     -->
-    
+
     <!-- /////////////// Toolsets /////////////// -->
     <mark-toolset name="borland-5.6.4" status="required"/>
     <mark-toolset name="cw-9.3" status="required"/>
@@ -107,7 +107,7 @@
                 syntax .to_container( c ) was applied to all list_of() expressions.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>        
+        <mark-expected-failures>
             <test name="multi_index_container"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="gcc-2.95.3*"/>
@@ -227,7 +227,7 @@
             <toolset name="intel-7.1-stdlib-default-linux"/>
             <toolset name="intel-7.1-linux"/>
                 <note author="J. Garland">These are strange runtime failures for
-                           which there is no obvious explanation.  Later versions of the 
+                           which there is no obvious explanation.  Later versions of the
                            Intel compiler (eg:8.0) seem to have resolved the issue.
                         </note>
             </mark-failure>
@@ -386,7 +386,7 @@
             <toolset name="intel-7.1-linux"/>
             <toolset name="intel-7.1-stdlib-default-linux"/>
             <note author="Aleksey Gurtovoy">
-                Due to to standard library bugs this configuration is not supported by 
+                Due to to standard library bugs this configuration is not supported by
                 the most recent version of the library.
             </note>
         </mark-unusable>
@@ -484,20 +484,20 @@
 
         <mark-expected-failures>
             <test name="is_sequence"/>
-            <test name="as_sequence"/>            
+            <test name="as_sequence"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="gcc-2.95.3*"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004">
                 This failure is caused by a deficient SFINAE implementation.
             </note>
         </mark-expected-failures>
-        
+
         <mark-expected-failures>
             <test name="apply"/>
             <test name="for_each"/>
             <test name="multiset"/>
             <test name="zip_view"/>
-            
+
             <toolset name="borland-5.6.4"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004" refid="26"/>
         </mark-expected-failures>
@@ -511,7 +511,7 @@
             <test name="multiset"/>
             <test name="no_has_xxx"/>
             <test name="zip_view"/>
-            
+
             <toolset name="mipspro"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004" refid="26"/>
         </mark-expected-failures>
@@ -522,7 +522,7 @@
             <toolset name="msvc*"/>
             <toolset name="mipspro"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004">
-                This failure is caused by a lack of compiler support for template template 
+                This failure is caused by a lack of compiler support for template template
                 parameters.
             </note>
         </mark-expected-failures>
@@ -609,6 +609,21 @@ for more information.
             <toolset name="vc7"/>
             <note author="Aleksey Gurtovoy" refid="3"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="optional_test_ref_fail1"/>
+            <toolset name="borland-5.6.4"/>
+            <note author="Fernando Cacciola" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="optional_test_fail3a"/>
+            <toolset name="gcc-3.3-darwin"/>
+            <note author="Fernando Cacciola" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="optional_test_inplace_fail2"/>
+            <toolset name="gcc-3.3-darwin"/>
+            <note author="Fernando Cacciola" refid="2"/>
+        </mark-expected-failures>
     </library>
 
 
@@ -659,7 +674,7 @@ for more information.
             <test name="*"/>
             <toolset name="vc8.0"/>
             <note author="Aleksey Gurtovoy">
-                This failure is caused by a compiler bug in version 14.00.40809 that has 
+                This failure is caused by a compiler bug in version 14.00.40809 that has
                 been fixed in the latest development "alpha".
             </note>
         </mark-expected-failures>
@@ -691,7 +706,7 @@ for more information.
             <toolset name="msvc*"/>
             <toolset name="vc7"/>
             <note author="Robert Ramey" refid="6">
-                msvc 6 compiler failure.  The facility being tested conflicts the the 
+                msvc 6 compiler failure.  The facility being tested conflicts the the
                 compiler in a fundamental way and cannnot be worked around.
             </note>
         </mark-expected-failures>
@@ -718,7 +733,7 @@ for more information.
             <toolset name="gcc-2.95.3-stlport*"/>
             <note author="Aleksey Gurtovoy">
                 The library is known to work in this configuration <i>if compiled against
-                Spirit 1.6</i>. The latter is not provided by the particular testing 
+                Spirit 1.6</i>. The latter is not provided by the particular testing
                 environment these tests have been run in.
             </note>
         </mark-expected-failures>
@@ -756,7 +771,7 @@ for more information.
                 Historically, Spirit supported a lot of compilers, including (to some
                 extent) poorly conforming compilers such as VC6. Spirit v1.6.x will be
                 the last release that will support older poorly conforming compilers.
-                Starting from Spirit v1.8.0, ill conforming compilers will not be       
+                Starting from Spirit v1.8.0, ill conforming compilers will not be
                 supported. If you are still using one of these older compilers, you can
                 still use Spirit v1.6.x.
                 </p>
@@ -780,7 +795,7 @@ for more information.
                 for VC6 and VC7 by Peder Holt.
                 </p>
             </note>
-        </mark-unusable>        
+        </mark-unusable>
         <mark-expected-failures>
             <test name="action_tests*"/>
             <toolset name="intel-win32-7.1-vc6"/>
@@ -793,7 +808,7 @@ for more information.
             <test name="repeat_ast_tests*"/>
             <toolset name="intel-8.0-linux"/>
             <note author="Aleksey Gurtovoy">
-                This failure is caused by a compiler bug that manifests itself in the 
+                This failure is caused by a compiler bug that manifests itself in the
                 particular environment/hardware configuration the test has been run in.
                 You may or may not experience this issue in your local setup.
             </note>
@@ -804,7 +819,7 @@ for more information.
             <test name="epsilon_tests*"/>
             <toolset name="vc8.0"/>
             <note author="Aleksey Gurtovoy">
-                This failure is caused by a compiler bug in version 14.00.40809 that has 
+                This failure is caused by a compiler bug in version 14.00.40809 that has
                 been fixed in the latest development "alpha".
             </note>
         </mark-expected-failures>
@@ -968,7 +983,7 @@ for more information.
         </test>
 
         <test name="indirect_iter_member_types" corner-case="yes"/>
-        
+
         <mark-expected-failures>
             <test name="indirect_iter_member_types"/>
             <test name="pointee"/>
@@ -1007,13 +1022,15 @@ for more information.
     <!-- numeric/conversion -->
     <library name="numeric/conversion">
         <mark-unusable>
-            <toolset name="gcc-2.95.3-linux"/>            
+            <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="borland-5.6.4"/>
             <note author="Aleksey Gurtovoy" refid="5"/>
         </mark-unusable>
         <mark-expected-failures>
             <test name="udt_support_test"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="intel-7.1-linux"/>
+            <toolset name="intel-7.1-stdlib-default-linux"/>
             <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
             <note author="Aleksey Gurtovoy" refid="2"/>
@@ -1022,7 +1039,12 @@ for more information.
             <test name="converter_test"/>
             <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
-            <toolset name="vc7"/>
+            <note author="Aleksey Gurtovoy" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="numeric_cast_test"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
             <note author="Aleksey Gurtovoy" refid="2"/>
         </mark-expected-failures>
     </library>
@@ -1065,7 +1087,7 @@ for more information.
             <test name="det"/>
             <toolset name="cw-8.3*"/>
             <note author="Aleksey Gurtovoy" refid="2"/>
-        </mark-expected-failures>        
+        </mark-expected-failures>
     </library>
 
 
@@ -1107,16 +1129,16 @@ for more information.
             </mark-failure>
         </test>
     </library>
-    
+
     <!-- program_options -->
     <library name="program_options">
-        
+
         <!-- Mark unusable toolsets -->
         <mark-unusable>
             <toolset name="gcc-2.95.3-linux"/>
             <note>
-                The failure is caused by standard library deficiencies 
-                -- it lacks the basic_string class template and 
+                The failure is caused by standard library deficiencies
+                -- it lacks the basic_string class template and
                     the &lt;locale&gt; header.
             </note>
         </mark-unusable>
@@ -1135,7 +1157,7 @@ for more information.
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
-                <note>The failures are caused by problems 
+                <note>The failures are caused by problems
                     with std::locale implementation</note>
             </mark-failure>
         </test>
@@ -1180,8 +1202,8 @@ for more information.
         <mark-expected-failures>
             <test name="variable_map_test"/>
             <test name="variable_map_test_dll"/>
-            <toolset name="msvc"/>            
-            <toolset name="msvc-stlport"/>            
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
             <note>
                The failures are caused by compiler bug: it's not possible to
                explicitly pass template arguments to member template function. The
@@ -1227,10 +1249,10 @@ for more information.
             <test name="vector_indexing_suite"/>
             <test name="virtual_functions"/>
             <toolset name="gcc-2.95.3-linux"/>
-            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>            
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <note author="D. Abrahams">
                 The problems with GCC 2.x only occur when C++ exceptions are thrown and
-                the framework catches them, which happens quite often in the tests. 
+                the framework catches them, which happens quite often in the tests.
                 So technically GCC 2.x is usable if you're careful.
              </note>
         </mark-expected-failures>
@@ -1294,7 +1316,7 @@ for more information.
         <mark-expected-failures>
             <test name="reversible_range_test"/>
             <toolset name="vc7"/>
-            <toolset name="tru64cxx65"/>    
+            <toolset name="tru64cxx65"/>
             <note author="Thorsten Ottosen">
                 This test probably fails because it uses built-in arrays. So do expect these
                 functions to work in normal code.
@@ -1315,7 +1337,7 @@ for more information.
             <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc7"/>
-            <toolset name="cw-8.3*"/> 
+            <toolset name="cw-8.3*"/>
             <toolset name="tru64cxx65"/>
             <note refid="6" author="Thorsten Ottosen">
                 For most compilers this is due to problems
@@ -1325,9 +1347,9 @@ for more information.
             </note>
         </mark-expected-failures>
     </library>
-            
 
-            
+
+
     <!-- regex -->
     <library name="regex">
         <test name="regex_token_iterator_eg_2">
@@ -1436,14 +1458,14 @@ for more information.
             <test name="*_lib"/>
             <toolset name="intel-8.0-linux*"/>
             <note author="Aleksey Gurtovoy">
-                This failure is caused by a conflict between the compiler 
-                and the testing environment: the tests are run on a platform with 
-                <i>too recent</i> version of glibc, which is not currently 
-                supported by the compiler vendor (Intel). 
-                
+                This failure is caused by a conflict between the compiler
+                and the testing environment: the tests are run on a platform with
+                <i>too recent</i> version of glibc, which is not currently
+                supported by the compiler vendor (Intel).
+
                 If you are having the same problem and <i>really</i> want to make
-                things work, renaming <code>strol</code> symbol in the 
-                compiler's static runtime library (<code>libcprts.a</code>) to 
+                things work, renaming <code>strol</code> symbol in the
+                compiler's static runtime library (<code>libcprts.a</code>) to
                 something else is known to resolve the issue.
             </note>
         </mark-expected-failures>
@@ -1471,9 +1493,9 @@ for more information.
             <toolset name="msvc"/>
             <toolset name="vc7"/>
             <note author="Aleksey Gurtovoy">
-                This failure is caused by the lack of compiler support for class template 
-                partial specialization. A limited subset of the tested functionality is 
-                available on the compiler through a user-side workaround (see 
+                This failure is caused by the lack of compiler support for class template
+                partial specialization. A limited subset of the tested functionality is
+                available on the compiler through a user-side workaround (see
                 <a href="http://www.boost.org/libs/type_traits/index.html#transformations">
                 http://www.boost.org/libs/type_traits/index.html#transformations</a> for
                 details).
@@ -1591,7 +1613,7 @@ for more information.
     </note>
 
     <note id="1">
-        The failure is caused by a problem in Boost code. The Boost developer is aware of 
+        The failure is caused by a problem in Boost code. The Boost developer is aware of
         the problem and plans to fix it.
     </note>
 
@@ -1600,7 +1622,7 @@ for more information.
     </note>
 
     <note id="3">
-        The failure is caused by a compiler bug, which has been reported to the compiler 
+        The failure is caused by a compiler bug, which has been reported to the compiler
         supplier (or is already known to them).
     </note>
 
@@ -1609,12 +1631,12 @@ for more information.
     </note>
 
     <note id="5">
-        The failure is caused by a standard library bug, which has been reported to the 
+        The failure is caused by a standard library bug, which has been reported to the
         standard library supplier (or is already known to them).
     </note>
 
     <note id="6">
-        The failure is probably caused by the test code, harness, or configuration. Thus 
+        The failure is probably caused by the test code, harness, or configuration. Thus
         it may not affect users of the library.
     </note>
 
@@ -1623,8 +1645,8 @@ for more information.
     </note>
 
     <note id="10">
-        The failure is serious and likely to prevent all use of this Boost library with this 
-        compiler. The failure is caused by a compiler bug, which has been reported to the compiler 
+        The failure is serious and likely to prevent all use of this Boost library with this
+        compiler. The failure is caused by a compiler bug, which has been reported to the compiler
         supplier (or is already known to them).
     </note>
 
@@ -1633,7 +1655,7 @@ for more information.
     </note>
 
     <note id="15">
-        The failure is caused by a platform API bug, which has been reported to the platform API 
+        The failure is caused by a platform API bug, which has been reported to the platform API
         supplier (or is already known to them).
     </note>
 
@@ -1667,17 +1689,17 @@ for more information.
 
     <note id="23">
       A bug in standard library prevents passing std::set from DLL to
-      application. A fixed &lt;tree&gt; header is available from 
+      application. A fixed &lt;tree&gt; header is available from
       http://www.dinkumware.com/vc_fixes.html.
     </note>
 
     <note id="24">
       Although the documentation from the Comeau website would make it appear
-      that windows DLL's are supported using the --windows option,  after some 
-      experimentation we have been, unsuccessful in making dll configurations 
-      work correctly.  
+      that windows DLL's are supported using the --windows option,  after some
+      experimentation we have been, unsuccessful in making dll configurations
+      work correctly.
     </note>
-    
+
     <!-- R. Rivera -->
     <note id="25">
       The failure is caused by a runtime limitation. Locale support is only
@@ -1687,14 +1709,14 @@ for more information.
     </note>
 
     <note id="26">
-        This failure is caused by a compiler bug with no known workaround. 
+        This failure is caused by a compiler bug with no known workaround.
         Patches are welcome!
     </note>
 
     <!-- Thorsten Ottosen -->
     <note id="27" >
         This failure is caused by bugs in the standard library implementation and/or
-        bugs in the compiler. 
+        bugs in the compiler.
     </note>
 
 </explicit-failures-markup>
