@@ -457,65 +457,6 @@ include testing.jam ;
           [ run libs/utility/projection_iterator_example.cpp ]
           [ run libs/utility/reverse_iterator_example.cpp ]
           [ run libs/utility/transform_iterator_example.cpp ]
-        ;    
-
-    test-suite ublas
-        : [ run libs/numeric/ublas/test1/test1.cpp
-                libs/numeric/ublas/test1/test11.cpp
-                libs/numeric/ublas/test1/test12.cpp
-                libs/numeric/ublas/test1/test13.cpp ]
-        ;
-
-    run libs/utility/iterator_traits_test.cpp ;
-
-    run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
-
-    compile-fail libs/utility/noncopyable_test.cpp ;
-
-    run libs/utility/numeric_traits_test.cpp ;
-
-    run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
-
-    run libs/utility/tie_example.cpp ;
-
-    run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ;
-
-    test-suite multi_array
-        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/test_exec_monitor  ]
-          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/test_exec_monitor ]
-          [ compile libs/multi_array/test/concept_checks.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
-          [ compile-fail libs/multi_array/test/fail_citerator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cparen.cpp ]
-          [ compile-fail libs/multi_array/test/fail_criterator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_csubarray.cpp ]
-          [ compile-fail libs/multi_array/test/fail_csubarray2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_csubarray3.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cview.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cview2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_cview3.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cbracket.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cdata.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_citerator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cparen.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_criterator.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_csubarray.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_csubarray2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_csubarray3.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cview.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
-          [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
 
     test-suite ublas
@@ -586,6 +527,58 @@ include testing.jam ;
               # borland warns so often that successful compilation is prevented.
                 <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
           ]
+        ;
+
+    run libs/utility/iterator_traits_test.cpp ;
+
+    run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    compile-fail libs/utility/noncopyable_test.cpp ;
+
+    run libs/utility/numeric_traits_test.cpp ;
+
+    run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    run libs/utility/tie_example.cpp ;
+
+    run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    test-suite multi_array
+        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/test_exec_monitor  ]
+          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ compile libs/multi_array/test/concept_checks.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
+          [ compile-fail libs/multi_array/test/fail_citerator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cparen.cpp ]
+          [ compile-fail libs/multi_array/test/fail_criterator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cbracket.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cdata.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_citerator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cparen.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_criterator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
 
 }
