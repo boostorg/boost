@@ -69,7 +69,7 @@ def unzip_test_runs( dir ):
     files = glob.glob( files_mask )
     if len( files ):
         utils.log( 'Warning: Some files could not be unzipped using the built-in \'zipfile\' module.' )
-        utils.log( '         Trying to decompress them using a platform-specific utility...' )
+        utils.log( '         Trying to decompress them using a platform-specific tool...' )
         try: import unzip_cmd
         except ImportError:
             utils.log( '  Could not find \'unzip_cmd\' module in the script directory.' )
