@@ -94,7 +94,14 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:variable name="unexpected_success" select="$status = 'unexpected' and $actual_result = 'success'"/>
 
         <xsl:variable name="expected_reason">
-            <xsl:value-of select="$test_failures_markup/@reason"/>
+            <xsl:choose>
+                <xsl:when test="$test_failures_markup/@reason">
+                    <xsl:value-of select="$test_failures_markup/@reason"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$test_failures_markup2/@reason"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
 
         <xsl:variable name="notes">
