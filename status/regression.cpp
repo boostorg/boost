@@ -512,12 +512,15 @@ int main(int argc, char * argv[])
 
   out << "<html>\n<head>\n<title>\nCompiler Status: " + host + "\n</title>\n</head>\n"
       << "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
-      << "<img border border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\" align=\"left\">\n"
+      << "<table border=\"0\">\n<tr>\n"
+      << "<td><img border=\"0\" src=\"../c++boost.gif\" width=\"277\" height=\"86\"></td>\n"
+      << "<td>\n"
       << "<h1>Compiler Status: " + host + "</h1>\n"
       << "\n"
       << "<p><b>System Configuration:</b> " << get_system_configuration() << "<br>\n"
       << "<b>Run Date:</b> " << run_date << "</p>\n"
-      << "<p>\n" 
+      << "</td>\n</tr>\n</table>\n"
+      << "<p>\n\n" 
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
   do_tests(out, compilers.begin(), compilers.end(), config.test_config_file, config.boostpath,
@@ -525,9 +528,7 @@ int main(int argc, char * argv[])
 
   out << "</table></p>\n<p>\n";
   if(host == "linux")
-    out << "Notes: A hand-crafted &lt;limits&gt; Standard header has been\n"
-        << "applied to all configurations.\n"
-        << "The tests were run on a GNU libc 2.2.2 system which has improved\n"
+    out << "Notes: The tests were run on a GNU libc 2.2.4 system which has improved\n"
         << "wide character support compared to 2.1.x and earlier versions.";
   else if(host == "irix" || host == "tru64")
     out << "Note: For the 'clib' configuration, the missing new-style C\n"
