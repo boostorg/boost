@@ -51,7 +51,18 @@ subinclude libs/variant/test ;           # test-suite variant
                 <threading>multi <no-warn>config_test.cpp
           ]
            [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
+           [ run libs/config/test/abi/abi_test.cpp libs/config/test/abi/main.cpp ]
            [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+           [ run libs/config/test/link/main.cpp <dll>../libs/config/test/link/link_test
+                : #args
+                : #input-files
+                : #requirements
+                <runtime-link>dynamic
+                <define>BOOST_DYN_LINK=1
+                <define>BOOST_CONFIG_NO_LIB=1
+                :
+                config_link_test
+          ]
         ;
 
     run libs/any/any_test.cpp ;
