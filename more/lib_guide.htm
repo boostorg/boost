@@ -421,12 +421,12 @@ Automatic redirection failed, please go to
       <h3><a name="Naming&shy;_consistency">Naming consistency</a></h3>
       <p>As library developers and users have gained experience with Boost, the 
          following consistent naming approach has come to be viewed as very helpful, 
-         particularly for larger libraries which need their own header subdirectories 
+         particularly for larger libraries that need their own header subdirectories 
          and namespaces.</p>
-      <p>Here is how it works. The library is given a name which describes the contents 
-         of the library.&nbsp; Cryptic abbreviations are not acceptable. Following the 
+      <p>Here is how it works. The library is given a name that describes the contents 
+         of the library. Cryptic abbreviations are strongly discouraged. Following the 
          practice of the C++ Standard Library, names are usually singular rather than 
-         plural.&nbsp; For example, a library dealing with file systems might chose the 
+         plural. For example, a library dealing with file systems might chose the 
          name "filesystem", but not "filesystems", "fs" or "nicecode".</p>
       <ul>
          <li>
@@ -439,8 +439,23 @@ Automatic redirection failed, please go to
          &nbsp;
          <li>
             The library's primary namespace (in parent <i>::boost</i>) is given that same 
-            name. For example, <i>::boost::filesystem</i>.</li>
+            name, except when there's a component with that name (e.g., <i>boost::tuple</i>), in which case the namespace name is pluralized. For example, <i>::boost::filesystem</i>.</li>
       </ul>
+
+    <p>When documenting Boost libraries, follow these conventions (see also the following section of this document):
+    <ul>
+      <li>The library name is set in roman type.</li>
+      <li>The library name is capitalized.</li>
+      <li>A period between "Boost" and the library name (e.g., Boost.Bind) is used if and only if the library name is not followed by the word "library".</li>
+      <li>The word "library" is not part of the library name and is therefore lowercased.</li>
+    </ul>
+    <p>Here are a few examples of how to apply these conventions:
+    <ul>
+      <li>Boost.Bind was written by Peter Dimov.</li>
+      <li>The Boost Bind library was written by Peter Dimov.</li>
+      <li>I regularly use Bind, a Boost library written by Peter Dimov.</li>
+    </ul>
+
       <h3><a name="Documentation">Documentation</a></h3>
       <p>Even the simplest library needs some documentation; the amount should be 
          proportional to the need.&nbsp; The documentation should assume the readers 
