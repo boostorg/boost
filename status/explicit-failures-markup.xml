@@ -1703,6 +1703,16 @@ for more information.
                 <note refid="3" author="D. Gregor"/>
             </mark-failure>
         </test>
+        <mark-expected-failures>
+            <test name="value_init_test"/>
+            <toolset name="msvc*"/>
+            <toolset name="vc7"/>
+            <note author="Aleksey Gurtovoy">
+                This failure is caused by a compiler bug (default-constructed scalar
+                types are not zero-initialized) that has been fixed in the latest
+                versions of the compiler (VC 7.1 and greater).
+            </note>
+        </mark-expected-failures>
     </library>
 
 
