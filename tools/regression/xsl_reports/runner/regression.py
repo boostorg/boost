@@ -101,11 +101,15 @@ def retry( f, args, max_attempts=2, sleep_secs=10 ):
 
 
 def cleanup( args, **unused ):
-    log( 'Cleaning up "%s" directory ...' % boost_root )
-    rmtree( boost_root )
+    if args == []: args = [ 'source', 'bin' ]
+
+    if 'source' in args:
+        log( 'Cleaning up "%s" directory ...' % boost_root )
+        rmtree( boost_root )
     
-    log( 'Cleaning up "%s" directory ...' % regression_results )
-    rmtree( regression_results )
+    if 'bin' in args:
+        log( 'Cleaning up "%s" directory ...' % regression_results )
+        rmtree( regression_results )
 
 
 def http_get( source_url, destination, proxy ):
@@ -555,12 +559,12 @@ def regression(
         if incremental:
             update_source( user, tag, proxy, [] )
         else:
-            cleanup( args )
+            cleanup( [] )
             get_source( user, tag, proxy, [] )
 
         setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
         test( toolsets, monitored, timeout, [] )
-        collect_logs( tag, runner, platform, user, comment, incremental, args )
+        collect_logs( tag, runner, platform, user, comment, incremental, [] )
         upload_logs( tag, runner, user )
         update_itself()
         
@@ -700,7 +704,7 @@ if len(sys.argv) > 1 and sys.argv[1] in commands:
     command = sys.argv[1]
     args = sys.argv[ 2: ]
     if command not in [ 'collect-logs', 'upload-logs' ]:
-        args.append( '--runner=' )
+        args.insert( 0, '--runner=' )
 else:
     command = 'regression'
     args = sys.argv[ 1: ]
