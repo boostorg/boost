@@ -29,8 +29,9 @@ __ http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression
 Running tests
 -------------
 
-* To start a regression run, simply run ``regression.py`` providing it with the 
-  only required option, runner id. For example::
+* To start a regression run, simply run ``regression.py`` providing it with the only
+  required option, runner id (something unique of your choice that will identify your 
+  results in the reports [#runnerid]_). For example::
 
     python regression.py --runner=Metacomm
   
@@ -48,6 +49,11 @@ Running tests
   parameters through the ``--proxy`` option, e.g.::
 
     python regression.py --runner=Metacomm --proxy=http://www.someproxy.com:3128
+
+.. [#runnerid] Note that if you are running regressions interlacingly with a different 
+   set of compilers (e.g. for Intel in the morning and GCC at the end of the day), you need 
+   to provide a *different* runner id for each of these runs, e.g. ``your_name-intel``, and
+   ``your_name-gcc``.
 
 
 Details
