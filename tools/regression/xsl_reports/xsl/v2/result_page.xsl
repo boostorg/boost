@@ -65,7 +65,7 @@
 
     <xsl:template name="test_type_col">
         <td class="test-type">
-        <a href="../../../status/compiler_status.html#Understanding" class="legend-link">
+        <a href="http://www.boost.org/status/compiler_status.html#Understanding" class="legend-link">
             <xsl:variable name="test_type" select="./@test-type"/>
             <xsl:choose>
             <xsl:when test="$test_type='run_pyd'">      <xsl:text>r</xsl:text>  </xsl:when>
@@ -123,7 +123,7 @@
             </head>
             <body>
 
-                <img border="0" src="../../../c++boost.gif" width="277" height="86" align="right" alt="Boost logo"></img>
+                <img border="0" src="http://www.boost.org/c++boost.gif" width="277" height="86" align="right" alt="Boost logo"></img>
 
                 <h1 class="page-title">
                     <xsl:value-of select="$mode"/>
@@ -257,7 +257,7 @@
                 <body>
 
                 <h1 class="page-title">
-                    <a class="hover-link" name="{$library}" href="../../../libs/{$library}">
+                    <a class="hover-link" name="{$library}" href="http://www.boost.org/libs/{$library}">
                         <xsl:value-of select="$library" />
                     </a>
                     <xsl:text>/</xsl:text>
@@ -536,8 +536,8 @@
 
         <xsl:variable name="test_header">
         <td class="test-name">
-            <a href="../../../{$test_program}" class="test-link">
-            <xsl:value-of select="$test_name"/>
+            <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/{$test_program}" class="test-link">
+                <xsl:value-of select="$test_name"/>
             </a>
         </td>
         </xsl:variable>
