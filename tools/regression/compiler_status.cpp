@@ -209,10 +209,12 @@ namespace
       if ( fs::is_directory( *itr ) )
       {
         if ( child.empty() ) child = *itr;
-        else throw std::runtime_error(
-          string( "two target possibilities found: \"" )
-            + child.string() + "\" and \""
-            + (*itr).string() + "\"" );
+        else
+        {
+          std::cout << "Warning: only first of two target possibilities will be reported for: \n "
+            << root.string() << ": " << child.leaf()
+            << " and " << (*itr).leaf() << "\n";
+        }
       }
     }
     if ( child.empty() ) return root; // this dir has no children
@@ -355,8 +357,8 @@ const string & attribute_value( const xml::element_ptr & element,
       fs::ifstream file( pth );
       if ( !file ) // missing jam_log.xml
       {
-        std::cerr << "Missing jam_log.xml in target \""
-          << target_dir.string() << "\"\n";
+        std::cerr << "Missing jam_log.xml in target:\n "
+          << target_dir.string() << "\n";
         target += "<td>";
         target += pass ? pass_msg : fail_msg;
         target += "</td>";
