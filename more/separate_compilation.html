@@ -76,7 +76,7 @@
          compiler ABI settings.</P>
       <P>Boost.config provides the macro BOOST_HAS_ABI_HEADERS which is set whenever 
          there are prefix and suffix headers available for the compiler in use, typical 
-         usage is like this:</P>
+         usage in a header like this:</P>
       <PRE>#ifndef BOOST_WHATEVER_HPP
 #define BOOST_WHATEVER_HPP
 
@@ -103,6 +103,10 @@ whatever get_whatever();
 
 #endif
 </PRE>
+      <P>You can include this code in your source files as well if you want - although 
+         you probably shouldn't need to - these headers fix the ABI to the default used 
+         by the compiler, and if the user attempts to compile the source with any other 
+         setting then they will get compiler errors if there are any conflicts.</P>
       <H4>Rationale:</H4>
       <P>Without some means of managing this issue, users often report bugs along the 
          line of "Your silly library always crashes when I try and call it" and so on. 
