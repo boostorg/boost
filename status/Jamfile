@@ -67,6 +67,13 @@ include testing.jam ;
 
     run libs/crc/crc_test.cpp <lib>../libs/test/build/test_exec_monitor ;
 
+    test-suite date_time
+        : [ run libs/date_time/test/testgregorian_calendar.cpp
+            <lib>../libs/date_time/build/libboost_date_time ]
+          [ run libs/date_time/test/testint_adapter.cpp ]
+          [ run libs/date_time/test/testconstrained_value.cpp ]
+        ;
+
     test-suite disjoint_sets
         : [ run libs/disjoint_sets/disjoint_set_test.cpp <lib>../libs/test/build/test_exec_monitor ]
         ;
