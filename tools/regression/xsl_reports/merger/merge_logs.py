@@ -27,6 +27,7 @@ def download_from_ftp( destination_dir, tag ):
         utils.log( '  Downloading %s into "%s" directory...' % ( f, destination_dir ) )
         result = open( os.path.join( destination_dir, f ), 'wb' )
         ftp.retrbinary( 'RETR %s' % f, result.write )
+        result.close()
 
     ftp.quit()
 
