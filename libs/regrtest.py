@@ -15,6 +15,8 @@
 #             vcstlport  = Microsoft Visual C++ with STLport library
 #             suncc = Sun's C++ compiler
 #             kcc = KAI C++ 3.4g
+#             cxx   = Compaq C++
+#             irixcc = SGI IRIX CC
 #
 # Examples: regrtest
 #           regrtest
@@ -90,6 +92,18 @@ def compile( program ):
       invoke( "GCC 2.95.2", 'g++ -Wall -pedantic -ftemplate-depth-30 -Wno-long-long -c -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "kcc":
       invoke( "KCC 3.4g", 'KCC --strict_warnings -I' + path + ' ' + fullpath )
+
+# --------- DEC Alpha ---------- #
+
+  elif sys.platform == "osf1V5":
+    if compiler_arg=="*" or compiler_arg=="cxx":
+      invoke( "Compaq C++", "cxx -std strict_ansi  -D__USE_STD_IOSTREAM -I" + path + "  " + fullpath ) 
+
+# ---------- IRIX ---------------#
+
+  elif sys.platform == "irix6":
+    if compiler_arg=="*" or compiler_args=="irixcc":
+      invoke( "IRIX CC", "CC -LANG:std -I" + path + " " + fullpath )
 
 
 # ----------- BeOS5/Intel ------ #
@@ -177,6 +191,10 @@ if sys.platform == "linux2":
   platform = "Linux/x86"
 elif sys.platform == "sunos5":
   platform = "SunOS5/sparc"
+elif sys.platform == "osf1V5":
+  platform = "Compaq Tru64 Unix"
+elif sys.platform == "irix6":
+  platform = "SGI IRIX 6"
 elif sys.platform == "beos":
   platform = "BeOS5/x86"
 elif sys.platform == "win32":
@@ -217,6 +235,12 @@ elif sys.platform == "sunos5":
     f.write( "<td>GNU<br>GCC<br>2.95.2</td>\n" )
   if compiler_arg == "*" or compiler_arg == "kcc":
     f.write( "<td>KAI<br>KCC<br>3.4g</td>\n" )
+elif sys.platform == "osf1V5":
+  if compiler_arg == "*" or compiler_arg == "cxx":
+    f.write( "<td>Compaq C++<br>6.2-024</td>\n" )
+elif sys.platform == "irix6":
+  if compiler_arg == "*" or compiler_arg == "irixcc":
+    f.write( "<td>SGI IRIX CC<br>7.3.1.1m</td>\n" )
 elif sys.platform == "beos":
   if compiler_arg == "*" or compiler_arg == "gcc":
     f.write( "<td>GNUPro<br>GCC&nbsp;2.9</td>\n" )
@@ -279,7 +303,4 @@ if sys.platform == "linux2":
 f.write( "</body>\n</html>\n" )
 
 # end
-
-
-
 
