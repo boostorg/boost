@@ -5,11 +5,14 @@
 # (See accompanying file LICENSE_1_0.txt or copy at 
 # http://www.boost.org/LICENSE_1_0.txt)
 
+import socket
 import tarfile
+import shutil
 import time
 import os.path
 import string
 import sys
+import traceback
 
 
 def retry( f, args, max_attempts=2, sleep_secs=10 ):
@@ -24,6 +27,15 @@ def retry( f, args, max_attempts=2, sleep_secs=10 ):
 
             utils.log( 'Retrying (%d more attempts).' % attempts )
             time.sleep( sleep_secs )
+
+
+def rmtree( path ):
+    if os.path.exists( path ):
+        if sys.platform == 'win32':
+            os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
+            shutil.rmtree( path )
+        else:
+            os.system( 'rm -f -r "%s"' % path )
 
 
 def cvs_command( user, command ):
@@ -55,12 +67,23 @@ def make_tarball(
           working_dir
         , tag
         , user
+        , site_dir
         ):
-    
-    utils.log( 'Exporting files from CVS...' )
-    # cvs_export( working_dir, user, tag )
 
-    sources_dir = os.path.join( working_dir, 'boost' )    
+    sources_dir = os.path.join( working_dir, 'boost' )
+    if os.path.exists( sources_dir ):
+        utils.log( 'Already running, exiting this one...' )
+        return False
+
+    try:
+        os.mkdir( sources_dir )
+        utils.log( 'Exporting files from CVS...' )
+        cvs_export( working_dir, user, tag )
+    except:
+        utils.log( 'Cleaning up...' )
+        rmtree( sources_dir )
+        raise
+
     timestamped_dir_name = 'boost-%s-%s' % ( tag, time.strftime( '%y-%m-%d-%H%M', time.gmtime() ) )
     timestamped_dir = os.path.join( working_dir, timestamped_dir_name )
 
@@ -77,17 +100,71 @@ def make_tarball(
     tar.add( timestamped_dir, timestamped_dir_name )
     tar.close()
 
+    if site_dir is not None:
+        utils.log( 'Moving "%s" to the site location "%s"...' % ( tarball_name, site_dir ) )
+        shutil.move( tarball_path, site_dir )
+        utils.log( 'Removing "%s"...' % timestamped_dir )
+        rmtree( timestamped_dir )
+
+    return True
+
+
+def format_time( t ):
+    return time.strftime( 
+          '%a, %d %b %Y %H:%M:%S +0000'
+        , t
+        )
+
+
+def make_tarball_send_mail(
+          working_dir
+        , tag
+        , user
+        , site_dir
+	, mail
+        ):
+    try:
+        mail_subject = '[Boost CVS tarball] Build for %s on %s' % ( tag, string.split(socket.gethostname(), '.')[0] )
+
+        send_mail = make_tarball(
+              working_dir
+            , tag
+            , user
+            , site_dir
+            )
+
+        if mail and send_mail:
+            utils.log( 'Sending report to "%s"' % mail )
+            utils.send_mail( 
+                  mail
+                , '%s completed successfully at %s.' % ( mail_subject, format_time( time.localtime() ) )
+                )
+    except:
+        if mail:
+            utils.log( 'Sending report to "%s"' % mail )
+            msg = apply( traceback.format_exception, sys.exc_info() )
+            utils.send_mail( 
+                  mail
+                , '%s failed at %s.' % ( mail_subject, format_time( time.localtime() ) )
+                , '\n'.join( msg )
+                )
+        raise
+
 
 def accept_args( args ):
     args_spec = [ 
           'working-dir='
         , 'tag='
         , 'user='
+        , 'site-dir='
+        , 'mail='
         , 'help'
         ]
         
     options = { 
           '--tag': 'CVS-HEAD'
+        , '--site-dir': None
+        , '--mail': None
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -96,19 +173,23 @@ def accept_args( args ):
           options[ '--working-dir' ]
         , options[ '--tag' ]
         , options[ '--user' ]
+        , options[ '--site-dir' ]
+        , options[ '--mail' ]
         )
 
 
 def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
-\t--working-dir         working directory
-\t--tag                 snapshot tag (i.e. 'CVS-HEAD')
-\t--user                SourceForge user name for a CVS account
+\t--working-dir   working directory
+\t--tag           snapshot tag (i.e. 'CVS-HEAD')
+\t--user          SourceForge user name for a CVS account
+\t--site-dir      site directory to copy the snapshot to (optional)
+\t--mail          email address to send run notification to (optional)
 '''
 
 def main():
-    make_tarball( *accept_args( sys.argv[ 1: ] ) )
+    make_tarball_send_mail( *accept_args( sys.argv[ 1: ] ) )
 
 if __name__ != '__main__':  import utils
 else:
