@@ -10,9 +10,9 @@
 
     This program was designed to work unchanged on all platforms and
     configurations.  All output which is platform or configuration dependent
-    is obtained from external sources such as the Jamfile, the residue
-    from jam execution, the tools/build/xxx-tools.jam files, or the output
-    of the config_info tests.
+    is obtained from external sources such as the .xml file from
+    process_jam_log execution, the tools/build/xxx-tools.jam files, or the
+    output of the config_info tests.
 
     Please avoid adding platform or configuration dependencies during
     program maintenance.
@@ -62,7 +62,6 @@ namespace
   std::vector<string> toolsets;
 
   fs::ifstream jamfile;
-  fs::ifstream testsuitesfile; // in addition to jamfile
   fs::ofstream report;
   fs::ofstream links_file;
   string links_name;
@@ -193,61 +192,6 @@ namespace
       }
       result.clear();
     }
-    return result;
-  }
-
-//  test_type_desc  ----------------------------------------------------------//
-//  from jamfile or testsuitesfile
-
-  string test_type_desc( const string & test_name, fs::ifstream & file)
-  {
-    // adding "/" and ".c" eliminates a couple of corner cases.
-    // ".c" rather than ".cpp" because regex library includes some .c tests
-    string search_name1( "/" + test_name + ".c" );
-    string search_name2( " " + test_name + " " );
-
-    string result;
-    if ( file.is_open() )
-    {
-      file.clear();
-      file.seekg(0);
-      string line;
-      while( std::getline( file, line ) )
-      {
-        if ( line.find( ".c" ) != string::npos )
-        {
-          if ( line.find( "run " ) != string::npos )
-            result = "run";
-          else if ( line.find( "run-fail " ) != string::npos )
-            result = "run-fail";
-          else if ( line.find( "link " ) != string::npos )
-            result = "link";
-          else if ( line.find( "link-fail " ) != string::npos )
-            result = "link-fail";
-          else if ( line.find( "compile " ) != string::npos )
-            result = "compile";
-          else if ( line.find( "compile-fail " ) != string::npos )
-            result = "compile-fail";
-        }
-        if ( result.size() &&
-          ( line.find( search_name1 ) != string::npos
-          || line.find( search_name2 ) != string::npos ) )
-        {
-          if ( line.find( "# compiler_status<always_show_run_output>" )
-            != string::npos ) result.insert( (std::string::size_type)0, (std::string::size_type)1, '*' );
-          return result;
-        }
-      }
-      result.clear();
-    }
-    return result;
-  }
-
-  string test_type_desc( const string & test_name )
-  {
-    string result = test_type_desc( test_name, jamfile );
-    if ( result.empty() )
-      result = test_type_desc( test_name, testsuitesfile );
     return result;
   }
 
@@ -448,9 +392,11 @@ const string & attribute_value( const xml::element_ptr & element,
     const string & test_name, // "any_test"
     string & target )
   {
-    // get the library name and test program path from the .xml file
+    // get library name, test-type, test-program path, etc., from the .xml file
     string lib_name;
     string test_path( test_name ); // test_name is default if missing .test
+    string test_type( "unknown" );
+    bool always_show_run_output( false );
     fs::path xml_file_path;
     if ( find_file( test_dir, "test_log.xml", xml_file_path ) )
     {
@@ -460,6 +406,9 @@ const string & attribute_value( const xml::element_ptr & element,
         xml::element_ptr db = xml::parse( file, xml_file_path.string() );
         test_path = attribute_value( db, "test-program" );
         lib_name = attribute_value( db, "library" );
+        test_type = attribute_value( db, "test-type" );
+        always_show_run_output
+          = attribute_value( db, "show-run-output" ) == "true";
       }
     }
 
@@ -470,11 +419,6 @@ const string & attribute_value( const xml::element_ptr & element,
     string::size_type row_start_pos = target.size();
     target += "<tr><td><a href=\"" + lib_docs_path + "\">"  + lib_name  + "</a></td>";
     target += "<td><a href=\"" + test_path + "\">" + test_name + "</a></td>";
-
-    string test_type = test_type_desc( test_name );
-    bool always_show_run_output = false;
-    if ( !test_type.empty() && test_type[0] == '*' )
-      { always_show_run_output = true; test_type.erase( 0, 1 ); }
     target += "<td>" + test_type + "</td>";
 
     bool no_warn_save = no_warn;
@@ -494,26 +438,54 @@ const string & attribute_value( const xml::element_ptr & element,
     no_warn = no_warn_save;
   }
 
-//  do_table_body  -----------------------------------------------------------//
+//  do_rows_for_sub_tree  ----------------------------------------------------//
 
-  void do_table_body(
-    const fs::path & boost_root_dir, const fs::path & build_dir )
+  void do_rows_for_sub_tree( const fs::path & boost_root_dir,
+    const fs::path & bin_dir, std::vector<string> & results )
   {
-    // rows are held in a vector so they can be sorted, if desired.
-    std::vector<string> results;
-
-    // each test directory
-    for ( fs::directory_iterator itr( build_dir ); itr != end_itr; ++itr )
+    for ( fs::directory_iterator itr( bin_dir ); itr != end_itr; ++itr )
     {
       if ( fs::is_directory( *itr ) )
       {
-        results.push_back( std::string() ); // no sort required, but leave code
-                                            // in place in case that changes
+        results.push_back( std::string() ); 
         do_row( boost_root_dir, *itr,
                 itr->leaf().substr( 0, itr->leaf().size()-5 ),
                 results[results.size()-1] );
       }
     }
+  }
+
+//  do_table_body  -----------------------------------------------------------//
+
+  void do_table_body(
+    const fs::path & boost_root_dir, const fs::path & bin_dir )
+  {
+    // rows are held in a vector so they can be sorted, if desired.
+    std::vector<string> results;
+
+    // do primary bin directory
+    do_rows_for_sub_tree( boost_root_dir, bin_dir, results );
+
+    // do subinclude bin directories
+    jamfile.clear();
+    jamfile.seekg(0);
+    string line;
+    while( std::getline( jamfile, line ) )
+    {
+      string::size_type pos( line.find( "subinclude" ) );
+      if ( pos != string::npos
+        && line.find( '#' ) > pos )
+      {
+        pos = line.find_first_not_of( " \t", pos+10 );
+        if ( pos == string::npos ) continue;
+        string subinclude_bin_dir(
+          line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
+//        std::cout << "subinclude: " << subinclude_bin_dir << '\n';
+        do_rows_for_sub_tree( boost_root_dir,
+          boost_root_dir / subinclude_bin_dir / "/bin", results );  
+      }
+    }
+
 
     std::sort( results.begin(), results.end() );
 
@@ -526,8 +498,8 @@ const string & attribute_value( const xml::element_ptr & element,
 
   void do_table( const fs::path & boost_root_dir )
   {
-//    fs::path build_dir( boost_root_dir / "status" / "bin" );
-    fs::path build_dir( fs::initial_path() / "bin" );
+//    fs::path bin_dir( boost_root_dir / "status" / "bin" );
+    fs::path bin_dir( fs::initial_path() / "bin" );
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
 
@@ -536,7 +508,7 @@ const string & attribute_value( const xml::element_ptr & element,
     report << "<tr><td>Library</td><td>Test Name</td>\n"
       "<td><a href=\"compiler_status.html#test-type\">Test Type</a></td>\n";
 
-    fs::directory_iterator itr( build_dir );
+    fs::directory_iterator itr( bin_dir );
     while ( itr != end_itr && !fs::is_directory( *itr ) ) ++itr; // bypass chaff
     if ( itr != end_itr )
     {
@@ -567,7 +539,7 @@ const string & attribute_value( const xml::element_ptr & element,
 
     // now the rest of the table body
 
-    do_table_body( boost_root_dir, build_dir );
+    do_table_body( boost_root_dir, bin_dir );
 
     report << "</table>\n";
   }
@@ -605,6 +577,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   }
 
   boost_root_dir = fs::path( argv[1], fs::native );
+
   fs::path jamfile_path( fs::initial_path() / "Jamfile" );
   jamfile.open( jamfile_path );
   if ( !jamfile )
@@ -612,9 +585,6 @@ int cpp_main( int argc, char * argv[] ) // note name!
     std::cerr << "Could not open Jamfile: " << jamfile_path.native_file_string() << std::endl;
     return 1;
   }
-
-  fs::path testsuitesfile_path( fs::initial_path() / "testsuites.jam" );
-  testsuitesfile.open( testsuitesfile_path );
 
   report.open( argv[2] );
   if ( !report )
