@@ -1266,48 +1266,25 @@ for more information.
 
     <!-- type_traits -->
     <library name="type_traits">
-        <test name="function_traits_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
-        <test name="remove_bounds_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
-        <test name="remove_const_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
-        <test name="remove_cv_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
-        <test name="remove_pointer_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
-        <test name="remove_reference_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
-        <test name="remove_volatile_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <toolset name="vc7"/>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="function_traits_test"/>
+            <test name="remove_bounds_test"/>
+            <test name="remove_const_test"/>
+            <test name="remove_cv_test"/>
+            <test name="remove_pointer_test"/>
+            <test name="remove_reference_test"/>
+            <test name="remove_volatile_test"/>
+            <toolset name="msvc"/>
+            <toolset name="vc7"/>
+            <note author="Aleksey Gurtovoy">
+                This failure is caused by the lack of compiler support for class template 
+                partial specialization. A limited subset of the tested functionality is 
+                available on the compiler through a user-side workaround (see 
+                <a href="http://www.boost.org/libs/type_traits/index.html#transformations">
+                http://www.boost.org/libs/type_traits/index.html#transformations</a> for
+                details).
+            </note>
+        </mark-expected-failures>
         <test name="tricky_incomplete_type_test">
             <mark-failure>
                 <toolset name="borland-5.6.4"/>
@@ -1323,7 +1300,8 @@ for more information.
         <test name="is_abstract_test">
             <mark-failure>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="cwpro8"/><toolset name="cw-*"/>
+                <toolset name="cw-8.3*"/>
+                <toolset name="cw-9.3*"/>
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc7"/>
@@ -1331,96 +1309,26 @@ for more information.
         </test>
     </library>
 
+
     <!-- utility -->
     <library name="utility">
-        <test name="enable_if_constructors">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_dummy_arg_disambiguation">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_lazy">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_lazy_test">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_member_templates">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_namespace_disambiguation">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_no_disambiguation">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="enable_if_partial_specializations">
-            <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5.6.4"/>
-                <toolset name="cw-8.3*"/>
-                <toolset name="msvc"/>
-                <toolset name="msvc-stlport"/>
-                <toolset name="vc7"/>
-                <note refid="3"/>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="enable_if_constructors"/>
+            <test name="enable_if_dummy_arg_disambiguation"/>
+            <test name="enable_if_lazy"/>
+            <test name="enable_if_lazy_test"/>
+            <test name="enable_if_member_templates"/>
+            <test name="enable_if_namespace_disambiguation"/>
+            <test name="enable_if_no_disambiguation"/>
+            <test name="enable_if_partial_specializations"/>
+            <toolset name="borland"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="cw-8.3*"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note refid="3"/>
+        </mark-expected-failures>
         <test name="fun_out_iter_example">
             <mark-failure>
                 <toolset name="como-win32"/>
@@ -1438,6 +1346,9 @@ for more information.
             </mark-failure>
         </test>
     </library>
+
+
+    <!-- variant -->
     <library name="variant">
         <mark-unusable>
             <toolset name="mipspro"/>
@@ -1478,7 +1389,9 @@ for more information.
         </test>
     </library>
 
+
     <!-- /////////////// Standard note definitions /////////////// -->
+
     <note id="0">
         This test fails only intermittently.
     </note>
@@ -1591,4 +1504,3 @@ for more information.
     </note>
 
 </explicit-failures-markup>
-
