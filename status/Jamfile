@@ -21,6 +21,7 @@ subinclude libs/date_time/test ;         # test-suite date_time
 subinclude libs/filesystem/test ;        # test-suite filesystem
 subinclude libs/format/test ;            # test-suite format
 subinclude libs/function/test ;          # test-suite function
+subinclude libs/io/test ;                # test-suite io
 subinclude libs/iterator/test ;          # test-suite iterator
 subinclude libs/math/test ;              # test-suite math
 subinclude libs/numeric/interval/test ;  # test-suite interval
@@ -105,13 +106,6 @@ subinclude libs/variant/test ;           # test-suite variant
           [ run libs/integer/integer_test.cpp ]
           [ run libs/integer/integer_traits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
         ;
-
-    run 
-      libs/io/test/ios_state_test.cpp <lib>../libs/test/build/boost_test_exec_monitor   # sources
-      : # args
-      : # input-files
-      : std::locale-support
-      ;
 
     test-suite lambda
         : [ run libs/lambda/test/bind_tests_simple.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
@@ -300,7 +294,3 @@ subinclude libs/variant/test ;           # test-suite variant
           [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
         ;
 }
-
-
-
-
