@@ -27,7 +27,7 @@ install_log = os.path.join( regression_results, 'bjam_install.log' )
 boost_root = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
 comment_path = os.path.join( regression_root, 'comment.html' )
-timestamp_path = os.path.join( boost_root, 'boost' )
+timestamp_path = os.path.join( regression_root, 'timestamp' )
 
 cvs_command_line = 'cvs -z9 %(command)s'
 cvs_ext_command_line = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
@@ -137,12 +137,6 @@ def download_boost_tarball( destination, tag, proxy ):
     return tarball_path
 
 
-def time_to_string( t ):
-    return time.strftime( 
-              "%a, %d %b %Y %H:%M:%S +0000"
-              , time.gmtime( t )
-              )
-
 def unpack_tarball( tarball_path, destination ):
     log( 'Looking for old unpacked archives...' )
     old_boost_dirs =  glob.glob( os.path.join( destination, 'boost-*' ) )
@@ -171,12 +165,6 @@ def unpack_tarball( tarball_path, destination ):
 
     log( 'Renaming "%s" into "%s"' % ( boost_dir, boost_root ) )
     os.rename( boost_dir, boost_root )
-
-    # utime doesn't work on directories in Win32, but for that same 
-    # reason we don't need to adjust the timestamp -- it's already 
-    # current
-    if not sys.platform == 'win32':
-        os.utime( timestamp_path, ( time.time(), time.time() ) )
 
 
 def cvs_command( user, command ):
@@ -221,8 +209,21 @@ def cvs_update( user, tag, args ):
        )
 
 
+def format_time( t ):
+    return time.strftime( 
+          '%a, %d %b %Y %H:%M:%S +0000'
+        , t
+        )    
+
+def timestamp():
+    return format_time( 
+          time.gmtime( os.stat( timestamp_path ).st_mtime )
+        )    
+
+
 def get_source( user, tag, proxy, args, **unused ):
-    log( "Getting sources ..." )
+    open( timestamp_path, 'w' ).close()
+    log( 'Getting sources (%s)...' % timestamp() )
 
     if user is not None:
         cvs_checkout( user, tag, args )
@@ -233,7 +234,8 @@ def get_source( user, tag, proxy, args, **unused ):
 
 def update_source( user, tag, proxy, args, **unused ):
     if user is not None or os.path.exists( os.path.join( boost_root, 'CVS' ) ):
-        log( 'Updating sources from CVS...' )
+        open( timestamp_path, 'w' ).close()
+        log( 'Updating sources from CVS (%s)...' % timestamp() )
         cvs_update( user, tag, args )
     else:
         get_source( user, tag, proxy, args )
@@ -418,10 +420,13 @@ def collect_logs(
     if incremental: run_type = 'incremental'
     else:           run_type = 'full'
 
-    source = ''
-    if user is None:          source = 'tarball'
-    elif user == 'anonymous': source = 'anonymous CVS'
-    else:                     source = 'CVS'
+    source = 'tarball'
+    cvs_root_file = os.path.join( boost_root, 'CVS', 'root' )
+    if os.path.exists( cvs_root_file ):
+        if string.split( open( cvs_root_file ).readline(), '@' )[0] == ':pserver:anonymous':
+            source = 'anonymous CVS'
+        else:
+            source = 'CVS'
    
     from runner import collect_logs
     collect_logs( 
@@ -430,10 +435,7 @@ def collect_logs(
         , tag
         , platform
         , comment_path
-        , time.strftime( 
-              "%a, %d %b %Y %H:%M:%S +0000"
-            , time.gmtime( os.stat( timestamp_path ).st_mtime )
-            )
+        , timestamp_path
         , user
         , source
         , run_type
@@ -465,7 +467,12 @@ def regression(
         ):
 
     try:
-        mail_subject = "Boost regression for %s on %s \n" % ( tag, string.split(socket.gethostname(), '.')[0] )
+        mail_subject = 'Boost regression for %s on %s ' % ( tag, string.split(socket.gethostname(), '.')[0] )
+        start_time = time.localtime()
+        if mail:
+            log( 'Sending start notification to "%s"' % mail )
+            utils.send_mail( mail, mail_subject + ' started at %s.' % format_time( start_time ) )
+
         if incremental:
             update_source( user, tag, proxy, [] )
             setup( comment, [] )
@@ -480,12 +487,21 @@ def regression(
 
         if mail:
             log( 'Sending report to "%s"' % mail )
-            utils.send_mail( mail, mail_subject + ' completed successfully.' )
+            end_time = time.localtime()
+            utils.send_mail( 
+                  mail
+                , mail_subject + ' completed successfully at %s.' % format_time( end_time )
+                )
     except:
         if mail:
             log( 'Sending report to "%s"' % mail )
-            msg = regression_log + [ "" ] + apply( traceback.format_exception, sys.exc_info() ) 
-            utils.send_mail( mail, mail_subject + ' failed.', '\n'.join( msg ) )
+            msg = regression_log + [ '' ] + apply( traceback.format_exception, sys.exc_info() ) 
+            end_time = time.localtime()
+            utils.send_mail( 
+                  mail
+                , mail_subject + ' failed at %s.' % format_time( end_time )
+                , '\n'.join( msg )
+                )
         raise
 
 
