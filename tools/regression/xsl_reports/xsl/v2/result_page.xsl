@@ -286,6 +286,7 @@
                     <thead>
                       <xsl:call-template name="insert_runners_rows">
                         <xsl:with-param name="mode" select="'details'"/>
+                        <xsl:with-param name="top_or_bottom" select="'top'"/>
                         <xsl:with-param name="run_toolsets" select="$run_toolsets"/>
                       </xsl:call-template>
                       
@@ -304,6 +305,7 @@
 
                       <xsl:call-template name="insert_runners_rows">
                           <xsl:with-param name="mode" select="'details'"/>
+                          <xsl:with-param name="top_or_bottom" select="'bottom'"/>
                       </xsl:call-template>
                     </tfoot>
 
@@ -337,7 +339,7 @@
                         <xsl:if test="count( $lib_corner_case_tests ) > 0">
                             <tr>
                                 <!--<td colspan="2">&#160;</td>                  -->
-                                <td class="library-corner-case-header" colspan="{count($run_toolsets/runs/run/toolset) + 3 }" align="center">Corner-case tests</td>
+                                <td class="library-corner-case-header" colspan="{count($run_toolsets/platforms/platform/runs/run/toolset) + 3 }" align="center">Corner-case tests</td>
                                 <!--<td>&#160;</td>-->
                             </tr>
 
@@ -556,7 +558,7 @@
         <xsl:copy-of select="$test_header"/>
         <xsl:call-template name="test_type_col"/>
           
-        <xsl:for-each select="$run_toolsets/runs/run/toolset">
+        <xsl:for-each select="$run_toolsets/platforms/platform/runs/run/toolset">
             <xsl:variable name="toolset" select="@name" />
             <xsl:variable name="runner" select="../@runner" />
 

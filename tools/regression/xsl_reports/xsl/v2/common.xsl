@@ -28,50 +28,60 @@
         <xsl:variable name="required_toolsets" select="$explicit_markup//mark-toolset[ @status='required' ]"/>
 
         <xsl:variable name="runs" select="$document//test-run"/>
+        <xsl:variable name="platforms" select="set:distinct( $document//test-run/@platform )"/>
+        
+        
         <xsl:variable name="run_toolsets_f">
-        <runs>
-            <xsl:for-each select="$runs">
-                <run 
-                    runner="{@runner}" 
-                    timestamp="{@timestamp}" 
-                    platform="{@platform}"
-                    run-type="{@run-type}"
-                    source="{@source}">
-
-                    <comment><xsl:value-of select="comment"/></comment>
-                    <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) and meta:show_toolset( @toolset, $release ) ]/@toolset ) "/>
-
-                    <xsl:variable name="not_ordered_toolsets_with_info_f">
-                        <xsl:for-each select="$not_ordered_toolsets">
-                            <xsl:sort select="." order="ascending"/>
-                            <xsl:variable name="toolset" select="."/>
-                            <xsl:variable name="required">
-                                <xsl:choose>
-                                    <xsl:when test="count( $required_toolsets[ @name = $toolset ] ) > 0">yes</xsl:when>
-                                    <xsl:otherwise>no</xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <xsl:variable name="required_sort_hint">
-                                <xsl:choose>
-                                    <xsl:when test="$required = 'yes'">sort hint A</xsl:when>
-                                    <xsl:otherwise>sort hint B</xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:variable>
-                            <toolset name="{$toolset}" required="{$required}" required_sort_hint="{$required_sort_hint}"/>
-                        </xsl:for-each>
-                    </xsl:variable>
-
-                    <xsl:variable name="not_ordered_toolsets_with_info" select="exsl:node-set( $not_ordered_toolsets_with_info_f )"/>
-                    
-                    <xsl:for-each select="$not_ordered_toolsets_with_info/toolset">
-                        <xsl:sort select="concat( @required_sort_hint, '-', @name )" order="ascending"/>
-                        <xsl:copy-of select="."/>
+            <platforms>
+                <xsl:for-each select="$platforms">
+                    <xsl:variable name="platform" select="."/>
+                    <platform name="{$platform}">
+                        <runs>
+                            <xsl:for-each select="$runs[ @platform = $platform ]">
+                                <xsl:sort select="."/>
+                                <run 
+                                    runner="{@runner}" 
+                                    timestamp="{@timestamp}" 
+                                    platform="{@platform}"
+                                    run-type="{@run-type}"
+                                    source="{@source}">
+                            
+                                    <comment><xsl:value-of select="comment"/></comment>
+                                    <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) and meta:show_toolset( @toolset, $release ) ]/@toolset ) "/>
+                                    
+                                    <xsl:variable name="not_ordered_toolsets_with_info_f">
+                                        <xsl:for-each select="$not_ordered_toolsets">
+                                            <xsl:sort select="." order="ascending"/>
+                                            <xsl:variable name="toolset" select="."/>
+                                            <xsl:variable name="required">
+                                                <xsl:choose>
+                                                    <xsl:when test="count( $required_toolsets[ @name = $toolset ] ) > 0">yes</xsl:when>
+                                                        <xsl:otherwise>no</xsl:otherwise>
+                                                    </xsl:choose>
+                                                </xsl:variable>
+                                                <xsl:variable name="required_sort_hint">
+                                                    <xsl:choose>
+                                                        <xsl:when test="$required = 'yes'">sort hint A</xsl:when>
+                                                        <xsl:otherwise>sort hint B</xsl:otherwise>
+                                                    </xsl:choose>
+                                                </xsl:variable>
+                                                <toolset name="{$toolset}" required="{$required}" required_sort_hint="{$required_sort_hint}"/>
+                                            </xsl:for-each>
+                                        </xsl:variable>
+                                        
+                                        <xsl:variable name="not_ordered_toolsets_with_info" select="exsl:node-set( $not_ordered_toolsets_with_info_f )"/>
+                                        
+                                        <xsl:for-each select="$not_ordered_toolsets_with_info/toolset">
+                                            <xsl:sort select="concat( @required_sort_hint, '-', @name )" order="ascending"/>
+                                            <xsl:copy-of select="."/>
+                                        </xsl:for-each>
+                                    </run>
+                                </xsl:for-each>
+                            </runs>
+                        </platform>
                     </xsl:for-each>
-                </run>
-            </xsl:for-each>
-        </runs>
-        </xsl:variable>
-
+                </platforms>
+            </xsl:variable>
         <func:result select="exsl:node-set( $run_toolsets_f )"/>
     </func:function>
 
@@ -185,25 +195,47 @@
         <func:result select="concat( $output_directory, '/', meta:encode_path( $path ), '.html' )"/>
     </func:function>
 
-    <xsl:template name="insert_runners_rows">
-        <xsl:param name="mode"/>
-        
+    <xsl:template name="insert_platforms_row">
         <xsl:variable name="colspan">
             <xsl:choose>
                 <xsl:when test="$mode = 'summary'">1</xsl:when>
                 <xsl:when test="$mode = 'details'">2</xsl:when>
             </xsl:choose>
         </xsl:variable>
-        
+
+    </xsl:template>
+
+    <xsl:template name="insert_runners_rows">
+        <xsl:param name="mode"/>
+        <xsl:param name="top_or_bottom"/>
+
+        <xsl:variable name="colspan">
+            <xsl:choose>
+                <xsl:when test="$mode = 'summary'">1</xsl:when>
+                <xsl:when test="$mode = 'details'">2</xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+
+
+        <xsl:if test="$top_or_bottom = 'top'">
+            <tr>
+                <td colspan="{$colspan}">&#160;</td>
+                <xsl:for-each select="$run_toolsets/platforms/platform">
+                    <td colspan="{count(./runs/run/toolset)}" class="runner">
+                        <xsl:value-of select="@name"/>
+                    </td>
+                </xsl:for-each>
+                <td colspan="{$colspan}">&#160;</td>
+            </tr>
+        </xsl:if>
+
         <tr>
             <td colspan="{$colspan}">&#160;</td>
-            <xsl:for-each select="$run_toolsets/runs/run[ count(toolset) > 0 ]">
+            <xsl:for-each select="$run_toolsets//runs/run[ count(toolset) > 0 ]">
                 <td colspan="{count(toolset)}" class="runner">
                     <a href="../{@runner}.html">
                         <xsl:value-of select="@runner"/>
                     </a>
-                    <br/>
-                    <xsl:value-of select="@platform"/>
                 </td>
             </xsl:for-each>
             <td colspan="{$colspan}">&#160;</td>
@@ -211,11 +243,23 @@
 
         <tr>
             <td colspan="{$colspan}">&#160;</td>
-            <xsl:for-each select="$run_toolsets/runs/run[ count(toolset) > 0 ]">
+            <xsl:for-each select="$run_toolsets//runs/run[ count(toolset) > 0 ]">
                 <td colspan="{count(toolset)}" class="timestamp"><xsl:value-of select="@timestamp"/></td>
             </xsl:for-each>
             <td colspan="{$colspan}">&#160;</td>
         </tr>
+
+        <xsl:if test="$top_or_bottom = 'bottom'">
+            <tr>
+                <td colspan="{$colspan}">&#160;</td>
+                <xsl:for-each select="$run_toolsets/platforms/platform">
+                    <td colspan="{count(./runs/run/toolset)}" class="runner">
+                        <xsl:value-of select="@name"/>
+                    </td>
+                </xsl:for-each>
+                <td colspan="{$colspan}">&#160;</td>
+            </tr>
+        </xsl:if>
 
     </xsl:template>
 
@@ -242,7 +286,7 @@
             <td class="head" colspan="{$colspan}" width="1%"><xsl:value-of select="$title"/></td>
               
 
-            <xsl:for-each select="$run_toolsets/runs/run/toolset">
+            <xsl:for-each select="$run_toolsets//runs/run/toolset">
                 <xsl:variable name="toolset" select="@name"/>
                   
                 <xsl:variable name="class">
