@@ -196,9 +196,9 @@ if sys.platform == "linux2":
 #    f.write( "<td>OpenC++<br>2.5.9</td>\n" )
 elif sys.platform == "beos":
   if compiler_arg == "*" or compiler_arg == "gcc":
-    f.write( "<td>GNUPro<br>GCC<br>2.9</td>\n" )
+    f.write( "<td>GNUPro<br>GCC&nbsp;2.9</td>\n" )
   if compiler_arg == "*" or compiler_arg == "gcc-sgi":
-    f.write( "<td>GNUPro<br>GCC<br>2.9<br>SGI<br>STL<br>3.3</td>\n" )
+    f.write( "<td>GNUPro<br>GCC&nbsp;2.9<br>+<br>SGI&nbsp;STL&nbsp;3.3</td>\n" )
 else:
 #  if compiler_arg=="*" or compiler_arg=="bcc54":
 #    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
@@ -246,5 +246,6 @@ else:
 f.write( "</table>\n</body>\n</html>\n"  )
 
 # end
+
 
 
