@@ -81,6 +81,11 @@ namespace
 
   const string empty_string;
 
+  // prefix for library and test hyperlink prefix
+  string url_prefix_dir_view( "http://cvs.sourceforge.net/viewcvs.py/boost/boost" );
+  string url_prefix_checkout_view( "http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost" );
+  string url_suffix_text_view( "?content-type=text%2Fplain&rev=HEAD" );
+
 //  build notes_bookmarks from notes HTML  -----------------------------------//
 
   void build_notes_bookmarks()
@@ -572,15 +577,12 @@ const string & attribute_value( const xml::element & element,
       }
     }
 
-    // path to docs
-    fs::path rel;
-    relative_path( fs::initial_path(), boost_root, rel );
-    string lib_docs_path( rel.string() + "/libs/" + lib_name );
-
     // generate the library name, test name, and test type table data
     string::size_type row_start_pos = target.size();
-    target += "<tr><td><a href=\"" + lib_docs_path + "\">"  + lib_name  + "</a></td>";
-    target += "<td><a href=\"" + (rel / test_path).string() + "\">" + test_name + "</a></td>";
+    target += "<tr><td><a href=\"" + url_prefix_dir_view + "/libs/" + lib_name
+      + "\">"  + lib_name  + "</a></td>";
+    target += "<td><a href=\"" + url_prefix_checkout_view + "/" + test_path
+      + url_suffix_text_view + "\">" + test_name + "</a></td>";
     target += "<td>" + test_type + "</td>";
 
     bool no_warn_save = no_warn;
