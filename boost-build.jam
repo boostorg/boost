@@ -1,16 +1,16 @@
 BOOST_ROOT = $(.boost-build-file:D) ;
 if --v2 in $(ARGV)
 {
-    if $(JAM_VERSION:J="") < 030103
+    if $(JAM_VERSION:J="") < 030105
     {
-	ECHO "error: Boost.Jam 3.1.3 or later required" ;
-	EXIT ;
+        ECHO "error: Boost.Jam 3.1.5 or later required" ;
+        EXIT ;
     }
     else
     {
         JAMFILE = [Jj]amfile.v2 ;
-	boost-build tools/build/kernel ;
-    }	
+        boost-build tools/build/kernel ;
+    }   
 }
 else
 {
