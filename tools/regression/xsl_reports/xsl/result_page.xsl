@@ -124,7 +124,7 @@
 
   <xsl:template name="test_type_col">
     <td class="test-type">
-      <a href="#legend" class="legend-link">
+      <a href="../../status/compiler_status.html#Understanding" class="legend-link">
         <xsl:variable name="test_type" select="./@test-type"/>
         <xsl:choose>
           <xsl:when test="$test_type='run_pyd'">
@@ -303,7 +303,7 @@
         
         <xsl:if test="$multiple.libraries">
             <div class="library-name">
-                <a name="{$library}" href="../libs/{$library}" class="library-link">
+                <a name="{$library}" href="../../libs/{$library}" class="library-link">
                     <xsl:value-of select="$library" />
                 </a>
             </div>
@@ -538,7 +538,7 @@
 
     <xsl:variable name="test_header">
       <td class="test-name">
-        <a href="{$test_program}" class="test-link">
+        <a href="../../{$test_program}" class="test-link">
           <xsl:value-of select="$test_name"/>
         </a>
       </td>
