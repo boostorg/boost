@@ -78,7 +78,7 @@ std::string get_system_configuration()
 
 std::string get_system_configuration()
 {
-  return "BeOS";
+  return "BeOS 5 Intel Edition";
 }
 
 #else
@@ -240,13 +240,14 @@ test_result link(std::string command, const std::string & boostpath,
 }
 
 test_result run(std::string command, const std::string & boostpath,
-		const std::string & file, const std::string & args)
+		const std::string & file, std::string args)
 {
   std::string exename = "boosttmp.exe";
   replace(command, "%source", boostpath + "/" + file);
   if(execute(command)) {
     if(get_host() != "win32")
       exename = "./" + exename;
+    replace(args, "%boost", boostpath);
     return execute(exename + " " + args) ? run_ok : run_failed;
   } else {
     return link_failed;
