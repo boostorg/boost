@@ -52,7 +52,7 @@ def download_test_runs( incoming_dir, tag, user ):
 def unzip( archive_path, result_dir ):
     z = zipfile.ZipFile( archive_path, 'r', zipfile.ZIP_DEFLATED ) 
     for f in z.infolist():
-        result = open( os.path.join( result_dir, f.filename ), 'w' )
+        result = open( os.path.join( result_dir, f.filename ), 'wb' )
         result.write( z.read( f.filename ) )
         result.close()
 
@@ -67,7 +67,7 @@ def unzip_test_runs( dir ):
             zip_path = os.path.join( dir, test_run )
             unzip( zip_path, dir )
             utils.log( '  Removing "%s" ...' % test_run )
-            os.unlink( zip_path )
+            #os.unlink( zip_path )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
