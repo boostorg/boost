@@ -738,16 +738,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_class_info_load*"/>
-            <toolset name="*"/>
-            <note author="Robert Ramey" date="12 Feb 05" refid="0">
-                This test depends upon a file created by the corresponding test_class_save 
-                test.  This is a restriction that bjam cannot currently enforce.  This error
-                will usually disappear on the next run.
-                </note>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
             <test name="test_demo"/>
             <test name="test_demo_exception"/>
             <test name="test_demo_fast_binary_archive"/>
@@ -819,9 +809,7 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_no_rtti_binary_archive"/>
-            <test name="test_no_rtti_text_*"/>
-            <test name="test_no_rtti_xml_*"/>
+            <test name="test_no_rtti_*"/>
             <test name="test_set_*"/>
             <toolset name="borland-5_6_4"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
@@ -836,9 +824,7 @@ for more information.
         <mark-expected-failures>
             <test name="test_demo_shared_ptr"/>
             <test name="test_demo_fast_archive"/>
-            <test name="test_no_rtti_binary_archive"/>
-            <test name="test_no_rtti_text_*"/>
-            <test name="test_no_rtti_xml_*"/>
+            <test name="test_no_rtti_*"/>
             <toolset name="cw*"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
@@ -848,6 +834,17 @@ for more information.
             <toolset name="intel-7.1-linux"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
+
+        <test name="test_class_info_load*">
+            <mark-failure>
+                <toolset name="*"/>
+                <note author="Robert Ramey" date="12 Feb 05" refid="0">
+                    This test depends upon a file created by the corresponding test_class_save 
+                    test.  This is a restriction that bjam cannot currently enforce.  This error
+                    will usually disappear on the next run.
+                </note>
+            </mark-failure>
+        </test>
 
     </library>
 
