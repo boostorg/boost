@@ -21,6 +21,11 @@
 #include <fstream>
 #include <utility>
 
+// It is OK to use boost headers which contain entirely inline code.
+#include <boost/config.hpp>
+# ifdef BOOST_NO_STDC_NAMESPACE
+    namespace std { using ::exit; using ::system; }
+# endif
 
 std::string get_host()
 {
@@ -36,7 +41,7 @@ std::string get_host()
 
 struct entry
 {
-  std::string os, identifier, name, command, html;
+  std::string os, identifier, name, compile_only_command, compile_link_command, html;
 };
 
 void replace(std::string & s,
@@ -63,6 +68,14 @@ void replace_environment(std::string & s)
   }
 }
 
+// get a string line, ignoring empty lines and comment lines
+void getstringline( std::ifstream & is, std::string & s )
+{
+  do { std::getline( is, s ); }
+    while ( is.good()
+      && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
+}
+
 template<class OutputIterator>
 void read_compiler_configuration(const std::string & file, OutputIterator out)
 {
@@ -70,11 +83,12 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
   int lineno = 0;
   while(f.good()) {
     entry e;
-    std::getline(f, e.os);
-    std::getline(f, e.identifier);
-    std::getline(f, e.name);
-    std::getline(f, e.command);
-    std::getline(f, e.html);
+    getstringline(f, e.os);
+    getstringline(f, e.identifier);
+    getstringline(f, e.name);
+    getstringline(f, e.compile_only_command);
+    getstringline(f, e.compile_link_command);
+    getstringline(f, e.html);
     *out = e;
     ++out;
     std::string l;
@@ -103,14 +117,14 @@ enum test_result {
 test_result compile(std::string command, const std::string & boostpath,
 	     const std::string & file)
 {
-  replace(command, "%source", "-o boosttmp.o " + boostpath + "/" + file);
+  replace(command, "%source", boostpath + "/" + file);
   return execute(command) ? compile_ok : compile_failed;
 }
 
 test_result link(std::string command, const std::string & boostpath,
 		 const std::string & file)
 {
-  replace(command, "%source", "-o boosttmp.exe" + boostpath + "/" + file);
+  replace(command, "%source", boostpath + "/" + file);
   return execute(command) ? link_ok : link_failed;
 }
 
@@ -118,7 +132,7 @@ test_result run(std::string command, const std::string & boostpath,
 		const std::string & file)
 {
   std::string exename = "boosttmp.exe";
-  replace(command, "%source", "-o " + exename + " " + boostpath + "/" + file);
+  replace(command, "%source", boostpath + "/" + file);
   if(execute(command)) {
     return execute( (get_host() == "win32" ? "" : "./") + exename ) ?
       run_ok : run_failed;
@@ -128,22 +142,24 @@ test_result run(std::string command, const std::string & boostpath,
 }
 
 std::pair<test_result, test_result>
-run_test(const std::string & type, std::string command,
+run_test(const std::string & type, std::string compile_only_command,
+   std::string compile_link_command,
 	 const std::string & boostpath, const std::string & source)
 {
-  replace(command, "%include", boostpath);
+  replace(compile_only_command, "%include", boostpath);
+  replace(compile_link_command, "%include", boostpath);
   if(type == "compile")
-    return std::make_pair(compile(command, boostpath, source), compile_ok);
+    return std::make_pair(compile(compile_only_command, boostpath, source), compile_ok);
   else if(type == "compile-fail")
-    return std::make_pair(compile(command, boostpath, source), compile_failed);
+    return std::make_pair(compile(compile_only_command, boostpath, source), compile_failed);
   else if(type == "link")
-    return std::make_pair(link(command, boostpath, source), link_ok);
+    return std::make_pair(link(compile_link_command, boostpath, source), link_ok);
   else if(type == "link-fail")
-    return std::make_pair(link(command, boostpath, source), link_failed);
+    return std::make_pair(link(compile_link_command, boostpath, source), link_failed);
   else if(type == "run")
-    return std::make_pair(run(command, boostpath, source), run_ok);
+    return std::make_pair(run(compile_link_command, boostpath, source), run_ok);
   else if(type == "run-fail")
-    return std::make_pair(run(command, boostpath, source), run_failed);
+    return std::make_pair(run(compile_link_command, boostpath, source), run_failed);
   else
     return std::make_pair(unknown_type, ok);
 }
@@ -154,7 +170,8 @@ void do_tests(std::ostream & out,
 	      const std::string & testconfig, const std::string & boostpath)
 {
   out << "<tr>\n"
-      << "<td>Program</td>\n";
+      << "<td>Program</td>\n"
+      << "<td>Test<br>Type</td>\n";
   for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it) {
     out << "<td>" << it->html << "</td>\n";
   }
@@ -163,7 +180,7 @@ void do_tests(std::ostream & out,
   std::ifstream f(testconfig.c_str());
   while(f.good()) {
     std::string l;
-    std::getline(f, l);
+    getstringline(f, l);
     typedef std::string::size_type sz_type;
     sz_type p = l.find(' ');
     if(p == std::string::npos) {
@@ -171,28 +188,26 @@ void do_tests(std::ostream & out,
       continue;
     }
     std::string type(l, 0, p);
-    std::string file(l, p+1);
+    std::string file(l, p+1, std::string::npos);  // 3rd arg to fix VC++ bug
 
-    std::cout << file << "\n";
+    std::cout << "*** " << file << " ***\n\n";
 
     out << "<tr>\n"
-	<< "<td><a href=\"" << file << "\">" << file << "</a></td>\n";
+        << "<td><a href=\"" << file << "\">" << file << "</a></td>\n"
+        << "<td>" << type << "</td>\n";
 
     for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it) {
-      std::cout << "\t" << it->name << std::endl;
+      std::cout << "** " << it->name << std::endl;
       std::pair<test_result, test_result> result =
-	run_test(type, it->command, boostpath, file);
+	run_test(type, it->compile_only_command, it->compile_link_command, boostpath, file);
       if(result.first == unknown_type) {
 	std::cerr << "Unknown test type " << type << ", skipped\n";
 	continue;
       }
-      out << "<td>";
-      if(result.first == result.second)
-	out << "yes";
-      else
-	out << "no";
-      out << "<sup>" << int(result.second) << "</sup></td>" << std::endl;
-      std::cout << (result.first == result.second ? "ok" : "failed") << "\n";
+      out << "<td>"
+          << (result.first == result.second ? "Pass" : "<font color=\"#FF0000\">Fail</font>")
+          << "</td>" << std::endl;
+      std::cout << (result.first == result.second ? "Pass" : "Fail") << "\n\n";
     }
     out << "</tr>\n";
   }
@@ -201,7 +216,13 @@ void do_tests(std::ostream & out,
 
 int main(int argc, char * argv[])
 {
-  std::vector<std::string> args(argv+1, argv+argc);
+//  std::vector<std::string> args(argv+1, argv+argc);
+// hack around VC++ lack of ctor taking iterator args
+  std::vector<std::string> args;
+  for ( const char ** ait = (const char **)(argv+1);
+        ait != (const char **)(argv+argc); ++ait)
+    args.push_back(std::string( *ait ));
+
   if(args.size() < 3) {
     std::cerr << argv[0] << " usage: compiler-config test-config boost-path [compiler] [file]\n";
     std::exit(1);
@@ -213,7 +234,8 @@ int main(int argc, char * argv[])
   std::string host = get_host();
   for(std::list<entry>::iterator it = l.begin(); it != l.end(); ) {
     if(it->os == host && (compiler == "*" || it->identifier == compiler)) {
-      replace_environment(it->command);
+      replace_environment(it->compile_only_command);
+      replace_environment(it->compile_link_command);
       ++it;
     } else {
       it = l.erase(it);
@@ -223,7 +245,7 @@ int main(int argc, char * argv[])
   std::string boostpath = args[2];
 
   if(args.size() >= 5) {
-    std::string cmd = l.front().command;
+    std::string cmd = l.front().compile_only_command;
     replace(cmd, "%include", boostpath);
     compile(cmd, boostpath, args[4]);
     return 0;
@@ -242,12 +264,5 @@ int main(int argc, char * argv[])
   do_tests(out, l.begin(), l.end(), args[1], boostpath);
 
   out << "</table>\n";
-  out << "<p>\n"
-      << "2: compile failed<br>\n"
-      << "3: compile succeeded<br>\n"
-      << "4: link failed<br>\n"
-      << "5: link succeeded<br>\n"
-      << "6: run failed<br>\n"
-      << "7: run succeeded<br>\n";
   return 0;
 }
