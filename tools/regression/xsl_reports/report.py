@@ -228,9 +228,9 @@ def build_experimental_reports( locate_root_dir
                                 ):
     ( run_date ) = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime() )
     test_results_file = os.path.join( results_dir, "test_results.xml" )
-##    collect_test_logs( [ os.path.join( locate_root_dir, "libs" ), os.path.join( locate_root_dir, "status" ) ]
-##                       , test_results_file
-##                       )
+    collect_test_logs( [ os.path.join( locate_root_dir, "libs" ), os.path.join( locate_root_dir, "status" ) ]
+                       , test_results_file
+                       )
 
     make_result_pages( test_results_file
                        , expected_results_file
