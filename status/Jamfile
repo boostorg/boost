@@ -43,7 +43,8 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
                 : #args
                 : #input-files
                 : #requirements
-                <threading>multi
+                  <threading>multi
+                : std::facet-support
           ]
            [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
            [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
@@ -100,7 +101,7 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
       libs/io/test/ios_state_test.cpp <lib>../libs/test/build/boost_test_exec_monitor   # sources
       : # args
       : # input-files
-      : std::locale-support
+      : std::locale-support std::facet-support
       ;
 
     test-suite lambda
@@ -168,7 +169,7 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
 
     test-suite tuple
         : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
-          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ]
+          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/boost_test_exec_monitor : : : std::facet-support ]
     ;
 
 
