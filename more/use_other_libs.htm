@@ -1,0 +1,52 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Use other Boost or C</title>
+</head>
+
+<body>
+
+<ul>
+  <li>Use other Boost or C++ Standard Library components only when the benefits
+    outweigh the costs.</li>
+</ul>
+<p>(Details)</p>
+<p>The benefits of using components from other libraries include clearer, more
+understandable, code, reduced development and maintenance costs, and the
+assurance which comes from using well-known and trusted building blocks.</p>
+<p>The costs incurred may include added compilation and runtime costs, and
+undesirable coupling between components.&nbsp; If the interface to the
+additional component is complex, using it may make code less readable, and thus
+actually increase development and maintenance costs.</p>
+<p><b>Example where another boost component should be used:</b>&nbsp;
+boost::noncopyable (in boost/utility.hpp) has considerable benefits; it
+simplifies code, improves readability, and signals intent.&nbsp; Costs are low
+as coupling is limited;&nbsp; it uses no other classes and includes only the
+generally lightweight headers &lt;boost/config.hpp&gt; and &lt;cstddef&gt;.&nbsp;&nbsp;
+There are no runtime costs at all. With costs so low and benefits so high, other
+boost libraries should use boost::noncopyable except in exceptional
+circumstances.</p>
+<p><b>Example where a standard library component might be used:</b> Providing
+diagnostic output as a debugging aid can be a nice feature for a library. Yet
+using Standard Library iostreams for the purpose involves a lot of additional
+coupling, if iostreams is otherwise unused, and may be a complete waste if the
+library is used in a GUI or embedded application.&nbsp; It might be better to
+redesign the boost library so that the user supplies the output mechanism,
+avoiding marginal use of iostreams.</p>
+<p><b>Example where another boost component should not be used:</b>&nbsp; The
+boost dir_it library has considerable coupling and runtime costs, not to mention
+portability issues with unsupported operating systems.&nbsp; While completely
+appropriate when directory iteration is required, it would not be reasonable for
+another boost library to use dir_it just to check that a file is available
+before opening, since Standard Library file open functionality does this at
+lower cost.&nbsp; Don't use dir_it just for the sake of using a boost library.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

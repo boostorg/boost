@@ -1,0 +1,268 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Library Requirements and Guidelines</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta name="Microsoft Border" content="none, default">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libraries.htm"><font face="Arial" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people.htm"><font face="Arial" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+<h1 align="left">Boost Library Requirements and Guidelines</h1>
+<p align="left">This page describes requirements and guidelines for the content
+of a library submitted to Boost.</p>
+<p align="left">See the <a href="submission_process.htm">Boost Library
+Submission Process</a> page for a description of the process involved.</p>
+<h2 align="left">Requirements</h2>
+<p>To avoid the frustration and wasted time of a proposed library being
+rejected, it must meets these requirements:</p>
+<ul>
+  <li>The license must meet the <a href="#License">license requirements</a>
+    below. Restricted licenses like the GPL and LGPL are not acceptable. The
+    copyright <a href="#Ownership">ownership</a> must be clear.<br>
+  </li>
+  <li>The library must be generally useful and not restricted to a narrow
+    problem domain.<br>
+  </li>
+  <li>The library must meet the <a href="#Portability">portability requirements</a>
+    below.&nbsp;<br>
+  </li>
+  <li>The library must come reasonably close to meeting the <a href="#Guidelines">Guidelines</a>
+    below.<br>
+  </li>
+  <li>The author must be willing to participate in discussions on the mailing
+    list, and to refine the library accordingly.</li>
+</ul>
+<p>There's no requirement that an author read the mailing list for a time before
+making a submission. It has been noted, however, that submissions which begin
+&quot;I just started to read this mailing list ...&quot; seem to fail, often
+embarrassingly.</p>
+<h3 align="left"><a name="License">License</a> requirements</h3>
+<ul>
+  <li>Must be simple to read and understand.<br>
+  </li>
+  <li>Must grant permission to copy, use and modify the software for any use
+    (commercial and non-commercial) for no fee.<br>
+  </li>
+  <li>Must require that the license appear on all copies of the software source
+    code.<br>
+  </li>
+  <li>Must not require that the license appear with executables or other binary
+    uses of the library.&nbsp;&nbsp; Must not require that the source code be
+    available for execution or other binary uses of the library.<br>
+  </li>
+  <li>May restrict the use of the name and description of the library to the
+    standard version found on the Boost web site.</li>
+</ul>
+<h3 align="left"><a name="Portability">Portability</a> requirements</h3>
+<ul>
+  <li>
+    <p align="left">A library's interface must portable and not restricted to a
+    particular compiler or operating system.<br>
+  </li>
+  <li>
+    <p align="left">A library's implementation must if possible be portable and
+    not restricted to a particular compiler or operating system.&nbsp; If a
+    portable implementation is not possible, non-portable constructions are
+    acceptable if reasonably easy to port to other environments.<br>
+  </li>
+  <li>
+    <p align="left">There is no requirement that a library run on all C++
+    compilers.&nbsp;&nbsp;<br>
+  </li>
+  <li>
+    <p align="left">There is no requirement that a library run on any particular
+    C++ compiler.&nbsp; Boost contributors often try to ensure their libraries
+    work with popular compilers.&nbsp; The boost/config.hpp <a href="../libs/config/index.htm">configuration
+    header</a> is the preferred mechanism for working around compiler
+    deficiencies.</li>
+</ul>
+<p align="left">Since there is no absolute way to prove portability, many boost
+submissions demonstrate practical portability by compiling and executing
+correctly with two different C++ compilers, often under different operating
+systems.&nbsp; Otherwise reviewers may disbelieve that porting is in fact
+practical.</p>
+<h3 align="left"><a name="Ownership">Ownership</a></h3>
+<p align="left">Are you sure you own the library you are thinking of
+submitting?&nbsp;&nbsp; &quot;How to Copyright Software&quot; by MJ Salone, Nolo
+Press, 1990 says:</p>
+<blockquote>
+  <p align="left">Doing work on your own time that is very similar to
+  programming you do for your employer on company time can raise nasty legal
+  problems.&nbsp; In this situation, it's best to get a written release from
+  your employer in advance.</p>
+</blockquote>
+<p align="left">Place a copyright notice in all the important files you submit.
+Boost.org won't accept libraries without clear copyright information.</p>
+<h2 align="left"><a name="Guidelines">Guidelines</a></h2>
+<p align="left">Please use these guidelines as a checklist for preparing the
+content a library submission.&nbsp; Not every guideline applies to every
+library, but a reasonable effort to comply is expected.</p>
+<h3>Design and Programming</h3>
+<ul>
+  <li>Aim for ISO Standard C++. Than means making effective use of the standard
+    features of the language, and avoiding non-standard compiler extensions. It
+    also means using the C++ Standard Library where applicable.</li>
+</ul>
+<ul>
+  <li>Headers should be good neighbors. See the <a href="header.htm">header
+    policy</a>.</li>
+</ul>
+<ul>
+  <li>Follow the <a href="imp_vars.htm">implementation variation policy</a>.&nbsp;</li>
+</ul>
+<ul>
+  <li>Follow quality programming practices. See, for example, &quot;Effective
+    C++&quot; 2nd Edition, and &quot;More Effective C++&quot;, both by Scott
+    Meyers, published by Addison Wesley.</li>
+</ul>
+<ul>
+  <li>Use the lowercase/underscore <a href="#Naming">naming conventions</a> of
+    the C++ standard library.&nbsp; Template parameter names begin with an
+    uppercase letter. Macro (gasp!) names should be all uppercase and begin with
+    BOOST_.</li>
+</ul>
+<ul>
+  <li>Use exceptions to report errors where appropriate, and write code that is
+    safe in the face of exceptions.</li>
+</ul>
+<ul>
+  <li>Avoid exception-specifications. See <a href="#Exception-specification">exception-specification
+    rationale</a>.</li>
+</ul>
+<ul>
+  <li>Provide sample programs, confidence tests, or regression tests so
+    potential users can see how to use your library and verify that it has
+    compiled correctly.</li>
+</ul>
+<ul>
+  <li>Although some boost members use proportional fonts, tabs, and unrestricted
+    line lengths in their own code, boost's widely distributed source code
+    should follow more conservative guidelines:
+    <ul>
+      <li>Use fixed-width fonts.&nbsp; See <a href="#code fonts">fonts rationale</a>.</li>
+      <li>Use spaces rather than tabs.</li>
+      <li>Limit line lengths to 80 characters.</li>
+    </ul>
+  </li>
+</ul>
+<h3>Documentation</h3>
+<p>Even the simplest library needs some documentation; the amount should be
+proportional to the need.&nbsp; The documentation should assume the readers have
+a basic knowledge of C++, but are not necessarily experts.</p>
+<p>The format for documentation should be HTML, and should not require an
+advanced browser or server-side extensions.</p>
+<p>There is no single right way to do documentation. HTML documentation is often
+organized quite differently from traditional printed documents. Task-oriented
+styles differ from reference oriented styles. In the end, it comes down to the
+question: Is the documentation sufficient for the mythical &quot;average&quot;
+C++ programmer to use the library successfully?</p>
+<p>Appropriate topics for documentation often include:
+<ul>
+  <li>General introduction to the library.</li>
+  <li>Description of each class.</li>
+  <li>Relationship between classes.</li>
+  <li>For each function, as applicable, description, requirements
+    (preconditions), effects, post-conditions, returns, and throws.</li>
+  <li>Discussion of error detection and recovery strategy.</li>
+  <li>How to use including description of typical uses.</li>
+  <li>How to compile and link.</li>
+  <li>How to test.</li>
+  <li>Version or revision history.</li>
+  <li>Rationale for design decisions.&nbsp; See <a href="#Rationale">Rationale
+    rationale</a>.</li>
+  <li>Acknowledgements.&nbsp; See <a href="#Acknowledgements">Acknowledgments
+    rationale.</a></li>
+</ul>
+<h2>Rationale</h2>
+<p>Rationale for some of the requirements and guidelines follows.</p>
+<h3><a name="Exception-specification">Exception-specification</a> rationale</h3>
+<p>Exception specifications [ISO 15.4] are sometimes coded to indicate what
+exceptions may be thrown, or because the programmer hopes they will improved
+performance.&nbsp; But consider the follow member from a smart pointer:</p>
+<pre>    T&amp; operator*() const throw()  { return *ptr; }</pre>
+<p>This function calls no other functions; it only manipulates fundamental data
+types like pointers Therefore, no runtime behavior of the
+exception-specification can ever be invoked.&nbsp; The function is completely
+exposed to the compiler; indeed it is declared inline Therefore, a smart
+compiler can easily deduce that the functions are incapable of throwing
+exceptions, and make the same optimizations it would have made based on the
+empty exception-specification. A &quot;dumb&quot; compiler, however, may make
+all kinds of pessimizations.</p>
+<p>For example, some compilers turn off inlining if there is an
+exception-specification.&nbsp; Some compilers add try/catch blocks. Such
+pessimizations can be a performance disaster which makes the code unusable in
+practical applications.</p>
+<p>Although initially appealing, an exception-specification tends to have
+consequences that require <b>very</b> careful thought to understand. The biggest
+problem with exception-specifications is that programmers use them as though
+they have the effect the programmer would like, instead of the effect they
+actually have.</p>
+<p>A non-inline function is the one place a &quot;throws nothing&quot;
+exception-specification may have some benefit with some compilers.</p>
+<hr>
+<h3><a name="Naming">Naming</a> conventions rationale</h3>
+<p>The C++ standard committee's Library Working Group discussed this issue in
+detail, and over a long period of time. The discussion was repeated again in
+early boost postings. A short summary:</p>
+<ul>
+  <li>Naming conventions are contentious, and although several are widely used,
+    no one style predominates.<br>
+  </li>
+  <li>Given the intent to propose portions of boost for the next revision of the
+    C++ standard library, boost decided to follow the standard library's
+    conventions.<br>
+  </li>
+  <li>Once a library settles on a particular convention, a vast majority of
+    stakeholders want that style to be consistently used.<br>
+  </li>
+  <li>There is a strong preference for clear and descriptive names, even if
+    lengthy.</li>
+</ul>
+<hr>
+<h3>Source <a name="code fonts">code fonts</a> rationale</h3>
+<p>Dave Abrahams comments: An important purpose (I daresay the primary purpose)
+of source code is communication: the documentation of intent. This is a doubly
+important goal for boost, I think. Using a fixed-width font allows us to
+communicate with more people, in more ways (diagrams are possible) right there
+in the source. Code written for fixed-width fonts using spaces will read
+reasonably well when viewed with a variable-width font, and as far as I can tell
+every editor supporting variable-width fonts also supports fixed width. I don't
+think the converse is true.</p>
+<hr>
+<h3><a name="Rationale">Rationale</a> rationale</h3>
+<p>Rationale is defined as &quot;The fundamental reasons for something;
+basis.&quot; by the American Heritage Dictionary.</p>
+<p>Beman Dawes comments:&nbsp; Failure to supply contemporaneous rationale for
+design decisions is a major defect in many software projects. Lack of accurate
+rationale causes issues to revisited endlessly, causes maintenance bugs when a
+maintainer changes something without realizing it was done a certain way for
+some purpose, and shortens the useful lifetime of software.</p>
+<p>Rationale is fairly easy to provide at the time decisions are made, but very
+hard to accurately recover even a short time later.</p>
+<hr>
+<h3><a name="Acknowledgements">Acknowledgements</a> rationale</h3>
+<p>As a library matures, it almost always accumulates improvements suggested to
+the authors by other boost members.&nbsp; It is a part of the culture of
+boost.org to acknowledge such contributions, identifying the person making the
+suggestion.&nbsp; Major contributions are usually acknowledged in the
+documentation, while minor fixes are often mentioned in comments within the code
+itself.</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->24 July, 2000<!--webbot bot="Timestamp" endspan i-checksum="21054" --></p>
+
+</body>
+
+</html>
