@@ -145,27 +145,27 @@ configuration parse_command_line(char **first, char **last)
       cfg.compiler = *++first;
     } else if(arg.substr(0,1) == "-") {
       std::cerr << "usage:  regression [-h | --help] [--config compiler.cfg]\n"
-		<< "    [--tests regression.cfg] [--boost path] [-o output.html] [--compiler <name>]\n"
-		<< "    [test]\n"
-		<< "  -h or --help    print this help message\n"
-		<< "  --config <file> compiler configuration file (default: compiler.cfg)\n"
-		<< "  --tests <file>  test configuration file (default: regression.cfg)\n"
-		<< "  --boost <path>  filesystem path to main boost directory (default: ..)\n"
-		<< "  -o <file>       name of output file (default: cs-OS.html)\n"
-		<< "  --diff          highlight differences in output file\n"
-		<< "  --compiler <name>  use only compiler <name> (default: *)\n"
-		<< "  test            a single test, including the action (compile, run, etc.)\n";
+                << "    [--tests regression.cfg] [--boost path] [-o output.html] [--compiler <name>]\n"
+                << "    [test]\n"
+                << "  -h or --help    print this help message\n"
+                << "  --config <file> compiler configuration file (default: compiler.cfg)\n"
+                << "  --tests <file>  test configuration file (default: regression.cfg)\n"
+                << "  --boost <path>  filesystem path to main boost directory (default: ..)\n"
+                << "  -o <file>       name of output file (default: cs-OS.html)\n"
+                << "  --diff          highlight differences in output file\n"
+                << "  --compiler <name>  use only compiler <name> (default: *)\n"
+                << "  test            a single test, including the action (compile, run, etc.)\n";
       std::exit(1);
     } else {
       // add the rest of the command line to the "test" line
       for( ; first != last; ++first)
-	cfg.test += std::string(*first) + " ";
+        cfg.test += std::string(*first) + " ";
       break;
     }
   }
   if(cfg.test != "" && !output_redirected) {
     std::cerr << "Error: Please specify the HTML output file explicitly\n"
-	      << "(using \"--output file\") when running a single test only.\n";
+              << "(using \"--output file\") when running a single test only.\n";
     std::exit(1);
   }
   return cfg;
@@ -179,7 +179,7 @@ struct entry
 
 // replace the first %name in s with value
 void replace(std::string & s,
-	     const std::string & name, const std::string & value)
+             const std::string & name, const std::string & value)
 {
   std::string::size_type p = s.find(name);
   if(p != std::string::npos)
@@ -209,7 +209,7 @@ void getstringline( std::ifstream & is, std::string & s )
   do {
     std::getline( static_cast<std::istream&>(is), s ); // cast required by IRIX
   } while ( is.good()
-	    && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
+            && (!s.size() || (s.size() >= 2 && s[0] == '/' && s[1] == '/')) );
 }
 
 // read the compiler configuration from file and push entry's to out
@@ -233,7 +233,7 @@ void read_compiler_configuration(const std::string & file, OutputIterator out)
     lineno += 6;
     if(l != "") {
       std::cerr << file << ", line " << lineno
-		<< ": Empty line expected, got " << l << "\n";
+                << ": Empty line expected, got " << l << "\n";
       std::exit(1);
     }
   }
@@ -254,35 +254,35 @@ previous_results_type read_previous_results(std::istream & is)
   while(std::getline(is, line)) {
     if(status == prefix) {
       if(line.substr(0, 6) == "<table")
-	status = testname;
+        status = testname;
     } else if(status == testname) {
       if(line.substr(0, 6) == "<td><a") {
-	std::string::size_type pos = line.find(">", 5);
-	if(pos == std::string::npos || pos+1 >= line.size()) {
-	  std::cerr << "Line '" << line << "' has unknown format.";
-	  continue;
-	}
-	std::string::size_type pos_end = line.find("<", pos);
-	if(pos_end == std::string::npos) {
-	  std::cerr << "Line '" << line << "' has unknown format.";
-	  continue;
-	}	  
-	current_test = line.substr(pos+1, pos_end - (pos+1));
-	status = command;
+        std::string::size_type pos = line.find(">", 5);
+        if(pos == std::string::npos || pos+1 >= line.size()) {
+          std::cerr << "Line '" << line << "' has unknown format.";
+          continue;
+        }
+        std::string::size_type pos_end = line.find("<", pos);
+        if(pos_end == std::string::npos) {
+          std::cerr << "Line '" << line << "' has unknown format.";
+          continue;
+        }         
+        current_test = line.substr(pos+1, pos_end - (pos+1));
+        status = command;
       } else if(line.substr(0, 8) == "</table>") {
-	break;
+        break;
       }
     } else if(status == command) {
       status = testresult;
     } else if(status == testresult) {
       if(line == "</tr>")
-	status = testname;
+        status = testname;
       else if(line.find(pass_string) != std::string::npos)
-	result[current_test].append("P");
+        result[current_test].append("P");
       else if(line.find(fail_string) != std::string::npos)
-	result[current_test].append("F");
+        result[current_test].append("F");
       else
-	std::cerr << "Line '" << line << "' has unknown format.";
+        std::cerr << "Line '" << line << "' has unknown format.";
     }
   }
   return result;
@@ -305,21 +305,21 @@ enum test_result {
 };
 
 test_result compile(std::string command, const std::string & boostpath,
-	     const std::string & file)
+             const std::string & file)
 {
   replace(command, "%source", boostpath + "/" + file);
   return execute(command) ? compile_ok : compile_failed;
 }
 
 test_result link(std::string command, const std::string & boostpath,
-		 const std::string & file)
+                 const std::string & file)
 {
   replace(command, "%source", boostpath + "/" + file);
   return execute(command) ? link_ok : link_failed;
 }
 
 test_result run(std::string command, const std::string & boostpath,
-		const std::string & file, std::string args)
+                const std::string & file, std::string args)
 {
   std::string exename = "boosttmp.exe";
   replace(command, "%source", boostpath + "/" + file);
@@ -338,9 +338,9 @@ test_result run(std::string command, const std::string & boostpath,
 
 std::pair<test_result, test_result>
 run_test(const std::string & type, std::string compile_only_command,
-	 std::string compile_link_command,
-	 const std::string & boostpath, const std::string & source,
-	 const std::string & args)
+         std::string compile_link_command,
+         const std::string & boostpath, const std::string & source,
+         const std::string & args)
 {
   replace(compile_only_command, "%include", boostpath);
   replace(compile_link_command, "%include", boostpath);
@@ -362,10 +362,10 @@ run_test(const std::string & type, std::string compile_only_command,
 
 template<class ForwardIterator>
 void do_tests(std::ostream & out,
-	      ForwardIterator firstcompiler, ForwardIterator lastcompiler,
-	      const std::string & testconfig, const std::string & boostpath,
-	      const previous_results_type& previous_results,
-	      bool highlight_diff)
+              ForwardIterator firstcompiler, ForwardIterator lastcompiler,
+              const std::string & testconfig, const std::string & boostpath,
+              const previous_results_type& previous_results,
+              bool highlight_diff)
 {
   out << "<tr>\n"
       << "<td>Program</td>\n"
@@ -405,7 +405,7 @@ void do_tests(std::ostream & out,
     previous_results_type::const_iterator prev_iter =
       previous_results.find(file);
     std::string previous = (prev_iter == previous_results.end() ?
-			    std::string("") : prev_iter->second);
+                            std::string("") : prev_iter->second);
     std::string::size_type i = 0;
 
     for(ForwardIterator it = firstcompiler; it != lastcompiler; ++it, ++i) {
@@ -419,18 +419,18 @@ void do_tests(std::ostream & out,
       bool pass = result.first == result.second;
       char prev = (i < previous.size() ? previous[i] : ' ');
       bool changed = highlight_diff &&
-	((prev == 'F' && pass) || (prev == 'P' && !pass) || prev == ' ');
+        ((prev == 'F' && pass) || (prev == 'P' && !pass) || prev == ' ');
       out << "<td>"
-	  << (changed ? "<font size=\"+3\"><em>" : "")
+          << (changed ? "<font size=\"+3\"><em>" : "")
           << (pass ? pass_string : fail_string)
-	  << (changed ? "</em></font>" : "")
+          << (changed ? "</em></font>" : "")
           << "</td>" << std::endl;
       std::cout << (result.first == result.second ? "Pass" : "Fail") << "\n\n";
     }
     out << "</tr>\n";
   }
 }
-	      
+              
 
 int main(int argc, char * argv[])
 {
@@ -438,11 +438,11 @@ int main(int argc, char * argv[])
     
   std::list<entry> compilers;
   read_compiler_configuration(config.compiler_config_file,
-			      std::back_inserter(compilers));
+                              std::back_inserter(compilers));
   std::string host = get_host();
   for(std::list<entry>::iterator it = compilers.begin(); it != compilers.end(); ) {
     if(it->os == host && (config.compiler == "*" ||
-			  it->identifier == config.compiler)) {
+                          it->identifier == config.compiler)) {
       replace_environment(it->compile_only_command);
       replace_environment(it->compile_link_command);
       ++it;
@@ -485,17 +485,17 @@ int main(int argc, char * argv[])
       << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
     
   do_tests(out, compilers.begin(), compilers.end(), config.test_config_file, config.boostpath,
-	   previous_results, config.highlight_differences);
+           previous_results, config.highlight_differences);
 
   out << "</table></p>\n<p>\n";
   if(host == "linux")
     out << "Notes: A hand-crafted &lt;limits&gt; Standard header has been\n"
-	<< "applied to all configurations.\n"
-	<< "The tests were run on a GNU libc 2.2.2 system which has improved\n"
-	<< "wide character support compared to 2.1.x and earlier versions.";
+        << "applied to all configurations.\n"
+        << "The tests were run on a GNU libc 2.2.2 system which has improved\n"
+        << "wide character support compared to 2.1.x and earlier versions.";
   else if(host == "irix" || host == "tru64")
     out << "Note: For the 'clib' configuration, the missing new-style C\n"
-	<< "library headers &lt;cXXX&gt; have been supplied.\n";
+        << "library headers &lt;cXXX&gt; have been supplied.\n";
 
   out << "</p>\n</body>\n</html>" << std::endl;
   return 0;
