@@ -250,15 +250,15 @@ declare-build-fail-test COMPILE_FAIL : OBJ ;
 declare-build-succeed-test COMPILE : OBJ ;
 
 # Test that the given source-file(s) compile
-rule compile ( sources + : requirements * )
+rule compile ( sources + : requirements * : test-name ? )
 {
-    return [ boost-test $(sources) : COMPILE : $(requirements) ] ;
+    return [ boost-test $(sources) : COMPILE : $(requirements) : $(test-name) ] ;
 }
 
 # Test that the given source-file(s) fail to compile
-rule compile-fail ( sources + : requirements * )
+rule compile-fail ( sources + : requirements * : test-name ? )
 {
-    return [ boost-test $(sources) : COMPILE_FAIL : $(requirements) ] ;
+    return [ boost-test $(sources) : COMPILE_FAIL : $(requirements) : $(test-name) ] ;
 }
 
 
@@ -349,20 +349,20 @@ rule run ( sources + : args * : input-files * : requirements * : name ? )
     return [ boost-test $(sources) : RUN : $(requirements) : $(name) ] ;
 }
 
-rule run-fail # sources : args : input-files : requirements
+rule run-fail ( sources + : args * : input-files * : requirements * : name ? )
 {
     local gRUN_TEST_ARGS = $(2) ;
     local gRUN_TEST_INPUT_FILES = $(3) ;
     SEARCH on $(3) = $(LOCATE_SOURCE) ;
-    return [ boost-test $(<) : RUN_FAIL : $(4) ] ;
+    return [ boost-test $(<) : RUN_FAIL : $(4) : $(name) ] ;
 }
 
 ### Rules for testing whether a program links
 
 declare-build-fail-test LINK_FAIL : EXE ;
-rule link-fail # sources : requirements
+rule link-fail ( sources + : requirements * : name ? )
 {
-    return [ boost-test $(<) : LINK_FAIL : $(2) ] ;
+    return [ boost-test $(<) : LINK_FAIL : $(2) : $(name) ] ;
 }
 
 ### Rules for grouping tests into suites:
