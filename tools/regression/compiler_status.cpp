@@ -678,8 +678,9 @@ const string & attribute_value( const xml::element & element,
       "<td><a href=\"compiler_status.html#test-type\">Test Type</a></td>\n";
 
     fs::directory_iterator itr( bin_path );
-    while ( itr != end_itr && !fs::is_directory( *itr )
-      && itr->string().find( ".test" ) != (itr->string().size()-5) )
+    while ( itr != end_itr 
+      && ((itr->string().find( ".test" ) != (itr->string().size()-5))
+      || !fs::is_directory( *itr )))
       ++itr; // bypass chaff
     if ( itr != end_itr )
     {
