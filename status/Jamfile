@@ -264,27 +264,31 @@ rule compile-fail # source-file : requirements
 
 gGENERATOR_FUNCTION(RUN_TEST) = run-test ;
 SUFRUN_TEST = .run ;
-rule run-test # target : sources : requirements
+rule run-test ( target : sources + : requirements * )
 {
-    local executable = $(<:S=$(SUFEXE)) ; 
-    gTARGET_LIBS($(executable)) = $(gTARGET_LIBS($(<))) ;
-    gTARGET_DLLS($(executable)) = $(gTARGET_DLLS($(<))) ;
-    executable-file $(executable) : $(>) : $(3) ;
+    local executable = $(target:S=$(SUFEXE)) ; 
+    
+    local parent = $(target:S=.test) ;
+    # Move important data from the test target to the executable
+    gRUN_LD_LIBRARY_PATH($(executable)) = $(gRUN_LD_LIBRARY_PATH($(parent))) ;
+    gRUN_PATH($(executable)) = $(gRUN_PATH($(parent))) ;
+    
+    executable-file $(executable) : $(sources) : $(requirements) ;
     set-target-variables $(executable) ;
     
     # The .test file goes with the other subvariant targets
     # normalization is a hack to get the slashes going the right way on Windoze
     local LOCATE_TARGET = [ FDirName [ split-path $(LOCATE_TARGET) ] ] ;
-    MakeLocate $(<) : $(LOCATE_TARGET) ;
+    MakeLocate $(target) : $(LOCATE_TARGET) ;
     
-    DEPENDS $(<) : $(executable) $(gRUN_TEST_INPUT_FILES) ;
-    INPUT_FILES on $(<) = $(gRUN_TEST_INPUT_FILES) ;
-    ARGS on $(<) = $(gRUN_TEST_ARGS) ;
-    capture-run-output $(<) : $(executable) ;
+    DEPENDS $(target) : $(executable) $(gRUN_TEST_INPUT_FILES) ;
+    INPUT_FILES on $(target) = $(gRUN_TEST_INPUT_FILES) ;
+    ARGS on $(target) = $(gRUN_TEST_ARGS) ;
+    capture-run-output $(target) : $(executable) ;
     
     if $(RUN_ALL_TESTS)
     {
-        ALWAYS $(<) ;
+        ALWAYS $(target) ;
     }
 }
 
@@ -368,7 +372,6 @@ rule test-suite # pseudotarget-name : test-targets...
 }
 
 # ----------- Actual test invocations follow ----------------#
-
 
 test-suite "bind"
     : [ run libs/bind/bind_test.cpp ]
@@ -458,7 +461,7 @@ test-suite static_assert
 run libs/test/example/test_tools_example.cpp ;
 
 run-fail libs/test/test/test_tools_fail2.cpp ;
-
+    
 test-suite threads
   : [
     run libs/thread/test/test_thread.cpp <lib>../libs/thread/build/boost_thread 
