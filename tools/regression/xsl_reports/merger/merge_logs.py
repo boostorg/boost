@@ -7,7 +7,6 @@
 
 import xml.sax.saxutils
 import xml.dom.minidom
-import zipfile
 import ftplib
 import glob
 import os.path
@@ -49,15 +48,6 @@ def download_test_runs( incoming_dir, tag, user ):
     download_from_ftp( destination_dir, tag )
 
     
-def unzip( archive_path, result_dir ):
-    z = zipfile.ZipFile( archive_path, 'r', zipfile.ZIP_DEFLATED ) 
-    for f in z.infolist():
-        result = open( os.path.join( result_dir, f.filename ), 'wb' )
-        result.write( z.read( f.filename ) )
-        result.close()
-
-    z.close()
-    
 
 def unzip_test_runs( dir ):
     files = glob.glob( os.path.join( dir, '*.zip' ) )
@@ -65,7 +55,7 @@ def unzip_test_runs( dir ):
         try:
             utils.log( '  Unzipping "%s" ...' % test_run )
             zip_path = os.path.join( dir, test_run )
-            unzip( zip_path, dir )
+            utils.unzip( zip_path, dir )
             utils.log( '  Removing "%s" ...' % test_run )
             os.unlink( zip_path )
         except Exception, msg:
