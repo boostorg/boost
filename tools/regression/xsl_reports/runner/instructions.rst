@@ -6,6 +6,10 @@ Requirements
 
 * Python 2.3
 
+That's it! You don't even need a CVS client installed, unless you are behind a proxy 
+server; in the latter case, please see below.
+
+
 Installation
 ------------
 
@@ -31,10 +35,21 @@ Running tests
   only required option, runner id. For example::
 
     python regression.py --runner=Metacomm
-
+  
+  You can specify a particular set of toolsets you want to test with by passing them as 
+  a comma-separated list with the ``--toolsets`` option::
+  
+    python regression.py --runner=Metacomm --toolsets=gcc,vc7
+  
+  
   If you are interested in seeing all available options, run ``python regression.py``
   or ``python regression.py --help``.
   
+  **Note**: If you are using a proxy server, the easiest way to get the script 
+  running is to allow it to use anonymous CVS access to get the Boost sources::
+
+    python regression.py --runner=Metacomm --user=anonymous
+
 
 Details
 -------
