@@ -46,7 +46,7 @@
   <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
 
   <!-- -->
-  <xsl:variable name="toolsets" select="//test-log[ generate-id(.) = generate-id( key('toolset_key',@toolset)[1] ) ]/@toolset"/>
+  <xsl:variable name="toolsets" select="//test-log[ generate-id(.) = generate-id( key('toolset_key',@toolset)[1] ) and @toolset != '' ]/@toolset"/>
   <xsl:variable name="libraries" select="//test-log[ generate-id(.) = generate-id( key('library_key',@library)[1] ) and @library != '' ]/@library"/>
 
   <xsl:template name="toolsets_row">
