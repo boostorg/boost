@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type"
 content="text/html; charset=iso-8859-1">
-<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
 <title>Boost Regression Test User Documentation</title>
 </head>
 
@@ -100,15 +100,23 @@ set:</p>
         operational.</li>
 </ul>
 
-<p>A full set of tests and status tables can then be run thusly
-on a Window 2000 system:</p>
+<p>Just running bjam for a specific library can be run like this on Windows, 
+using the Filesystem Library as an example:</p>
+
+<blockquote>
+  <pre>cd \boost-root\libs\filesystem\test
+bjam</pre>
+</blockquote>
+<p>For POSIX systems, just change the backslashes to forward slashes.</p>
+
+<p>A full set of tests and status tables can be run thusly
+on a Windows system:</p>
 
 <blockquote>
     <pre>cd %BOOST_ROOT%\status
-md bin 2&gt;nul
-bjam --dump-tests test &gt;bin\bjam.log 2&gt;&amp;1
-start notepad bin\bjam.log
-process_jam_log &lt;bin\bjam.log
+bjam --dump-tests test &gt;bjam.log 2&gt;&amp;1
+start notepad bjam.log
+process_jam_log &lt;bjam.log
 compiler_status %BOOST_ROOT% cs-win32.html
 rem Specify links file, even though it will be overwritten, so report html includes links
 rem This works because the generated bookmark names are the same regardless of other settings
@@ -118,8 +126,8 @@ compiler_status %BOOST_ROOT% cs-win32-full.html cs-win32-links.html</pre>
 </blockquote>
 
 <p>Modulo syntax adjustments, the same procedure should work on
-other operating systems (an example shell script for this is <a
-href="../tools/regression/run_tests.sh">provided</a>, see the
+other operating systems (an example a <a href="../tools/regression/run_tests.sh">
+UNIX shell script</a> for this is provided, see the
 script itself for comments and directions).&nbsp; Rename the cs-win-xxx
 output files as appropriate.</p>
 
@@ -132,38 +140,60 @@ configurations, it might be useful to just run the <i>config_info</i>
 test, with a switch to force even up-to-date programs be rebuilt:</p>
 
 <blockquote>
-    <pre>bjam -a --dump-tests config_info &gt;bin\bjam.log 2&gt;&amp;1
-process_jam_log &lt;bin\bjam.log
+    <pre>bjam -a --dump-tests config_info &gt;bjam.log 2&gt;&amp;1
+process_jam_log &lt;bjam.log
 compiler_status %BOOST_ROOT% cs-win32.html
 </pre>
 </blockquote>
 
 <h2><a name="Adding_new_test">Adding a new test</a></h2>
 
-<h3>Overall Boost regression tests</h3>
+<h3>The best way - the <a name="subinclude"> <i>subinclud</i>e</a> approach</h3>
 
-<p>Adding tests is as simple as adding a single line to the <a
+<p>The best way to add a test to the <a
+href="../status/Jamfile">boost-root/status/Jamfile</a> is usually to use the bjam&nbsp;
+<i>subinclude</i> feature, since it allows the same test specification to be run 
+either as part of the overall Boost regression test or as a standalone test of 
+only the library involved.</p>
+
+<p>The test is specified in a Jamfile, which is usually placed in the library's
+<i>test</i> subdirectory. See the <a href="../libs/filesystem/test/Jamfile">
+Filesystem Library's test Jamfile</a> for an example, including the boilerplate 
+wrapped around the actual tests. By <a href="#Execution">executing bjam</a> 
+(with or without the status reporting programs) in the library's <i>test</i> 
+subdirectory, the library can be tested without the need to run the full Boost 
+regression tests.</p>
+
+<p>Then by adding a <i>subinclude</i> statement to <a
+href="../status/Jamfile">boost-root/status/Jamfile</a>, the library's test 
+Jamfile will become part of the main Boost regression tests.&nbsp; For example, 
+the Filesystem Library's tests are included by this line in the main 
+boost-root/status Jamfile:</p>
+
+<blockquote>
+  <pre>subinclude libs/filesystem/test ;</pre>
+</blockquote>
+
+<p>Don't forget that Jamfiles are white-space sensitive; delete the
+space before the semi-colon in the example above, and you will
+get an introduction to Jam error messages.</p>
+
+<h3>Another way - direct inclusion in Boost regression tests</h3>
+
+<p>Adding a test is as simple as adding a single line to the <a
 href="../status/Jamfile">boost-root/status/Jamfile</a>:</p>
 
 <blockquote>
     <pre>run libs/mylib/test/mytest.cpp ;</pre>
 </blockquote>
 
-<p>Don't forget that Jam is white-space sensitive; delete the
-space before the semi-colon in the example above, and you will
-get an introduction to Jam error messages.</p>
-
-<p>For creating more complex tests and test-suites, look at
-examples in the <a href="../status/Jamfile">Jamfile</a>.&nbsp;
+<p>For creating more complex tests and test-suites, use the
+<a href="#subinclude">subinclude approach</a>. Look at
+examples in the <a
+href="../status/Jamfile">boost-root/status/Jamfile</a>.&nbsp;
 The <i>bind</i> and <i>config</i> test-suites are simple
 examples, while the <i>regex</i> and <i>threads</i> test suites
 show more of the power of Jam based testing.</p>
-
-<h3>Private tests for a specific library</h3>
-
-<p>A library can have its own private set of tests by creating a
-Jamfile in one of the library's own sub-directories.&nbsp; For an
-example of this, see <a href="../libs/test/test/Jamfile">boost-root/libs/test/test/Jamfile</a>.</p>
 
 <h2><a name="Requirements">Requirements</a></h2>
 
@@ -199,8 +229,8 @@ program by Beman Dawes.</p>
 <hr>
 
 <p>Revised <!--webbot bot="Timestamp" startspan s-type="EDITED"
-s-format="%d %B, %Y" -->09 January, 2003<!--webbot bot="Timestamp"
-i-checksum="38582" endspan --></p>
+s-format="%d %B, %Y" -->20 January, 2003<!--webbot bot="Timestamp"
+i-checksum="38566" endspan --></p>
 
 <p>Original author: <a href="../people/jens_maurer.htm">Jens
 Maurer</a><br>
