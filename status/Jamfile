@@ -1,0 +1,763 @@
+# Boost regression-testing Jamfile
+#  (C) Copyright David Abrahams 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+subproject status ;
+
+# bring in the rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
+
+# Note that the Compiler Status Report HTML generator scans
+# these rule invocations to find test type (compile, run, etc.)
+# That program is quite stupid and needs help, including test names
+# (if supplied) which are unambiguous, not the same as a .cpp file
+# name, and preceded and followed by a space. The .cpp file name must
+# be given on the same line as the test type.
+#
+# If the line with the test type includes the comment
+# "# compiler_status<always_show_run_output>" then
+# run output will be displayed even if the test passes.
+
+{
+    # look in BOOST_ROOT for sources first, just in this Jamfile
+    local SEARCH_SOURCE = $(BOOST_ROOT) $(SEARCH_SOURCE) ;
+    
+    test-suite "bind"
+        : [ run libs/bind/bind_test.cpp ]
+          [ run libs/bind/mem_fn_test.cpp ]
+          [ run libs/bind/mem_fn_void_test.cpp ]
+          [ run libs/bind/mem_fn_derived_test.cpp ]
+        ;
+
+    test-suite config
+        : [ run libs/config/test/config_test.cpp <lib>../libs/test/build/test_exec_monitor
+                : #args
+                : #input-files
+                : #requirements
+                <threading>multi
+          ]
+           [ run libs/config/test/config_info.cpp ] # compiler_status<always_show_run_output>
+           [ run libs/config/test/limits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+    run libs/any/any_test.cpp ;
+
+    test-suite array
+        : [ run libs/array/array1.cpp ]
+          [ run libs/array/array2.cpp ]
+          [ run libs/array/array3.cpp ]
+          [ run libs/array/array4.cpp ]
+          [ run libs/array/array5.cpp ]
+        ;
+
+    test-suite concept_check
+        : [ compile libs/concept_check/concept_check_test.cpp ]
+          [ compile libs/concept_check/class_concept_check_test.cpp ]
+          [ link-fail libs/concept_check/concept_check_fail_expected.cpp ]
+          [ link-fail libs/concept_check/class_concept_fail_expected.cpp ]
+        ;
+
+    test-suite conversion
+        : [ run libs/conversion/cast_test.cpp ]
+          [ run libs/conversion/lexical_cast_test.cpp ]
+        ;
+
+    run libs/crc/crc_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    test-suite date_time
+        : [ run libs/date_time/test/testgregorian_calendar.cpp
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testdate.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testdate_duration.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testdate_iterator.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testfacet.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testformatters.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testgenerators.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testgreg_cal.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testgreg_day.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]          
+          [ run libs/date_time/test/gregorian/testgreg_month.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/gregorian/testparse_date.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testc_local_adjustor.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testclock.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testdst_rules.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testduration.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testiterator.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testparse_time.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testperiod.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/posix_time/testtime.cpp
+	    <lib>../libs/date_time/build/boost_date_time$(SUFLIB)
+            : : : <define>DATE_TIME_INLINE <define>BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG ]
+          [ run libs/date_time/test/testint_adapter.cpp ]
+          [ run libs/date_time/test/testtime_resolution_traits.cpp ]
+          [ run libs/date_time/test/testwrapping_int.cpp ]
+          [ run libs/date_time/test/testconstrained_value.cpp ]
+        ;
+
+    test-suite disjoint_sets
+        : [ run libs/disjoint_sets/disjoint_set_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+    test-suite dynamic_bitset
+        : [ run libs/dynamic_bitset/dyn_bitset_unit_tests1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests2.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/dynamic_bitset/dyn_bitset_unit_tests3.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+    test-suite format
+        : [ run libs/format/test/format_test1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/format/test/format_test2.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+    
+    test-suite function
+        : [ run libs/function/test/deprecated_syntax_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/function_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/function_n_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/allocator_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/function/test/stateless_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ compile-fail libs/function/test/function_test_fail1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ compile-fail libs/function/test/function_test_fail2.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ; 
+
+    run libs/functional/function_test.cpp ;
+
+    run libs/graph/test/graph.cpp ;
+
+
+    test-suite integer
+        : [ run libs/integer/cstdint_test.cpp ]
+          [ run libs/integer/integer_test.cpp ]
+          [ run libs/integer/integer_traits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+    run 
+      libs/io/test/ios_state_test.cpp <lib>../libs/test/build/test_exec_monitor   # sources
+      : # args
+      : # input-files
+      : <runtime-link>static # requirements (static runtime required by Metrowerks)
+      ;
+
+    test-suite lambda
+        : [ run libs/lambda/test/bind_tests_simple.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_advanced.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/bll_and_function.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/cast_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/constructor_tests.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/control_structures.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/exception_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/extending_rt_traits.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/is_instance_of_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/member_pointer_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/operator_tests_simple.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/phoenix_control_structures.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/lambda/test/switch_construct.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+    test-suite math
+        : [ run libs/math/test/common_factor_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/math/octonion/octonion_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/math/quaternion/quaternion_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/math/special_functions/special_functions_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+        ;
+
+    run libs/pool/test/test_pool_alloc.cpp  <lib>../libs/test/build/test_exec_monitor ;
+
+    test-suite preprocessor
+        : [ compile libs/preprocessor/regression/arithmetic.cpp ]
+          [ compile libs/preprocessor/regression/array.cpp ]
+          [ compile libs/preprocessor/regression/comparison.cpp ]
+          [ compile libs/preprocessor/regression/control.cpp ]
+          [ compile libs/preprocessor/regression/debug.cpp ]
+          [ compile libs/preprocessor/regression/facilities.cpp ]
+          [ compile libs/preprocessor/regression/iteration.cpp ]
+          [ compile libs/preprocessor/regression/list.cpp ]
+          [ compile libs/preprocessor/regression/logical.cpp ]
+          [ compile libs/preprocessor/regression/repetition.cpp ]
+          [ compile libs/preprocessor/regression/selection.cpp ]
+          [ compile libs/preprocessor/regression/slot.cpp ]
+          [ compile libs/preprocessor/regression/tuple.cpp ]
+        ;
+
+    test-suite property_map
+        : [ compile libs/property_map/property_map_cc.cpp ]
+        ;
+
+    test-suite rational
+        : [ run libs/rational/rational_example.cpp ]
+          [ run libs/rational/rational_test.cpp ]
+        ;
+
+    test-suite random
+        : [ run libs/random/random_test.cpp  <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/random/random_demo.cpp ]
+        ;
+
+    run libs/utility/addressof_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+    run libs/utility/ref_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    {
+            local test-dir = $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)test$(SLASH)regress$(SLASH) ;
+
+            local test-files = $(test-dir)tests.txt
+            # dwa -- not sure if this is generally applicable
+            #  $(test-dir)test1252.txt
+            ;
+
+        test-suite regex
+        : [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/test/build/prg_exec_monitor
+           : 
+                    $(test-files)
+           : 
+           : 
+                    <define>BOOST_REGEX_NO_LIB=1
+                    <define>BOOST_REGEX_STATIC_LINK=1
+           :
+                    regress ]
+
+            [ run libs/regex/test/regress/parse.cpp libs/regex/test/regress/regress.cpp libs/regex/test/regress/tests.cpp
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+                    <lib>../libs/test/build/prg_exec_monitor
+            : 
+                    $(test-files)
+            : 
+            : 
+                    <define>BOOST_REGEX_NO_LIB=1
+                    <define>TEST_UNICODE=1
+                    <define>BOOST_REGEX_STATIC_LINK=1
+            :
+                    wregress ]
+
+            [ run libs/regex/test/c_compiler_checks/posix_api_check.c
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB)
+                    <lib>../libs/test/build/prg_exec_monitor
+            : 
+            : 
+            : 
+                    <define>BOOST_REGEX_NO_LIB=1
+                    <define>BOOST_REGEX_STATIC_LINK=1
+            :
+                    posix_api_check_c ]
+
+            [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.c
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+            : 
+            : 
+            : 
+                    <define>BOOST_REGEX_NO_LIB=1
+                    <define>BOOST_REGEX_STATIC_LINK=1
+            :
+                    wide_posix_api_check_c ]
+
+            [ run libs/regex/test/c_compiler_checks/posix_api_check.cpp
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB) 
+            : 
+            : 
+            :
+                    <define>BOOST_REGEX_NO_LIB=1
+                    <define>BOOST_REGEX_STATIC_LINK=1
+            ]
+
+            [ run libs/regex/test/c_compiler_checks/wide_posix_api_check.cpp
+                    <lib>../libs/regex/build/boost_regex$(SUFLIB)
+            : 
+            : 
+            : 
+                    <define>BOOST_REGEX_NO_LIB=1
+                    <define>BOOST_REGEX_STATIC_LINK=1
+            ]
+
+            [ run libs/regex/example/timer/regex_timer.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)example$(SLASH)timer$(SLASH)input_script.txt
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_timer
+            ]
+
+            [ run libs/regex/example/jgrep/jgrep.cpp libs/regex/example/jgrep/main.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  -n boost/ $(BOOST_ROOT)$(SLASH)boost$(SLASH)regex.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  jgrep
+           ]
+
+           [ run libs/regex/example/snippets/credit_card_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  credit_card_example
+           ]
+
+           [ run libs/regex/example/snippets/partial_regex_grep.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  partial_regex_grep
+           ]
+
+           [ run libs/regex/example/snippets/partial_regex_match.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  1234-5678-8765-4
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  partial_regex_match
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_1.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_1
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_2.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_2
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_3.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_3
+            ]
+
+            [ run libs/regex/example/snippets/regex_grep_example_4.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_grep_example_4
+            ]
+
+            [ run libs/regex/example/snippets/regex_match_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  -auto
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_match_example
+            ]
+
+            [ run libs/regex/example/snippets/regex_merge_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_merge_example
+            ]
+
+            [ run libs/regex/example/snippets/regex_search_example.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)boost$(SLASH)rational.hpp
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_search_example
+            ]
+
+            [ run libs/regex/example/snippets/regex_split_example_1.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  -auto
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_split_example_1
+            ]
+
+            [ run libs/regex/example/snippets/regex_split_example_2.cpp
+               <lib>../libs/regex/build/boost_regex$(SUFLIB)
+               :
+                  $(BOOST_ROOT)$(SLASH)libs$(SLASH)regex$(SLASH)index.htm
+               :
+               :
+                  <define>BOOST_REGEX_NO_LIB=1
+                  <define>BOOST_REGEX_STATIC_LINK=1
+               :
+                  regex_split_example_2
+            ]
+
+     ;
+
+    }
+
+    test-suite signals
+        : [ run libs/signals/test/dead_slot_test.cpp
+              <lib>../libs/test/build/test_exec_monitor
+              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+          [ run libs/signals/test/deletion_test.cpp
+              <lib>../libs/test/build/test_exec_monitor
+              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+          [ run libs/signals/test/ordering_test.cpp
+              <lib>../libs/test/build/test_exec_monitor
+              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+          [ run libs/signals/test/signal_n_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
+              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+          [ run libs/signals/test/signal_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
+              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+          [ run libs/signals/test/trackable_test.cpp 
+              <lib>../libs/test/build/test_exec_monitor 
+              <lib>../libs/signals/build/boost_signals$(SUFLIB) ]
+        ;
+
+
+    test-suite smart_ptr
+        : [ run libs/smart_ptr/smart_ptr_test.cpp ]
+          [ run libs/smart_ptr/shared_ptr_test.cpp ]
+          [ compile-fail libs/smart_ptr/shared_ptr_assign_fail.cpp ]
+        ;
+
+    test-suite static_assert
+        : [ compile libs/static_assert/static_assert_test.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_1.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_2.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_3.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_4.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_5.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_6.cpp ]
+          [ compile-fail libs/static_assert/static_assert_test_fail_7.cpp ]
+          [ link-fail libs/static_assert/static_assert_test_fail_8.cpp ]
+        ;
+
+    subinclude libs/test/test ;
+	
+    {
+        local threadmon ;
+        local thread-sources ;
+        local thread-requirements ;
+
+        if $(NT)
+        {
+            threadmon = <dll>../libs/thread/build/boost_threadmon ;
+        }
+
+        thread-sources = <lib>../libs/thread/build/boost_thread
+          <lib>../libs/test/build/unit_test_framework
+          $(threadmon)
+        ;
+        thread-requirements = <threading>multi ;
+
+        test-suite threads
+          : [ run libs/thread/test/test_thread.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_mutex.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_condition.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_tss.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_once.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+            [ run libs/thread/test/test_xtime.cpp $(thread-sources)
+                : #args
+                : #input-files
+                : $(thread-requirements)
+            ]
+        ;
+    }
+
+
+    compile libs/timer/timer_test.cpp ;
+
+    test-suite tokenizer
+        : [ run libs/tokenizer/examples.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/tokenizer/simple_example_1.cpp ]
+          [ run libs/tokenizer/simple_example_2.cpp ]
+          [ run libs/tokenizer/simple_example_3.cpp ]
+          [ run libs/tokenizer/simple_example_4.cpp ]
+          [ run libs/tokenizer/simple_example_5.cpp ]
+        ;
+
+    test-suite tuple
+        : [ run libs/tuple/test/tuple_test_bench.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/tuple/test/io_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+	;
+
+    test-suite type_traits
+        : [ run libs/type_traits/tests/alignment_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/arithmetic_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/composite_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/cv_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/function_traits_test.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/type_traits/tests/is_function_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/is_convertible_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/is_same_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/object_type_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+          [ run libs/type_traits/tests/transform_traits_test.cpp <lib>../libs/test/build/prg_exec_monitor ]
+        ;
+
+    run libs/utility/call_traits_test.cpp : -u ;
+
+    compile-fail libs/utility/checked_delete_test.cpp ;
+
+    run libs/utility/compressed_pair_test.cpp <lib>../libs/test/build/test_exec_monitor : -u ;
+
+    test-suite iterator_adaptors
+        : [ run libs/utility/counting_iterator_test.cpp : # args
+            : # input files
+            : # requirements
+
+            # borland warns incorrectly in this case, so often that
+            # successful compilation is prevented.
+            <borland><*><cxxflags>"-w-8091 -w-8092"
+          ]
+
+          [ run libs/utility/iterator_adaptor_test.cpp ]
+          [ compile-fail libs/utility/iter_adaptor_fail_expected1.cpp ]
+          [ compile-fail libs/utility/iter_adaptor_fail_expected2.cpp ]
+          [ run libs/utility/transform_iterator_test.cpp ]
+          [ run libs/utility/indirect_iterator_test.cpp ]
+          [ run libs/utility/iter_traits_gen_test.cpp ]
+
+          [ run libs/utility/iterator_adaptor_examples.cpp ]
+          [ run libs/utility/counting_iterator_example.cpp ]
+          [ run libs/utility/filter_iterator_example.cpp ]
+          [ run libs/utility/fun_out_iter_example.cpp ]
+          [ run libs/utility/indirect_iterator_example.cpp ]
+          [ run libs/utility/projection_iterator_example.cpp ]
+          [ run libs/utility/reverse_iterator_example.cpp ]
+          [ run libs/utility/transform_iterator_example.cpp ]
+        ;
+
+    test-suite ublas
+        : [ run libs/numeric/ublas/test1/test1.cpp
+                libs/numeric/ublas/test1/test11.cpp
+                libs/numeric/ublas/test1/test12.cpp
+                libs/numeric/ublas/test1/test13.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test2/test2.cpp
+                libs/numeric/ublas/test2/test21.cpp
+                libs/numeric/ublas/test2/test22.cpp
+                libs/numeric/ublas/test2/test23.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test3/test3.cpp
+                libs/numeric/ublas/test3/test31.cpp
+                libs/numeric/ublas/test3/test32.cpp
+                libs/numeric/ublas/test3/test33.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test4/test4.cpp
+                libs/numeric/ublas/test4/test41.cpp
+                libs/numeric/ublas/test4/test42.cpp
+                libs/numeric/ublas/test4/test43.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test5/test5.cpp
+                libs/numeric/ublas/test5/test51.cpp
+                libs/numeric/ublas/test5/test52.cpp
+                libs/numeric/ublas/test5/test53.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/test6/test6.cpp
+                libs/numeric/ublas/test6/test61.cpp
+                libs/numeric/ublas/test6/test62.cpp
+                libs/numeric/ublas/test6/test63.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+          [ run libs/numeric/ublas/concepts.cpp
+            : # args
+            : # input files
+            : # requirements
+
+              # borland warns so often that successful compilation is prevented.
+                <borland><*><cxxflags>"-w-8026 -w-8027 -w-8057 -w-8084 -w-8092"
+          ]
+        ;
+
+    run libs/utility/iterator_traits_test.cpp ;
+
+    run libs/utility/iterators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    compile-fail libs/utility/noncopyable_test.cpp ;
+
+    run libs/utility/numeric_traits_test.cpp ;
+
+    run libs/utility/operators_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    run libs/utility/tie_example.cpp ;
+
+    run libs/utility/binary_search_test.cpp <lib>../libs/test/build/test_exec_monitor ;
+
+    test-suite multi_array
+        : [ run libs/multi_array/test/constructors.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/access.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/compare.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/iterators.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/slice.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/assign.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/index_bases.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/storage_order.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/reshape.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/range1.cpp <lib>../libs/test/build/test_exec_monitor  ]
+          [ run libs/multi_array/test/idxgen1.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ run libs/multi_array/test/stl_interaction.cpp <lib>../libs/test/build/test_exec_monitor ]
+          [ compile libs/multi_array/test/concept_checks.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cbracket.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cdata.cpp ]
+          [ compile-fail libs/multi_array/test/fail_citerator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cparen.cpp ]
+          [ compile-fail libs/multi_array/test/fail_criterator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_csubarray3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_cview3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cbracket.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cdata.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_citerator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cparen.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_criterator.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_csubarray3.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview2.cpp ]
+          [ compile-fail libs/multi_array/test/fail_ref_cview3.cpp ]
+        ;
+
+}
