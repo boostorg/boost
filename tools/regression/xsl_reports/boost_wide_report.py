@@ -631,6 +631,7 @@ The following options are useful in debugging:
 \t                        p  - patches
 \t                        x  - extended results file
 \t                        i  - issues
+\t                        n  - runner comment files
 '''
 
 def main():
