@@ -345,6 +345,7 @@
                 <!-- general tests section -->
 
                 <xsl:call-template name="insert_test_section">
+                    <xsl:with-param name="library" select="$library"/>
                     <xsl:with-param name="section_tests" select="$lib_general_tests"/>
                     <xsl:with-param name="lib_tests" select="$lib_tests"/>
                     <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
@@ -360,6 +361,7 @@
                     </tr>
 
                 <xsl:call-template name="insert_test_section">
+                    <xsl:with-param name="library" select="$library"/>
                     <xsl:with-param name="section_tests" select="$lib_corner_case_tests"/>
                     <xsl:with-param name="lib_tests" select="$lib_tests"/>
                     <xsl:with-param name="toolsets" select="$ordered_toolsets"/>
@@ -522,6 +524,7 @@
   </xsl:template>
 
   <xsl:template name="insert-test-line">
+    <xsl:param name="library"/>    
     <xsl:param name="test_name"/>
     <xsl:param name="test_results"/>
     <xsl:param name="toolsets"/>
@@ -551,13 +554,13 @@
           <xsl:when test="$mode='user'">
             <xsl:call-template name="insert_cell_user">
               <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
-              <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
+              <xsl:with-param name="log_link" select="concat( $links_file, '#', $library, '-', $test_name, '-', $toolset )"/>
             </xsl:call-template>
           </xsl:when>
           <xsl:when test="$mode='developer'">
             <xsl:call-template name="insert_cell_developer">
               <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
-              <xsl:with-param name="log_link" select="concat( $links_file, '#', $test_name, '-', $toolset )"/>
+              <xsl:with-param name="log_link" select="concat( $links_file, '#',  $library, '-', $test_name, '-', $toolset )"/>
             </xsl:call-template>
           </xsl:when>
         </xsl:choose>
@@ -568,6 +571,7 @@
   </xsl:template>
 
   <xsl:template name="insert_test_section">
+      <xsl:param name="library"/>      
       <xsl:param name="section_tests"/>
       <xsl:param name="lib_tests"/>
       <xsl:param name="toolsets"/>
@@ -592,6 +596,7 @@
           </xsl:variable>
           
           <xsl:call-template name="insert-test-line">
+              <xsl:with-param name="library" select="$library"/>
               <xsl:with-param name="test_results" select="$lib_tests[ @test-name = $test_name ]"/>
               <xsl:with-param name="toolsets" select="$toolsets"/>
               <xsl:with-param name="test_name" select="$test_name"/>
