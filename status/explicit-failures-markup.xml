@@ -1432,6 +1432,21 @@ for more information.
                 </note>
             </mark-failure>
         </test>
+        <mark-expected-failures>
+            <test name="*_lib"/>
+            <toolset name="intel-8.0-linux*"/>
+            <note author="Aleksey Gurtovoy">
+                This failure is caused by a conflict between the compiler 
+                and the testing environment: the tests are run on a platform with 
+                <i>too recent</i> version of glibc, which is not currently 
+                supported by the compiler vendor (Intel). 
+                
+                If you are having the same problem and <i>really</i> want to make
+                things work, renaming <code>strol</code> symbol in the 
+                compiler's static runtime library (<code>libcprts.a</code>) to 
+                something else is known to resolve the issue.
+            </note>
+        </mark-expected-failures>
     </library>
 
 
