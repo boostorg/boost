@@ -338,7 +338,7 @@ namespace
       assert( m_target_directory == target_directory );
       assert( result == "succeed" || result == "fail" );
 
-      // if test_log.xml entry needed, create it
+      // if test_log.xml entry needed
       if ( !m_compile_failed
         || action_name != "compile"
         || m_previous_target_directory != target_directory )
@@ -347,6 +347,7 @@ namespace
           && result == "fail" ) m_compile_failed = true;
 
         test_log tl( target_directory, m_test_name, m_toolset );
+        tl.remove_action( "lib" ); // always clear out lib residue
 
         // dependency removal
         if ( action_name == "lib" )
