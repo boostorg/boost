@@ -15,7 +15,7 @@
 # This can be either a non-exitent directory or an already complete Boost
 # source tree.
 #
-boost_root=$HOME/CVSROOTs/Boost/boost_regression
+boost_root="$HOME/CVSROOTs/Boost/boost_regression"
 
 #
 # Wether to fetch the most current Boost code from CVS (yes/no):
@@ -45,7 +45,7 @@ toolset=gcc
 # "comment_path" is the path to an html-file describing the test environment.
 # The content of this file will be embedded in the status pages being produced.
 #
-comment_path=$boost_root/../regression_comment.html
+comment_path="$boost_root/../regression_comment.html"
 
 
 ### DEFAULTS ARE OK FOR THESE.
@@ -63,20 +63,20 @@ exe_suffix=
 # The location of the binary for running bjam. The default should work
 # under most circumstances.
 #
-bjam=$boost_root/tools/build/jam_src/bin/bjam$exe_suffix
+bjam="$boost_root/tools/build/jam_src/bin/bjam$exe_suffix"
 
 #
 # "process_jam_log", and "compiler_status" paths to built helper programs:
 # The location of the executables of the regression help programs. These
 # are built locally so the default should work in most situations.
 #
-process_jam_log=$boost_root/tools/regression/build/run/process_jam_log$exe_suffix
-compiler_status=$boost_root/tools/regression/build/run/compiler_status$exe_suffix
+process_jam_log="$boost_root/tools/regression/build/run/process_jam_log$exe_suffix"
+compiler_status="$boost_root/tools/regression/build/run/compiler_status$exe_suffix"
 
 #
 # "boost_build_path" can point to additional locations to find toolset files.
 #
-boost_build_path=$HOME/.boost-build
+boost_build_path="$HOME/.boost-build"
 
 
 ### NO MORE CONFIGURABLE PARTS.
@@ -84,16 +84,16 @@ boost_build_path=$HOME/.boost-build
 #
 # Some setup.
 #
-boost_dir=`basename $boost_root`
-export BOOST_BUILD_PATH=$boost_build_path $BOOST_BUILD_PATH
+boost_dir=`basename "$boost_root"`
+export BOOST_BUILD_PATH="$boost_build_path" "$BOOST_BUILD_PATH"
 
 #
 # STEP 0:
 #
 # Get the source code:
 #
-if test ! -d $boost_root ; then
-    mkdir -p $boost_root
+if test ! -d "$boost_root" ; then
+    mkdir -p "$boost_root"
     if test $? -ne 0 ; then
         echo "creation of $boost_root directory failed."
         exit 256
@@ -101,13 +101,13 @@ if test ! -d $boost_root ; then
 fi
 if test $cvs_update = yes ; then
     echo fetching Boost:
-    echo "/1 :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost A" >> $HOME/.cvspass
-    cat $HOME/.cvspass | sort | uniq > $HOME/.cvspass
-    cd `dirname $boost_root`
+    echo "/1 :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost A" >> "$HOME/.cvspass"
+    cat "$HOME/.cvspass" | sort | uniq > "$HOME/.cvspass"
+    cd `dirname "$boost_root"`
     if test -f boost/CVS/Root ; then
-        cvs -z3 -d `cat $boost_dir/CVS/Root` co -d $boost_dir boost
+        cvs -z3 -d `cat "$boost_dir/CVS/Root"` co -d "$boost_dir" boost
     else
-        cvs -z3 -d :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost co -d $boost_dir boost
+        cvs -z3 -d :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost co -d "$boost_dir" boost
     fi
 fi
 
@@ -116,7 +116,7 @@ fi
 # rebuild bjam if required:
 #
 echo building bjam:
-cd $boost_root/tools/build/jam_src && \
+cd "$boost_root/tools/build/jam_src" && \
 LOCATE_TARGET=bin sh ./build.sh
 if test $? != 0 ; then
     echo "bjam build failed."
@@ -128,8 +128,8 @@ fi
 # rebuild the regression test helper programs if required:
 #
 echo building regression test helper programs:
-cd $boost_root/tools/regression/build && \
-$bjam -sTOOLS=$toolset -sBUILD=release run
+cd "$boost_root/tools/regression/build" && \
+"$bjam" -sTOOLS=$toolset -sBUILD=release run
 if test $? != 0 ; then
     echo "helper program build failed."
     exit 256
@@ -146,15 +146,15 @@ for tool in $test_tools ; do
 # run the regression tests:
 #
 echo running the $tool regression tests:
-cd $boost_root/status
-$bjam -sTOOLS=$tool --dump-tests test 2>&1 | tee regress.log
+cd "$boost_root/status"
+"$bjam" -sTOOLS=$tool --dump-tests test 2>&1 | tee regress.log
 
 #
 # STEP 4:
 # post process the results:
 #
 echo processing the regression test results for $tool:
-cat regress.log | $process_jam_log
+cat regress.log | "$process_jam_log"
 if test $? != 0 ; then
     echo "Failed regression log post processing."
     exit 256
@@ -168,7 +168,7 @@ done
 #
 uname=`uname`
 echo generating html tables:
-$compiler_status --comment $comment_path $boost_root cs-$uname.html cs-$uname-links.html
+"$compiler_status" --comment "$comment_path" "$boost_root" cs-$uname.html cs-$uname-links.html
 if test $? != 0 ; then
     echo "Failed HTML result table generation."
     exit 256
