@@ -843,57 +843,42 @@ for more information.
     
     <!-- program_options -->
     <library name="program_options">
-        <mark-unusable>
-            <toolset name="msvc-stlport"/>
-        </mark-unusable>
+        
+        <!-- Mark unusable toolsets -->
         <mark-unusable>
             <toolset name="gcc-2.95.3-linux"/>
             <note>
-                The failure is caused by standard library deficiencies -- it lacks
-                basic_string class and the &lt;locale&gt; header.
+                The failure is caused by standard library deficiencies 
+                -- it lacks the basic_string class template and 
+                    the &lt;locale&gt; header.
             </note>
         </mark-unusable>
+
         <mark-unusable>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <note refid="2"/>
         </mark-unusable>
+
+        <!-- Mark expected failures -->
+
         <test name="unicode_test*">
             <mark-failure>
                 <toolset name="intel-win32-7.1-vc6"/>
                 <toolset name="intel-win32-7.1-vc6-stlport-4.5.3"/>
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
-                <note>The failures are caused by problems with std::locale implementation</note>
+                <note>The failures are caused by problems 
+                    with std::locale implementation</note>
             </mark-failure>
         </test>
+
         <test name="unicode_test">
             <mark-failure>
                 <toolset name="cwpro8"/><toolset name="cw-8.3"/>
                 <note>The test fails at runtime for unknown reason</note>
             </mark-failure>
         </test>
-        <test name="variable_map_test">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <note>
-                    The failures are caused by compiler bug: it's not possible to
-                    explicitly pass template arguments to member template function. The
-                    failure is serious and makes one of the primary interfaces
-                    unusable.
-                </note>
-            </mark-failure>
-        </test>
-        <test name="variable_map_test_dll">
-            <mark-failure>
-                <toolset name="msvc"/>
-                <note>
-                    The failures are caused by compiler bug: it's not possible to
-                    explicitly pass template arguments to member template function. The
-                    failure is serious and makes one of the primary interfaces
-                    unusable.
-                </note>
-            </mark-failure>
-        </test>
+
 
         <test name="options_description_test_dll">
              <mark-failure>
@@ -926,6 +911,18 @@ for more information.
                 </note>
             </mark-failure>
         </test>
+
+        <mark-expected-failures>
+            <test name="variable_map_test"/>
+            <test name="variable_map_test_dll"/>
+            <toolset name="msvc"/>            
+            <note>
+               The failures are caused by compiler bug: it's not possible to
+               explicitly pass template arguments to member template function. The
+               failure is serious and makes one of the primary interfaces
+               unusable.
+             </note>
+        </mark-expected-failures>
 
     </library>
 
