@@ -594,7 +594,7 @@ int cpp_main( int argc, char ** argv )
     }
 
     // bjam indicates some prior dependency failed by a "...skipped" message
-    else if ( line.find( "...skipped <" ) != string::npos )
+    else if ( line.find( "...skipped <" ) != string::npos && line.find( "<directory-grist>" ) == string::npos)
     {
       mgr.stop_message( content );
       content.clear();
