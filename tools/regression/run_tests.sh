@@ -93,7 +93,7 @@ if test ! -d $boost_root ; then
         exit 256
     fi
 fi
-if test $cvs_update == yes ; then
+if test $cvs_update = yes ; then
     echo fetching Boost:
     echo "/1 :pserver:anonymous@cvs.sourceforge.net:2401/cvsroot/boost A" | cat $HOME/.cvspass - | sort | uniq > $HOME/.cvspass
     cd `dirname $boost_root`
@@ -168,3 +168,4 @@ if test $? != 0 ; then
 fi
 
 echo "done!"
+
