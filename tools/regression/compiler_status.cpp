@@ -54,6 +54,8 @@ namespace
   bool no_warn;
   bool no_links;
 
+  fs::path jamfile_path;
+
   fs::directory_iterator end_itr;
 
   // It's immportant for reliability that we find the same compilers for each
@@ -607,13 +609,20 @@ const string & attribute_value( const xml::element & element,
     string line;
     while( std::getline( jamfile, line ) )
     {
+      bool v2(false);
       string::size_type pos( line.find( "subinclude" ) );
-      if ( pos == string::npos )
+      if ( pos == string::npos ) {
         pos = line.find( "build-project" );
+        v2 = true;
+      }
       if ( pos != string::npos
         && line.find( '#' ) > pos )
       {
-        pos = line.find_first_not_of( " \t./", pos+10 );
+        if (v2)
+          pos = line.find_first_not_of( " \t./", pos+13 );
+        else
+          pos = line.find_first_not_of( " \t./", pos+10 );
+      
         if ( pos == string::npos ) continue;
         string subinclude_bin_dir(
           line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
@@ -726,6 +735,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
       { notes_map_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
+    else if ( argc > 2 && std::strcmp( argv[1], "--jamfile" ) == 0)
+      { jamfile_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
     --argc;
     ++argv;
@@ -749,6 +760,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "                               to be copied into status-file.\n"
       "           --notes-map path    Path to file of toolset/test,n lines, where\n"
       "                               n is number of note bookmark in --notes file.\n"
+      "           --jamfile path      Path to Jamfile. By default \"Jamfile\".\n"
       "Example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n"
       "Note: Only the leaf of the links-file path and --notes file string are\n"
       "used in status-file HTML links. Thus for browsing, status-file,\n"
@@ -759,8 +771,10 @@ int cpp_main( int argc, char * argv[] ) // note name!
 
   boost_root = fs::path( argv[1], fs::native );
   if ( locate_root.empty() ) locate_root = boost_root;
-
-  fs::path jamfile_path( fs::initial_path() / "Jamfile" );
+  
+  if (jamfile_path.empty())
+    jamfile_path = "Jamfile";
+  jamfile_path = fs::complete( jamfile_path, fs::initial_path() );
   jamfile.open( jamfile_path );
   if ( !jamfile )
   {
