@@ -487,8 +487,9 @@ const string & attribute_value( const xml::element_ptr & element,
         string subinclude_bin_dir(
           line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
 //      std::cout << "subinclude: " << subinclude_bin_dir << '\n';
-        do_rows_for_sub_tree( 
-          locate_root / subinclude_bin_dir / "/bin", results );  
+        fs::path subinclude_path( locate_root / subinclude_bin_dir / "/bin" );
+        if ( fs::exists( subinclude_path ) )
+          { do_rows_for_sub_tree( subinclude_path, results ); }
       }
     }
 
@@ -600,7 +601,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
     return 1;
   }
 
-  report.open( argv[2] );
+  report.open( fs::path( argv[2], fs::native ) );
   if ( !report )
   {
     std::cerr << "Could not open report output file: " << argv[2] << std::endl;
@@ -610,7 +611,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( argc == 4 )
   {
     links_name = argv[3];
-    links_file.open( links_name );
+    links_file.open( fs::path( links_name, fs::native ) );
     if ( !links_file )
     {
       std::cerr << "Could not open links output file: " << links_name << std::endl;
