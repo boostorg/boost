@@ -67,7 +67,7 @@ def unzip_test_runs( dir ):
             zip_path = os.path.join( dir, test_run )
             unzip( zip_path, dir )
             utils.log( '  Removing "%s" ...' % test_run )
-            #os.unlink( zip_path )
+            os.unlink( zip_path )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
