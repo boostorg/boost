@@ -24,10 +24,12 @@
 
 Boost's internal regression test suite produces the
 <a href="../status/compiler_status.html">compiler status tables</a>.
+<p>Although not ordinarily run by Boost library users, it is documented here for
+the benefit of Boost developers, and for Boost users porting to a new platform.</p>
 
 <h2>Requirements</h2>
 
-The test suite has been design according to the following requirements.
+The test suite has been designed to meet to the following requirements.
 <ul>
 <li>Pure ISO C++, no tools required except a C++ compiler.
 <li>Support for tests which expect an error
@@ -239,7 +241,13 @@ the platform.
 
 You also need to configure the compilers available on your platform in
 "compiler.cfg" as described above.
-<p>
+<p>You may need to add an entry for the compiler to <a href="../boost/config.hpp">boost/config.hpp</a>,
+but only if entries for the compiler is not already present, and the compiler
+doesn't fully conform to the ISO C++ Standard.</p>
+<h2>History</h2>
+<p>The regression.cpp test program was contributed
+by Jens Maurer, generalizing and improving an earlier program by Beman Dawes.</p>
+
 <hr>
 2001-01-30<br>
 <a href="../people/jens_maurer.htm">Jens Maurer</a>
