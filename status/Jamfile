@@ -17,6 +17,7 @@ DEPENDS all : test ;
 #  Please keep these in alphabetic order by test-suite name
 
 subinclude libs/bind/test ;              # test-suite bind
+subinclude libs/conversion/test ;        # test-suite conversion
 subinclude libs/date_time/test ;         # test-suite date_time
 subinclude libs/filesystem/test ;        # test-suite filesystem
 subinclude libs/format/test ;            # test-suite format
@@ -65,11 +66,6 @@ subinclude libs/type_traits/test ;       # test-suite type_traits
           [ compile libs/concept_check/class_concept_check_test.cpp ]
           [ compile-fail libs/concept_check/concept_check_fail_expected.cpp ]
           [ compile-fail libs/concept_check/class_concept_fail_expected.cpp ]
-        ;
-
-    test-suite conversion
-        : [ run libs/conversion/cast_test.cpp ]
-          [ run libs/conversion/lexical_cast_test.cpp ]
         ;
 
     run libs/crc/crc_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ;
