@@ -58,10 +58,18 @@
     <xsl:variable name="run_toolsets" select="meta:test_structure( /, $release )"/>
 
     <!-- libraries -->
+
     <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
     <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
 
+    <!-- modes -->
+
+    <xsl:variable name="release_postfix">
+        <xsl:if test="$release='yes'">
+            <xsl:text>_release</xsl:text>
+        </xsl:if>
+    </xsl:variable>
 
 
     <xsl:template name="test_type_col">
@@ -99,12 +107,6 @@
             </debug>
 
         </exsl:document>
-
-        <xsl:variable name="release_postfix">
-            <xsl:if test="$release='yes'">
-                <xsl:text>_release</xsl:text>
-            </xsl:if>
-        </xsl:variable>
 
         <xsl:variable name="index_path" select="concat( 'index_', $release_postfix, '.html' )"/>
         
@@ -414,65 +416,117 @@
         <xsl:param name="library"/>
         <xsl:param name="toolset"/>
         <xsl:param name="test_log"/>
-        <xsl:param name="log_link"/>
         
         <xsl:variable name="is_new">
-        <xsl:if test="$test_log/@is-new = 'yes' and $test_log/@status = 'unexpected' and $test_log/@result != 'success'">
-            <xsl:value-of select="'-new'"/>
-        </xsl:if>
+            <xsl:if test="$test_log/@is-new = 'yes' and $test_log/@status = 'unexpected' and $test_log/@result != 'success'">
+                <xsl:value-of select="'-new'"/>
+            </xsl:if>
         </xsl:variable>
 
-        <xsl:variable name="class">
-        <xsl:choose>
-            <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
-                <xsl:text>library-unusable</xsl:text>
-            </xsl:when>
-            <xsl:when test="not( $test_log )">
-                <xsl:text>library-missing</xsl:text>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="concat( 'library-', $test_log/@result, '-', $test_log/@status, $is_new )"/>
-            </xsl:otherwise>
-        </xsl:choose>
+        
+        <xsl:variable name="class" select="concat( 'library-', meta:result_cell_class( $library, $toolset, $test_log ) )"/>
+
+        <xsl:variable name="cell_link">
+            <xsl:choose>
+                <xsl:when test="count( $test_log ) &gt; 1">
+                    <xsl:variable name="variants_file_path" select="concat( meta:encode_path( concat( $test_log/../@runner, '-', $test_log/@library, '-', $test_log/@toolset, '-', $test_log/@test-name, '-variants' ) ), '.html' )"/>
+                    <xsl:variable name="variants__file_path" select="concat( meta:encode_path( concat( $test_log/../@runner, '-', $test_log/@library, '-', $test_log/@toolset, '-', $test_log/@test-name, '-variants_' ) ), '.html' )"/>
+                    <xsl:message>Writing variants file <xsl:value-of select="$variants_file_path"/></xsl:message>
+                    
+                    <exsl:document href="{$variants_file_path}"
+                        method="html" 
+                        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
+                        encoding="utf-8"
+                        indent="yes">
+                        <html>
+                            <head>
+                                <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
+                                <title>Boost regression: <xsl:value-of select="$library"/>/<xsl:value-of select="$source"/></title>
+                            </head>
+                            <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
+                                <frame name="tocframe" src="toc{$release_postfix}.html" scrolling="auto"/>
+                                <frame name="docframe" src="{$variants__file_path}" scrolling="auto"/>
+                            </frameset>
+                        </html>
+                    </exsl:document>  
+
+                    <exsl:document href="{$variants__file_path}"
+                        method="html" 
+                        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
+                        encoding="utf-8"
+                        indent="yes">
+
+                        <html>
+                            <body>
+                                <table>
+                                    <xsl:for-each select="$test_log">
+                                        <tr>
+                                            <td>
+                                                <!--<debug>
+                                                    <xsl:copy-of select="."/>
+
+                                                    <xsl:value-of select="meta:show_output( $explicit_markup, . )"/>
+                                                    <xsl:value-of select="meta:log_file_path(.)"/>
+                                                </debug>-->
+                                                <xsl:choose>
+                                                    <xsl:when test="meta:log_file_path(.) != ''">
+                                                        <a href="{meta:log_file_path(.)}" target="_top" >
+                                                            <xsl:value-of select="@target-directory"/>
+                                                        </a>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>
+                                                        <xsl:value-of select="@target-directory"/>
+                                                    </xsl:otherwise>
+                                                </xsl:choose>
+                                            </td>
+                                        </tr>
+                                    </xsl:for-each>
+                                </table>
+                            </body>
+                        </html>
+                    </exsl:document>           
+                    <xsl:value-of select="$variants_file_path"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="meta:log_file_path($test_log)"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
 
         <td class="{$class}">
         <xsl:choose>
-            <xsl:when test="not( $test_log )">
+            <xsl:when test="count( $test_log ) &lt; 1">
                 <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
             </xsl:when> 
  
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
                     <xsl:call-template name="insert_test_result">
                         <xsl:with-param name="result" select="'fail'"/>
-                        <xsl:with-param name="log_link" select="$log_link"/>
+                        <xsl:with-param name="log_link" select="$cell_link"/>
                     </xsl:call-template>
             </xsl:when>
 
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'unexpected'">
                     <xsl:call-template name="insert_test_result">
                         <xsl:with-param name="result" select="'fail'"/>
-                        <xsl:with-param name="log_link" select="$log_link"/>
+                        <xsl:with-param name="log_link" select="$cell_link"/>
                     </xsl:call-template>
             </xsl:when>
 
             <xsl:when test="$test_log/@result = 'success' and $test_log/@status = 'unexpected'">
                     <xsl:call-template name="insert_test_result">
                         <xsl:with-param name="result" select="'pass'"/>
-                        <xsl:with-param name="log_link" select="$log_link"/>
+                        <xsl:with-param name="log_link" select="$cell_link"/>
                     </xsl:call-template>
             </xsl:when>
 
             <xsl:otherwise>
                     <xsl:call-template name="insert_test_result">
                         <xsl:with-param name="result" select="'pass'"/>
-                        <xsl:with-param name="log_link" select="$log_link"/>
+                        <xsl:with-param name="log_link" select="$cell_link"/>
                     </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>  
-        <xsl:if test="count( $test_log ) > 1" > 
-            <div class="library-conf-problem">conf.&#160;problem</div>
-        </xsl:if>
         </td>
     </xsl:template>
 
@@ -529,9 +583,9 @@
             </xsl:otherwise>
         </xsl:choose>  
 
-        <xsl:if test="count( $test_log ) > 1" > 
+        <!--<xsl:if test="count( $test_log ) > 1" > 
             <div class="conf-problem">conf.&#160;problem</div>
-        </xsl:if>
+        </xsl:if>-->
         </td>
     </xsl:template>
 
@@ -565,38 +619,33 @@
             <!-- Write log file -->
             <xsl:variable name="test_result_for_toolset" select="$test_results[ @toolset = $toolset and ../@runner=$runner ]"/>
 
-            <xsl:variable name="log_file">
-                <xsl:choose>
-                    <xsl:when test="meta:show_output( $explicit_markup, $test_result_for_toolset )">
-                        <xsl:value-of select="meta:output_file_path( concat( $test_result_for_toolset/../@runner, '-', $test_result_for_toolset/@target-directory ) )"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text></xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:variable>
 
-            
-            <xsl:if test="$release != 'yes' and count( $test_result_for_toolset ) > 0 and $log_file != '' ">
-                <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
-                    <exsl:document href="{$log_file}"
-                        method="html" 
-                        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
-                        encoding="utf-8"
-                        indent="yes">
-                        
-                        <html>
-                            <head>
-                                <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
-                                <!--<title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>-->
-                            </head>
-                            <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-                                <frame name="tocframe" src="../toc.html" scrolling="auto"/>
-                                <frame name="docframe" src="../../{$log_file}" scrolling="auto"/>
-                            </frameset>
-                        </html>
-                    </exsl:document>
-            </xsl:if>
+            <xsl:for-each select="$test_result_for_toolset">
+                <xsl:variable name="log_file" select="meta:log_file_path(.)"/>
+
+                <xsl:if test="$release != 'yes' and count( $test_result_for_toolset ) > 0 and $log_file != '' ">
+                    <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
+                        <exsl:document href="{$log_file}"
+                            method="html" 
+                            doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
+                            encoding="utf-8"
+                            indent="yes">
+                            
+                            <html>
+                                <head>
+                                    <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
+                                    <!--<title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>-->
+                                </head>
+                                <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
+                                    <frame name="tocframe" src="../toc.html" scrolling="auto"/>
+                                    <frame name="docframe" src="../../{$log_file}" scrolling="auto"/>
+                                </frameset>
+                            </html>
+                        </exsl:document>
+                    </xsl:if>
+                
+            </xsl:for-each>
+
 
             <!-- Insert cell -->
             <xsl:choose>
@@ -613,7 +662,6 @@
                 <xsl:with-param name="library" select="$library"/>
                 <xsl:with-param name="toolset" select="$toolset"/>
                 <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
-                <xsl:with-param name="log_link" select="$log_file"/>
                 </xsl:call-template>
             </xsl:when>
             </xsl:choose>
