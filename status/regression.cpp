@@ -39,6 +39,8 @@ std::string get_host()
   return "tru64";
 #elif defined __sgi
   return "irix";
+#elif defined __sun
+  return "solaris";
 #elif defined _WIN32
   return "win32";
 #elif defined __BEOS__
