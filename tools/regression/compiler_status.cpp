@@ -62,6 +62,7 @@ namespace
   std::vector<string> toolsets;
 
   fs::ifstream jamfile;
+  fs::ifstream testsuitesfile; // in addition to jamfile
   fs::ofstream report;
   fs::ofstream links_file;
   string links_name;
@@ -196,9 +197,9 @@ namespace
   }
 
 //  test_type_desc  ----------------------------------------------------------//
-//  from jamfile
+//  from jamfile or testsuitesfile
 
-  string test_type_desc( const string & test_name )
+  string test_type_desc( const string & test_name, fs::ifstream & file)
   {
     // adding "/" and ".c" eliminates a couple of corner cases.
     // ".c" rather than ".cpp" because regex library includes some .c tests
@@ -206,12 +207,12 @@ namespace
     string search_name2( " " + test_name + " " );
 
     string result;
-    if ( jamfile.is_open() )
+    if ( file.is_open() )
     {
-      jamfile.clear();
-      jamfile.seekg(0);
+      file.clear();
+      file.seekg(0);
       string line;
-      while( std::getline( jamfile, line ) )
+      while( std::getline( file, line ) )
       {
         if ( line.find( ".c" ) != string::npos )
         {
@@ -241,7 +242,15 @@ namespace
     }
     return result;
   }
-  
+
+  string test_type_desc( const string & test_name )
+  {
+    string result = test_type_desc( test_name, jamfile );
+    if ( result.empty() )
+      result = test_type_desc( test_name, testsuitesfile );
+    return result;
+  }
+
 //  target_directory  --------------------------------------------------------//
 //  this amounts to a request to find a unique leaf directory
 
@@ -291,7 +300,7 @@ const string & attribute_value( const xml::element_ptr & element,
 }
 
 //  generate_report  ---------------------------------------------------------//
-  
+
   // return 0 if nothing generated, 1 otherwise, except 2 if compiler msgs
   int generate_report( const xml::element_ptr & db,
                        const string & test_name,
@@ -300,18 +309,18 @@ const string & attribute_value( const xml::element_ptr & element,
                        bool always_show_run_output = false )
   {
     // compile msgs sometimes modified, so make a local copy
-    string compile( (pass && no_warn) 
+    string compile( (pass && no_warn)
       ? empty_string :  element_content( db, "compile" ) );
 
     const string & link( pass ? empty_string : element_content( db, "link" ) );
-    const string & run( (pass && !always_show_run_output) 
+    const string & run( (pass && !always_show_run_output)
       ? empty_string : element_content( db, "run" ) );
     string lib( pass ? empty_string : element_content( db, "lib" ) );
 
     // some compilers output the filename even if there are no errors or
     // warnings; detect this if one line of output and it contains no space.
     string::size_type pos = compile.find( '\n', 1 );
-    if ( pos != string::npos && compile.size()-pos <= 2 
+    if ( pos != string::npos && compile.size()-pos <= 2
         && compile.find( ' ' ) == string::npos ) compile.clear();
 
     if ( lib.empty() && compile.empty() && link.empty() && run.empty() )
@@ -337,7 +346,7 @@ const string & attribute_value( const xml::element_ptr & element,
         << compile << "</pre>\n";
     }
     if ( !link.empty() )
-      links_file << "<h3>Linker output:</h3><pre>" << link << "</pre>\n";  
+      links_file << "<h3>Linker output:</h3><pre>" << link << "</pre>\n";
     if ( !run.empty() )
       links_file << "<h3>Run output:</h3><pre>" << run << "</pre>\n";
 
@@ -492,7 +501,7 @@ const string & attribute_value( const xml::element_ptr & element,
   {
     // rows are held in a vector so they can be sorted, if desired.
     std::vector<string> results;
-    
+
     // each test directory
     for ( fs::directory_iterator itr( build_dir ); itr != end_itr; ++itr )
     {
@@ -521,7 +530,7 @@ const string & attribute_value( const xml::element_ptr & element,
     fs::path build_dir( fs::initial_path() / "bin" );
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
-     
+
     // generate the column headings
 
     report << "<tr><td>Library</td><td>Test Name</td>\n"
@@ -550,7 +559,7 @@ const string & attribute_value( const xml::element_ptr & element,
                << (desc.size() ? desc : compiler_itr->leaf())
                << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
                << "</td>\n";
-        } 
+        }
       }
     }
 
@@ -603,6 +612,9 @@ int cpp_main( int argc, char * argv[] ) // note name!
     std::cerr << "Could not open Jamfile: " << jamfile_path.native_file_string() << std::endl;
     return 1;
   }
+
+  fs::path testsuitesfile_path( fs::initial_path() / "testsuites.jam" );
+  testsuitesfile.open( testsuitesfile_path );
 
   report.open( argv[2] );
   if ( !report )
