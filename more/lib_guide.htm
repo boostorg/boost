@@ -294,6 +294,44 @@
             </ul>
          </li>
       </ul>
+      <ul>
+         <li>
+            Make sure your code compiles in the presence of the <code>min()</code> and <code>max()</code>
+            macros. Some platform headers define <code>min()</code> and <code>max()</code> macros which
+            cause some common C++ constructs to fail to compile. Some simple tricks can protect your code
+            from inappropriate macro substitution:<br>&nbsp;
+            <ul>
+               <li>
+                  If you want to call <code>std::min()</code> or <code>std::max()</code>:<br>&nbsp;
+                  <ul>
+                     <li>
+                        Use <code>(std::min)(a,b)</code> if you do not require argument-dependent
+                        look-up.</li>&nbsp;
+                     <li>
+                        Use <code>boost::std_min(a,b)</code> if you do require argument-dependent look-up.
+                        <code>boost::std_min()</code> delegates to <code>std::min()</code>.</li>&nbsp;
+                  </ul>
+               </li>
+               <li>
+                  If you want to call <code>std::numeric_limits&lt;int&gt;::max()</code>, use
+                  <code>(std::numeric_limits&lt;int&gt;::max)()</code> instead.<br>&nbsp;
+               </li>
+               <li>
+                  If you want to call a <code>min()</code> or <code>max()</code> member function,
+                  instead to doing <code>obj.min()</code>, use <code>(obj.min)()</code>.<br>&nbsp;
+               </li>
+               <li>
+                  If you want to declare or define a function or a member function named <code>min</code>
+                  or <code>max</code>, then you must use the <code>BOOST_PREVENT_MACRO_SUBSTITUTION</code>
+                  macro. Instead of writing <code>int min() { return 0; }</code> you should write
+                  <code>int min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }</code>This is true
+                  regardless if the function is a free (namespace scope) function, a member function or a
+                  static member function, and it applies for the function declaration as well as the
+                  function definition.<br>&nbsp;
+               </li>
+            </ul>
+         </li>
+      </ul>
       <h3><a name="Directory_structure">Directory Structure</a> and Filenames</h3>
       <ul>
          <li>
