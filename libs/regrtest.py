@@ -6,8 +6,7 @@
 #
 # Default: regrtest * *
 #
-# Compilers:  bcc54 = Borland 5.4
-#             bcc55 = Borland 5.5.1
+# Compilers:  bcc   = Borland 5.5.1
 #             cw    = Metrowerks CodeWarrior
 #             gcc   = GNU GCC/egcs
 #             como  = Comeau C++
@@ -65,6 +64,8 @@ def compile( program ):
   f.write( "<tr>\n" )
   f.write( "<td><a href=\"" + program + "\">" + program + "</a></td>\n" )
 
+# ----------  Linux2 ---------- #
+
   if sys.platform == "linux2": 
     if compiler_arg == "*" or compiler_arg == "gcc":
       invoke( "GCC 2.95.2", 'g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
@@ -74,13 +75,16 @@ def compile( program ):
 #      invoke( "GCC pre-2.96 experimental", '/opt/exp/gcc/bin/g++ -ftemplate-depth-30 -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "como":
       invoke( "Comeau C++ 4.2.44 beta3", 'como -I' + path + ' ' + fullpath)
+
+# ----------  Windows ---------- #
+
   else:
-    if compiler_arg=="*" or compiler_arg=="bcc54":
-      bcc54_path=os.environ["BOOST_BCC54_PATH"]
-      invoke( "Borland C++ 5.4 up2", "\"" + bcc54_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
-    if compiler_arg=="*" or compiler_arg=="bcc55":
+#    if compiler_arg=="*" or compiler_arg=="bcc54":
+#      bcc54_path=os.environ["BOOST_BCC54_PATH"]
+#      invoke( "Borland C++ 5.4 up2", "\"" + bcc54_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
+    if compiler_arg=="*" or compiler_arg=="bcc":
       bcc55_path=os.environ["BOOST_BCC55_PATH"]
-      invoke( "Borland C++ 5.5.1", "\"" + bcc55_path + "/bcc32\" -I" + path + " -j10 -q " + fullpath )
+      invoke( "Borland C++ 5.5.1", "\"" + bcc55_path + "/bcc32\" -I" + path + " -c -j10 -q " + fullpath )
 
     # GCC 2.95.2 is looping on some tests, so only invoke if asked for by name
     #if compiler_arg=="*" or compiler_arg=="gcc":
@@ -89,14 +93,14 @@ def compile( program ):
       invoke( "GNU GCC", "c++ -ftemplate-depth-30 -I" + path + " -IC:/stl/STLport-4.0b8/stlport  " + fullpath + "  c:/stl/STLport-4.0b8/lib/libstlport_gcc.a" )
 
     if compiler_arg=="*" or compiler_arg=="cw":
-      invoke( "Metrowerks CodeWarrior", "mwcc -maxerrors 10 -cwd source -I- -I" + path + " " + fullpath )
+      invoke( "Metrowerks CodeWarrior", "mwcc -nolink -maxerrors 10 -cwd source -I- -I" + path + " " + fullpath )
 
 #John Maddock says use /Zm400 switch; it increases compiler memory
     if compiler_arg=="*" or compiler_arg=="vc":
-      invoke( "VC++ with MS library", 'cl /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
+      invoke( "VC++ with MS library", 'cl /c /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
     if compiler_arg=="*" or compiler_arg=="vcstlport":
       stl=os.environ["BOOST_STLPORT_PATH"]
-      invoke( "VC++ with STLport library", 'cl /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + stl + '" /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
+      invoke( "VC++ with STLport library", 'cl /c /nologo /Zm400 /MDd /W3 /GR /GX /Zi /Od /GZ /I "' + stl + '" /I "' + path + '" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_CONSOLE" ' + fullpath )
 
 
   f.write( "</tr>\n" )
@@ -172,9 +176,9 @@ if sys.platform == "linux2":
   if compiler_arg == "*" or compiler_arg == "como":
     f.write( "<td>Comeau C++<br>4.2.44 beta3<br>STLport<br>4.0</td>\n" )
 else:
-  if compiler_arg=="*" or compiler_arg=="bcc54":
-    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
-  if compiler_arg=="*" or compiler_arg=="bcc55":
+#  if compiler_arg=="*" or compiler_arg=="bcc54":
+#    f.write( "<td>Borland<br>BCC<br>5.4 up2</td>\n" )
+  if compiler_arg=="*" or compiler_arg=="bcc":
     f.write( "<td>Borland<br>BCC<br>5.5.1</td>\n" )
 
   # GCC 2.95.2 is looping on some tests, so only invoke if asked for by name
@@ -202,6 +206,7 @@ if  program_arg=="*":
   compile( "rational/rational_example.cpp" )
   compile( "random/random_test.cpp" )
   compile( "random/random_demo.cpp" )
+  compile( "regex/src/cregex.cpp" )
   compile( "smart_ptr/smart_ptr_test.cpp" )
 #  compile( "utility/algo_opt_examples.cpp" )
   compile( "utility/call_traits_test.cpp" )
