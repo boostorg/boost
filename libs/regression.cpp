@@ -294,8 +294,13 @@ void do_tests(std::ostream & out,
     }
     std::string type(l, 0, p);
     sz_type end_filename = l.find(' ', p+1);
-    std::string file(l, p+1, end_filename-(p+1));
-    std::string args(l, end_filename+1, std::string::npos);
+    std::string file, args;
+    if(end_filename == std::string::npos) {
+      file = l.substr(p+1, std::string::npos);
+    } else {
+      file = l.substr(p+1, end_filename-(p+1));
+      args = l.substr(end_filename+1, std::string::npos);
+    }
 
     std::cout << "*** " << file << " ***\n\n";
 
