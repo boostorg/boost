@@ -69,6 +69,33 @@
         <func:result select="$explicit_markup//library[ @name = $library ]/mark-unusable[ toolset/@name = $toolset or toolset/@name='*' ]"/>
     </func:function>
 
+    <func:function name="meta:re_match">
+        <xsl:param name="pattern"/>
+        <xsl:param name="text"/>
+        
+        <func:result>
+            <xsl:choose>
+                <xsl:when test="not( contains( $pattern, '*' ) )">
+                    <xsl:value-of select="$text = $pattern"/>
+                </xsl:when>
+                <xsl:when test="$pattern = '*'">
+                    <xsl:value-of select="1 = 1"/>
+                </xsl:when>
+                <xsl:when test="substring( $pattern, 1, 1 ) = '*' and substring( $pattern, string-length($pattern), 1 ) = '*' ">
+                    <xsl:value-of select="contains( $text, substring( $pattern, 2, string-length($pattern) - 2 ) ) "/>
+                </xsl:when>
+                <xsl:when test="substring( $pattern, 1, 1 ) = '*'">
+                    <xsl:variable name="pattern_tail" select="substring( $pattern, 2, string-length($pattern) - 1 )"/>
+                    <xsl:value-of select="substring( $text, string-length($text) - string-length($pattern_tail) + 1, string-length($pattern_tail) ) = $pattern_tail"/>
+                </xsl:when>
+                <xsl:when test="substring( $pattern, string-length($pattern), 1 ) = '*' ">
+                    <xsl:variable name="pattern_head" select="substring( $pattern, 1, string-length($pattern) - 2 )"/>
+                    <xsl:value-of select="substring( $text, 1, string-length($pattern_head) ) = $pattern_head "/>
+                </xsl:when>
+            </xsl:choose>
+        </func:result>
+    </func:function>
+
     <func:function name="meta:encode_path">
         <xsl:param name="path"/>
         <func:result select="translate( translate( $path, '/', '-' ), './', '-' )"/>
