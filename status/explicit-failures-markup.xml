@@ -1667,6 +1667,26 @@ for more information.
             <note author="B. Dawes" refid="3"/>
         </mark-expected-failures>
 
+        <mark-expected-failures>
+            <test name="token_iterator_test"/>
+            <toolset name="msvc-stlport"/>
+            <note refid="3"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures reason="?">
+            <test name="token_iterator_test"/>
+            <toolset name="iw-7_1-vc6"/>
+            <toolset name="msvc"/>
+            <toolset name="gcc-3.4.2-linux"/>
+            <note refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures reason="?">
+            <test name="basic_cstring_test"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <note refid="29"/>
+        </mark-expected-failures>
+
     </library>
 
 
@@ -1715,6 +1735,18 @@ for more information.
             <test name="test_barrier_lib"/>
             <toolset name="vc-8_0"/>
             <note author="Aleksey Gurtovoy" refid="6"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_thread"/>
+            <toolset name="vc-7_1"/>
+            <note author="Aleksey Gurtovoy" refid="6"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures reason="?">
+            <test name="*_lib"/>
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
     </library>
 
@@ -1986,10 +2018,9 @@ for more information.
     </note>
 
     <note id="29">
-        Due to unresearched issues, the tested functionality is not 
-        currently available for this particular configuration. The library
+        The test fails due to unresearched issues. The library
         developers are aware of this failure, but need help with 
-        researching/addressing it for future releases.
+        investigating/addressing it for future releases.
     </note>
 
 </explicit-failures-markup>
