@@ -316,7 +316,7 @@ const string & attribute_value( const xml::element & element,
       if ( lib[0] == '\n' ) lib.erase( 0, 1 );
       string lib_test_name( extract_test_name( lib ) );
       links_file << "<h3>Library build failure: </h3>\n"
-        "See <a href=\"#" << lib_test_name << " " << toolset << "\">"
+        "See <a href=\"#" << lib_test_name << "-" << toolset << "\">"
         << lib_test_name << " / " << toolset << "</a>";
 
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
@@ -332,7 +332,7 @@ const string & attribute_value( const xml::element & element,
         else
         {
           links_file << "<h2><a name=\""
-            << lib_test_name << " " << toolset << "\">"
+            << lib_test_name << "-" << toolset << "\">"
             << lib_test_name << " / " << toolset << "</a></h2>\n"
             "test_log.xml not found\n";
         }
