@@ -87,7 +87,7 @@ def compile( program ):
     if compiler_arg == "*" or compiler_arg =="suncc":
 	invoke("Sun WorkShop 6 2000/04/07 C++ 5.1", 'CC -c -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "gcc":
-      invoke( "GCC 2.95.2", 'g++ -Wall -pedantic -ftemplate-depth-30 -c -I' + path + ' ' + fullpath )
+      invoke( "GCC 2.95.2", 'g++ -Wall -pedantic -ftemplate-depth-30 -Wno-long-long -c -I' + path + ' ' + fullpath )
     if compiler_arg == "*" or compiler_arg == "kcc":
       invoke( "KCC 3.4g", 'KCC --strict_warnings -I' + path + ' ' + fullpath )
 
