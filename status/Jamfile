@@ -9,8 +9,6 @@ subproject status ;
 # bring in the rules for testing
 SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
 include testing.jam ;
-SEARCH on testsuites.jam = . ;
-include testsuites.jam ;
 
 # Note that the Compiler Status Report HTML generator scans
 # these rule invocations to find test type (compile, run, etc.)
@@ -757,6 +755,12 @@ include testsuites.jam ;
 
     {
 
+	lib type_traits_init : libs/type_traits/test/init.cpp 
+    	: 
+        	<sysinclude>$(BOOST_ROOT)
+    	: 
+	;
+	
     rule type-traits-run ( sources + )
     {
         return [ 
@@ -765,7 +769,7 @@ include testsuites.jam ;
              $(sources)
 
              # dependencies
-             <lib>../libs/type_traits/test/type_traits_init 
+             <lib>type_traits_init 
              <lib>../libs/test/build/boost_unit_test_framework 
          :  # additional args
             --report_level=detailed --build_info=yes --log_level=messages
@@ -835,6 +839,8 @@ test-suite type_traits :
     } # type traits sub rules...
 
 }
+
+
 
 
 
