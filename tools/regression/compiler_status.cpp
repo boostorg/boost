@@ -48,7 +48,8 @@ const std::size_t max_compile_msg_size = 10000;
 
 namespace
 {
-  fs::path boost_root_dir;
+  fs::path boost_root;  // boost-root complete path
+  fs::path locate_root; // locate-root (AKA ALL_LOCATE_TARGET) complete path
 
   bool ignore_pass;
   bool no_warn;
@@ -70,15 +71,18 @@ namespace
 
   const string empty_string;
 
-//  convert backslashes to forward slashes -----------------------------------//
+//  relative path between two paths  -----------------------------------------//
 
-  void convert_backslashes( string & s )
+  void relative_path( const fs::path & from, const fs::path & to,
+    fs::path & target )
   {
-    for ( string::iterator itr = s.begin(); itr != s.end(); ++itr )
-      if ( *itr == '\\' ) *itr = '/';
+    if ( from.string().size() <= to.string().size() ) return;
+    target /= "..";
+    relative_path( from.branch_path(), to, target );
+    return;
   }
 
-// extra information from target directory string  ---------------------------//
+//  extract test name from target directory string  --------------------------//
 
   string extract_test_name( const string & s )
   {
@@ -111,18 +115,18 @@ namespace
   }
 
 //  platform_desc  -----------------------------------------------------------//
-//  from boost-root/status/bin/config_info.test/xxx/.../config_info.output
+//  from locate_root/status/bin/config_info.test/xxx/.../config_info.output
 
-  string platform_desc( const fs::path & boost_root_dir )
+  string platform_desc()
   {
     string result;
     fs::path dot_output_path;
 
     // the gcc config_info "Detected Platform" sometimes reports "cygwin", so
     // prefer any of the other compilers.
-    if ( find_file( boost_root_dir / "status/bin/config_info.test",
+    if ( find_file( locate_root / "status/bin/config_info.test",
       "config_info.output", dot_output_path, "gcc" )
-      || find_file( boost_root_dir / "status/bin/config_info.test",
+      || find_file( locate_root / "status/bin/config_info.test",
       "config_info.output", dot_output_path ) )
     {
       fs::ifstream file( dot_output_path );
@@ -143,14 +147,13 @@ namespace
   }
 
 //  version_desc  ------------------------------------------------------------//
-//  from boost-root/status/bin/config_info.test/xxx/.../config_info.output
+//  from locate-root/status/bin/config_info.test/xxx/.../config_info.output
 
-  string version_desc( const fs::path & boost_root_dir,
-    const string & compiler_name )
+  string version_desc( const string & compiler_name )
   {
     string result;
     fs::path dot_output_path;
-    if ( find_file( boost_root_dir / "status/bin/config_info.test"
+    if ( find_file( locate_root / "status/bin/config_info.test"
       / compiler_name, "config_info.output", dot_output_path ) )
     {
       fs::ifstream file( dot_output_path );
@@ -173,11 +176,10 @@ namespace
 //  compiler_desc  -----------------------------------------------------------//
 //  from boost-root/tools/build/xxx-tools.jam
 
-  string compiler_desc( const fs::path & boost_root_dir,
-    const string & compiler_name )
+  string compiler_desc( const string & compiler_name )
   {
     string result;
-    fs::path tools_path( boost_root_dir / "tools/build" / (compiler_name
+    fs::path tools_path( boost_root / "tools/build" / (compiler_name
       + "-tools.jam") );
     fs::ifstream file( tools_path );
     if ( file )
@@ -306,7 +308,7 @@ const string & attribute_value( const xml::element_ptr & element,
       if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
       {
         failed_lib_target_dirs.insert( lib );
-        fs::path pth( boost_root_dir / lib / "test_log.xml" );
+        fs::path pth( boost_root / lib / "test_log.xml" );
         fs::ifstream file( pth );
         if ( file )
         {
@@ -387,8 +389,8 @@ const string & attribute_value( const xml::element_ptr & element,
 
 //  do_row  ------------------------------------------------------------------//
 
-  void do_row( const fs::path & boost_root_dir,
-    const fs::path & test_dir, // "c:/boost_root/status/bin/any_test.test"
+  void do_row(
+    const fs::path & test_dir, // locate_root / "status/bin/any_test.test"
     const string & test_name, // "any_test"
     string & target )
   {
@@ -412,13 +414,15 @@ const string & attribute_value( const xml::element_ptr & element,
       }
     }
 
-    // find the library documentation path
-    string lib_docs_path( "../libs/" + lib_name );
+    // path to docs
+    fs::path rel;
+    relative_path( fs::initial_path(), boost_root, rel );
+    string lib_docs_path( rel.string() + "/libs/" + lib_name );
 
     // generate the library name, test name, and test type table data
     string::size_type row_start_pos = target.size();
     target += "<tr><td><a href=\"" + lib_docs_path + "\">"  + lib_name  + "</a></td>";
-    target += "<td><a href=\"" + test_path + "\">" + test_name + "</a></td>";
+    target += "<td><a href=\"" + (rel / test_path).string() + "\">" + test_name + "</a></td>";
     target += "<td>" + test_type + "</td>";
 
     bool no_warn_save = no_warn;
@@ -440,15 +444,16 @@ const string & attribute_value( const xml::element_ptr & element,
 
 //  do_rows_for_sub_tree  ----------------------------------------------------//
 
-  void do_rows_for_sub_tree( const fs::path & boost_root_dir,
+  void do_rows_for_sub_tree(
     const fs::path & bin_dir, std::vector<string> & results )
   {
     for ( fs::directory_iterator itr( bin_dir ); itr != end_itr; ++itr )
     {
-      if ( fs::is_directory( *itr ) )
+      if ( fs::is_directory( *itr )
+        && itr->string().find( ".test" ) == (itr->string().size()-5) )
       {
         results.push_back( std::string() ); 
-        do_row( boost_root_dir, *itr,
+        do_row( *itr,
                 itr->leaf().substr( 0, itr->leaf().size()-5 ),
                 results[results.size()-1] );
       }
@@ -457,14 +462,13 @@ const string & attribute_value( const xml::element_ptr & element,
 
 //  do_table_body  -----------------------------------------------------------//
 
-  void do_table_body(
-    const fs::path & boost_root_dir, const fs::path & bin_dir )
+  void do_table_body( const fs::path & bin_dir )
   {
     // rows are held in a vector so they can be sorted, if desired.
     std::vector<string> results;
 
     // do primary bin directory
-    do_rows_for_sub_tree( boost_root_dir, bin_dir, results );
+    do_rows_for_sub_tree( bin_dir, results );
 
     // do subinclude bin directories
     jamfile.clear();
@@ -480,9 +484,9 @@ const string & attribute_value( const xml::element_ptr & element,
         if ( pos == string::npos ) continue;
         string subinclude_bin_dir(
           line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
-//        std::cout << "subinclude: " << subinclude_bin_dir << '\n';
-        do_rows_for_sub_tree( boost_root_dir,
-          boost_root_dir / subinclude_bin_dir / "/bin", results );  
+//      std::cout << "subinclude: " << subinclude_bin_dir << '\n';
+        do_rows_for_sub_tree( 
+          locate_root / subinclude_bin_dir / "/bin", results );  
       }
     }
 
@@ -496,10 +500,11 @@ const string & attribute_value( const xml::element_ptr & element,
 
 //  do_table  ----------------------------------------------------------------//
 
-  void do_table( const fs::path & boost_root_dir )
+  void do_table()
   {
-//    fs::path bin_dir( boost_root_dir / "status" / "bin" );
-    fs::path bin_dir( fs::initial_path() / "bin" );
+    string relative( fs::initial_path().string() );
+    relative.erase( 0, boost_root.string().size()+1 );
+    fs::path bin_path( locate_root / relative / "bin" );
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
 
@@ -508,8 +513,10 @@ const string & attribute_value( const xml::element_ptr & element,
     report << "<tr><td>Library</td><td>Test Name</td>\n"
       "<td><a href=\"compiler_status.html#test-type\">Test Type</a></td>\n";
 
-    fs::directory_iterator itr( bin_dir );
-    while ( itr != end_itr && !fs::is_directory( *itr ) ) ++itr; // bypass chaff
+    fs::directory_iterator itr( bin_path );
+    while ( itr != end_itr && !fs::is_directory( *itr )
+      && itr->string().find( ".test" ) != (itr->string().size()-5) )
+      ++itr; // bypass chaff
     if ( itr != end_itr )
     {
       fs::directory_iterator compiler_itr( *itr );
@@ -523,10 +530,8 @@ const string & attribute_value( const xml::element_ptr & element,
           if ( specific_compiler.size() != 0
             && specific_compiler != compiler_itr->leaf() ) continue;
           toolsets.push_back( compiler_itr->leaf() );
-          string desc( compiler_desc( boost_root_dir,
-                                                 compiler_itr->leaf() ) );
-          string vers( version_desc( boost_root_dir,
-                                                compiler_itr->leaf() ) );
+          string desc( compiler_desc( compiler_itr->leaf() ) );
+          string vers( version_desc( compiler_itr->leaf() ) );
           report << "<td>"
                << (desc.size() ? desc : compiler_itr->leaf())
                << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
@@ -539,7 +544,7 @@ const string & attribute_value( const xml::element_ptr & element,
 
     // now the rest of the table body
 
-    do_table_body( boost_root_dir, bin_dir );
+    do_table_body( bin_path );
 
     report << "</table>\n";
   }
@@ -557,6 +562,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
   {
     if ( argc > 2 && std::strcmp( argv[1], "--compiler" ) == 0 )
     { specific_compiler = argv[2]; --argc; ++argv; }
+    else if ( argc > 2 && std::strcmp( argv[1], "--locate-root" ) == 0 )
+    { locate_root = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
@@ -567,16 +574,21 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( argc != 3 && argc != 4 )
   {
     std::cerr <<
-      "usage: compiler_status [options...] boost-root-dir status-file [links-file]\n"
-      "must be run from directory containing Jamfile\n"
+      "Usage: compiler_status [options...] boost-root status-file [links-file]\n"
+      "  boost-root is the path to the boost tree root directory.\n"
+      "  status-file and links-file are paths to the output files.\n"
+      "Must be run from directory containing Jamfile\n"
       "  options: --compiler name     Run for named compiler only\n"
       "           --ignore-pass       Do not report tests which pass all compilers\n"
       "           --no-warn           Warnings not reported if test passes\n"
-      "example: compiler_status --compiler gcc \\boost-root cs.html cs-links.html\n";
+      "           --locate-root path  Path to ALL_LOCATE_TARGET for bjam;\n"
+      "                               default boost-root.\n"
+      "example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n";
     return 1;
   }
 
-  boost_root_dir = fs::path( argv[1], fs::native );
+  boost_root = fs::path( argv[1], fs::native );
+  if ( locate_root.empty() ) locate_root = boost_root;
 
   fs::path jamfile_path( fs::initial_path() / "Jamfile" );
   jamfile.open( jamfile_path );
@@ -621,7 +633,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
           "<td><img border=\"0\" src=\"../c++boost.gif\" width=\"277\" "
           "height=\"86\"></td>\n"
           "<td>\n"
-          "<h1>Compiler Status: " + platform_desc( boost_root_dir ) + "</h1>\n"
+          "<h1>Compiler Status: " + platform_desc() + "</h1>\n"
           "<b>Run Date:</b> "
        << run_date
        << "\n</td>\n</table>\n<br>\n"
@@ -640,14 +652,14 @@ int cpp_main( int argc, char * argv[] ) // note name!
          "<td><img border=\"0\" src=\"../c++boost.gif\" width=\"277\" "
          "height=\"86\"></td>\n"
          "<td>\n"
-         "<h1>Compiler Status: " + platform_desc( boost_root_dir ) + "</h1>\n"
+         "<h1>Compiler Status: " + platform_desc() + "</h1>\n"
          "<b>Run Date:</b> "
       << run_date
       << "\n</td>\n</table>\n<br>\n"
       ;
   }
 
-  do_table( boost_root_dir );
+  do_table();
 
   report << "</body>\n"
           "</html>\n"

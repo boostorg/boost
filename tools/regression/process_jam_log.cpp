@@ -29,12 +29,14 @@ namespace
 {
   struct test_info
   {
-    string      file_path;
+    string      file_path; // relative boost-root
     string      type;
     bool        always_show_run_output;
   };
   typedef std::map< string, test_info > test2info_map;  // key is test-name
   test2info_map test2info;
+
+  fs::path locate_root; // ALL_LOCATE_TARGET (or BOOST_ROOT if none)
 
 //  append_html  -------------------------------------------------------------//
 
@@ -75,15 +77,24 @@ namespace
       if ( *itr == '\\' || *itr == '!' ) *itr = '/';
   }
 
-//  extract a directory from a jam target string  ----------------------------//
+//  extract a target directory path from a jam target string  ----------------//
+//  s may be relative to the initial_path:
+//    ..\..\..\libs\foo\build\bin\libfoo.lib\vc7\debug\runtime-link-dynamic\boo.obj
+//  s may be absolute:
+//    d:\myboost\libs\foo\build\bin\libfoo.lib\vc7\debug\runtime-link-dynamic\boo.obj
+//  return path is always relative to the boost directory tree:
+//    libs/foo/build/bin/libfs.lib/vc7/debug/runtime-link-dynamic
 
   string target_directory( const string & s )
   {
     string temp( s );
     convert_path_separators( temp );
-    temp.erase( temp.find_last_of( "/" ) );
-    string::size_type pos = temp.find_last_of( " " );
+    temp.erase( temp.find_last_of( "/" ) ); // remove leaf
+    string::size_type pos = temp.find_last_of( " " ); // remove leading spaces
     if ( pos != string::npos ) temp.erase( 0, pos+1 );
+    if ( temp[0] == '.' ) temp.erase( 0, temp.find_first_not_of( "./" ) ); 
+    else temp.erase( 0, locate_root.string().size()+1 );
+//std::cout << "\"" << s << "\", \"" << temp << "\"" << std::endl;
     return temp;
   }
 
@@ -153,9 +164,8 @@ namespace
               const string & toolset )
       : m_target_directory( target_directory )
     {
-      fs::path pth( target_directory );
-      pth /= "test_log.xml";
-      fs::ifstream file( pth );
+      fs::path pth( locate_root / target_directory / "test_log.xml" );
+      fs::ifstream file( pth  );
       if ( !file )
       {
         test_info info;
@@ -197,8 +207,7 @@ namespace
 
     ~test_log()
     {
-      fs::path pth( m_target_directory );
-      pth /= "test_log.xml";
+      fs::path pth( locate_root / m_target_directory / "test_log.xml" );
       fs::ofstream file( pth );
       if ( !file )
         throw fs::filesystem_error( "process_jam_long.cpp",
@@ -331,7 +340,13 @@ namespace
 
 int cpp_main( int argc, char ** argv )
 {
+  if ( argc <= 1 )
+    std::cout << "Usage: bjam [bjam-args] | process_jam_log [locate-root]\n"
+                 "  locate-root is the same as the bjam ALL_LOCATE_TARGET\n"
+                 "  parameter, if any. Default is boost-root.\n";
+
   string boost_root_relative_initial;
+
   fs::path boost_root( fs::initial_path() );
   while ( !boost_root.empty()
     && !fs::exists( boost_root / "libs" ) )
@@ -344,6 +359,10 @@ int cpp_main( int argc, char ** argv )
     std::cout << "must be run from within the boost-root directory tree\n";
     return 1;
   }
+
+  locate_root = argc > 1 
+    ? fs::path( argv[1], fs::native )
+    : boost_root;
 
   message_manager mgr;
 
@@ -433,7 +452,7 @@ int cpp_main( int argc, char ** argv )
         // contents of .output file for content
         capture_lines = false;
         content = "\n";
-        fs::ifstream file( fs::path(target_dir)
+        fs::ifstream file( locate_root / target_dir
           / (test_name(target_dir) + ".output") );
         if ( file )
         {
