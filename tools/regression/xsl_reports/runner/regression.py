@@ -21,6 +21,7 @@ import sys
 regression_root = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 regression_results = os.path.join( regression_root, 'results' )
 regression_log = os.path.join( regression_results, 'bjam.log' )
+install_log = os.path.join( regression_results, 'bjam_install.log' )
 
 boost_root = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
@@ -40,7 +41,7 @@ if sys.platform == 'win32':
     bjam[ 'location' ] = 'bin.ntx86'
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
     process_jam_log[ 'toolset/compiler' ] = 'vc7.1'
-    patch_boost_name = "patch_boost.bat"
+    patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
     bjam[ 'toolset/compiler' ] = 'gcc'
@@ -48,7 +49,7 @@ else:
     bjam[ 'location' ] = ''
     process_jam_log[ 'name' ] = "process_jam_log"
     process_jam_log[ 'toolset/compiler' ] = 'gcc'
-    patch_boost_name = "patch_boost"
+    patch_boost_name = './patch_boost'
 
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
 bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
@@ -61,11 +62,6 @@ process_jam_log[ 'build_path' ] = os.path.join(
         , process_jam_log[ 'name' ], process_jam_log[ 'toolset/compiler' ]
         , 'release', process_jam_log[ 'name' ]
         )
-
-process_jam_log[ 'build_cmd' ] = '%s -sTOOLS=%s'% (
-      bjam[ 'path' ]
-    , process_jam_log[ 'toolset/compiler' ]
-    )
 
 
 utils = None
@@ -190,6 +186,20 @@ def cvs_checkout( user, tag, args ):
        )
 
 
+def cvs_update( user, tag, args ):
+    if tag != 'CVS-HEAD':
+        command = 'update -r %s' % tag
+    else:
+        command = 'update'
+    
+    os.chdir( os.path.join( regression_root, 'boost' ) )
+    retry( 
+         cvs_command
+       , ( user, command )
+       , max_attempts=5
+       )
+
+
 def get_source( user, tag, proxy, args, **unused ):
     log( "Getting sources ..." )
 
@@ -226,7 +236,7 @@ def build_if_needed( tool ):
         raise 'Could not find %s source directory \"%s\"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
 
     if not os.path.exists( tool[ 'build_path' ] ):
-        raise 'Failed to find bjam (\"%s\") after build.' % tool[ 'build_path' ]
+        raise 'Failed to find (\"%s\") after build.' % tool[ 'build_path' ]
 
     log( '%s succesfully built in "%s" directory' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
 
@@ -237,6 +247,17 @@ def import_utils():
         sys.path.append( xsl_reports_dir )
         import utils as utils_module
         utils = utils_module
+
+
+def tool_path( name_or_spec ):
+    if isinstance( name_or_spec, basestring ):
+        return os.path.join( regression_results, name_or_spec )
+
+    if os.path.exists( name_or_spec[ 'path' ] ):
+        return name_or_spec[ 'path' ]
+    else:
+        return name_or_spec[ 'build_path' ]
+
 
 def setup(
           comment
@@ -250,11 +271,35 @@ def setup(
         utils.system( [ patch_boost_name ] )
 
     build_if_needed( bjam )
+
+    process_jam_log[ 'build_cmd' ] = '%s -sTOOLS=%s'% (
+          tool_path( bjam )
+        , process_jam_log[ 'toolset/compiler' ]
+        )
+
     build_if_needed( process_jam_log )
 
 
-def tool_path( name ):
-    return os.path.join( regression_results, name )
+def bjam_set_commands( toolsets ):
+    result = []
+    if not toolsets is None:
+        result.append( 'set TOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' ) )
+    result.append( 'set BOOST_ROOT=%s' % boost_root )
+    return result
+
+
+def install( toolsets, **unused ):
+    import_utils()
+    os.chdir( os.path.join( boost_root ) )
+
+    log( 'Making "%s" directory...' % regression_results )
+    utils.makedirs( regression_results )
+    
+    install_cmd = bjam_set_commands( toolsets )
+    install_cmd.append( '"%s" -d2 install >>%s 2>&1' % ( tool_path( bjam ), install_log ) )
+    log( 'Installing libraries (%s)...' % install_cmd )
+    utils.system( install_cmd )
+
 
 def start_build_monitor():
     if sys.platform == 'win32':
@@ -273,13 +318,9 @@ def stop_build_monitor():
 def run_process_jam_log():
     log( 'Getting test case results out of "%s"...' % regression_log )
 
-    global process_jam_log
-    if not os.path.exists( process_jam_log[ 'path' ] ):
-        process_jam_log[ 'path' ] = process_jam_log[ 'build_path' ]
-
     utils.checked_system( [ 
-        '%s %s <%s' % (  
-              process_jam_log[ 'path' ]
+        '%s %s <%s' % (
+              tool_path( process_jam_log )
             , regression_results
             , regression_log
             )
@@ -312,16 +353,9 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
-            global bjam
-            if not os.path.exists( bjam[ 'path' ] ):
-                bjam[ 'path' ] = bjam[ 'build_path' ]
-
-            test_cmd = []
-            if not toolsets is None:
-                test_cmd.append( 'set TOOLS=%s' % string.join( string.split( toolsets, ',' ), ' ' ) )
-            test_cmd.append( 'set BOOST_ROOT=%s' % boost_root )
+            test_cmd = bjam_set_commands( toolsets )
             test_cmd.append( '"%s" -d2 --dump-tests "-sALL_LOCATE_TARGET=%s" >>%s 2>&1'
-                                      % (     bjam[ 'path' ]
+                                      % (     tool_path( bjam )
                                             , regression_results
                                             , regression_log
                                             )
@@ -486,6 +520,7 @@ commands = {
     , 'get-source'      : get_source
     , 'update-source'   : update_source
     , 'setup'           : setup
+    , 'install'         : install
     , 'test'            : test
     , 'collect-logs'    : collect_logs
     , 'upload-logs'     : upload_logs
@@ -499,14 +534,14 @@ Commands:
 \t%s
 
 Options:
-\t--runner              runner ID (e.g. 'Metacomm')
-\t--tag                 the tag for the results ('CVS-HEAD' by default)
-\t--comment             an html comment file (will be inserted in the reports, 
-\t                      'comment.html' by default)
-\t--incremental         do incremental run (do not remove previous binaries)
-\t--user                SourceForge user name for a shell/CVS account (optional)
-\t--toolsets            comma-separated list of toolsets to test with (optional)
-\t--mail                email address to send run notification to (optional)
+\t--runner        runner ID (e.g. 'Metacomm')
+\t--tag           the tag for the results ('CVS-HEAD' by default)
+\t--comment       an html comment file (will be inserted in the reports, 
+\t                'comment.html' by default)
+\t--incremental   do incremental run (do not remove previous binaries)
+\t--user          SourceForge user name for a shell/CVS account (optional)
+\t--toolsets      comma-separated list of toolsets to test with (optional)
+\t--mail          email address to send run notification to (optional)
 \t--proxy         HTTP proxy server address and port (e.g. 
 \t                'http://www.someproxy.com:3128', optional)
 ''' % '\n\t'.join( commands.keys() )
@@ -518,6 +553,8 @@ Options:
 if len(sys.argv) > 1 and sys.argv[1] in commands:
     command = sys.argv[1]
     args = sys.argv[ 2: ]
+    if command not in [ 'collect-logs', 'upload-logs' ]:
+        args.append( '--runner=' )
 else:
     command = 'regression'
     args = sys.argv[ 1: ]
