@@ -7,6 +7,7 @@
 
 import xml.sax.saxutils
 import zipfile
+import ftplib
 
 import os.path
 import string
@@ -40,11 +41,28 @@ def collect_test_logs( input_dirs, test_results_writer ):
         os.path.walk( input_dir, process_test_log_files, test_results_writer )
 
 
-def upload_results_file( user, tag, results_file ):
+def upload_to_sourceforge( user, tag, results_file ):
     upload_dir = 'regression-logs/incoming/%s/' % tag
     utils.log( 'Uploading test results file "%s" into "%s" [connecting as %s]...' % ( results_file, upload_dir, user ) )
     
     utils.sourceforge.upload( results_file, upload_dir, user )
+
+def upload_to_ftp( tag, result_file ):
+    ftp_site = 'fx.meta-comm.com'
+    side_path = '/boost-regression'
+    utils.log( "Uploading log archive \"%s\" to ftp://%s%s/%s" % ( result_file, ftp_site, side_path, tag ) )
+    
+    ftp = ftplib.FTP( ftp_site )
+    ftp.login()
+    ftp.cwd( side_path )
+    try:
+        ftp.cwd( tag )
+    except ftplib.error_perm:
+        ftp.mkd( tag )
+        ftp.cwd( tag )
+
+    result_file_reader = open( result_file, "r" )
+    ftp.storbinary( "STOR %s" % os.path.basename( result_file ), result_file_reader )
 
 
 def copy_comments( results_xml, comment_file ):
@@ -72,10 +90,6 @@ def collect_and_upload_logs(
         ):
     
     test_results_file =  '%s.xml' % runner_id
-    if not os.path.exists( test_results_file ):
-        utils.log( 'No test results found (%s); did nothing.' % test_results_file )
-        return
-    
     test_results_writer = open( test_results_file, "w" )
     utils.log( 'Collecting test logs into "%s"...' % test_results_file )
     
@@ -106,7 +120,10 @@ def collect_and_upload_logs(
     z.write( test_results_file, os.path.basename( test_results_file ) )
     z.close()
     
-    upload_results_file( user, tag, test_results_archive )
+    if user is None:
+        upload_to_ftp( tag, test_results_archive )
+    else:
+        upload_to_sourceforge( user, tag, test_results_archive )
 
 
 def accept_args( args ):
@@ -121,7 +138,10 @@ def accept_args( args ):
         , 'help'
         ]
     
-    options = {}
+    options = {
+          '--user' :        None
+        }
+    
     utils.accept_args( args_spec, args, options, usage )
         
     return ( 
@@ -144,7 +164,7 @@ def usage():
 \t--platform            platform name
 \t--comment             an html comment file (will be inserted in the reports)
 \t--timestamp           timestamp of the run
-\t--user                SourceForge user name for a shell account
+\t--user                SourceForge user name for a shell account (optional)
 '''
     
 def main():
