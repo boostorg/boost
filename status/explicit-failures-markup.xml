@@ -764,7 +764,113 @@ for more information.
             <toolset name="cw*"/>
             <note author="Robert Ramey">
                 All tests that serialize derived pointers currently fail with Metrowerks compilers.
-        </note>
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_array_xml_*"/>
+            <test name="test_binary_xml_*"/>
+            <test name="test_class_info_load_xml_*"/>
+            <test name="test_class_info_save_xml_warchive"/>
+            <test name="test_contained_class_xml_*"/>
+            <test name="test_cyclic_ptrs_xml_warchive"/>
+            <test name="test_delete_pointer_xml_*"/>
+            <test name="test_deque_xml_*"/>
+            <test name="test_derived_class_ptr_xml_*"/>
+            <test name="test_derived_class_xml_*"/>
+            <test name="test_derived_xml_*"/>
+            <test name="test_diamond_xml_*"/>
+            <test name="test_exported_xml_*"/>
+            <test name="test_list_ptrs_xml_*"/>
+            <test name="test_list_xml_*"/>
+            <test name="test_map_xml_*"/>
+            <test name="test_mi_xml_*"/>
+            <test name="test_mult_archive_types"/>
+            <test name="test_multiple_ptrs_xml_*"/>
+            <test name="test_no_rtti_xml_*"/>
+            <test name="test_non_default_ctor2_xml_*"/>
+            <test name="test_non_default_ctor_xml_*"/>
+            <test name="test_non_intrusive_xml_*"/>
+            <test name="test_null_ptr_xml_*"/>
+            <test name="test_nvp_xml_*"/>
+            <test name="test_object_xml_*"/>
+            <test name="test_optional_xml_*"/>
+            <test name="test_polymorphic_xml_*"/>
+            <test name="test_primitive_xml_*"/>
+            <test name="test_recursion_xml_*"/>
+            <test name="test_registered_xml_*"/>
+            <test name="test_set_binary_*"/>
+            <test name="test_set_text_*"/>
+            <test name="test_set_xml_*"/>
+            <test name="test_shared_ptr_xml_*"/>
+            <test name="test_simple_class_ptr_xml_*"/>
+            <test name="test_simple_class_xml_*"/>
+            <test name="test_split_xml_*"/>
+            <test name="test_tracking_xml_*"/>
+            <test name="test_unregistered_xml_*"/>
+            <test name="test_utf8_codecvt"/>
+            <test name="test_vector_xml_*"/>
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_class_info_load_text_warchive"/>
+            <test name="test_const"/>
+            <test name="test_demo_fast_archive"/>
+            <test name="test_demo_portable_archive"/>
+            <test name="test_void_cast"/>
+            <toolset name="msvc"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_const"/>
+            <toolset name="vc7"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_demo_fast_archive"/>
+            <test name="test_no_rtti_binary_archive"/>
+            <test name="test_no_rtti_text_*"/>
+            <test name="test_no_rtti_xml_*"/>
+            <test name="test_set_binary_archive"/>
+            <test name="test_set_text_*"/>
+            <test name="test_set_xml_*"/>
+            <toolset name="borland-5_6_4"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_array_binary_archive"/>
+            <test name="test_array_text_*"/>
+            <test name="test_demo_shared_ptr"/>
+            <test name="test_demo_fast_archive"/>
+            <test name="test_no_rtti_binary_archive"/>
+            <test name="test_no_rtti_text_*"/>
+            <test name="test_no_rtti_xml_*"/>
+            <toolset name="cw-8_3"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_demo_shared_ptr"/>
+            <test name="test_demo_fast_archive"/>
+            <test name="test_no_rtti_binary_archive"/>
+            <test name="test_no_rtti_text_*"/>
+            <test name="test_no_rtti_xml_*"/>
+            <toolset name="cw-9_3"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="test_class_info_load_text_warchive"/>
+            <toolset name="iw-7_1-vc6"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">        
+            <test name="test_class_info_load_text_warchive"/>
+            <toolset name="intel-win32-8_0"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>            
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">        
+            <test name="test_smart_cast"/>
+            <toolset name="intel-7.1-linux"/>
+            <note author="Aleksey Gurtovoy" refid="29"/>            
         </mark-expected-failures>
     </library>
 
@@ -1243,10 +1349,7 @@ for more information.
             <test name="parsers_test_dll"/>
             <test name="variable_map_test_dll"/>
             <toolset name="mingw-3*"/>
-            <note>
-                Due to unresearched issues, the tested functionality is not 
-                currently available for this particular configuration.
-            </note>
+            <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -1874,5 +1977,11 @@ for more information.
         information about possible causes.
     </note>
 
+    <note id="29">
+        Due to unresearched issues, the tested functionality is not 
+        currently available for this particular configuration. The library
+        developers are aware of this failure, but need help with 
+        researching/addressing it for future releases.
+    </note>
 
 </explicit-failures-markup>
