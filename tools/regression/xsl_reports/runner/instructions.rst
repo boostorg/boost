@@ -129,6 +129,46 @@ state by several hours, sometimes up to twelve. By contrast, the tarball the scr
 downloads by default is at most one hour behind.
 
 
+Integration with a custom driver script
+.......................................
+
+Even if you've already been using a custom driver script, and for some 
+reason you don't  want ``regression.py`` to take over of the entire test cycle, 
+getting your regression results into `Boost-wide reports`__ is still easy!
+
+In fact, it's just a matter of modifying your script to perform two straightforward 
+operations:
+
+1. *Timestamp file creation* needs to be done before the CVS update/checkout.
+   The file's location doesn't matter (nor does the content), as long as you know how 
+   to access it later. Making your script to do something as simple as
+   ``echo >timestamp`` would work just fine.
+
+2. *Collecting and uploading logs* can be done any time after ``process_jam_log``' s
+   run, and is as simple as an invocation of the local copy of
+   ``boost/tools/regression/xsl_reports/runner/collect_and_upload_logs.py``
+   script that was just obtained from the CVS with the rest of the sources.
+   You'd need to provide ``collect_and_upload_logs.py`` with the following three
+   arguments::
+
+        --locate-root   directory to to scan for "test_log.xml" files
+        --runner        runner ID (e.g. "Metacomm")
+        --timestamp     path to a file which modification time will be used 
+                        as a timestamp of the run ("timestamp" by default)
+
+   For example, assuming that the run's resulting  binaries are in 
+   ``/Volumes/stuff/users/alexy/boost_regressions/results`` directory,
+   the  ``collect_and_upload_logs.py`` invocation might look like this::
+
+       python boost/tools/regression/xsl_reports/runner/collect_and_upload_logs.py 
+          --locate-root=/Volumes/stuff/users/alexy/boost_regressions/results
+          --runner=agurtovoy
+          --timestamp=/Volumes/stuff/users/alexy/boost_regressions/timestamp
+
+
+__ http://www.boost.org/regression-logs/developer/
+
+
 Feedback
 --------
 
