@@ -150,6 +150,18 @@ if $(lib-sources)
         {
             if $(NT)
             {
+                local version-files = [ MATCH "(.*[.]lib)" : $(lib-dest-files) ] ;
+                local noversion-files ;
+                for local version-file in $(version-files)
+                {
+                    local noversion-file =
+                        [ MATCH "(.*)-[0-9_]+([.]lib)" : $(version-file) ] ;
+                    noversion-file = $(noversion-file[1])$(noversion-file[2]) ;
+                    MakeLocate $(noversion-file) : [ FDirName [ split-path $(lib-locate) ] ] ;
+                    HardLink $(noversion-file) : $(version-file) ;
+                    noversion-files += $(noversion-file) ;
+                }
+                declare-fake-targets $(lib-target) : $(noversion-files) ;
             }
             else if $(UNIX)
             {
