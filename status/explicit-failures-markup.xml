@@ -213,11 +213,33 @@
             <toolset name="iw-7_1-vc6"/>
         </mark-unusable>
 
+        <test name="testgreg_serialize*">
+            <mark-failure>
+            <toolset name="borland*"/>
+            <toolset name="msvc*"/>
+            <toolset name="mingw*"/>
+            <toolset name="gcc-2.*"/>
+            <note author="B. Garst">The serialization library does not support this compiler.
+            </note>
+            </mark-failure>
+        </test>
+
+        <test name="testtime_serialize*">
+            <mark-failure>
+            <toolset name="borland*"/>
+            <toolset name="msvc*"/>
+            <toolset name="mingw*"/>
+            <toolset name="gcc-2.*"/>
+            <note author="B. Garst">The serialization library does not support this compiler.
+            </note>
+            </mark-failure>
+        </test>
+
         <test name="testdate_iterator">
             <mark-failure>
             <toolset name="intel-7.1-stdlib-default-linux"/>
             <toolset name="intel-7.1-linux"/>
-         <note author="J. Garland" refid="19,21"/>
+                <note author="J. Garland" refid="19,21"/>
             </mark-failure>
         </test>
         <test name="testdate_iterator_dll">
