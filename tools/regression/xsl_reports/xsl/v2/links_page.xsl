@@ -32,7 +32,7 @@
 
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
 
-    <xsl:template match="test-log[ meta:show_output( . ) ]">
+    <xsl:template match="test-log[ meta:show_output( $explicit_markup, . ) ]">
         <xsl:variable name="document_path" select="meta:output_file_path( concat( ../@runner, '-', @target-directory ) )"/>
 
         <xsl:message>Writing log file document <xsl:value-of select="$document_path"/></xsl:message>
