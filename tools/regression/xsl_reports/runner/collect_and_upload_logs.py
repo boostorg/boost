@@ -87,6 +87,8 @@ def collect_logs(
         , comment_file
         , timestamp
         , user
+        , source
+        , run_type
         ):
     
     test_results_file =  '%s.xml' % runner_id
@@ -102,6 +104,8 @@ def collect_logs(
             , "platform":   platform
             , "runner":     runner_id
             , "timestamp":  timestamp 
+            , "source":     source
+            , "run-type":   run_type
             }
         )
     
@@ -159,12 +163,16 @@ def accept_args( args ):
         , 'platform='
         , 'comment='
         , 'timestamp='
+        , 'source='
+        , 'run-type='
         , 'user='
         , 'help'
         ]
     
     options = {
-          '--user' :        None
+          '--user' :          None
+          , '--source' :      ''
+          , '--run-type' :    ''
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -177,6 +185,8 @@ def accept_args( args ):
         , options[ '--comment' ]
         , options[ '--timestamp' ]
         , options[ '--user' ]
+        , options[ '--source' ]
+        , options[ '--run-type' ]
         )
 
 
@@ -190,6 +200,8 @@ def usage():
 \t--comment             an html comment file (will be inserted in the reports)
 \t--timestamp           timestamp of the run
 \t--user                SourceForge user name for a shell account (optional)
+\t--source              SourceForge user name for a shell account (optional)
+\t--run-type            "incremental" or "full" (optional)
 '''
     
 def main():

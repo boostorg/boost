@@ -40,6 +40,7 @@ if sys.platform == 'win32':
     bjam[ 'location' ] = 'bin.ntx86'
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
     process_jam_log[ 'toolset/compiler' ] = 'vc7.1'
+    patch_boost_name = "patch_boost.bat"
 else:
     bjam[ 'name' ] = 'bjam'
     bjam[ 'toolset/compiler' ] = 'gcc'
@@ -47,6 +48,7 @@ else:
     bjam[ 'location' ] = ''
     process_jam_log[ 'name' ] = "process_jam_log"
     process_jam_log[ 'toolset/compiler' ] = 'gcc'
+    patch_boost_name = "patch_boost"
 
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
 bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
@@ -133,7 +135,7 @@ def download_boost_tarball( destination, tag, proxy ):
         , tarball_path
         , proxies
         )
-
+        
     return tarball_path
 
 
@@ -236,13 +238,17 @@ def import_utils():
         import utils as utils_module
         utils = utils_module
 
-
 def setup(
           comment
         , args
         , **unused
         ):
     import_utils()
+    
+    if os.path.exists( patch_boost_name ):
+        log( 'Found patch file "%s". Executing it.' % patch_boost_name )
+        utils.system( [ patch_boost_name ] )
+
     build_if_needed( bjam )
     build_if_needed( process_jam_log )
 
@@ -338,11 +344,12 @@ def collect_logs(
         , platform
         , user
         , comment
+        , incremental
         , args
         , **unused
         ):
     import_utils()
-
+    
     global comment_path
     if comment is None:
         log( 'Comment file "%s" not found; creating default comment.' % comment_path )
@@ -352,6 +359,15 @@ def collect_logs(
     else: 
         comment_path = os.path.join( regression_root, comment )
     
+    run_type = ""
+    if incremental: run_type = "incremental"
+    else:           run_type = "incremental"
+
+    source = ""
+    if user is None:          source = "tarball"
+    elif user == "anonymous": source = "cvs:pserver %s" % tag
+    else:                     source = "cvs:ext %s" % tag
+   
     from runner import collect_logs
     collect_logs( 
           regression_results
@@ -364,6 +380,8 @@ def collect_logs(
             , time.gmtime( os.stat( timestamp_path ).st_mtime )
             )
         , user
+        , source
+        , run_type
         )
         
 
@@ -402,7 +420,7 @@ def regression(
             setup( comment, [] )
 
         test( toolsets, [] )
-        collect_logs( tag, runner, platform, user, comment, args )
+        collect_logs( tag, runner, platform, user, comment, incremental, args )
         upload_logs( tag, runner, user )
 
         if mail:
@@ -481,14 +499,14 @@ Commands:
 \t%s
 
 Options:
-\t--runner        runner ID (e.g. 'Metacomm')
-\t--tag           the tag for the results ('CVS-HEAD' by default)
-\t--comment       an html comment file (will be inserted in the reports, 
-\t                'comment.html' by default)
-\t--incremental   do incremental run (do not remove previous binaries)
-\t--user          SourceForge user name for a shell/CVS account (optional)
-\t--toolsets      comma-separated list of toolsets to test with (optional)
-\t--mail          email address to send run notification to (optional)
+\t--runner              runner ID (e.g. 'Metacomm')
+\t--tag                 the tag for the results ('CVS-HEAD' by default)
+\t--comment             an html comment file (will be inserted in the reports, 
+\t                      'comment.html' by default)
+\t--incremental         do incremental run (do not remove previous binaries)
+\t--user                SourceForge user name for a shell/CVS account (optional)
+\t--toolsets            comma-separated list of toolsets to test with (optional)
+\t--mail                email address to send run notification to (optional)
 \t--proxy         HTTP proxy server address and port (e.g. 
 \t                'http://www.someproxy.com:3128', optional)
 ''' % '\n\t'.join( commands.keys() )
@@ -503,5 +521,5 @@ if len(sys.argv) > 1 and sys.argv[1] in commands:
 else:
     command = 'regression'
     args = sys.argv[ 1: ]
-
+    
 commands[ command ]( **accept_args( args ) )
