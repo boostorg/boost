@@ -240,8 +240,10 @@ namespace
   string compiler_desc( const string & compiler_name )
   {
     string result;
-    fs::path tools_path( boost_root / "tools/build" / (compiler_name
+    fs::path tools_path( boost_root / "tools/build/v1" / (compiler_name
       + "-tools.jam") );
+    if ( !fs::exists( tools_path ) )
+      tools_path = boost_root / "tools/build" / (compiler_name + "-tools.jam");
     fs::ifstream file( tools_path );
     if ( file )
     {
