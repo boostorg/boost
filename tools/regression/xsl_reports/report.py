@@ -167,7 +167,7 @@ def make_result_pages(
             )
 
     shutil.copyfile(
-          xsl_path( 'html/master.css' )
+          xsl_path( 'html/master.css', v2 )
         , os.path.join( output_dir, 'master.css' )
         )
 
