@@ -237,9 +237,15 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <xsl:text>fail-unexpected-new</xsl:text>
                 </xsl:when>
 
+
+                <xsl:when test="count( $test_logs[@result='fail' and @expected-reason != '' ] )">
+                    <xsl:text>fail-expected-unresearched</xsl:text>
+                </xsl:when>
+
                 <xsl:when test="count( $test_logs[@result='fail'] )">
                     <xsl:text>fail-expected</xsl:text>
                 </xsl:when>
+                
                 
                 <xsl:when test="count( $test_logs[@result='success' and  @status='unexpected'] )">
                     <xsl:text>success-unexpected</xsl:text>
