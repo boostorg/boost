@@ -15,6 +15,7 @@ import shutil
 import stat
 import os.path
 import os
+import platform
 import traceback
 import string
 import sys
@@ -729,7 +730,7 @@ def accept_args( args ):
     options = {
           '--tag'           : 'CVS-HEAD'
         , '--local'         : None
-        , '--platform'      : sys.platform
+        , '--platform'      : platform.system()
         , '--user'          : None
         , '--comment'       : None
         , '--toolsets'      : None
