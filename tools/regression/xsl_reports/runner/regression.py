@@ -580,16 +580,17 @@ def upload_logs(
 
 def update_itself( **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
-    log( 'Updating %s from %s...' % ( sys.argv[0], source )  )
+    self = os.path.join( regression_root, os.path.basename( sys.argv[0] ) )
+    log( 'Updating %s from %s...' % ( self, source )  )
     log( '    Checking modification dates...' )
-    if os.stat( sys.argv[0] ).st_mtime > os.stat( source ).st_mtime:
+    if os.stat( self ).st_mtime > os.stat( source ).st_mtime:
         log( 'Warning: The current version of script appears to be newer than the source.' )
         log( '         Update skipped.' )
     else:
         log( '    Saving a backup copy of the current script...' )
-        shutil.move( sys.argv[0], '%s~' % sys.argv[0] )
-        log( '    Replacing %s with a newer version...' % sys.argv[0] )
-        shutil.copy2( source, sys.argv[0] )
+        shutil.move( self, '%s~' % self )
+        log( '    Replacing %s with a newer version...' % self )
+        shutil.copy2( source, self )
 
 
 def send_mail( smtp_login, mail, subject, msg = '', debug_level = 0 ):
