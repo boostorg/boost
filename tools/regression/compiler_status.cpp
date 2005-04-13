@@ -55,6 +55,7 @@ namespace
   bool ignore_pass;
   bool no_warn;
   bool no_links;
+  bool boost_build_v2;
 
   fs::path jamfile_path;
 
@@ -337,6 +338,47 @@ const string & attribute_value( const xml::element & element,
         ++atr ) {}
   return atr == element.attributes.end() ? empty_string : atr->value;
 }
+
+  // Takes a relative path from boost root to a Jamfile.
+  // Returns the directory where the build targets from
+  // that Jamfile are located. If not found, emits a warning 
+  // and returns empty path.
+  const fs::path find_bin_path(const string& relative)
+  {
+    fs::path bin_path;
+    if (boost_build_v2)
+    {
+      bin_path = locate_root / "bin.v2" / relative;
+      if (!fs::exists(bin_path))
+      {
+        std::cerr << "warning: could not found build results for '" 
+                  << relative << "'.\n";
+        std::cerr << "warning: tried directory " 
+                  << bin_path.native_directory_string() << "\n";
+        bin_path = "";
+      }
+    }
+    else
+    {
+      bin_path = locate_root / "bin/boost" / relative;
+      if (!fs::exists(bin_path))
+      {
+        bin_path = locate_root / "bin" / relative / "bin";
+        if (!fs::exists(bin_path))
+        {
+          bin_path = fs::path( locate_root / relative / "bin" );
+        }
+      }
+      if (!fs::exists(bin_path))
+      {
+        std::cerr << "warning: could not found build results for '" 
+                  << relative << "'.\n";
+        bin_path = "";
+      }
+    }
+    return bin_path;
+  }
+
 
 //  generate_report  ---------------------------------------------------------//
 
@@ -655,17 +697,10 @@ const string & attribute_value( const xml::element & element,
         if ( pos == string::npos ) continue;
         string subinclude_bin_dir(
           line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
-//      std::cout << "subinclude: " << subinclude_bin_dir << '\n';
-        fs::path subinclude_path( locate_root / "bin/boost" / subinclude_bin_dir );
-        if ( fs::exists( subinclude_path ) )
-          { do_rows_for_sub_tree( subinclude_path, results ); continue; }
-        subinclude_path = fs::path( locate_root / "bin" 
-                                    / subinclude_bin_dir / "bin" );
-        if ( fs::exists( subinclude_path ) )
-          { do_rows_for_sub_tree( subinclude_path, results ); continue; }
-        subinclude_path = fs::path( locate_root / subinclude_bin_dir / "/bin" );
-        if ( fs::exists( subinclude_path ) )
-          { do_rows_for_sub_tree( subinclude_path, results ); }
+
+        fs::path bin_path = find_bin_path(subinclude_bin_dir);
+        if (!bin_path.empty())
+          do_rows_for_sub_tree( bin_path, results );
       }
     }
 
@@ -686,16 +721,8 @@ const string & attribute_value( const xml::element & element,
     // - Boost.Build V2 location with top-lelve "build-dir" 
     // - Boost.Build V1 location without ALL_LOCATE_TARGET
     string relative( fs::initial_path().string() );
-    relative.erase( 0, boost_root.string().size()+1 );
-    fs::path bin_path( locate_root / "bin/boost" / relative );
-    if (!fs::exists(bin_path))
-    {
-      bin_path = locate_root / "bin/status/bin";
-      if (!fs::exists(bin_path))
-      {
-        bin_path = fs::path( locate_root / relative / "bin" );
-      }
-    }
+    relative.erase( 0, boost_root.string().size()+1 );    
+    fs::path bin_path = find_bin_path(relative);
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
 
@@ -765,6 +792,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
       { notes_map_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
+    else if ( std::strcmp( argv[1], "--v2" ) == 0 ) boost_build_v2 = true;
     else if ( argc > 2 && std::strcmp( argv[1], "--jamfile" ) == 0)
       { jamfile_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
@@ -803,7 +831,10 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( locate_root.empty() ) locate_root = boost_root;
   
   if (jamfile_path.empty())
-    jamfile_path = "Jamfile";
+    if (boost_build_v2)
+      jamfile_path = "Jamfile.v2";
+    else
+      jamfile_path = "Jamfile";
   jamfile_path = fs::complete( jamfile_path, fs::initial_path() );
   jamfile.open( jamfile_path );
   if ( !jamfile )

@@ -31,6 +31,7 @@ namespace fs = boost::filesystem;
 
 static bool echo = false;
 static bool create_dirs = false;
+static bool boost_build_v2 = false;
 
 namespace
 {
@@ -138,25 +139,100 @@ namespace
         ? pos : s.find( "/", pos )) - pos_start );
   }
 
+  // Take a path to a target directory of test, and
+  // returns library name corresponding to that path.
   string test_path_to_library_name( string const& path )
   {
     std::string result;
     string::size_type start_pos( path.find( "libs/" ) );
     if ( start_pos != string::npos )
     {
-      start_pos += 5;
-      string::size_type end_pos( path.find( '/', start_pos ) );
-      result = path.substr( start_pos, end_pos - start_pos );
+      // The path format is ...libs/functional/hash/test/something.test/....      
+      // So, the part between "libs" and "test/something.test" can be considered
+      // as library name. But, for some libraries tests are located too deep,
+      // say numeric/ublas/test/test1 directory, and some libraries have tests
+      // in several subdirectories (regex/example and regex/test). So, nested
+      // directory may belong to several libraries.
 
-      // if a "sublibs" file exists, the library name includes the
-      // next level down directory name.
-      if ( fs::exists( ( boost_root / "libs" ) / result / "sublibs" ) )
+      // To disambituate, it's possible to place a 'sublibs' file in
+      // a directory. It means that child directories are separate libraries.
+      // It's still possible to have tests in the directory that has 'sublibs'
+      // file.
+
+      std::string interesting;
+      start_pos += 5;
+      string::size_type end_pos( path.find( ".test/", start_pos ) );
+      end_pos = path.rfind('/', end_pos);
+      if (path.substr(end_pos - 5, 5) == "/test")
+        interesting = path.substr( start_pos, end_pos - 5 - start_pos );
+      else
+        interesting = path.substr( start_pos, end_pos - start_pos );
+
+      // Take slash separate elements until we have corresponding 'sublibs'.
+      end_pos = 0;
+      for(;;)
       {
-        result += path.substr( end_pos, path.find( '/', end_pos+1 ) - end_pos );
+        end_pos = interesting.find('/', end_pos);
+        if (end_pos == string::npos) {
+          result = interesting;
+          break;
+        }
+        result = interesting.substr(0, end_pos);
+
+        if ( fs::exists( ( boost_root / "libs" ) / result / "sublibs" ) )
+        {
+          end_pos = end_pos + 1;
+        }
+        else
+          break;
       }
     }
 
     return result;
+  }
+
+  // Tries to find target name in the string 'msg', starting from 
+  // position start.
+  // If found, extract the directory name from the target name and
+  // stores it in 'dir', and return the position after the target name.
+  // Otherwise, returns string::npos.
+  string::size_type parse_skipped_msg_aux(const string& msg,
+                                          string::size_type start,
+                                          string& dir)
+  {
+    dir.clear();
+    string::size_type start_pos = msg.find( '<', start );
+    if ( start_pos == string::npos ) return string::npos;
+    ++start_pos;
+    string::size_type end_pos = msg.find( '>', start_pos );
+    dir += msg.substr( start_pos, end_pos - start_pos );
+    if ( boost_build_v2 )
+    {
+        // The first letter is a magic value indicating
+        // the type of grist.
+        convert_path_separators( dir );
+        dir.erase( 0, 1 );
+        // We need path from root, not from 'status' dir.
+        if (dir.find("../") == 0)
+          dir.erase(0,3);
+    }
+    else
+    {
+      if ( dir[0] == '@' )
+      {
+        // new style build path, rooted build tree
+        convert_path_separators( dir );
+        dir.replace( 0, 1, "bin/" );
+      }
+      else
+      {
+        // old style build path, integrated build tree
+        start_pos = dir.rfind( '!' );
+        convert_path_separators( dir );
+        dir.insert( dir.find( '/', start_pos + 1), "/bin" );
+      }
+    }
+    return end_pos;
   }
   
   // the format of paths is really kinky, so convert to normal form
@@ -168,47 +244,10 @@ namespace
   void parse_skipped_msg( const string & msg,
     string & first_dir, string & second_dir )
   {
-    first_dir.clear();
-    second_dir.clear();
-    string::size_type start_pos( msg.find( '<' ) );
-    if ( start_pos == string::npos ) return;
-    ++start_pos;
-    string::size_type end_pos( msg.find( '>', start_pos ) );
-    first_dir += msg.substr( start_pos, end_pos - start_pos );
-    if ( first_dir[0] == '@' )
-    {
-      // new style build path, rooted build tree
-      convert_path_separators( first_dir );
-      first_dir.replace( 0, 1, "bin/" );
-    }
-    else
-    {
-      // old style build path, integrated build tree
-      start_pos = first_dir.rfind( '!' );
-      convert_path_separators( first_dir );
-      first_dir.insert( first_dir.find( '/', start_pos + 1), "/bin" );
-    }
-//std::cout << first_dir << std::endl;
-
-    start_pos = msg.find( '<', end_pos );
-    if ( start_pos == string::npos ) return;
-    ++start_pos;
-    end_pos = msg.find( '>', start_pos );
-    second_dir += msg.substr( start_pos, end_pos - start_pos );
-    if ( second_dir[0] == '@' )
-    {
-      // new style build path, rooted build tree
-      convert_path_separators( second_dir );
-      second_dir.replace( 0, 1, "bin/" );
-    }
-    else
-    {
-      // old style build path, integrated build tree
-      start_pos = second_dir.rfind( '!' );
-      convert_path_separators( second_dir );
-      second_dir.insert( second_dir.find( '/', start_pos + 1), "/bin" );
-    }
-//std::cout << second_dir << std::endl;
+    string::size_type pos = parse_skipped_msg_aux(msg, 0, first_dir);
+    if (pos == string::npos)
+      return;
+    parse_skipped_msg_aux(msg, pos, second_dir);
   }
 
 //  test_log hides database details  -----------------------------------------//
@@ -440,7 +479,7 @@ namespace
 int cpp_main( int argc, char ** argv )
 {
   if ( argc <= 1 )
-    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [locate-root]\n"
+    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [--v2] [locate-root]\n"
                  "locate-root         - the same as the bjam ALL_LOCATE_TARGET\n"
                  "                      parameter, if any. Default is boost-root.\n"
                  "create-directories  - if the directory for xml file doesn't exists - creates it.\n"
@@ -473,6 +512,13 @@ int cpp_main( int argc, char ** argv )
       create_dirs = true;
       --argc; ++argv;
   } 
+
+  if ( argc > 1 && std::strcmp( argv[1], "--v2" ) == 0 )
+  {
+    boost_build_v2 = true;
+    --argc; ++argv;
+  }
+
 
   if (argc > 1)
   {
@@ -591,7 +637,7 @@ int cpp_main( int argc, char ** argv )
     }
 
     else if ( line.find( "execute-test" ) != string::npos 
-             || line.find( "testing.capture-output" ) != string::npos )
+             || line.find( "capture-output" ) != string::npos )
     {
       if ( line.find( "...failed " ) != string::npos )
       {
