@@ -243,8 +243,8 @@
             <mark-failure>
             <toolset name="borland*"/>
             <toolset name="msvc*"/>
-            <toolset name="mingw*"/>
             <toolset name="gcc-2.*"/>
+            <toolset name="tru64cxx65-042"/>
             <note author="B. Garst">The serialization library does not support this compiler.
             </note>
             </mark-failure>
@@ -254,8 +254,8 @@
             <mark-failure>
             <toolset name="borland*"/>
             <toolset name="msvc*"/>
-            <toolset name="mingw*"/>
             <toolset name="gcc-2.*"/>
+            <toolset name="tru64cxx65-042"/>
             <note author="B. Garst">The serialization library does not support this compiler.
             </note>
             </mark-failure>
@@ -302,6 +302,40 @@
                 <note author="B. Garst" refid="19,21"/>
             </mark-failure>
         </test>
+        <test name="testlocal_time_facet">
+            <mark-failure>
+            <toolset name="msvc"/>
+            <toolset name="mingw*"/>
+                <note author="J. Garland">
+                   Some older compilers are confused by the template code here.  
+                   These are new features to date-time in 1.33 and there is no
+                   plan to backport to these non-compliant compilers.
+                </note>
+            </mark-failure>
+        </test>
+
+        <test name="testlocal_time">
+            <mark-failure>
+            <toolset name="msvc"/>
+                <note author="J. Garland">
+                   Some older compilers are confused by the template code here.  
+                   These are new features to date-time in 1.33 and there is no
+                   plan to backport to these non-compliant compilers.
+                </note>
+            </mark-failure>
+        </test>
+
+        <test name="testtz_database">
+            <mark-failure>
+            <toolset name="msvc"/>
+                <note author="J. Garland">
+                   Some older compilers are confused by the template code here.  
+                   These are new features to date-time in 1.33 and there is no
+                   plan to backport to these non-compliant compilers.
+                </note>
+            </mark-failure>
+        </test>
+
         <test name="testtime_wstream">
             <mark-failure>
                 <toolset name="gcc"/>
@@ -310,7 +344,7 @@
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
                 <toolset name="borland-5_6_4"/>
-                <toolset name="mingw-3*"/>
+                <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
                 <note author="B. Garst" refid="19,21,22"/>
             </mark-failure>
