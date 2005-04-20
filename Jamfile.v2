@@ -138,7 +138,10 @@ rule tag ( name : type ? : property-set )
             name = [ stage.add-variant-and-compiler $(name) 
               : $(type) : $(property-set) ] ;
             
-            if [ $(property-set).get <os> ] = NT
+            # On NT, library with version suffix won't be recognized
+            # by linkers. On CYGWIN, we get strage duplicate symbol
+            # errors when library is generated with version suffix.
+            if [ $(property-set).get <os> ] in NT CYGWIN
             {
                 return $(name:B)_$(BOOST_VERSION)$(name:S) ;
             }
