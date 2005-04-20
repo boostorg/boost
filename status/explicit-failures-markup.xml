@@ -519,6 +519,20 @@
         </mark-unusable>
     </library>
 
+    <!-- functional/hash -->
+    <library name="functional/hash">
+        <mark-expected-failures>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note author="Daniel James">
+              hash_value is not overloaded for arrays for older versions
+              of Visual C++. There is a work around so that
+              boost::hash&lt;T[N]&gt; is still supported.
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- graph -->
     <library name="graph">
         <mark-unusable>
