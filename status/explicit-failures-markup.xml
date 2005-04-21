@@ -516,14 +516,24 @@
     <!-- functional/hash -->
     <library name="functional/hash">
         <mark-expected-failures>
+            <test name="hash_value_array_test"/>
             <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc7"/>
             <note author="Daniel James">
               hash_value is not overloaded for arrays for older versions
               of Visual C++. There is a work around so that
-              boost::hash&lt;T[N]&gt; is still supported.
+              boost::hash&lt;T[N]&gt;, boost::hash_combine and boost::hash_range
+              work.
             </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="hash_function_pointer_test"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note refid="2" author="Daniel James"/>
         </mark-expected-failures>
     </library>
 
