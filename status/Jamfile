@@ -15,6 +15,7 @@ DEPENDS all : test ;
 # Tests from Jamfiles in individual library test subdirectories
 # Please keep these in alphabetic order by test-suite name
 
+subinclude libs/any/test ;                 # test-suite any
 subinclude libs/algorithm/minmax/test ;    # test-suite algorithm/minmax
 subinclude libs/algorithm/string/test ;    # test-suite algorithm/string
 subinclude libs/assign/test ;              # test-suite assign
@@ -89,8 +90,6 @@ subinclude libs/wave/test/build ;          # test-suite wave
           [ compile-fail libs/config/test/threads/test_thread_fail1.cpp ]
           [ compile-fail libs/config/test/threads/test_thread_fail2.cpp ]
         ;
-
-    run libs/any/any_test.cpp ;
 
     test-suite array
         : [ run libs/array/array1.cpp ]
