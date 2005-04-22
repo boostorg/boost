@@ -206,13 +206,13 @@
         </test>
         <test name="test_thread_fail1">
             <mark-failure>
-                <toolset name="sunpro- 5_3"/>
+                <toolset name="sunpro-5_3"/>
                 <note author="J. Maddock" refid="3"/>
             </mark-failure>
         </test>
         <test name="test_thread_fail2">
             <mark-failure>
-                <toolset name="sunpro- 5_3"/>
+                <toolset name="sunpro-5_3"/>
                 <note author="J. Maddock" refid="3"/>
             </mark-failure>
         </test>
@@ -1777,6 +1777,12 @@ for more information.
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
+        <test name="static_assert_example_2">
+            <mark-failure>
+                <toolset name="sunpro-5_3"/>
+                <note author="J. Maddock" refid="4"/>
+            </mark-failure>
+        </test>
     </library>
 
     <!-- test -->
@@ -1909,11 +1915,18 @@ for more information.
                 details).
             </note>
         </mark-expected-failures>
-        <test name="tricky_incomplete_type_test">
-            <mark-failure>
-                <toolset name="borland-5_6_4"/>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="tricky_incomplete_type_test"/>
+            <test name="decay_test"/>
+            <test name="extent_test"/>
+            <test name="is_base_of_test"/>
+            <test name="rank_test"/>
+            <test name="remove_all_extents_test"/>
+            <test name="remove_extent_test"/>
+            <test name="tricky_function_type_test"/>
+            <toolset name="borland-5_6_4"/>
+            <note author="John Maddock" refid="2"/>
+        </mark-expected-failures>
         <test name="tricky_is_enum_test">
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
@@ -1933,12 +1946,64 @@ for more information.
                 <toolset name="gcc-2*"/>
                 <toolset name="gcc-3.2*"/>
                 <toolset name="gcc-3.3*"/>
+                <toolset name="sunpro-5_3"/>
+                <toolset name="tru64cxx65-042"/>
+                <toolset name="darwin"/>
                 <note author="Aleksey Gurtovoy">
                     This functionality is available only on compilers that implement C++ Core Language
                     <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#337">Defect Report 337</a>.
                 </note>
             </mark-failure>
         </test>
+        <mark-expected-failures>
+            <test name="decay_test"/>
+            <test name="extent_test"/>
+            <test name="has_nothrow_assign_test"/>
+            <test name="has_nothrow_constr_test"/>
+            <test name="has_nothrow_copy_test"/>
+            <test name="has_trivial_assign_test"/>
+            <test name="has_trivial_constr_test"/>
+            <test name="has_trivial_copy_test"/>
+            <test name="has_trivial_destructor_test"/>
+            <test name="is_array_test"/>
+            <test name="is_base_and_derived_test"/>
+            <test name="is_base_of_test"/>
+            <test name="is_class_test"/>
+            <test name="is_convertible_test"/>
+            <test name="is_object_test"/>
+            <test name="is_pod_test"/>
+            <test name="is_polymorphic_test"/>
+            <test name="rank_test"/>
+            <test name="remove_all_extents_test"/>
+            <test name="remove_bounds_test"/>
+            <test name="remove_extent_test"/>
+            <toolset name="sunpro-5_3"/>
+            
+            <note author="John Maddock">
+                The Type Traits library is broken when used with Sunpro-5.3 and the
+                argument to the template is an array or function type.  Most other argument types
+                do work as expected: in other words the functionality is limited
+                with this compiler, but not so much as to render the library unuseable.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="is_empty_test"/>
+            <test name="is_function_test"/>
+            <test name="is_member_func_test"/>
+            <test name="is_member_obj_test"/>
+            <test name="is_reference_test"/>
+            <test name="tricky_function_type_test"/>
+            <test name="tricky_incomplete_type_test"/>
+            <test name="tricky_is_enum_test"/>
+            <toolset name="sunpro-5_3"/>
+            <note author="John Maddock" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="tricky_function_type_test"/>
+            <test name="is_convertible_test"/>
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <note author="John Maddock" refid="2"/>
+        </mark-expected-failures>
     </library>
 
 
