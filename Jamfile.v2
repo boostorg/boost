@@ -138,24 +138,27 @@ rule tag ( name : type ? : property-set )
             name = [ stage.add-variant-and-compiler $(name) 
               : $(type) : $(property-set) ] ;
             
+            local version-tag = [ MATCH "^([^.]+)[.]([^.]+)" : $(BOOST_VERSION[1]) ] ;
+            version-tag = $(version-tag:J="_") ;
+            
             # On NT, library with version suffix won't be recognized
             # by linkers. On CYGWIN, we get strage duplicate symbol
             # errors when library is generated with version suffix.
             if [ $(property-set).get <os> ] in NT CYGWIN
             {
-                return $(name:B)_$(BOOST_VERSION)$(name:S) ;
+                return $(name:B)-$(version-tag)$(name:S) ;
             }
             else
             {
-                return $(name:B)_$(BOOST_VERSION)$(name:S).$(BOOST_VERSION)  ;
-            }                                                  
+                return $(name:B)-$(version-tag)$(name:S).$(BOOST_VERSION)  ;
+            }
         }
         else
         {
             return [ stage.add-variant-and-compiler $(name) 
               : $(type) : $(property-set) ] ;
-        }        
-    }                   
+        }
+    }
 }
 
 # Install to system location.
