@@ -588,6 +588,7 @@ def update_itself( **unused ):
         log( '         Update skipped.' )
     else:
         log( '    Saving a backup copy of the current script...' )
+        os.chmod( self, stat.S_IWRITE ) # Win32 workaround
         shutil.move( self, '%s~' % self )
         log( '    Replacing %s with a newer version...' % self )
         shutil.copy2( source, self )
