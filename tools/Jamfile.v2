@@ -37,3 +37,13 @@ install dist-lib
     :
     release
     ;
+
+local patterns = *.dtd *.xml *.xsl LICENSE ;
+local dirs = boostbook/dtd boostbook/xsl ;
+install dist-share-boostbook
+    :
+    [ glob $(dirs)/$(patterns) $(dirs)/*/$(patterns) $(dirs)/*/*/$(patterns) ]
+    :
+    <location>../dist/share
+    <install-source-root>.
+    ;
