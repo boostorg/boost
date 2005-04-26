@@ -1759,11 +1759,24 @@ for more information.
                 <note author="J. Maddock"/>
             </mark-failure>
         </test>
+        <test name="concept_check">
+            <mark-failure>
+                <toolset name="vc-8_0"/>
+                <toolset name="sunpro-5_3"/>
+                <toolset name="tru64cxx65-042"/>
+                <note author="John Maddock"/ refid="2">
+            </mark-failure>
+        </test>
         <mark-expected-failures>
-            <test name="regex_regress*"/>
-            <test name="regex_wide_regress*"/>
-            <toolset name="vc-8_0"/>
-            <note author="Aleksey Gurtovoy" refid="6"/>
+            <test name="regex_regress"/>
+            <test name="regex_regress_dll"/>
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <note author="John Maddock" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="unicode_iterator_test"/>
+            <toolset name="borland-5_6_4"/>
+            <note author="John Maddock" refid="6"/>
         </mark-expected-failures>
     </library>
 
@@ -1941,6 +1954,7 @@ for more information.
             <test name="rank_test"/>
             <test name="is_unsigned_test"/>
             <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
             <toolset name="vc7"/>
             <note author="Aleksey Gurtovoy">
                 This failure is caused by the lack of compiler support for class template
