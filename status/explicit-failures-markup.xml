@@ -164,6 +164,25 @@
             <toolset name="intel-7.1-stdlib-default-linux"/>
             <note refid="2" author="Aleksey Gurtovoy"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bind_dm2_test"/>
+            <test name="mem_fn_dm_test"/>
+            <toolset name="msvc*"/>
+            <toolset name="vc7"/>
+            <toolset name="cw-8_3"/>
+            <note refid="31" author="Peter Dimov"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bind_dm_test"/>
+            <toolset name="msvc*"/>
+            <toolset name="sunpro-5_3"/>
+            <note refid="31" author="Peter Dimov"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="mem_fn_derived_test"/>
+            <toolset name="sunpro-5_3"/>
+            <note refid="31" author="Peter Dimov"/>
+        </mark-expected-failures>
     </library>
 
 
@@ -1015,6 +1034,17 @@ for more information.
             <test name="test_smart_cast"/>
             <toolset name="intel-7.1-linux"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
+        </mark-expected-failures>
+    </library>
+
+
+    <!-- smart_ptr -->
+    <library name="smart_ptr">
+        <mark-expected-failures>
+            <test name="shared_ptr_assign_fail"/>
+            <toolset name="gcc-2.9*"/>
+            <toolset name="sunpro-5_3"/>
+            <note refid="32" author="Peter Dimov"/>
         </mark-expected-failures>
     </library>
 
@@ -2253,9 +2283,21 @@ for more information.
     </note>
 
     <note id="30">
-        The support for this deficient compiler will be dropped staring
+        The support for this deficient compiler will be dropped starting
         from Boost 1.33.0 release. Please use one of the previous Boost
         releases if you need the library to work on this compiler.
+    </note>
+
+    <note id="31">
+        This failure is caused by compiler bugs or limitations. Some advanced
+        or esoteric library features may be unavailable or only partially available.
+        This does not impact most common uses of the library.
+    </note>
+
+    <note id="32">
+        This failure is caused by a compiler bug. Certain code constructs that should
+        fail compilation are accepted by the compiler. This can mask some programming
+        errors, but does not impact the usability of the library.
     </note>
 
 </explicit-failures-markup>
