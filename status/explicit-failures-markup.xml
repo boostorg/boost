@@ -2059,7 +2059,18 @@ for more information.
             <test name="tricky_function_type_test"/>
             <test name="is_convertible_test"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <toolset name="gcc-2.95.3-linux"/>
             <note author="John Maddock" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="aligned_storage_test"/>
+            <toolset name="cw-8_3"/>
+            <note author="John Maddock">
+               Older versions of MWCW incorrectly align pointers to member functions
+               (they use 12-byte boundaries, rather than a power-of-2 boundary), 
+               leading to alignment_of / aligned_storage
+               to fail with these types on this compiler.
+            </note>
         </mark-expected-failures>
     </library>
 
