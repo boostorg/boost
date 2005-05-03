@@ -270,7 +270,6 @@
 
         <test name="testgreg_serialize*">
             <mark-failure>
-            <toolset name="borland*"/>
             <toolset name="msvc*"/>
             <toolset name="gcc-2.*"/>
             <toolset name="tru64cxx65-042"/>
@@ -282,7 +281,6 @@
 
         <test name="testtime_serialize*">
             <mark-failure>
-            <toolset name="borland*"/>
             <toolset name="msvc*"/>
             <toolset name="gcc-2.*"/>
             <toolset name="tru64cxx65-042"/>
@@ -337,6 +335,7 @@
         <test name="testlocal_time_facet">
             <mark-failure>
             <toolset name="msvc"/>
+            <toolset name="vc7"/>
             <toolset name="mingw*"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
@@ -356,6 +355,45 @@
                 </note>
             </mark-failure>
         </test>
+
+        <test name="testclocks">
+            <mark-failure>
+            <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="msvc"/>
+                <note author="J. Garland">
+                   Some older compilers are confused by the template code here.  
+                   These are new features to date-time in 1.33 and there is no
+                   plan to backport to these non-compliant compilers.
+                </note>
+            </mark-failure>
+        </test>
+
+        <test name="testlocal_time_input_facet">
+            <mark-failure>
+            <toolset name="vc7"/>
+            <toolset name="msvc"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="tru64cxx65-042"/>
+                <note author="J. Garland">
+                   Some older compilers are confused by the template code here.  
+                   These are new features to date-time in 1.33 and there is no
+                   plan to backport to these non-compliant compilers.
+                </note>
+            </mark-failure>
+        </test>
+
+        <test name="testfacet*">
+            <mark-failure>
+            <toolset name="tru64cxx65-042"/>
+                <note author="J. Garland">
+                   There something non-standard about the tru64 standard library which 
+                   is preventing these tests from compiling.
+                </note>
+            </mark-failure>
+        </test>
+
+
 
         <test name="testtz_database">
             <mark-failure>
@@ -402,6 +440,7 @@
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
                 <toolset name="mingw*"/>
+                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,19"/>
             </mark-failure>
         </test>
@@ -413,6 +452,7 @@
                 <toolset name="msvc"/>
                 <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
+                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,19"/>
             </mark-failure>
             <mark-failure>
@@ -436,6 +476,7 @@
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="msvc"/>
                 <toolset name="vc7"/>
+                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,20"/>
             </mark-failure>
         </test>
