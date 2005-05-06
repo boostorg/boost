@@ -65,6 +65,23 @@
         </mark-unusable>
     </library>
 
+    <!-- any -->
+    <library name="any">
+        <test name="any_to_ref_test">
+          <mark-failure>
+              <toolset name="msvc"/>
+              <toolset name="msvc-stlport"/>
+              <note author="Vladimir Prus">
+                The test fail with ICE, but the exact reason for ICE is not
+                known. A minimal example of casting any to reference type 
+                seem to work. Anyone interested in using this functionality
+                with msvc is suggested to do additional testing.
+              </note>
+          </mark-failure>
+        </test>
+    </library>
+    
+
     <!-- array -->
     <library name="array">
         <test name="array3">
