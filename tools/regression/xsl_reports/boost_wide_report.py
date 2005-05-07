@@ -79,7 +79,8 @@ def list_ftp( f ):
     # 2. split lines into words
     word_lines = [ x.split( None, 8 ) for x in lines ]
 
-    result = [ file_info( l[-1], None, get_date( l ) ) for l in word_lines ]
+    # we don't need directories
+    result = [ file_info( l[-1], None, get_date( l ) ) for l in word_lines if l[0][0] != "d" ]
     for f in result:
         utils.log( "    %s" % f )
     return result
@@ -87,15 +88,12 @@ def list_ftp( f ):
 def list_dir( dir ):
     utils.log( "listing destination content %s" % dir )
     result = []
-    for file_name in  os.listdir( dir ):
-        file_path = os.path.join( dir, file_name )
+    for file_path in glob.glob( os.path.join( dir, "*.zip" ) ):
         if os.path.isfile( file_path ):
-            # print f, time.localtime( os.path.getmtime( f ) )
             mod_time = time.localtime( os.path.getmtime( file_path ) )
-            # no wday, yday and isdst
-            mod_time = ( mod_time[0], mod_time[1], mod_time[2], mod_time[3], mod_time[4], mod_time[5], 0, 0, 0 )
+            mod_time = ( mod_time[0], mod_time[1], mod_time[2], mod_time[3], mod_time[4], mod_time[5], 0, 0, mod_time[8] )
             # no size (for now)
-            result.append( file_info( file_name, None, mod_time ) )
+            result.append( file_info( os.path.basename( file_path ), None, mod_time ) )
     for fi in result:
         utils.log( "    %s" % fi )
     return result
@@ -106,53 +104,65 @@ def find_by_name( d, name ):
             return dd
     return None
 
-def diff( s, d ):
-    utils.log( "Finding files to copy" )
-    result = []
-    for source in s:
-        found = find_by_name( d, source.name )
-        if found is None: result.append( source.name )
-        elif found.date != source.date: result.append( source.name )
+def diff( source_dir_content, destination_dir_content ):
+    utils.log( "Finding updated files" )
+    result = ( [], [] ) # ( changed_files, obsolete_files )
+    for source_file in source_dir_content:
+        found = find_by_name( destination_dir_content, source_file.name )
+        if found is None: result[0].append( source_file.name )
+        elif time.mktime( found.date ) != time.mktime( source_file.date ): result[0].append( source_file.name )
         else:
             pass
-    for f in result:
+    for destination_file in destination_dir_content:
+        found = find_by_name( source_dir_content, destination_file.name )
+        if found is None: result[1].append( destination_file.name )
+    utils.log( "   Updated files:" )
+    for f in result[0]:
+        utils.log( "    %s" % f )
+    utils.log( "   Obsolete files:" )
+    for f in result[1]:
         utils.log( "    %s" % f )
     return result
         
         
 def ftp_task( site, site_path , destination ):
-    utils.log( 'Execting ftp from "ftp://%s/%s" -> %s' % ( site, site_path, destination ) )
+    __log__ = 1
+    utils.log( '' )
+    utils.log( 'ftp_task: "ftp://%s/%s" -> %s' % ( site, site_path, destination ) )
 
-    utils.log( '   logging on ftp site %s' % site )
+    utils.log( '    logging on ftp site %s' % site )
     f = ftplib.FTP( site )
     f.login()
-    utils.log( '   cwd to "%s"' % site_path )
+    utils.log( '    cwd to "%s"' % site_path )
     f.cwd( site_path )
 
     source_content = list_ftp( f )
-    #print "\n".join( [ "%s" % x for x in source_content ] )
-
-    # print ""
-    
     destination_content = list_dir( destination )
-    # print "\n".join( [ "%s" % x for x in destination_content ] )
-
     d = diff( source_content, destination_content )
 
-    utils.log( "Copying update files" )
-    for source in d:
-        utils.log( 'Copying "%s"' % source )
-        result = open( os.path.join( destination, source ), 'wb' )
-        f.retrbinary( 'RETR %s' % source, result.write )
-        result.close()
-        m = time.mktime( find_by_name( source_content, source ).date )
-        os.utime( os.path.join( destination, source ), ( m, m ) )
+    def synchronize():
+        for source in d[0]:
+            utils.log( 'Copying "%s"' % source )
+            result = open( os.path.join( destination, source ), 'wb' )
+            f.retrbinary( 'RETR %s' % source, result.write )
+            result.close()
+            mod_date = find_by_name( source_content, source ).date
+            m = time.mktime( mod_date )
+            os.utime( os.path.join( destination, source ), ( m, m ) )
 
+        for obsolete in d[1]:
+            utils.log( 'Deleting "%s"' % obsolete )
+            os.unlink( os.path.join( destination, obsolete ) )
+
+    utils.log( "    Synchronizing..." )
+    __log__ = 2
+    synchronize()
+    
     f.quit()        
     
 
 
-def sync_dirs( file_mask, source_dir, destination_dir, timestamp, do_sync ):
+def sync_dirs( file_mask, source_dir, destination_dir, timestamp, do_sync, do_unlink ):
     utils.makedirs( destination_dir )
     files = glob.glob( os.path.join( source_dir, file_mask ) )
     for src in files:
@@ -163,13 +173,23 @@ def sync_dirs( file_mask, source_dir, destination_dir, timestamp, do_sync ):
         else:
             src_timestamp = timestamp( src )
             dst_timestamp = timestamp( dst )
-            utils.log( '    "%s" [%s] <-> "%s" [%s]' % ( src, src_timestamp, dst, dst_timestamp ) )
+            common_path = os.path.commonprefix( [ src, dst ] )
+            shortened_src = src[ len( common_path ): ]
+            shortened_dst = dst[ len( common_path ): ]
+            utils.log( '     "%s" [%s] -> >"%s" [%s]' % ( shortened_src, src_timestamp, shortened_dst, dst_timestamp ) )
             if timestamp( src ) != timestamp( dst ):
                 do_sync( src )
-
-
+    files = glob.glob( os.path.join( destination_dir, file_mask ) )
+    for dst in files:
+        src = os.path.join( source_dir, os.path.basename( dst ) )
+        if not os.path.exists( src ):
+            utils.log( '    "%s" <-> "%s" [doesn\'t exist]' % ( dst, src ) )
+            do_unlink( dst )
+                
 def sync_archives_task( source_dir, processed_dir, unzip_func ):
-
+    utils.log( '' )
+    utils.log( 'sync_archives_task: unpacking updated archives in "%s"...' % source_dir )
+    __log__ = 1
     def _modtime_timestamp( file ):
         return os.stat( file ).st_mtime
 
@@ -182,18 +202,30 @@ def sync_archives_task( source_dir, processed_dir, unzip_func ):
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( zip_file, msg ) )
 
-    utils.log( 'Unpacking updated archives in "%s"...' % source_dir )
+    def _unlink( zip_file ):
+        processed_file = os.path.join( processed_dir, zip_file )
+        xml_file = os.path.join( source_dir, os.path.splitext( os.path.basename( zip_file ) )[0] + ".xml" )
+        utils.log( '  Deleting obsolete "%s"' % xml_file )
+        os.unlink( xml_file )
+        utils.log( '  Deleting obsolete "%s"' % processed_file )
+        os.unlink( processed_file )
+        
+            
     sync_dirs(
           '*.zip'
         , source_dir
         , processed_dir
         , _modtime_timestamp
         , _unzip
+        , _unlink
         )
 
 
 
 def sync_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file ):    
+    utils.log( '' )
+    utils.log( 'sync_xmls_task: processing updated XMLs in "%s"...' % source_dir )
+    __log__ = 1
 
     def _xml_timestamp( xml_path ):
 
@@ -226,14 +258,20 @@ def sync_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file
         utils.log( '  Copying "%s" into "%s"' % ( xml, processed_dir ) )
         shutil.copy2( xml, processed_dir )
 
+    def _unlink( xml ):
+        processed_xml_file = os.path.join( merged_dir, os.path.basename( xml ) )
+        utils.log( '  Deleting obsolete "%s"' % xml )
+        os.unlink( xml )
+        utils.log( '  Deleting obsolete "%s"' % processed_xml_file )
+        os.unlink( processed_xml_file )
 
-    utils.log( 'Processing updated XMLs in "%s"...' % source_dir )
     sync_dirs(
           '*.xml'
         , source_dir
         , processed_dir
         , _xml_timestamp
         , _process_updated_xml
+        , _unlink
         )
 
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
@@ -246,18 +284,21 @@ class xmlgen( xml.sax.saxutils.XMLGenerator ):
 
 
 def merge_processed_test_runs( test_runs_dir, tag, writer ):
+    utils.log( '' )
+    utils.log( 'merge_processed_test_runs: merging processed test runs into a single XML... %s' % test_runs_dir )
+    __log__ = 1
+    
     all_runs_xml = xmlgen( writer )
     all_runs_xml.startDocument()
     all_runs_xml.startElement( 'all-test-runs', {} )
-
-    utils.log( 'Merging processed test runs into a single XML... %s' % test_runs_dir )
+    
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
         try:
-            utils.log( '  Writing "%s" into the resulting XML...' % test_run )
+            utils.log( '    Writing "%s" into the resulting XML...' % test_run )
             xml.sax.parse( test_run, all_runs_xml  )
         except Exception, msg:
-            utils.log( '  Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
+            utils.log( '    Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
 
     all_runs_xml.endElement( 'all-test-runs' )
     all_runs_xml.endDocument()
@@ -342,17 +383,26 @@ def timestamps_different( f1, f2 ):
 
 def make_links_task( input_dir, output_dir, tag, run_date, comment_file, extended_test_results, failures_markup_file ):
 
-    input_files = glob.glob( os.path.join( input_dir, "*.xml" ) )
+    def find_by_name( file_paths, name ):
+        try:
+            pos = [ os.path.basename( x ).lower() for x in file_paths ].index( name.lower() )
+            return file_paths[pos]
+        except ValueError, e: # not found
+            return None
+        
+    input_file_paths = glob.glob( os.path.join( input_dir, "*.xml" ) )
+    existing_file_paths = glob.glob( os.path.join( input_dir, "*.links" ) )
+    
     links = os.path.join( output_dir, 'links.html' )
-    for input_file in input_files:
-        stamp_file = input_file + ".links"
+    for input_file_path in input_file_paths:
+        stamp_file_path = input_file_path + ".links"
 
-        if timestamps_different( input_file, stamp_file ):
+        if timestamps_different( input_file_path, stamp_file_path ):
             utils.makedirs( os.path.join( output_dir, 'output' ) )
             utils.log( '    Making test output files...' )
             utils.libxslt( 
                   utils.log
-                , input_file
+                , input_file_path
                 , xsl_path( 'links_page.xsl' )
                 , links
                 , {
@@ -362,8 +412,13 @@ def make_links_task( input_dir, output_dir, tag, run_date, comment_file, extende
                     , 'explicit_markup_file':   failures_markup_file
                     }
                 )
-        stamp( stamp_file, input_file )
+        stamp( stamp_file_path, input_file_path )
 
+    for existing_file_path in existing_file_paths:
+        existing_file_name = os.path.basename( existing_file_path )
+        if not find_by_name( input_file_paths, os.path.splitext( existing_file_name )[0]  ):
+            utils.log( 'Deleting obsolete "%s"' % existing_file_name )
+            os.unlink( existing_file_path )
          
     return links
 
