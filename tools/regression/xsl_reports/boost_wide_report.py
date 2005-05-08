@@ -246,7 +246,7 @@ class make_links_action( action ):
         self.links_file_path_ = os.path.join( output_dir, 'links.html' )
         
     def update( self ):
-        utils.makedirs( os.path.dirname( self.links_file_path_ ) )
+        utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "output" ) )
         utils.log( '    Making test output files...' )
         utils.libxslt( 
             utils.log
