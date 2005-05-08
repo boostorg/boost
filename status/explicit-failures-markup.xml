@@ -287,22 +287,38 @@
 
         <test name="testgreg_serialize*">
             <mark-failure>
-            <toolset name="msvc*"/>
+            <toolset name="cw-8_3*"/>
             <toolset name="gcc-2.*"/>
-            <toolset name="tru64cxx65-042"/>
-            <toolset name="vc7"/>
+            <toolset name="*como-4_3_3*"/>
             <note author="B. Garst">The serialization library does not support this compiler.
+            </note>
+            </mark-failure>
+        </test>
+
+        <test name="testgreg_serialize_xml">
+            <mark-failure>
+            <toolset name="msvc*"/>
+            <toolset name="vc7"/>
+            <note author="J. Garland">XML serialization is not supported on this compiler.
             </note>
             </mark-failure>
         </test>
 
         <test name="testtime_serialize*">
             <mark-failure>
-            <toolset name="msvc*"/>
+            <toolset name="cw-8_3*"/>
             <toolset name="gcc-2.*"/>
-            <toolset name="tru64cxx65-042"/>
-            <toolset name="vc7"/>
+            <toolset name="*como-4_3_3*"/>
             <note author="B. Garst">The serialization library does not support this compiler.
+            </note>
+            </mark-failure>
+        </test>
+
+        <test name="testtime_serialize_xml">
+            <mark-failure>
+            <toolset name="msvc*"/>
+            <toolset name="vc7"/>
+            <note author="J. Garland">XML serialization is not supported on this compiler.
             </note>
             </mark-failure>
         </test>
@@ -349,11 +365,13 @@
                 <note author="B. Garst" refid="19,21"/>
             </mark-failure>
         </test>
+
         <test name="testlocal_time_facet">
             <mark-failure>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="cw-8_3*"/>
             <toolset name="msvc"/>
             <toolset name="vc7"/>
-            <toolset name="mingw*"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
                    These are new features to date-time in 1.33 and there is no
@@ -377,8 +395,9 @@
 
         <test name="testclocks">
             <mark-failure>
-            <toolset name="gcc-2.95.3-linux"/>
             <toolset name="borland-5_6_4"/>
+            <toolset name="cw-8_3*"/>
+            <toolset name="gcc-2.95.3-linux"/>
             <toolset name="msvc"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
@@ -390,11 +409,11 @@
 
         <test name="testlocal_time_input_facet">
             <mark-failure>
-            <toolset name="vc7"/>
-            <toolset name="msvc"/>
             <toolset name="borland-5_6_4"/>
+            <toolset name="cw-8_3*"/>
+            <toolset name="msvc"/>
             <toolset name="gcc-2.95.3-linux"/>
-            <toolset name="tru64cxx65-042"/>
+            <toolset name="vc7"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
                    These are new features to date-time in 1.33 and there is no
@@ -405,10 +424,10 @@
 
         <test name="testtime_input_facet">
             <mark-failure>
-            <toolset name="vc7"/>
-            <toolset name="msvc"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="msvc"/>
+            <toolset name="vc7"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
                    These are new features to date-time in 1.33 and there is no
@@ -419,9 +438,10 @@
 
         <test name="testcustom_time_zone">
             <mark-failure>
-            <toolset name="msvc"/>
-            <toolset name="gcc-2.95.3-linux"/>
             <toolset name="borland-5_6_4"/>
+            <toolset name="cw-8_3*"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="msvc"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
                    These are new features to date-time in 1.33 and there is no
@@ -432,9 +452,10 @@
 
         <test name="testposix_time_zone">
             <mark-failure>
-            <toolset name="msvc"/>
             <toolset name="borland-5_6_4"/>
+            <toolset name="cw-8_3*"/>
             <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="msvc"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
                    These are new features to date-time in 1.33 and there is no
@@ -453,10 +474,10 @@
             </mark-failure>
         </test>
 
-
-
         <test name="testtz_database">
             <mark-failure>
+            <toolset name="cw-8_3"/>
+            <toolset name="borland-5_6_4"/>
             <toolset name="msvc"/>
                 <note author="J. Garland">
                    Some older compilers are confused by the template code here.  
@@ -468,7 +489,6 @@
 
         <test name="testtime_wstream">
             <mark-failure>
-                <toolset name="gcc"/>
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
@@ -480,6 +500,7 @@
                 <note author="B. Garst" refid="19,21,22"/>
             </mark-failure>
         </test>
+
         <test name="testtime_wstream_std_config">
             <mark-failure>
                 <toolset name="gcc"/>
@@ -507,7 +528,6 @@
         <test name="testfacet_dll">
             <mark-failure>
                 <toolset name="gcc-2.95.3-linux"/>
-                <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
                 <toolset name="mingw*"/>
@@ -520,15 +540,9 @@
                 <note author="R. Rivera" refid="25"/>
             </mark-failure>
         </test>
-        <test name="testday_dll">
-            <mark-failure>
-                <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
-            </mark-failure>
-        </test>
         <test name="testgreg_year_dll">
             <mark-failure>
                 <toolset name="*como-4_3_3*"/>
-                <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             </mark-failure>
         </test>
         <test name="testparse_date">
@@ -552,10 +566,8 @@
             <mark-failure>
                 <toolset name="gcc"/>
                 <toolset name="gcc-2.95.3-linux"/>
-                <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="msvc"/>
-                <toolset name="cw-8_3*"/>
                 <toolset name="vc7"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="mingw-3*"/>
@@ -567,14 +579,12 @@
         </test>
         <test name="testdate_dll">
             <mark-failure>
-                <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
                 <toolset name="*como-4_3_3*"/>
                 <note author="J. Garland" date="30 Jan 2004" id="24"/>
             </mark-failure>
         </test>
         <test name="testgreg_day_dll">
             <mark-failure>
-                <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
                 <toolset name="*como-4_3_3*"/>
                 <note author="J. Garland" date="30 Jan 2004" id="24"/>
             </mark-failure>
