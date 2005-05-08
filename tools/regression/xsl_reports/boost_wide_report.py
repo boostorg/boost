@@ -124,7 +124,159 @@ def diff( source_dir_content, destination_dir_content ):
         utils.log( "    %s" % f )
     return result
         
+def _modtime_timestamp( file ):
+    return os.stat( file ).st_mtime
+                
+
+root_paths = []
+
+def shorten( file_path ):
+    root_paths.sort( lambda x, y: cmp( len(y ), len( x ) ) )
+    for root in root_paths:
+        if file_path.lower().startswith( root.lower() ):
+            return file_path[ len( root ): ].replace( "\\", "/" )
+    return file_path.replace( "\\", "/" )
+
+class action:
+    def __init__( self, file_path ):
+        self.file_path_ = file_path
+        self.relevant_paths_ = [ self.file_path_ ]
+        self.boost_paths_ = []
+        self.dependencies_ = []
+        self.other_results_ = []
+
+    def run( self ):
+        utils.log( "%s: run" % shorten( self.file_path_ ) )
+        __log__ = 2
+
+        for dependency in self.dependencies_:
+            if not os.path.exists( dependency ):
+                utils.log( "%s doesn't exists, removing target" % shorten( dependency ) )
+                self.clean()
+                return
+
+        if not os.path.exists( self.file_path_ ):
+            utils.log( "target doesn't exists, building" )            
+            self.update()
+            return
+
+        dst_timestamp = _modtime_timestamp( self.file_path_ )
+        utils.log( "    target: %s [%s]" % ( shorten( self.file_path_ ),  dst_timestamp ) )
+        needs_updating = 0
+        utils.log( "    dependencies:" )
+        for dependency in  self.dependencies_:
+            dm = _modtime_timestamp( dependency )
+            update_mark = ""
+            if dm > dst_timestamp:
+                needs_updating = 1
+            utils.log( '        %s [%s] %s' % ( shorten( dependency ), dm, update_mark ) )
+            
+        if  needs_updating:
+            utils.log( "target needs updating, rebuilding" )            
+            self.update()
+            return
+        else:
+            utils.log( "target is up-to-date" )            
+
+
+    def clean( self ):
+        to_unlink = self.other_results_ + [ self.file_path_ ]
+        for result in to_unlink:
+            utils.log( '  Deleting obsolete "%s"' % shorten( result ) )
+            if os.path.exists( result ):
+                os.unlink( result )
+    
+class merge_xml_action( action ):
+    def __init__( self, source, destination, expected_results_file, failures_markup_file ):
+        action.__init__( self, destination )
+        self.source_ = source
+        self.destination_ = destination
         
+        self.expected_results_file_ = expected_results_file
+        self.failures_markup_file_  = failures_markup_file
+
+        self.dependencies_.extend( [
+            self.source_
+            , self.expected_results_file_
+            , self.failures_markup_file_
+            ]
+            )
+
+        self.relevant_paths_.extend( [ self.source_ ] )
+        self.boost_paths_.extend( [ self.expected_results_file_, self.failures_markup_file_ ] ) 
+        
+    def update( self ):
+        utils.log( 'Merging "%s" with expected results...' % shorten( self.source_ ) )
+        utils.libxslt( 
+            utils.log
+            , self.source_
+            , xsl_path( 'add_expected_results.xsl' )
+            , os.path.join( self.file_path_ )
+            , {
+              "expected_results_file" : self.expected_results_file_
+              , "failures_markup_file": self.failures_markup_file_
+              }
+            )
+        
+    def _xml_timestamp( xml_path ):
+
+        class timestamp_reader( xml.sax.handler.ContentHandler ):
+            def startElement( self, name, attrs ):
+                if name == 'test-run':
+                    self.timestamp = attrs.getValue( 'timestamp' )
+                    raise self
+
+        try:
+            xml.sax.parse( xml_path, timestamp_reader() )
+            raise 'Cannot extract timestamp from "%s". Invalid XML file format?' % xml_path
+        except timestamp_reader, x:
+            return x.timestamp
+
+
+class make_links_action( action ):
+    def __init__( self, source, destination, output_dir, tag, run_date, comment_file, failures_markup_file ):
+        action.__init__( self, destination )
+        self.dependencies_.append( source )
+        self.source_ = source
+        self.output_dir_ = output_dir
+        self.tag_        = tag
+        self.run_date_   = run_date 
+        self.comment_file_ = comment_file
+        self.failures_markup_file_ = failures_markup_file
+        self.links_file_path_ = os.path.join( output_dir, 'links.html' )
+        
+    def update( self ):
+        utils.makedirs( os.path.dirname( self.links_file_path_ ) )
+        utils.log( '    Making test output files...' )
+        utils.libxslt( 
+            utils.log
+            , self.source_
+            , xsl_path( 'links_page.xsl' )
+            , self.links_file_path_
+            , {
+              'source':                 self.tag_
+              , 'run_date':               self.run_date_
+              , 'comment_file':           self.comment_file_
+              , 'explicit_markup_file':   self.failures_markup_file_
+              }
+            )
+        
+        open( self.file_path_, "w" ).close()
+
+class unzip_action( action ):
+    def __init__( self, source, destination, unzip_func ):
+        action.__init__( self, destination )
+        self.dependencies_.append( source )
+        self.source_     = source
+        self.unzip_func_ = unzip_func
+
+    def update( self ):
+        try:
+            utils.log( '  Unzipping "%s" ... into "%s"' % ( shorten( self.source_ ), os.path.dirname( self.file_path_ ) ) )
+            self.unzip_func_( self.source_, os.path.dirname( self.file_path_ ) )
+        except Exception, msg:
+            utils.log( '  Skipping "%s" due to errors (%s)' % ( self.source_, msg ) )
+
 def ftp_task( site, site_path , destination ):
     __log__ = 1
     utils.log( '' )
@@ -159,120 +311,50 @@ def ftp_task( site, site_path , destination ):
     synchronize()
     
     f.quit()        
-    
 
-
-def sync_dirs( file_mask, source_dir, destination_dir, timestamp, do_sync, do_unlink ):
-    utils.makedirs( destination_dir )
-    files = glob.glob( os.path.join( source_dir, file_mask ) )
-    for src in files:
-        dst = os.path.join( destination_dir, os.path.basename( src ) )
-        if not os.path.exists( dst ):
-            utils.log( '    "%s" <-> "%s" [doesn\'t exist]' % ( src, dst ) )
-            do_sync( src )
-        else:
-            src_timestamp = timestamp( src )
-            dst_timestamp = timestamp( dst )
-            common_path = os.path.commonprefix( [ src, dst ] )
-            shortened_src = src[ len( common_path ): ]
-            shortened_dst = dst[ len( common_path ): ]
-            utils.log( '     "%s" [%s] -> >"%s" [%s]' % ( shortened_src, src_timestamp, shortened_dst, dst_timestamp ) )
-            if timestamp( src ) != timestamp( dst ):
-                do_sync( src )
-    files = glob.glob( os.path.join( destination_dir, file_mask ) )
-    for dst in files:
-        src = os.path.join( source_dir, os.path.basename( dst ) )
-        if not os.path.exists( src ):
-            utils.log( '    "%s" <-> "%s" [doesn\'t exist]' % ( dst, src ) )
-            do_unlink( dst )
-                
-def sync_archives_task( source_dir, processed_dir, unzip_func ):
+def unzip_archives_task( source_dir, processed_dir, unzip_func ):
     utils.log( '' )
-    utils.log( 'sync_archives_task: unpacking updated archives in "%s"...' % source_dir )
-    __log__ = 1
-    def _modtime_timestamp( file ):
-        return os.stat( file ).st_mtime
-
-    def _unzip( zip_file ):
-        try:
-            utils.log( '  Unzipping "%s" ...' % zip_file )
-            unzip_func( zip_file, source_dir )
-            utils.log( '  Copying "%s" into "%s"' % ( zip_file, processed_dir ) )
-            shutil.copy2( zip_file, processed_dir )
-        except Exception, msg:
-            utils.log( '  Skipping "%s" due to errors (%s)' % ( zip_file, msg ) )
-
-    def _unlink( zip_file ):
-        processed_file = os.path.join( processed_dir, zip_file )
-        xml_file = os.path.join( source_dir, os.path.splitext( os.path.basename( zip_file ) )[0] + ".xml" )
-        utils.log( '  Deleting obsolete "%s"' % xml_file )
-        os.unlink( xml_file )
-        utils.log( '  Deleting obsolete "%s"' % processed_file )
-        os.unlink( processed_file )
-        
-            
-    sync_dirs(
-          '*.zip'
-        , source_dir
-        , processed_dir
-        , _modtime_timestamp
-        , _unzip
-        , _unlink
-        )
-
-
-
-def sync_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file ):    
-    utils.log( '' )
-    utils.log( 'sync_xmls_task: processing updated XMLs in "%s"...' % source_dir )
+    utils.log( 'unzip_archives_task: unpacking updated archives in "%s" into "%s"...' % ( source_dir, processed_dir ) )
     __log__ = 1
 
-    def _xml_timestamp( xml_path ):
-
-        class timestamp_reader( xml.sax.handler.ContentHandler ):
-            def startElement( self, name, attrs ):
-                if name == 'test-run':
-                    self.timestamp = attrs.getValue( 'timestamp' )
-                    raise self
-
-        try:
-            xml.sax.parse( xml_path, timestamp_reader() )
-            raise 'Cannot extract timestamp from "%s". Invalid XML file format?' % xml_path
-        except timestamp_reader, x:
-            return x.timestamp
-
+    target_files = [ os.path.join( processed_dir, os.path.basename( x.replace( ".zip", ".xml" ) )  ) for x in glob.glob( os.path.join( source_dir, "*.zip" ) ) ] + glob.glob( os.path.join( processed_dir, "*.xml" ) )
+    actions = [ unzip_action( os.path.join( source_dir, os.path.basename( x.replace( ".xml", ".zip" ) ) ), x, unzip_func ) for x in target_files ]
+    for a in actions:
+        a.run()
+   
+def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file ):    
+    utils.log( '' )
+    utils.log( 'merge_xmls_task: merging updated XMLs in "%s"...' % source_dir )
+    __log__ = 1
         
-    def _process_updated_xml( xml ):
-        utils.log( '  Merging "%s" with expected results...' % xml )
-        utils.libxslt( 
-            utils.log
-            , xml
-            , xsl_path( 'add_expected_results.xsl' )
-            , os.path.join( merged_dir, os.path.basename( xml ) )
-            , {
-              "expected_results_file" : expected_results_file
-              , "failures_markup_file": failures_markup_file
-              }
-            )
-        
-        utils.log( '  Copying "%s" into "%s"' % ( xml, processed_dir ) )
-        shutil.copy2( xml, processed_dir )
+    utils.makedirs( merged_dir )
+    target_files = [ os.path.join( merged_dir, os.path.basename( x ) ) for x in glob.glob( os.path.join( processed_dir, "*.xml" ) ) ] + glob.glob( os.path.join( merged_dir, "*.xml" ) )
+    actions = [ merge_xml_action( os.path.join( processed_dir, os.path.basename( x ) )
+                                  , x
+                                  , expected_results_file
+                                  , failures_markup_file ) for x in target_files ]
 
-    def _unlink( xml ):
-        processed_xml_file = os.path.join( merged_dir, os.path.basename( xml ) )
-        utils.log( '  Deleting obsolete "%s"' % xml )
-        os.unlink( xml )
-        utils.log( '  Deleting obsolete "%s"' % processed_xml_file )
-        os.unlink( processed_xml_file )
+    for a in actions:
+        a.run()
 
-    sync_dirs(
-          '*.xml'
-        , source_dir
-        , processed_dir
-        , _xml_timestamp
-        , _process_updated_xml
-        , _unlink
-        )
+
+def make_links_task( input_dir, output_dir, tag, run_date, comment_file, extended_test_results, failures_markup_file ):
+    utils.log( '' )
+    utils.log( 'make_links_task: make output files for test results in "%s"...' % input_dir )
+    __log__ = 1
+
+    target_files = [ x + ".links"  for x in glob.glob( os.path.join( input_dir, "*.xml" ) ) ] + glob.glob( os.path.join( input_dir, "*.links" ) )
+    actions = [ make_links_action( x.replace( ".links", "" )
+                                   , x
+                                   , output_dir
+                                   , tag
+                                   , run_date
+                                   , comment_file
+                                   , failures_markup_file 
+                                   ) for x in target_files ]
+
+    for a in actions:
+        a.run()
 
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
     document_started = 0
@@ -338,10 +420,8 @@ def execute_tasks(
 
         ftp_task( ftp_site, site_path, incoming_dir )
 
-
-    sync_archives_task( incoming_dir, processed_dir, utils.unzip )
-    sync_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file )
-    
+    unzip_archives_task( incoming_dir, processed_dir, utils.unzip )
+    merge_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file )
     make_links_task( merged_dir
                      , output_dir
                      , tag
@@ -368,61 +448,7 @@ def execute_tasks(
         , reports
         )
 
-def stamp( stamp_path, stamp_date_origin ):
-    if not os.path.exists( stamp_path ):
-        open( stamp_path, "w" ).close()
-
-    timestamp = os.path.getmtime( stamp_date_origin )
-    os.utime( stamp_path, ( timestamp, timestamp ) )
-
-def timestamps_different( f1, f2 ):
-    if not os.path.exists( f1 ) or not os.path.exists( f2 ):
-        return 1
-    else:
-        return time.localtime( os.path.getmtime( f1 ) ) != time.localtime( os.path.getmtime( f2 ) )
-
-def make_links_task( input_dir, output_dir, tag, run_date, comment_file, extended_test_results, failures_markup_file ):
-
-    def find_by_name( file_paths, name ):
-        try:
-            pos = [ os.path.basename( x ).lower() for x in file_paths ].index( name.lower() )
-            return file_paths[pos]
-        except ValueError, e: # not found
-            return None
         
-    input_file_paths = glob.glob( os.path.join( input_dir, "*.xml" ) )
-    existing_file_paths = glob.glob( os.path.join( input_dir, "*.links" ) )
-    
-    links = os.path.join( output_dir, 'links.html' )
-    for input_file_path in input_file_paths:
-        stamp_file_path = input_file_path + ".links"
-
-        if timestamps_different( input_file_path, stamp_file_path ):
-            utils.makedirs( os.path.join( output_dir, 'output' ) )
-            utils.log( '    Making test output files...' )
-            utils.libxslt( 
-                  utils.log
-                , input_file_path
-                , xsl_path( 'links_page.xsl' )
-                , links
-                , {
-                      'source':                 tag
-                    , 'run_date':               run_date 
-                    , 'comment_file':           comment_file
-                    , 'explicit_markup_file':   failures_markup_file
-                    }
-                )
-        stamp( stamp_file_path, input_file_path )
-
-    for existing_file_path in existing_file_paths:
-        existing_file_name = os.path.basename( existing_file_path )
-        if not find_by_name( input_file_paths, os.path.splitext( existing_file_name )[0]  ):
-            utils.log( 'Deleting obsolete "%s"' % existing_file_name )
-            os.unlink( existing_file_path )
-         
-    return links
-
-
 def make_result_pages(
           extended_test_results
         , expected_results_file
@@ -575,7 +601,10 @@ def build_xsl_reports(
         ):
 
     ( run_date ) = time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime() )
-        
+
+    root_paths.append( locate_root_dir )
+    root_paths.append( results_dir )
+    
     bin_boost_dir = os.path.join( locate_root_dir, 'bin', 'boost' )
     
     output_dir = os.path.join( results_dir, result_file_prefix )
