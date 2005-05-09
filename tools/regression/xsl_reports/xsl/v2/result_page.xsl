@@ -70,6 +70,7 @@ http://www.boost.org/LICENSE_1_0.txt)
     </xsl:variable>
 
 
+
     <xsl:template name="test_type_col">
         <td class="test-type">
         <a href="http://www.boost.org/status/compiler_status.html#Understanding" class="legend-link" target="_top">
@@ -443,66 +444,11 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:variable name="cell_link">
             <xsl:choose>
                 <xsl:when test="count( $test_log ) &gt; 1">
-                    <xsl:variable name="variants_file_path" select="concat( meta:encode_path( concat( $test_log/../@runner, '-', $test_log/@library, '-', $test_log/@toolset, '-', $test_log/@test-name, '-variants' ) ), '.html' )"/>
-                    <xsl:variable name="variants__file_path" select="concat( meta:encode_path( concat( $test_log/../@runner, '-', $test_log/@library, '-', $test_log/@toolset, '-', $test_log/@test-name, '-variants_' ) ), '.html' )"/>
-                    <xsl:message>Writing variants file <xsl:value-of select="$variants_file_path"/></xsl:message>
-                    
-                    <exsl:document href="{$variants_file_path}"
-                        method="html" 
-                        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
-                        encoding="utf-8"
-                        indent="yes">
-                        <html>
-                            <head>
-                                <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
-                                <title>Boost regression: <xsl:value-of select="$library"/>/<xsl:value-of select="$source"/></title>
-                            </head>
-                            <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-                                <frame name="tocframe" src="toc{$release_postfix}.html" scrolling="auto"/>
-                                <frame name="docframe" src="{$variants__file_path}" scrolling="auto"/>
-                            </frameset>
-                        </html>
-                    </exsl:document>  
-
-                    <exsl:document href="{$variants__file_path}"
-                        method="html" 
-                        doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
-                        encoding="utf-8"
-                        indent="yes">
-
-                        <html>
-                            <body>
-                                <table>
-                                    <xsl:for-each select="$test_log">
-                                        <tr>
-                                            <td>
-                                                <!--<debug>
-                                                    <xsl:copy-of select="."/>
-
-                                                    <xsl:value-of select="meta:show_output( $explicit_markup, . )"/>
-                                                    <xsl:value-of select="meta:log_file_path(.)"/>
-                                                </debug>-->
-                                                <xsl:choose>
-                                                    <xsl:when test="meta:log_file_path(.) != ''">
-                                                        <a href="{meta:log_file_path(.)}" target="_top" >
-                                                            <xsl:value-of select="@target-directory"/>
-                                                        </a>
-                                                    </xsl:when>
-                                                    <xsl:otherwise>
-                                                        <xsl:value-of select="@target-directory"/>
-                                                    </xsl:otherwise>
-                                                </xsl:choose>
-                                            </td>
-                                        </tr>
-                                    </xsl:for-each>
-                                </table>
-                            </body>
-                        </html>
-                    </exsl:document>           
-                    <xsl:value-of select="$variants_file_path"/>
+                    <xsl:variable name="variants__file_path" select="concat( meta:encode_path( concat( $test_log/../@runner, '-', $test_log/@library, '-', $test_log/@toolset, '-', $test_log/@test-name, '-variants_', $release_postfix ) ), '.html' )"/>
+                    <xsl:value-of select="$variants__file_path"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="meta:log_file_path($test_log)"/>
+                    <xsl:value-of select="meta:log_file_path( $test_log, $test_log/../@runner, $release_postfix )"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -646,36 +592,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:variable name="toolset" select="@name" />
             <xsl:variable name="runner" select="../@runner" />
 
-            <!-- Write log file -->
             <xsl:variable name="test_result_for_toolset" select="$test_results[ @toolset = $toolset and ../@runner=$runner ]"/>
-
-
-            <xsl:for-each select="$test_result_for_toolset">
-                <xsl:variable name="log_file" select="meta:log_file_path(.)"/>
-
-                <xsl:if test="$release != 'yes' and count( $test_result_for_toolset ) > 0 and $log_file != '' ">
-                    <xsl:message>Writing log file document  <xsl:value-of select="$log_file"/></xsl:message>
-                        <exsl:document href="{$log_file}"
-                            method="html" 
-                            doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" 
-                            encoding="utf-8"
-                            indent="yes">
-                            
-                            <html>
-                                <head>
-                                    <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
-                                    <!--<title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>-->
-                                </head>
-                                <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-                                    <frame name="tocframe" src="../toc.html" scrolling="auto"/>
-                                    <frame name="docframe" src="../../{$log_file}" scrolling="auto"/>
-                                </frameset>
-                            </html>
-                        </exsl:document>
-                    </xsl:if>
-                
-            </xsl:for-each>
-
 
             <!-- Insert cell -->
             <xsl:choose>
