@@ -133,7 +133,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                                 <xsl:variable name="toolsets" select="set:distinct( $test_test_logs/@toolset )"/>
                                 <xsl:for-each select="$toolsets">
                                     <xsl:variable name="toolset" select="."/>
-                                    <xsl:variable name="toolset_test_logs" select="$test_test_logs[@toolset=@toolset]"/>
+                                    <xsl:variable name="toolset_test_logs" select="$test_test_logs[@toolset=$toolset]"/>
                                     <toolset name="{$toolset}">
                                         <xsl:copy-of select="$toolset_test_logs"/>
                                     </toolset>
