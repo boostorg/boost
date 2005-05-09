@@ -217,10 +217,12 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <func:function name="meta:log_file_path">
         <xsl:param name="test_log"/>
+        <xsl:param name="runner"/>
+        <xsl:param name="release_postfix" select="''"/>
         <func:result>
             <xsl:choose>
                 <xsl:when test="meta:show_output( $explicit_markup, $test_log )">
-                    <xsl:value-of select="meta:output_file_path( concat( $test_log/../@runner, '-', $test_log/@target-directory ) )"/>
+                    <xsl:value-of select="meta:output_file_path( concat( $runner, '-', $test_log/@target-directory, $release_postfix ) )"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:text></xsl:text>
