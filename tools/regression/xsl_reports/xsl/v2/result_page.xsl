@@ -143,7 +143,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
                 <div class="report-info">
                     <div>
-                        <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+                        <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
                     </div>
                       
                     <div>
@@ -289,7 +289,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 </h1>
 
                 <div class="report-info">
-                    <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+                    <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
                 </div>
 
                 <!-- library marks = library-unusable markup for toolsets in the report  -->
@@ -302,12 +302,14 @@ http://www.boost.org/LICENSE_1_0.txt)
                         <xsl:with-param name="mode" select="'details'"/>
                         <xsl:with-param name="top_or_bottom" select="'top'"/>
                         <xsl:with-param name="run_toolsets" select="$run_toolsets"/>
+                        <xsl:with-param name="run_date" select="$run_date"/>
                       </xsl:call-template>
                       
                       <xsl:call-template name="insert_toolsets_row">
                         <xsl:with-param name="mode" select="'details'"/>
                         <xsl:with-param name="library_marks" select="$library_marks"/>
                         <xsl:with-param name="library" select="$library"/>
+                        <xsl:with-param name="run_date" select="$run_date"/>
                       </xsl:call-template>
                     </thead>
                     <tfoot>
@@ -315,11 +317,14 @@ http://www.boost.org/LICENSE_1_0.txt)
                         <xsl:with-param name="mode" select="'details'"/>
                         <xsl:with-param name="library_marks" select="$library_marks"/>
                         <xsl:with-param name="library" select="$library"/>
+                        <xsl:with-param name="run_date" select="$run_date"/>
                       </xsl:call-template>
 
                       <xsl:call-template name="insert_runners_rows">
                           <xsl:with-param name="mode" select="'details'"/>
                           <xsl:with-param name="top_or_bottom" select="'bottom'"/>
+                          <xsl:with-param name="run_toolsets" select="$run_toolsets"/>
+                          <xsl:with-param name="run_date" select="$run_date"/>
                       </xsl:call-template>
                     </tfoot>
 

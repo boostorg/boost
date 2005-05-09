@@ -5,8 +5,10 @@ sys.path.append( '..' )
 import os
 
 import boost_wide_report
+import common
 import utils
 import shutil
+import time
 
 tag = "CVS-HEAD"
 
@@ -20,7 +22,7 @@ boost_wide_report.unzip_archives_task = lambda incoming_dir, processed_dir, unzi
 boost_wide_report.execute_tasks(
     tag = tag
     , user = None
-    , run_date = "Today date"
+    , run_date = common.format_timestamp( time.gmtime() )
     , comment_file = os.path.abspath( "comment.html" )
         , results_dir = os.path.abspath( "results" )
         , output_dir = os.path.abspath( "output" )

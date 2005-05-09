@@ -112,7 +112,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             </h1>
 
             <div class="report-info">
-                <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+                <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
             </div>
 
             <div class="statistics">
@@ -131,20 +131,26 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:call-template name="insert_runners_rows">
                     <xsl:with-param name="mode" select="'summary'"/>
                     <xsl:with-param name="top_or_bottom" select="'top'"/>
+                    <xsl:with-param name="run_toolsets" select="$run_toolsets"/>
+                    <xsl:with-param name="run_date" select="$run_date"/>
                 </xsl:call-template>
 
                 <xsl:call-template name="insert_toolsets_row">
                     <xsl:with-param name="mode" select="'summary'"/>
+                    <xsl:with-param name="run_date" select="$run_date"/>
                 </xsl:call-template>
             </thead>
 
             <tfoot>
                 <xsl:call-template name="insert_toolsets_row">
                     <xsl:with-param name="mode" select="'summary'"/>
+                    <xsl:with-param name="run_date" select="$run_date"/>
                 </xsl:call-template>
                 <xsl:call-template name="insert_runners_rows">
                     <xsl:with-param name="mode" select="'summary'"/>
                     <xsl:with-param name="top_or_bottom" select="'bottom'"/>
+                    <xsl:with-param name="run_toolsets" select="$run_toolsets"/>
+                    <xsl:with-param name="run_date" select="$run_date"/>
                 </xsl:call-template>
             </tfoot>
           

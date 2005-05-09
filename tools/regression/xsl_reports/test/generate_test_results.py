@@ -40,6 +40,7 @@ def test_run_type( runner_idx ):
     if runner_idx % 2: return "incremental"
     else:              return "full"
 
+
 def make_test_results():
     if not os.path.exists( results_directory ):
         os.makedirs( results_directory )
@@ -54,8 +55,9 @@ def make_test_results():
             
         g.startElement( "test-run", { "platform": platform
                                       , "runner": runner_id
-                                      , "timestamp": time.strftime( "%a, %d %b %Y %H:%M:%S +0000"
-                                                                   , time.gmtime())
+                                      , "timestamp": common.format_timestamp( 
+                                                          time.gmtime( time.time() - i_runner * 24*60*60 )
+                                                        )
                                       , "source": test_run_source( i_runner )
                                       , "run-type": test_run_type( i_runner )
                                       } )

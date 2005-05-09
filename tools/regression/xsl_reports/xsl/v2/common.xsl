@@ -13,11 +13,12 @@ http://www.boost.org/LICENSE_1_0.txt)
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:exsl="http://exslt.org/common"
     xmlns:func="http://exslt.org/functions"
+    xmlns:date="http://exslt.org/dates-and-times"
     xmlns:str="http://exslt.org/strings"
     xmlns:set="http://exslt.org/sets"
     xmlns:meta="http://www.meta-comm.com"
     extension-element-prefixes="func"
-    exclude-result-prefixes="exsl func str set meta"
+    exclude-result-prefixes="exsl func date str set meta"
     version="1.0">
 
     <xsl:variable name="output_directory" select="'output'"/>
@@ -170,6 +171,38 @@ http://www.boost.org/LICENSE_1_0.txt)
         </xsl:choose>
     </func:function>
 
+    <!-- date-time -->
+
+    <func:function name="meta:timestamp_difference">
+        <xsl:param name="x"/>
+        <xsl:param name="y"/>
+
+        <xsl:variable name="duration" select="date:difference( $x, $y )"/>
+        <xsl:choose>
+            <xsl:when test="contains( $duration, 'D' )">
+                <xsl:variable name="days" select="substring-before( $duration, 'D' )"/>
+                <func:result select="substring-after( $days, 'P' )"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <func:result select="0"/>
+            </xsl:otherwise>
+        </xsl:choose>
+
+    </func:function>
+    
+    <func:function name="meta:format_timestamp">
+        <xsl:param name="timestamp"/>
+
+        <xsl:variable name="time" select="substring-before( date:time( $timestamp ), 'Z' )"/>
+        <xsl:variable name="day" select="date:day-in-month( $timestamp )"/>
+        <xsl:variable name="day_abbrev" select="date:day-abbreviation( $timestamp )"/>
+        <xsl:variable name="month_abbrev" select="date:month-abbreviation( $timestamp )"/>
+        <xsl:variable name="year" select="date:year( $timestamp )"/>        
+        
+        <func:result select="concat( $day_abbrev, ', ', $day, ' ', $month_abbrev, ' ', $year, ' ', $time, ' +0000' )"/>
+
+    </func:function>
+    
     <!-- path -->
 
     <func:function name="meta:encode_path">
@@ -309,6 +342,8 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:template name="insert_runners_rows">
         <xsl:param name="mode"/>
         <xsl:param name="top_or_bottom"/>
+        <xsl:param name="run_toolsets"/>
+        <xsl:param name="run_date"/>
 
         <xsl:variable name="colspan">
             <xsl:choose>
@@ -347,7 +382,10 @@ http://www.boost.org/LICENSE_1_0.txt)
         <tr>
             <td colspan="{$colspan}">&#160;</td>
             <xsl:for-each select="$run_toolsets//runs/run[ count(toolset) > 0 ]">
-                <td colspan="{count(toolset)}" class="timestamp"><xsl:value-of select="@timestamp"/></td>
+                <xsl:variable name="age" select="meta:timestamp_difference( @timestamp, $run_date )"/>
+                <td colspan="{count(toolset)}" class="timestamp">
+                    <span class="timestamp-{$age}"><xsl:value-of select="meta:format_timestamp( @timestamp )"/></span>
+                </td>
             </xsl:for-each>
             <td colspan="{$colspan}">&#160;</td>
         </tr>
@@ -372,6 +410,7 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="mode"/>
         <xsl:param name="library"/>
         <xsl:param name="library_marks"/>
+        <xsl:param name="run_date"/>
 
         <tr valign="middle">
             <xsl:variable name="colspan">
@@ -406,6 +445,8 @@ http://www.boost.org/LICENSE_1_0.txt)
                 </xsl:variable>
 
                 <td class="{$class}">
+                    <xsl:variable name="age" select="meta:timestamp_difference( ../@timestamp, $run_date )"/>
+                    <span class="timestamp-{$age}">
 
                     <!-- break toolset names into words -->
                     <xsl:for-each select="str:tokenize($toolset, '-')">
@@ -438,6 +479,8 @@ http://www.boost.org/LICENSE_1_0.txt)
                             </span>
                         </xsl:if>
                     </xsl:if>
+
+                    </span>
                 </td>
             </xsl:for-each>
               
