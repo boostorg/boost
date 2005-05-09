@@ -600,7 +600,7 @@ def build_xsl_reports(
         , upload = False
         ):
 
-    ( run_date ) = time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime() )
+    ( run_date ) = time.strftime( '%Y-%m-%dT%H:%M:%SZ', time.gmtime() )
 
     root_paths.append( locate_root_dir )
     root_paths.append( results_dir )

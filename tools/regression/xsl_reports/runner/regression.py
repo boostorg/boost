@@ -271,8 +271,9 @@ def refresh_timestamp():
 
 
 def timestamp():
-    return format_time( 
-          time.gmtime( os.stat( timestamp_path ).st_mtime )
+    return time.strftime(
+          '%Y-%m-%dT%H:%M:%SZ'
+        , time.gmtime( os.stat( timestamp_path ).st_mtime )
         )
 
 

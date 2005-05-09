@@ -223,7 +223,7 @@ def build_xsl_reports(
         , upload = False
         ):
 
-    ( run_date ) = time.strftime('%a, %d %b %Y %H:%M:%S +0000', time.gmtime() )
+    ( run_date ) = time.strftime( '%Y-%m-%dT%H:%M:%SZ', time.gmtime() )
     
     test_results_file = os.path.join( results_dir, 'test_results.xml' )
     bin_boost_dir = os.path.join( locate_root_dir, 'bin', 'boost' )
