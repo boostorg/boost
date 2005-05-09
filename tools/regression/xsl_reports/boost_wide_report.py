@@ -247,6 +247,8 @@ class make_links_action( action ):
         
     def update( self ):
         utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "output" ) )
+        utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "developer", "output" ) )
+        utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "user", "output" ) )
         utils.log( '    Making test output files...' )
         utils.libxslt( 
             utils.log
