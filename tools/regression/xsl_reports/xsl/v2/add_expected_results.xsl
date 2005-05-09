@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 
-Copyright MetaCommunications, Inc. 2003-2004.
+Copyright MetaCommunications, Inc. 2003-2005.
 
 Distributed under the Boost Software License, Version 1.0. (See
 accompanying file LICENSE_1_0.txt or copy at
@@ -66,9 +66,20 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:for-each select="$expected_results">
                 
                 <xsl:variable name="expected_results_test_case" select="key( 'trk', concat( $toolset, '-', $library, '-', $test-name ) )"/>
-                <xsl:variable name="test_failures_markup" select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]/mark-failure/toolset[ meta:re_match( @name, $toolset ) ]/.."/>
+                <xsl:variable name="test_case_markup"      select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]"/>
+                <xsl:variable name="test_failures_markup"  select="$test_case_markup/mark-failure/toolset[ meta:re_match( @name, $toolset ) ]/.."/>
                 <xsl:variable name="test_failures_markup2" select="$failures_markup//library[@name=$library]/mark-expected-failures/test[ meta:re_match( @name, $test-name ) ]/../toolset[ meta:re_match( @name, $toolset ) ]/.."/>
 
+                <xsl:variable name="category">
+                    <xsl:choose>
+                        <xsl:when test="$test_case_markup/@category">
+                            <xsl:value-of select="$test_case_markup/@category"/>
+                        </xsl:when>
+                        <xsl:otherwise>0</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+
+                
                 <xsl:variable name="is_new">
                     <xsl:choose>
                         <xsl:when test="$expected_results_test_case">
@@ -194,6 +205,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:attribute name="expected-reason"><xsl:value-of select="$expected_reason"/></xsl:attribute>
                 <xsl:attribute name="status"><xsl:value-of select="$status"/></xsl:attribute>
                 <xsl:attribute name="is-new"><xsl:value-of select="$is_new"/></xsl:attribute>
+                <xsl:attribute name="category"><xsl:value-of select="$category"/></xsl:attribute>
                 <xsl:element name="notes"><xsl:copy-of select="$notes"/></xsl:element>
                 
                 <xsl:apply-templates select="$test_log/node()" />
