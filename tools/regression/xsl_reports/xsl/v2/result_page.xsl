@@ -330,46 +330,19 @@ http://www.boost.org/LICENSE_1_0.txt)
                     </tfoot>
 
                     <tbody>
-                        <!-- lib_tests = test_log* -->
                         <xsl:variable name="lib_tests" select="$test_case_logs[@library = $library]" /> 
-
-                        <!-- lib_unique_test_names = test_log* -->
-                        <xsl:variable name="lib_unique_test_names" 
+                        <xsl:variable name="lib_unique_tests_list" 
                             select="$lib_tests[ generate-id(.) = generate-id( key('test_name_key', concat( @library, '&gt;@&lt;', @test-name ) ) ) ]" />
 
-                        <xsl:variable name="lib_corner_case_tests_markup" select="$explicit_markup//library[ @name = $library ]/test[ @corner-case='yes' ]"/>
-                        
-                        <xsl:variable name="lib_general_tests" 
-                            select="meta:order_tests_by_name( $lib_unique_test_names[ not( @test-name = $lib_corner_case_tests_markup/@name ) ]  )"/>
-
-
-                        <xsl:variable name="lib_corner_case_tests" select="meta:order_tests_by_name( $lib_unique_test_names[ @test-name = $lib_corner_case_tests_markup/@name ] ) " />
-
-
-                        <!-- general tests section -->
+                        <xsl:variable name="lib_tests_by_category"
+                            select="meta:order_tests_by_category( $lib_unique_tests_list )"/>
 
                         <xsl:call-template name="insert_test_section">
                             <xsl:with-param name="library" select="$library"/>
-                            <xsl:with-param name="section_test_names" select="$lib_general_tests"/>
+                            <xsl:with-param name="section_test_names" select="$lib_tests_by_category"/>
                             <xsl:with-param name="lib_tests" select="$lib_tests"/>
+                            <xsl:with-param name="toolsets" select="$run_toolsets"/>
                         </xsl:call-template>
-
-                        <!-- corner-case tests section -->
-
-                        <xsl:if test="count( $lib_corner_case_tests ) > 0">
-                            <tr>
-                                <!--<td colspan="2">&#160;</td>                  -->
-                                <td class="library-corner-case-header" colspan="{count($run_toolsets/platforms/platform/runs/run/toolset) + 3 }" align="center">Corner-case tests</td>
-                                <!--<td>&#160;</td>-->
-                            </tr>
-
-                        <xsl:call-template name="insert_test_section">
-                            <xsl:with-param name="library" select="$library"/>
-                            <xsl:with-param name="section_test_names" select="$lib_corner_case_tests"/>
-                            <xsl:with-param name="lib_tests" select="$lib_tests"/>
-                        </xsl:call-template>
-                        
-                    </xsl:if>
 
                     </tbody>
                 </table>
@@ -569,7 +542,6 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="library"/>    
         <xsl:param name="test_name"/>
         <xsl:param name="test_results"/>
-        <xsl:param name="toolsets"/>
         <xsl:param name="line_mod"/>
 
         <xsl:variable name="test_program">
@@ -620,33 +592,38 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <xsl:template name="insert_test_section">
         <xsl:param name="library"/>      
-        <xsl:param name="section_test_nanes"/>
+        <xsl:param name="section_test_names"/>
         <xsl:param name="lib_tests"/>
         <xsl:param name="toolsets"/>
 
+        <xsl:variable name="category_span" select="count($toolsets/platforms/platform/runs/run/toolset) + 3"/>
+
         <xsl:for-each select="$section_test_names">
+
             <xsl:variable name="test_name" select="@test-name"/>
+            <xsl:variable name="category_start" select="position() = 1 or @category != preceding-sibling::*[1]/@category"/>
+            <xsl:variable name="category_end" select="position() = last() or @category != following-sibling::*[1]/@category"/>
+
             <xsl:variable name="line_mod">
                 <xsl:choose>
-                    <xsl:when test="1 = last()">
-                        <xsl:text>-single</xsl:text>
-                    </xsl:when>
-                    <xsl:when test="generate-id( . ) = generate-id( $section_test_names[1] )">
-                        <xsl:text>-first</xsl:text>
-                    </xsl:when>
-                    <xsl:when test="generate-id( . ) = generate-id( $section_test_names[last()] )">
-                        <xsl:text>-last</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text></xsl:text>
-                    </xsl:otherwise>
+                    <xsl:when test="$category_start and $category_end"><xsl:text>-single</xsl:text></xsl:when>
+                    <xsl:when test="$category_start"><xsl:text>-first</xsl:text></xsl:when>
+                    <xsl:when test="$category_end"><xsl:text>-last</xsl:text></xsl:when>
+                    <xsl:otherwise><xsl:text></xsl:text></xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-              
+
+            <xsl:if test="$category_start and @category != '0'">
+                <tr>
+                    <td class="library-test-category-header" colspan="{$category_span}" align="center">
+                        <xsl:value-of select="@category"/>
+                    </td>
+                </tr>
+            </xsl:if>
+
             <xsl:call-template name="insert_test_line">
                 <xsl:with-param name="library" select="$library"/>
                 <xsl:with-param name="test_results" select="$lib_tests[ @test-name = $test_name ]"/>
-                <xsl:with-param name="toolsets" select="$toolsets"/>
                 <xsl:with-param name="test_name" select="$test_name"/>
                 <xsl:with-param name="line_mod" select="$line_mod"/>
             </xsl:call-template>
@@ -654,12 +631,12 @@ http://www.boost.org/LICENSE_1_0.txt)
           
     </xsl:template>
 
-    <func:function name="meta:order_tests_by_name">
+    <func:function name="meta:order_tests_by_category">
         <xsl:param name="tests"/>
 
         <xsl:variable name="a">                  
             <xsl:for-each select="$tests">
-                <xsl:sort select="@test-name" order="ascending"/>
+                <xsl:sort select="concat( @category, '|', @test-name )" order="ascending"/>
                 <xsl:copy-of select="."/>
             </xsl:for-each>
         </xsl:variable>
