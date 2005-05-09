@@ -192,14 +192,19 @@ http://www.boost.org/LICENSE_1_0.txt)
     
     <func:function name="meta:format_timestamp">
         <xsl:param name="timestamp"/>
-
-        <xsl:variable name="time" select="substring-before( date:time( $timestamp ), 'Z' )"/>
-        <xsl:variable name="day" select="date:day-in-month( $timestamp )"/>
-        <xsl:variable name="day_abbrev" select="date:day-abbreviation( $timestamp )"/>
-        <xsl:variable name="month_abbrev" select="date:month-abbreviation( $timestamp )"/>
-        <xsl:variable name="year" select="date:year( $timestamp )"/>        
-        
-        <func:result select="concat( $day_abbrev, ', ', $day, ' ', $month_abbrev, ' ', $year, ' ', $time, ' +0000' )"/>
+        <xsl:choose>
+            <xsl:when test="date:date( $timestamp ) = ''">
+                <func:result select="$timestamp"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="time" select="substring-before( date:time( $timestamp ), 'Z' )"/>
+                <xsl:variable name="day" select="date:day-in-month( $timestamp )"/>
+                <xsl:variable name="day_abbrev" select="date:day-abbreviation( $timestamp )"/>
+                <xsl:variable name="month_abbrev" select="date:month-abbreviation( $timestamp )"/>
+                <xsl:variable name="year" select="date:year( $timestamp )"/>
+                <func:result select="concat( $day_abbrev, ', ', $day, ' ', $month_abbrev, ' ', $year, ' ', $time, ' +0000' )"/>
+            </xsl:otherwise>
+        </xsl:choose>
 
     </func:function>
     
