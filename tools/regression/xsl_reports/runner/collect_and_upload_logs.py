@@ -119,7 +119,7 @@ def collect_logs(
               'tag':        tag
             , 'platform':   platform
             , 'runner':     runner_id
-            , 'timestamp':  time.strftime( '%a, %d %b %Y %H:%M:%S +0000', t )     
+            , 'timestamp':  time.strftime( '%Y-%m-%dT%H:%M:%SZ', t )
             , 'source':     source
             , 'run-type':   run_type
             }
