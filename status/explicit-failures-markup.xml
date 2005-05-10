@@ -128,10 +128,24 @@
         <mark-expected-failures>
             <test name="list_inserter"/>
             <toolset name="vc7"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="tru64cxx65"/>
+            <toolset name="intel-win32"/>
             <note refid="6" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="list_inserter"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="gcc-2.95.3*"/>
+            <note  author="Thorsten Ottosen">
+                This test could probably be made to work if somebody with knowledge
+                about the compilers would submit a patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="list_of"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="tru64cxx65"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
@@ -142,11 +156,19 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="list_of_workaround"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <note author="Thorsten Ottosen" >
+                The test could probably be made to work if somebody submitted a patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="multi_index_container"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="tru64cxx65"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="intel-8.0-linux"/>
-            <toolset name="intel-8.1-linux"/>
             <toolset name="gcc-3.4.1*"/>
             <toolset name="gcc-3.4.2*"/>
             <note refid="27" author="Thorsten Ottosen"/>
@@ -167,6 +189,56 @@
             <test name="my_vector_example"/>
             <toolset name="gcc-2.95.3*"/>
             <note refid="27" author="Thorsten Ottosen"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_list_inserter"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="tru64cxx65"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <toolset name="mipspro"/>
+            <note author="Thorsten Ottosen" >
+                The test depends on Boost.Pointer Container which probably does not work for 
+                this compiler.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_list_of"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="tru64cxx65"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <toolset name="mipspro"/>
+            <note author="Thorsten Ottosen" >
+                The test depends on Boost.Pointer Container which probably does not work for 
+                this compiler.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="std"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <note author="Thorsten Ottosen" >
+                The test does not work for 
+                this compiler.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="tuple_list_of"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="msvc"/>
+            <toolset name="msvc-stlport"/>
+            <toolset name="vc7"/>
+            <note author="Thorsten Ottosen" >
+                The test depends on Boost.Tuple which probably does not work for 
+                this compiler.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -1653,7 +1725,16 @@ for more information.
 
     </library>
 
+     <!-- pointer container -->
+    <library name="pointer container">
+        <mark-unusable>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="tru64cxx65-042"/>
+        </mark-unusable>
+    </library>
 
+    
     <!-- python -->
     <library name="python">
         <mark-unusable>
