@@ -612,7 +612,7 @@ int cpp_main( int argc, char ** argv )
       string action( ( line.find( "Link-action " ) != string::npos
         || line.find( "vc-Link " ) != string::npos 
         || line.find( ".link") != string::npos
-        || line.find( "Archive-action "))
+        || line.find( "Archive-action ") != string::npos )
         ? "link" : "compile" );
       if ( line.find( "...failed " ) != string::npos )
         mgr.stop_message( action, target_directory( line ),
