@@ -478,6 +478,11 @@ namespace
 
 int cpp_main( int argc, char ** argv )
 {
+  // Turn off synchronization with corresponding C standard library files. This
+  // gives a significant speed improvement on platforms where the standard C++
+  // streams are implemented using standard C files.
+  std::ios::sync_with_stdio(false);
+
   if ( argc <= 1 )
     std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [--v2] [locate-root]\n"
                  "locate-root         - the same as the bjam ALL_LOCATE_TARGET\n"
