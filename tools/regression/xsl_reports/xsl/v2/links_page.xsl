@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 
-Copyright MetaCommunications, Inc. 2003-2004.
+Copyright MetaCommunications, Inc. 2003-2005.
 
 Distributed under the Boost Software License, Version 1.0. (See
 accompanying file LICENSE_1_0.txt or copy at
@@ -245,7 +245,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                     </div>
                     
                     <div>
-                        <b>Report Time: </b> <xsl:value-of select="$run_date"/>
+                        <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
                     </div>
                     
                     <xsl:if test="notes/note">
