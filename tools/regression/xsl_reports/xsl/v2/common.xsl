@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 
-Copyright MetaCommunications, Inc. 2003-2004.
+Copyright MetaCommunications, Inc. 2003-2005.
 
 Distributed under the Boost Software License, Version 1.0. (See
 accompanying file LICENSE_1_0.txt or copy at
@@ -392,6 +392,9 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:variable name="age" select="meta:timestamp_difference( @timestamp, $run_date )"/>
                 <td colspan="{count(toolset)}" class="timestamp">
                     <span class="timestamp-{$age}"><xsl:value-of select="meta:format_timestamp( @timestamp )"/></span>
+                    <xsl:if test="@run-type != 'full'">
+                        <span class="run-type-{@run-type}"><xsl:value-of select="substring( @run-type, 1, 1 )"/></span>
+                    </xsl:if>
                 </td>
             </xsl:for-each>
             <td colspan="{$colspan}">&#160;</td>
