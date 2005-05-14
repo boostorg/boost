@@ -836,33 +836,33 @@
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
             <note author="Jonathan Turkanis">
-		        Many compiler-specific workarounds will have to applied before toolset is supported.
+                Many compiler-specific workarounds will have to applied before toolset is supported.
             </note>
         </mark-unusable>
         <mark-expected-failures>
             <test name="seekable_file_test"/>
-			<toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="borland-5_6_4"/>
-			<toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <toolset name="msvc-stlport"/>
             <note author="Jonathan Turkanis">
                 This failure is a result of an undiagnosed STLPort bug; 
-				the test fails even if all Boost components are replaced by 
-				standard library components.
+                the test fails even if all Boost components are replaced by 
+                standard library components.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="code_converter_test"/>
-			<toolset name="gcc-2.95.3-linux"/>
-			<toolset name="mingw"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="mingw"/>
             <note author="Jonathan Turkanis">
                 No wide stream support.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="wide_stream_test"/>
-			<toolset name="gcc-2.95.3-linux"/>
-			<toolset name="mingw"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="mingw"/>
             <note author="Jonathan Turkanis">
                 No wide stream support.
             </note>
@@ -2069,6 +2069,16 @@ for more information.
                 <note author="J. Maddock" refid="4"/>
             </mark-failure>
         </test>
+        <test name="static_assert_test_fail_function">
+            <mark-failure>
+                <toolset name="cw-8*"/>
+                <note author="R. Rivera">
+                    This failure is caused by a compiler optimization. The compiler
+                    doesn't instantiate types not affecting semantics of the program,
+                    per section 14.7.1 [temp.inst].
+                </note>
+            </mark-failure>
+        </test>
     </library>
 
     <!-- test -->
@@ -2171,9 +2181,9 @@ for more information.
             <test name="*_lib"/>
             <toolset name="gcc-*-sunos"/>
             <note author="Caleb Epstein">
-		SunOS does not provide static versions of -lrt or
-		-lpthread, and gcc -static refuses to link with any
-		shared objects, so these tests don't compile.
+                SunOS does not provide static versions of -lrt or
+                -lpthread, and gcc -static refuses to link with any
+                shared objects, so these tests don't compile.
             </note>
         </mark-expected-failures>
     </library>
