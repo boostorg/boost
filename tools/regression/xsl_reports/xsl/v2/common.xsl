@@ -37,11 +37,12 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:variable name="run_toolsets_f">
             <platforms>
                 <xsl:for-each select="$platforms">
+                    <xsl:sort select="."/>
                     <xsl:variable name="platform" select="."/>
                     <platform name="{$platform}">
                         <runs>
                             <xsl:for-each select="$runs[ @platform = $platform ]">
-                                <xsl:sort select="."/>
+                                <xsl:sort select="@platform"/>
                                 <run 
                                     runner="{@runner}" 
                                     timestamp="{@timestamp}" 
