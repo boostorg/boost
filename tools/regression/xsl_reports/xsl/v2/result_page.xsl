@@ -54,7 +54,27 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
     <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
+    <xsl:variable name="unusables_f">
+        <unusables>
+            <xsl:for-each select="set:distinct( $run_toolsets//toolset/@name )">
+                <xsl:variable name="toolset" select="."/>
+                <xsl:for-each select="$libraries">
+                    <xsl:variable name="library" select="."/>
+                    <xsl:if test="meta:is_unusable_( $explicit_markup, $library, $toolset )">
+                        <unusable library-name="{$library}" toolset-name="{$toolset}"/>                            
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:for-each>
+        </unusables>
+    </xsl:variable>
 
+    <xsl:variable name="unusables" select="exsl:node-set( $unusables_f )"/>
+
+        
+    <xsl:key 
+        name="library-name_toolset-name_key" 
+        match="unusables/unusable" 
+        use="concat( @library-name, '&gt;@&lt;', @toolset-name )"/>
 
     <!-- modes -->
 
@@ -92,6 +112,8 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <xsl:template match="/">
 
+        <xsl:message><xsl:value-of select="count($unusables)"/><xsl:copy-of select="$unusables"/></xsl:message>
+        
         <exsl:document href="debug.xml" 
           method="xml" 
           encoding="utf-8"
@@ -103,10 +125,12 @@ http://www.boost.org/LICENSE_1_0.txt)
                         <xsl:copy-of select="."/>
                     </xsl:for-each>
                 </runs>
+                <xsl:copy-of select="$unusables_f"/>
+                <xsl:copy-of select="$unusables"/>
             </debug>
 
         </exsl:document>
-
+        <xsl:message>Wrote debug</xsl:message>
         <xsl:variable name="index_path" select="concat( 'index_', $release_postfix, '.html' )"/>
         
         <!-- Index page -->
