@@ -1999,6 +1999,18 @@ for more information.
                 <note author="John Maddock" refid="2"/>
             </mark-failure>
         </test>
+        <test name="grep">
+            <mark-failure>
+                <toolset name="gcc-2.95.3-linux"/>
+                <toolset name="sunpro-5_3-sunos"/>
+                <toolset name="msvc-stlport"/>
+                <toolset name="msvc"/>
+                <toolset name="vc7"/>
+                <note author="John Maddock">
+                  This test fails because a dependency (Boost.Program Options) doesn't build with this compiler.
+                </note>
+            </mark-failure>
+        </test>
         <mark-expected-failures>
             <test name="regex_regress"/>
             <test name="regex_regress_dll"/>
@@ -2008,6 +2020,7 @@ for more information.
         <mark-expected-failures>
             <test name="unicode_iterator_test"/>
             <toolset name="borland-5_6_4"/>
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <note author="John Maddock" refid="6"/>
         </mark-expected-failures>
     </library>
