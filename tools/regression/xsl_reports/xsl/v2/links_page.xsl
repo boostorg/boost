@@ -36,6 +36,13 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
     <xsl:variable name="runner_id" select="test-run/@runner"/>
 
+    <!-- runs / toolsets -->
+    <xsl:variable name="run_toolsets" select="meta:test_structure( /, 'no' )"/>
+
+    <!-- libraries -->
+    <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) ]"/>
+    <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
+
     <xsl:variable name="unusables_f">
             <xsl:for-each select="set:distinct( $run_toolsets//toolset/@name )">
                 <xsl:variable name="toolset" select="."/>
