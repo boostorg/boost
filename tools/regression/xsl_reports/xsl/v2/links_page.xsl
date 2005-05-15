@@ -36,6 +36,27 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
     <xsl:variable name="runner_id" select="test-run/@runner"/>
 
+    <xsl:variable name="unusables_f">
+            <xsl:for-each select="set:distinct( $run_toolsets//toolset/@name )">
+                <xsl:variable name="toolset" select="."/>
+                <xsl:for-each select="$libraries">
+                    <xsl:variable name="library" select="."/>
+                    <xsl:if test="meta:is_unusable_( $explicit_markup, $library, $toolset )">
+                        <unusable library-name="{$library}" toolset-name="{$toolset}"/>                            
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:variable name="unusables" select="exsl:node-set( $unusables_f )"/>
+
+        
+    <xsl:key 
+        name="library-name_toolset-name_key" 
+        match="unusable" 
+        use="concat( @library-name, '&gt;@&lt;', @toolset-name )"/>
+
+
     <!-- 
          Build a  tree with the following structure:
 
