@@ -45,6 +45,26 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:key name="toolset_key" match="test-log" use="@toolset"/>
     <xsl:key name="test_name_key"  match="test-log" use="@test-name "/>
 
+    <xsl:variable name="unusables_f">
+            <xsl:for-each select="set:distinct( $run_toolsets//toolset/@name )">
+                <xsl:variable name="toolset" select="."/>
+                <xsl:for-each select="$libraries">
+                    <xsl:variable name="library" select="."/>
+                    <xsl:if test="meta:is_unusable_( $explicit_markup, $library, $toolset )">
+                        <unusable library-name="{$library}" toolset-name="{$toolset}"/>                            
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:for-each>
+    </xsl:variable>
+
+    <xsl:variable name="unusables" select="exsl:node-set( $unusables_f )"/>
+
+        
+    <xsl:key 
+        name="library-name_toolset-name_key" 
+        match="unusable" 
+        use="concat( @library-name, '&gt;@&lt;', @toolset-name )"/>
+
     <!--<xsl:variable name="expected_results" select="document( $expected_results_file )" />-->
 
     <!-- runs / toolsets -->

@@ -134,12 +134,23 @@ http://www.boost.org/LICENSE_1_0.txt)
         <func:result select="$test_log/@test-type='compile' or $test_log/@test-type='compile_fail' or $test_log/@test-type='run' or $test_log/@test-type='run_pyd'"/>
     </func:function>
 
-    <func:function name="meta:is_unusable">
+
+    <func:function name="meta:is_unusable_">
         <xsl:param name="explicit_markup"/>
         <xsl:param name="library"/>
         <xsl:param name="toolset"/>
           
         <func:result select="count( $explicit_markup//library[ @name = $library ]/mark-unusable/toolset[ meta:re_match( @name, $toolset ) ] ) > 0"/>
+    </func:function>
+
+    <func:function name="meta:is_unusable">
+        <xsl:param name="explicit_markup"/>
+        <xsl:param name="library"/>
+        <xsl:param name="toolset"/>
+          
+        <xsl:for-each select="$unusables">
+            <func:result select="count( key( 'library-name_toolset-name_key', concat( $library, '&gt;@&lt;', $toolset ) ) ) &gt; 0"/>
+        </xsl:for-each>
     </func:function>
 
     <func:function name="meta:re_match">
