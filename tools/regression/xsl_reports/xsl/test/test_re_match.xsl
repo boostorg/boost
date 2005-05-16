@@ -50,8 +50,8 @@ http://www.boost.org/LICENSE_1_0.txt)
     </func:function>
 
     <xsl:template match='test'>
-        <xsl:variable name="result" select="meta:re_match( @pattern, @text ) = 'true'"/>
-        <xsl:variable name="expected-result" select="@result"/>
+        <xsl:variable name="result" select="meta:re_match( @pattern, @text )"/>
+        <xsl:variable name="expected-result" select="@result = 'true'"/>
         <xsl:if test="$result != $expected-result">
             <failed regex="{@pattern}" text="{@text}" result="{$result}"  expected-result="{$expected-result}"/>
         </xsl:if>
