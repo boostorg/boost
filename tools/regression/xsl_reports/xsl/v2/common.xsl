@@ -172,7 +172,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <func:result select="substring( $text, string-length($text) - string-length($pattern_tail) + 1, string-length($pattern_tail) ) = $pattern_tail"/>
             </xsl:when>
             <xsl:when test="substring( $pattern, string-length($pattern), 1 ) = '*' ">
-                <xsl:variable name="pattern_head" select="substring( $pattern, 1, string-length($pattern) - 2 )"/>
+                <xsl:variable name="pattern_head" select="substring( $pattern, 1, string-length($pattern) - 1 )"/>
                 <func:result select="starts-with( $text, $pattern_head )"/>
             </xsl:when>
             <xsl:when test="contains( $pattern, '*' ) ">
