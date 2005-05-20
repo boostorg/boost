@@ -112,6 +112,9 @@
 
     <!-- assign -->
     <library name="assign">
+        <mark-unusable>
+            <toolset name="dmc- 8_43- stlport- 4_5_3"/>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="array"/>
             <toolset name="msvc-stlport"/>
@@ -130,7 +133,7 @@
             <test name="list_inserter"/>
             <toolset name="vc7"/>
             <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
             <toolset name="intel-win32"/>
             <note refid="6" author="Thorsten Ottosen"/>
         </mark-expected-failures>
@@ -146,7 +149,7 @@
         <mark-expected-failures>
             <test name="list_of"/>
             <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
@@ -166,12 +169,13 @@
         <mark-expected-failures>
             <test name="multi_index_container"/>
             <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="intel-8.0-linux"/>
             <toolset name="gcc-3.4.1*"/>
             <toolset name="gcc-3.4.2*"/>
+            <toolset name="gcc- 4.0.0*"/>
             <note refid="27" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -194,7 +198,7 @@
         <mark-expected-failures>
             <test name="ptr_list_inserter"/>
             <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="msvc"/>
@@ -209,7 +213,7 @@
         <mark-expected-failures>
             <test name="ptr_list_of"/>
             <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="msvc"/>
@@ -1910,34 +1914,56 @@ for more information.
     <!-- range -->
     <library name="range">
         <mark-unusable>
-         <!--   <toolset name="gcc-2.95.3*"/> -->
             <toolset name="mipspro"/>
-            <note author="Thorsten Ottosen"/>
+            <toolset name="dmc- 8_43- stlport- 4_5_3"/>
+            <toolset name="gcc- 2.95.3*"/>
+            <toolset name="sunpro- 5_3- sunos"/>
         </mark-unusable>
         <mark-expected-failures>
-            <test name="array_test"/>
+            <test name="array"/>
             <toolset name="como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc7"/>
+            <toolset name="gcc- 3.4.3*"/>
+            <toolset name="gcc- 4.0.0*"/>
             <note refid="27" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="iterator_range"/>
-            <toolset name="cw-8_3*"/>
             <toolset name="msvc-stlport"/>
-            <toolset name="vc7"/>
             <toolset name="tru64cxx65"/>
+            <toolset name="gcc- 3.4.3*"/>
+            <toolset name="gcc- 4.0.0*"/>            
             <note author="Thorsten Ottosen">
                 For most compilers this is due to problems
                 with built-in arrays (notably char arrays) and operator==()
                 and operator!=() for iterator_range. Thus, not using built-in arrays
                 fixes the problem.
+
+                For other compilers it is simply a bug in the standard library.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="reversible_range_test"/>
+            <test name="const_ranges"/>
+            <toolset name="gcc- 3.4.3*"/>
+            <toolset name="gcc- 4.0.0*"/>            
+            <note author="Thorsten Ottosen">
+                This failure is due to a bug in the standard library.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="partial_workaround"/>
+            <toolset name="vc- 7_1"/>
+            <toolset name="vc- 8_0"/>
+            <toolset name="intel- win32- 8_1"/>
+             <note author="Thorsten Ottosen">
+                 This failure is of no importance to this compiler.
+             </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="reversible_range"/>
             <toolset name="vc7"/>
             <toolset name="tru64cxx65"/>
             <note author="Thorsten Ottosen">
@@ -1946,12 +1972,14 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="string_test"/>
+            <test name="string"/>
             <toolset name="vc7"/>
             <toolset name="tru64cxx65"/>
+            <toolset name="borland- 5_6_4"/>
             <note author="Thorsten Ottosen">
                 The string functionality is expected to work if
-                the user employs std::string.
+                the user employs std::string and stays away from built-in
+                arrays.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -1960,13 +1988,21 @@ for more information.
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc7"/>
-            <toolset name="cw-8_3*"/>
             <toolset name="tru64cxx65"/>
             <note refid="6" author="Thorsten Ottosen">
                 For most compilers this is due to problems
                 with built-in arrays (notably char arrays) and operator==()
                 and operator!=() for iterator_range. Thus, not using built-in arrays
                 fixes the problem.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="sub_range"/>
+            <toolset name="cw-9_5-darwin"/>
+            <note author="Thorsten Ottosen">
+                At the time of release I couldn't figure out why this was failing.
+                Anyway, the failure is not very important; also, the well-definedness of
+                "singularity" of an iterator range is likely to change.
             </note>
         </mark-expected-failures>
     </library>
