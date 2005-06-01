@@ -5,7 +5,7 @@
 #  all copies. This software is provided "as is" without express or implied
 #  warranty, and with no claim as to its suitability for any purpose.
 
-subproject tools/regression/test ;
+subproject libs/regression/test ;
 
 # bring in rules for testing
 import testing ;
@@ -19,9 +19,14 @@ DEPENDS all : test ;
     
     run compile-fail.cpp ;
     run run-fail.cpp ;
+    run run-fail-warn.cpp ;
     run run-note-fail.cpp ;
     run run-note-pass.cpp ;
     run run-note-warn.cpp ;
     run run-pass.cpp ;
     run run-pass-warn.cpp ;
+    run-fail run_fail-fail.cpp ;
+    run-fail run_fail-fail-warn.cpp ;
+    run-fail run_fail-pass.cpp ;
+    run-fail run_fail-pass-warn.cpp ;
 }
