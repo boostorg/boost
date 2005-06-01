@@ -12,6 +12,9 @@ int main()
 
   // provoke a compiler warning to make sure <note> takes priority over
   // a warning, but neither is lost from status reporting links HTML.
-  char x = 0xffffffff;
-  return x ? 0 : 0; // use x to eliminate other warnings
+  short s;
+  unsigned long ul;
+  s = s & ul; // warning from many compilers
+  if ( s == ul ) {} // warning from GCC
+  return 0;
 }
