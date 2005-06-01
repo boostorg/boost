@@ -315,10 +315,11 @@ namespace
 
 //  find_element  ------------------------------------------------------------//
 
+  const xml::element empty_element;
+
   const xml::element & find_element(
     const xml::element & root, const string & name )
   {
-    static xml::element empty_element;
     xml::element_list::const_iterator itr;
     for ( itr = root.elements.begin();
           itr != root.elements.end() && (*itr)->name != name;
@@ -339,45 +340,52 @@ const string & attribute_value( const xml::element & element,
   return atr == element.attributes.end() ? empty_string : atr->value;
 }
 
-  // Takes a relative path from boost root to a Jamfile.
-  // Returns the directory where the build targets from
-  // that Jamfile are located. If not found, emits a warning 
-  // and returns empty path.
-  const fs::path find_bin_path(const string& relative)
+//  find_bin_path  -----------------------------------------------------------//
+
+// Takes a relative path from boost root to a Jamfile.
+// Returns the directory where the build targets from
+// that Jamfile are located. If not found, emits a warning 
+// and returns empty path.
+const fs::path find_bin_path(const string& relative)
+{
+  fs::path bin_path;
+  if (boost_build_v2)
   {
-    fs::path bin_path;
-    if (boost_build_v2)
+    bin_path = locate_root / "bin.v2" / relative;
+    if (!fs::exists(bin_path))
     {
-      bin_path = locate_root / "bin.v2" / relative;
-      if (!fs::exists(bin_path))
-      {
-        std::cerr << "warning: could not found build results for '" 
-                  << relative << "'.\n";
-        std::cerr << "warning: tried directory " 
-                  << bin_path.native_directory_string() << "\n";
-        bin_path = "";
-      }
+      std::cerr << "warning: could not find build results for '" 
+                << relative << "'.\n";
+      std::cerr << "warning: tried directory " 
+                << bin_path.native_directory_string() << "\n";
+      bin_path = "";
     }
-    else
+  }
+  else
+  {
+    bin_path = locate_root / "bin/boost" / relative;
+    if (!fs::exists(bin_path))
     {
-      bin_path = locate_root / "bin/boost" / relative;
+      bin_path = locate_root / "bin" / relative / "bin";
       if (!fs::exists(bin_path))
       {
-        bin_path = locate_root / "bin" / relative / "bin";
+        bin_path = fs::path( locate_root / relative / "bin" );
         if (!fs::exists(bin_path))
         {
-          bin_path = fs::path( locate_root / relative / "bin" );
+          bin_path = fs::path( locate_root / "bin/boost/libs" /
+            relative.substr( relative.find( '/' )+1 ) );
         }
       }
-      if (!fs::exists(bin_path))
-      {
-        std::cerr << "warning: could not found build results for '" 
-                  << relative << "'.\n";
-        bin_path = "";
-      }
     }
-    return bin_path;
+    if (!fs::exists(bin_path))
+    {
+      std::cerr << "warning: could not find build results for '" 
+                << relative << "'.\n";
+      bin_path = "";
+    }
   }
+  return bin_path;
+}
 
 
 //  generate_report  ---------------------------------------------------------//
@@ -531,10 +539,10 @@ const string & attribute_value( const xml::element & element,
     fs::path target_dir( target_directory( test_dir / toolset ) );
     bool pass = false;
 
-    // missing jam residue
-    if ( fs::exists( target_dir / (test_name + ".test") ) ) pass = true;
-    else if ( !fs::exists( target_dir / "test_log.xml" ) )
+    if ( !fs::exists( target_dir / "test_log.xml" ) )
     {
+      std::cerr << "Missing jam_log.xml in target:\n "
+        << target_dir.string() << "\n";
       target += "<td>" + missing_residue_msg + "</td>";
       return true;
     }
@@ -542,22 +550,26 @@ const string & attribute_value( const xml::element & element,
     int anything_generated = 0;
     bool note = false;
 
-    // create links file entry
+    fs::path pth( target_dir / "test_log.xml" );
+    fs::ifstream file( pth );
+    if ( !file ) // could not open jam_log.xml
+    {
+      std::cerr << "Can't open jam_log.xml in target:\n "
+        << target_dir.string() << "\n";
+      target += "<td>" + missing_residue_msg + "</td>";
+      return false;
+    }
+
+    xml::element_ptr dbp = xml::parse( file, pth.string() );
+    const xml::element & db( *dbp );
+
+    const xml::element & run_element( find_element( db, "run" ) );
+
+    pass = !run_element.name.empty()
+      && attribute_value( run_element, "result" ) != "fail";
+
     if ( !no_links )
     {
-      fs::path pth( target_dir / "test_log.xml" );
-      fs::ifstream file( pth );
-      if ( !file ) // missing jam_log.xml
-      {
-        std::cerr << "Missing jam_log.xml in target:\n "
-          << target_dir.string() << "\n";
-        target += "<td>";
-        target += pass ? pass_msg : fail_msg;
-        target += "</td>";
-        return pass;
-      }
-      xml::element_ptr dbp = xml::parse( file, pth.string() );
-      const xml::element & db( *dbp );
       note = attribute_value( find_element( db, "run" ), "result" ) == "note";
 
       // generate bookmarked report of results, and link to it
@@ -630,7 +642,7 @@ const string & attribute_value( const xml::element & element,
     target += "<td>" + test_type + "</td>";
 
     bool no_warn_save = no_warn;
-    if ( test_type.find( "fail" ) != string::npos ) no_warn = true;
+    //if ( test_type.find( "fail" ) != string::npos ) no_warn = true;
 
     // for each compiler, generate <td>...</td> html
     bool anything_to_report = false;
