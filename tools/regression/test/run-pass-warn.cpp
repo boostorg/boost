@@ -2,9 +2,13 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-int main()
+// provoke one or more compiler warnings
+
+int main(int argc, char * argv[] )
 {
-  // provoke a compiler warning
-  char x = 0xffffffff;
-  return x ? 0 : 0; // use x to eliminate other warnings
+  short s;
+  unsigned long ul;
+  s = s & ul; // warning from many compilers
+  if ( s == ul ) {} // warning from GCC
+  return 0;
 }
