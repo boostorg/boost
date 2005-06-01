@@ -859,51 +859,33 @@
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="dmc-8_43-stlport-4_5_3"/>
-            <note author="Jonathan Turkanis">
-                Many workarounds would be required to support toolset
-            </note>
+            <note author="Jonathan Turkanis" refid="17"/>
         </mark-unusable>
-        <!-- 
-			<mark-unusable>
-				<toolset name="gcc-2.95.3-linux"/>
-				<note refid="5" author="D. Gregor"/>
-			</mark-unusable>
-		-->
         <mark-expected-failures>
             <test name="seekable_file_test"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <toolset name="msvc-stlport"/>
-            <note author="Jonathan Turkanis">
-                This failure is a result of an undiagnosed STLPort bug; 
-                the test fails even if all Boost components are replaced by 
-                standard library components.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="seekable_file_test"/>
             <toolset name="*como-4_3_3*"/>
-            <note author="Jonathan Turkanis" refid="5"/>
+            <note author="Jonathan Turkanis" refid="4"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="code_converter_test"/>
-            <toolset name="gcc-2.95.3-linux"/>
-            <toolset name="mingw"/>
-            <toolset name="mingw-3_4_2"/>
-            <note author="Jonathan Turkanis">
-                No wide stream support.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
             <test name="wide_stream_test"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="mingw"/>
             <toolset name="mingw-3_4_2"/>
-            <note author="Jonathan Turkanis">
-                No wide stream support.
-            </note>
+            <note author="Jonathan Turkanis" refid="19"/>
         </mark-expected-failures>
+        <!--
+			<mark-expected-failures>
+				<toolset name="gcc-2.95.3-linux"/>
+				<toolset name="mingw"/>
+				<toolset name="mingw-3_4_2"/>
+				<note author="Jonathan Turkanis" refid="19"/>
+			</mark-expected-failures>
+		-->
         <mark-expected-failures>
             <test name="bzip2_test"/>
             <test name="file_descriptor_test"/>
@@ -911,6 +893,14 @@
             <toolset name="*como-4_3_3*"/>
             <note author="Jonathan Turkanis">
                 compiler can't compile "windows.h" in strict mode
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="direct_adapter_test"/>
+            <test name="gzip_test"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <note author="Jonathan Turkanis">
+                Undiagnosed runtime failure
             </note>
         </mark-expected-failures>
     </library>
