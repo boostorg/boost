@@ -16,7 +16,7 @@ http://www.boost.org/LICENSE_1_0.txt)
     xmlns:meta="http://www.meta-comm.com"
     xmlns:set="http://exslt.org/sets"
     extension-element-prefixes="func exsl"
-    exclude-result-prefixes="set meta"
+    exclude-result-prefixes="exsl set meta"
     version="1.0">
 
     <xsl:import href="common.xsl"/>
@@ -28,27 +28,28 @@ http://www.boost.org/LICENSE_1_0.txt)
         />
 
 
-    <xsl:param name="links_file"/>
-    <xsl:param name="mode"/>
     <xsl:param name="source"/>
     <xsl:param name="run_date"/>
     <xsl:param name="comment_file"/>
     <xsl:param name="expected_results_file"/>
     <xsl:param name="explicit_markup_file"/>
+    <xsl:param name="release"/>
 
     <!-- the author-specified expected test results -->
     <xsl:variable name="explicit_markup" select="document( $explicit_markup_file )"/>
     <xsl:variable name="expected_results" select="document( $expected_results_file )" />
      
+    <xsl:variable name="release_postfix">
+        <xsl:if test="$release='yes'">
+            <xsl:text>_release</xsl:text>
+        </xsl:if>
+    </xsl:variable>
+
     <!-- necessary indexes -->
     <xsl:key 
         name="test_name_key" 
         match="test-log" 
         use="concat( @library, '@', @test-name )"/>
-                    <xsl:key 
-                        name="a" 
-                        match="." 
-                        use="concat( @library, '@', @test-name )"/>
 
     <xsl:key 
         name="library_key" 
@@ -61,7 +62,9 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:variable name="required_toolsets" select="$explicit_markup//mark-toolset[ @status='required' ]"/>
     <xsl:variable name="required_toolset_names" select="$explicit_markup//mark-toolset[ @status='required' ]/@name"/>
     <!-- libraries -->
-    <xsl:variable name="libraries" select="//test-log[ @library != '' and generate-id(.) = generate-id( key('library_key',@library)[1] )  ]/@library"/>
+
+    <xsl:variable name="test_case_logs" select="//test-log[ meta:is_test_log_a_test_case(.) and meta:show_library( @library, $release ) and meta:show_toolset( @toolset, $release )]"/>
+    <xsl:variable name="libraries" select="set:distinct( $test_case_logs/@library )"/>
 
     <xsl:variable name="unexpected_test_cases" select="//test-log[ @status='unexpected' and @result='fail' and @toolset = $required_toolset_names and meta:is_test_log_a_test_case(.)]"/>
 
@@ -80,8 +83,8 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 
     <xsl:template match="/">
-
-        <xsl:variable name="issues_list" select="'issues_.html'"/>
+        <xsl:variable name="issues_list" 
+          select="concat('issues', $release_postfix, '_.html')"/>
 
         <!-- Issues page -->
         <html>
@@ -90,7 +93,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <title>Boost regression unresolved issues: <xsl:value-of select="$source"/></title>
         </head>
         <frameset cols="190px,*" frameborder="0" framespacing="0" border="0">
-        <frame name="tocframe" src="toc.html" scrolling="auto"/>
+        <frame name="tocframe" src="toc{$release_postfix}.html" scrolling="auto"/>
         <frame name="docframe" src="{$issues_list}" scrolling="auto"/>
         </frameset>
         </html>
@@ -112,7 +115,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
                 <h1 class="page-title">
                     <xsl:text>Unresolved Issues: </xsl:text>
-                    <a class="hover-link" href="summary.html" target="_top"><xsl:value-of select="$source"/></a>
+                    <a class="hover-link" href="summary{$release_postfix}.html" target="_top"><xsl:value-of select="$source"/></a>
                 </h1>
 
                 <div class="report-info">
@@ -134,7 +137,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                         <xsl:variable name="library_test_names" select="set:distinct( $library_tests/@test-name )"/>
 
                         <h2>
-                            <a class="hover-link" href="{$library_page}.html" target="_top">
+                            <a class="hover-link" href="{$library_page}{$release_postfix}.html" target="_top">
                                 <xsl:value-of select="$library"/>
                             </a>
                         </h2>
@@ -171,30 +174,38 @@ http://www.boost.org/LICENSE_1_0.txt)
                                         <td class="failures-row">
                                             <table summary="unexpected fail legend" class="issue-box">
                                                 <tr class="library-row-single">
-                                                
-                                                <xsl:for-each select="$unexpected_toolsets">
+                                                  
+                                                  <xsl:for-each select="$unexpected_toolsets">
                                                     <xsl:sort select="." order="ascending"/>
                                                     <xsl:variable name="toolset" select="."/>
                                                     <xsl:variable name="test_result" select="$library_tests[@test-name = $test_name and @toolset = $toolset]"/>
-                                                    <xsl:variable name="log_link" select="meta:output_file_path( $test_result/@target-directory )"/>
-                                                    <xsl:variable name="class">
+                                                    <xsl:variable name="test_log" select="set:distinct(key('test_name_key', concat ($library, '@', $test_name))[@toolset = $toolset])"/>
+                                                    <xsl:for-each select="$test_log">
+                                                      <xsl:variable name="log_link">
+                                                        <xsl:value-of select="meta:log_file_path( ., ../@runner, $release_postfix )"/>
+                                                      </xsl:variable>
+                                                      <xsl:variable name="class">
                                                         <xsl:choose>
-                                                            <xsl:when test="$test_result/@is-new = 'yes'">
-                                                                <xsl:text>library-fail-unexpected-new</xsl:text>
-                                                            </xsl:when>
-                                                            <xsl:otherwise>
-                                                                <xsl:text>library-fail-unexpected</xsl:text>
-                                                            </xsl:otherwise>
+                                                          <xsl:when test="$test_result/@is-new = 'yes'">
+                                                            <xsl:text>library-fail-unexpected-new</xsl:text>
+                                                          </xsl:when>
+                                                          <xsl:otherwise>
+                                                            <xsl:text>library-fail-unexpected</xsl:text>
+                                                          </xsl:otherwise>
                                                         </xsl:choose>
-                                                    </xsl:variable>
-
-                                                    <td class="{$class}">
+                                                      </xsl:variable>
+                                                      
+                                                      <td class="{$class}">
                                                         <span>
-                                                        <a href="{$log_link}" class="log-link" target="_top">
-                                                            <xsl:value-of select="."/>
-                                                        </a>
+                                                          <a href="{$log_link}" class="log-link" target="_top">
+                                                            <xsl:value-of select="$toolset"/>
+                                                            <xsl:text> (</xsl:text>
+                                                            <xsl:value-of select="../@runner"/>
+                                                             <xsl:text>)</xsl:text>
+                                                          </a>
                                                         </span>
-                                                    </td>
+                                                      </td>
+                                                    </xsl:for-each>
                                                 </xsl:for-each>
                                                 
                                                 </tr>
@@ -207,7 +218,6 @@ http://www.boost.org/LICENSE_1_0.txt)
 
                             </table>
 
-
                         </xsl:if>
                     </xsl:for-each>
 
@@ -217,6 +227,5 @@ http://www.boost.org/LICENSE_1_0.txt)
             </body>
             </html>
         </exsl:document>  
-
     </xsl:template>
 </xsl:stylesheet>

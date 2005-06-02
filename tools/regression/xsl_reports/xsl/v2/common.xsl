@@ -148,9 +148,7 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="library"/>
         <xsl:param name="toolset"/>
           
-        <xsl:for-each select="$unusables">
-            <func:result select="count( key( 'library-name_toolset-name_key', concat( $library, '&gt;@&lt;', $toolset ) ) ) &gt; 0"/>
-        </xsl:for-each>
+        <func:result select="count( $explicit_markup//library[ @name = $library ]/mark-unusable/toolset[ meta:re_match( @name, $toolset ) ] ) > 0"/>
     </func:function>
 
     <func:function name="meta:re_match">
