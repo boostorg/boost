@@ -214,6 +214,88 @@ http://www.boost.org/LICENSE_1_0.txt)
         </body>
       </html>
     </exsl:document>  
+
+    <xsl:message>Writing document issues-email.txt</xsl:message>
+    <exsl:document href="issues-email.txt" method="text" encoding="utf-8">
+      <xsl:text>Boost regression test failures
+------------------------------
+Report time: </xsl:text>
+      
+      <xsl:value-of select="$run_date"/>
+      
+      <xsl:text>
+
+Purpose: You are receiving this report because one of the libraries
+you maintain has regression test failures that are not accounted for.
+
+Detailed report: 
+  http://engineering.meta-comm.com/boost-regression/</xsl:text>
+        <xsl:value-of select="$source"/>
+        <xsl:text>/developer/issues.html
+
+</xsl:text>
+      <xsl:value-of select="count($failing_tests)"/>
+      <xsl:text> failure</xsl:text>
+      <xsl:if test="count($failing_tests) &gt; 1">
+        <xsl:text>s</xsl:text>
+      </xsl:if>
+      <xsl:text> in </xsl:text>
+      <xsl:value-of select="count($libraries)"/>
+      <xsl:text> librar</xsl:text>
+      <xsl:choose>
+        <xsl:when test="count($libraries) &gt; 1">
+          <xsl:text>ies</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:text>y</xsl:text>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>:
+</xsl:text>
+      <xsl:for-each select="$libraries">
+        <xsl:sort select="." order="ascending"/>
+        <xsl:variable name="library" select="."/>
+        <xsl:text>  </xsl:text>
+        <xsl:value-of select="$library"/>
+        <xsl:text> (</xsl:text>
+        <xsl:value-of select="count($failing_tests[@library = $library])"/>
+        <xsl:text>)
+</xsl:text>
+      </xsl:for-each>
+
+      <xsl:for-each select="$libraries">
+        <xsl:sort select="." order="ascending"/>
+        <xsl:variable name="library" select="."/>
+        <xsl:variable name="library_page" select="meta:encode_path( $library )" />
+        <xsl:variable name="library_tests" select="$failing_tests[@library = $library]"/>
+        <xsl:variable name="library_test_names" select="set:distinct( $library_tests/@test-name )"/>
+
+        <xsl:text>
+|</xsl:text>
+        <xsl:value-of select="$library"/>
+        <xsl:text>|
+</xsl:text>
+
+        <xsl:for-each select="$library_test_names">
+          <xsl:sort select="." order="ascending"/>
+          <xsl:variable name="test_name" select="."/>
+          
+          <xsl:variable name="unexpected_toolsets" select="$library_tests[@test-name = $test_name]/@toolset"/>
+          
+          <xsl:variable name="test_program"  select="$library_tests[@test-name = $test_name]/@test-program"/>
+          <xsl:text>  </xsl:text>
+          <xsl:value-of select="$test_name"/>
+          <xsl:text>:</xsl:text>
+          <xsl:for-each select="$unexpected_toolsets">
+            <xsl:sort select="." order="ascending"/>
+            <xsl:text>  </xsl:text>
+            <xsl:value-of select="."/>
+          </xsl:for-each>
+          <xsl:text>
+</xsl:text>
+        </xsl:for-each>
+      </xsl:for-each>
+    </exsl:document>
   </xsl:template>
 
   <xsl:template name="print_failure_cell">
