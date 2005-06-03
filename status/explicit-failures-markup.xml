@@ -499,7 +499,6 @@
             <toolset name="borland-5_6_4"/>
             <toolset name="*como-4_3_3*"/>
             <toolset name="cw-8_3*"/>
-            <toolset name="cw-9_5*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="msvc"/>
@@ -512,12 +511,12 @@
             </mark-failure>
         </test>
 
+
         <test name="testtime_input_facet">
             <mark-failure>
             <toolset name="borland-5_6_4"/>
             <toolset name="*como-4_3_3*"/>
             <toolset name="cw-8_3*"/>
-            <toolset name="cw-9_5*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="msvc"/>
@@ -696,6 +695,19 @@
             <toolset name="cw-8_3*"/>
             <note author="R. Rivera" refid="25"/>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="testlocal_time_input_facet">
+            <test name="testtime_input_facet">
+            <toolset name="cw-9_5*"/>
+            <note author="J. Garland">
+                 Although these tests compile, the execution aborts for 
+                 an unknown reason.  This may be fixable if someone
+                 can track down the source of the problem.
+            </note>
+        </mark-expected-failures>
+
+
     </library>
 
 
