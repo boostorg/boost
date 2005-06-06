@@ -72,9 +72,10 @@ to_line = 'boost@lists.boost.org'
 from_line = 'Douglas Gregor <dgregor@cs.indiana.edu>'
 
 message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
+To: boost@lists.boost.org
 """
 
-message += "CC: "
+message += "BCC: "
 message += cc_line
 
 message += """
