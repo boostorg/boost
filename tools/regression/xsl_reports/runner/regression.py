@@ -829,13 +829,14 @@ Options:
     print 'For more documentation, see http://tinyurl.com/4f2zp\n'
 
 
-if len(sys.argv) > 1 and sys.argv[1] in commands:
-    command = sys.argv[1]
-    args = sys.argv[ 2: ]
-    if command not in [ 'collect-logs', 'upload-logs' ]:
-        args.insert( 0, '--runner=' )
-else:
-    command = 'regression'
-    args = sys.argv[ 1: ]
-    
-commands[ command ]( **accept_args( args ) )
+if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv[1] in commands:
+        command = sys.argv[1]
+        args = sys.argv[ 2: ]
+        if command not in [ 'collect-logs', 'upload-logs' ]:
+            args.insert( 0, '--runner=' )
+    else:
+        command = 'regression'
+        args = sys.argv[ 1: ]
+
+    commands[ command ]( **accept_args( args ) )
