@@ -5,7 +5,6 @@
 # (See accompanying file LICENSE_1_0.txt or copy at 
 # http://www.boost.org/LICENSE_1_0.txt)
 
-import socket
 import tarfile
 import shutil
 import time
@@ -72,8 +71,8 @@ def make_tarball(
 
     sources_dir = os.path.join( working_dir, 'boost' )
     if os.path.exists( sources_dir ):
-        utils.log( 'Already running, exiting this one...' )
-        return False
+        utils.log( 'Directory "%s" already exists, cleaning it up...' % sources_dir )
+        rmtree( sources_dir )
 
     try:
         os.mkdir( sources_dir )
@@ -106,50 +105,6 @@ def make_tarball(
         utils.log( 'Removing "%s"...' % timestamped_dir )
         rmtree( timestamped_dir )
 
-    return True
-
-
-def format_time( t ):
-    return time.strftime( 
-          '%a, %d %b %Y %H:%M:%S +0000'
-        , t
-        )
-
-
-def make_tarball_send_mail(
-          working_dir
-        , tag
-        , user
-        , site_dir
-        , mail
-        ):
-    try:
-        mail_subject = '[Boost CVS tarball] Build for %s on %s' % ( tag, string.split(socket.gethostname(), '.')[0] )
-
-        send_mail = make_tarball(
-              working_dir
-            , tag
-            , user
-            , site_dir
-            )
-
-        if mail and send_mail:
-            utils.log( 'Sending report to "%s"' % mail )
-            utils.send_mail( 
-                  mail
-                , '%s completed successfully at %s.' % ( mail_subject, format_time( time.localtime() ) )
-                )
-    except:
-        if mail:
-            utils.log( 'Sending report to "%s"' % mail )
-            msg = apply( traceback.format_exception, sys.exc_info() )
-            utils.send_mail( 
-                  mail
-                , '%s failed at %s.' % ( mail_subject, format_time( time.localtime() ) )
-                , '\n'.join( msg )
-                )
-        raise
-
 
 def accept_args( args ):
     args_spec = [ 
@@ -164,7 +119,6 @@ def accept_args( args ):
     options = { 
           '--tag': 'CVS-HEAD'
         , '--site-dir': None
-        , '--mail': None
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -174,7 +128,6 @@ def accept_args( args ):
         , options[ '--tag' ]
         , options[ '--user' ]
         , options[ '--site-dir' ]
-        , options[ '--mail' ]
         )
 
 
@@ -185,11 +138,10 @@ def usage():
 \t--tag           snapshot tag (i.e. 'CVS-HEAD')
 \t--user          SourceForge user name for a CVS account
 \t--site-dir      site directory to copy the snapshot to (optional)
-\t--mail          email address to send run notification to (optional)
 '''
 
 def main():
-    make_tarball_send_mail( *accept_args( sys.argv[ 1: ] ) )
+    make_tarball( *accept_args( sys.argv[ 1: ] ) )
 
 if __name__ != '__main__':  import utils
 else:
