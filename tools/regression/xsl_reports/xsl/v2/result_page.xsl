@@ -167,13 +167,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <a class="hover-link" href="summary.html" target="_top"><xsl:value-of select="$source"/></a>
                 </h1>                            
 
-                <xsl:call-template name="insert_report_header">
-                    <xsl:with-param name="run_date" select="$run_date"/>
-                    <xsl:with-param name="warnings" select="$warnings"/>
-                </xsl:call-template>
-
-                <div class="report-info">
-                    <b>Purpose: </b>
+                <xsl:variable name="purpose">
                     <xsl:choose>
                         <xsl:when test="$mode='user'">
                             The purpose of this report is to help a user to find out whether a particular library 
@@ -185,8 +179,14 @@ http://www.boost.org/LICENSE_1_0.txt)
                             report, see <a href="../{$alternate_mode}/index.html" target="_top">user summary</a>.
                         </xsl:when>
                     </xsl:choose>
-                </div>
-                              
+                </xsl:variable>
+
+                <xsl:call-template name="insert_report_header">
+                    <xsl:with-param name="run_date" select="$run_date"/>
+                    <xsl:with-param name="warnings" select="$warnings"/>
+                    <xsl:with-param name="purpose" select="$purpose"/>
+                </xsl:call-template>
+
                 <div class="comment">
                     <xsl:if test="$comment_file != ''">
                         <xsl:copy-of select="document( $comment_file )"/>

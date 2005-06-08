@@ -320,18 +320,31 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:template name="insert_report_header">
         <xsl:param name="run_date"/>
         <xsl:param name="warnings"/>
+        <xsl:param name="purpose"/>
 
         <div class="report-info">
-            <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
-        </div>
+            <div>
+                <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
+            </div>
 
-        <xsl:if test="$warnings">
-            <xsl:for-each select="str:split( $warnings )">
-                <div class="report-warning">
-                    <b>Warning: </b> <xsl:value-of select="."/>
+            <xsl:if test="$purpose">
+                <div>
+                    <b>Purpose: </b> <xsl:value-of select="$purpose"/>
                 </div>
-            </xsl:for-each>
-        </xsl:if>
+            </xsl:if>
+
+            <xsl:if test="$warnings">
+                <xsl:for-each select="str:split( $warnings, '+' )">
+                    <div class="report-warning">
+                        <b>Warning: </b> 
+                        <a href="mailto:boost-testing@lists.boost.org?subject=[Report Pages] {.} ({meta:format_timestamp( $run_date )})" class="warning-link">
+                            <xsl:value-of select="."/>
+                        </a>
+                    </div>
+                </xsl:for-each>
+            </xsl:if>
+
+        </div>
 
     </xsl:template>
 
