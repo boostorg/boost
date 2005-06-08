@@ -490,6 +490,7 @@ def make_result_pages(
             , {
                   'source':                 tag
                 , 'run_date':               run_date
+                , 'warnings':               warnings_text
                 , 'comment_file':           comment_file
                 , 'expected_results_file':  expected_results_file
                 , 'explicit_markup_file':   failures_markup_file

@@ -135,8 +135,9 @@ def http_get( source_url, destination, proxy ):
     src.close()
 
 
-def download_boost_tarball( destination, tag, proxy ):
-    tarball_name = 'boost-%s.tar.bz2' % tag
+def download_boost_tarball( destination, tag, proxy, timestamp_only = False ):
+    if not timestamp_only:  tarball_name = 'boost-%s.tar.bz2' % tag
+    else:                   tarball_name = 'boost-%s.timestamp' % tag
     tarball_path = os.path.join( destination, tarball_name )
     tarball_url = 'http://www.meta-comm.com/engineering/boost/snapshot/%s' % tarball_name
 

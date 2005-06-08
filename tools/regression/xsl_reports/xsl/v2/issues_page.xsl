@@ -117,11 +117,8 @@ http://www.boost.org/LICENSE_1_0.txt)
           <xsl:call-template name="insert_report_header">
             <xsl:with-param name="run_date" select="$run_date"/>
             <xsl:with-param name="warnings" select="$warnings"/>
+            <xsl:with-param name="purpose" select="'Provides a list of current unresolved test failures.'"/>
           </xsl:call-template>
-          
-          <div class="report-info">
-              <b>Purpose: </b> Provides a list of current unresolved test failures. 
-          </div>
 
           <!-- Emit the index -->  
           <h2>Libraries with unresolved failures</h2>
