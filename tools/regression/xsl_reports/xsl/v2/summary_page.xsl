@@ -27,10 +27,10 @@ http://www.boost.org/LICENSE_1_0.txt)
         indent="yes"
         />
 
-
     <xsl:param name="mode"/>
     <xsl:param name="source"/>
     <xsl:param name="run_date"/>
+    <xsl:param name="warnings"/>
     <xsl:param name="comment_file"/>
     <xsl:param name="explicit_markup_file"/>
     <xsl:param name="release"/>
@@ -131,9 +131,10 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <a class="hover-link" href="summary{$release_postfix}.html" target="_top"><xsl:value-of select="$source"/></a>
             </h1>
 
-            <div class="report-info">
-                <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
-            </div>
+            <xsl:call-template name="insert_report_header">
+                <xsl:with-param name="run_date" select="$run_date"/>
+                <xsl:with-param name="warnings" select="$warnings"/>
+            </xsl:call-template>
 
             <div class="statistics">
             Unusable: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'unusable' ] )"/>

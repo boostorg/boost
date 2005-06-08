@@ -317,6 +317,24 @@ http://www.boost.org/LICENSE_1_0.txt)
         </func:result>
     </func:function>
 
+    <xsl:template name="insert_report_header">
+        <xsl:param name="run_date"/>
+        <xsl:param name="warnings"/>
+
+        <div class="report-info">
+            <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
+        </div>
+
+        <xsl:if test="$warnings">
+            <xsl:for-each select="str:split( $warnings )">
+                <div class="report-warning">
+                    <b>Warning: </b> <xsl:value-of select="."/>
+                </div>
+            </xsl:for-each>
+        </xsl:if>
+
+    </xsl:template>
+
 
     <xsl:template name="insert_view_link">
         <xsl:param name="page"/>

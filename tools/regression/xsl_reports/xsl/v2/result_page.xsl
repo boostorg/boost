@@ -31,6 +31,7 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:param name="mode"/>
     <xsl:param name="source"/>
     <xsl:param name="run_date"/>
+    <xsl:param name="warnings"/>
     <xsl:param name="comment_file"/>
     <xsl:param name="expected_results_file"/>
     <xsl:param name="explicit_markup_file"/>
@@ -166,25 +167,24 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <a class="hover-link" href="summary.html" target="_top"><xsl:value-of select="$source"/></a>
                 </h1>                            
 
+                <xsl:call-template name="insert_report_header">
+                    <xsl:with-param name="run_date" select="$run_date"/>
+                    <xsl:with-param name="warnings" select="$warnings"/>
+                </xsl:call-template>
+
                 <div class="report-info">
-                    <div>
-                        <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
-                    </div>
-                      
-                    <div>
-                        <b>Purpose: </b>
-                        <xsl:choose>
-                            <xsl:when test="$mode='user'">
-                                The purpose of this report is to help a user to find out whether a particular library 
-                                works on the particular compiler(s). For CVS "health report", see 
-                                <a href="../{$alternate_mode}/index.html" target="_top">developer summary</a>.
-                            </xsl:when>
-                            <xsl:when test="$mode='developer'">
-                                Provides Boost developers with visual indication of the CVS "health". For user-level 
-                                report, see <a href="../{$alternate_mode}/index.html" target="_top">user summary</a>.
-                            </xsl:when>
-                        </xsl:choose>
-                    </div>
+                    <b>Purpose: </b>
+                    <xsl:choose>
+                        <xsl:when test="$mode='user'">
+                            The purpose of this report is to help a user to find out whether a particular library 
+                            works on the particular compiler(s). For CVS "health report", see 
+                            <a href="../{$alternate_mode}/index.html" target="_top">developer summary</a>.
+                        </xsl:when>
+                        <xsl:when test="$mode='developer'">
+                            Provides Boost developers with visual indication of the CVS "health". For user-level 
+                            report, see <a href="../{$alternate_mode}/index.html" target="_top">user summary</a>.
+                        </xsl:when>
+                    </xsl:choose>
                 </div>
                               
                 <div class="comment">
@@ -313,9 +313,10 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <a class="hover-link" href="summary.html" target="_top"><xsl:value-of select="$source"/></a>
                 </h1>
 
-                <div class="report-info">
-                    <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
-                </div>
+                <xsl:call-template name="insert_report_header">
+                    <xsl:with-param name="run_date" select="$run_date"/>
+                    <xsl:with-param name="warnings" select="$warnings"/>
+                </xsl:call-template>
 
                 <!-- library marks = library-unusable markup for toolsets in the report  -->
                 <xsl:variable name="library_marks" select="$explicit_markup//library[ @name = $library ]/mark-unusable/toolset[  meta:re_match( @name, $run_toolsets//toolset/@name ) ]/.."/>

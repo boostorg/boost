@@ -395,6 +395,7 @@ def execute_tasks(
         , results_dir
         , output_dir
         , reports
+        , warnings
         , extended_test_results
         , dont_collect_logs
         , expected_results_file
@@ -448,6 +449,7 @@ def execute_tasks(
         , comment_file
         , output_dir
         , reports
+        , warnings
         )
 
         
@@ -460,10 +462,13 @@ def make_result_pages(
         , comment_file
         , output_dir
         , reports
+        , warnings
         ):
 
     utils.log( 'Producing the reports...' )
     __log__ = 1
+
+    warnings_text = '+'.join( warnings )
     
     if comment_file != '':
         comment_file = os.path.abspath( comment_file )
@@ -504,7 +509,8 @@ def make_result_pages(
                       'links_file':             'links.html'
                     , 'mode':                   mode
                     , 'source':                 tag
-                    , 'run_date':               run_date 
+                    , 'run_date':               run_date
+                    , 'warnings':               warnings_text
                     , 'comment_file':           comment_file
                     , 'expected_results_file':  expected_results_file
                     , 'explicit_markup_file' :  failures_markup_file
@@ -523,6 +529,7 @@ def make_result_pages(
                       'mode' :                  mode 
                     , 'source':                 tag
                     , 'run_date':               run_date 
+                    , 'warnings':               warnings_text
                     , 'comment_file':           comment_file
                     , 'explicit_markup_file' :  failures_markup_file
                     }
@@ -541,6 +548,7 @@ def make_result_pages(
                     , 'mode':                   mode
                     , 'source':                 tag
                     , 'run_date':               run_date 
+                    , 'warnings':               warnings_text
                     , 'comment_file':           comment_file
                     , 'expected_results_file':  expected_results_file
                     , 'explicit_markup_file' :  failures_markup_file
@@ -560,6 +568,7 @@ def make_result_pages(
                       'mode' :                  mode
                     , 'source':                 tag
                     , 'run_date':               run_date 
+                    , 'warnings':               warnings_text
                     , 'comment_file':           comment_file
                     , 'explicit_markup_file' :  failures_markup_file
                     , 'release':                'yes'
@@ -600,6 +609,7 @@ def build_xsl_reports(
         , result_file_prefix
         , dont_collect_logs = 0
         , reports = report_types
+        , warnings = []
         , user = None
         , upload = False
         ):
@@ -630,6 +640,7 @@ def build_xsl_reports(
         , results_dir
         , output_dir
         , reports
+        , warnings
         , extended_test_results
         , dont_collect_logs
         , expected_results_file

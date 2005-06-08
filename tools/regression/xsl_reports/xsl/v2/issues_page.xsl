@@ -31,6 +31,7 @@ http://www.boost.org/LICENSE_1_0.txt)
   
   <xsl:param name="source"/>
   <xsl:param name="run_date"/>
+  <xsl:param name="warnings"/>
   <xsl:param name="comment_file"/>
   <xsl:param name="expected_results_file"/>
   <xsl:param name="explicit_markup_file"/>
@@ -112,14 +113,14 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:text>Unresolved Issues: </xsl:text>
             <a class="hover-link" href="summary{$release_postfix}.html" target="_top"><xsl:value-of select="$source"/></a>
           </h1>
+
+          <xsl:call-template name="insert_report_header">
+            <xsl:with-param name="run_date" select="$run_date"/>
+            <xsl:with-param name="warnings" select="$warnings"/>
+          </xsl:call-template>
           
           <div class="report-info">
-            <div>
-              <b>Report Time: </b> <xsl:value-of select="$run_date"/>
-            </div>
-            <div>
               <b>Purpose: </b> Provides a list of current unresolved test failures. 
-            </div>
           </div>
 
           <!-- Emit the index -->  
