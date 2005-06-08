@@ -83,7 +83,8 @@ def make_tarball(
         rmtree( sources_dir )
         raise
 
-    timestamped_dir_name = 'boost-%s-%s' % ( tag, time.strftime( '%y-%m-%d-%H%M', time.gmtime() ) )
+    timestamp = time.gmtime()
+    timestamped_dir_name = 'boost-%s-%s' % ( tag, time.strftime( '%y-%m-%d-%H%M', timestamp ) )
     timestamped_dir = os.path.join( working_dir, timestamped_dir_name )
 
     utils.log( 'Renaming "%s" to "%s"...' % ( sources_dir, timestamped_dir ) )
@@ -99,9 +100,15 @@ def make_tarball(
     tar.add( timestamped_dir, timestamped_dir_name )
     tar.close()
 
+    tarball_timestamp_path = os.path.join( working_dir, 'boost-%s.timestamp' % tag )
+    timestamp_file = open( tarball_timestamp_path, 'w' )
+    timestamp_file.write( '%f' % time.mktime( timestamp ) )
+    timestamp_file.close()
+
     if site_dir is not None:
         utils.log( 'Moving "%s" to the site location "%s"...' % ( tarball_name, site_dir ) )
         shutil.move( tarball_path, site_dir )
+        shutil.move( tarball_timestamp_path, site_dir )
         utils.log( 'Removing "%s"...' % timestamped_dir )
         rmtree( timestamped_dir )
 
