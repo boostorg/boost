@@ -73,6 +73,7 @@ from_line = 'Douglas Gregor <dgregor@cs.indiana.edu>'
 
 message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
 To: boost@lists.boost.org
+Reply-To: boost@lists.boost.org
 """
 
 message += "BCC: "
