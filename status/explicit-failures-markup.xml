@@ -63,7 +63,7 @@
             <toolset name="mipspro"/>
             <toolset name="sunpro-5_3-sunos"/>
             <note author="P.Droba">
-		        The compiler does not support features that are essential for the library.
+                The compiler does not support features that are essential for the library.
             </note>
         </mark-unusable>
     </library>
@@ -2232,6 +2232,12 @@ for more information.
     <!-- test -->
     <library name="test">
         <mark-expected-failures>
+            <test name="ifstream_line_iterator_test"/>
+            <toolset name="sunpro*"/>
+            <note author="Gennadiy Rozental" refid="2"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="custom_exception_test"/>
             <toolset name="msvc*"/>
             <toolset name="vc-6_5*"/>
@@ -2246,17 +2252,18 @@ for more information.
 
         <mark-expected-failures>
             <test name="token_iterator_test"/>
+            <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
-            <note refid="3"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures reason="?">
-            <test name="token_iterator_test"/>
             <toolset name="iw-7_1-vc6"/>
-            <toolset name="msvc"/>
-            <toolset name="gcc-3.4.2-linux"/>
-            <note refid="29"/>
+            <toolset name="vc-7_0"/>
+            <toolset name="vc-7_0-stlport"/>
+            <toolset name="gcc-2_95_3-linux"/>
+            <toolset name="gcc-2_95_3-stlport-4_5_3-linux"/>
+            <toolset name="tru64cxx65"/>
+            <toolset name="sunpro*"/>
+            <toolset name="borland*"/>
+            <note author="Gennadiy Rozental" refid="3"/>
         </mark-expected-failures>
 
         <mark-expected-failures reason="?">
