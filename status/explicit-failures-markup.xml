@@ -716,6 +716,20 @@
             </note>
         </mark-expected-failures>
 
+        <mark-expected-failures>
+            <test name="testlocal_time"/>
+            <test name="testlocal_time_input_facet"/>
+            <test name="testtime_input_facet"/>
+            <toolset name="vc-8_0"/>
+            <note author="J. Garland">
+               These tests are failing with the beta2 version of VC_8.  At least
+               one of them is directly a result of the new VC_8 standard library
+               restricting the year value in a tm struct to be positive (that is
+               greater than year 1900).  This is a change from VC7_1 and Microsoft
+               is considering removing this restriction.
+            </note>
+        </mark-expected-failures>
+
 
     </library>
 
