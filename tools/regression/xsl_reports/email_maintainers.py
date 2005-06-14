@@ -11,6 +11,7 @@ import smtplib
 import os
 import time
 import string
+import datetime
 
 got_issues = False
 print 'Retrieving issues email...'
@@ -80,7 +81,12 @@ message += "BCC: "
 message += cc_line
 
 message += """
-Subject: Boost regression notification
+Subject: Boost regression notification ("""
+
+message += str(datetime.date.today())
+message += ")"
+
+message += """
 
 """
 
