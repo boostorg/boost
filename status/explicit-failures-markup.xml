@@ -778,18 +778,12 @@
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
         </mark-unusable>
-        <test name="format_test2">
-            <mark-failure>
-                <toolset name="tru64cxx65*"/>
-                <note author="Markus Schoepflin" refid="33"/>
-            </mark-failure>
-        </test>
-        <test name="format_test3">
-            <mark-failure>
-                <toolset name="tru64cxx65*"/>
-                <note author="Markus Schoepflin" refid="33"/>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="format_test2"/>
+            <test name="format_test3"/>
+            <toolset name="tru64cxx65*"/>
+            <note author="Markus Schoepflin" refid="33"/>
+        </mark-expected-failures>
     </library>
 
     <!-- functional/hash -->
@@ -902,6 +896,12 @@
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
             <note refid="4" author="Aleksey Gurtovoy"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ios_state_test"/>
+            <test name="ios_state_unit_test"/>
+            <toolset name="tru64cxx65*"/>
+            <note refid="34" author="Markus Schoepflin"/>
         </mark-expected-failures>
     </library>
 
@@ -2809,6 +2809,13 @@ for more information.
         <code>std::internal</code> flag in the iostreams implementation of the
         standard library used on that compiler/platform combo. Apart from that,
         the format library works as expected.
+    </note>
+
+    <note id="34">
+        The failures are caused by the fact that the iword and pword arrays seem
+        to share the same memory area in the iostreams implementation of the
+        standard library used on that compiler/platform combo. As long as you
+        stay clear of iword and pword, the library should work ok.
     </note>
 
 </explicit-failures-markup>
