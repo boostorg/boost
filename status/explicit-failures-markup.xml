@@ -778,6 +778,18 @@
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
         </mark-unusable>
+        <test name="format_test2">
+            <mark-failure>
+                <toolset name="tru64cxx65*"/>
+                <note author="Markus Schoepflin" refid="33"/>
+            </mark-failure>
+        </test>
+        <test name="format_test3">
+            <mark-failure>
+                <toolset name="tru64cxx65*"/>
+                <note author="Markus Schoepflin" refid="33"/>
+            </mark-failure>
+        </test>
     </library>
 
     <!-- functional/hash -->
@@ -2790,6 +2802,13 @@ for more information.
         This failure is caused by a compiler bug. Certain code constructs that should
         fail compilation are accepted by the compiler. This can mask some programming
         errors, but does not impact the usability of the library.
+    </note>
+
+    <note id="33">
+        The failures are caused by the wrong handling of the
+        <code>std::internal</code> flag in the iostreams implementation of the
+        standard library used on that compiler/platform combo. Apart from that,
+        the format library works as expected.
     </note>
 
 </explicit-failures-markup>
