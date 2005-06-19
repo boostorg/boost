@@ -393,6 +393,7 @@ const fs::path find_bin_path(const string& relative)
   // return 0 if nothing generated, 1 otherwise, except 2 if compiler msgs
   int generate_report( const xml::element & db,
                        const string & source_library_name,
+                       const string & test_type,
                        const string & test_name, // possibly object library name
                        const string & toolset,
                        bool pass,
@@ -413,8 +414,9 @@ const fs::path find_bin_path(const string& relative)
     if ( pos != string::npos && compile.size()-pos <= 2
         && compile.find( ' ' ) == string::npos ) compile.clear();
 
-    if ( lib.empty() && compile.empty() && link.empty() && run.empty() )
-      return 0;
+    if ( lib.empty()
+      && (compile.empty() || test_type == "compile_fail")
+      && link.empty() && run.empty() ) return 0;
 
     int result = 1; // some kind of msg for sure
 
@@ -470,7 +472,7 @@ const fs::path find_bin_path(const string& relative)
         if ( file )
         {
           xml::element_ptr db = xml::parse( file, pth.string() );
-          generate_report( *db, source_library_name, object_library_name, toolset, false );
+          generate_report( *db, source_library_name, test_type, object_library_name, toolset, false );
         }
         else
         {
@@ -530,6 +532,7 @@ const fs::path find_bin_path(const string& relative)
 
   bool do_cell( const string & lib_name,
     const fs::path & test_dir,
+    const string & test_type,
     const string & test_name,
     const string & toolset,
     string & target,
@@ -563,18 +566,27 @@ const fs::path find_bin_path(const string& relative)
     xml::element_ptr dbp = xml::parse( file, pth.string() );
     const xml::element & db( *dbp );
 
-    const xml::element & run_element( find_element( db, "run" ) );
+    std::string test_type_base( test_type );
+    if ( test_type_base.size() > 5 )
+    {
+      const string::size_type trailer = test_type_base.size() - 5;
+      if ( test_type_base.substr( trailer ) == "_fail" )
+      {
+        test_type_base.erase( trailer );
+      }
+    }
+    const xml::element & test_type_element( find_element( db, test_type_base ) );
 
-    pass = !run_element.name.empty()
-      && attribute_value( run_element, "result" ) != "fail";
+    pass = !test_type_element.name.empty()
+      && attribute_value( test_type_element, "result" ) != "fail";
 
     if ( !no_links )
     {
-      note = attribute_value( find_element( db, "run" ), "result" ) == "note";
+      note = attribute_value( test_type_element, "result" ) == "note";
 
       // generate bookmarked report of results, and link to it
       anything_generated
-        = generate_report( db, lib_name, test_name, toolset, pass,
+        = generate_report( db, lib_name, test_type, test_name, toolset, pass,
           always_show_run_output || note );
     }
 
@@ -591,7 +603,9 @@ const fs::path find_bin_path(const string& relative)
       target += "-";
       target += toolset;
       target += "\">";
-      target += pass ? (anything_generated < 2 ? pass_msg : warn_msg) : fail_msg;
+      target += pass
+        ? (anything_generated < 2 ? pass_msg : warn_msg)
+        : fail_msg;
       target += "</a>";
       if ( pass && note ) target += note_msg;
     }
@@ -649,7 +663,7 @@ const fs::path find_bin_path(const string& relative)
     for ( std::vector<string>::const_iterator itr=toolsets.begin();
       itr != toolsets.end(); ++itr )
     {
-      anything_to_report |= do_cell( lib_name, test_dir, test_name, *itr, target,
+      anything_to_report |= do_cell( lib_name, test_dir, test_type, test_name, *itr, target,
         always_show_run_output );
     }
 
