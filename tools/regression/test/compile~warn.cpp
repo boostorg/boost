@@ -2,15 +2,17 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <iostream>
+//  Test naming convention: the portion of the name before the tilde ("~")
+//  identifies the bjam test type. The portion after the tilde
+//  identifies the correct result to be reported by compiler_status.
 
-int main()
+// provoke one or more compiler warnings
+
+int main(int argc, char * argv[] )
 {
   short s;
   unsigned long ul;
   s = s & ul; // warning from many compilers
   if ( s == ul ) {} // warning from GCC
-
-  std::cout << "example of output from a run-time failure\n";
-  return 1;
+  return 0;
 }
