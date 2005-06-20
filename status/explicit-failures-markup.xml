@@ -2166,9 +2166,21 @@ for more information.
         <test name="*_dll">
             <mark-failure>
                 <toolset name="*como-4_3_3*"/>
-                <note author="J. Maddock"/>
+                <note author="J. Maddock">
+                This test requires features that are unsupported by Como: 
+                use and building of dll's mainly.
+                </note>
             </mark-failure>
         </test>
+        <mark-expected-failures>
+            <test name="static_mutex_test"/>
+            <test name="grep"/>
+            <toolset name="*como-4_3_3*"/>
+            <note author="J. Maddock">
+            This test requires features that are unsupported by Como: 
+            use and building of dll's mainly.
+            </note>
+        </mark-expected-failures>
         <test name="concept_check">
             <mark-failure>
                 <toolset name="vc-8_0"/>
@@ -2201,6 +2213,13 @@ for more information.
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <note author="John Maddock" refid="6"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="regex_timer"/>
+            <toolset name="vc-6_5-stlport"/>
+            <note author="John Maddock">
+               Test fails due to unresilved externals from STLport: appears to be
+               an STLport bug. </note>
         </mark-expected-failures>
     </library>
 
