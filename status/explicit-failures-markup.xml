@@ -166,6 +166,19 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="list_of"/>
+            <toolset name="intel-win32-8_1"/>
+            <toolset name="intel-win32-9_0"/>
+            <note author="Thorsten Ottosen">
+                The test would (most likely) compile and run properly if 
+                the test did not use list_of() with boost::array.
+                I would be very happy to see an intel programmer
+                submit a patch. It is quite strange that it only happens on
+                intel's windows compilers.
+            </note>
+         </mark-expected-failures>
+            
+        <mark-expected-failures>
             <test name="list_of_workaround"/>
             <toolset name="sunpro-5_3-sunos"/>
             <note author="Thorsten Ottosen" >
@@ -1909,23 +1922,23 @@ for more information.
             <toolset name="vc-6_5*"/>
             <toolset name="vc-7_0"/>
             <toolset name="dmc-8_43-stlport-4_5_3"/>
-        </mark-unusable>
-
-        <!--
+        </mark-unusable>   
         <mark-expected-failures>
-            <test name="ptr_array"/>
-            <test name="ptr_deque"/>
             <test name="ptr_list"/>
-            <test name="ptr_map"/>           
-            <test name="ptr_set"/>           
-            <toolset name="gcc- 3.4.3- linux"/>
-            <toolset name="gcc- 4.0.0- linux"/>
+            <toolset name="gcc-4.0.0*"/>
             <note author="Thorsten Ottosen">
                 The error is due to problems in the standard library implementation.
                 It should be fixed in newer versions of the compiler.
             </note>
         </mark-expected-failures>
-        -->
+        <mark-expected-failures>
+            <test name="ptr_list"/>
+            <toolset name="gcc-4.0.0*"/>
+            <note author="Thorsten Ottosen">
+                The error is due to problems in the standard library implementation.
+                It should be fixed in newer versions of the compiler.
+            </note>
+        </mark-expected-failures>     
     </library>
 
     
