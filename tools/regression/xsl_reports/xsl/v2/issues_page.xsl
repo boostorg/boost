@@ -223,9 +223,7 @@ Report time: </xsl:text>
       
       <xsl:text>
 
-Purpose: You are receiving this report because one of the libraries
-you maintain has regression test failures that are not accounted for.
-The report is also copied to the Boost mailing list.
+This report lists all regression test failures on release platforms.
 
 Detailed report: 
   http://engineering.meta-comm.com/boost-regression/</xsl:text>
