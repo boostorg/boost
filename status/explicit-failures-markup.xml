@@ -924,6 +924,11 @@
             <toolset name="tru64cxx65*"/>
             <note refid="34" author="Markus Schoepflin"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ios_state_unit_test"/>
+            <toolset name="gcc-2.95.3-*"/>
+            <note refid="3" author="Doug Gregor"/>
+        </mark-expected-failures>
     </library>
 
     <!-- iostreams -->
@@ -1007,6 +1012,11 @@
             <test name="bll_and_function"/>
             <toolset name="vc-8_0"/>
             <note author="Aleksey Gurtovoy" refid="6"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="member_pointer_test"/>
+            <toolset name="gcc-2.95.3-*"/>
+            <note author="Doug Gregor" refid="3"/>
         </mark-expected-failures>
     </library>
 
@@ -1148,6 +1158,17 @@ for more information.
             <toolset name="gcc-2.95.3*"/>
             <note author="Aleksey Gurtovoy" date="21 Sep 2004" refid="2"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="assign"/>
+            <test name="compare"/>
+            <test name="concept_checks"/>
+            <test name="constructors"/>
+            <test name="iterators"/>
+            <test name="resize"/>
+            <test name="stl_interaction"/>
+            <toolset name="gcc-2.95.3*"/>
+            <note author="Doug Gregor" date="23 Jun 2005" refid="3"/>
+        </mark-expected-failures>
     </library>
 
 
@@ -1222,6 +1243,12 @@ for more information.
         </mark-expected-failures>
     </library>
 
+    <library name="pool">
+      <mark-unusable>
+        <toolset name="gcc-2.95.3-*"/>
+        <note author="Doug Gregor" refid="2"/>
+      </mark-unusable>
+    </library>
 
     <!-- serialization -->
     <library name="serialization">
@@ -1687,6 +1714,10 @@ for more information.
 
     <!-- math -->
     <library name="math">
+        <mark-unusable>
+          <toolset name="gcc-2.95.3-*"/>
+          <note author="Doug Gregor" refid="3"/>
+        </mark-unusable>
         <test name="quaternion_mult_incl_test">
             <mark-failure>
                 <toolset name="intel-win32"/>
@@ -2498,6 +2529,7 @@ for more information.
                 <toolset name="msvc"/>
                 <toolset name="msvc-stlport"/>
                 <toolset name="vc-6_5-stlport"/>
+                <toolset name="gcc-2.95.3-*"/>
             </mark-failure>
         </test>
         <test name="tricky_incomplete_type_test">
@@ -2532,6 +2564,13 @@ for more information.
                 </note>
             </mark-failure>
         </test>
+
+        <mark-expected-failures>
+          <test name="is_polymorphic_test"/>
+          <toolset name="gcc-2.95.3-stlport-*"/>
+          <note author="Doug Gregor" refid="3"/>
+        </mark-expected-failures>
+
         <mark-expected-failures>
             <test name="decay_test"/>
             <test name="extent_test"/>
