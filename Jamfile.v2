@@ -144,7 +144,9 @@ rule tag ( name : type ? : property-set )
             # On NT, library with version suffix won't be recognized
             # by linkers. On CYGWIN, we get strage duplicate symbol
             # errors when library is generated with version suffix.
-            if [ $(property-set).get <os> ] in NT CYGWIN
+            # On OSX, version suffix is not needed -- the linker expets
+            # libFoo.1.2.3.dylib format.
+            if [ $(property-set).get <os> ] in NT CYGWIN MACOSX
             {
                 return $(name:B)-$(version-tag)$(name:S) ;
             }
