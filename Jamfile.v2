@@ -13,6 +13,7 @@
 import modules ;
 import set ;
 import stage ;
+import package ;
 
 constant BOOST_VERSION : 1.33.0 ;
 
@@ -28,13 +29,9 @@ project boost
     : build-dir bin.v2  
     ;
 
-# The code here selects the libraries that must be built and builds
-# and creates two targets:
-# 'stage', which builds only libraries and placed them in one location
-# 'install', which places both libraries and headers in system location
-
-
-
+# Decides which libraries are to be installed by looking at --with-<library>
+# --without-<library> arguments. Returns the list of directories under "libs"
+# which must be built at installed.
 rule libraries-to-install ( existing-libraries * )
 {
    local argv = [ modules.peek : ARGV ] ;
@@ -71,12 +68,6 @@ rule libraries-to-install ( existing-libraries * )
    }         
 }
 
-# The following is a copy of V1 logic. We don't yet support
-# selecting versioned/unversioned install and changing the build
-# directory.
-
-ARGV = [ modules.peek : ARGV ] ;
-
 # what kind of layout are we doing?
 layout = [ MATCH "^--layout=(.*)" : $(ARGV) ] ;
 layout ?= versioned ;
@@ -86,40 +77,12 @@ layout-$(layout) = true ;
 local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
 stage-locate ?= stage ;
 
-# architecture independent files
-local boost-locate ;
-if ! $(with-stage)
-{
-    boost-locate = [ MATCH "^--prefix=(.*)" : $(ARGV) ] ;
-}
-else
-{
-    boost-locate = $(stage-locate) ;
-}
+path-constant BOOST_STAGE_LOCATE : $(stage-locate) ;
 
-if [ modules.peek : NT ] { boost-locate ?= C:\\Boost ; }
-else if [ modules.peek : UNIX ] { boost-locate ?= /usr/local ; }
-
-# architecture dependent files
-local exec-locate = [ MATCH "^--exec-prefix=(.*)" : $(ARGV) ] ;
-exec-locate ?= $(boost-locate) ;
-
-# object code libraries
-local lib-locate = [ MATCH "^--libdir=(.*)" : $(ARGV) ] ;
-lib-locate ?= $(exec-locate)/lib ;
-
-# where to build
-local all-locate = [ MATCH "^--builddir=(.*)" : $(ARGV) ] ;
-ALL_LOCATE_TARGET ?= $(all-locate) ;
-
-# source header files
-local include-locate = [ MATCH "^--includedir=(.*)" : $(ARGV) ] ;
-include-locate ?= $(boost-locate)/include ;
 
 # location of python
 local python-root = [ MATCH "^--with-python-root=(.*)" : $(ARGV) ] ;
 PYTHON_ROOT ?= $(python-root) ;
-
 
 # Select the libraries to install.
 libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
@@ -165,36 +128,47 @@ rule tag ( name : type ? : property-set )
 
 # Install to system location.
 
-alias install : install-libs install-headers ;
-
-install install-libs : libs/$(libraries)/build   
-  : <so-version>1.33.0 
-    <location>$(lib-locate) 
-  ;
-
 local patterns = *.hpp *.ipp *.h *.inc ;
 local dirs = boost boost/* boost/*/* ;
-install install-headers : 
-  [ glob $(dirs)/$(patterns) ]
-  :  
-  <location>$(include-locate)
-  <install-source-root>.
-  ;  
+
+# Complete install
+package.install install 
+    : <install-source-root>. # No specific requirements
+    : # No binaries
+    : libs/$(libraries)/build
+    : [ glob $(dirs)/$(patterns) ]
+    ;
 
 # Install just library.
 install stage : libs/$(libraries)/build 
   : <location>$(stage-locate)
   ;
 
-explicit install install-libs install-headers stage ;        
-
 # Just build the libraries, don't install them anywhere.
 # This is what happend with just "bjam --v2".
 alias build_all : libs/$(libraries)/build ;
 
+# This rule should be called from libraries' Jamfiles and will
+# create two targets, "install" and "stage", that will install
+# or stage that library. The --prefix option is respected, by
+# --with and --without options, naturally, are ignored.
+#
+# - libraries -- list of library targets to install.
+rule boost-install ( libraries * )
+{
+    package.install install 
+        : <dependency>/boost//install-headers
+        : # No binaries
+        : $(libraries)
+        : # No headers, it's handled by the dependency
+    ;
+
+    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;            
+}
+
+
 
 # Make project ids of all libraries known.
-
 for local l in $(libraries)
 {
     use-project /boost/$(l) : libs/$(l)/build ;
