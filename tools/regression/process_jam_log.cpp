@@ -682,10 +682,9 @@ int cpp_main( int argc, char ** argv )
       content.clear();
       capture_lines = false;
 
-      if ( line.find( " for lack of " ) != string::npos
-        && line.find( ".run for lack of " ) == string::npos )
+      if ( line.find( " for lack of " ) != string::npos )
       {
-        capture_lines = true;
+        capture_lines = ( line.find( ".run for lack of " ) == string::npos );
 
         string target_dir;
         string lib_dir;
