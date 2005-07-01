@@ -109,7 +109,8 @@ rule tag ( name : type ? : property-set )
             # errors when library is generated with version suffix.
             # On OSX, version suffix is not needed -- the linker expets
             # libFoo.1.2.3.dylib format.
-            if [ $(property-set).get <os> ] in NT CYGWIN MACOSX
+            # AIX linkers don't accept version suffixes either.
+            if [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
             {
                 return $(name:B)-$(version-tag)$(name:S) ;
             }
