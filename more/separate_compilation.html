@@ -324,13 +324,13 @@ libboost_regex-vc71-sgd-1_31.lib
          Jamfile:</P>
       <PRE>subproject libs/whatever/build ; </PRE>
       <P>Then add the static library build target (if supported):</P>
-      <PRE>lib boost_whatever 
-   :
-      # list all the sources for this library:
-      ../src/whatever.cpp
-   :
-      # all build requirements go here.
-      # the common names rule ensures that the library will
+      <PRE>lib 
+   boost_whatever
+      : # list all the sources for this
+      library:
+   ../src/whatever.cpp
+      : # all build requirements go
+      here. # the "common-variant-tag" rule ensures that the library will
       # be named according to the rules used by the install
       # and auto-link features:
       common-variant-tag 
@@ -348,13 +348,13 @@ libboost_regex-vc71-sgd-1_31.lib
          are unlikely to function correctly (the dll will have a separate runtime from 
          the executable using it, this generally causing problems with new and 
          delete,&nbsp;as well as exception handling runtimes).</P>
-      <PRE>dll boost_whatever 
-   :
-      # list all the sources for this library:
-      ../src/whatever.cpp
-   :
-      # all build requirements go here.
-      # the common names rule ensures that the library will
+      <PRE>dll 
+   boost_whatever
+      : # list all the sources for this
+      library:
+   ../src/whatever.cpp
+      : # all build requirements go
+      here. # the "common-variant-tag" rule ensures that the library will
       # be named according to the rules used by the install
       # and auto-link features:
       common-variant-tag 
@@ -371,7 +371,7 @@ libboost_regex-vc71-sgd-1_31.lib
 </PRE>
       <P>Now add an install target so that Boost.Install can find this library to 
          install:</P>
-<pre>install whatever lib
+      <pre>install whatever lib
     : &lt;dll&gt;boost_whatever &lt;lib&gt;boost_whatever
     ;
 </pre>
