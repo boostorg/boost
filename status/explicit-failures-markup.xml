@@ -1706,21 +1706,16 @@ for more information.
 
     <!-- iterator -->
     <library name="iterator">
-        <test name="interoperable_fail">
+        <test name="interoperable_fail" category="Corner-case tests">
             <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5_6_4"/>
-                <toolset name="msvc"/>
-                <toolset name="vc-6_5"/>
-                <toolset name="vc-7_0"/>
-                <note author="B. Dawes" refid="2"/>
-            </mark-failure>
-            <mark-failure>
+                <toolset name="gcc-3.3*"/>
+                <toolset name="gcc-3_3*"/>
+                <toolset name="gcc-3.2*"/>
+                <toolset name="gcc-2*"/>
                 <toolset name="gcc"/>
-                <note refid="3"/>
-            </mark-failure>
-            <mark-failure>
-                <toolset name="*"/>
+                <toolset name="mingw"/>
+                <toolset name="borland*"/>
+                <toolset name="cw-8*"/>
                 <note author="D. Abrahams">
                     This failure is caused by a compiler bug.  Templated operators
                     that combine different iterators built with iterator_facade or
@@ -1734,15 +1729,14 @@ for more information.
 
         <test name="is_convertible_fail" category="Corner-case tests">
             <mark-failure>
-                <toolset name="borland"/>
-                <toolset name="borland-5_6_4"/>
+                <toolset name="gcc-2*"/>
+                <toolset name="gcc"/>
+                <toolset name="mingw"/>
+                <toolset name="borland*"/>
+                <toolset name="cw-8*"/>
+                <toolset name="vc-6*"/>
+                <toolset name="vc-7_0*"/>
                 <toolset name="msvc"/>
-                <toolset name="vc-6_5"/>
-                <toolset name="vc-7_0"/>
-                <note refid="2"/>
-            </mark-failure>
-            <mark-failure>
-                <toolset name="*"/>
                 <note author="D. Abrahams">
                     This failure is caused by a compiler bug.
                     <code>is_convertible&lt;T,U&gt;::value</code> may be true for unrelated
