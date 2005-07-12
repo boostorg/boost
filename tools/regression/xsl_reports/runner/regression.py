@@ -115,6 +115,10 @@ def cleanup( args, **unused ):
         rmtree( boost_root )
     
     if 'bin' in args:
+        boost_bin_dir = os.path.join( boost_root, 'bin' )
+        log( 'Cleaning up "%s" directory ...' % boost_bin_dir )
+        rmtree( boost_bin_dir )
+
         log( 'Cleaning up "%s" directory ...' % regression_results )
         rmtree( regression_results )
 
@@ -630,6 +634,7 @@ def regression(
         , bjam_toolset
         , pjl_toolset
         , incremental
+        , force_update
         , monitored
         , timeout
         , mail = None
@@ -661,7 +666,8 @@ def regression(
             
             unpack_tarball( local, regression_root )
         else:
-            if incremental:
+            if incremental or force_update:
+                if not incremental: cleanup( [ 'bin' ] )
                 update_source( user, tag, proxy, [] )
             else:
                 cleanup( [] )
@@ -726,6 +732,7 @@ def accept_args( args ):
         , 'ftp-proxy='
         , 'debug-level='
         , 'incremental'
+        , 'force-update'
         , 'monitored'
         , 'help'
         ]
@@ -767,6 +774,7 @@ def accept_args( args ):
         , 'bjam_toolset'    : options[ '--bjam-toolset' ]
         , 'pjl_toolset'     : options[ '--pjl-toolset' ]
         , 'incremental'     : options.has_key( '--incremental' )
+        , 'force_update'    : options.has_key( '--force-update' )
         , 'monitored'       : options.has_key( '--monitored' )
         , 'timeout'         : options[ '--timeout' ]
         , 'mail'            : options[ '--mail' ]
@@ -805,6 +813,8 @@ Options:
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
+\t--force-update  do a CVS update (if applicable) instead of a clean
+\t                checkout, even when performing a full run
 \t--monitored     do a monitored run
 \t--timeout       specifies the timeout, in minutes, for a single test
 \t                run/compilation (enforced only in monitored runs, 5 by 
