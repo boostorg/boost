@@ -415,11 +415,10 @@ def setup(
 
 
 def bjam_command( toolsets ):
-    result = '%s "-sBOOST_BUILD_PATH=%s:%s" "-sBOOST_ROOT=%s"'\
+    result = '%s "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
         % (
             tool_path( bjam )
           , regression_root
-          , os.path.join( boost_root, 'tools/build/v1' )
           , boost_root
           )
     
