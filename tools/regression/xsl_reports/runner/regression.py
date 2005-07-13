@@ -419,10 +419,12 @@ def setup(
 
 
 def bjam_command( toolsets ):
+    build_path = regression_root
+    if build_path[-1] == '\\': build_path += '\\'
     result = '%s "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
         % (
             tool_path( bjam )
-          , regression_root
+          , build_path
           , boost_root
           )
     
