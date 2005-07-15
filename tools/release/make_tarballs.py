@@ -17,18 +17,28 @@ my_location  = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 def accept_args( args ):
     #( release_version, cvs_tag, sf_user, temp_dir, start_step ) = accept_args( sys.argv[ 1: ] )
     parser = optparse.OptionParser()
-    parser.add_option( "", "--version", dest="version", help="release version" )
+    parser.add_option( "-v", "--release-version", dest="release_version", metavar="release-version", help="release version (e.g. 1.32.0)")
     parser.add_option( "", "--tag",  dest="tag", help="CVS tag" )
-    parser.add_option( "", "--user", dest="user", help="SourceForge user name" )
-    parser.add_option( "", "--toolset", dest="toolset", help="toolset to use to build needed tools" )
-    parser.usage = "make_tarballs [options] temp_dir [start_step]\n\n" + \
+    parser.add_option( "-r", "--cvs-branch", dest="cvs_branch", metavar="cvs-branch"
+                       , help = "cvs branch to get the sources from (e.g RC_1_32_0). Important: it is case sensitive" )
+    parser.add_option( "-u", "--sf-user", dest="sf_user", metavar="sf-user"
+                       , help = "SourceForge user name (for CVS)" )
+    parser.add_option( "-t", "--toolset", dest="toolset", help="toolset to use to build needed tools" )
+    parser.add_option( "-s", "--start-step", dest="start_step" )
+    parser.usage = "make_tarballs [options] target_directory \n\n" + \
                    "Requirements:\n" + \
-                   "\tcvs - to export sources with windows newlines \n" + \
-                   "\tbash cvs  - (cygwin) to export sources with posix newlines\n" + \
-                   "\tbjam - to build BoostBook\n" + \
-                   "\t7z - to create zipball\n" + \
-                   "\tuser-config.jam in user directory ($HOME/%HOME%) - to build BoostBook\n" + \
-                   "\tmv - posix move"
+                   "  CVS:\n"+ \
+                   "    cvs             - (windows) to export sources with windows newlines \n" + \
+                   "    /usr/bin/cvs    - (cygwin) to export sources with posix newlines\n" + \
+                   "  Utilities:\n" + \
+                   "    mv              - (cygwin) posix move\n" + \
+                   "    /usr/bin/find   - (cygwin) to export sources with posix newlines\n" + \
+                   "    7z              - to create zipball\n" + \
+                   "  BoostBook generation:\n" + \
+                   "    bjam\n" + \
+                   "    user-config.jam - in user directory ($HOME/%HOME%)  for BoostBook generation\n" + \
+                   "    java\n" + \
+                   "    doxygen\n"
     
     
 
@@ -37,24 +47,30 @@ def accept_args( args ):
     temp_dir = None
     start_step = None
     if ( len( args ) > 0 ): temp_dir = args[0]
-    if ( len( args ) > 1 ): start_step = args[1]
+
+    
+    ( version, tag, user, toolset, start_step ) =  ( options.release_version
+                                         , options.cvs_branch
+                                         , options.sf_user
+                                         , options.toolset
+                                         , options.start_step )
 
     if ( start_step is None ): start_step = ""
-    
-    ( version, tag, user, toolset ) =  ( options.version
-                                         , options.tag
-                                         , options.user
-                                         , options.toolset )
 
-    if ( version is None
-         or tag is None
-         or user is None
-         or temp_dir is None
-         or toolset is None ):
-        parser.print_help()
-        sys.exit( 1 )
+    def required( value, name ):
+       if ( value is None ):
+            print "%s should be specified." % name
+            parser.print_help()
+            sys.exit( 1 )
+       
+    required( version, "version" )
+    required( tag, "tag" )
+    required( user, "user" )
+    required( temp_dir, "temp_dir" )
+    required( toolset, "toolset" )
                        
     return ( version, tag, user, toolset, temp_dir, start_step )
+
 
 def remove_directory( directory ):
     if os.path.exists( directory ):
@@ -135,6 +151,7 @@ class make_tarballs( utils.step_controller ):
             cmd = cvs_export_template % { "user": sf_user
                                           , "branch" : cvs_tag }
 
+            print cmd
             os.system( shell % cmd )
             os.system( "del /S/F/Q .cvsignore >nul" )
             # have to use mv instead of os.rename - cygwin cvs sets strange directory permssions
@@ -162,6 +179,7 @@ class make_tarballs( utils.step_controller ):
         
         zip_name = "boost_%s.zip" % release_version
         os.chdir( temp_win )
+
         
         if self.start_step( "win.zip", "    Zipping" ):
              print "    Zipping"
@@ -248,6 +266,7 @@ class make_tarballs( utils.step_controller ):
                     if os.path.splitext( f )[1] in [ ".boostbook" ] \
                         and os.access( full_path, os.W_OK ):
                         os.unlink( full_path )
+            self.finish_step( "win.make_docs.clean3" )
                         
 
     def correct_executable_permissions( self, path ):
@@ -272,7 +291,7 @@ class make_tarballs( utils.step_controller ):
         temp_unix = self.make_temp_platform( temp_dir, "unix" )
         os.chdir( temp_unix )
 
-        exported_dir = self.cvs_export( sf_user, cvs_tag, release_version, "bash -c \"PATH=/bin:$PATH;%s\"" )
+        exported_dir = self.cvs_export( sf_user, cvs_tag, release_version, "bash -c \"/usr/bin/%s\"" )
         self.correct_executable_permissions( "." )
         self.finish_step( "unix.export" )
 
@@ -281,7 +300,7 @@ class make_tarballs( utils.step_controller ):
 
         if self.start_step( "unix.make_readonly", "Making all files readonly" ):
             utils.checked_system( [ "chmod -R a-w+r,u+w %s" % temp_unix ] )
-            utils.checked_system( [ "bash -c PATH=/bin:$PATH;find %s -type d -exec chmod u+w {} ;" % temp_unix ] )
+            utils.checked_system( [ "bash -c /usr/bin/find %s -type d -exec chmod u+w {} ;" % temp_unix ] )
             self.finish_step( "unix.make_readonly" )
 
         gz_archive_name = "boost_%s" % release_version + ".tar.gz"
@@ -314,7 +333,7 @@ class make_tarballs( utils.step_controller ):
                 "cp -R %s %s " % ( os.path.join( win_boost_directory, "doc", "html" )
                                 , doc_html_directory )
                 ] )
-            for f in [ "boost.docbook", "boost.fo" ]: # "catalog.xml"
+            for f in [ "boost.docbook", "boost.fo" ]:
                 utils.checked_system( [
                     "cp %s %s" % ( os.path.join( win_boost_directory, "doc", f )
                                     , os.path.join( doc_directory, f ) )
