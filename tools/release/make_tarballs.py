@@ -15,8 +15,46 @@ import utils
 my_location  = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 
 def accept_args( args ):
-    return ( args[0], args[1], args[2], args[3], args[4] )
+    #( release_version, cvs_tag, sf_user, temp_dir, start_step ) = accept_args( sys.argv[ 1: ] )
+    parser = optparse.OptionParser()
+    parser.add_option( "", "--version", dest="version", help="release version" )
+    parser.add_option( "", "--tag",  dest="tag", help="CVS tag" )
+    parser.add_option( "", "--user", dest="user", help="SourceForge user name" )
+    parser.add_option( "", "--toolset", dest="toolset", help="toolset to use to build needed tools" )
+    parser.usage = "make_tarballs [options] temp_dir [start_step]\n\n" + \
+                   "Requirements:\n" + \
+                   "\tcvs - to export sources with windows newlines \n" + \
+                   "\tbash cvs  - (cygwin) to export sources with posix newlines\n" + \
+                   "\tbjam - to build BoostBook\n" + \
+                   "\t7z - to create zipball\n" + \
+                   "\tuser-config.jam in user directory ($HOME/%HOME%) - to build BoostBook\n" + \
+                   "\tmv - posix move"
+    
+    
 
+    ( options, args ) = parser.parse_args( args )
+
+    temp_dir = None
+    start_step = None
+    if ( len( args ) > 0 ): temp_dir = args[0]
+    if ( len( args ) > 1 ): start_step = args[1]
+
+    if ( start_step is None ): start_step = ""
+    
+    ( version, tag, user, toolset ) =  ( options.version
+                                         , options.tag
+                                         , options.user
+                                         , options.toolset )
+
+    if ( version is None
+         or tag is None
+         or user is None
+         or temp_dir is None
+         or toolset is None ):
+        parser.print_help()
+        sys.exit( 1 )
+                       
+    return ( version, tag, user, toolset, temp_dir, start_step )
 
 def remove_directory( directory ):
     if os.path.exists( directory ):
@@ -28,19 +66,38 @@ def clean_directory( directory ):
     print "    Creating directory %s" % directory 
     os.makedirs( directory )
 
-    
-    
+def listdir_recursively( root, path="" ):
+    # recursive listdir
+    files = []
+    try:
+        for file in os.listdir(os.path.join(root, path)):
+            pathname = os.path.join(path, file)
+            if os.path.isdir(os.path.join(root, pathname)):
+                files.extend(listdir_recursively(root, pathname))
+            else:
+                files.append(pathname)
+    except OSError:
+        pass
+    return files
 
-    
+def find_file( root, name ):
+    print root
+    files = listdir_recursively( root )
+    for file in files:
+        # print file
+        if os.path.basename( file ) == name:
+            return os.path.join( root, file )
+    return None
 
 start_dir = os.getcwd()
 
 class make_tarballs( utils.step_controller ):
-    def __init__( self, release_version, cvs_tag, sf_user, temp_dir, start_step ):
+    def __init__( self, release_version, cvs_tag, sf_user, toolset, temp_dir, start_step ):
         utils.step_controller.__init__( self, start_step )
         self.release_version_ = release_version
         self.cvs_tag_         = cvs_tag
         self.sf_user_         = sf_user
+        self.toolset_         = toolset
         self.temp_dir_        = temp_dir
     
     def run( self ):
@@ -80,7 +137,9 @@ class make_tarballs( utils.step_controller ):
 
             os.system( shell % cmd )
             os.system( "del /S/F/Q .cvsignore >nul" )
-            os.rename( "boost", "boost_%s" % release_version )
+            # have to use mv instead of os.rename - cygwin cvs sets strange directory permssions
+            # which Windows rename or Python's os.rename cannot deal with
+            os.system( "mv boost boost_%s" % release_version )
         return "boost_%s" % release_version
 
     def build_win( self, release_version, cvs_tag, sf_user, temp_dir ):
@@ -94,7 +153,7 @@ class make_tarballs( utils.step_controller ):
             exported_dir = self.cvs_export( sf_user, cvs_tag, release_version )
             self.finish_step( "win.export" )
         
-        self.make_docs( os.path.abspath( exported_dir ) )
+        self.make_docs( os.path.abspath( exported_dir ), temp_dir )
 
         if self.start_step( "win.make_readonly", "Making all files writable" ):
             os.chdir( temp_win )
@@ -108,20 +167,30 @@ class make_tarballs( utils.step_controller ):
              print "    Zipping"
              if os.path.exists( zip_name ): os.unlink( zip_name )
 
-             os.system( "7z a -r -tzip %s %s\* > %s" % ( os.path.splitext( zip_name )[0], "boost_%s" % release_version, zip_name + ".log" ) )
+             utils.checked_system( ["7z a -r -tzip %s %s\* > %s" % ( zip_name, "boost_%s" % release_version, zip_name + ".log" ) ] )
              self.finish_step( "win.zip" )
 
 
         return ( os.path.abspath( exported_dir ), [ os.path.abspath( zip_name ) ] )
 
-    def make_docs( self, boost_directory ):
-
+    def make_docs( self, boost_directory, temp_dir ):
         boostbook_temp = os.path.join( boost_directory, "bin.v2" )
+        tools_directory = os.path.join( temp_dir, "tools" )
+        if not os.path.exists( tools_directory ):
+            os.makedirs( tools_directory )
+
+        if self.start_step( "win.make_docs.setup_tools", "Setting up BoostBook tools" ):
+            sys.path.append( sys.path[0] + "/../boostbook" )
+            print sys.path
+            import setup_boostbook
+            os.environ[ "BOOST_ROOT" ] = boost_directory
+            setup_boostbook.setup_boostbook( os.path.join( temp_dir, "tools" ) )
 
         if self.start_step( "win.make_docs.clean", "Clearing \"bin.v2" ):
             if os.path.exists( boostbook_temp ):
                 shutil.rmtree( boostbook_temp )
             self.finish_step( "win.make_docs.clean" )
+
             
         cd = os.getcwd()
         os.chdir( os.path.join( boost_directory, "doc" )  )
@@ -138,8 +207,8 @@ class make_tarballs( utils.step_controller ):
         def generate( output_format ):
             if self.start_step( "win.make_docs.%s" % output_format, '    Generating %s' % output_format ):
                 utils.checked_system( [ 
-                    "set HOME=%s" % my_location
-                    , "%s -d2 --v2 %s" % ( bjam_path(), output_format )
+                    # "set HOME=%s" % my_location
+                     "%s -d2 --v2 %s " % ( bjam_path(), output_format )
                     ] )
                 self.finish_step( "win.make_docs.%s" % output_format )
         
@@ -148,8 +217,8 @@ class make_tarballs( utils.step_controller ):
         generate( "fo" )
 
         if self.start_step( "win.make_docs.copy_docs", "Copying docs into doc directory" ):
-            shutil.copy( os.path.join( boostbook_temp, "doc", "debug", "boost.docbook" ), "boost.docbook" )
-            shutil.copy( os.path.join( boostbook_temp, "doc", "debug", "boost.fo" ), "boost.fo" )
+            shutil.copy( os.path.join( boostbook_temp, "doc", self.toolset_, "debug", "boost.docbook" ), "boost.docbook" )
+            shutil.copy( os.path.join( boostbook_temp, "doc", self.toolset_, "debug", "boost.fo" ), "boost.fo" )
             self.finish_step( "win.make_docs.copy_docs" )
 
 
@@ -162,12 +231,12 @@ class make_tarballs( utils.step_controller ):
             os.chdir( os.path.join( boost_directory, "tools", "build", "v2", "doc" ) )
 
             utils.checked_system( [ 
-                    "set HOME=%s" % my_location
-                    , "%s -d2 --v2 pdf" % bjam_path()
+#                    "set HOME=%s" % my_location
+                    "%s -d2 --v2 pdf" % bjam_path()
                     ] )
 
             for f in [ "userman.pdf" ]:
-                shutil.copy( os.path.join( boostbook_temp, "tools", "build", "v2", "doc", "debug", f ), f  )
+                shutil.copy( find_file( os.path.join( boostbook_temp ), f ), f  )
 
             shutil.rmtree( boostbook_temp )
             self.finish_step( "win.make_docs.bb_userman" )
@@ -203,7 +272,7 @@ class make_tarballs( utils.step_controller ):
         temp_unix = self.make_temp_platform( temp_dir, "unix" )
         os.chdir( temp_unix )
 
-        exported_dir = self.cvs_export( sf_user, cvs_tag, release_version, "bash -c \"%s\"" )
+        exported_dir = self.cvs_export( sf_user, cvs_tag, release_version, "bash -c \"PATH=/bin:$PATH;%s\"" )
         self.correct_executable_permissions( "." )
         self.finish_step( "unix.export" )
 
@@ -212,7 +281,7 @@ class make_tarballs( utils.step_controller ):
 
         if self.start_step( "unix.make_readonly", "Making all files readonly" ):
             utils.checked_system( [ "chmod -R a-w+r,u+w %s" % temp_unix ] )
-            utils.checked_system( [ "lfind %s -type d -exec chmod u+w {} ;" % temp_unix ] )
+            utils.checked_system( [ "bash -c PATH=/bin:$PATH;find %s -type d -exec chmod u+w {} ;" % temp_unix ] )
             self.finish_step( "unix.make_readonly" )
 
         gz_archive_name = "boost_%s" % release_version + ".tar.gz"
@@ -245,7 +314,7 @@ class make_tarballs( utils.step_controller ):
                 "cp -R %s %s " % ( os.path.join( win_boost_directory, "doc", "html" )
                                 , doc_html_directory )
                 ] )
-            for f in [ "boost.docbook", "boost.fo", "catalog.xml" ]:
+            for f in [ "boost.docbook", "boost.fo" ]: # "catalog.xml"
                 utils.checked_system( [
                     "cp %s %s" % ( os.path.join( win_boost_directory, "doc", f )
                                     , os.path.join( doc_directory, f ) )
@@ -277,9 +346,9 @@ def bjam_path():
         return "bjam.exe"
         
 def main():
-    ( release_version, cvs_tag, sf_user, temp_dir, start_step ) = accept_args( sys.argv[ 1: ] )
+    ( release_version, cvs_tag, sf_user, toolset, temp_dir, start_step ) = accept_args( sys.argv[ 1: ] )
 
-    make_tarballs( release_version, cvs_tag, sf_user, temp_dir, start_step  ).run()
+    make_tarballs( release_version, cvs_tag, sf_user, toolset, temp_dir, start_step  ).run()
     
 if __name__ == "__main__":
     main()
