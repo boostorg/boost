@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2004
+# Copyright (c) MetaCommunications, Inc. 2003-2005
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -14,7 +14,7 @@ import sys
 import traceback
 
 
-def retry( f, args, max_attempts=2, sleep_secs=10 ):
+def retry( f, args, max_attempts=5, sleep_secs=10 ):
     for attempts in range( max_attempts, -1, -1 ):
         try:
             return f( *args )
@@ -58,7 +58,6 @@ def cvs_export( working_dir, user, tag ):
     retry( 
          cvs_command
        , ( user, command )
-       , max_attempts=5
        )
 
 
@@ -107,7 +106,12 @@ def make_tarball(
 
     if site_dir is not None:
         utils.log( 'Moving "%s" to the site location "%s"...' % ( tarball_name, site_dir ) )
-        shutil.move( tarball_path, site_dir )
+        temp_site_dir = os.path.join( site_dir, 'temp' )
+        if not os.path.exists( temp_site_dir ):
+            os.mkdir( temp_site_dir )
+                
+        shutil.move( tarball_path, temp_site_dir )
+        shutil.move( os.path.join( temp_site_dir, tarball_name ), site_dir )
         shutil.move( tarball_timestamp_path, site_dir )
         utils.log( 'Removing "%s"...' % timestamped_dir )
         rmtree( timestamped_dir )
