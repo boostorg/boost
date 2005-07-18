@@ -93,7 +93,7 @@ def rmtree( path ):
             os.system( 'rm -f -r "%s"' % path )
 
 
-def retry( f, args, max_attempts=2, sleep_secs=10 ):
+def retry( f, args, max_attempts=5, sleep_secs=10 ):
     for attempts in range( max_attempts, -1, -1 ):
         try:
             return f( *args )
@@ -154,7 +154,7 @@ def download_boost_tarball( destination, tag, proxy, timestamp_only = False ):
         , tarball_path
         , proxy
         )
-        
+
     return tarball_path
 
 
@@ -240,11 +240,7 @@ def cvs_checkout( user, tag, args ):
         command = 'checkout boost'
     
     os.chdir( regression_root )
-    retry( 
-         cvs_command
-       , ( user, command )
-       , max_attempts=5
-       )
+    cvs_command( user, command )
 
 
 def cvs_update( user, tag, args ):
@@ -254,11 +250,7 @@ def cvs_update( user, tag, args ):
         command = 'update -dPA'
     
     os.chdir( os.path.join( regression_root, 'boost' ) )
-    retry( 
-         cvs_command
-       , ( user, command )
-       , max_attempts=5
-       )
+    cvs_command( user, command )
 
 
 def format_time( t ):
@@ -282,22 +274,35 @@ def timestamp():
         )
 
 
+def get_tarball( tag, proxy, **unused ):
+    tarball_path = download_boost_tarball( regression_root, tag, proxy )
+    unpack_tarball( tarball_path, regression_root )
+
+
 def get_source( user, tag, proxy, args, **unused ):
     refresh_timestamp()
     log( 'Getting sources (%s)...' % timestamp() )
 
     if user is not None:
-        cvs_checkout( user, tag, args )
+        retry( 
+              cvs_checkout
+            , ( user, tag, args )
+            )
     else:
-        tarball_path = download_boost_tarball( regression_root, tag, proxy )
-        unpack_tarball( tarball_path, regression_root )
+        retry( 
+              get_tarball
+            , ( tag, proxy )
+            )
 
 
 def update_source( user, tag, proxy, args, **unused ):
     if user is not None or os.path.exists( os.path.join( boost_root, 'CVS' ) ):
         open( timestamp_path, 'w' ).close()
         log( 'Updating sources from CVS (%s)...' % timestamp() )
-        cvs_update( user, tag, args )
+        retry( 
+              cvs_update
+            , ( user, tag, args )
+            )
     else:
         get_source( user, tag, proxy, args )
 
@@ -582,7 +587,10 @@ def upload_logs(
         ):
     import_utils()
     from runner import upload_logs
-    upload_logs( regression_results, runner, tag, user, ftp_proxy, debug_level )
+    retry(
+          upload_logs
+        , ( regression_results, runner, tag, user, ftp_proxy, debug_level )
+        )
 
 
 def update_itself( **unused ):
