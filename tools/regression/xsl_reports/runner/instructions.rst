@@ -74,13 +74,30 @@ The regression run procedure will:
 * Upload the results to ftp://fx.meta-comm.com/boost-regression.
 
 
-The report merger process running on MetaCommunications site every 2 hours will 
+The report merger process running continuously on MetaCommunications site will 
 merge all submitted test runs and publish them at 
 http://boost.sourceforge.net/regression-logs/developer.
 
 
 Advanced use
 ------------
+
+Providing detailed information about your environment
+.....................................................
+
+Once you have your regression results displayed in the Boost-wide
+reports, you may consider providing a bit more information about
+yourself and your test environment. This additional information will
+be presented in the reports on a page associated with your runner ID.
+
+By default, the page's content is just a single line coming from the
+``comment.html`` file in your ``regression.py`` directory, specifying
+the tested platform. You can put online a more detailed description of
+your environment, such as your hardware configuration, compiler builds,
+and test schedule, by simply altering the file's content. Also, please
+consider providing your name and email address for cases where Boost
+developers have questions specific to your particular set of results.
+
 
 Incremental runs
 ................
