@@ -355,7 +355,7 @@ def build_if_needed( tool, toolset, toolsets ):
         build_cmd = tool[ 'build_cmd' ]( toolset )
         log( 'Building "%s" (%s)...' % ( tool[ 'name'], build_cmd ) )
         utils.system( [ 
-              'cd %s' % tool[ 'source_dir' ]
+              'cd "%s"' % tool[ 'source_dir' ]
             , build_cmd
             ] )
     else:
@@ -426,7 +426,7 @@ def setup(
 def bjam_command( toolsets ):
     build_path = regression_root
     if build_path[-1] == '\\': build_path += '\\'
-    result = '%s "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
+    result = '"%s" "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
         % (
             tool_path( bjam )
           , build_path
@@ -455,7 +455,7 @@ def start_build_monitor( timeout ):
     if sys.platform == 'win32':
         build_monitor_path = tool_path( 'build_monitor.exe' )
         if os.path.exists( build_monitor_path ):
-            utils.system( [ 'start /belownormal %s bjam.exe %d' % ( build_monitor_path, timeout*60 ) ] )
+            utils.system( [ 'start /belownormal "%s" bjam.exe %d' % ( build_monitor_path, timeout*60 ) ] )
         else:
             log( 'Warning: Build monitor is not found at "%s"' % build_monitor_path )
 
@@ -464,14 +464,14 @@ def stop_build_monitor():
     if sys.platform == 'win32':
         build_monitor_path = tool_path( 'build_monitor.exe' )
         if os.path.exists( build_monitor_path ):
-            utils.system( [ '%s build_monitor' %  tool_path( 'pskill.exe' ) ] )
+            utils.system( [ '"%s" build_monitor' %  tool_path( 'pskill.exe' ) ] )
 
 
 def run_process_jam_log():
     log( 'Getting test case results out of "%s"...' % regression_log )
 
     utils.checked_system( [ 
-        '%s %s <%s' % (
+        '"%s" "%s" <"%s"' % (
               tool_path( process_jam_log )
             , regression_results
             , regression_log
@@ -510,7 +510,7 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
-            test_cmd = '%s -d2 --dump-tests %s "-sALL_LOCATE_TARGET=%s" >>%s 2>&1' % (
+            test_cmd = '%s -d2 --dump-tests %s "-sALL_LOCATE_TARGET=%s" >>"%s" 2>&1' % (
                   bjam_command( toolsets )
                 , bjam_options
                 , regression_results
