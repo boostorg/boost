@@ -455,7 +455,7 @@ def start_build_monitor( timeout ):
     if sys.platform == 'win32':
         build_monitor_path = tool_path( 'build_monitor.exe' )
         if os.path.exists( build_monitor_path ):
-            utils.system( [ 'start /belownormal "%s" bjam.exe %d' % ( build_monitor_path, timeout*60 ) ] )
+            utils.system( [ 'start /belownormal "" "%s" bjam.exe %d' % ( build_monitor_path, timeout*60 ) ] )
         else:
             log( 'Warning: Build monitor is not found at "%s"' % build_monitor_path )
 
