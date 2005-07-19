@@ -84,6 +84,14 @@ def log( message ):
     sys.stderr.flush()
 
 
+def platform_name():
+    # See http://article.gmane.org/gmane.comp.lib.boost.testing/933
+    if sys.platform == 'win32':
+        return 'Windows'
+
+    return platform.system()
+
+
 def rmtree( path ):
     if os.path.exists( path ):
         if sys.platform == 'win32':
@@ -548,7 +556,7 @@ def collect_logs(
     if not os.path.exists( comment_path ):
         log( 'Comment file "%s" not found; creating default comment.' % comment_path )
         f = open( comment_path, 'w' )
-        f.write( '<p>Tests are run on %s platform.</p>' % string.capitalize( sys.platform ) )
+        f.write( '<p>Tests are run on %s platform.</p>' % platform_name() )
         f.close()
     
     run_type = ''
@@ -750,7 +758,7 @@ def accept_args( args ):
     options = {
           '--tag'           : 'CVS-HEAD'
         , '--local'         : None
-        , '--platform'      : platform.system()
+        , '--platform'      : platform_name()
         , '--user'          : None
         , '--comment'       : None
         , '--toolsets'      : None
