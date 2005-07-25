@@ -39,6 +39,17 @@ a:hover {
   height: 1px;
   overflow: hidden;
 }
+/* Enforce a minimum width. */
+/* - For IE we can't really control this so we only make
+   sure the container doesn't look strange at small sizes by
+   making the body have enough whitespace. */
+#content h1, #content h2, #content h3 {
+  white-space: nowrap;
+}
+/* - New browsers have the easy way to set this. */
+.body-0 {
+  min-width: 55em;
+}
 /* The shadow arrangement. */
 .body-0 {
   padding-left: 50px;
@@ -61,9 +72,14 @@ a:hover {
   border: 2px solid #FFFFFF;
   position: relative;
 }
-#heading h1 {
+#heading * {
   color: #FFFFFF;
+}
+#heading h1 {
   padding: 2.5em 0.25em 0.25em 0.75em;
+  float: left;
+  position: relative;
+  white-space: nowrap;
 }
 #heading #boost {
   font-size: 250%;
@@ -74,6 +90,28 @@ a:hover {
   font-size: 100%;
   font-weight: 900;
   padding-left: 0.75em;
+}
+#heading-quote {
+  white-space: nowrap;
+  margin: 0.75em 0.75em 0em -7em;
+  float: right;
+  clear: right;
+  position: relative;
+  text-align: right;
+}
+#heading-quote .quote {
+  font-size: 80%;
+  display: block;
+}
+#heading-quote .attribution {
+  font-size: 75%;
+  display: block;
+}
+#heading-quote a {
+  border-bottom: 1px solid #0080C0;
+}
+#heading-quote a:hover {
+  border-bottom: 1px solid #c8dae3;
 }
 /* Content sections, inside the top content section. */
 .section {
@@ -146,6 +184,15 @@ a:hover {
   font-weight: bold;
 }
 .section-body .faq .faq-answer {
+}
+.section-body .note {
+  margin: 0em 0em 1em 0em;
+}
+.section-body .note .note-label {
+  color: #005080;
+  font-weight: bold;
+}
+.section-body .note .note-body {
 }
 /* Section headings, all use the same stream op indicator style. */
 #content h1, #content h2 {
