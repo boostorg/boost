@@ -147,9 +147,13 @@ def http_get( source_url, destination, proxy ):
     src.close()
 
 
+def tarball_name_for_tag( tag, timestamp = False ):
+    if not timestamp: return 'boost-%s.tar.bz2' % tag
+    else:             return 'boost-%s.timestamp' % tag
+
+
 def download_boost_tarball( destination, tag, proxy, timestamp_only = False ):
-    if not timestamp_only:  tarball_name = 'boost-%s.tar.bz2' % tag
-    else:                   tarball_name = 'boost-%s.timestamp' % tag
+    tarball_name = tarball_name_for_tag( tag, timestamp_only )
     tarball_path = os.path.join( destination, tarball_name )
     tarball_url = 'http://www.meta-comm.com/engineering/boost/snapshot/%s' % tarball_name
 
@@ -182,9 +186,8 @@ def unpack_tarball( tarball_path, destination  ):
 
     log( 'Unpacking boost tarball ("%s")...' % tarball_path )
 
-    b = os.path.basename( tarball_path )
-    name = b[ 0: b.find( '.' ) ]
-    extension =b[ b.find( '.' ) : ]
+    tarball_name = os.path.basename( tarball_path )
+    extension = tarball_name[ tarball_name.find( '.' ) : ]
 
     if extension in ( ".tar.gz", ".tar.bz2" ):
         mode = os.path.splitext( extension )[1][1:]
@@ -204,7 +207,6 @@ def unpack_tarball( tarball_path, destination  ):
         z = zipfile.ZipFile( tarball_path, 'r', zipfile.ZIP_DEFLATED ) 
         for f in z.infolist():
             destination_file_path = os.path.join( destination, f.filename )
-            print f.filename
             if destination_file_path[-1] == "/": # directory 
                 if not os.path.exists( destination_file_path  ):
                     os.makedirs( destination_file_path  )
@@ -214,7 +216,7 @@ def unpack_tarball( tarball_path, destination  ):
                 result.close()
         z.close()
     else:
-        raise "Do not know how to unpack archives with extension \"%s\"" % extension
+        raise 'Do not know how to unpack archives with extension \"%s\"' % extension
 
     boost_dir = find_boost_dirs( destination )[0]
     log( '    Unpacked into directory "%s"' % boost_dir )
@@ -282,9 +284,18 @@ def timestamp():
         )
 
 
-def get_tarball( tag, proxy, **unused ):
-    tarball_path = download_boost_tarball( regression_root, tag, proxy )
-    unpack_tarball( tarball_path, regression_root )
+def get_tarball( tag, proxy, args, **unused ):
+    if args == []: args = [ 'download', 'unpack' ]
+
+    tarball_path = None
+
+    if 'download' in args:
+        tarball_path = download_boost_tarball( regression_root, tag, proxy )
+
+    if 'unpack' in args:
+        if not tarball_path:
+            tarball_path = os.path.join( regression_root, tarball_name_for_tag( tag ) )
+        unpack_tarball( tarball_path, regression_root )
 
 
 def get_source( user, tag, proxy, args, **unused ):
@@ -299,7 +310,7 @@ def get_source( user, tag, proxy, args, **unused ):
     else:
         retry( 
               get_tarball
-            , ( tag, proxy )
+            , ( tag, proxy, args )
             )
 
 
@@ -601,9 +612,10 @@ def upload_logs(
         )
 
 
-def update_itself( **unused ):
+def update_itself( tag, **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
     self = os.path.join( regression_root, os.path.basename( sys.argv[0] ) )
+
     log( 'Updating %s from %s...' % ( self, source )  )
     log( '    Checking modification dates...' )
     if os.stat( self ).st_mtime > os.stat( source ).st_mtime:
@@ -695,7 +707,7 @@ def regression(
         test( toolsets, bjam_options, monitored, timeout, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
         upload_logs( tag, runner, user, ftp_proxy, debug_level )
-        update_itself()
+        update_itself( tag )
         
         if mail:
             log( 'Sending report to "%s"' % mail )
