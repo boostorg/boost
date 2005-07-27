@@ -1486,15 +1486,18 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_demo"/>
-            <test name="test_demo_exception"/>
+            <test name="test_demo_dll"/>
+            <test name="test_demo_exception*"/>
+            <test name="test_demo_shared_ptr*"/>
             <test name="test_demo_xml*"/>
-            <test name="test_shared_ptr*"/>
-            <test name="test_mi*"/>
-            <test name="test_non_default_ctor2*"/>
             <test name="test_exported*"/>
+            <test name="test_mi*"/>
+            <test name="test_mult_archive_types*"/>
+            <test name="test_no_rtti*"/>
+            <test name="test_non_default_ctor2*"/>
             <test name="test_registered*"/>
-            <test name="test_unregistered*"/>
             <test name="test_shared_ptr*"/>
+            <test name="test_unregistered*"/>
             <toolset name="cw*"/>
             <note author="Robert Ramey" refid="29">
                 All tests that serialize derived pointers currently fail with Metrowerks compilers.
@@ -1511,13 +1514,6 @@ for more information.
         <mark-expected-failures>
             <test name="test_array_binary_archive"/>
             <test name="test_array_text_*"/>
-            <note author="Aleksey Gurtovoy" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_fast_archive"/>
-            <test name="test_no_rtti_*"/>
-            <toolset name="cw*"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
 
@@ -1587,6 +1583,14 @@ for more information.
             <test name="test_multiple_ptrs_text_warchive_dll"/>
             <test name="test_multiple_ptrs_xml_archive_dll"/>
             <test name="test_multiple_ptrs_xml_warchive_dll"/>
+            <test name="test_non_default_ctor_text_archive_dll"/>
+            <test name="test_non_default_ctor_text_warchive_dll"/>
+            <test name="test_non_default_ctor_xml_archive_dll"/>
+            <test name="test_non_default_ctor_xml_warchive_dll"/>
+            <test name="test_non_intrusive_ctor_text_archive_dll"/>
+            <test name="test_non_intrusive_ctor_text_warchive_dll"/>
+            <test name="test_non_intrusive_ctor_xml_archive_dll"/>
+            <test name="test_non_intrusive_ctor_xml_warchive_dll"/>
             <test name="test_null_ptr_text_archive_dll"/>
             <test name="test_null_ptr_text_warchive_dll"/>
             <test name="test_null_ptr_xml_archive_dll"/>
@@ -1641,6 +1645,39 @@ for more information.
             <test name="test_vector_xml_warchive_dll"/>
             <toolset name="cw-9_5-darwin"/>
             <note author="Doug Gregor" refid="35"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_demo_fast_archive"/>
+            <toolset name="cw-8*"/>
+            <note author="Rene Rivera">
+                This is caused by a compiler bug in this particular version, but not present
+                in version thereafter. The compiler has some difficulties resolving operators
+                to methods in the archive classes. This can be worked around by calling the
+                operator directly, and such a work around is already present in library code.
+                This test demonstrates that this can happen in user code.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_diamond*"/>
+            <toolset name="cw-8*"/>
+            <toolset name="cw-9*-darwin*"/>
+            <note author="Rene Rivera">
+                The CW compilers have problems with the static construction idiom used to
+                implement the type registration in the Boost.Serialization library. In many
+                cases CW specific work arounds are implemented in the library but this one
+                is not immediately solvable. There is a user work around possible, please
+                contact the library developers on the Boost list for information on the
+                work around if needed.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_class_info_load_text*"/>
+            <test name="test_class_info_load_xml_warchive*"/>
+            <toolset name="cw-9*-darwin*"/>
+            <note author="Rene Rivera" refid="29"/>
         </mark-expected-failures>
     </library>
 
@@ -2509,26 +2546,10 @@ for more information.
 
     <!-- static_assert -->
     <library name="static_assert">
-        <test name="static_assert_test_fail_8">
-            <mark-failure>
-                <toolset name="cw-8_3*"/>
-                <note author="B. Dawes" refid="3"/>
-            </mark-failure>
-        </test>
         <test name="static_assert_example_2">
             <mark-failure>
                 <toolset name="sunpro-5_3-sunos"/>
                 <note author="J. Maddock" refid="4"/>
-            </mark-failure>
-        </test>
-        <test name="static_assert_test_fail_function">
-            <mark-failure>
-                <toolset name="cw-8*"/>
-                <note author="R. Rivera">
-                    This failure is caused by a compiler optimization. The compiler
-                    doesn't instantiate types not affecting semantics of the program,
-                    per section 14.7.1 [temp.inst].
-                </note>
             </mark-failure>
         </test>
     </library>
@@ -2937,6 +2958,13 @@ for more information.
                not usable with this toolset.
             </note>
         </mark-unusable>
+
+        <mark-expected-failures>
+            <test name="testwave"/>
+            <toolset name="cw-9*-darwin*"/>
+            <toolset name="cw-8*"/>
+            <note author="Rene Rivera" refid="29"/>
+        </mark-expected-failures>
     </library>
 
     <!-- /////////////// Standard note definitions /////////////// -->
