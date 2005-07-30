@@ -1598,6 +1598,10 @@ for more information.
             <test name="test_non_intrusive_ctor_text_warchive_dll"/>
             <test name="test_non_intrusive_ctor_xml_archive_dll"/>
             <test name="test_non_intrusive_ctor_xml_warchive_dll"/>
+            <test name="test_non_intrusive_text_archive_dll"/>
+            <test name="test_non_intrusive_text_warchive_dll"/>
+            <test name="test_non_intrusive_xml_archive_dll"/>
+            <test name="test_non_intrusive_xml_warchive_dll"/>
             <test name="test_null_ptr_text_archive_dll"/>
             <test name="test_null_ptr_text_warchive_dll"/>
             <test name="test_null_ptr_xml_archive_dll"/>
@@ -1669,7 +1673,7 @@ for more information.
         <mark-expected-failures>
             <test name="test_diamond*"/>
             <toolset name="cw-8*"/>
-            <toolset name="cw-9*-darwin*"/>
+            <toolset name="cw-9_5-darwin"/>
             <note author="Rene Rivera">
                 The CW compilers have problems with the static construction idiom used to
                 implement the type registration in the Boost.Serialization library. In many
@@ -1683,7 +1687,7 @@ for more information.
         <mark-expected-failures>
             <test name="test_class_info_load_text*"/>
             <test name="test_class_info_load_xml_warchive*"/>
-            <toolset name="cw-9*-darwin*"/>
+            <toolset name="cw-9_5-darwin"/>
             <note author="Rene Rivera" refid="29"/>
         </mark-expected-failures>
     </library>
@@ -1776,6 +1780,11 @@ for more information.
             <test name="chset_tests*"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <note author="Aleksey Gurtovoy" refid="28"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="traverse_tests*"/>
+            <toolset name="intel-win32-9_0"/>
+            <note author="S. Slapeta" refid="31"/>
         </mark-expected-failures>
     </library>
 
@@ -2160,9 +2169,11 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="cmdline_test_dll"/>
             <test name="options_description_test_dll"/>
             <test name="parsers_test_dll"/>
             <test name="variable_map_test_dll"/>
+            <test name="positional_options_test_dll"/>
             <toolset name="mingw-3*"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
@@ -2172,7 +2183,12 @@ for more information.
             <toolset name="mingw-3*"/>
             <note refid="19"/>
         </mark-expected-failures>
-
+        
+        <mark-expected-failures>
+          <test name="unicode_test_dll"/>
+          <toolset name="*-darwin"/>
+          <note refid="35" author="Doug Gregor"/>
+        </mark-expected-failures>
     </library>
 
      <!-- pointer container -->
@@ -2342,12 +2358,6 @@ for more information.
             <toolset name="vc-7_0"/>
             <note author="B. Dawes" refid="10"/>
         </mark-unusable>
-        <test name="random*">
-            <mark-failure>
-                <toolset name="intel-win32-8_0"/>
-                <note author="S. Slapeta" refid="3"/>
-            </mark-failure>
-        </test>
         <test name="random_test">
             <mark-failure>
                 <toolset name="cw-8_3*"/>
@@ -2357,6 +2367,10 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <note author="B. Dawes" refid="2"/>
+            </mark-failure>
+            <mark-failure>
+                <toolset name="intel-win32-*"/>
+                <note author="S. Slapeta" refid="1"/>
             </mark-failure>
         </test>
     </library>
@@ -2604,6 +2618,7 @@ for more information.
             <toolset name="vc-6_5*"/>
             <toolset name="vc-7_0"/>
             <toolset name="vc-7_0-stlport"/>
+            <toolset name="borland-5_6_4"/>
             <note author="Gennadiy Rozental" refid="3"/>
         </mark-expected-failures>
 
@@ -2613,6 +2628,25 @@ for more information.
             <note refid="29"/>
         </mark-expected-failures>
 
+        <mark-expected-failures>
+          <test name="errors_handling_test"/>
+          <test name="test_tools_test"/>
+          <toolset name="cw-9_5-darwin"/>
+          <note refid="29" author="Doug Gregor"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+          <test name="errors_handling_test"/>
+          <toolset name="vc-8_0"/>
+          <note refid="29" author="Doug Gregor"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+          <test name="errors_handling_test"/>
+          <test name="test_tools_test"/>
+          <toolset name="cw-9_4"/>
+          <note refid="29" author="Doug Gregor"/>
+        </mark-expected-failures>
     </library>
 
 
@@ -2968,17 +3002,18 @@ for more information.
 
         <mark-expected-failures>
             <test name="testwave"/>
-            <toolset name="cw-9*-darwin*"/>
+            <toolset name="cw-9_5-darwin"/>
             <toolset name="cw-8*"/>
             <note author="Rene Rivera" refid="29"/>
         </mark-expected-failures>
- 
-         <mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="testwave"/>
             <toolset name="gcc-3.2.3-linux"/>
             <toolset name="gcc-3.3.6-linux"/>
             <note author="Hartmut Kaiser" refid="29"/>
         </mark-expected-failures>
+
     </library>
 
     <!-- /////////////// Standard note definitions /////////////// -->
