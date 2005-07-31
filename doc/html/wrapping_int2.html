@@ -1,0 +1,91 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template wrapping_int2</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id796064" title="Header &lt;boost/date_time/wrapping_int.hpp&gt;">
+<link rel="prev" href="wrapping_int.html" title="Class template wrapping_int">
+<link rel="next" href="year_month_day_base.html" title="Struct template year_month_day_base">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="wrapping_int.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id796064"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="year_month_day_base.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="wrapping_int2"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template wrapping_int2</span></h2>
+<p>boost::date_time::wrapping_int2 &#8212; A wrapping integer used to wrap around at the top. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> int_type_, int_type_ wrap_min, int_type_ wrap_max&gt; 
+<span class="bold"><strong>class</strong></span> wrapping_int2 {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> int_type_ int_type;
+
+  <span class="emphasis"><em>// <a href="wrapping_int2.html#wrapping_int2construct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="wrapping_int2.html#id931224-bb">wrapping_int2</a>(int_type);
+
+  <span class="emphasis"><em>// <a href="wrapping_int2.html#id1002416-bb">public member functions</a></em></span>
+  <span class="type">int_type</span> <a href="wrapping_int2.html#id1002421-bb">as_int</a>() <span class="bold"><strong>const</strong></span>;
+  <a href="wrapping_int2.html#id1002438-bb"><span class="bold"><strong>operator</strong></span> int_type</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">int_type</span> <a href="wrapping_int2.html#id905778-bb">add</a>(int_type) ;
+  <span class="type">int_type</span> <a href="wrapping_int2.html#id936262-bb">subtract</a>(int_type) ;
+
+  <span class="emphasis"><em>// <a href="wrapping_int2.html#id1031949-bb">public static functions</a></em></span>
+  <span class="type"><span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>long</strong></span></span> <a href="wrapping_int2.html#id1031954-bb">wrap_value</a>() ;
+  <span class="type"><span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>long</strong></span></span> <a href="wrapping_int2.html#id1031967-bb">min_value</a>() ;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1148581"></a><h2>Description</h2>
+<p>Bad name, quick impl to fix a bug -- fix later!! This allows the wrap to restart at a value other than 0. Currently this only works if wrap_min == 1 </p>
+<div class="refsect2" lang="en">
+<a name="id1148589"></a><h3>
+<a name="wrapping_int2construct-copy-destruct"></a><code class="computeroutput">wrapping_int2</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><a name="id931224-bb"></a>wrapping_int2(int_type v);</pre>
+<p>If initializing value is out of range of [wrap_min, wrap_max], value will be initialized to closest of min or max </p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1148628"></a><h3>
+<a name="id1002416-bb"></a><code class="computeroutput">wrapping_int2</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">int_type</span> <a name="id1002421-bb"></a>as_int() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><a name="id1002438-bb"></a><span class="bold"><strong>operator</strong></span> int_type() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">int_type</span> <a name="id905778-bb"></a>add(int_type v) ;</pre></li>
+<li><pre class="literallayout"><span class="type">int_type</span> <a name="id936262-bb"></a>subtract(int_type v) ;</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1148726"></a><h3>
+<a name="id1031949-bb"></a><code class="computeroutput">wrapping_int2</code> public static functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>long</strong></span></span> <a name="id1031954-bb"></a>wrap_value() ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>long</strong></span></span> <a name="id1031967-bb"></a>min_value() ;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="wrapping_int.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id796064"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="year_month_day_base.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

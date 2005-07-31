@@ -1,0 +1,149 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Chapter 27. Frequently Asked Questions</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../bbv2.html" title="Part III. Boost.Build v2 User Manual">
+<link rel="prev" href="reference/generators.html" title="Generators">
+<link rel="next" href="faq/envar.html" title="
+      Accessing environment variables
+      ">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="reference/generators.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../bbv2.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="faq/envar.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="chapter" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="bbv2.faq"></a>Chapter 27. Frequently Asked Questions</h2></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="section"><a href="faq.html#id1708877">
+        I'm getting "Duplicate name of actual target" error. What
+        does it mean?
+      </a></span></dt>
+<dt><span class="section"><a href="faq/envar.html">
+      Accessing environment variables
+      </a></span></dt>
+<dt><span class="section"><a href="faq/s03.html">
+        How to control properties order?
+      </a></span></dt>
+<dt><span class="section"><a href="faq/s04.html">
+      How to control the library order on Unix?
+    </a></span></dt>
+<dt><span class="section"><a href="faq/external.html">Can I get output of external program as a variable in a Jamfile?
+    </a></span></dt>
+<dt><span class="section"><a href="faq/s06.html">How to get the project-root location?
+    </a></span></dt>
+<dt><span class="section"><a href="faq/s07.html">How to change compilation flags for one file?
+    </a></span></dt>
+<dt><span class="section"><a href="faq/dll-path.html">Why are the <code class="computeroutput">dll-path</code> and
+    <code class="computeroutput">hardcode-dll-paths</code> properties useful?
+    </a></span></dt>
+<dt><span class="section"><a href="recipies/site-config.html">Targets in site-config.jam</a></span></dt>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="id1708877"></a>
+        I'm getting "Duplicate name of actual target" error. What
+        does it mean?
+      </h2></div></div></div>
+<p>    
+    The most likely case is that you're trying to
+    compile the same file twice, with almost the same,
+    but differing properties. For example:
+
+</p>
+<pre class="programlisting">
+exe a : a.cpp : &lt;include&gt;/usr/local/include ;
+exe b : a.cpp ;
+</pre>
+<p>
+    The above snippet requires two different compilations
+    of 'a.cpp', which differ only in 'include' property.
+    Since the 'include' property is free, Boost.Build
+    can't generate two objects files into different directories.
+    On the other hand, it's dangerous to compile the file only
+    once -- maybe you really want to compile with different
+    includes.
+    </p>
+<p>
+    To solve this issue, you need to decide if file should
+    be compiled once or twice.</p>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>Two compile file only once, make sure that properties
+      are the same:
+
+</p>
+<pre class="programlisting">
+exe a : a.cpp : &lt;include&gt;/usr/local/include ;
+exe b : a.cpp : &lt;include&gt;/usr/local/include ;
+</pre>
+</li>
+<li>
+<p>
+      If changing the properties is not desirable, for example
+      if 'a' and 'b' target have other sources which need
+      specific properties, separate 'a.cpp' into it's own target:
+
+</p>
+<pre class="programlisting">
+obj a_obj : a.cpp : &lt;include&gt;/usr/local/include ;
+exe a : a_obj ;
+</pre>
+</li>
+<li>
+<p>
+      To compile file twice, you can make the object file local
+      to the main target:
+
+</p>
+<pre class="programlisting">
+      exe a : [ obj a_obj : a.cpp ] : &lt;include&gt;/usr/local/include ;
+      exe b : [ obj a_obj : a.cpp ] ;
+</pre>
+</li>
+</ol></div>
+<p>
+   A good question is why Boost.Build can't use some of the above
+   approaches automatically. The problem is that such magic would
+   require additional implementation complexities and would only
+   help in half of the cases, while in other half we'd be silently
+   doing the wrong thing. It's simpler and safe to ask user to
+   clarify his intention in such cases.
+   </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="reference/generators.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../bbv2.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="faq/envar.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

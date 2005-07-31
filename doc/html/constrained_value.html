@@ -1,0 +1,93 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template constrained_value</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id860535" title="Header &lt;boost/date_time/constrained_value.hpp&gt;">
+<link rel="prev" href="c_time.html" title="Struct c_time">
+<link rel="next" href="simple_exception_policy.html" title="Class template simple_exception_policy">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="c_time.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id860535"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="simple_exception_policy.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="constrained_value"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template constrained_value</span></h2>
+<p>boost::CV::constrained_value &#8212; A template to specify a constrained basic value type. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> value_policies&gt; 
+<span class="bold"><strong>class</strong></span> constrained_value {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> value_policies::value_type value_type;
+
+  <span class="emphasis"><em>// <a href="constrained_value.html#constrained_valueconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="constrained_value.html#id698806-bb">constrained_value</a>(value_type);
+  constrained_value&amp; <a href="constrained_value.html#id1001127-bb"><span class="bold"><strong>operator</strong></span>=</a>(value_type);
+
+  <span class="emphasis"><em>// <a href="constrained_value.html#id895089-bb">public member functions</a></em></span>
+  <a href="constrained_value.html#id1076917-bb"><span class="bold"><strong>operator</strong></span> value_type</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="constrained_value.html#id838318-bb">public static functions</a></em></span>
+  <span class="type">value_type max</span> <a href="constrained_value.html#id1000197-bb">BOOST_PREVENT_MACRO_SUBSTITUTION</a>() ;
+  <span class="type">value_type min</span> <a href="constrained_value.html#id859786-bb">BOOST_PREVENT_MACRO_SUBSTITUTION</a>() ;
+
+  <span class="emphasis"><em>// <a href="constrained_value.html#id1047030-bb">private member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="constrained_value.html#id834361-bb">assign</a>(value_type) ;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1039962"></a><h2>Description</h2>
+<p>This template provides a quick way to generate an integer type with a constrained range. The type provides for the ability to specify the min, max, and and error handling policy.</p>
+<p><span class="bold"><strong>value policies</strong></span>  A class that provides the range limits via the min and max functions as well as a function on_error that determines how errors are handled. A common strategy would be to assert or throw and exception. The on_error is passed both the current value and the new value that is in error. </p>
+<div class="refsect2" lang="en">
+<a name="id1039982"></a><h3>
+<a name="constrained_valueconstruct-copy-destruct"></a><code class="computeroutput">constrained_value</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><a name="id698806-bb"></a>constrained_value(value_type value);</pre></li>
+<li><pre class="literallayout">constrained_value&amp; <a name="id1001127-bb"></a><span class="bold"><strong>operator</strong></span>=(value_type v);</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1040037"></a><h3>
+<a name="id895089-bb"></a><code class="computeroutput">constrained_value</code> public member functions</h3>
+<div class="orderedlist"><ol type="1"><li><pre class="literallayout"><a name="id1076917-bb"></a><span class="bold"><strong>operator</strong></span> value_type() <span class="bold"><strong>const</strong></span>;</pre></li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1040078"></a><h3>
+<a name="id838318-bb"></a><code class="computeroutput">constrained_value</code> public static functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">value_type max</span> <a name="id1000197-bb"></a>BOOST_PREVENT_MACRO_SUBSTITUTION() ;</pre></li>
+<li><pre class="literallayout"><span class="type">value_type min</span> <a name="id859786-bb"></a>BOOST_PREVENT_MACRO_SUBSTITUTION() ;</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1040133"></a><h3>
+<a name="id1047030-bb"></a><code class="computeroutput">constrained_value</code> private member functions</h3>
+<div class="orderedlist"><ol type="1"><li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id834361-bb"></a>assign(value_type value) ;</pre></li></ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="c_time.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id860535"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="simple_exception_policy.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
