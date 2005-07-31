@@ -1,0 +1,209 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class condition</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="threads/reference.html#id928670" title="Header &lt;boost/thread/condition.hpp&gt;">
+<link rel="prev" href="barrier.html" title="Class barrier">
+<link rel="next" href="lock_error.html" title="Class lock_error">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="barrier.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id928670"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="lock_error.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="condition"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class condition</span></h2>
+<p>boost::condition &#8212; <p>An object of class <a href="condition.html" title="Class condition">condition</a> is a
+          synchronization primitive used to cause a thread to wait until a
+          particular shared-data condition (or time) is met.</p></p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> condition : <span class="bold"><strong>private</strong></span> boost::noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
+{
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="condition.html#conditionconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="condition.html#id762070-bb">condition</a>();
+  <a href="condition.html#id663126-bb">~condition</a>();
+
+  <span class="emphasis"><em>// <a href="condition.html#id663121-bb">notification</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="condition.html#id1187096-bb">notify_one</a>();
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="condition.html#id731921-bb">notify_all</a>();
+
+  <span class="emphasis"><em>// <a href="condition.html#id1111340-bb">waiting</a></em></span>
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="condition.html#id1076467-bb">wait</a>(ScopedLock&amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock, <span class="bold"><strong>typename</strong></span> Pred&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="condition.html#id721465-bb">wait</a>(ScopedLock&amp;, Pred);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock&gt; 
+    <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="condition.html#id1179084-bb">timed_wait</a>(ScopedLock&amp;, <span class="bold"><strong>const</strong></span> <a href="xtime.html" title="Struct xtime">boost::xtime</a>&amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock, <span class="bold"><strong>typename</strong></span> Pred&gt; 
+    <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="condition.html#id1153261-bb">timed_wait</a>(ScopedLock&amp;, Pred);
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1557163"></a><h2>Description</h2>
+<p>A <a href="condition.html" title="Class condition">condition</a> object is always used in
+          conjunction with a <a href="threads/concepts.html#threads.concepts.mutexes" title="Mutexes">mutex</a>
+          object (an object whose type is a model of a <a href="threads/concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> or one of its
+          refinements). The mutex object must be locked prior to waiting on the
+          condition, which is verified by passing a lock object (an object whose
+          type is a model of <a href="threads/concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a> or
+          one of its refinements) to the <a href="condition.html" title="Class condition">condition</a> object's
+          wait functions. Upon blocking on the <a href="condition.html" title="Class condition">condition</a>
+          object, the thread unlocks the mutex object. When the thread returns
+          from a call to one of the <a href="condition.html" title="Class condition">condition</a> object's wait
+          functions the mutex object is again locked. The tricky unlock/lock
+          sequence is performed automatically by the
+          <a href="condition.html" title="Class condition">condition</a> object's wait functions.</p>
+<p>The <a href="condition.html" title="Class condition">condition</a> type is often used to
+          implement the Monitor Object and other important patterns (see
+           and ). Monitors are one
+          of the most important patterns for creating reliable multithreaded
+          programs.</p>
+<p>See <a href="threads.html#threads.glossary" title="Glossary">Glossary</a> for definitions of <a href="threads.html#threads.glossary.thread-state">thread states</a>
+          blocked and ready. Note that "waiting" is a synonym for blocked.</p>
+<div class="refsect2" lang="en">
+<a name="id1557267"></a><h3>
+<a name="conditionconstruct-copy-destruct"></a><code class="computeroutput">condition</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id762070-bb"></a>condition();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Constructs a <a href="condition.html" title="Class condition">condition</a>
+            object.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id663126-bb"></a>~condition();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Destroys <code class="computeroutput">*this</code>.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1557346"></a><h3>
+<a name="id663121-bb"></a><code class="computeroutput">condition</code> notification</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1187096-bb"></a>notify_one();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If there is a thread waiting on <code class="computeroutput">*this</code>,
+              change that thread's state to ready. Otherwise there is no
+              effect.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    If more than one thread is waiting on <code class="computeroutput">*this</code>,
+              it is unspecified which is made ready. After returning to a ready
+              state the notified thread must still acquire the mutex again (which
+              occurs within the call to one of the <a href="condition.html" title="Class condition">condition</a>
+              object's wait functions.)</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id731921-bb"></a>notify_all();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Change the state of all threads waiting on
+              <code class="computeroutput">*this</code> to ready. If there are no waiting threads,
+              <code class="computeroutput">notify_all()</code> has no effect.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1557470"></a><h3>
+<a name="id1111340-bb"></a><code class="computeroutput">condition</code> waiting</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1076467-bb"></a>wait(ScopedLock&amp; lock);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">ScopedLock</code> meets the <a href="threads/concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>
+              requirements.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Releases the lock on the <a href="threads/concepts.html#threads.concepts.mutexes" title="Mutexes">mutex object</a>
+              associated with <code class="computeroutput">lock</code>, blocks the current thread of execution
+              until readied by a call to <code class="computeroutput">this-&gt;notify_one()</code>
+              or<code class="computeroutput"> this-&gt;notify_all()</code>, and then reacquires the
+              lock.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <a href="lock_error.html" title="Class lock_error">lock_error</a> if
+              <code class="computeroutput">!lock.locked()</code></p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock, <span class="bold"><strong>typename</strong></span> Pred&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id721465-bb"></a>wait(ScopedLock&amp; lock, Pred pred);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">ScopedLock</code> meets the <a href="threads/concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>
+              requirements and the return from <code class="computeroutput">pred()</code> is
+              convertible to <code class="computeroutput">bool</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    As if: <code class="computeroutput">while (!pred())
+                wait(lock)</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <a href="lock_error.html" title="Class lock_error">lock_error</a> if
+              <code class="computeroutput">!lock.locked()</code></p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1179084-bb"></a>timed_wait(ScopedLock&amp; lock, <span class="bold"><strong>const</strong></span> <a href="xtime.html" title="Struct xtime">boost::xtime</a>&amp; xt);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">ScopedLock</code> meets the <a href="threads/concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>
+              requirements.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Releases the lock on the <a href="threads/concepts.html#threads.concepts.mutexes" title="Mutexes">mutex object</a>
+              associated with <code class="computeroutput">lock</code>, blocks the current thread of execution
+              until readied by a call to <code class="computeroutput">this-&gt;notify_one()</code>
+              or<code class="computeroutput"> this-&gt;notify_all()</code>, or until time <code class="computeroutput">xt</code> 
+              is reached, and then reacquires the lock.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">false</code> if time <code class="computeroutput">xt</code> is reached,
+              otherwise <code class="computeroutput">true</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <a href="lock_error.html" title="Class lock_error">lock_error</a> if
+              <code class="computeroutput">!lock.locked()</code></p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ScopedLock, <span class="bold"><strong>typename</strong></span> Pred&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1153261-bb"></a>timed_wait(ScopedLock&amp; lock, Pred pred);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">ScopedLock</code> meets the <a href="threads/concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>
+              requirements and the return from <code class="computeroutput">pred()</code> is
+              convertible to <code class="computeroutput">bool</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    As if: <code class="computeroutput">while (!pred()) { if (!timed_wait(lock,
+                xt)) return false; } return true;</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">false</code> if <code class="computeroutput">xt</code> is reached,
+              otherwise <code class="computeroutput">true</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <a href="lock_error.html" title="Class lock_error">lock_error</a> if
+              <code class="computeroutput">!lock.locked()</code></p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="barrier.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id928670"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="lock_error.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Definitions</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../reference.html" title="Chapter 26. Detailed reference">
+<link rel="prev" href="buildprocess.html" title="Build process">
+<link rel="next" href="generators.html" title="Generators">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="buildprocess.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="generators.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.reference.definitions"></a>Definitions</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.features">Features and properties</a></span></dt>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.variants">Build Variants</a></span></dt>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.variants.proprefine">Property refinement</a></span></dt>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.variants.propcond">Conditional properties</a></span></dt>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.ids">Target identifiers and references</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.features"></a>Features and properties</h3></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.features.validity">Property Validity</a></span></dt>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.features.attributes">Feature Attributes</a></span></dt>
+<dt><span class="section"><a href="definitions.html#bbv2.reference.features.declaration">Feature Declaration</a></span></dt>
+</dl></div>
+<p>A <span class="emphasis"><em>feature</em></span> is a normalized (toolset-independent)
+        aspect of a build configuration, such as whether inlining is
+        enabled. Feature names may not contain the '<code class="literal">&gt;</code>'
+        character.</p>
+<p>Each feature in a build configuration has one or more
+        associated <span class="emphasis"><em>value</em></span>s. Feature values for non-free features
+        may not contain the '<code class="literal">&lt;</code>', '<code class="literal">:</code>', or
+        '<code class="literal">=</code>' characters. Feature values for free features may not
+        contain the '<code class="literal">&lt;</code>' character.</p>
+<p>A <span class="emphasis"><em>property</em></span> is a (feature,value) pair, expressed as
+        &lt;feature&gt;value.</p>
+<p>A <span class="emphasis"><em>subfeature</em></span> is a feature that only exists in the
+        presence of its parent feature, and whose identity can be derived
+        (in the context of its parent) from its value. A subfeature's
+        parent can never be another subfeature. Thus, features and their
+        subfeatures form a two-level hierarchy.</p>
+<p>A <span class="emphasis"><em>value-string</em></span> for a feature <span class="bold"><strong>F</strong></span> is a string of
+        the form
+        <code class="literal">value-subvalue1-subvalue2</code>...<code class="literal">-subvalueN</code>, where
+        <code class="literal">value</code> is a legal value for <span class="bold"><strong>F</strong></span> and
+        <code class="literal">subvalue1</code>...<code class="literal">subvalueN</code> are legal values of some
+        of <span class="bold"><strong>F</strong></span>'s subfeatures. For example, the properties
+        <code class="literal">&lt;toolset&gt;gcc &lt;toolset-version&gt;3.0.1</code> can be
+        expressed more conscisely using a value-string, as
+        <code class="literal">&lt;toolset&gt;gcc-3.0.1</code>.</p>
+<p>A <span class="emphasis"><em>property set</em></span> is a set of properties (i.e. a
+        collection without duplicates), for instance:
+        <code class="literal">&lt;toolset&gt;gcc &lt;runtime-link&gt;static</code>.</p>
+<p>A <span class="emphasis"><em>property path</em></span> is a property set whose elements have
+        been joined into a single string separated by slashes. A property
+        path representation of the previous example would be
+        <code class="literal">&lt;toolset&gt;gcc/&lt;runtime-link&gt;static</code>.</p>
+<p>A <span class="emphasis"><em>build specification</em></span> is a property set that fully
+        describes the set of features used to build a target.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="bbv2.reference.features.validity"></a>Property Validity</h4></div></div></div>
+<p>
+          For <a href="definitions.html#bbv2.reference.features.attributes.free">free</a>
+            features, all values are valid. For all other features,
+          the valid values are explicitly specified, and the build
+          system will report an error for the use of an invalid
+          feature-value. Subproperty validity may be restricted so
+          that certain values are valid only in the presence of
+          certain other subproperties. For example, it is possible
+          to specify that the <code class="computeroutput">&lt;gcc-target&gt;mingw</code>
+          property is only valid in the presence of
+          <code class="computeroutput">&lt;gcc-version&gt;2.95.2</code>.
+        </p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="bbv2.reference.features.attributes"></a>Feature Attributes</h4></div></div></div>
+<p>Each feature has a collection of zero or more of the following
+          attributes. Feature attributes are low-level descriptions of how the
+          build system should interpret a feature's values when they appear in
+          a build request. We also refer to the attributes of properties, so
+          that an <span class="emphasis"><em>incidental</em></span> property, for example, is
+          one whose feature has the <span class="emphasis"><em>incidental</em></span>
+          attribute.</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+<p><span class="emphasis"><em>incidental</em></span></p>
+<p>Incidental features are assumed not to affect build
+              products at all. As a consequence, the build system may use
+              the same file for targets whose build specification differs
+              only in incidental features. A feature that controls a
+              compiler's warning level is one example of a likely
+              incidental feature.</p>
+<p>Non-incidental features are assumed to affect build
+              products, so the files for targets whose build specification
+              differs in non-incidental features are placed in different
+              directories as described in "target paths" below. [ where? ]
+            </p>
+</li>
+<li>
+<p><a name="bbv2.reference.features.attributes.propagated"></a><span class="emphasis"><em>propagated</em></span></p>
+<p>Features of this kind are
+              propagated to dependencies. That is, if a <a href="../advanced/jamfiles.html#bbv2.advanced.targets.main">main target</a> is built using a
+              propagated
+              property, the build systems attempts to use the same property
+              when building any of its dependencies as part of that main
+              target. For instance, when an optimized exectuable is
+              requested, one usually wants it to be linked with optimized
+              libraries. Thus, the <code class="literal">&lt;optimization&gt;</code> feature is
+              propagated.</p>
+</li>
+<li>
+<p><a name="bbv2.reference.features.attributes.free"></a><span class="emphasis"><em>free</em></span></p>
+<p>Most features have a finite set of allowed values, and can
+              only take on a single value from that set in a given build
+              specification. Free features, on the other hand, can have
+              several values at a time and each value can be an arbitrary
+              string. For example, it is possible to have several
+              preprocessor symbols defined simultaneously:</p>
+<pre class="programlisting">
+&lt;define&gt;NDEBUG=1 &lt;define&gt;HAS_CONFIG_H=1
+</pre>
+</li>
+<li>
+<p><span class="emphasis"><em>optional</em></span></p>
+<p>An optional feature is a feature that is not required to
+              appear in a build specification. Every non-optional non-free
+              feature has a default value that is used when a value for
+              the feature is not otherwise specified, either in a target's
+              requirements or in the user's build request. [A feature's
+              default value is given by the first value listed in the
+              feature's declaration. -- move this elsewhere - dwa]</p>
+</li>
+<li>
+<p><span class="emphasis"><em>symmetric</em></span></p>
+<p>A symmetric feature's default value is not automatically
+              included in <a href="definitions.html#bbv2.reference.variants" title="Build Variants">build variants</a>.  Normally
+              a feature only generates a subvariant directory when its
+              value differs from the value specified by the build variant,
+              leading to an assymmetric subvariant directory structure for
+              certain values of the feature. A symmetric feature, when
+              relevant to the toolset, always generates a corresponding
+              subvariant directory.</p>
+</li>
+<li>
+<p><span class="emphasis"><em>path</em></span></p>
+<p>The value of a path feature specifies a path. The path is
+              treated as relative to the directory of Jamfile where path
+              feature is used and is translated appropriately by the build
+              system when the build is invoked from a different
+              directory</p>
+</li>
+<li>
+<p><span class="emphasis"><em>implicit</em></span></p>
+<p>Values of implicit features alone identify the feature.
+              For example, a user is not required to write
+              "&lt;toolset&gt;gcc", but can simply write "gcc". Implicit
+              feature names also don't appear in variant paths, although
+              the values do. Thus: bin/gcc/... as opposed to
+              bin/toolset-gcc/.... There should typically be only a few
+              such features, to avoid possible name clashes.</p>
+</li>
+<li>
+<p><span class="emphasis"><em>composite</em></span></p>
+<p>Composite features actually correspond to groups of
+              properties. For example, a build variant is a composite
+              feature. When generating targets from a set of build
+              properties, composite features are recursively expanded and
+              <span class="emphasis"><em>added</em></span> to the build property set, so rules can find
+              them if necessary. Non-composite non-free features override
+              components of composite features in a build property set.</p>
+</li>
+<li>
+<p><span class="emphasis"><em>dependency</em></span></p>
+<p>The value of dependency feature if a target reference.
+              When used for building of a main target, the value of
+              dependency feature is treated as additional dependency.</p>
+<p>For example, dependency features allow to state that
+              library A depends on library B. As the result, whenever an
+              application will link to A, it will also link to B.
+              Specifying B as dependency of A is different from adding B to
+              the sources of A. </p>
+</li>
+</ul></div>
+<p>Features that are neither free nor incidental are called
+          <span class="emphasis"><em>base</em></span> features.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="bbv2.reference.features.declaration"></a>Feature Declaration</h4></div></div></div>
+<p>The low-level feature declaration interface is the
+          <code class="literal">feature</code> rule from the
+          <code class="literal">feature</code> module:
+          
+</p>
+<pre class="programlisting">
+rule feature ( name : allowed-values * : attributes * )
+</pre>
+<p>
+          
+          A feature's allowed-values may be extended with the
+          <code class="computeroutput">feature.extend</code> rule.
+        </p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.variants"></a>Build Variants</h3></div></div></div>
+<p>
+        A build variant, or (simply variant) is a special kind of composite
+        feature that automatically incorporates the default values of
+        features that . Typically you'll want at least two separate
+        variants: one for debugging, and one for your release code. [
+        Volodya says: "Yea, we'd need to mention that it's a composite
+        feature and describe how they are declared, in pacticular that
+        default values of non-optional features are incorporated into
+        build variant automagically. Also, do we wan't some variant
+        inheritance/extension/templates. I don't remember how it works in
+        V1, so can't document this for V2.". Will clean up soon -DWA ]
+      </p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.variants.proprefine"></a>Property refinement</h3></div></div></div>
+<p>When a target with certain properties is requested, and that
+        target requires some set of properties, it is needed to find the
+        set of properties to use for building. This process is called
+        <span class="emphasis"><em>property refinement</em></span> and is performed by these rules</p>
+<div class="orderedlist"><ol type="1">
+<li>
+            Each property in the required set is added to the original
+            property set
+          </li>
+<li>
+            If the original property set includes property with a different
+            value of non free feature, that property is removed.
+          </li>
+</ol></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.variants.propcond"></a>Conditional properties</h3></div></div></div>
+<p>Sometime it's desirable to apply certain requirements only for
+        a specific combination of other properties. For example, one of
+        compilers that you use issues a pointless warning that you want to
+        suppress by passing a command line option to it. You would not
+        want to pass that option to other compilers. Conditional
+        properties allow you to do just that. Their syntax is:</p>
+<pre class="programlisting">
+        property ( "," property ) * ":" property
+      </pre>
+<p>
+        For example, the problem above would be solved by:
+
+</p>
+<pre class="programlisting">
+exe hello : hello.cpp : &lt;toolset&gt;yfc:&lt;cxxflags&gt;-disable-pointless-warning ;
+</pre>
+<p>The syntax also allows several properties in the condition, for
+        example:
+</p>
+<pre class="programlisting">
+exe hello : hello.cpp : &lt;os&gt;NT,&lt;toolset&gt;gcc:&lt;link&gt;static ;
+</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.ids"></a>Target identifiers and references</h3></div></div></div>
+<p><span class="emphasis"><em>Target identifier</em></span> is used to denote a
+        target. The syntax is:</p>
+<pre class="programlisting">
+target-id -&gt; (project-id | target-name | file-name )
+              | (project-id | directory-name) "//" target-name   
+project-id -&gt; path
+target-name -&gt; path
+file-name -&gt; path
+directory-name -&gt; path                  
+</pre>
+<p>
+        This grammar allows some elements to be recognized as either
+        
+        </p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+              project id (at this point, all project ids start with slash).
+            </li>
+<li>
+              name of target declared in current Jamfile (note that target
+              names may include slash).
+            </li>
+<li>
+              a regular file, denoted by absolute name or name relative to
+              project's sources location.
+            </li>
+</ul></div>
+<p>
+
+        To determine the real meaning a check is made if project-id
+        by the specified name exists, and then if main target of that
+        name exists. For example, valid target ids might be:
+
+</p>
+<pre class="screen">
+a                                    -- target in current project
+lib/b.cpp                            -- regular file
+/boost/thread                        -- project "/boost/thread"
+/home/ghost/build/lr_library//parser -- target in specific project
+</pre>
+<p><span class="bold"><strong>Rationale:</strong></span>Target is separated from project by special
+        separator (not just slash), because:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+            It emphasises that projects and targets are different things.
+          </li>
+<li>
+            It allows to have main target names with slashes. 
+
+            </li>
+</ul></div>
+<p><a name="bbv2.reference.targets.references"></a><span class="emphasis"><em>Target reference</em></span> is used to
+        specify a source target, and may additionally specify desired
+        properties for that target. It has this syntax:</p>
+<pre class="programlisting">
+target-reference -&gt; target-id [ "/" requested-properties ]
+requested-properties -&gt; property-path
+</pre>
+<p>
+        For example,
+
+        </p>
+<pre class="programlisting">
+          exe compiler : compiler.cpp libs/cmdline/&lt;optimization&gt;space ;
+        </pre>
+<p>
+        
+        would cause the version of <code class="literal">cmdline</code> library,
+        optimized for space, to be linked in even if the
+        <code class="literal">compiler</code> executable is build with optimization for
+        speed.
+      </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="buildprocess.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="generators.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

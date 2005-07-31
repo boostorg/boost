@@ -1,10 +1,104 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
-    <meta http-equiv="refresh" content="0; URL=http://www.boost.org/regression-logs/cs-win32_metacomm/doc/html/function.html">
-  </head>
-  <body>
-    Automatic redirection failed, please go to
-    <a href="http://www.boost.org/regression-logs/cs-win32_metacomm/doc/html/function.html">http://www.boost.org/regression-logs/cs-win32_metacomm/doc/html/function.html</a>
-  </body>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Chapter 4. Boost.Function</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="libraries.html" title="Part I. The Boost C++ Libraries">
+<link rel="prev" href="time_zone.html" title="Class time_zone">
+<link rel="next" href="function/history.html" title="History &amp; Compatibility Notes">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="time_zone.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="libraries.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="function/history.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="chapter" lang="en">
+<div class="titlepage"><div>
+<div><h2 class="title">
+<a name="function"></a>Chapter 4. Boost.Function</h2></div>
+<div><div class="author">
+<h3 class="author">
+<span class="firstname">Douglas</span> <span class="surname">Gregor</span>
+</h3>
+<code class="email">&lt;<a href="mailto:dgregor%20-at-%20cs.indiana.edu">dgregor -at- cs.indiana.edu</a>&gt;</code>
+</div></div>
+<div><p class="copyright">Copyright © 2001-2004 Douglas Gregor</p></div>
+<div><div class="legalnotice">
+<a name="id1186182"></a><p>Use, modification and distribution is subject to the Boost
+    Software License, Version 1.0. (See accompanying file
+    <code class="filename">LICENSE_1_0.txt</code> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)</p>
+</div></div>
+</div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="section"><a href="function.html#function.intro">Introduction</a></span></dt>
+<dt><span class="section"><a href="function/history.html">History &amp; Compatibility Notes</a></span></dt>
+<dt><span class="section"><a href="function/tutorial.html">Tutorial</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="function/tutorial.html#id1186576">Basic Usage</a></span></dt>
+<dt><span class="section"><a href="function/tutorial.html#id1186874">Free functions</a></span></dt>
+<dt><span class="section"><a href="function/tutorial.html#id1186902">Member functions</a></span></dt>
+<dt><span class="section"><a href="function/tutorial.html#id1187060">References to Function Objects</a></span></dt>
+<dt><span class="section"><a href="function/tutorial.html#id1187209">Comparing Boost.Function function objects</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="function/reference.html">Reference</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="function/reference.html#function.definitions">Definitions</a></span></dt>
+<dt><span class="section"><a href="function/reference.html#header.boost.function.hpp">Header &lt;boost/function.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="function/reference.html#id1002914">Header &lt;boost/function_equal.hpp&gt;</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="function/faq.html">Frequently Asked Questions</a></span></dt>
+<dt><span class="section"><a href="function/misc.html">Miscellaneous Notes</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="function/misc.html#id1215111">Boost.Function vs. Function Pointers</a></span></dt>
+<dt><span class="section"><a href="function/misc.html#id1215161">Performance</a></span></dt>
+<dt><span class="section"><a href="function/misc.html#id1215202">Combatting virtual function "bloat"</a></span></dt>
+<dt><span class="section"><a href="function/misc.html#id1215222">Acknowledgements</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="function/testsuite.html">Testsuite</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="function/testsuite.html#function.testsuite.acceptance">Acceptance tests</a></span></dt>
+<dt><span class="section"><a href="function/testsuite.html#function.testsuite.negative">Negative tests</a></span></dt>
+</dl></dd>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="function.intro"></a>Introduction</h3></div></div></div>
+<p>The Boost.Function library contains a family of class templates
+that are function object wrappers. The notion is similar to a
+generalized callback. It shares features with function pointers in
+that both define a call interface (e.g., a function taking two integer
+arguments and returning a floating-point value) through which some
+implementation can be called, and the implementation that is invoked
+may change throughout the course of the program.</p>
+<p> Generally, any place in which a function pointer would be used
+to defer a call or make a callback, Boost.Function can be used instead
+to allow the user greater flexibility in the implementation of the
+target. Targets can be any 'compatible' function object (or function
+pointer), meaning that the arguments to the interface designated by
+Boost.Function can be converted to the arguments of the target
+function object.</p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><small><p>Last revised: July 25, 2004 at 02:51:51 GMT</p></small></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="time_zone.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="libraries.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="function/history.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
 </html>

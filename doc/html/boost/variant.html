@@ -1,0 +1,397 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template variant</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../variant/reference.html#id1258086" title="Header &lt;boost/variant/variant.hpp&gt;">
+<link rel="prev" href="../id696758.html" title="Macro BOOST_VARIANT_NO_FULL_RECURSIVE_VARIANT_SUPPORT">
+<link rel="next" href="../id928296.html" title="Function template swap">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../id696758.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../variant/reference.html#id1258086"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../id928296.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="boost.variant"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template variant</span></h2>
+<p>boost::variant &#8212; Safe, generic, stack-based discriminated union container.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T1, <span class="bold"><strong>typename</strong></span> T2 = <span class="emphasis"><em>unspecified</em></span>, ..., 
+         <span class="bold"><strong>typename</strong></span> TN = <span class="emphasis"><em>unspecified</em></span>&gt; 
+<span class="bold"><strong>class</strong></span> variant {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span> types;
+
+  <span class="emphasis"><em>// <a href="variant.html#boost.variantconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="variant.html#id1114004-bb">variant</a>();
+  <a href="variant.html#id1043426-bb">variant</a>(<span class="bold"><strong>const</strong></span> variant &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <a href="variant.html#id1140052-bb">variant</a>(T &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <a href="variant.html#id727749-bb">variant</a>(<span class="bold"><strong>const</strong></span> T &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U1, <span class="bold"><strong>typename</strong></span> U2, ..., <span class="bold"><strong>typename</strong></span> UN&gt; 
+    <a href="variant.html#id1354083-bb">variant</a>(variant&lt;U1, U2, ..., UN&gt; &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U1, <span class="bold"><strong>typename</strong></span> U2, ..., <span class="bold"><strong>typename</strong></span> UN&gt; 
+    <a href="variant.html#id1248407-bb">variant</a>(<span class="bold"><strong>const</strong></span> variant&lt;U1, U2, ..., UN&gt; &amp;);
+  <a href="variant.html#id657817-bb">~variant</a>();
+
+  <span class="emphasis"><em>// <a href="variant.html#id1251197-bb">modifiers</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="variant.html#id1047505-bb">swap</a>(variant &amp;);
+  <span class="type">variant &amp;</span> <a href="variant.html#id1326145-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> variant &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <span class="type">variant &amp;</span> <a href="variant.html#id1035713-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> T &amp;);
+
+  <span class="emphasis"><em>// <a href="variant.html#id1243424-bb">queries</a></em></span>
+  <span class="type"><span class="bold"><strong>int</strong></span></span> <a href="variant.html#id752988-bb">which</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="variant.html#id896399-bb">empty</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>const</strong></span> std::type_info &amp;</span> <a href="variant.html#id1246423-bb">type</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="variant.html#id1114916-bb">relational</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="variant.html#id1569910-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> variant &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="variant.html#id1316170-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> U &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="variant.html#id1206339-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> variant &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="variant.html#id1220565-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> U &amp;) <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1663925"></a><h2>Description</h2>
+<p>The <code class="computeroutput">variant</code> class template (inspired by Andrei
+        Alexandrescu's class of the same name
+        [<a href="../variant/refs.html#variant.refs.ale01a">Ale01A</a>]) is an efficient,
+        <a href="../variant/tutorial.html#variant.tutorial.recursive" title="Recursive variant types">recursive-capable</a>,
+        bounded discriminated union value type capable of containing any value
+        type (either POD or non-POD). It supports construction from any type
+        convertible to one of its bounded types or from a source
+        <code class="computeroutput">variant</code> whose bounded types are each convertible to one
+        of the destination <code class="computeroutput">variant</code>'s bounded types. As well,
+        through <code class="computeroutput"><a href="../apply_visitor.html" title="Function apply_visitor">apply_visitor</a></code>,
+        <code class="computeroutput">variant</code> supports compile-time checked, type-safe
+        visitation; and through <code class="computeroutput"><a href="../get.html" title="Function get">get</a></code>,
+        <code class="computeroutput">variant</code> supports run-time checked, type-safe value
+        retrieval.</p>
+<p><span class="bold"><strong>Notes</strong></span>:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>The bounded types of the <code class="computeroutput">variant</code> are exposed
+            via the nested typedef <code class="computeroutput">types</code>, which is an
+            <a href="../../../libs/mpl/index.html" target="_top">MPL</a>-compatible Sequence containing the
+            set of types that must be handled by any
+            <a href="../variant/reference.html#variant.concepts.static-visitor" title="StaticVisitor">visitor</a> to
+            the <code class="computeroutput">variant</code>.</li>
+<li>All members of <code class="computeroutput">variant</code> satisfy at least the
+            basic guarantee of exception-safety. That is, all operations on
+            a <code class="computeroutput">variant</code> remain defined even after previous
+            operations have failed.</li>
+<li>Each type specified as a template argument to
+            <code class="computeroutput">variant</code> must meet the requirements of the
+            <span class="emphasis"><em><a href="../variant/reference.html#variant.concepts.bounded-type" title="BoundedType">BoundedType</a></em></span>
+            concept.</li>
+<li>Each type specified as a template argument to
+            <code class="computeroutput">variant</code> must be distinct after removal of qualifiers.
+            Thus, for instance, both <code class="computeroutput">variant&lt;int, int&gt;</code> and
+            <code class="computeroutput">variant&lt;int, const int&gt;</code> have undefined
+            behavior.</li>
+<li>Conforming implementations of <code class="computeroutput">variant</code> must
+            allow at least ten types as template arguments. The exact number
+            of allowed arguments is exposed by the preprocessor macro
+            <code class="computeroutput"><a href="../BOOST_VARIANT_LIMIT_TYPES.html" title="Macro BOOST_VARIANT_LIMIT_TYPES">BOOST_VARIANT_LIMIT_TYPES</a></code>.
+            (See <code class="computeroutput"><a href="../make_variant_over.html" title="Class template make_variant_over">make_variant_over</a></code> for a
+            means to specify the bounded types of a <code class="computeroutput">variant</code> by
+            the elements of an <a href="../../../libs/mpl/index.html" target="_top">MPL</a> or compatible
+            Sequence, thus overcoming this limitation.)</li>
+</ul></div>
+<div class="refsect2" lang="en">
+<a name="id1664158"></a><h3>
+<a name="boost.variantconstruct-copy-destruct"></a><code class="computeroutput">variant</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id1114004-bb"></a>variant();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    The first bounded type of the <code class="computeroutput">variant</code> (i.e.,
+            <code class="computeroutput">T1</code>) must fulfill the requirements of the
+            <span class="emphasis"><em>DefaultConstructible</em></span> [20.1.4]
+            concept.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    Content of <code class="computeroutput">*this</code> is the default value of the
+            first bounded type (i.e, <code class="computeroutput">T1</code>).<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    May fail with any exceptions arising from the default
+            constructor of <code class="computeroutput">T1</code>.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id1043426-bb"></a>variant(<span class="bold"><strong>const</strong></span> variant &amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    Content of <code class="computeroutput">*this</code> is a copy of the content of
+            <code class="computeroutput">other</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    May fail with any exceptions arising from the
+            copy constructor of <code class="computeroutput">other</code>'s contained type.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <a name="id1140052-bb"></a>variant(T &amp; operand);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">T</code> must be unambiguously convertible to one of
+            the bounded types (i.e., <code class="computeroutput">T1</code>, <code class="computeroutput">T2</code>,
+            etc.).<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    Content of <code class="computeroutput">*this</code> is the best conversion of
+            <code class="computeroutput">operand</code> to one of the bounded types, as determined
+            by standard overload resolution rules.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    May fail with any exceptions arising from the conversion of
+            <code class="computeroutput">operand</code> to one of the bounded types.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <a name="id727749-bb"></a>variant(<span class="bold"><strong>const</strong></span> T &amp; operand);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    Same semantics as previous constructor, but allows
+            construction from temporaries.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U1, <span class="bold"><strong>typename</strong></span> U2, ..., <span class="bold"><strong>typename</strong></span> UN&gt; 
+  <a name="id1354083-bb"></a>variant(variant&lt;U1, U2, ..., UN&gt; &amp; operand);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <span class="emphasis"><em>Every</em></span> one of <code class="computeroutput">U1</code>,
+            <code class="computeroutput">U2</code>, ..., <code class="computeroutput">UN</code> must have an unambiguous
+            conversion to one of the bounded types (i.e., <code class="computeroutput">T1</code>,
+            <code class="computeroutput">T2</code>, ..., <code class="computeroutput">TN</code>).<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    If <code class="computeroutput">variant&lt;U1, U2, ..., UN&gt;</code> is itself
+            one of the bounded types, then content of <code class="computeroutput">*this</code> is a
+            copy of <code class="computeroutput">operand</code>. Otherwise, content of
+            <code class="computeroutput">*this</code> is the best conversion of the content of
+            <code class="computeroutput">operand</code> to one of the bounded types, as determined
+            by standard overload resolution rules.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If <code class="computeroutput">variant&lt;U1, U2, ..., UN&gt;</code> is itself
+          one of the bounded types, then may fail with any exceptions arising
+          from the copy constructor of
+          <code class="computeroutput">variant&lt;U1, U2, ..., UN&gt;</code>. Otherwise, may fail
+          with any exceptions arising from the conversion of the content of
+          <code class="computeroutput">operand</code> to one of the bounded types.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U1, <span class="bold"><strong>typename</strong></span> U2, ..., <span class="bold"><strong>typename</strong></span> UN&gt; 
+  <a name="id1248407-bb"></a>variant(<span class="bold"><strong>const</strong></span> variant&lt;U1, U2, ..., UN&gt; &amp; operand);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    Same semantics as previous constructor, but allows
+            construction from temporaries.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id657817-bb"></a>~variant();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Destroys the content of <code class="computeroutput">*this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1664686"></a><h3>
+<a name="id1251197-bb"></a><code class="computeroutput">variant</code> modifiers</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1047505-bb"></a>swap(variant &amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    Every bounded type must fulfill the requirements of the
+              <a href="../Assignable.html" title="Concept Assignable">Assignable</a>
+              concept.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Interchanges the content of <code class="computeroutput">*this</code> and
+              <code class="computeroutput">other</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If the contained type of <code class="computeroutput">other</code> is the same as
+              the contained type of <code class="computeroutput">*this</code>, then may fail with any
+              exceptions arising from the <code class="computeroutput">swap</code> of the contents of
+              <code class="computeroutput">*this</code> and <code class="computeroutput">other</code>. Otherwise, may fail
+              with any exceptions arising from either of the copy constructors
+              of the contained types. Also, in the event of insufficient
+              memory, may fail with <code class="computeroutput">std::bad_alloc</code>
+              (<a href="../variant/design.html#variant.design.never-empty.problem" title="The Implementation Problem">why?</a>).</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type">variant &amp;</span> <a name="id1326145-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> variant &amp; rhs);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    Every bounded type must fulfill the requirements of the
+              <a href="../Assignable.html" title="Concept Assignable">Assignable</a>
+              concept.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If the contained type of <code class="computeroutput">rhs</code> is the same as
+              the contained type of <code class="computeroutput">*this</code>, then assigns the
+              content of <code class="computeroutput">rhs</code> into the content of
+              <code class="computeroutput">*this</code>. Otherwise, makes the content of
+              <code class="computeroutput">*this</code> a copy of the content of <code class="computeroutput">rhs</code>,
+              destroying the previous content of <code class="computeroutput">*this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If the contained type of <code class="computeroutput">rhs</code> is the same as
+              the contained type of <code class="computeroutput">*this</code>, then may fail with any
+              exceptions arising from the assignment of the content of
+              <code class="computeroutput">rhs</code> into the content <code class="computeroutput">*this</code>. Otherwise,
+              may fail with any exceptions arising from the copy constructor
+              of the contained type of <code class="computeroutput">rhs</code>. Also, in the event of
+              insufficient memory, may fail with <code class="computeroutput">std::bad_alloc</code>
+              (<a href="../variant/design.html#variant.design.never-empty.problem" title="The Implementation Problem">why?</a>).</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <span class="type">variant &amp;</span> <a name="id1035713-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> T &amp; rhs);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <div class="itemizedlist"><ul type="disc">
+<li>
+<code class="computeroutput">T</code> must be unambiguously convertible to
+                one of the bounded types (i.e., <code class="computeroutput">T1</code>,
+                <code class="computeroutput">T2</code>, etc.).</li>
+<li>Every bounded type must fulfill the requirements of the
+                <a href="../Assignable.html" title="Concept Assignable">Assignable</a>
+                concept.</li>
+</ul></div><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If the contained type of <code class="computeroutput">*this</code> is
+              <code class="computeroutput">T</code>, then assigns <code class="computeroutput">rhs</code> into the content
+              of <code class="computeroutput">*this</code>. Otherwise, makes the content of
+              <code class="computeroutput">*this</code> the best conversion of <code class="computeroutput">rhs</code> to
+              one of the bounded types, as determined by standard overload
+              resolution rules, destroying the previous content of
+              <code class="computeroutput">*this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If the contained type of <code class="computeroutput">*this</code> is
+              <code class="computeroutput">T</code>, then may fail with any exceptions arising from
+              the assignment of <code class="computeroutput">rhs</code> into the content
+              <code class="computeroutput">*this</code>. Otherwise, may fail with any exceptions
+              arising from the conversion of <code class="computeroutput">rhs</code> to one of the
+              bounded types. Also, in the event of insufficient memory, may
+              fail with <code class="computeroutput">std::bad_alloc</code>
+              (<a href="../variant/design.html#variant.design.never-empty.problem" title="The Implementation Problem">why?</a>).</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1665158"></a><h3>
+<a name="id1243424-bb"></a><code class="computeroutput">variant</code> queries</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>int</strong></span></span> <a name="id752988-bb"></a>which() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    The zero-based index into the set of bounded types
+              of the contained type of <code class="computeroutput">*this</code>. (For instance, if
+              called on a <code class="computeroutput">variant&lt;int, std::string&gt;</code> object
+              containing a <code class="computeroutput">std::string</code>, <code class="computeroutput">which()</code>
+              would return <code class="computeroutput">1</code>.)<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id896399-bb"></a>empty() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">false</code>: <code class="computeroutput">variant</code> always contains
+              exactly one of its bounded types. (See
+              <a href="../variant/design.html#variant.design.never-empty" title='"Never-Empty" Guarantee'>the section called &#8220;"Never-Empty" Guarantee&#8221;</a>
+              for more information.)<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    Facilitates generic compatibility with
+              <a href="any.html" title="Class any">boost::any</a>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>const</strong></span> std::type_info &amp;</span> <a name="id1246423-bb"></a>type() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">typeid(x)</code>, where <code class="computeroutput">x</code> is the the
+              content of <code class="computeroutput">*this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1665383"></a><h3>
+<a name="id1114916-bb"></a><code class="computeroutput">variant</code> relational</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<p><a name="id1280996-bb"></a></p>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1569910-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> variant &amp; rhs) <span class="bold"><strong>const</strong></span>;
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1316170-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> U &amp; ) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    The overload returning <code class="computeroutput">void</code> exists only to
+              prohibit implicit conversion of the operator's right-hand side
+              to <code class="computeroutput">variant</code>; thus, its use will (purposefully)
+              result in a compile-time error.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    Every bounded type of the <code class="computeroutput">variant</code> must
+              fulfill the requirements of the
+              <a href="../EqualityComparable.html" title="Concept EqualityComparable">EqualityComparable</a>
+              concept.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> iff <code class="computeroutput">which() == rhs.which()</code><span class="emphasis"><em>and</em></span><code class="computeroutput">content_this == content_rhs</code>, where
+              <code class="computeroutput">content_this</code> is the content of <code class="computeroutput">*this</code>
+              and <code class="computeroutput">content_rhs</code> is the content of
+              <code class="computeroutput">rhs</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If <code class="computeroutput">which() == rhs.which()</code> then may fail with
+              any exceptions arising from <code class="computeroutput">operator==(T,T)</code>, where
+              <code class="computeroutput">T</code> is the contained type of
+              <code class="computeroutput">*this</code>.</p>
+</li>
+<li>
+<p><a name="id1138292-bb"></a></p>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1206339-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> variant &amp; rhs) <span class="bold"><strong>const</strong></span>;
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1220565-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> U &amp; ) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    The overload returning <code class="computeroutput">void</code> exists only to
+              prohibit implicit conversion of the operator's right-hand side
+              to <code class="computeroutput">variant</code>; thus, its use will (purposefully)
+              result in a compile-time error.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    Every bounded type of the <code class="computeroutput">variant</code> must
+              fulfill the requirements of the
+              <a href="../LessThanComparable.html" title="Concept LessThanComparable">LessThanComparable</a>
+              concept.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    If <code class="computeroutput">which() == rhs.which()</code> then:
+              <code class="computeroutput">content_this &lt; content_rhs</code>, where
+              <code class="computeroutput">content_this</code> is the content of <code class="computeroutput">*this</code>
+              and <code class="computeroutput">content_rhs</code> is the content of <code class="computeroutput">rhs</code>.
+              Otherwise: <code class="computeroutput">which() &lt; rhs.which()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If <code class="computeroutput">which() == rhs.which()</code> then may fail with
+              any exceptions arising from <code class="computeroutput">operator&lt;(T,T)</code>,
+              where <code class="computeroutput">T</code> is the contained type of
+              <code class="computeroutput">*this</code>.</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2002, 2003 Eric Friedman, Itay Maman</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../id696758.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../variant/reference.html#id1258086"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../id928296.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
