@@ -1,0 +1,125 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Configuration</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
+<link rel="prev" href="../threads/faq.html" title="Frequently Asked Questions">
+<link rel="next" href="build.html" title="Build">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../threads/faq.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="build.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="thread.configuration"></a>Configuration</h3></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="configuration.html#thread.configuration.public">Library Defined Public Macros</a></span></dt>
+<dt><span class="section"><a href="configuration.html#thread.configuration.implementation">Library Defined Implementation Macros</a></span></dt>
+</dl></div>
+<p> uses several configuration macros in &lt;boost/config.hpp&gt;,
+	as well as configuration macros meant to be supplied by the application. These
+	macros are documented here.
+	</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="thread.configuration.public"></a>Library Defined Public Macros</h4></div></div></div>
+<p>
+	These macros are defined by  but are expected to be used
+	by application code.
+		</p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Macro</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody><tr>
+<td>BOOST_HAS_THREADS</td>
+<td>
+	Indicates that threading support is available. This means both that there
+	is a platform specific implementation for  and that
+	threading support has been enabled in a platform specific manner. For instance,
+	on the Win32 platform there's an implementation for 
+	but unless the program is compiled against one of the multithreading runtimes
+	(often determined by the compiler predefining the macro _MT) the BOOST_HAS_THREADS
+	macro remains undefined.
+						</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="thread.configuration.implementation"></a>Library Defined Implementation Macros</h4></div></div></div>
+<p>
+	These macros are defined by  and are implementation details
+	of interest only to implementors.
+		</p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Macro</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>BOOST_HAS_WINTHREADS</td>
+<td>
+	Indicates that the platform has the Microsoft Win32 threading libraries,
+	and that they should be used to implement .
+			            </td>
+</tr>
+<tr>
+<td>BOOST_HAS_PTHREADS</td>
+<td>
+	Indicates that the platform has the POSIX pthreads libraries, and that
+	they should be used to implement .
+						</td>
+</tr>
+<tr>
+<td>BOOST_HAS_FTIME</td>
+<td>
+	Indicates that the implementation should use GetSystemTimeAsFileTime()
+	and the FILETIME type to calculate the current time. This is an implementation
+	detail used by boost::detail::getcurtime().
+						</td>
+</tr>
+<tr>
+<td>BOOST_HAS_GETTTIMEOFDAY</td>
+<td>
+	Indicates that the implementation should use gettimeofday() to calculate
+	the current time. This is an implementation detail used by boost::detail::getcurtime().
+						</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><small><p>Last revised: July 17, 2004 at 04:33:59 GMT</p></small></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../threads/faq.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="build.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

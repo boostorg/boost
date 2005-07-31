@@ -1,0 +1,186 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class any</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../any/reference.html#header.boost.any.hpp" title="Header &lt;boost/any.hpp&gt;">
+<link rel="prev" href="../bad_any_cast.html" title="Class bad_any_cast">
+<link rel="next" href="../any_cast.html" title="Function any_cast">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../bad_any_cast.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../any/reference.html#header.boost.any.hpp"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../any_cast.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="boost.any"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class any</span></h2>
+<p>boost::any &#8212; A class whose instances can hold instances of any
+          type that satisfies <a href="../any/reference.html#any.ValueType" title="ValueType requirements">ValueType</a>
+          requirements.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> any {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="any.html#boost.anyconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="any.html#id691864-bb">any</a>();
+  <a href="any.html#id691852-bb">any</a>(<span class="bold"><strong>const</strong></span> <a href="any.html" title="Class any">any</a> &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <a href="any.html#id759379-bb">any</a>(<span class="bold"><strong>const</strong></span> ValueType &amp;);
+  <span class="type"><a href="any.html" title="Class any">any</a> &amp;</span> <a href="any.html#id755290-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> <a href="any.html" title="Class any">any</a> &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <span class="type"><a href="any.html" title="Class any">any</a> &amp;</span> <a href="any.html#id591278-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> ValueType &amp;);
+  <a href="any.html#id756388-bb">~any</a>();
+
+  <span class="emphasis"><em>// <a href="any.html#id720717-bb">modifiers</a></em></span>
+  <span class="type"><a href="any.html" title="Class any">any</a> &amp;</span> <a href="any.html#id722843-bb">swap</a>(<a href="any.html" title="Class any">any</a> &amp;);
+
+  <span class="emphasis"><em>// <a href="any.html#id761589-bb">queries</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="any.html#id761592-bb">empty</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>const</strong></span> std::type_info &amp;</span> <a href="any.html#id761615-bb">type</a>() <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id970852"></a><h2>Description</h2>
+<div class="refsect2" lang="en">
+<a name="id970855"></a><h3>
+<a name="boost.anyconstruct-copy-destruct"></a><code class="computeroutput">any</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id691864-bb"></a>any();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">this-&gt;<a href="any.html#id761592-bb">empty</a>()</code></p>
+</li>
+<li>
+<pre class="literallayout"><a name="id691852-bb"></a>any(<span class="bold"><strong>const</strong></span> <a href="any.html" title="Class any">any</a> &amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+     Copy constructor that copies content of
+            <code class="computeroutput">other</code> into new instance, so that any content
+            is equivalent in both type and value to the content of
+            <code class="computeroutput">other</code>, or empty if <code class="computeroutput">other</code> is
+            empty. <br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    May fail with a
+            <code class="computeroutput">std::bad_alloc</code>
+            exception or any exceptions arising from the copy
+            constructor of the contained type.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <a name="id759379-bb"></a>any(<span class="bold"><strong>const</strong></span> ValueType &amp; value);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Makes a copy of <code class="computeroutput">value</code>, so
+            that the initial content of the new instance is equivalent
+            in both type and value to
+            <code class="computeroutput">value</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <code class="computeroutput">std::bad_alloc</code>
+            or any exceptions arising from the copy constructor of the
+            contained type.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><a href="any.html" title="Class any">any</a> &amp;</span> <a name="id755290-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> <a href="any.html" title="Class any">any</a> &amp; rhs);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Copies content of <code class="computeroutput">rhs</code> into
+            current instance, discarding previous content, so that the
+            new content is equivalent in both type and value to the
+            content of <code class="computeroutput">rhs</code>, or empty if
+            <code class="computeroutput">rhs.<a href="any.html#id761592-bb">empty</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <code class="computeroutput">std::bad_alloc</code>
+            or any exceptions arising from the copy constructor of the
+            contained type. Assignment satisfies the strong guarantee
+            of exception safety.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <span class="type"><a href="any.html" title="Class any">any</a> &amp;</span> <a name="id591278-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> ValueType &amp; rhs);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Makes a copy of <code class="computeroutput">rhs</code>,
+            discarding previous content, so that the new content of is
+            equivalent in both type and value to
+            <code class="computeroutput">rhs</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <code class="computeroutput">std::bad_alloc</code>
+            or any exceptions arising from the copy constructor of the
+            contained type. Assignment satisfies the strong guarantee
+            of exception safety.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id756388-bb"></a>~any();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Releases any and all resources used in
+            management of instance.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Nothing.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id971249"></a><h3>
+<a name="id720717-bb"></a><code class="computeroutput">any</code> modifiers</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type"><a href="any.html" title="Class any">any</a> &amp;</span> <a name="id722843-bb"></a>swap(<a href="any.html" title="Class any">any</a> &amp; rhs);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Exchange of the contents of
+              <code class="computeroutput">*this</code> and
+              <code class="computeroutput">rhs</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">*this</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Nothing.</p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id971335"></a><h3>
+<a name="id761589-bb"></a><code class="computeroutput">any</code> queries</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id761592-bb"></a>empty() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if instance is
+              empty, otherwise <code class="computeroutput">false</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>const</strong></span> std::type_info &amp;</span> <a name="id761615-bb"></a>type() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    the <code class="computeroutput">typeid</code> of the
+              contained value if instance is non-empty, otherwise
+              <code class="computeroutput">typeid(void)</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    Useful for querying against types known
+              either at compile time or only at
+              runtime.</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001 Kevlin Henney</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../bad_any_cast.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../any/reference.html#header.boost.any.hpp"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../any_cast.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
