@@ -373,6 +373,7 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:template name="insert_page_links">
         <xsl:param name="page"/>
         <xsl:param name="release"/>
+        <xsl:param name="mode"/>
 
         <div class="links">
             <xsl:copy-of select="document( 'html/make_tinyurl.html' )"/>
@@ -382,6 +383,26 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:with-param name="class" select="''"/>
                 <xsl:with-param name="release" select="$release"/>
             </xsl:call-template>
+
+            <xsl:text>&#160;|&#160;</xsl:text>
+            <xsl:choose>
+                <xsl:when test="$release='yes'">
+                    <a href="../{$mode}/{$page}_release.html" class="view-link" target="_top">
+                        <xsl:value-of select="$mode"/><xsl:text> View</xsl:text>
+                    </a>
+                </xsl:when>
+                <xsl:otherwise>
+                    <a href="../{$mode}/{$page}.html" class="view-link" target="_top">
+                        <xsl:value-of select="$mode"/><xsl:text> View</xsl:text>
+                    </a>
+                </xsl:otherwise>
+            </xsl:choose>
+
+            <xsl:text>&#160;|&#160;</xsl:text>
+            <a href="{$page}_.html#legend">
+                <xsl:text>Legend</xsl:text>
+            </a>
+
         </div>
 
     </xsl:template>
