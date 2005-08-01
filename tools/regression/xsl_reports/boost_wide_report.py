@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2004
+# Copyright (c) MetaCommunications, Inc. 2003-2005
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -20,7 +20,7 @@ import utils
 import runner
 
 
-report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'i', 'n', 'ddr', 'dsr' ]
+report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'i', 'n', 'ddr', 'dsr', 'udr', 'usr' ]
 
 if __name__ == '__main__':
     run_dir = os.path.abspath( os.path.dirname( sys.argv[ 0 ] ) )
@@ -536,14 +536,14 @@ def make_result_pages(
                     }
                 )
 
-    if "ddr" in reports:
-        mode = 'developer'
-        utils.log( '    Making detailed %s release report...' % mode )
-        utils.libxslt( 
+    for mode in ( 'developer', 'user' ):
+        if mode[0] + 'dr' in reports:
+            utils.log( '    Making detailed %s release report...' % mode )
+            utils.libxslt( 
                   utils.log
                 , extended_test_results
                 , xsl_path( 'result_page.xsl' )
-                , os.path.join( output_dir, "developer", 'index_release.html' )
+                , os.path.join( output_dir, mode, 'index_release.html' )
                 , { 
                       'links_file':             'links.html'
                     , 'mode':                   mode
@@ -557,14 +557,14 @@ def make_result_pages(
                     }
                 )
 
-    if "dsr" in reports:
-        mode = 'developer'
-        utils.log( '    Making summary %s release report...' % mode )
-        utils.libxslt(
+    for mode in ( 'developer', 'user' ):
+        if mode[0] + 'sr' in reports:
+            utils.log( '    Making summary %s release report...' % mode )
+            utils.libxslt(
                   utils.log
                 , extended_test_results
                 , xsl_path( 'summary_page.xsl' )
-                , os.path.join( output_dir, "developer", 'summary_release.html' )
+                , os.path.join( output_dir, mode, 'summary_release.html' )
                 , { 
                       'mode' :                  mode
                     , 'source':                 tag

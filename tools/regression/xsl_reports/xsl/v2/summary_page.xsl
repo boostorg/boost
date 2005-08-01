@@ -84,6 +84,15 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <xsl:variable name="sorted_libraries" select="exsl:node-set( $sorted_libraries_output )/library/@library"/>
 
+    <!-- modes -->
+
+    <xsl:variable name="alternate_mode">
+        <xsl:choose>
+        <xsl:when test="$mode='user'">developer</xsl:when>
+        <xsl:otherwise>user</xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+
     <xsl:variable name="release_postfix">
         <xsl:if test="$release='yes'">
             <xsl:text>_release</xsl:text>
@@ -124,6 +133,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:call-template name="insert_page_links">
                 <xsl:with-param name="page" select="'summary'"/>
                 <xsl:with-param name="release" select="$release"/>
+                <xsl:with-param name="mode" select="$alternate_mode"/>
             </xsl:call-template>
 
             <h1 class="page-title">
@@ -246,11 +256,14 @@ http://www.boost.org/LICENSE_1_0.txt)
             </tbody>
             </table>
 
-            <xsl:copy-of select="document( concat( 'html/summary_', $mode, '_legend.html' ) )"/>
+            <div id="legend">
+                <xsl:copy-of select="document( concat( 'html/summary_', $mode, '_legend.html' ) )"/>
+            </div>
 
             <xsl:call-template name="insert_page_links">
                 <xsl:with-param name="page" select="'summary'"/>
                 <xsl:with-param name="release" select="$release"/>
+                <xsl:with-param name="mode" select="$alternate_mode"/>
             </xsl:call-template>
 
             </body>
@@ -309,61 +322,40 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:param name="library"/>
     <xsl:param name="toolset"/>
     <xsl:param name="expected_test_count"/>
-    <xsl:variable name="class">
-        <xsl:choose>
-        <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
-            <xsl:text>summary-unusable</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell ) &lt; $expected_test_count">
-            <xsl:text>summary-missing</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[@result='fail' and @status='unexpected' ] )">
-            <xsl:text>summary-user-fail-unexpected</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[ @result='fail'] )">
-            <xsl:text>summary-user-fail-expected</xsl:text>
-        </xsl:when>
-        <xsl:when test="count( $current_cell[ @result='success'] )">
-            <xsl:text>summary-user-success</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:message terminate="yes">
-                Unknown status
-                <xsl:copy-of select="$current_cell">
-                </xsl:copy-of>
-            </xsl:message>
-        </xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
-      
-    <xsl:variable name="library_page" select="meta:encode_path( $library )" />
+
+    <xsl:variable name="class" select="concat( 'summary-', meta:result_cell_class( $library, $toolset, $current_cell ) )"/>
     
-    <td class="{$class}" title="{$library}/{$toolset}">
+    <xsl:variable name="library_page" select="meta:encode_path( $library )" />
+
+    <td class="{$class} user-{$class}" title="{$library}/{$toolset}">
         <xsl:choose>
         <xsl:when test="$class='summary-unusable'">
-            <a href="{$library_page}.html" class="log-link" target="_top">
-            <xsl:text>unusable</xsl:text>
-            </a>          
+            <xsl:text>&#160;&#160;</xsl:text>
+            <a href="{$library_page}{$release_postfix}.html" class="log-link" target="_top">
+                <xsl:text>unusable</xsl:text>
+            </a>
+            <xsl:text>&#160;&#160;</xsl:text>
         </xsl:when>
-
         <xsl:when test="$class='summary-missing'">
-            <xsl:text>missing</xsl:text>
+            <xsl:text>no results</xsl:text>
         </xsl:when>
-
-        <xsl:when test="$class='summary-user-fail-unexpected'">
-            <a href="{$library_page}.html" class="log-link" target="_top">
-            <xsl:text>unexp.</xsl:text>
+        <xsl:when test="$class='summary-fail-unexpected'">
+            <a href="{$library_page}{$release_postfix}.html" class="log-link" target="_top">
+                <xsl:text>regress.</xsl:text>
             </a>
         </xsl:when>
-
-        <xsl:when test="$class='summary-user-fail-expected'">
-            <a href="{$library_page}.html" class="log-link" target="_top">
-            <xsl:text>details</xsl:text>
+        <xsl:when test="$class='summary-fail-unexpected-new'
+                     or $class='summary-fail-expected'
+                     or $class='summary-unknown-status'
+                     or $class='summary-fail-expected-unresearched'">
+            <xsl:text>&#160;&#160;</xsl:text>
+            <a href="{$library_page}{$release_postfix}.html" class="log-link" target="_top">
+                <xsl:text>details</xsl:text>
             </a>
+            <xsl:text>&#160;&#160;</xsl:text>
         </xsl:when>
-
         <xsl:otherwise>
-            <xsl:text>&#160;</xsl:text>
+            <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
         </xsl:otherwise>
         </xsl:choose>
     </td>
