@@ -303,6 +303,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:call-template name="insert_page_links">
                     <xsl:with-param name="page" select="meta:encode_path( $library )"/>
                     <xsl:with-param name="release" select="$release"/>
+                    <xsl:with-param name="mode" select="$alternate_mode"/>
                 </xsl:call-template>
 
                 <h1 class="page-title">
@@ -391,12 +392,15 @@ http://www.boost.org/LICENSE_1_0.txt)
                     </xsl:for-each>
                     </table>
                 </xsl:if>
-                    
-                <xsl:copy-of select="document( concat( 'html/library_', $mode, '_legend.html' ) )"/>
+
+                <div id="legend">                    
+                     <xsl:copy-of select="document( concat( 'html/library_', $mode, '_legend.html' ) )"/>
+                </div>
 
                 <xsl:call-template name="insert_page_links">
                     <xsl:with-param name="page" select="meta:encode_path( $library )"/>
                     <xsl:with-param name="release" select="$release"/>
+                    <xsl:with-param name="mode" select="$alternate_mode"/>
                 </xsl:call-template>
 
                 </body>
@@ -509,57 +513,71 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="library"/>
         <xsl:param name="toolset"/>
         <xsl:param name="test_log"/>
-        <xsl:param name="log_link"/>
-        
-        <xsl:variable name="class">
-        <xsl:choose>
-            <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
-            <xsl:text>library-unusable</xsl:text>
-            </xsl:when>
-            <xsl:when test="not( $test_log )">
-            <xsl:text>library-missing</xsl:text>
-            </xsl:when>
-            <xsl:when test="$test_log[@result='fail' and @status='unexpected']">
-            <xsl:text>library-user-fail-unexpected</xsl:text>
-            </xsl:when>
-            <xsl:when test="$test_log[ @result='fail' and @status='expected' ]">
-            <xsl:text>library-user-fail-expected</xsl:text>
-        </xsl:when>
-        <xsl:when test="$test_log[ @result='success']">
-            <xsl:text>library-user-success</xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:message terminate="yes">
-            Unknown status
-            </xsl:message>
-        </xsl:otherwise>
-        </xsl:choose>
 
-    </xsl:variable>
+        <xsl:variable name="class" select="concat( 'library-', meta:result_cell_class( $library, $toolset, $test_log ) )"/>
 
-        <td class="{$class}" title="{$test_log/@test-name}/{$toolset}">
+        <xsl:variable name="cell_link">
+            <xsl:choose>
+                <xsl:when test="count( $test_log ) &gt; 1">
+                    <xsl:variable name="variants__file_path" select="concat( meta:encode_path( concat( $test_log/../@runner, '-', $test_log/@library, '-', $test_log/@toolset, '-', $test_log/@test-name, '-variants_', $release_postfix ) ), '.html' )"/>
+                    <xsl:value-of select="$variants__file_path"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="meta:log_file_path( $test_log, $test_log/../@runner, $release_postfix )"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <td class="{$class} user-{$class}" title="{$test_log/@test-name}/{$toolset}">
         <xsl:choose>
-            <xsl:when test="not( $test_log )">
-            missing
-            </xsl:when>
+             <xsl:when test="meta:is_unusable( $explicit_markup, $library, $toolset )">
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'unusable'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
+            </xsl:when> 
+
+            <xsl:when test="count( $test_log ) &lt; 1">
+                <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
+            </xsl:when> 
+ 
             <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
-            <a href="{$log_link}" class="log-link" target="_top">
-                fail
-            </a>
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result">
+                        <xsl:choose>
+                            <xsl:when test="$test_log/@expected-reason != ''">
+                                <xsl:text>fail?</xsl:text>
+                            </xsl:when> 
+                            <xsl:otherwise>
+                                <xsl:text>fail*</xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:with-param>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:when>
-            <xsl:when test="$test_log/@result != 'success'">
-            <a href="{$log_link}" class="log-link" target="_top">
-                unexp.
-            </a>
+
+            <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'unexpected'">
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'fail'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:when>
+
+            <xsl:when test="$test_log/@result = 'success' and $test_log/@status = 'unexpected'">
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'pass'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
+            </xsl:when>
+
             <xsl:otherwise>
-            <xsl:text>pass</xsl:text>
+                <xsl:call-template name="insert_test_result">
+                    <xsl:with-param name="result" select="'pass'"/>
+                    <xsl:with-param name="log_link" select="$cell_link"/>
+                </xsl:call-template>
             </xsl:otherwise>
         </xsl:choose>  
-
-        <!--<xsl:if test="count( $test_log ) > 1" > 
-            <div class="conf-problem">conf.&#160;problem</div>
-        </xsl:if>-->
         </td>
     </xsl:template>
 
@@ -598,7 +616,6 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:with-param name="library" select="$library"/>
                 <xsl:with-param name="toolset" select="$toolset"/>
                 <xsl:with-param name="test_log" select="$test_result_for_toolset"/>
-                <xsl:with-param name="log_link" select="$log_file"/>
                 </xsl:call-template>
             </xsl:when>
             <xsl:when test="$mode='developer'">
