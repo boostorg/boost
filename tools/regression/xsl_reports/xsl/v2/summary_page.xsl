@@ -101,7 +101,7 @@ http://www.boost.org/LICENSE_1_0.txt)
      
     <xsl:template match="/">
 
-        <xsl:variable name="summary_results" select="concat( 'summary_', $release_postfix, '.html' )"/>
+        <xsl:variable name="summary_results" select="concat( 'summary', $release_postfix, '_.html' )"/>
 
         <!-- Summary page -->
         <html>
@@ -357,7 +357,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:text>&#160;</xsl:text>
         </xsl:when>
         <xsl:otherwise>
-            <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
+            <xsl:text>&#160;pass&#160;</xsl:text>
         </xsl:otherwise>
         </xsl:choose>
     </td>
