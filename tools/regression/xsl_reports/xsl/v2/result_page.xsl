@@ -132,7 +132,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         </exsl:document>
         <xsl:message>Wrote debug</xsl:message>
-        <xsl:variable name="index_path" select="concat( 'index_', $release_postfix, '.html' )"/>
+        <xsl:variable name="index_path" select="concat( 'index', $release_postfix, '_.html' )"/>
         
         <!-- Index page -->
         <head>

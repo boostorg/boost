@@ -384,22 +384,17 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:with-param name="release" select="$release"/>
             </xsl:call-template>
 
-            <xsl:text>&#160;|&#160;</xsl:text>
-            <xsl:choose>
-                <xsl:when test="$release='yes'">
-                    <a href="../{$mode}/{$page}_release.html" class="view-link" target="_top">
-                        <xsl:value-of select="$mode"/><xsl:text> View</xsl:text>
-                    </a>
-                </xsl:when>
-                <xsl:otherwise>
-                    <a href="../{$mode}/{$page}.html" class="view-link" target="_top">
-                        <xsl:value-of select="$mode"/><xsl:text> View</xsl:text>
-                    </a>
-                </xsl:otherwise>
-            </xsl:choose>
+            <xsl:variable name="release_postfix">
+                <xsl:if test="$release='yes'">_release</xsl:if>
+            </xsl:variable>
 
             <xsl:text>&#160;|&#160;</xsl:text>
-            <a href="{$page}_.html#legend">
+            <a href="../{$mode}/{$page}{$release_postfix}.html" class="view-link" target="_top">
+                <xsl:value-of select="$mode"/><xsl:text> View</xsl:text>
+            </a>
+
+            <xsl:text>&#160;|&#160;</xsl:text>
+            <a href="{$page}{$release_postfix}_.html#legend">
                 <xsl:text>Legend</xsl:text>
             </a>
 
