@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
    <head>
       <title>Getting Started</title>
@@ -288,7 +288,7 @@
          </tr>
          <tr>
             <td><A href="../tools/build/v1/kcc-tools.html"><code>kcc</code></A></td>
-            <td><a href="http://developer.intel.com/software/products/kcc/">KAI C++</a></td>
+            <td>KAI C++</td>
          </tr>
          <tr>
             <td><A href="../tools/build/v1/kylix-tools.html"><code>kylix</code></A></td>
@@ -525,6 +525,15 @@
                <tt>-sICU_PATH=/usr/local/icu/3.3</tt>.  See 
                <a href="../libs/regex/doc/install.html#unicode">the Boost.Regex
                installation documentation for more information</a>.</td>
+         </tr>
+         <tr>
+            <td vAlign="top" noWrap align="left"><tt>-sNO_COMPRESSION=1</tt></td>
+            <td vAlign="top" align="left">Build Boost.Iostreams without support for the compression
+            filters which rely on the non-Boost libraries zlib and libbz2. If you use Windows, 
+            this option is enabled by default. If you use UNIX, the compression filters will likely
+            work with no configuration, so this option should not be necessary. For full details see 
+            <A HREF="http://www.boost.org/libs/iostreams/doc/index.html?path=7">Boost.Iostreams Installation</A>.
+            </td>
          </tr>
       </table>
       <p>There are additional options as supported by <A href="../tools/build/v1/build_system.htm">
@@ -865,7 +874,7 @@
          static libraries (archives), and ".so" for shared libraries. For toolsets that 
          support it in Unix they will also have a full version extension (for example "<tt>.so.1.31.0</tt>") 
          with a symbolic link for the un-versioned library.</p>
-      <H2><A name="#auto-link"></A>Automatic Linking on Windows</H2>
+      <H2><A name="auto-link"></A>Automatic Linking on Windows</H2>
       <P>For most Boost libraries that have separate source, the correct build variant 
          is linked against automatically when you include one of that library's header 
          files.&nbsp; For this feature to work, your compiler must support the <code>#pragma 
@@ -927,6 +936,16 @@
                      reading an AT&amp;T graphviz file.</A></TD>
             </TR>
             <TR>
+               <TD>Iostreams</TD>
+               <TD>Yes</TD>
+               <TD>
+                  <P>Yes</P>
+               </TD>
+               <TD>static</TD>
+               <TD>Yes</TD>
+               <TD>&nbsp;</TD>
+            </TR>
+            <TR>
                <TD>Program Options</TD>
                <TD>Yes</TD>
                <TD>Yes</TD>
@@ -953,7 +972,7 @@
                <TD>&nbsp;</TD>
             </TR>
             <TR>
-               <TD>Serialisation</TD>
+               <TD>Serialization</TD>
                <TD>Yes</TD>
                <TD>Yes</TD>
                <TD>static</TD>
@@ -974,17 +993,25 @@
                <TD>No</TD>
                <TD>static</TD>
                <TD>No</TD>
-               <TD>Which library you link to depends upon which program entry point you define, 
+              <TD>Which library you link to depends upon which program entry point you define, 
                   rather than which Boost.Test features you use.</TD>
             </TR>
             <TR>
                <TD>Thread</TD>
                <TD>Partial</TD>
                <TD>Yes</TD>
-               <TD>dynamic</TD>
+               <TD>static (Visual C++), otherwise dynamic</TD>
                <TD>Yes</TD>
                <TD>For technical reasons static linking is supported on only one Windows compiler 
                   (Visual C++).</TD>
+            </TR>
+            <TR>
+               <TD>Wave</TD>
+               <TD>Yes</TD>
+               <TD>Yes</TD>
+               <TD>static</TD>
+               <TD>Yes</TD>
+               <TD>&nbsp;</TD>
             </TR>
          </TABLE>
       </P>
@@ -1015,4 +1042,6 @@
                www.boost.org/LICENSE_1_0.txt</a>)</small></p>
    </body>
 </html>
+
+
 
