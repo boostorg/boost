@@ -29,7 +29,6 @@
     <mark-toolset name="vc-6_5-stlport" status="required"/>
     <mark-toolset name="vc-7_0" status="required"/>
     <mark-toolset name="vc-7_1" status="required"/>
-    <mark-toolset name="vc-8_0" status="required"/>
     <mark-toolset name="mingw-3_4_2" status="required"/>
     <mark-toolset name="gcc-2.95.3-linux" status="required"/>
     <mark-toolset name="gcc-2.95.3-stlport-4.5.3-linux" status="required"/>
@@ -38,9 +37,11 @@
     <mark-toolset name="gcc-3.3.6-linux" status="required"/>
     <mark-toolset name="gcc-3.4.4-linux" status="required"/>
     <mark-toolset name="gcc-4.0.0-linux" status="required"/>
+    <mark-toolset name="gcc-4.0.1-linux" status="required"/>
     <mark-toolset name="gcc-3_3-darwin" status="required"/>
     <mark-toolset name="gcc-3_4_3-sunos" status="required"/>
     <mark-toolset name="intel-win32-8_1" status="required"/>
+    <mark-toolset name="intel-win32-9_0" status="required"/>
     <mark-toolset name="intel-8.1-linux" status="required"/>
 
     <!-- /////////////// Libraries /////////////// -->
@@ -1051,6 +1052,11 @@
             <toolset name="*como-4_3_3*"/>
             <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="mapped_file_test"/>
+            <toolset name="intel-win32-9_0"/>
+            <note author="Jonathan Turkanis" refid="0"/>
+        </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="direct_adapter_test"/>
             <test name="gzip_test"/>
@@ -1394,9 +1400,11 @@ for more information.
         <mark-expected-failures>
              <test name="test_demo_portable_archive_dll"/>
              <toolset name="vc*"/>
+             <toolset name="borland-5_6_4"/>
              <toolset name="msvc*"/>
              <toolset name="vc-6_5*"/>
              <toolset name="iw*"/>
+             <toolset name="intel-win32-*"/>
              <note author="Robert Ramey" date="12 Feb 05" refid="2,29"/>
         </mark-expected-failures>
 
@@ -1410,6 +1418,7 @@ for more information.
         <mark-expected-failures>
             <test name="test_array*"/>
             <test name="test_demo_fast_archive"/>
+            <test name="test_demo_fast_archive_dll"/>
             <toolset name="borland*"/>
             <note author="Robert Ramey" date="12 Feb 05" refid="26">
                 Borland compilers don't handle templates with array type arguments properly.
@@ -1422,6 +1431,7 @@ for more information.
             <test name="test_demo_exception"/>
             <test name="test_demo_exception_dll"/>
             <test name="test_demo_shared_ptr"/>
+            <test name="test_demo_shared_ptr_dll"/>
             <test name="test_demo_xml_save"/>
             <test name="test_demo_xml_load"/>
             <test name="test_demo_xml_save_dll"/>
@@ -1434,6 +1444,7 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_demo_fast_archive"/>
+            <test name="test_demo_fast_archive_dll"/>
             <toolset name="msvc*"/>
             <toolset name="vc-6_5*"/>
             <note author="Robert Ramey" refid="6"/>
@@ -1449,8 +1460,10 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_demo_pimpl"/>
+            <test name="test_demo_pimpl_dll"/>
             <test name="test_diamond*"/>
             <test name="test_mult_archive_types"/>
+            <test name="test_mult_archive_types_dll"/>
             <toolset name="msvc*"/>
             <toolset name="vc-6_5*"/>
             <toolset name="vc-7_0"/>
@@ -1689,6 +1702,56 @@ for more information.
             <test name="test_class_info_load_xml_warchive*"/>
             <toolset name="cw-9_5-darwin"/>
             <note author="Rene Rivera" refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_class_info_load_text_warchive_dll"/>
+            <toolset name="vc-6_5"/>
+            <note author="Doug Gregor" refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_const_load_fail1"/>
+            <test name="test_const_load_fail1_nvp"/>
+            <test name="test_const_load_fail2"/>
+            <test name="test_const_load_fail2_nvp"/>
+            <toolset name="borland-5_6_4"/>
+            <note author="Doug Gregor" refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_const_save_fail1"/>
+            <test name="test_const_save_fail2"/>
+            <test name="test_const_save_fail3"/>
+            <toolset name="vc-6_5"/>
+            <toolset name="vc-6_5-stlport"/>
+            <toolset name="vc-7_0"/>
+            <note author="Doug Gregor" refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_map_binary_archive_dll"/>
+            <test name="test_map_text_archive_dll"/>
+            <test name="test_map_text_warchive_dll"/>
+            <toolset name="vc-6_5"/>
+            <toolset name="vc-7_0"/>
+            <note author="Doug Gregor" refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+          <test name="test_shared_ptr_132_xml_archive_dll"/>
+          <toolset name="intel-win32-8_1"/>
+          <note author="Doug Gregor" refid="29"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+          <test name="test_demo_dll"/>
+          <test name="test_demo_exception_dll"/>
+          <test name="test_demo_shared_ptr_dll"/>
+          <test name="test_demo_xml_load_dll"/>
+          <test name="test_demo_xml_save_dll"/>
+          <toolset name="intel-win32-8_1"/>
+          <note author="Doug Gregor" refid="35"/>
         </mark-expected-failures>
     </library>
 
@@ -2205,7 +2268,7 @@ for more information.
         </mark-unusable>
         <mark-expected-failures>
             <test name="ptr_list"/>
-            <toolset name="gcc-4.0.0*"/>
+            <toolset name="gcc-4.0.*"/>
             <note author="Thorsten Ottosen">
                 The error is due to problems in the standard library implementation.
                 It should be fixed in newer versions of the compiler.
@@ -3010,7 +3073,7 @@ for more information.
         <mark-expected-failures>
             <test name="testwave"/>
             <toolset name="gcc-3.2.3-linux"/>
-            <toolset name="gcc-3.3.6-linux"/>
+            <!-- toolset name="gcc-3.3.6-linux"/ -->
             <note author="Hartmut Kaiser" refid="29"/>
         </mark-expected-failures>
 
