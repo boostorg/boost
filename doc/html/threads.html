@@ -1,0 +1,650 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Chapter 12. Boost.Threads</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="libraries.html" title="Part I. The Boost C++ Libraries">
+<link rel="prev" href="string_algo/credits.html" title="Credits">
+<link rel="next" href="threads/design.html" title="Design">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="string_algo/credits.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="libraries.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="threads/design.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="chapter" lang="en">
+<div class="titlepage"><div>
+<div><h2 class="title">
+<a name="threads"></a>Chapter 12. Boost.Threads</h2></div>
+<div><div class="author"><h3 class="author">
+<span class="firstname">William</span> <span class="othername">E.</span> <span class="surname">Kempf</span>
+</h3></div></div>
+<div><p class="copyright">Copyright © 2001-2003 William E. Kempf</p></div>
+<div><div class="legalnotice">
+<a name="id1357153"></a><p>Permission to use, copy, modify, distribute and sell this
+      software and its documentation for any purpose is hereby granted
+      without fee, provided that the above copyright notice appear in all
+      copies and that both that copyright notice and this permission notice
+      appear in supporting documentation. William E. Kempf makes no
+      representations about the suitability of this software for any purpose.
+      It is provided "as is" without express or implied warranty.</p>
+</div></div>
+</div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="section"><a href="threads.html#threads.overview">Overview</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="threads.html#threads.introduction">Introduction</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357232">Dangers</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357380">C++ Standard Library usage in multithreaded programs</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357511">Common guarantees for all  components</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="threads/design.html">Design</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="threads/design.html#threads.design.goals">Goals</a></span></dt>
+<dt><span class="section"><a href="threads/design.html#id1357741">Iterative Phases</a></span></dt>
+<dt><span class="section"><a href="threads/design.html#id1357751">Phase 1, Synchronization Primitives</a></span></dt>
+<dt><span class="section"><a href="threads/design.html#threads.design.phase2">Phase 2, Thread Management and Thread Specific Storage</a></span></dt>
+<dt><span class="section"><a href="threads/design.html#id1357895">The Next Phase</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="threads/concepts.html">Concepts</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="threads/concepts.html#threads.concepts.mutexes">Mutexes</a></span></dt>
+<dt><span class="section"><a href="threads/concepts.html#threads.concepts.read-write-mutexes">Read/Write Mutexes</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="threads/rationale.html">Rationale</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="threads/rationale.html#threads.rationale.Boost.Threads">Rationale for the Creation of </a></span></dt>
+<dt><span class="section"><a href="threads/rationale.html#threads.rationale.primitives">Rationale for the Low Level Primitives Supported in </a></span></dt>
+<dt><span class="section"><a href="threads/rationale.html#threads.rationale.locks">Rationale for the Lock Design</a></span></dt>
+<dt><span class="section"><a href="threads/rationale.html#threads.rationale.non-copyable">Rationale for NonCopyable Thread Type</a></span></dt>
+<dt><span class="section"><a href="threads/rationale.html#threads.rationale.events">Rationale for not providing <span class="emphasis"><em>Event Variables</em></span></a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="threads/reference.html">Reference</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="threads/reference.html#id759234">Header &lt;boost/thread/barrier.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id928670">Header &lt;boost/thread/condition.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id824356">Header &lt;boost/thread/exceptions.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id868118">Header &lt;boost/thread/mutex.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id718104">Header &lt;boost/thread/once.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id1172185">Header &lt;boost/thread/recursive_mutex.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id693680">Header &lt;boost/thread/read_write_mutex.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id1248802">Header &lt;boost/thread/thread.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id1220687">Header &lt;boost/thread/tss.hpp&gt;</a></span></dt>
+<dt><span class="section"><a href="threads/reference.html#id997727">Header &lt;boost/thread/xtime.hpp&gt;</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="threads/faq.html">Frequently Asked Questions</a></span></dt>
+<dt><span class="section"><a href="thread/configuration.html">Configuration</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="thread/configuration.html#thread.configuration.public">Library Defined Public Macros</a></span></dt>
+<dt><span class="section"><a href="thread/configuration.html#thread.configuration.implementation">Library Defined Implementation Macros</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="thread/build.html">Build</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="thread/build.html#thread.build.building">Building the  Libraries</a></span></dt>
+<dt><span class="section"><a href="thread/build.html#thread.build.testing">Testing the  Libraries</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="threads/implementation_notes.html">Implementation Notes</a></span></dt>
+<dd><dl><dt><span class="section"><a href="threads/implementation_notes.html#threads.implementation_notes.win32">Win32</a></span></dt></dl></dd>
+<dt><span class="section"><a href="threads/release_notes.html">Release Notes</a></span></dt>
+<dd><dl><dt><span class="section"><a href="threads/release_notes.html#threads.release_notes.boost_1_32_0">Boost 1.32.0</a></span></dt></dl></dd>
+<dt><span class="glossary"><a href="threads.html#threads.glossary">Glossary</a></span></dt>
+<dt><span class="section"><a href="thread/acknowledgements.html">Acknowledgements</a></span></dt>
+<dt><span class="bibliography"><a href="threads.html#threads.bibliography">Bibliography</a></span></dt>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="threads.overview"></a>Overview</h3></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="threads.html#threads.introduction">Introduction</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357232">Dangers</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357380">C++ Standard Library usage in multithreaded programs</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357511">Common guarantees for all  components</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="threads.introduction"></a>Introduction</h4></div></div></div>
+<p> allows C++ programs to execute as multiple,
+    asynchronous, independent threads-of-execution. Each thread has its own
+    machine state including program instruction counter and registers. Programs
+    which execute as multiple threads are called multithreaded programs to
+    distinguish them from traditional single-threaded programs. The <a href="threads.html#threads.glossary" title="Glossary">glossary</a> gives a more complete description
+	of the multithreading execution environment.</p>
+<p>Multithreading provides several advantages:
+    </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>Programs which would otherwise block waiting for some external
+        event can continue to respond if the blocking operation is placed in a
+        separate thread. Multithreading is usually an absolute requirement for
+        these programs.</p></li>
+<li><p>Well-designed multithreaded programs may execute faster than
+        single-threaded programs, particularly on multiprocessor hardware.
+        Note, however, that poorly-designed multithreaded programs are often
+        slower than single-threaded programs.</p></li>
+<li><p>Some program designs may be easier to formulate using a
+        multithreaded approach. After all, the real world is
+        asynchronous!</p></li>
+</ul></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1357232"></a>Dangers</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="threads.html#id1357235">General considerations</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357310">Testing and debugging considerations</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357348">Getting a head start</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357235"></a>General considerations</h5></div></div></div>
+<p>Beyond the errors which can occur in single-threaded programs,
+    multithreaded programs are subject to additional errors:
+    </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p><a href="threads.html#threads.glossary.race-condition">Race
+	    conditions</a></p></li>
+<li><p><a href="threads.html#threads.glossary.deadlock">Deadlock</a>
+        (sometimes called "deadly embrace")</p></li>
+<li><p><a href="threads.html#threads.glossary.priority-failure">Priority
+        failures</a> (priority inversion, infinite overtaking, starvation,
+		etc.)</p></li>
+</ul></div>
+<p>Every multithreaded program must be designed carefully to avoid these
+	errors. These aren't rare or exotic failures - they are virtually guaranteed
+	to occur unless multithreaded code is designed to avoid them. Priority
+	failures are somewhat less common, but are nonetheless serious.</p>
+<p>The <a href="threads/design.html" title="Design"> design</a>
+    attempts to minimize these errors, but they will still occur unless the
+    programmer proactively designs to avoid them.</p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>Please also see <a href="threads/implementation_notes.html" title="Implementation Notes">the section called &#8220;Implementation Notes&#8221;</a>
+	for additional, implementation-specific considerations.</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357310"></a>Testing and debugging considerations</h5></div></div></div>
+<p>Multithreaded programs are non-deterministic. In other words, the
+      same program with the same input data may follow different execution
+      paths each time it is invoked. That can make testing and debugging a
+      nightmare:
+      </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>Failures are often not repeatable.</p></li>
+<li><p>Probe effect causes debuggers to produce very different results
+          from non-debug uses.</p></li>
+<li><p>Debuggers require special support to show thread state.</p></li>
+<li><p>Tests on a single processor system may give no indication of
+          serious errors which would appear on multiprocessor systems, and visa
+          versa. Thus test cases should include a varying number of
+          processors.</p></li>
+<li><p>For programs which create a varying number of threads according
+          to workload, tests which don't span the full range of possibilities
+          may miss serious errors.</p></li>
+</ul></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357348"></a>Getting a head start</h5></div></div></div>
+<p>Although it might appear that multithreaded programs are inherently
+      unreliable, many reliable multithreaded programs do exist. Multithreading
+      techniques are known which lead to reliable programs.</p>
+<p>Design patterns for reliable multithreaded programs, including the
+      important <span class="emphasis"><em>monitor</em></span> pattern, are presented in 
+      <span class="emphasis"><em>Pattern-Oriented Software Architecture Volume 2 - Patterns for
+      Concurrent and Networked Objects</em></span>. Many important multithreading programming
+	  considerations (independent of threading library) are discussed in
+	  <span class="emphasis"><em>Programming with POSIX Threads</em></span>.</p>
+<p>Doing some reading before attempting multithreaded designs will
+      give you a head start toward reliable multithreaded programs.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1357380"></a>C++ Standard Library usage in multithreaded programs</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="threads.html#id1357384">Runtime libraries</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357428">Potentially non-thread-safe functions</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357384"></a>Runtime libraries</h5></div></div></div>
+<p><span class="bold"><strong>Warning:</strong></span> Multithreaded programs such as
+	  those using  must link to <a href="threads.html#threads.glossary.thread-safe">thread-safe</a> versions of
+	  all runtime libraries used by the program, including the runtime library
+	  for the C++ Standard Library. Failure to do so will cause <a href="threads.html#threads.glossary.race-condition">race conditions</a> to occur
+	  when multiple threads simultaneously execute runtime library functions for
+	  <code class="computeroutput">new</code>, <code class="computeroutput">delete</code>, or other language features which
+	  imply shared state.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357428"></a>Potentially non-thread-safe functions</h5></div></div></div>
+<p>Certain C++ Standard Library functions inherited from C are
+      particular problems because they hold internal state between
+      calls:
+      </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p><code class="computeroutput">rand</code></p></li>
+<li><p><code class="computeroutput">strtok</code></p></li>
+<li><p><code class="computeroutput">asctime</code></p></li>
+<li><p><code class="computeroutput">ctime</code></p></li>
+<li><p><code class="computeroutput">gmtime</code></p></li>
+<li><p><code class="computeroutput">localtime</code></p></li>
+</ul></div>
+<p>It is possible to write thread-safe implementations of these by
+      using thread specific storage (see
+	  <code class="computeroutput"><a href="thread_specific_ptr.html" title="Class thread_specific_ptr">boost::thread_specific_ptr</a></code>), and several C++ 
+	  compiler vendors do just that. The technique is well-know and is explained
+	  in .</p>
+<p>But at least one vendor (HP-UX) does not provide thread-safe
+      implementations of the above functions in their otherwise thread-safe
+      runtime library. Instead they provide replacement functions with
+      different names and arguments.</p>
+<p><span class="bold"><strong>Recommendation:</strong></span> For the most
+	  portable, yet thread-safe code, use Boost replacements for the problem
+	  functions. See the Boost Random Number Library
+	  and Boost Tokenizer Library.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1357511"></a>Common guarantees for all  components</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="threads.html#id1357515">Exceptions</a></span></dt>
+<dt><span class="section"><a href="threads.html#id1357574">NonCopyable requirement</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357515"></a>Exceptions</h5></div></div></div>
+<p> destructors never
+	  throw exceptions. Unless otherwise specified, other
+	   functions that do not have
+	  an exception-specification may throw implementation-defined
+	  exceptions.</p>
+<p>In particular, 
+	  reports failure to allocate storage by throwing an exception of type
+	  <code class="computeroutput">std::bad_alloc</code> or a class derived from
+	  <code class="computeroutput">std::bad_alloc</code>, failure to obtain thread resources other than
+	  memory by throwing an exception of type
+	  <code class="computeroutput"><a href="thread_resource_error.html" title="Class thread_resource_error">boost::thread_resource_error</a></code>, and certain lock
+	  related failures by throwing an exception of type
+	  <code class="computeroutput"><a href="lock_error.html" title="Class lock_error">boost::lock_error</a></code>.</p>
+<p><span class="bold"><strong>Rationale:</strong></span> Follows the C++ Standard
+	  Library practice of allowing all functions except destructors or other
+	  specified functions to throw exceptions on errors.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1357574"></a>NonCopyable requirement</h5></div></div></div>
+<p> classes documented as
+	  meeting the NonCopyable requirement disallow copy construction and copy
+	  assignment. For the sake of exposition, the synopsis of such classes show
+	  private derivation from <code class="computeroutput">boost::noncopyable</code>. Users
+	  should not depend on this derivation, however, as implementations are free
+	  to meet the NonCopyable requirement in other ways.</p>
+</div>
+</div>
+</div>
+<div class="glossary">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="threads.glossary"></a>Glossary</h2></div></div></div>
+<p>Definitions are given in terms of the C++ Standard
+  . References to the standard are in the form [1.2.3/4], which
+  represents the section number, with the paragraph number following the
+  "/".</p>
+<p>Because the definitions are written in something akin to "standardese",
+  they can be difficult to understand. The intent isn't to confuse, but rather
+  to clarify the additional requirements  places on a C++
+  implementation as defined by the C++ Standard.</p>
+<dl>
+<dt>
+<a name="threads.glossary.thread"></a>Thread</dt>
+<dd>
+<p>Thread is short for "thread of execution". A thread of execution is
+	  an execution environment [1.9/7] within the execution environment of a C++
+	  program [1.9]. The main() function [3.6.1] of the program is the initial
+	  function of the initial thread. A program in a multithreading environment
+	  always has an initial thread even if the program explicitly creates no
+	  additional threads.</p>
+<p>Unless otherwise specified, each thread shares all aspects of its
+	  execution environment with other threads in the program. Shared aspects of
+	  the execution environment include, but are not limited to, the
+	  following:</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>Static storage duration (static, extern) objects
+		[3.7.1].</p></li>
+<li><p>Dynamic storage duration (heap) objects [3.7.3]. Thus
+		each memory allocation will return a unique addresses, regardless of the
+		thread making the allocation request.</p></li>
+<li><p>Automatic storage duration (stack) objects [3.7.2]
+		accessed via pointer or reference from another thread.</p></li>
+<li><p>Resources provided by the operating system. For example,
+		files.</p></li>
+<li><p>The program itself. In other words, each thread is
+		executing some function of the same program, not a totally different
+		program.</p></li>
+</ul></div>
+<p>Each thread has its own:</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>Registers and current execution sequence (program
+		counter) [1.9/5].</p></li>
+<li><p>Automatic storage duration (stack) objects
+		[3.7.2].</p></li>
+</ul></div>
+</dd>
+<dt>
+<a name="threads.glossary.thread-safe"></a>Thread-safe</dt>
+<dd>
+<p>A program is thread-safe if it has no <a href="threads.html#threads.glossary.race-condition">race conditions</a>, does
+	  not <a href="threads.html#threads.glossary.deadlock">deadlock</a>, and has
+	  no <a href="threads.html#threads.glossary.priority-failure">priority
+	  failures</a>.</p>
+<p>Note that thread-safety does not necessarily imply efficiency, and
+	  than while some thread-safety violations can be determined statically at
+	  compile time, many thread-safety errors can only only be detected at
+	  runtime.</p>
+</dd>
+<dt>
+<a name="threads.glossary.thread-state"></a>Thread State</dt>
+<dd>
+<p>During the lifetime of a thread, it shall be in one of the following
+	  states:</p>
+<div class="table">
+<a name="id1567021"></a><p class="title"><b>Table 12.26. Thread States</b></p>
+<table class="table" summary="Thread States">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th align="left">State</th>
+<th align="left">Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">Ready</td>
+<td align="left">Ready to run, but waiting for a processor.</td>
+</tr>
+<tr>
+<td align="left">Running</td>
+<td align="left">Currently executing on a processor. Zero or more threads
+					may be running at any time, with a maximum equal to the number of
+					processors.</td>
+</tr>
+<tr>
+<td align="left">Blocked</td>
+<td align="left">Waiting for some resource other than a processor which is
+					not currently available, or for the completion of calls to library
+					functions [1.9/6]. The term "waiting" is synonymous with
+					"blocked"</td>
+</tr>
+<tr>
+<td align="left">Terminated</td>
+<td align="left">Finished execution but not yet detached or joined.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Thread state transitions shall occur only as specified:</p>
+<div class="table">
+<a name="id1567071"></a><p class="title"><b>Table 12.27. Thread States Transitions</b></p>
+<table class="table" summary="Thread States Transitions">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th align="left">From</th>
+<th align="left">To</th>
+<th align="left">Cause</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">[none]</td>
+<td align="left">Ready</td>
+<td align="left"><p>Thread is created by a call to a library function. 
+					In the case of the initial thread, creation is implicit and 
+					occurs during the startup of the main() function [3.6.1].</p></td>
+</tr>
+<tr>
+<td align="left">Ready</td>
+<td align="left">Running</td>
+<td align="left"><p>Processor becomes available.</p></td>
+</tr>
+<tr>
+<td align="left">Running</td>
+<td align="left">Ready</td>
+<td align="left">Thread preempted.</td>
+</tr>
+<tr>
+<td align="left">Running</td>
+<td align="left">Blocked</td>
+<td align="left">Thread calls a library function which waits for a resource or
+					for the completion of I/O.</td>
+</tr>
+<tr>
+<td align="left">Running</td>
+<td align="left">Terminated</td>
+<td align="left">Thread returns from its initial function, calls a thread
+					termination library function, or is canceled by some other thread
+					calling a thread termination library function.</td>
+</tr>
+<tr>
+<td align="left">Blocked</td>
+<td align="left">Ready</td>
+<td align="left">The resource being waited for becomes available, or the
+					blocking library function completes.</td>
+</tr>
+<tr>
+<td align="left">Terminated</td>
+<td align="left">[none]</td>
+<td align="left">Thread is detached or joined by some other thread calling the
+					appropriate library function, or by program termination
+					[3.6.3].</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>[Note: if a suspend() function is added to the threading library,
+	  additional transitions to the blocked state will have to be added to the
+	  above table.]</p>
+</dd>
+<dt>
+<a name="threads.glossary.race-condition"></a>Race Condition</dt>
+<dd>
+<p>A race condition is what occurs when multiple threads read from and write
+	  to the same memory without proper synchronization, resulting in an incorrect
+	  value being read or written. The result of a race condition may be a bit
+	  pattern which isn't even a valid value for the data type. A race condition
+	  results in undefined behavior [1.3.12].</p>
+<p>Race conditions can be prevented by serializing memory access using
+	  the tools provided by .</p>
+</dd>
+<dt>
+<a name="threads.glossary.deadlock"></a>Deadlock</dt>
+<dd><p>Deadlock is an execution state where for some set of threads, each
+	  thread in the set is blocked waiting for some action by one of the other
+	  threads in the set. Since each is waiting on the others, none will ever
+	  become ready again.</p></dd>
+<dt>
+<a name="threads.glossary.starvation"></a>Starvation</dt>
+<dd><p>The condition in which a thread is not making sufficient progress in
+	  its work during a given time interval.</p></dd>
+<dt>
+<a name="threads.glossary.priority-failure"></a>Priority Failure</dt>
+<dd><p>A priority failure (such as priority inversion or infinite overtaking)
+	  occurs when threads are executed in such a sequence that required work is not
+	  performed in time to be useful.</p></dd>
+<dt>
+<a name="threads.glossary.undefined-behavior"></a>Undefined Behavior</dt>
+<dd>
+<p>The result of certain operations in  is undefined;
+	  this means that those operations can invoke almost any behavior when
+	  they are executed.</p>
+<p>An operation whose behavior is undefined can work "correctly"
+	  in some implementations (i.e., do what the programmer thought it
+	  would do), while in other implementations it may exhibit almost
+	  any "incorrect" behavior--such as returning an invalid value,
+	  throwing an exception, generating an access violation, or terminating 
+	  the process.</p>
+<p>Executing a statement whose behavior is undefined is a
+	  programming error.</p>
+</dd>
+<dt>
+<a name="threads.glossary.memory-visibility"></a>Memory Visibility</dt>
+<dd>
+<p>An address [1.7] shall always point to the same memory byte,
+	  regardless of the thread or processor dereferencing the address.</p>
+<p>An object [1.8, 1.9] is accessible from multiple threads if it is of
+	  static storage duration (static, extern) [3.7.1], or if a pointer or
+	  reference to it is explicitly or implicitly dereferenced in multiple
+	  threads.</p>
+<p>For an object accessible from multiple threads, the value of the
+	  object accessed from one thread may be indeterminate or different from the
+	  value accessed from another thread, except under the conditions specified in
+	  the following table. For the same row of the table, the value of an object
+	  accessible at the indicated sequence point in thread A will be determinate
+	  and the same if accessed at or after the indicated sequence point in thread
+	  B, provided the object is not otherwise modified. In the table, the
+	  "sequence point at a call" is the sequence point after the evaluation of all
+	  function arguments [1.9/17], while the "sequence point after a call" is the
+	  sequence point after the copying of the returned value... [1.9/17].</p>
+<div class="table">
+<a name="id1567280"></a><p class="title"><b>Table 12.28. Memory Visibility</b></p>
+<table class="table" summary="Memory Visibility">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Thread A</th>
+<th>Thread B</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>The sequence point at a call to a library thread-creation
+					function.</td>
+<td>The first sequence point of the initial function in the new
+					thread created by the Thread A call.</td>
+</tr>
+<tr>
+<td>The sequence point at a call to a library function which
+					locks a mutex, directly or by waiting for a condition
+					variable.</td>
+<td>The sequence point after a call to a library function which
+					unlocks the same mutex.</td>
+</tr>
+<tr>
+<td>The last sequence point before thread termination.</td>
+<td>The sequence point after a call to a library function which
+					joins the terminated thread.</td>
+</tr>
+<tr>
+<td>The sequence point at a call to a library function which
+					signals or broadcasts a condition variable.</td>
+<td>The sequence point after the call to the library function
+					which was waiting on that same condition variable or signal.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The architecture of the execution environment and the observable
+	  behavior of the abstract machine [1.9] shall be the same on all
+	  processors.</p>
+<p>The latitude granted by the C++ standard for an implementation to
+	  alter the definition of observable behavior of the abstract machine to
+	  include additional library I/O functions [1.9/6] is extended to include
+	  threading library functions.</p>
+<p>When an exception is thrown and there is no matching exception handler
+	  in the same thread, behavior is undefined. The preferred behavior is the
+	  same as when there is no matching exception handler in a program
+	  [15.3/9]. That is, terminate() is called, and it is implementation-defined
+	  whether or not the stack is unwound.</p>
+</dd>
+</dl>
+</div>
+<div class="bibliography">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="threads.bibliography"></a>Bibliography</h2></div></div></div>
+<div class="biblioentry">
+<a name="threads.bib.AndrewsSchneider83"></a><p>[<span class="abbrev"><a name="threads.bib.AndrewsSchneider83.abbrev"></a>AndrewsSchnieder83</span>] <span class="biblioset"><i>ACM Computing Surveys</i>. <span class="volumenum">Vol. 15. </span><span class="issuenum">No. 1. </span><span class="date">March, 1983. </span></span><span class="biblioset"><span class="authorgroup"><span class="firstname">Gregory</span> <span class="othername">R.</span> <span class="surname">Andrews</span> and <span class="firstname">Fred</span> <span class="othername">B.</span> <span class="surname">Schneider</span>. </span>&#8220;<a href="http://www.acm.org/pubs/citations/journals/surveys/1983-15-1/p3-andrews/" target="_top">Concepts and Notations for Concurrent Programming</a>&#8221;. </span><p>Good general background reading. Includes descriptions of Path
+    Expressions, Message Passing, and Remote Procedure Call in addition to the
+    basics</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.Boost"></a><p>[<span class="abbrev"><a name="threads.bib.Boost.abbrev"></a>Boost</span>] <span class="bibliomisc">The <span class="emphasis"><em>Boost</em></span> world wide web site.
+	<a href="http://www.boost.org" target="_top">http://www.boost.org</a>. </span><p> is one of many Boost libraries. The Boost web
+    site includes a great deal of documentation and general information which
+    applies to all Boost libraries. Current copies of the libraries including
+    documentation and test programs may be downloaded from the web
+    site.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.Hansen73"></a><p>[<span class="abbrev"><a name="threads.bib.Hansen73.abbrev"></a>Hansen73</span>] <span class="biblioset"><i>ACM Computing Surveys</i>. <span class="volumenum">Vol. 5. </span><span class="issuenum">No. 4. </span><span class="date">December, 1973. </span></span><span class="biblioset"><span class="author"><span class="firstname">Per Brinch</span>. </span>&#8220;<a href="http://www.acm.org/pubs/articles/journals/surveys/1973-5-4/p223-hansen/" target="_top">Concurrent Programming Concepts</a>&#8221;. </span><p>"This paper describes the evolution of language features for
+    multiprogramming from event queues and semaphores to critical regions and
+    monitors." Includes analysis of why events are considered error-prone. Also
+    noteworthy because of an introductory quotation from Christopher Alexander;
+    Brinch Hansen was years ahead of others in recognizing pattern concepts
+    applied to software, too.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.Butenhof97"></a><p>[<span class="abbrev"><a name="threads.bib.Butenhof97.abbrev"></a>Butenhof97</span>] <span class="title"><i>Programming with POSIX Threads</i>. </span><span class="author"><span class="firstname">David</span> <span class="othername">R.</span> <span class="surname">Butenhof</span>. </span><span class="publisher">Addison-Wesley</span><span class="copyright">Copyright © 1997. </span><span class="isbn">ISNB: 0-201-63392-2. </span><p>This is a very readable explanation of threads and how to use
+	them. Many of the insights given apply to all multithreaded programming, not
+	just POSIX Threads</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.Hoare74"></a><p>[<span class="abbrev"><a name="threads.bib.Hoare74.abbrev"></a>Hoare74</span>] <span class="biblioset"><i>Communications of the ACM</i>. <span class="volumenum">Vol. 17. </span><span class="issuenum">No. 10. </span><span class="date">October, 1974. </span></span><span class="biblioset">&#8220;<a href="http://www.acm.org/classics/feb96/" target="_top">Monitors: An Operating System Structuring Concept</a>&#8221;. <span class="author"><span class="firstname">C.A.R.</span> <span class="surname">Hoare</span>. </span><span class="pagenums">549-557. </span></span><p>Hoare and Brinch Hansen's work on Monitors is the basis for reliable
+	multithreading patterns. This is one of the most often referenced papers in
+	all of computer science, and with good reason.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.ISO98"></a><p>[<span class="abbrev"><a name="threads.bib.ISO98.abbrev"></a>ISO98</span>] <span class="title"><i><a href="http://www.ansi.org" target="_top">Programming Language C++</a></i>. </span><span class="orgname">ISO/IEC. </span><span class="releaseinfo">14882:1998(E). </span><p>This is the official C++ Standards document. Available from the ANSI
+	(American National Standards Institute) Electronic Standards Store.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.McDowellHelmbold89"></a><p>[<span class="abbrev"><a name="threads.bib.McDowellHelmbold89.abbrev"></a>McDowellHelmbold89</span>] <span class="biblioset"><i>Communications of the ACM</i>. <span class="volumenum">Vol. 21. </span><span class="issuenum">No. 2. </span><span class="date">December, 1989. </span></span><span class="biblioset"><span class="author"><span class="firstname">Charles</span> <span class="othername">E.</span> <span class="surname">McDowell</span>. </span><span class="author"><span class="firstname">David</span> <span class="othername">P.</span> <span class="surname">Helmbold</span>. </span><i><a href="http://www.acm.org/pubs/citations/journals/surveys/1989-21-4/p593-mcdowell/" target="_top">Debugging Concurrent Programs</a></i>. </span><p>Identifies many of the unique failure modes and debugging difficulties
+	associated with concurrent programs.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.SchmidtPyarali"></a><p>[<span class="abbrev"><a name="threads.bib.SchmidtPyarali.abbrev"></a>SchmidtPyarali</span>] <span class="title"><i><a href="http://www.cs.wustl.edu/~schmidt/win32-cv-1.html" target="_top">Strategies for Implementing POSIX Condition Variables on Win32</a></i>. </span><span class="authorgroup"><span class="firstname">Douglas</span> <span class="othername">C.</span> <span class="surname">Schmidt</span> and <span class="firstname">Irfan</span> <span class="surname">Pyarali</span>. </span><span class="orgname">Department of Computer Science, Washington University, St. Louis,
+	Missouri. </span><p>Rationale for understanding  condition
+	variables. Note that Alexander Terekhov found some bugs in the
+	implementation given in this article, so pthreads-win32 and 
+	are even more complicated yet.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.SchmidtStalRohnertBuschmann"></a><p>[<span class="abbrev"><a name="threads.bib.SchmidtStalRohnertBuschmann.abbrev"></a>SchmidtStalRohnertBuschmann</span>] <span class="title"><i><a href="http://www.wiley.com/Corporate/Website/Objects/Products/0,9049,104671,00.html" target="_top">Pattern-Oriented Architecture Volume 2</a></i>. </span><span class="subtitle">Patterns for Concurrent and Networked Objects. </span><span class="titleabbrev">POSA2. </span><span class="authorgroup"><span class="firstname">Douglas</span> <span class="othername">C.</span> <span class="surname">Schmidt</span>, <span class="firstname">Michael</span>, <span class="firstname">Hans</span> <span class="surname">Rohnert</span>, and <span class="firstname">Frank</span> <span class="surname">Buschmann</span>. </span><span class="publisher">Wiley</span><span class="copyright">Copyright © 2000. </span><p>This is a very good explanation of how to apply several patterns
+	useful for concurrent programming. Among the patterns documented is the
+	Monitor Pattern mentioned frequently in the 
+	documentation.</p></p>
+</div>
+<div class="biblioentry">
+<a name="threads.bib.Stroustrup"></a><p>[<span class="abbrev"><a name="threads.bib.Stroustrup.abbrev"></a>Stroustrup</span>] <span class="title"><i><a href="http://www.awprofessional.com/titles/0-201-88954-4" target="_top">The C++ Programming Language</a></i>. </span><span class="edition">Third Edition. </span><span class="publisher">Addison-Wesley</span><span class="copyright">Copyright © 2000. </span><span class="isbn">ISBN: 0-201-70073-5. </span><p>The first book a C++ programmer should own. Note that the 3rd edition
+	(and subsequent editions like the Special Edition) has been rewritten to
+	cover the ISO standard language and library.</p></p>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><small><p>Last revised: July 07, 2005 at 18:06:26 GMT</p></small></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="string_algo/credits.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="libraries.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="threads/design.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

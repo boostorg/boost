@@ -1,0 +1,144 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Project Hierarchies</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../tutorial.html" title="Chapter 23. Tutorial">
+<link rel="prev" href="properties.html" title="Properties">
+<link rel="next" href="libs.html" title="Dependent Targets">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="properties.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../tutorial.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="libs.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.tutorial.hierarchy"></a>Project Hierarchies</h2></div></div></div>
+<p>So far we've only considered examples with one project
+    (i.e. with one user-written Boost.Jam file,
+    <code class="filename">Jamroot</code>). A typical large codebase would be
+    composed of many projects organized into a tree. The top of the
+    tree is called the <em class="firstterm">project root</em>.  Every
+    subproject is defined by a file called
+    <code class="filename">Jamfile</code> in a descendant directory of the
+    project root.  The parent project of a subproject is defined by
+    the nearest <code class="filename">Jamfile</code> or
+    <code class="filename">Jamroot</code> file in an ancestor directory. For
+    example, in the following directory layout:
+
+</p>
+<pre class="screen">
+top/ 
+  |
+  +-- Jamroot
+  |
+  +-- app/
+  |    |
+  |    +-- Jamfile
+  |    `-- app.cpp
+  | 
+  `-- util/
+       |
+       +-- foo/
+       .    |
+       .    +-- Jamfile
+       .    `-- bar.cpp
+</pre>
+<p>
+
+      the project root is <code class="filename">top/</code>.  Because there is
+      no <code class="filename">Jamfile</code> in
+      <code class="filename">top/util/</code>, the projects in
+      <code class="filename">top/app/</code> and
+      <code class="filename">top/util/foo/</code> are immediate children of the
+      root project.
+
+      </p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>
+<p>
+          When we refer to a &#8220;Jamfile,&#8221; set in normal
+          type, we mean a file called either
+          <code class="filename">Jamfile</code> or
+          <code class="filename">Jamroot</code>.  When we need to be more
+          specific, the filename will be set as
+          &#8220;<code class="filename">Jamfile</code>&#8221; or
+          &#8220;<code class="filename">Jamroot</code>.&#8221;
+        </p>
+</div>
+<p>
+      Projects inherit all attributes (such as requirements)
+      from their parents.  Inherited requirements are combined with
+      any requirements specified by the sub-project.  
+      For example, if <code class="filename">top/Jamroot</code> has
+
+</p>
+<pre class="programlisting">
+&lt;include&gt;/home/ghost/local
+</pre>
+<p>
+
+      in its requirements, then all of its sub-projects will have it
+      in their requirements, too.  Of course, any project can add
+      include paths to those specified by its parents. <sup>[<a name="id1701983" href="#ftn.id1701983">5</a>]</sup> 
+    More details can be found in 
+      <a href="../advanced/jamfiles.html#bbv2.advanced.projects" title="Projects">the section called &#8220;Projects&#8221;</a>.
+    </p>
+<p>
+      Invoking <span><strong class="command">bjam</strong></span> without explicitly specifying
+      any targets on the command-line builds the project rooted in the
+      current directory.  Building a project does not automatically
+      cause its sub-projects to be built unless the parent project's
+      Jamfile explicitly requests it. In our example,
+      <code class="filename">top/Jamroot</code> might contain:
+
+</p>
+<pre class="programlisting">
+build-project app ;
+</pre>
+<p>
+
+      which would cause the project in <code class="filename">top/app/</code>
+      to be built whenever the project in <code class="filename">top/</code> is
+      built. However, targets in <code class="filename">top/util/foo/</code>
+      will be built only if they are needed by targets in
+      <code class="filename">top/</code> or <code class="filename">top/app/</code>.
+    </p>
+<div class="footnotes">
+<br><hr width="100" align="left">
+<div class="footnote"><p><sup>[<a name="ftn.id1701983" href="#id1701983">5</a>] </sup>Many
+      features will be overridden,
+      rather than added-to, in sub-projects.  See <a href="../reference/definitions.html#bbv2.reference.features.attributes" title="Feature Attributes">the section called &#8220;Feature Attributes&#8221;</a> for more
+      information</p></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="properties.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../tutorial.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="libs.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

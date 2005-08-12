@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Why are the dll-path and
+    hardcode-dll-paths properties useful?
+    </title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../faq.html" title="Chapter 27. Frequently Asked Questions">
+<link rel="prev" href="s07.html" title="How to change compilation flags for one file?
+    ">
+<link rel="next" href="../recipies/site-config.html" title="Targets in site-config.jam">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="s07.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../faq.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../recipies/site-config.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.faq.dll-path"></a>Why are the <code class="computeroutput">dll-path</code> and
+    <code class="computeroutput">hardcode-dll-paths</code> properties useful?
+    </h2></div></div></div>
+<p>(This entry is specific to Unix system.)Before answering the
+      questions, let's recall a few points about shared libraries. Shared
+      libraries can be used by several applications, or other libraries,
+      without phisycally including the library in the application. This can
+      greatly decrease the total size of applications. It's also possible to
+      upgrade a shared library when the application is already
+      installed. Finally, shared linking can be faster.
+    </p>
+<p>However, the shared library must be found when the application is
+      started. The dynamic linker will search in a system-defined list of
+      paths, load the library and resolve the symbols. Which means that you
+      should either change the system-defined list, given by the
+      <code class="envar">LD_LIBRARY_PATH</code> environment variable, or install the
+      libraries to a system location. This can be inconvenient when
+      developing, since the libraries are not yet ready to be installed, and
+      cluttering system paths is undesirable. Luckily, on Unix there's another
+      way.
+    </p>
+<p>An executable can include a list of additional library paths, which
+      will be searched before system paths. This is excellent for development,
+      because the build system knows the paths to all libraries and can include
+      them in executables. That's done when the <code class="computeroutput">hardcode-dll-paths</code>
+      feature has the <code class="literal">true</code> value, which is the
+      default. When the executables should be installed, the story is
+      different.
+    </p>
+<p>
+      Obviously, installed executable should not hardcode paths to your
+      development tree. (The <code class="computeroutput">stage</code> rule explicitly disables the
+      <code class="computeroutput">hardcode-dll-paths</code> feature for that reason.) However, you
+      can use the <code class="computeroutput">dll-path</code> feature to add explicit paths
+      manually. For example:
+</p>
+<pre class="programlisting">
+stage installed : application : &lt;dll-path&gt;/usr/lib/snake
+                                &lt;location&gt;/usr/bin ;          
+</pre>
+<p>
+      will allow the application to find libraries placed to
+      <code class="filename">/usr/lib/snake</code>.
+    </p>
+<p>If you install libraries to a nonstandard location and add an
+      explicit path, you get more control over libraries which will be used. A
+      library of the same name in a system location will not be inadvertently
+      used.  If you install libraries to a system location and do not add any
+      paths, the system administrator will have more control. Each library can
+      be individually upgraded, and all applications will use the new library.
+    </p>
+<p>Which approach is best depends on your situation. If the libraries
+      are relatively standalone and can be used by third party applications,
+      they should be installed in the system location. If you have lots of
+      libraries which can be used only by your application, it makes sense to
+      install it to a nonstandard directory and add an explicit path, like the
+      example above shows. Please also note that guidelines for different
+      systems differ in this respect. The Debian guidelines prohibit any
+      additional search paths, and Solaris guidelines suggest that they should
+      always be used.
+    </p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="s07.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../faq.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../recipies/site-config.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

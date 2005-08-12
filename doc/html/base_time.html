@@ -1,0 +1,129 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template base_time</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id831553" title="Header &lt;boost/date_time/time.hpp&gt;">
+<link rel="prev" href="gather_weekday_strings.html" title="Function template gather_weekday_strings">
+<link rel="next" href="second_clock.html" title="Class template second_clock">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="gather_weekday_strings.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id831553"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="second_clock.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="base_time"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template base_time</span></h2>
+<p>boost::date_time::base_time &#8212; Representation of a precise moment in time, including the date. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T, <span class="bold"><strong>typename</strong></span> time_system&gt; 
+<span class="bold"><strong>class</strong></span> base_time {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> T                               time_type;         
+  <span class="bold"><strong>typedef</strong></span> time_system::time_rep_type      time_rep_type;     
+  <span class="bold"><strong>typedef</strong></span> time_system::date_type          date_type;         
+  <span class="bold"><strong>typedef</strong></span> time_system::date_duration_type date_duration_type;
+  <span class="bold"><strong>typedef</strong></span> time_system::time_duration_type time_duration_type;
+
+  <span class="emphasis"><em>// <a href="base_time.html#base_timeconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="base_time.html#id796514-bb">base_time</a>(<span class="bold"><strong>const</strong></span> date_type &amp;, <span class="bold"><strong>const</strong></span> time_duration_type &amp;, 
+            dst_flags = not_dst);
+  <a href="base_time.html#id689610-bb">base_time</a>(special_values);
+  <a href="base_time.html#id689624-bb">base_time</a>(<span class="bold"><strong>const</strong></span> time_rep_type &amp;);
+
+  <span class="emphasis"><em>// <a href="base_time.html#id724655-bb">public member functions</a></em></span>
+  <span class="type">date_type</span> <a href="base_time.html#id724660-bb">date</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_duration_type</span> <a href="base_time.html#id724673-bb">time_of_day</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">std::string</span> <a href="base_time.html#id724686-bb">zone_name</a>(<span class="bold"><strong>bool</strong></span> = false) <span class="bold"><strong>const</strong></span>;
+  <span class="type">std::string</span> <a href="base_time.html#id828497-bb">zone_abbrev</a>(<span class="bold"><strong>bool</strong></span> = false) <span class="bold"><strong>const</strong></span>;
+  <span class="type">std::string</span> <a href="base_time.html#id828535-bb">zone_as_posix_string</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id828553-bb">is_not_a_date_time</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id726580-bb">is_infinity</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id718630-bb">is_pos_infinity</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id718647-bb">is_neg_infinity</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id795507-bb">is_special</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id719180-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> time_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="base_time.html#id718223-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> time_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_duration_type</span> <a href="base_time.html#id803846-bb"><span class="bold"><strong>operator</strong></span>-</a>(<span class="bold"><strong>const</strong></span> time_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_type</span> <a href="base_time.html#id803874-bb"><span class="bold"><strong>operator</strong></span>+</a>(<span class="bold"><strong>const</strong></span> date_duration_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_type</span> <a href="base_time.html#id803902-bb"><span class="bold"><strong>operator</strong></span>+=</a>(<span class="bold"><strong>const</strong></span> date_duration_type &amp;) ;
+  <span class="type">time_type</span> <a href="base_time.html#id721757-bb"><span class="bold"><strong>operator</strong></span>-</a>(<span class="bold"><strong>const</strong></span> date_duration_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_type</span> <a href="base_time.html#id796021-bb"><span class="bold"><strong>operator</strong></span>-=</a>(<span class="bold"><strong>const</strong></span> date_duration_type &amp;) ;
+  <span class="type">time_type</span> <a href="base_time.html#id834553-bb"><span class="bold"><strong>operator</strong></span>+</a>(<span class="bold"><strong>const</strong></span> time_duration_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_type</span> <a href="base_time.html#id834581-bb"><span class="bold"><strong>operator</strong></span>+=</a>(<span class="bold"><strong>const</strong></span> time_duration_type &amp;) ;
+  <span class="type">time_type</span> <a href="base_time.html#id834605-bb"><span class="bold"><strong>operator</strong></span>-</a>(<span class="bold"><strong>const</strong></span> time_duration_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">time_type</span> <a href="base_time.html#id796489-bb"><span class="bold"><strong>operator</strong></span>-=</a>(<span class="bold"><strong>const</strong></span> time_duration_type &amp;) ;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1117231"></a><h2>Description</h2>
+<p>This class is a skeleton for the interface of a temporal type with a resolution that is higher than a day. It is intended that this class be the base class and that the actual time class be derived using the BN pattern. In this way, the derived class can make decisions such as 'should there be a default constructor' and what should it set its value to, should there be optional constructors say allowing only an time_durations that generate a time from a clock,etc. So, in fact multiple time types can be created for a time_system with different construction policies, and all of them can perform basic operations by only writing a copy constructor. Finally, compiler errors are also shorter.</p>
+<p>The real behavior of the time class is provided by the time_system template parameter. This class must provide all the logic for addition, subtraction, as well as define all the interface types. </p>
+<div class="refsect2" lang="en">
+<a name="id1117242"></a><h3>
+<a name="base_timeconstruct-copy-destruct"></a><code class="computeroutput">base_time</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><a name="id796514-bb"></a>base_time(<span class="bold"><strong>const</strong></span> date_type &amp; day, <span class="bold"><strong>const</strong></span> time_duration_type &amp; td, 
+          dst_flags dst = not_dst);</pre></li>
+<li><pre class="literallayout"><a name="id689610-bb"></a>base_time(special_values sv);</pre></li>
+<li><pre class="literallayout"><a name="id689624-bb"></a>base_time(<span class="bold"><strong>const</strong></span> time_rep_type &amp; rhs);</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1117309"></a><h3>
+<a name="id724655-bb"></a><code class="computeroutput">base_time</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">date_type</span> <a name="id724660-bb"></a>date() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_duration_type</span> <a name="id724673-bb"></a>time_of_day() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li>
+<pre class="literallayout"><span class="type">std::string</span> <a name="id724686-bb"></a>zone_name(<span class="bold"><strong>bool</strong></span> as_offset = false) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Optional bool parameter will return time zone as an offset (ie "+07:00"). Empty string is returned for classes that do not use a time_zone </p>
+</li>
+<li>
+<pre class="literallayout"><span class="type">std::string</span> <a name="id828497-bb"></a>zone_abbrev(<span class="bold"><strong>bool</strong></span> as_offset = false) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Optional bool parameter will return time zone as an offset (ie "+07:00"). Empty string is returned for classes that do not use a time_zone </p>
+</li>
+<li><pre class="literallayout"><span class="type">std::string</span> <a name="id828535-bb"></a>zone_as_posix_string() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id828553-bb"></a>is_not_a_date_time() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id726580-bb"></a>is_infinity() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id718630-bb"></a>is_pos_infinity() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id718647-bb"></a>is_neg_infinity() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id795507-bb"></a>is_special() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id719180-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> time_type &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id718223-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> time_type &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_duration_type</span> <a name="id803846-bb"></a><span class="bold"><strong>operator</strong></span>-(<span class="bold"><strong>const</strong></span> time_type &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id803874-bb"></a><span class="bold"><strong>operator</strong></span>+(<span class="bold"><strong>const</strong></span> date_duration_type &amp; dd) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id803902-bb"></a><span class="bold"><strong>operator</strong></span>+=(<span class="bold"><strong>const</strong></span> date_duration_type &amp; dd) ;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id721757-bb"></a><span class="bold"><strong>operator</strong></span>-(<span class="bold"><strong>const</strong></span> date_duration_type &amp; dd) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id796021-bb"></a><span class="bold"><strong>operator</strong></span>-=(<span class="bold"><strong>const</strong></span> date_duration_type &amp; dd) ;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id834553-bb"></a><span class="bold"><strong>operator</strong></span>+(<span class="bold"><strong>const</strong></span> time_duration_type &amp; td) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id834581-bb"></a><span class="bold"><strong>operator</strong></span>+=(<span class="bold"><strong>const</strong></span> time_duration_type &amp; td) ;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id834605-bb"></a><span class="bold"><strong>operator</strong></span>-(<span class="bold"><strong>const</strong></span> time_duration_type &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">time_type</span> <a name="id796489-bb"></a><span class="bold"><strong>operator</strong></span>-=(<span class="bold"><strong>const</strong></span> time_duration_type &amp; td) ;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="gather_weekday_strings.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id831553"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="second_clock.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

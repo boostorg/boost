@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template find_iterator</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="string_algo/reference.html#id1113894" title="Header &lt;boost/algorithm/string/find_iterator.hpp&gt;">
+<link rel="prev" href="id1171494.html" title="Function template regex_formatter">
+<link rel="next" href="split_iterator.html" title="Class template split_iterator">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id1171494.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="string_algo/reference.html#id1113894"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="split_iterator.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="find_iterator"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template find_iterator</span></h2>
+<p>boost::algorithm::find_iterator &#8212; find_iterator </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> IteratorT&gt; 
+<span class="bold"><strong>class</strong></span> find_iterator {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="find_iterator.html#find_iteratorconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="find_iterator.html#id1138856-bb">find_iterator</a>();
+  <a href="find_iterator.html#id1209314-bb">find_iterator</a>(<span class="bold"><strong>const</strong></span> <a href="find_iterator.html" title="Class template find_iterator">find_iterator</a> &amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> FinderT&gt; <a href="find_iterator.html#id1173158-bb">find_iterator</a>(IteratorT, IteratorT, FinderT);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> FinderT, <span class="bold"><strong>typename</strong></span> RangeT&gt; <a href="find_iterator.html#id1179053-bb">find_iterator</a>(RangeT &amp;, FinderT);
+
+  <span class="emphasis"><em>// <a href="find_iterator.html#id1149827-bb">public member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="find_iterator.html#id754748-bb">eof</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="find_iterator.html#id1210798-bb">private member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>const</strong></span>  match_type &amp;</span> <a href="find_iterator.html#id1113880-bb">dereference</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="find_iterator.html#id1066809-bb">increment</a>() ;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="find_iterator.html#id1174062-bb">equal</a>(<span class="bold"><strong>const</strong></span> <a href="find_iterator.html" title="Class template find_iterator">find_iterator</a> &amp;) <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1323276"></a><h2>Description</h2>
+<p>Find iterator encapsulates a Finder and allows for incremental searching in a string. Each increment moves the iterator to the next match.</p>
+<p>Find iterator is a readable forward traversal iterator.</p>
+<p>Dereferencing the iterator yields an iterator_range delimiting the current match. </p>
+<div class="refsect2" lang="en">
+<a name="id1323291"></a><h3>
+<a name="find_iteratorconstruct-copy-destruct"></a><code class="computeroutput">find_iterator</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id1138856-bb"></a>find_iterator();</pre>
+<p>Construct null iterator. All null iterators are equal.</p>
+<p></p>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    eof()==true </p>
+</li>
+<li>
+<pre class="literallayout"><a name="id1209314-bb"></a>find_iterator(<span class="bold"><strong>const</strong></span> <a href="find_iterator.html" title="Class template find_iterator">find_iterator</a> &amp; Other);</pre>
+<p>Construct a copy of the find_iterator </p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> FinderT&gt; 
+  <a name="id1173158-bb"></a>find_iterator(IteratorT Begin, IteratorT End, FinderT Finder);</pre>
+<p>Construct new find_iterator for a given finder and a range. </p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> FinderT, <span class="bold"><strong>typename</strong></span> RangeT&gt; 
+  <a name="id1179053-bb"></a>find_iterator(RangeT &amp; Col, FinderT Finder);</pre>
+<p>Construct new find_iterator for a given finder and a range. </p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1323433"></a><h3>
+<a name="id1149827-bb"></a><code class="computeroutput">find_iterator</code> public member functions</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id754748-bb"></a>eof() <span class="bold"><strong>const</strong></span>;</pre>
+<p>Check the eof condition. Eof condition means that there is nothing more to be searched i.e. find_iterator is after the last match. </p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1323480"></a><h3>
+<a name="id1210798-bb"></a><code class="computeroutput">find_iterator</code> private member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>const</strong></span>  match_type &amp;</span> <a name="id1113880-bb"></a>dereference() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1066809-bb"></a>increment() ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1174062-bb"></a>equal(<span class="bold"><strong>const</strong></span> <a href="find_iterator.html" title="Class template find_iterator">find_iterator</a> &amp; Other) <span class="bold"><strong>const</strong></span>;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2002-2004 Pavol Droba</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id1171494.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="string_algo/reference.html#id1113894"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="split_iterator.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template dst_calc_engine</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id866029" title="Header &lt;boost/date_time/dst_rules.hpp&gt;">
+<link rel="prev" href="dst_calculator.html" title="Class template dst_calculator">
+<link rel="next" href="us_dst_rules.html" title="Class template us_dst_rules">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="dst_calculator.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id866029"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="us_dst_rules.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="dst_calc_engine"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template dst_calc_engine</span></h2>
+<p>boost::date_time::dst_calc_engine &#8212; Compile-time configurable daylight savings time calculation engine. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> date_type, <span class="bold"><strong>typename</strong></span> time_duration_type, <span class="bold"><strong>typename</strong></span> dst_traits&gt; 
+<span class="bold"><strong>class</strong></span> dst_calc_engine {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> date_type::year_type                            year_type;    
+  <span class="bold"><strong>typedef</strong></span> date_type::calendar_type                        calendar_type;
+  <span class="bold"><strong>typedef</strong></span> <a href="dst_calculator.html" title="Class template dst_calculator">dst_calculator</a>&lt; date_type, time_duration_type &gt; dstcalc;      
+
+  <span class="emphasis"><em>// <a href="dst_calc_engine.html#id1111389-bb">public static functions</a></em></span>
+  <span class="type">time_is_dst_result</span> 
+  <a href="dst_calc_engine.html#id1074662-bb">local_is_dst</a>(<span class="bold"><strong>const</strong></span> date_type &amp;, <span class="bold"><strong>const</strong></span> time_duration_type &amp;) ;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="dst_calc_engine.html#id1033622-bb">is_dst_boundary_day</a>(date_type) ;
+  <span class="type">time_duration_type</span> <a href="dst_calc_engine.html#id974604-bb">dst_offset</a>() ;
+  <span class="type">date_type</span> <a href="dst_calc_engine.html#id974622-bb">local_dst_start_day</a>(year_type) ;
+  <span class="type">date_type</span> <a href="dst_calc_engine.html#id901026-bb">local_dst_end_day</a>(year_type) ;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1081670"></a><h2>Description</h2>
+<div class="refsect2" lang="en">
+<a name="id1081673"></a><h3>
+<a name="id1111389-bb"></a><code class="computeroutput">dst_calc_engine</code> public static functions</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type">time_is_dst_result</span> 
+<a name="id1074662-bb"></a>local_is_dst(<span class="bold"><strong>const</strong></span> date_type &amp; d, <span class="bold"><strong>const</strong></span> time_duration_type &amp; td) ;</pre>
+<p>Determines if the time is really in DST or not. Also checks for invalid and ambiguous. 
+</p>
+</li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1033622-bb"></a>is_dst_boundary_day(date_type d) ;</pre></li>
+<li><pre class="literallayout"><span class="type">time_duration_type</span> <a name="id974604-bb"></a>dst_offset() ;</pre></li>
+<li><pre class="literallayout"><span class="type">date_type</span> <a name="id974622-bb"></a>local_dst_start_day(year_type year) ;</pre></li>
+<li><pre class="literallayout"><span class="type">date_type</span> <a name="id901026-bb"></a>local_dst_end_day(year_type year) ;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="dst_calculator.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id866029"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="us_dst_rules.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

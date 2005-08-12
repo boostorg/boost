@@ -1,0 +1,613 @@
+<html>
+   <head>
+      <title>Boost Library Requirements and Guidelines</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+      <meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+      <meta name="ProgId" content="FrontPage.Editor.Document">
+      <meta name="Microsoft Border" content="none, default">
+   </head>
+   <body bgcolor="#ffffff" text="#000000">
+      <table border="1" bgcolor="#007f7f" cellpadding="2">
+         <tr>
+            <td bgcolor="#ffffff"><img src="../boost.png" alt="boost.png (6897 bytes)" width="277" height="86"></td>
+            <td><a href="../index.htm"><font face="Arial" color="#ffffff"><big>Home</big></font></a></td>
+            <td><a href="../libs/libraries.htm"><font face="Arial" color="#ffffff"><big>Libraries</big></font></a></td>
+            <td><a href="../people/people.htm"><font face="Arial" color="#ffffff"><big>People</big></font></a></td>
+            <td><a href="faq.htm"><font face="Arial" color="#ffffff"><big>FAQ</big></font></a></td>
+            <td><a href="index.htm"><font face="Arial" color="#ffffff"><big>More</big></font></a></td>
+         </tr>
+      </table>
+      <h1 align="left">Boost Library Requirements and Guidelines</h1>
+      <p align="left"><a href="#Introduction">Introduction</a><br>
+         <a href="#Requirements">Requirements</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#License">License requirements</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Portability">Portability requirements</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Ownership">Ownership</a><br>
+         <a href="#Guidelines">Guidelines</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Design_and_Programming">Design and programming</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Directory_structure">Directory structure and 
+            filenames</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Naming&shy;_consistency">Naming consistency</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Documentation">Documentation</a><br>
+         <a href="#Rationale">Rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Exception-specification">Exception-specification 
+            rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Naming">Naming conventions rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#code_fonts">Source code fonts rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Tabs">Tabs rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#JavaScript">ECMAScript/JavaScript rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Rationale_rationale">Rationale rationale</a><br>
+         &nbsp;&nbsp;&nbsp; <a href="#Acknowledgements">Acknowledgements rationale</a></p>
+      <h2 align="left"><a name="Introduction">Introduction</a></h2>
+      <p align="left">This page describes requirements and guidelines for the content of 
+         a library submitted to Boost.</p>
+      <p align="left">See the <a href="submission_process.htm">Boost Library Submission 
+            Process</a> page for a description of the process involved.</p>
+      <h2 align="left"><a name="Requirements">Requirements</a></h2>
+      <p>To avoid the frustration and wasted time of a proposed library being rejected, 
+         it must meets these requirements:</p>
+      <ul>
+         <li>
+            The license must meet the <a href="#License">license requirements</a>
+         below. Restricted licenses like the GPL and LGPL are not acceptable.
+         <li>
+            The copyright <a href="#Ownership">ownership</a>
+         must be clear.
+         <li>
+         The library must be generally useful and not restricted to a narrow problem 
+         domain.
+         <li>
+            The library must meet the <a href="#Portability">portability requirements</a>
+         below.&nbsp;
+         <li>
+            The library must come reasonably close to meeting the <a href="#Guidelines">Guidelines</a>
+            below.
+            <ul>
+               <li>
+                  <a href="#Design_and_Programming">Design and Programming</a>
+               <li>
+                  <a href="#Directory_structure">Directory Structure</a>
+               <li>
+                  <a href="#Documentation">Documentation</a></li>
+            </ul>
+         <li>
+            The author must be willing to participate in discussions on the mailing list, 
+            and to refine the library accordingly.</li>
+      </ul>
+      <p>There's no requirement that an author read the mailing list for a time before 
+         making a submission. It has been noted, however, that submissions which begin 
+         "I just started to read this mailing list ..." seem to fail, often 
+         embarrassingly.</p>
+      <h3 align="left"><a name="License">License</a> requirements</h3>
+      <p>The preferred way to meet the license requirements is to use the <a href="../LICENSE_1_0.txt">
+            Boost Software License</a>. See <a href="license_info.html">license information</a>. 
+         If for any reason you do not intend to use the Boost Software License, please 
+         discuss the issues on the Boost <a href="mailing_lists.htm#main">developers 
+            mailing list</a> first.</p>
+      <p>The license requirements:</p>
+      <ul>
+         <li>
+         Must be simple to read and understand.
+         <li>
+         Must grant permission without fee to copy, use and modify the software for any 
+         use (commercial and non-commercial).
+         <li>
+         Must require that the license appear on all copies of the software source code.
+         <li>
+         Must not require that the license appear with executables or other binary uses 
+         of the library.
+         <li>
+         Must not require that the source code be available for execution or other 
+         binary uses of the library.
+         <li>
+            May restrict the use of the name and description of the library to the standard 
+            version found on the Boost web site.</li>
+      </ul>
+      <h3 align="left"><a name="Portability">Portability</a> requirements</h3>
+      <ul>
+         <li>
+            <p align="left">A library's interface must portable and not restricted to a 
+               particular compiler or operating system.</p>
+         <li>
+            <p align="left">A library's implementation must if possible be portable and not 
+               restricted to a particular compiler or operating system.&nbsp; If a portable 
+               implementation is not possible, non-portable constructions are acceptable if 
+               reasonably easy to port to other environments, and implementations are provided 
+               for at least two popular operating systems (such as UNIX and Windows).</p>
+         <li>
+            <p align="left">There is no requirement that a library run on C++ compilers which 
+               do not conform to the ISO standard.&nbsp;</p>
+         <li>
+            <p align="left">There is no requirement that a library run on any particular C++ 
+               compiler.&nbsp; Boost contributors often try to ensure their libraries work 
+               with popular compilers.&nbsp; The boost/config.hpp <a href="../libs/config/config.htm">
+                  configuration header</a> is the preferred mechanism for working around 
+               compiler deficiencies.</p>
+         </li>
+      </ul>
+      <p align="left">Since there is no absolute way to prove portability, many boost 
+         submissions demonstrate practical portability by compiling and executing 
+         correctly with two different C++ compilers, often under different operating 
+         systems.&nbsp; Otherwise reviewers may disbelieve that porting is in fact 
+         practical.</p>
+      <h3 align="left"><a name="Ownership">Ownership</a></h3>
+      <p align="left">Are you sure you own the library you are thinking of 
+         submitting?&nbsp;&nbsp; "How to Copyright Software" by MJ Salone, Nolo Press, 
+         1990 says:</p>
+      <blockquote>
+         <p align="left">Doing work on your own time that is very similar to programming 
+            you do for your employer on company time can raise nasty legal problems.&nbsp; 
+            In this situation, it's best to get a written release from your employer in 
+            advance.</p>
+      </blockquote>
+      <p align="left">Place a copyright notice in all the important files you submit. 
+         Boost won't accept libraries without clear copyright information.</p>
+      <h2 align="left"><a name="Guidelines">Guidelines</a></h2>
+      <p align="left">Please use these guidelines as a checklist for preparing the 
+         content a library submission.&nbsp; Not every guideline applies to every 
+         library, but a reasonable effort to comply is expected.</p>
+      <h3><a name="Design_and_Programming">Design and Programming</a></h3>
+      <ul>
+         <li>
+            Aim first for clarity and correctness; optimization should be only a secondary 
+            concern in most Boost libraries.</li>
+      </ul>
+      <ul>
+         <li>
+            Aim for ISO Standard C++. Than means making effective use of the standard 
+            features of the language, and avoiding non-standard compiler extensions. It 
+            also means using the C++ Standard Library where applicable.</li>
+      </ul>
+      <ul>
+         <li>
+            Headers should be good neighbors. See the <a href="header.htm">header policy</a>. 
+            See <a href="#Naming&shy;_consistency">Naming consistency</a>.</li>
+      </ul>
+      <ul>
+         <li>
+            Follow quality programming practices. See, for example, "Effective C++" 2nd 
+            Edition, and "More Effective C++", both by Scott Meyers, published by Addison 
+            Wesley.</li>
+      </ul>
+      <ul>
+         <li>
+            Use the C++ Standard Library or other Boost libraries, but only when the 
+            benefits outweigh the costs.&nbsp; Do not use libraries other than the C++ 
+            Standard Library or Boost. See <a href="library_reuse.htm">Library reuse</a>.</li>
+      </ul>
+      <ul>
+         <li>
+            Read <a href="imp_vars.htm">Implementation Variation</a> to see how to supply 
+            performance, platform, or other implementation variations.</li>
+      </ul>
+      <ul>
+         <li>
+            Read the <A href="separate_compilation.html">guidelines for libraries with 
+               separate source</A>
+         to see how to ensure that compiled link libraries meet user expectations.
+         </li>
+      </ul>
+      <ul>
+         <LI>
+            Use the naming conventions of the C++ Standard Library (See <a href="#Naming">Naming 
+               conventions rationale</a>):
+            <br>
+            &nbsp;<ul>
+               <li>
+               Names (except as noted below) should be all lowercase, with words separated by 
+               underscores.
+               <li>
+                  Acronyms should be treated as ordinary names (e.g. <code>xml_parser</code> instead 
+                  of <code>XML_parser</code>).
+               <li>
+               Template parameter names begin with an uppercase letter.
+               <li>
+                  Macro (gasp!) names all uppercase and begin with BOOST_.</li>
+            </ul>
+         </LI>
+      </ul>
+      <ul>
+         <li>
+            Choose meaningful names - explicit is better than implicit, and readability 
+            counts. There is a strong preference for clear and descriptive names, even if 
+            lengthy.</li>
+      </ul>
+      <ul>
+         <li>
+            Use exceptions to report errors where appropriate, and write code that is safe 
+            in the face of exceptions.</li>
+      </ul>
+      <ul>
+         <li>
+            Avoid exception-specifications. See <a href="#Exception-specification">exception-specification 
+               rationale</a>.</li>
+      </ul>
+      <ul>
+         <li>
+            Provide sample programs or confidence tests so potential users can see how to 
+            use your library.</li>
+      </ul>
+      <ul>
+         <li>
+            Provide a regression test program or programs which follow the <a href="test_policy.htm">
+               Test Policies and Protocols</a>.</li>
+      </ul>
+      <ul>
+         <li>
+            Although some boost members use proportional fonts, tabs, and unrestricted line 
+            lengths in their own code, boost's widely distributed source code should follow 
+            more conservative guidelines:
+            <ul>
+               <li>
+                  Use fixed-width fonts.&nbsp; See <a href="#code_fonts">fonts rationale</a>.
+               <li>
+                  Use spaces rather than tabs. See <a href="#Tabs">tabs rationale</a>.
+               <li>
+                  Limit line lengths to 80 characters.</li>
+            </ul>
+         </li>
+      </ul>
+      <ul>
+         <li>
+            End all documentation files (HTML or otherwise) with a copyright message and a 
+            licensing message. See the <a href="#Copyright">end of this file</a> for an 
+            example of the preferred form.</li>
+      </ul>
+      <ul>
+         <li>
+            Begin all source files (including programs, headers, scripts, etc.) with:
+            <br>
+            &nbsp;<ul>
+               <li>
+                  A comment line describing the contents of the file.<br>
+               &nbsp;
+               <li>
+                  Comments describing copyright and licensing. The preferred form is:<br>
+                  <br>
+                  <code>//&nbsp; Copyright Jane Programmer 2002. Use, modification, and distribution 
+                     are<br>
+                     //&nbsp; subject to the Boost Software License, Version 1.0. (See accompanying<br>
+                     //&nbsp; file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)<br>
+                  </code>
+                  <br>
+                  Please leave an empty line before and after the copyright and license comments. 
+                  It is fine if the copyright and license messages are on different lines, but 
+                  there should be no other intervening text. Do not include "All rights reserved" 
+                  in the copyright message.<br>
+                  <br>
+                  See <a href="license_info.html">license information page</a> for more 
+                  information about the Boost Software License.<br>
+                  <br>
+                  Note that developers should not include a copy of <code>LICENSE_1_0.txt</code> in 
+                  their libraries; Boost distributions already include a copy in the Boost root 
+                  directory.<br>
+               &nbsp;
+               <li>
+                  A comment line referencing your library on the Boost web site. For example:<br>
+                  <br>
+                  <code>//&nbsp; See http://www.boost.org/libs/foo for library home page.</code><br>
+                  <br>
+                  where <code>foo</code> is the directory name (see below) for your library. As 
+                  well as aiding users who come across a Boost file detached from its 
+                  documentation, some of Boost's automatic tools depend on this comment to 
+                  identify which library header files belong to.</li>
+            </ul>
+         </li>
+      </ul>
+      <ul>
+         <li>
+            Make sure your code compiles in the presence of the <code>min()</code> and <code>max()</code>
+            macros. Some platform headers define <code>min()</code> and <code>max()</code> macros which
+            cause some common C++ constructs to fail to compile. Some simple tricks can protect your code
+            from inappropriate macro substitution:<br>&nbsp;
+            <ul>
+               <li>
+                  If you want to call <code>std::min()</code> or <code>std::max()</code>:<br>&nbsp;
+                  <ul>
+                     <li>
+                        If you do not require argument-dependent look-up, use <code>(std::min)(a,b)</code>.
+                     </li>&nbsp;
+                     <li>
+                        If you do require argument-dependent look-up, you should:<br>&nbsp;
+                        <ul>
+                           <li><code>#include &lt;boost/config.hpp&gt;</code></li>&nbsp;
+                           <li>Use <code>BOOST_USING_STD_MIN();</code> to bring <code>std::min()</code> into
+                               the current scope.</li>&nbsp;
+                           <li>Use <code>min BOOST_PREVENT_MACRO_SUBSTITUTION (a,b);</code> to make an
+                               argument-dependent call to <code>min(a,b)</code>.</li>&nbsp;
+                        </ul>
+                     </li>
+                  </ul>&nbsp;
+               </li>
+               <li>
+                  If you want to call <code>std::numeric_limits&lt;int&gt;::max()</code>, use
+                  <code>(std::numeric_limits&lt;int&gt;::max)()</code> instead.<br>&nbsp;
+               </li>
+               <li>
+                  If you want to call a <code>min()</code> or <code>max()</code> member function,
+                  instead to doing <code>obj.min()</code>, use <code>(obj.min)()</code>.<br>&nbsp;
+               </li>
+               <li>
+                  If you want to declare or define a function or a member function named <code>min</code>
+                  or <code>max</code>, then you must use the <code>BOOST_PREVENT_MACRO_SUBSTITUTION</code>
+                  macro. Instead of writing <code>int min() { return 0; }</code> you should write
+                  <code>int min BOOST_PREVENT_MACRO_SUBSTITUTION () { return 0; }</code> This is true
+                  regardless if the function is a free (namespace scope) function, a member function or a
+                  static member function, and it applies for the function declaration as well as the
+                  function definition.<br>&nbsp;
+               </li>
+            </ul>
+         </li>
+      </ul>
+      <h3><a name="Directory_structure">Directory Structure</a> and Filenames</h3>
+      <ul>
+         <li>
+         File and directory names must contain only <b>lowercase</b> ASCII letters , numbers, 
+         underscores, and a period.&nbsp; Leading character must be alphabetic. Maximum 
+         length 31. Only a single period is permitted.&nbsp; These requirements ensure 
+         file and directory names are relatively portable.
+         <li>
+            Files intended to be processed by a C++ compiler as part
+            of a translation unit should have <b>a three-letter
+            extension ending in &quot;pp&quot;</b>.  Other files should
+            <i>not</i> use extensions ending in &quot;pp&quot;.  This
+            convention makes it easy to identify all of the C++ source
+            in Boost.</li>
+         <li>
+            All libraries have at their highest level a primary directory named for the 
+            particular library. See <a href="#Naming&shy;_consistency">Naming consistency</a>. 
+         The primary directory may have sub-directories.
+         <li>
+            For very simple libraries implemented entirely within the library header, all 
+            files go in the primary directory (except headers, which go in the boost header 
+            directory).</li>
+      </ul>
+      <blockquote>
+         <p><b>Boost standard sub-directory names</b></p>
+         <table border="1" cellpadding="5">
+            <tr>
+               <td><b>Sub-directory</b></td>
+               <td><b>Contents</b></td>
+               <td><b>Required</b></td>
+            </tr>
+            <tr>
+               <td><code>build</code></td>
+               <td>Library build files such as a Jamfile.</td>
+               <td>If any build files.</td>
+            </tr>
+            <tr>
+               <td><code>doc</code></td>
+               <td>Documentation (HTML) files.</td>
+               <td>If several doc files.</td>
+            </tr>
+            <tr>
+               <td><code>example</code></td>
+               <td>Sample program files.</td>
+               <td>If several sample files.</td>
+            </tr>
+            <tr>
+               <td><code>src</code></td>
+               <td>Source files which must be compiled to build the library.&nbsp;</td>
+               <td>If any source files.</td>
+            </tr>
+            <tr>
+               <td><code>test</code></td>
+               <td>Regression or other test programs or scripts.</td>
+               <td>If several test files.</td>
+            </tr>
+         </table>
+      </blockquote>
+      <h4><a name="Redirection">Redirection</a></h4>
+      <p>The primary directory should always contain a file named index.html (or 
+         index.htm). Authors have requested this so that they can publish URL's in the 
+         form <i>http://www.boost.org/libs/lib-name</i> with the assurance a 
+         documentation reorganization won't invalidate the URL. Boost's internal tools 
+         are also simplified by knowing that a library's documentation is always 
+         reachable via the simplified URL.</p>
+      <p>If the documentation is in a doc sub-directory, the primary directory 
+         index.html file should just do an automatic redirection to the doc 
+         subdirectory:</p>
+      <blockquote>
+         <pre>&lt;html&gt;
+&lt;head&gt;
+&lt;meta http-equiv="refresh" content="0; URL=doc/index.html"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Automatic redirection failed, please go to
+&lt;a href="doc/index.html"&gt;doc/index.html&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+      </blockquote>
+      <h3><a name="Naming&shy;_consistency">Naming consistency</a></h3>
+      <p>As library developers and users have gained experience with Boost, the 
+         following consistent naming approach has come to be viewed as very helpful, 
+         particularly for larger libraries that need their own header subdirectories 
+         and namespaces.</p>
+      <p>Here is how it works. The library is given a name that describes the contents 
+         of the library. Cryptic abbreviations are strongly discouraged. Following the 
+         practice of the C++ Standard Library, names are usually singular rather than 
+         plural. For example, a library dealing with file systems might chose the 
+         name "filesystem", but not "filesystems", "fs" or "nicecode".</p>
+      <ul>
+         <li>
+            The library's primary directory (in parent <i>boost-root/libs</i>) is given 
+            that same name.&nbsp; For example, <i>boost-root/libs/filesystem</i>.<br>
+         &nbsp;
+         <li>
+            The library's primary header directory (in parent <i>boost-root/boost</i>) is 
+            given that same name. For example, <i>boost-root/boost/filesystem</i>.<br>
+         &nbsp;
+         <li>
+            The library's primary namespace (in parent <i>::boost</i>) is given that same 
+            name, except when there's a component with that name (e.g., <i>boost::tuple</i>), in which case the namespace name is pluralized. For example, <i>::boost::filesystem</i>.</li>
+      </ul>
+
+    <p>When documenting Boost libraries, follow these conventions (see also the following section of this document):
+    <ul>
+      <li>The library name is set in roman type.</li>
+      <li>The library name is capitalized.</li>
+      <li>A period between "Boost" and the library name (e.g., Boost.Bind) is used if and only if the library name is not followed by the word "library".</li>
+      <li>The word "library" is not part of the library name and is therefore lowercased.</li>
+    </ul>
+    <p>Here are a few examples of how to apply these conventions:
+    <ul>
+      <li>Boost.Bind was written by Peter Dimov.</li>
+      <li>The Boost Bind library was written by Peter Dimov.</li>
+      <li>I regularly use Bind, a Boost library written by Peter Dimov.</li>
+    </ul>
+
+      <h3><a name="Documentation">Documentation</a></h3>
+      <p>Even the simplest library needs some documentation; the amount should be 
+         proportional to the need.&nbsp; The documentation should assume the readers 
+         have a basic knowledge of C++, but are not necessarily experts.</p>
+      <p>The format for documentation should be HTML, and should not require an advanced 
+         browser or server-side extensions. Style sheets are acceptable. 
+         ECMAScript/JavaScript is not acceptable. The documentation entry point should 
+         always be a file named index.html or index.htm; see <a href="#Redirection">Redirection</a>.</p>
+      <p>There is no single right way to do documentation. HTML documentation is often 
+         organized quite differently from traditional printed documents. Task-oriented 
+         styles differ from reference oriented styles. In the end, it comes down to the 
+         question: Is the documentation sufficient for the mythical "average" C++ 
+         programmer to use the library successfully?</p>
+      <p>Appropriate topics for documentation often include:
+         <ul>
+            <li>
+            General introduction to the library.
+            <li>
+            Description of each class.
+            <li>
+            Relationship between classes.
+            <li>
+            For each function, as applicable, description, requirements (preconditions), 
+            effects, post-conditions, returns, and throws.
+            <li>
+            Discussion of error detection and recovery strategy.
+            <li>
+            How to use including description of typical uses.
+            <li>
+            How to compile and link.
+            <li>
+            How to test.
+            <li>
+            Version or revision history.
+            <li>
+               Rationale for design decisions.&nbsp; See <a href="#Rationale">Rationale rationale</a>.
+            <li>
+               Acknowledgements.&nbsp; See <a href="#Acknowledgements">Acknowledgments rationale.</a></li>
+         </ul>
+      <p>If you need more help with how to write documentation you can check out the 
+         article on <a href="writingdoc/index.html">Writing Documentation for Boost</a>.</p>
+      <h2><a name="Rationale">Rationale</a></h2>
+      <p>Rationale for some of the requirements and guidelines follows.</p>
+      <hr>
+      <h3><a name="Exception-specification">Exception-specification</a> rationale</h3>
+      <p>Exception specifications [ISO 15.4] are sometimes coded to indicate what 
+         exceptions may be thrown, or because the programmer hopes they will improved 
+         performance.&nbsp; But consider the following member from a smart pointer:</p>
+      <pre>    T&amp; operator*() const throw()  { return *ptr; }</pre>
+      <p>This function calls no other functions; it only manipulates fundamental data 
+         types like pointers Therefore, no runtime behavior of the 
+         exception-specification can ever be invoked.&nbsp; The function is completely 
+         exposed to the compiler; indeed it is declared inline Therefore, a smart 
+         compiler can easily deduce that the functions are incapable of throwing 
+         exceptions, and make the same optimizations it would have made based on the 
+         empty exception-specification. A "dumb" compiler, however, may make all kinds 
+         of pessimizations.</p>
+      <p>For example, some compilers turn off inlining if there is an 
+         exception-specification.&nbsp; Some compilers add try/catch blocks. Such 
+         pessimizations can be a performance disaster which makes the code unusable in 
+         practical applications.</p>
+      <p>Although initially appealing, an exception-specification tends to have 
+         consequences that require <b>very</b> careful thought to understand. The 
+         biggest problem with exception-specifications is that programmers use them as 
+         though they have the effect the programmer would like, instead of the effect 
+         they actually have.</p>
+      <p>A non-inline function is the one place a "throws nothing" 
+         exception-specification may have some benefit with some compilers.</p>
+      <hr>
+      <h3><a name="Naming">Naming</a> conventions rationale</h3>
+      <p>The C++ standard committee's Library Working Group discussed this issue in 
+         detail, and over a long period of time. The discussion was repeated again in 
+         early boost postings. A short summary:</p>
+      <ul>
+         <li>
+         Naming conventions are contentious, and although several are widely used, no 
+         one style predominates.
+         <li>
+         Given the intent to propose portions of boost for the next revision of the C++ 
+         standard library, boost decided to follow the standard library's conventions.
+         <li>
+            Once a library settles on a particular convention, a vast majority of 
+            stakeholders want that style to be consistently used.
+         </li>
+      </ul>
+      <hr>
+      <h3>Source <a name="code_fonts">code fonts</a> rationale</h3>
+      <p>Dave Abrahams comments: An important purpose (I daresay the primary purpose) of 
+         source code is communication: the documentation of intent. This is a doubly 
+         important goal for boost, I think. Using a fixed-width font allows us to 
+         communicate with more people, in more ways (diagrams are possible) right there 
+         in the source. Code written for fixed-width fonts using spaces will read 
+         reasonably well when viewed with a variable-width font, and as far as I can 
+         tell every editor supporting variable-width fonts also supports fixed width. I 
+         don't think the converse is true.</p>
+      <hr>
+      <h3><a name="Tabs">Tabs</a> rationale</h3>
+      <p>Tabs are banned because of the practical problems caused by tabs in 
+         multi-developer projects like Boost, rather than any dislike in principle. See <a href="mailing_lists.htm#archive">
+            mailing list archives</a>. Problems include maintenance of a single source 
+         file by programmers using tabs and programmers using spaces, and the difficulty 
+         of enforcing a consistent tab policy other than just "no tabs". Discussions 
+         concluded that Boost files should either all use tabs, or all use spaces, and 
+         thus the decision to stick with spaces.</p>
+      <hr>
+      <h3>ECMAScript/<a name="JavaScript">JavaScript</a> rationale</h3>
+      <p>Before the 1.29.0 release, two Boost libraries added ECMAScript/JavaScript 
+         documentation. Controversy followed (see <a href="mailing_lists.htm#archive">mailing 
+            list archives</a>), and the developers were asked to remove the 
+         ECMAScript/JavaScript. Reasons given for banning included:</p>
+      <ul>
+         <li>
+         Incompatible with some older browsers and some text based browsers.
+         <li>
+         Makes printing docs pages difficult.
+         <li>
+         Often results in really bad user interface design.
+         <li>
+         "It's just annoying in general."
+         <li>
+         Would require Boost to test web pages for ECMAScript/JavaScript compliance.
+         <li>
+            Makes docs maintenance by other than the original developer more difficult.</li>
+      </ul>
+      <hr>
+      <h3><a name="Rationale_rationale">Rationale rationale</a></h3>
+      <p>Rationale is defined as "The fundamental reasons for something; basis" by the 
+         American Heritage Dictionary.</p>
+      <p>Beman Dawes comments:&nbsp; Failure to supply contemporaneous rationale for 
+         design decisions is a major defect in many software projects. Lack of accurate 
+         rationale causes issues to be revisited endlessly, causes maintenance bugs when 
+         a maintainer changes something without realizing it was done a certain way for 
+         some purpose, and shortens the useful lifetime of software.</p>
+      <p>Rationale is fairly easy to provide at the time decisions are made, but very 
+         hard to accurately recover even a short time later.</p>
+      <hr>
+      <h3><a name="Acknowledgements">Acknowledgements</a> rationale</h3>
+      <p>As a library matures, it almost always accumulates improvements suggested to 
+         the authors by other boost members.&nbsp; It is a part of the culture of 
+         boost.org to acknowledge such contributions, identifying the person making the 
+         suggestion.&nbsp; Major contributions are usually acknowledged in the 
+         documentation, while minor fixes are often mentioned in comments within the 
+         code itself.</p>
+      <hr>
+      <p>Revised 
+         <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan --> 
+         04 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39359" --></p>
+      <p>
+         © <a name="Copyright">Copyright</a> Beman Dawes 2003.</p>
+    <p> Distributed under the Boost Software License, Version 1.0. 
+    (See accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or 
+    copy at <a href="http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a>)
+    </p>
+   </body>
+</html>

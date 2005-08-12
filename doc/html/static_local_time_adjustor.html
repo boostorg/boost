@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template static_local_time_adjustor</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id1045289" title="Header &lt;boost/date_time/local_time_adjustor.hpp&gt;">
+<link rel="prev" href="id1075450.html" title="Class template dynamic_local_time_adjustor">
+<link rel="next" href="local_adjustor.html" title="Class template local_adjustor">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id1075450.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id1045289"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="local_adjustor.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="static_local_time_adjustor"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template static_local_time_adjustor</span></h2>
+<p>boost::date_time::static_local_time_adjustor &#8212; Embed the rules for local time adjustments at compile time. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> time_type, <span class="bold"><strong>typename</strong></span> dst_rules, <span class="bold"><strong>typename</strong></span> utc_offset_rules&gt; 
+<span class="bold"><strong>class</strong></span> static_local_time_adjustor {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> time_type::time_duration_type time_duration_type;
+  <span class="bold"><strong>typedef</strong></span> time_type::date_type          date_type;         
+
+  <span class="emphasis"><em>// <a href="static_local_time_adjustor.html#id899927-bb">public static functions</a></em></span>
+  <span class="type">time_duration_type</span> <a href="static_local_time_adjustor.html#id899932-bb">utc_to_local_offset</a>(<span class="bold"><strong>const</strong></span> time_type &amp;) ;
+  <span class="type">time_duration_type</span> 
+  <a href="static_local_time_adjustor.html#id1036272-bb">local_to_utc_offset</a>(<span class="bold"><strong>const</strong></span> time_type &amp;, 
+                      date_time::dst_flags = date_time::calculate) ;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1108698"></a><h2>Description</h2>
+<div class="refsect2" lang="en">
+<a name="id1108704"></a><h3>
+<a name="id899927-bb"></a><code class="computeroutput">static_local_time_adjustor</code> public static functions</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type">time_duration_type</span> <a name="id899932-bb"></a>utc_to_local_offset(<span class="bold"><strong>const</strong></span> time_type &amp; t) ;</pre>
+<p>
+The logic is as follows. Starting with UTC time use the offset to create a label for an non-dst adjusted local time. Then call dst_rules::local_is_dst with the non adjust local time. The results of this function will either unabiguously decide that the initial local time is in dst or return an illegal or ambiguous result. An illegal result only occurs at the end of dst (where labels are skipped) and indicates that dst has ended. An ambiguous result means that we need to recheck by making a dst adjustment and then rechecking. If the dst offset is added to the utc time and the recheck proves non-ambiguous then we are past the boundary. If it is still ambiguous then we are ahead of the boundary and dst is still in effect.</p>
+<p>TODO -- check if all dst offsets are positive. If not then the algorithm needs to check for this and reverse the illegal/ambiguous logic. </p>
+<div class="variablelist">
+<p class="title"><b>Parameters</b></p>
+<dl>
+<dt><span class="term">t</span></dt>
+<dd><p>UTC time to calculate offset to local time This adjustment depends on the following observations about the workings of the DST boundary offset. Since UTC time labels are monotonically increasing we can determine if a given local time is in DST or not and therefore adjust the offset appropriately.</p></dd>
+</dl>
+</div>
+</li>
+<li><pre class="literallayout"><span class="type">time_duration_type</span> 
+<a name="id1036272-bb"></a>local_to_utc_offset(<span class="bold"><strong>const</strong></span> time_type &amp; t, 
+                    date_time::dst_flags dst = date_time::calculate) ;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id1075450.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id1045289"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="local_adjustor.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

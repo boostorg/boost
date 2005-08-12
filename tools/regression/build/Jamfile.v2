@@ -1,0 +1,41 @@
+# Regression test status reporting tools build Jamfile
+
+exe process_jam_log
+    :
+    ../process_jam_log.cpp ../detail/tiny_xml.cpp
+    /boost/filesystem//boost_filesystem
+    :
+    :
+    release
+    ;
+
+exe compiler_status
+    :
+    ../compiler_status.cpp ../detail/tiny_xml.cpp
+    /boost/filesystem//boost_filesystem
+    :
+    :
+    release
+    ;
+
+install dist-bin
+    :
+    process_jam_log
+    compiler_status
+    :
+    <install-type>EXE
+    <location>../../../dist/bin
+    :
+    release
+    ;
+
+install dist-lib
+    :
+    process_jam_log
+    compiler_status
+    :
+    <install-type>LIB
+    <location>../../../dist/lib
+    :
+    release
+    ;
