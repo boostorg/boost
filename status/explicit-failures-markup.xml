@@ -855,6 +855,43 @@
         </mark-expected-failures>
     </library>
 
+    <!-- foreach-->
+    <library name="foreach">
+        <mark-expected-failures>
+            <test name="rvalue_const"/>
+            <toolset name="msvc*"/>
+            <toolset name="vc-6_5*"/>
+            <toolset name="vc-7_0"/>
+            <toolset name="vc-7_1"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="gcc-2*"/>
+            <toolset name="gcc-3.2*"/>
+            <note author="Eric Niebler">
+                This compiler does not support detection of
+                const rvalues.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="rvalue_nonconst"/>
+            <toolset name="msvc*"/>
+            <toolset name="vc-6_5*"/>
+            <toolset name="vc-7_0"/>
+            <toolset name="borland-5_6_4"/>
+            <note author="Eric Niebler">
+                This compiler does not support detection of
+                rvalues.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="user_defined"/>
+            <toolset name="cw-9_5-darwin"/>
+            <note author="Eric Niebler">
+                This compiler is not finding the correct
+                specialization of range_iterator.
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- format -->
     <library name="format">
         <mark-unusable>
