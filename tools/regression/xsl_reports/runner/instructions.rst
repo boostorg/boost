@@ -5,7 +5,7 @@ Running Boost Regression Tests
 Requirements
 ------------
 
-* Python 2.3
+* Python 2.3 or higher
 
 That's it! You don't even need a CVS client installed.
 
