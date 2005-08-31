@@ -1931,6 +1931,36 @@ for more information.
         </mark-expected-failures>
     </library>
 
+    <!-- typeof -->
+    <library name="typeof">
+        <mark-unusable>
+            <toolset name="sunpro*"/>
+            <toolset name="borland*"/>
+            <toolset name="intel*"/>
+            <toolset name="cw-*"/>
+            <toolset name="vc7"/>
+            <note author="Arkadiy Vertleyb">
+            This compiler is not [yet] supported.
+            </note>
+        </mark-unusable>
+        <mark-expected-failures>
+            <test name="*_native"/>
+            <toolset name="vc-8_0"/>
+            <note author="Arkadiy Vertleyb">
+            Native mode is not supported for this compiler.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*_emulation"/>
+            <toolset name="msvc*"/>
+            <toolset name="vc-6_5*"/>
+            <toolset name="vc-7_0"/>
+            <note author="Arkadiy Vertleyb">
+            Emulation mode is not supported for this compiler.
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- function -->
     <library name="function">
         <mark-unusable>
