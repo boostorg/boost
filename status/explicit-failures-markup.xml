@@ -859,12 +859,21 @@
 
     <!-- foreach-->
     <library name="foreach">
+        <mark-unusable>
+            <toolset name="dmc*"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <note author="Eric Niebler">
+                This compiler does not support the Boost.Range
+                library, on which Boost.Foreach depends.
+            </note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="rvalue_const"/>
             <toolset name="msvc*"/>
             <toolset name="vc-6_5*"/>
             <toolset name="vc-7_0"/>
             <toolset name="vc-7_1"/>
+            <toolset name="vc- 7_1-stlport"/>
             <toolset name="vc-8_0"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="gcc-2*"/>
