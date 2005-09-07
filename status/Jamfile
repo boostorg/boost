@@ -21,6 +21,7 @@ subinclude libs/algorithm/string/test ;    # test-suite algorithm/string
 subinclude libs/assign/test ;              # test-suite assign
 subinclude libs/bind/test ;                # test-suite bind
 subinclude libs/conversion/test ;          # test-suite conversion
+subinclude libs/concept_check ;            # test-suite concept_check
 subinclude libs/date_time/test ;           # test-suite date_time
 subinclude libs/dynamic_bitset ;           # test suite dynamic_bitset
 subinclude libs/filesystem/test ;          # test-suite filesystem
@@ -99,13 +100,6 @@ subinclude libs/wave/test/build ;          # test-suite wave
           [ run libs/array/array3.cpp ]
           [ run libs/array/array4.cpp ]
           [ run libs/array/array5.cpp ]
-        ;
-
-    test-suite concept_check
-        : [ compile libs/concept_check/concept_check_test.cpp ]
-          [ compile libs/concept_check/class_concept_check_test.cpp ]
-          [ compile-fail libs/concept_check/concept_check_fail_expected.cpp ]
-          [ compile-fail libs/concept_check/class_concept_fail_expected.cpp ]
         ;
 
     run libs/crc/crc_test.cpp <lib>../libs/test/build/boost_test_exec_monitor ;
