@@ -29,6 +29,35 @@ project boost
     : build-dir bin.v2  
     ;
 
+# Setup convenient aliases for all libraries.
+
+all-libraries = [ MATCH .*libs/(.*)/build/.* 
+                  : [ glob libs/*/build/Jamfile.v2 ] ] ;
+                  
+# First, the complicated libraries: where the target name in
+# Jamfile is different from directory name.
+alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
+alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
+alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
+alias bgl-vis : libs/graps/build//bgl-vis ;
+alias serialization : libs/serialization//serialization ;
+alias wserialization : libs/serialization//wserialization ;
+
+explicit prg_exec_monitor test_exec_monitor unit_test_framework
+    bgl-vis serialization wserialization ;
+                  
+for local l in $(all-libraries) 
+{
+    if ! $(l) in test graph serialization
+    {
+        alias $(l) : libs/$(l)/build//boost_$(l) ;
+        explicit $(l) ;
+    }
+}
+    
+alias headers : : : : <include>. ;
+
+
 # Decides which libraries are to be installed by looking at --with-<library>
 # --without-<library> arguments. Returns the list of directories under "libs"
 # which must be built at installed.
@@ -85,8 +114,7 @@ local python-root = [ MATCH "^--with-python-root=(.*)" : $(ARGV) ] ;
 PYTHON_ROOT ?= $(python-root) ;
 
 # Select the libraries to install.
-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
-libraries = [ libraries-to-install $(libraries) ] ;
+libraries = [ libraries-to-install $(all-libraries) ] ;
 
 
 # This rule is called by Boost.Build to determine the name of 
@@ -164,7 +192,14 @@ rule boost-install ( libraries * )
         : # No headers, it's handled by the dependency
     ;
 
-    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;            
+    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;
+
+    local c = [ project.current ] ;
+    local project-module = [ $(c).project-module ] ;
+    module $(project-module)
+    {
+        explicit stage ;
+    }        
 }
 
 
