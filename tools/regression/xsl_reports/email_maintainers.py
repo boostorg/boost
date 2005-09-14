@@ -19,32 +19,49 @@ import sys
 # Returns the list of failing libraries
 def get_issues_email(branch):
     got_issues = False
-    print 'Retrieving issues email...'
     for x in range(30):
         if not ('--no-get' in sys.argv):
             # Update issues-email.txt
             url = "http://engineering.meta-comm.com/boost-regression/CVS-"
             url += branch
             url += "/developer/issues-email.txt"
+            print 'Retrieving issues email from ' + url
+            os.system('rm -f issues-email.txt')
             os.system('curl -O ' + url)
 
-        # Determine the set of libraries that have unresolved failures
-        failing_libraries = {}
-        library_regex = re.compile('\|(.*)\|')
-            
-        for line in file('issues-email.txt', 'r'):
-            if line.count('Report time') > 0:
-                got_issues = True
-                
-            m = library_regex.match(line)
-            if m:
-                failing_libraries[m.group(1)] = ""
-                
-        if got_issues:
-            break
+        # See if we actually got the file
+        if os.path.isfile('issues-email.txt'):
+          # Determine the set of libraries that have unresolved failures
+          failing_libraries = {}
+          library_regex = re.compile('\|(.*)\|')
+              
+          for line in file('issues-email.txt', 'r'):
+              if line.count('Report time') > 0:
+                  got_issues = True
+                  
+              m = library_regex.match(line)
+              if m:
+                  failing_libraries[m.group(1)] = ""
 
+          if got_issues:
+              break
+
+        print 'Failed to fetch issues email. '
         time.sleep (30)
 
+    if not got_issues:
+        print 'Aborting.'
+        message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
+To: Douglas Gregor <dgregor@cs.indiana.edu>
+Reply-To: boost@lists.boost.org
+Subject: Regression status script failed on """
+        message += str(datetime.date.today()) + " [" + branch + "]"
+        smtp = smtplib.SMTP('milliways.osl.iu.edu')
+        smtp.sendmail(from_addr = 'Douglas Gregor <dgregor@cs.indiana.edu>',
+                      to_addrs = 'dgregor@cs.indiana.edu',
+                      msg = message)
+        sys.exit(-1)
+        
     return failing_libraries
    
 # Parses the file $BOOST_ROOT/libs/maintainers.txt to create a hash
