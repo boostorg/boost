@@ -86,10 +86,11 @@ boost_build_path="$HOME/.boost-build"
 #
 boost_dir=`basename "$boost_root"`
 if test -n "${BOOST_BUILD_PATH}" ; then
-    export BOOST_BUILD_PATH="$boost_build_path:$BOOST_BUILD_PATH"
+    BOOST_BUILD_PATH="$boost_build_path:$BOOST_BUILD_PATH"
 else
-    export BOOST_BUILD_PATH="$boost_build_path"
+    BOOST_BUILD_PATH="$boost_build_path"
 fi
+export BOOST_BUILD_PATH
 
 #
 # STEP 0:
