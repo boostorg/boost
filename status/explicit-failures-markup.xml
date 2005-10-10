@@ -960,6 +960,16 @@
                 depends on a template parameter.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="user_defined"/>
+            <toolset name="vc-6_5*"/>
+            <toolset name="vc-7_0*"/>
+            <note author="Eric Niebler">
+                This failure is because the Boost.Range extension
+                mechanism is broken on these compilers. It requires
+                ADL which these compilers do not support.
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- format -->
