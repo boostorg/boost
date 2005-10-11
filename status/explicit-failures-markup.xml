@@ -462,7 +462,6 @@
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
                 <toolset name="*como-4_3_3*"/>
-                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="19,21"/>
             </mark-failure>
         </test>
@@ -598,16 +597,6 @@
             </mark-failure>
         </test>
 
-        <test name="testfacet*">
-            <mark-failure>
-            <toolset name="tru64cxx65-042"/>
-                <note author="J. Garland">
-                   There something non-standard about the tru64 standard library which
-                   is preventing these tests from compiling.
-                </note>
-            </mark-failure>
-        </test>
-
         <test name="testtz_database">
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
@@ -708,7 +697,6 @@
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="mingw*"/>
-                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,19"/>
             </mark-failure>
         </test>
@@ -720,7 +708,6 @@
                 <toolset name="vc-6_5"/>
                 <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
-                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,19"/>
             </mark-failure>
         </test>
@@ -735,7 +722,6 @@
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="vc-7_0"/>
-                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,20"/>
             </mark-failure>
         </test>
@@ -758,7 +744,6 @@
                 <toolset name="mingw-3*"/>
                 <toolset name="mingw"/>
                 <toolset name="*como-4_3_3*"/>
-                <toolset name="tru64cxx65-042"/>
                 <note author="B. Garst" refid="18,19,20"/>
             </mark-failure>
         </test>
@@ -822,6 +807,29 @@
             </note>
         </mark-expected-failures>
 
+        <mark-expected-failures>
+            <test name="testfacet"/>
+            <test name="testfacet_dll"/>
+            <toolset name="tru64cxx*"/>
+            <note author="M. Schoepflin">
+            The failure is caused by a standard library bug. It doesn't
+            support used defined facets which are not default
+            constructible. This has been reported to the compiler vendor.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="testgreg_wstream"/>
+            <test name="testparse_date"/>
+            <test name="teststreams"/>
+            <toolset name="tru64cxx*"/>
+            <note author="M. Schoepflin">
+            The failure is caused by a standard library bug. The end-of-stream
+            istream iterator can only be constructed when the istream iterator
+            has been instantiated with char as the character type. This has
+            been reported to the compiler vendor.
+            </note>
+        </mark-expected-failures>
 
     </library>
 
