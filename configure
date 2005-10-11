@@ -124,7 +124,7 @@ if test "x$want_help" = xyes; then
   cat <<EOF
 \`configure' configures Boost to adapt to a few kinds of systems.
 
-Usage: $0 [OPTION]... [VAR=VALUE]...
+Usage: $0 [OPTION]... 
 
 Defaults for the options are specified in brackets.
 
@@ -174,22 +174,28 @@ if test "x$TOOLSET" == x; then
   TOOLSET=`$my_dir/tools/build/jam_src/build.sh --guess-toolset`
 fi
 
+rm -f config.log
+
 # Build bjam
 if test "x$BJAM" == x; then
-  echo "Building Boost.Jam..."
+  echo -n "Building Boost.Jam with toolset $TOOLSET... "
   pwd=`pwd`
-  cd "$my_dir/tools/build/jam_src" && ./build.sh "$TOOLSET"
+  cd "$my_dir/tools/build/jam_src" && ./build.sh "$TOOLSET" > config.log 2>&1
   cd $pwd
   arch=`cd $my_dir/tools/build/jam_src && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
   BJAM="$my_dir/tools/build/jam_src/$arch/bjam"
+  echo "tools/build/jam_src/$arch/bjam"
 fi
+
+# TBD: Turn BJAM into an absolute path
 
 # If there is a list of libraries 
 if test "x$flag_show_libraries" == xyes; then
   libraries=`$BJAM -d0 --show-libraries`
   cat <<EOF
+
 The following Boost libraries have portions that require a separate build
-and installation step. Any library not listed here can be used via including
+and installation step. Any library not listed here can be used by including
 the headers only.
 
 The Boost libraries requiring separate building and installation are:
@@ -232,19 +238,17 @@ if test "x$flag_no_python" == x; then
 fi
 
 # Configure ICU
+echo -n "Unicode/ICU support for Boost.Regex?... "
 if test "x$flag_icu" == xyes; then
-  echo -n "Unicode/ICU support enabled"
   if test "x$ICU_ROOT" == x; then
     BJAM_CONFIG="$BJAM_CONFIG -sHAVE_ICU=1"
-    echo "."
+    echo "yes."
   else
     BJAM_CONFIG="$BJAM_CONFIG -sICU_PATH=$ICU_ROOT"
-    echo " in $ICU_ROOT "
+    echo "$ICU_ROOT"
   fi
 else
-    cat <<EOF
-Unicode/ICU support disabled for Boost.Regex. Use --with-icu or --with-icu=DIR.
-EOF
+  echo "no."
 fi
 
 
@@ -262,16 +266,22 @@ INCLUDEDIR=$INCLUDEDIR
 LIBS=$LIBS
 
 all: .dummy
-	\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS)
+	@echo "\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS)"
+	@\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS) || \\
+	echo "Not all Boost libraries built properly."
 
 clean: .dummy
 	rm -rf bin
 
 distclean: clean
-	rm -rf Makefile
+	rm -rf Makefile config.log
+
+check: .dummy
+	@cd status && ../\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) test || echo "Some Boost regression tests failed. This is normal."
 
 install: .dummy
-	\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install
+	@echo "\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install"
+	@\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install || echo "Not all Boost libraries built properly."
 
 .dummy:
 
