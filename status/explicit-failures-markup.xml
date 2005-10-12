@@ -811,7 +811,7 @@
             <test name="testfacet"/>
             <test name="testfacet_dll"/>
             <toolset name="tru64cxx*"/>
-            <note author="M. Schoepflin">
+            <note author="Markus Schoepflin">
             The failure is caused by a standard library bug. It doesn't
             support used defined facets which are not default
             constructible. This has been reported to the compiler vendor.
@@ -823,7 +823,7 @@
             <test name="testparse_date"/>
             <test name="teststreams"/>
             <toolset name="tru64cxx*"/>
-            <note author="M. Schoepflin">
+            <note author="Markus Schoepflin">
             The failure is caused by a standard library bug. The end-of-stream
             istream iterator can only be constructed when the istream iterator
             has been instantiated with char as the character type. This has
@@ -2330,6 +2330,15 @@ for more information.
             <note refid="2"/>
             <note refid="17"/>
         </mark-unusable>
+        <mark-unusable>
+            <toolset name="tru64cxx65*"/>
+            <note author="Markus Schoepflin">
+            The library fails to compile because of an error in the C++
+            standard library implementation on this platform. It incorrectly
+            assumes that fpos_t is of an integral type, which is not always
+            the case. This is fixed in a later release.
+            </note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="args"/>
             <test name="auto_ptr"/>
@@ -2447,6 +2456,12 @@ for more information.
                 in this configuration. The failures are due to configuration issues of
                 the particular testing environment these tests have been run in.
             </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="pointer_vector"/>
+            <test name="polymorphism"/>
+            <toolset name="tru64cxx7*"/>
+            <note author="Markus Schoepflin" refid="29"/>
         </mark-expected-failures>
     </library>
 
