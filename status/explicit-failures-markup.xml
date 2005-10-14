@@ -1079,7 +1079,7 @@
             <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
         <!--
-		<mark-expected-failures>
+        <mark-expected-failures>
             <test name="mapped_file_test"/>
             <toolset name="intel-win32-9_0"/>
             <note author="Jonathan Turkanis" refid="0"/>
@@ -1780,6 +1780,15 @@ for more information.
           <test name="test_demo_xml_save_dll"/>
           <toolset name="intel-win32-8_1"/>
           <note author="Doug Gregor" refid="35"/>
+        </mark-expected-failures>
+        
+        <mark-expected-failures>
+            <test name="test_variant_*"/>
+            <toolset name="tru64cxx65*"/>
+            <note author="Markus Schoepflin">
+                The variant library is not supported for this compiler version.
+                Therefore serialization of variants doesn't work.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -2671,12 +2680,13 @@ for more information.
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
         </mark-unusable>
-        <test name="dead_slot_test">
-            <mark-failure>
-                <toolset name="*como-4_3_3*"/>
-                <note refid="3" author="D. Gregor"/>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="dead_slot_test"/>
+            <test name="trackable_test"/>
+            <toolset name="*como-4_3_3*"/>
+            <toolset name="tru64cxx*"/>
+            <note author="Markus Schoepflin" refid="2"/>
+        </mark-expected-failures>
         <test name="signal_test">
             <mark-failure>
                 <toolset name="cw-8_3*"/>
@@ -2689,12 +2699,6 @@ for more information.
                 <toolset name="vc-6_5"/>
                 <toolset name="vc-7_0"/>
                 <note author="B. Dawes" refid="3"/>
-            </mark-failure>
-        </test>
-        <test name="trackable_test">
-            <mark-failure>
-                <toolset name="*como-4_3_3*"/>
-                <note refid="3" author="D. Gregor"/>
             </mark-failure>
         </test>
     </library>
