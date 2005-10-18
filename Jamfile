@@ -17,6 +17,9 @@ Options:
     
     -sTOOLS=<toolsets>      Indicates the tools to build with.
     
+    --show-libraries        Displays the list of Boost libraries that require
+                            build and installation steps, then exit.
+
     --layout=<layout>       Determines what kind of build layout to use. This
                             allows one to control the naming of the resulting
                             libraries, and the locations of the installed
@@ -162,12 +165,26 @@ import python ;
 local version-tag = [ MATCH "^([^.]+).([^.]+)" : $(BOOST_VERSION) ] ;
 version-tag = $(version-tag:J="_") ;
 
+if --show-libraries in $(ARGV)
+{
+  if ! $(gSHOW_LIBRARIES_DONE) 
+  {
+    local library-jamfiles ;
+    library-jamfiles = [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : 
+                         [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ] ;
+    libraries = [ MATCH ^.*libs/([^/\\:]*)[/\\:]build[/\\:]Jamfile$ : $(library-jamfiles) ] ;
+    ECHO $(libraries) ;
+    with-libraries = "" ;
+    gSHOW_LIBRARIES_DONE = yes ;
+  }
+} else {
 #
 install-subinclude
     [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ]
     : <exclude>$(without-libraries) <include>$(with-libraries) ;
 
 local lib-sources = [ install-sources lib ] ;
+}
 
 if $(lib-sources)
 {
