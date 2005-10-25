@@ -161,30 +161,29 @@ project-root ;
 # bring in the rules for python
 import python ;
 
+# print out libraries to build/install
+if --show-libraries in $(ARGV)
+{
+    local library-jamfiles ;
+    library-jamfiles =
+        [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : 
+            [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ] ;
+    libraries =
+        [ MATCH ^.*libs[/\\:]([^/\\:]*)[/\\:]build[/\\:]Jamfile$ :
+            $(library-jamfiles) ] ;
+    EXIT $(libraries) ;
+}
+
 #
 local version-tag = [ MATCH "^([^.]+).([^.]+)" : $(BOOST_VERSION) ] ;
 version-tag = $(version-tag:J="_") ;
 
-if --show-libraries in $(ARGV)
-{
-  if ! $(gSHOW_LIBRARIES_DONE) 
-  {
-    local library-jamfiles ;
-    library-jamfiles = [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : 
-                         [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ] ;
-    libraries = [ MATCH ^.*libs/([^/\\:]*)[/\\:]build[/\\:]Jamfile$ : $(library-jamfiles) ] ;
-    ECHO $(libraries) ;
-    with-libraries = "" ;
-    gSHOW_LIBRARIES_DONE = yes ;
-  }
-} else {
 #
 install-subinclude
     [ MATCH ^(.*build[/\\:]$(JAMFILE))$ : [ glob-tree $(BOOST_ROOT)/libs : $(JAMFILE) ] ]
     : <exclude>$(without-libraries) <include>$(with-libraries) ;
 
 local lib-sources = [ install-sources lib ] ;
-}
 
 if $(lib-sources)
 {
