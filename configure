@@ -70,13 +70,13 @@ do
           do
               LIBS="$LIBS --with-$library"
 
-              if test $library == python; then
+              if test $library = python; then
                   requested_python=yes
               fi
           done
           IFS=$old_IFS
 
-          if test "x$requested_python" != xyes; then
+          if test "x$requested_python" != "xyes" ; then
               flag_no_python=yes
           fi
       fi
@@ -90,7 +90,7 @@ do
       do
           LIBS="$LIBS --without-$library"
 
-          if test $library == python; then
+          if test $library = "python" ; then
               flag_no_python=yes
           fi
       done
@@ -172,14 +172,14 @@ test -n "$want_help" && exit 0
 my_dir="."
 
 # Determine the toolset, if not already decided
-if test "x$TOOLSET" == x; then
+if test "x$TOOLSET" = "x" ; then
   TOOLSET=`$my_dir/tools/build/jam_src/build.sh --guess-toolset`
 fi
 
 rm -f config.log
 
 # Build bjam
-if test "x$BJAM" == x; then
+if test "x$BJAM" = "x" ; then
   echo -n "Building Boost.Jam with toolset $TOOLSET... "
   pwd=`pwd`
   cd "$my_dir/tools/build/jam_src" && ./build.sh "$TOOLSET" > config.log 2>&1
@@ -192,7 +192,7 @@ fi
 # TBD: Turn BJAM into an absolute path
 
 # If there is a list of libraries 
-if test "x$flag_show_libraries" == xyes; then
+if test "x$flag_show_libraries" = "xyes" ; then
   libraries=`$BJAM -d0 --show-libraries`
   cat <<EOF
 
@@ -210,39 +210,59 @@ EOF
 fi
 
 # Setup paths
-if test "x$EPREFIX" == x; then
+if test "x$EPREFIX" = "x" ; then
   EPREFIX=$PREFIX
 fi
 
-if test "x$LIBDIR" == x; then
+if test "x$LIBDIR" = "x" ; then
   LIBDIR="$EPREFIX/lib"
 fi
 
-if test "x$INCLUDEDIR" == x; then
+if test "x$INCLUDEDIR" = "x" ; then
   INCLUDEDIR="$PREFIX/include"
 fi
 
 # Find Python
-if test "x$flag_no_python" == x; then
-    if test "x$PYTHON_VERSION" == x; then
+if test "x$flag_no_python" = "x" ; then
+    if test "x$PYTHON_VERSION" = "x" ; then
         echo -n "Detecting Python version... "
-        PYTHON_VERSION=`$PYTHON -c "import sys; print (\"%d.%d\" % (sys.version_info[0], sys.version_info[1]))"`
-        echo $PYTHON_VERSION
+        PYTHON_VERSION=`$PYTHON -c "import sys; print (\"%d.%d\" % (sys.version_info[0], sys.version_info[1]))" 2>&1`
+        if test $? != 0 ; then
+            echo "not found."
+            flag_no_python="yes"
+            LIBS="$LIBS --without-python"
+        else
+            echo $PYTHON_VERSION
+        fi
     fi
 
-    if test "x$PYTHON_ROOT" == x; then
-        echo -n "Detecting Python root... "
-        PYTHON_ROOT=`$PYTHON -c "import sys; print sys.prefix"`
-        echo $PYTHON_ROOT
-    fi    
+    if test "x$flag_no_python" = "x" ; then
+        if test "x$PYTHON_ROOT" = "x" ; then
+            echo -n "Detecting Python root... "
+            PYTHON_ROOT=`$PYTHON -c "import sys; print sys.prefix" 2>&1`
+            if test $? != 0 ; then
+                echo "not found."
+                flag_no_python="yes"
+                LIBS="$LIBS --without-python"
+            else
+                echo $PYTHON_ROOT
+            fi
+        fi
+    fi
 
-    BJAM_CONFIG="$BJAM_CONFIG -sPYTHON_ROOT=$PYTHON_ROOT -sPYTHON_VERSION=$PYTHON_VERSION"
+    echo -n "Python support?... "
+    if test "x$flag_no_python" = "x" ; then
+        echo "yes."
+        BJAM_CONFIG="$BJAM_CONFIG -sPYTHON_ROOT=$PYTHON_ROOT -sPYTHON_VERSION=$PYTHON_VERSION"
+    else
+        echo "no."
+    fi
 fi
 
 # Configure ICU
 echo -n "Unicode/ICU support for Boost.Regex?... "
-if test "x$flag_icu" == xyes; then
-  if test "x$ICU_ROOT" == x; then
+if test "x$flag_icu" = "xyes" ; then
+  if test "x$ICU_ROOT" = "x" ; then
     BJAM_CONFIG="$BJAM_CONFIG -sHAVE_ICU=1"
     echo "yes."
   else
