@@ -184,7 +184,11 @@ if --show-libraries in $(ARGV)
 }
 
 #
-local version-tag = [ MATCH "^([^.]+).([^.]+)" : $(BOOST_VERSION) ] ;
+local version-tag = [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ] ;
+if $(version-tag[3]) = 0
+{
+    version-tag = $(version-tag[1-2]) ;
+}
 version-tag = $(version-tag:J="_") ;
 
 #
