@@ -1,0 +1,148 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Target types</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../extender.html" title="Chapter 25. Extender Manual">
+<link rel="prev" href="../extender.html" title="Chapter 25. Extender Manual">
+<link rel="next" href="tools.html" title="Tools and generators">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../extender.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../extender.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="tools.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.extending.targets"></a>Target types</h2></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="targets.html#bbv2.extending.scanners">Scanners</a></span></dt></dl></div>
+<p>The first thing we did in the <a href="../extender.html#bbv2.extender.intro" title="Introduction">intruduction</a> was declaring a
+      new target type:
+</p>
+<pre class="programlisting">
+import type ;
+type.register VERBATIM : verbatim ;
+</pre>
+<p>
+        The type is the most important property of a target. Boost.Build can
+        automatically generate necessary build actions only because you
+        specify the desired type (using the different main target rules), and
+        because Boost.Build can guess the type of sources from their
+        extensions.        
+      </p>
+<p>The first two parameters for the <code class="computeroutput">type.register</code> rule
+        are the name of new type and the list of extensions associated with
+        it. A file with an extension from the list will have the given target
+        type. In the case where a target of the declared type is generated
+        from other sources, the first specified extension will be used. 
+      </p>
+<p>Sometimes you want to change the suffix used for generated targets
+      depending on build properties, such as toolset. For example, some compiler
+      uses extension <code class="literal">elf</code> for executable files. You can use the
+      <code class="computeroutput">type.set-generated-target-suffix</code> rule:
+</p>
+<pre class="programlisting">
+type.set-generated-target-suffix EXE : &lt;toolset&gt;elf : elf ;
+</pre>
+<p>A new target type can be inherited from an existing one. 
+</p>
+<pre class="programlisting">
+type.register PLUGIN : : SHARED_LIB ;
+</pre>
+<p>
+      The above code defines a new type derived from
+      <code class="computeroutput">SHARED_LIB</code>. Initially, the new type inherits all the
+      properties of the base type - in particular generators and suffix.
+      Typically, you'll change the new type in some way. For example, using
+      <code class="computeroutput">type.set-generated-target-suffix</code> you can set the suffix for
+      the new type. Or you can write special generator for the new type. For
+      example, it can generate additional metainformation for plugin.
+      In either way, the <code class="computeroutput">PLUGIN</code> type can be used whenever
+      <code class="computeroutput">SHARED_LIB</code> can. For example, you can directly link plugins
+      to an application.
+    </p>
+<p>A type can be defined as "main", in which case Boost.Build will
+      automatically declare a main target rule for building targets of that
+      type. More details can be found <a href="rules.html#bbv2.extending.rules.main-type">later</a>.
+    </p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.extending.scanners"></a>Scanners</h3></div></div></div>
+<p>
+          Sometimes, a file can refer to other files via some include
+          mechanism. To make Boost.Build track dependencies to the included
+          files, you need to provide a scanner. The primary limitation is that
+          only one scanner can be assigned to a target type.
+        </p>
+<p>First, we need to declare a new class for the scanner:
+</p>
+<pre class="programlisting">
+class verbatim-scanner : common-scanner
+{
+    rule pattern ( )
+    {
+        return "//###include[ ]*\"([^\"]*)\"" ;
+    }
+}
+</pre>
+<p>         
+          All the complex logic is in the <code class="computeroutput">common-scanner</code>
+          class, and you only need to override the method that returns
+          the regular expression to be used for scanning. The
+          paranthethis in the regular expression indicate which part
+          of the string is the name of the included file.  Only the
+          first parenthesized group in the regular expression will be
+          recognized; if you can't express everything you want that
+          way, you can return multiple regular expressions, each of
+          which contains a parenthesized group to be matched.
+        </p>
+<p>After that, we need to register our scanner class:
+</p>
+<pre class="programlisting">
+scanner.register verbatim-scanner : include ;
+</pre>
+<p>
+            The value of the second parameter, in this case
+            <code class="computeroutput">include</code>, specifies the properties that contain the list
+            of paths that should be searched for the included files.
+         </p>
+<p>Finally, we assign the new scaner to the <code class="computeroutput">VERBATIM</code>
+        target type:
+</p>
+<pre class="programlisting">
+type.set-scanner VERBATIM : verbatim-scanner ;
+</pre>
+<p>
+          That's enough for scanning include dependencies.
+        </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../extender.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../extender.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="tools.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

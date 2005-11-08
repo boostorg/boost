@@ -1,0 +1,173 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Properties</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../tutorial.html" title="Chapter 23. Tutorial">
+<link rel="prev" href="../tutorial.html" title="Chapter 23. Tutorial">
+<link rel="next" href="hierarchy.html" title="Project Hierarchies">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../tutorial.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../tutorial.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="hierarchy.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.tutorial.properties"></a>Properties</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="properties.html#bbv2.tutorial.properties.requirements">Build Requests and Target Requirements</a></span></dt>
+<dt><span class="section"><a href="properties.html#bbv2.tutorial.properties.project_attributes">Project Attributes</a></span></dt>
+</dl></div>
+<p>
+      To portably represent aspects of target configuration such as
+      debug and release variants, or single- and multi-threaded
+      builds, Boost.Build uses <em class="firstterm">features</em> with
+      associated <em class="firstterm">values</em>.  For
+      example, the <code class="computeroutput">debug-symbols</code> feature can have a value of <code class="computeroutput">on</code> or
+      <code class="computeroutput">off</code>.  A <em class="firstterm">property</em> is just a (feature,
+      value) pair.  When a user initiates a build, Boost.Build
+      automatically translates the requested properties into appropriate
+      command-line flags for invoking toolset components like compilers
+      and linkers.</p>
+<p>There are many built-in features that can be combined to
+      produce arbitrary build configurations.  The following command
+      builds the project's <code class="computeroutput">release</code> variant with inlining
+      disabled and debug symbols enabled:
+
+</p>
+<pre class="screen">
+bjam release inlining=off debug-symbols=on
+</pre>
+<p>Properties on the command-line are specified with the syntax:
+
+</p>
+<pre class="screen"><em class="replaceable"><code>feature-name</code></em>=<em class="replaceable"><code>feature-value</code></em></pre>
+<p>The <code class="option">release</code> and <code class="option">debug</code> that we've seen
+      in <span><strong class="command">bjam</strong></span> invocations are just a shorthand way to
+      specify values of the <code class="varname">variant</code> feature.  For example, the command
+      above could also have been written this way:
+
+      </p>
+<pre class="screen">
+bjam variant=release inlining=off debug-symbols=on
+      </pre>
+<p><code class="varname">variant</code> is so commonly-used that it has
+      been given special status as an <em class="firstterm">implicit</em>
+      feature&#8212;Boost.Build will deduce the its identity just
+      from the name of one of its values.
+    </p>
+<p>
+      A complete description of features can be found in <a href="../reference/definitions.html#bbv2.reference.features" title="Features and properties">the section called &#8220;Features and properties&#8221;</a>.
+    </p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.tutorial.properties.requirements"></a>Build Requests and Target Requirements</h3></div></div></div>
+<p>      
+        The set of properties specified on the command line constitute
+        a <em class="firstterm">build request</em>&#8212;a description of
+        the desired properties for building the requested targets (or,
+        if no targets were explicitly requested, the project in the
+        current directory).  The <span class="emphasis"><em>actual</em></span>
+        properties used for building targets are typically a
+        combination of the build request and properties derived from
+        the project's <code class="filename">Jamroot</code> (and its other
+        Jamfiles, as described in <a href="hierarchy.html" title="Project Hierarchies">the section called &#8220;Project Hierarchies&#8221;</a>).  For example, the
+        locations of <code class="computeroutput">#include</code>d header files are normally
+        not specified on the command-line, but described in
+        Jamfiles as <em class="firstterm">target
+        requirements</em> and automatically combined with the
+        build request for those targets.  Multithread-enabled
+        compilation is another example of a typical target
+        requirement.  The Jamfile fragment below
+        illustrates how these requirements might be specified.
+      </p>
+<pre class="programlisting">
+exe hello 
+    : hello.cpp
+    : &lt;include&gt;boost &lt;threading&gt;multi
+    ;
+</pre>
+<p> 
+        When <code class="filename">hello</code> is built, the two
+        requirements specified above will always be present. 
+        If the build request given on the <span><strong class="command">bjam</strong></span>
+        command-line explictly contradicts a target's requirements,
+        the target requirements usually override (or, in the case of
+        &#8220;free&#8221;&#8221; features like
+        <code class="varname">&lt;include&gt;</code>,
+        <sup>[<a name="id1354091" href="#ftn.id1354091">4</a>]</sup>
+        augments) the build request.
+
+      </p>
+<div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Tip</h3>
+<p>The value of the <code class="varname">&lt;include&gt;</code> feature is
+          relative to the location of <code class="filename">Jamroot</code> where it's
+          used. 
+        </p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.tutorial.properties.project_attributes"></a>Project Attributes</h3></div></div></div>
+<p>
+        If we want the same requirements for our other
+        target, <code class="filename">hello2</code>, we could simply duplicate
+        them.  However, as projects grow, that approach leads to a great
+        deal of repeated boilerplate in Jamfiles.
+        
+        Fortunately, there's a better way. Each project can specify a
+        set of <em class="firstterm">attributes</em>, including
+        requirements:
+
+</p>
+<pre class="programlisting">
+project 
+    : requirements &lt;include&gt;/home/ghost/Work/boost &lt;threading&gt;multi 
+    ;
+
+exe hello : hello.cpp ;
+exe hello2 : hello.cpp ;
+</pre>
+<p>
+
+        The effect would be as if we specified the same requirement for
+        both <code class="filename">hello</code> and <code class="filename">hello2</code>.
+      </p>
+</div>
+<div class="footnotes">
+<br><hr width="100" align="left">
+<div class="footnote"><p><sup>[<a name="ftn.id1354091" href="#id1354091">4</a>] </sup>
+See <a href="../reference/definitions.html#bbv2.reference.features.attributes" title="Feature Attributes">the section called &#8220;Feature Attributes&#8221;</a></p></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../tutorial.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../tutorial.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="hierarchy.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

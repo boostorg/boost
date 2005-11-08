@@ -1,0 +1,139 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Chapter 25. Extender Manual</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../bbv2.html" title="Part III. Boost.Build v2 User Manual">
+<link rel="prev" href="advanced/differences_to_v1.html" title="Differences to Boost.Build V1">
+<link rel="next" href="extending/targets.html" title="Target types">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="advanced/differences_to_v1.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../bbv2.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="extending/targets.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="chapter" lang="en">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="bbv2.extender"></a>Chapter 25. Extender Manual</h2></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="section"><a href="extender.html#bbv2.extender.intro">Introduction</a></span></dt>
+<dt><span class="section"><a href="extending/targets.html">Target types</a></span></dt>
+<dd><dl><dt><span class="section"><a href="extending/targets.html#bbv2.extending.scanners">Scanners</a></span></dt></dl></dd>
+<dt><span class="section"><a href="extending/tools.html">Tools and generators</a></span></dt>
+<dt><span class="section"><a href="extending/features.html">Features</a></span></dt>
+<dt><span class="section"><a href="extending/rules.html">Main target rules</a></span></dt>
+<dt><span class="section"><a href="extending/toolset_modules.html">Toolset modules</a></span></dt>
+</dl>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.extender.intro"></a>Introduction</h2></div></div></div>
+<p>This document explains how to extend Boost.Build to accomodate
+  your local requirements. Let's start with a simple but
+  realistic example.</p>
+<p>Say you're writing an application that generates C++ code. If
+  you ever did this, you know that it's not nice. Embedding large
+  portions of C++ code in string literals is very awkward. A much
+  better solution is:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+        Write the template of the code to be generated, leaving
+    placeholders at the points that will change
+      </li>
+<li>
+        Access the template in your application and replace
+    placeholders with appropriate text.
+      </li>
+<li>Write the result.</li>
+</ol></div>
+<p>It's quite easy to achieve. You write special verbatim files
+  that are just C++, except that the very first line of the file
+  contains the name of a variable that should be generated. A simple tool
+  is created that takes a verbatim file and creates a cpp file with
+  a single <code class="computeroutput">char*</code> variable whose name is taken from the first line
+  of the verbatim file and whose value is the file's properly quoted content.</p>
+<p>Let's see what Boost.Build can do.</p>
+<p>First off, Boost.Build has no idea about "verbatim files". So,
+  you must register a new target type. The following code does
+  it:</p>
+<pre class="programlisting">
+import type ;
+type.register VERBATIM : vrb ;
+</pre>
+<p>The first parameter to
+  <code class="computeroutput">type.register</code> gives the name of the
+  declared type. By convention, it's uppercase. The second parameter
+  is the suffix for files of this type. So, if Boost.Build sees
+  <code class="filename">code.vrb</code> in a list of sources, it knows that it's of type
+  <code class="computeroutput">VERBATIM</code>.</p>
+<p>Next, you tell Boost.Build that the verbatim files can be
+  transformed into C++ files in one build step.  A
+  <em class="firstterm">generator</em> is a template for a build step that
+  transforms targets of one type (or set of types) into another.  Our
+  generator will be called <code class="computeroutput">verbatim.inline-file</code>; it
+  transforms <code class="computeroutput">VERBATIM</code> files into <code class="computeroutput">CPP</code> files:
+
+</p>
+<pre class="programlisting">
+import generators ;
+generators.register-standard verbatim.inline-file : VERBATIM : CPP ;
+</pre>
+<p>Lastly, you have to inform Boost.Build about the shell
+  commands used to make that transformation.  That's done with an
+  <code class="computeroutput">actions</code> declaration.
+
+</p>
+<pre class="programlisting">
+actions inline-file
+{
+    "./inline-file.py" $(&lt;) $(&gt;)
+}
+</pre>
+<p>Now, we're ready to tie it all together. Put all the code
+  above in file <code class="filename">verbatim.jam</code>, add <code class="computeroutput">import verbatim ;</code> 
+  to <code class="filename">project-root.jam</code>, and it's possible to write
+  the following in Jamfile:</p>
+<pre class="programlisting">
+exe codegen : codegen.cpp class_template.verbatim usage.verbatim ;
+</pre>
+<p>
+The verbatim files will be automatically converted into C++
+and linked it.
+  </p>
+<p>In the subsequent sections, we will extend this example, and review
+        all the mechanisms in detail. The complete code is available in <a href="../../../tools/build/v2/example/customization" target="_top">example/customization</a>
+        directory.
+      </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="advanced/differences_to_v1.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../bbv2.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="extending/targets.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

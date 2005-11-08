@@ -1,0 +1,396 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Targets</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../arch.html" title="Appendix B. Boost.Build v2 architecture">
+<link rel="prev" href="tools.html" title="The tools layer">
+<link rel="next" href="../../who_s_using_boost_.html" title="Who's Using Boost?">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="tools.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../arch.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../who_s_using_boost_.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.arch.targets"></a>Targets</h2></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="targets.html#bbv2.arch.depends">Dependency scanning</a></span></dt></dl></div>
+<p>NOTE: THIS SECTION IS NOT EXPECTED TO BE READ!
+        There are two user-visible kinds of targets in Boost.Build.
+  First are "abstract" &#8212; they correspond to things declared
+  by user, for example, projects and executable files. The primary
+  thing about abstract target is that it's possible to request them
+  to be build with a particular values of some properties. Each
+  combination of properties may possible yield different set of
+  real file, so abstract target do not have a direct correspondence
+  with files.</p>
+<p>File targets, on the contary, are associated with concrete
+  files. Dependency graphs for abstract targets with specific
+  properties are constructed from file targets. User has no was to
+  create file targets, however it can specify rules that detect
+  file type for sources, and also rules for transforming between
+  file targets of different types. That information is used in
+  constructing dependency graph, as desribed in the "next section".
+  [ link? ] <span class="bold"><strong>Note:</strong></span>File targets are not
+  the same as targets in Jam sense; the latter are created from
+  file targets at the latest possible moment. <span class="bold"><strong>Note:</strong></span>"File
+  target" is a proposed name for what we call virtual targets. It
+  it more understandable by users, but has one problem: virtual
+  targets can potentially be "phony", and not correspond to any
+  file.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.arch.depends"></a>Dependency scanning</h3></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="targets.html#id1362085">Support for different scanning algorithms</a></span></dt>
+<dt><span class="section"><a href="targets.html#id1362093">Ability to scan the same file several times</a></span></dt>
+<dt><span class="section"><a href="targets.html#id1362128">Proper detection of dependencies on generated files.</a></span></dt>
+<dt><span class="section"><a href="targets.html#id1362262">Proper detection of dependencies from generated files</a></span></dt>
+</dl></div>
+<p>Dependency scanning is the process of finding implicit
+  dependencies, like "#include" statements in C++. The requirements
+  for right dependency scanning mechanism are:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+        Support for different scanning algorithms. C++ and XML have
+    quite different syntax for includes and rules for looking up
+    included files.
+      </li>
+<li>
+        Ability to scan the same file several times. For example,
+    single C++ file can be compiled with different include
+    paths.
+      </li>
+<li>
+        Proper detection of dependencies on generated files.
+      </li>
+<li>
+        Proper detection of dependencies from generated file.
+      </li>
+</ul></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1362085"></a>Support for different scanning algorithms</h4></div></div></div>
+<p>Different scanning algorithm are encapsulated by objects
+  called "scanners". Please see the documentation for "scanner"
+  module for more details.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1362093"></a>Ability to scan the same file several times</h4></div></div></div>
+<p>As said above, it's possible to compile a C++ file twice, with
+  different include paths. Therefore, include dependencies for
+  those compilations can be different. The problem is that bjam
+  does not allow several scans of the same target.</p>
+<p>The solution in Boost.Build is straigtforward. When a virtual
+  target is converted to bjam target (via
+  <code class="literal">virtual-target.actualize</code> method), we specify the scanner
+  object to be used. The actualize method will create different
+  bjam targets for different scanners.</p>
+<p>All targets with specific scanner are made dependent on target
+  without scanner, which target is always created. This is done in
+  case the target is updated. The updating action will be
+  associated with target without scanner, but if sources for that
+  action are touched, all targets &#8212; with scanner and without
+  should be considered outdated.</p>
+<p>For example, assume that "a.cpp" is compiled by two compilers
+  with different include path. It's also copied into some install
+  location. In turn, it's produced from "a.verbatim". The
+  dependency graph will look like:</p>
+<pre class="programlisting">
+a.o (&lt;toolset&gt;gcc)  &lt;--(compile)-- a.cpp (scanner1) ----+
+a.o (&lt;toolset&gt;msvc) &lt;--(compile)-- a.cpp (scanner2) ----|
+a.cpp (installed copy)    &lt;--(copy) ----------------------- a.cpp (no scanner)
+                                                                 ^
+                                                                 |
+                       a.verbose --------------------------------+
+</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1362128"></a>Proper detection of dependencies on generated files.</h4></div></div></div>
+<p>This requirement breaks down to the following ones.</p>
+<div class="orderedlist"><ol type="1">
+<li>
+        If when compiling "a.cpp" there's include of "a.h", the
+    "dir" directory is in include path, and a target called "a.h"
+    will be generated to "dir", then bjam should discover the
+    include, and create "a.h" before compiling "a.cpp".
+      </li>
+<li>
+      Since almost always Boost.Build generates targets to a
+    "bin" directory, it should be supported as well. I.e. in the
+    scanario above, Jamfile in "dir" might create a main target,
+    which generates "a.h". The file will be generated to "dir/bin"
+    directory, but we still have to recornize the dependency.
+      </li>
+</ol></div>
+<p>The first requirement means that when determining what "a.h"
+  means, when found in "a.cpp", we have to iterate over all
+  directories in include paths, checking for each one:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+        If there's file "a.h" in that directory, or
+      </li>
+<li>
+        If there's a target called "a.h", which will be generated
+    to that directory.
+      </li>
+</ol></div>
+<p>Classic Jam has built-in facilities for point (1) above, but
+  that's not enough. It's hard to implement the right semantic
+  without builtin support. For example, we could try to check if
+  there's targer called "a.h" somewhere in dependency graph, and
+  add a dependency to it. The problem is that without search in
+  include path, the semantic may be incorrect. For example, one can
+  have an action which generated some "dummy" header, for system
+  which don't have the native one. Naturally, we don't want to
+  depend on that generated header on platforms where native one is
+  included.</p>
+<p>There are two design choices for builtin support. Suppose we
+  have files a.cpp and b.cpp, and each one includes header.h,
+  generated by some action. Dependency graph created by classic jam
+  would look like:</p>
+<pre class="programlisting">
+a.cpp -----&gt; &lt;scanner1&gt;header.h  [search path: d1, d2, d3]
+
+
+                  &lt;d2&gt;header.h  --------&gt; header.y
+                  [generated in d2]
+           
+b.cpp -----&gt; &lt;scanner2&gt;header.h [ search path: d1, d2, d4]
+</pre>
+<p>
+In this case, Jam thinks all header.h target are not
+realated. The right dependency graph might be:
+
+</p>
+<pre class="programlisting">
+a.cpp ---- 
+          \
+           \     
+            &gt;----&gt;  &lt;d2&gt;header.h  --------&gt; header.y
+           /       [generated in d2]
+          / 
+b.cpp ----
+</pre>
+<p>
+
+or
+
+</p>
+<pre class="programlisting">
+a.cpp -----&gt; &lt;scanner1&gt;header.h  [search path: d1, d2, d3]
+                          |
+                       (includes)
+                          V
+                  &lt;d2&gt;header.h  --------&gt; header.y
+                  [generated in d2]
+                          ^
+                      (includes)  
+                          |
+b.cpp -----&gt; &lt;scanner2&gt;header.h [ search path: d1, d2, d4]
+</pre>
+<p>
+The first alternative was used for some time. The problem
+however is: what include paths should be used when scanning
+header.h? The second alternative was suggested by Matt Armstrong.
+It has similiar effect: add targets which depend on
+&lt;scanner1&gt;header.h will also depend on &lt;d2&gt;header.h.
+But now we have two different target with two different scanners,
+and those targets can be scanned independently. The problem of
+first alternative is avoided, so the second alternative is
+implemented now.
+        </p>
+<p>The second sub-requirements is that targets generated to "bin"
+  directory are handled as well. Boost.Build implements
+  semi-automatic approach. When compiling C++ files the process
+  is:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+        The main target to which compiled file belongs is found.
+      </li>
+<li>
+        All other main targets that the found one depends on are
+    found. Those include main target which are used as sources, or
+    present as values of "dependency" features.
+      </li>
+<li>
+        All directories where files belonging to those main target
+    will be generated are added to the include path.
+      </li>
+</ol></div>
+<p>After this is done, dependencies are found by the approach
+  explained previously.</p>
+<p>Note that if a target uses generated headers from other main
+  target, that main target should be explicitly specified as
+  dependency property. It would be better to lift this requirement,
+  but it seems not very problematic in practice.</p>
+<p>For target types other than C++, adding of include paths must
+  be implemented anew.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1362262"></a>Proper detection of dependencies from generated files</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="targets.html#id1362363">File targets</a></span></dt>
+<dt><span class="section"><a href="targets.html#id1362395">Target paths</a></span></dt>
+</dl></div>
+<p>Suppose file "a.cpp" includes "a.h" and both are generated by
+  some action. Note that classic jam has two stages. In first stage
+  dependency graph graph is build and actions which should be run
+  are determined. In second stage the actions are executed.
+  Initially, neither file exists, so the include is not found. As
+  the result, jam might attempt to compile a.cpp before creating
+  a.h, and compilation will fail.</p>
+<p>The solution in Boost.Jam is to perform additional dependency
+  scans after targets are updated. This break separation between
+  build stages in jam &#8212; which some people consider a good
+  thing &#8212; but I'm not aware of any better solution.</p>
+<p>In order to understand the rest of this section, you better
+  read some details about jam dependency scanning, available
+  <a href="http://public.perforce.com:8080/@md=d&amp;cd=//public/jam/src/&amp;ra=s&amp;c=kVu@//2614?ac=10" target="_top">
+  at this link</a>.</p>
+<p>Whenever a target is updated, Boost.Jam rescans it for
+  includes. Consider this graph, created before any actions are
+  run.</p>
+<pre class="programlisting">
+A -------&gt; C ----&gt; C.pro
+     /
+B --/         C-includes   ---&gt; D
+</pre>
+<p>
+Both A and B have dependency on C and C-includes (the latter
+dependency is not shown). Say during building we've tried to create
+A, then tried to create C and successfully created C.
+        </p>
+<p>In that case, the set of includes in C might well have
+  changed. We do not bother to detect precisely which includes were
+  added or removed. Instead we create another internal node
+  C-includes-2. Then we determine what actions should be run to
+  update the target. In fact this mean that we perform logic of
+  first stage while already executing stage.</p>
+<p>After actions for C-includes-2 are determined, we add
+  C-includes-2 to the list of A's dependents, and stage 2 proceeds
+  as usual. Unfortunately, we can't do the same with target B,
+  since when it's not visited, C target does not know B depends on
+  it. So, we add a flag to C which tells and it was rescanned. When
+  visiting B target, the flag is notices and C-includes-2 will be
+  added to the list of B's dependencies.</p>
+<p>Note also that internal nodes are sometimes updated too.
+  Consider this dependency graph:</p>
+<pre class="programlisting">
+a.o ---&gt; a.cpp
+            a.cpp-includes --&gt;  a.h (scanned)
+                                   a.h-includes ------&gt; a.h (generated)
+                                                                 |
+                                                                 |
+            a.pro &lt;-------------------------------------------+
+</pre>
+<p>Here, out handling of generated headers come into play. Say
+  that a.h exists but is out of date with respect to "a.pro", then
+  "a.h (generated)" and "a.h-includes" will be marking for
+  updating, but "a.h (scanned)" won't be marked. We have to rescan
+  "a.h" file after it's created, but since "a.h (generated)" has no
+  scanner associated with it, it's only possible to rescan "a.h"
+  after "a.h-includes" target was updated.</p>
+<p>Tbe above consideration lead to decision that we'll rescan a
+  target whenever it's updated, no matter if this target is
+  internal or not.</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p>
+    The remainder of this document is not indended to be read at
+    all. This will be rearranged in future.
+    </p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1362363"></a>File targets</h5></div></div></div>
+<p>
+  As described above, file targets corresponds
+  to files that Boost.Build manages. User's may be concerned about
+  file targets in three ways: when declaring file target types,
+  when declaring transformations between types, and when
+  determining where file target will be placed. File targets can
+  also be connected with actions, that determine how the target is
+  created. Both file targets and actions are implemented in the
+  <code class="literal">virtual-target</code> module.
+          </p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="id1362381"></a>Types</h6></div></div></div>
+<p>A file target can be given a file, which determines
+  what transformations can be applied to the file. The
+  <code class="literal">type.register</code> rule declares new types. File type can
+  also be assigned a scanner, which is used to find implicit
+  dependencies. See "dependency scanning" [ link? ] below.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="id1362395"></a>Target paths</h5></div></div></div>
+<p>To distinguish targets build with different properties, they
+  are put in different directories. Rules for determining target
+  paths are given below:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+        All targets are placed under directory corresponding to the
+    project where they are defined.
+      </li>
+<li>
+        Each non free, non incidental property cause an additional
+    element to be added to the target path. That element has the
+    form <code class="literal">&lt;feature-name&gt;-&lt;feature-value&gt;</code> for
+    ordinary features and <code class="literal">&lt;feature-value&gt;</code> for
+    implicit ones. [Note about composite features].
+      </li>
+<li>
+        If the set of free, non incidental properties is different
+    from the set of free, non incidental properties for the project
+    in which the main target that uses the target is defined, a
+    part of the form <code class="literal">main_target-&lt;name&gt;</code> is added to
+    the target path. <span class="bold"><strong>Note:</strong></span>It would be nice to completely
+    track free features also, but this appears to be complex and
+    not extremely needed.
+      </li>
+</ol></div>
+<p>For example, we might have these paths:</p>
+<pre class="programlisting">
+debug/optimization-off
+debug/main-target-a
+</pre>
+</div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="tools.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../arch.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../who_s_using_boost_.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

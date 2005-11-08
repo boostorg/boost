@@ -1,0 +1,141 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Build process</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../reference.html" title="Chapter 26. Detailed reference">
+<link rel="prev" href="jamfiles.html" title="Writing Jamfiles">
+<link rel="next" href="definitions.html" title="Definitions">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="jamfiles.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="definitions.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.reference.buildprocess"></a>Build process</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="buildprocess.html#bbv2.reference.buildprocess.alternatives">Alternative selection</a></span></dt>
+<dt><span class="section"><a href="buildprocess.html#bbv2.reference.buildprocess.common">Determining common properties</a></span></dt>
+</dl></div>
+<p>The general overview of the build process was given in the 
+      <a href="../advanced/build_process.html" title="The Build Process">user documentation</a>.
+      This section provides additional details, and some specific rules.
+    </p>
+<p>To recap, building a target with specific properties includes the
+      following steps:
+      </p>
+<div class="orderedlist"><ol type="1">
+<li><p>applying default build,</p></li>
+<li><p>selecting the main target alternative to use,
+          </p></li>
+<li><p>determining "common" properties</p></li>
+<li><p>building targets referred by the sources list and
+            dependency properties</p></li>
+<li><p>adding the usage requirements produces when building
+            dependencies to the "common" properties</p></li>
+<li><p>building the target using generators</p></li>
+<li><p>computing the usage requirements to be returned</p></li>
+</ol></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.buildprocess.alternatives"></a>Alternative selection</h3></div></div></div>
+<p>When there are several alternatives, one of them must be
+        selected. The process is as follows:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+            For each alternative <span class="emphasis"><em>condition</em></span> is defined
+            as the set of base properies in requirements. [Note: it might be
+            better to specify the condition explicitly, as in
+            conditional requirements].
+          </li>
+<li>
+            An alternative is viable only if all properties in condition
+            are present in build request.
+          </li>
+<li>
+            If there's one viable alternative, it's choosen. Otherwise,
+            an attempt is made to find one best alternative. An alternative
+            a is better than another alternative b, iff set of properties
+            in b's condition is strict subset of the set of properities of
+            'a's condition. If there's one viable alternative, which is
+            better than all other, it's selected. Otherwise, an error is
+            reported.
+          </li>
+</ol></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.reference.buildprocess.common"></a>Determining common properties</h3></div></div></div>
+<p>The "common" properties is a somewhat artificial term. Those are
+        the intermediate property set from which both the build request for
+        dependencies and properties for building the target are derived.
+      </p>
+<p>Since default build and alternatives are already handled, we have
+        only two inputs: build requests and requirements. Here are the rules
+        about common properties.
+      </p>
+<div class="orderedlist"><ol type="1">
+<li><p>Non-free feature can have only one
+            value</p></li>
+<li><p>A non-conditional property in requirement in always
+            present in common properties.</p></li>
+<li><p>A property in build request is present in
+            common properties, unless (2) tells otherwise.</p></li>
+<li><p>If either build request, or requirements (non-conditional
+            or conditional) include an expandable property (either composite,
+            or property with specified subfeature value), the behaviour is
+            equivalent to explicitly adding all expanded properties to build
+            request or requirements.</p></li>
+<li><p>If requirements include a conditional property, and
+            condiiton of this property is true in context of common
+            properties, then the conditional property should be in common
+            properties as well.</p></li>
+<li><p>If no value for a feature is given by other rules
+            here, it has default value in common properties.</p></li>
+</ol></div>
+<p>Those rules are declarative, they don't specify how to compute the
+        common properties. However, they provide enough information for the
+        user. The important point is the handling of conditional
+        requirements. The condition can be satisfied either by property in
+        build request, by non-conditional requirements, or even by another
+        conditional property. For example, the following example works as
+        expected:
+</p>
+<pre class="programlisting">
+exe a : a.cpp 
+      : &lt;toolset&gt;gcc:&lt;variant&gt;release 
+        &lt;variant&gt;release:&lt;define&gt;FOO ;
+</pre>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="jamfiles.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="definitions.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

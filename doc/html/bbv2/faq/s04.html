@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>
+      How to control the library order on Unix?
+    </title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../faq.html" title="Chapter 27. Frequently Asked Questions">
+<link rel="prev" href="s03.html" title="
+        How to control properties order?
+      ">
+<link rel="next" href="external.html" title="Can I get output of external program as a variable in a Jamfile?
+    ">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="s03.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../faq.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="external.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="id1361374"></a>
+      How to control the library order on Unix?
+    </h2></div></div></div>
+<p>On the Unix-like operating systems, the order in which static
+      libraries are specified when invoking the linker is important, because by
+      default, the linker uses one pass though the libraries list. Passing the
+      libraries in the incorrect order will lead to a link error. Further, this
+      behaviour is often used to make one library override symbols from
+      another. So, sometimes it's necessary to force specific order of
+      libraries.    
+    </p>
+<p>Boost.Build tries to automatically compute the right order.  The
+      primary rule is that if library a "uses" library b, then library a will
+      appear on the command line before library b. Library a is considered to
+      use b is b is present either in the sources of a or in its
+      requirements. To explicitly specify the use relationship one can use the
+      &lt;use&gt; feature. For example, both of the following lines will cause
+      a to appear before b on the command line:
+</p>
+<pre class="programlisting">
+lib a : a.cpp b ;
+lib a : a.cpp : &lt;use&gt;b ;
+</pre>
+<p>
+      The same approach works for searched libraries, too:
+</p>
+<pre class="programlisting">
+lib z ;
+lib png : : &lt;use&gt;z ;
+exe viewer : viewer png z ;
+</pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="s03.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../faq.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="external.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

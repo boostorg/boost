@@ -1,0 +1,126 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template period</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id733471" title="Header &lt;boost/date_time/period.hpp&gt;">
+<link rel="prev" href="id966373.html" title="Type ymd_order_spec">
+<link rel="next" href="period_formatter.html" title="Class template period_formatter">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id966373.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id733471"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="period_formatter.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="period"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template period</span></h2>
+<p>boost::date_time::period &#8212; Provides generalized period type useful in date-time systems. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> point_rep, <span class="bold"><strong>typename</strong></span> duration_rep&gt; 
+<span class="bold"><strong>class</strong></span> period {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> point_rep    point_type;   
+  <span class="bold"><strong>typedef</strong></span> duration_rep duration_type;
+
+  <span class="emphasis"><em>// <a href="period.html#periodconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="period.html#id893021-bb">period</a>(point_rep, point_rep);
+  <a href="period.html#id827741-bb">period</a>(point_rep, duration_rep);
+
+  <span class="emphasis"><em>// <a href="period.html#id895813-bb">public member functions</a></em></span>
+  <span class="type">point_rep</span> <a href="period.html#id895818-bb">begin</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">point_rep</span> <a href="period.html#id727479-bb">end</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">point_rep</span> <a href="period.html#id976297-bb">last</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_rep</span> <a href="period.html#id965184-bb">length</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id1004543-bb">is_null</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id801515-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id904376-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="period.html#id833345-bb">shift</a>(<span class="bold"><strong>const</strong></span> duration_rep &amp;) ;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id969401-bb">contains</a>(<span class="bold"><strong>const</strong></span> point_rep &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id1038001-bb">contains</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id768675-bb">intersects</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id1004589-bb">is_adjacent</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id894018-bb">is_before</a>(<span class="bold"><strong>const</strong></span> point_rep &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="period.html#id823088-bb">is_after</a>(<span class="bold"><strong>const</strong></span> point_rep &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><a href="period.html" title="Class template period">period</a></span> <a href="period.html#id859456-bb">intersection</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><a href="period.html" title="Class template period">period</a></span> <a href="period.html#id863999-bb">merge</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><a href="period.html" title="Class template period">period</a></span> <a href="period.html#id799215-bb">span</a>(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp;) <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1039130"></a><h2>Description</h2>
+<p>This template uses a class to represent a time point within the period and another class to represent a duration. As a result, this class is not appropriate for use when the number and duration representation are the same (eg: in the regular number domain).</p>
+<p>A period can be specified by providing either the begining point and a duration or the begining point and the end point( end is NOT part of the period but 1 unit past it. A period will be "invalid" if either end_point &lt;= begin_point or the given duration is &lt;= 0. Any valid period will return false for is_null().</p>
+<p>Zero length periods are also considered invalid. Zero length periods are periods where the begining and end points are the same, or, the given duration is zero. For a zero length period, the last point will be one unit less than the begining point.</p>
+<p>In the case that the begin and last are the same, the period has a length of one unit.</p>
+<p>The best way to handle periods is usually to provide a begining point and a duration. So, day1 + 7 days is a week period which includes all of the first day and 6 more days (eg: Sun to Sat). </p>
+<div class="refsect2" lang="en">
+<a name="id1039169"></a><h3>
+<a name="periodconstruct-copy-destruct"></a><code class="computeroutput">period</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id893021-bb"></a>period(point_rep first_point, point_rep end_point);</pre>
+<p>If end &lt;= begin then the period will be invalid </p>
+</li>
+<li>
+<pre class="literallayout"><a name="id827741-bb"></a>period(point_rep first_point, duration_rep len);</pre>
+<p>If len is &lt;= 0 then the period will be invalid </p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1039221"></a><h3>
+<a name="id895813-bb"></a><code class="computeroutput">period</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">point_rep</span> <a name="id895818-bb"></a>begin() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">point_rep</span> <a name="id727479-bb"></a>end() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">point_rep</span> <a name="id976297-bb"></a>last() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_rep</span> <a name="id965184-bb"></a>length() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1004543-bb"></a>is_null() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id801515-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id904376-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id833345-bb"></a>shift(<span class="bold"><strong>const</strong></span> duration_rep &amp; d) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id969401-bb"></a>contains(<span class="bold"><strong>const</strong></span> point_rep &amp; point) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1038001-bb"></a>contains(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; other) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id768675-bb"></a>intersects(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; other) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1004589-bb"></a>is_adjacent(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; other) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id894018-bb"></a>is_before(<span class="bold"><strong>const</strong></span> point_rep &amp; point) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id823088-bb"></a>is_after(<span class="bold"><strong>const</strong></span> point_rep &amp; point) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><a href="period.html" title="Class template period">period</a></span> <a name="id859456-bb"></a>intersection(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; other) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><a href="period.html" title="Class template period">period</a></span> <a name="id863999-bb"></a>merge(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; other) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li>
+<pre class="literallayout"><span class="type"><a href="period.html" title="Class template period">period</a></span> <a name="id799215-bb"></a>span(<span class="bold"><strong>const</strong></span> <a href="period.html" title="Class template period">period</a> &amp; other) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Combines two periods and any gap between them such that start = min(p1.start, p2.start) end = max(p1.end , p2.end) </p>
+<pre class="programlisting">        [---p1---)
+                       [---p2---)
+ result:
+        [-----------p3----------) 
+   *
+</pre>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id966373.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id733471"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="period_formatter.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Manual setup for all systems</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../getting/started.html" title="Chapter 17. Getting Started">
+<link rel="prev" href="../getting/started.html" title="Chapter 17. Getting Started">
+<link rel="next" href="running.html" title="Running BoostBook">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../getting/started.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../getting/started.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="running.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="boostbook.setup.manual"></a>Manual setup for all systems</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="manual.html#boostbook.setup.xsltproc">Configuring <span><strong class="command">xsltproc</strong></span></a></span></dt>
+<dt><span class="section"><a href="manual.html#boostbook.setup.docbook">Configuring local DocBook XSL and DTD distributions</a></span></dt>
+<dt><span class="section"><a href="manual.html#boostbook.setup.doxygen">Configuring Doxygen for Documentation Extraction</a></span></dt>
+<dt><span class="section"><a href="manual.html#boostbook.setup.fop">Configuring Apache FOP</a></span></dt>
+</dl></div>
+<p>This section describes how to manually configure Boost
+      Boost version 2 (BBv@) for BoostBook. If you can use the
+      automatic setup script, you should. All configuration will
+      happen in the BBv2 user configuration file,
+      <code class="filename">user-config.jam</code>. If you do not have a copy
+      of this file in your home directory, you should copy the one
+      that resides in <code class="computeroutput">tools/build/v2</code> to your home
+      directory. Alternatively, you can edit
+      <code class="filename">tools/build/v2/user-config.jam</code> directly or
+      a site-wide <code class="filename">site-config.jam</code> file.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boostbook.setup.xsltproc"></a>Configuring <span><strong class="command">xsltproc</strong></span></h3></div></div></div>
+<p>To configure <span><strong class="command">xsltproc</strong></span> manually, you
+        will need to add a directive to
+        <code class="filename">user-config.jam</code> telling it where to find
+        <span><strong class="command">xsltproc</strong></span>. If the program is in your path,
+        just add the following line to
+        <code class="filename">user-config.jam</code>:</p>
+<pre class="programlisting">using xsltproc ;</pre>
+<p>If <span><strong class="command">xsltproc</strong></span> is somewhere else, use
+        this directive, where <code class="computeroutput">XSLTPROC</code> is the full
+        pathname to <span><strong class="command">xsltproc</strong></span> (including
+        <span><strong class="command">xsltproc</strong></span>):</p>
+<pre class="programlisting">using xsltproc : XSLTPROC ;</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boostbook.setup.docbook"></a>Configuring local DocBook XSL and DTD distributions</h3></div></div></div>
+<p>This section describes how to configure Boost.Build to
+        use local copies of the DocBook DTD and XSL stylesheets to
+        improve processing time. You will first need to download two
+        packages:
+
+        </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>Norman Walsh's DocBook XSL stylesheets,
+          available at the <a href="http://docbook.sourceforge.net" target="_top">DocBook sourceforge
+          site</a>. Extract the DocBook XSL stylesheets to a
+          directory on your hard disk (which we'll refer to as the
+          <code class="computeroutput">DOCBOOK_XSL_DIR</code>).</p></li>
+<li><p>The DocBook DTD, available as a ZIP archive
+          at the <a href="http://www.oasis-open.org/docbook/xml/4.2/index.shtml" target="_top">OASIS
+          DocBook site</a>. The package is called "DocBook XML
+          4.2". Extract the DocBook DTD to a directory on your hard
+          disk (which we'll refer to as the
+          <code class="computeroutput">DOCBOOK_DTD_DIR</code>). You will want to extract this
+          archive in a subdirectory!</p></li>
+</ul></div>
+<p>Add the following directive telling BBv2 where to find
+        the DocBook DTD and XSL stylesheets:</p>
+<pre class="programlisting">#  BoostBook configuration
+using boostbook 
+  : DOCBOOK_XSL_DIR
+  : DOCBOOK_DTD_DIR
+  ;</pre>
+<p>Whenever you change this directive, you will need to
+        remove the <code class="computeroutput">bin.v2</code> directory that BBv2 generates.
+        This is due to longstanding bug we are trying to fix.</p>
+<p>At this point, you should be able to build HTML
+        documentation for libraries that do not require Doxygen. To
+        test this, change into the directory <code class="filename">$BOOST_ROOT/libs/function/doc</code> and
+        run the command <code class="computeroutput">bjam --v2</code>: it should produce HTML
+        documentation for the Boost.Function library in the
+        <code class="computeroutput">html</code> subdirectory.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boostbook.setup.doxygen"></a>Configuring Doxygen for Documentation Extraction</h3></div></div></div>
+<p>Doxygen is required to build the documentation for
+        several Boost libraries. You will need a recent version of
+        <a href="http://www.doxygen.org" target="_top">Doxygen</a> (most of
+        the 1.3.x and 1.4.x versions will suffice). BBv2 by adding the
+        following directive to
+        <code class="filename">user-config.jam</code>:</p>
+<pre class="programlisting">using doxygen : DOXYGEN ;</pre>
+<p><code class="filename">DOXYGEN</code> should be replaced with the
+        name of the <span><strong class="command">doxygen</strong></span> executable (with full
+        path name). If the right <span><strong class="command">doxygen</strong></span> executable
+        can be found via the path, this parameter can be
+        omitted, e.g.</p>
+<pre class="programlisting">using doxygen ;</pre>
+<div class="important" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Important</h3>
+<p>The relative order of declarations in
+          <code class="filename">user-config.jam</code> /
+          <code class="filename">site-config.jam</code> files is
+          significant. In particular, the <code class="literal">using
+          doxygen</code> line should come
+          <span class="emphasis"><em>after</em></span> the <code class="literal">using
+          boostbook</code> declaration.
+          </p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boostbook.setup.fop"></a>Configuring Apache FOP</h3></div></div></div>
+<p>In order to generate PDF and PostScript output using
+      Apache FOP, you will need a <a href="http://java.sun.com" target="_top">Java interpreter</a> and <a href="http://xml.apache.org/fop/download.html" target="_top">Apache FOP</a>
+      (version 0.20.5 is best). Unpack Apache FOP to some
+      directory. The top level directory of the FOP tool should
+      contain a main script called <code class="filename">fop.sh</code> on Unix
+      and <code class="filename">fop.bat</code> on Windows. You need to specify
+      the location of that script and Java location to
+      Boost.Build. Add the following to your
+      <code class="filename">user-config.jam</code> or
+      <code class="filename">site-config.jam</code>:
+</p>
+<pre class="programlisting">
+using fop : FOP_COMMAND 
+          : JAVA_HOME 
+          ;
+</pre>
+<p> replacing
+      <code class="computeroutput">FOP_COMMAND</code> with the full path to the FOP main script, and
+      replacing <code class="computeroutput">JAVA_HOME</code> with the directory where Java is
+      installed. If the <code class="envar">JAVA_HOME</code> environment variable is
+      already set, you don't need to specify it above.
+      </p>
+<p>To test PDF generation, switch to the directory <code class="filename">$BOOST_ROOT/libs/function/doc</code> and
+      execute the command <span><strong class="command">bjam --v2 pdf</strong></span>. In the
+      absence of any errors, Apache FOP will be executed to transform
+      the XSL:FO output of DocBook into a PDF file.</p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2003-2005 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../getting/started.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../getting/started.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="running.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

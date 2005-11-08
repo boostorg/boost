@@ -1,0 +1,144 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template date_names_put</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id799078" title="Header &lt;boost/date_time/date_names_put.hpp&gt;">
+<link rel="prev" href="date_itr.html" title="Class template date_itr">
+<link rel="next" href="all_date_names_put.html" title="Class template all_date_names_put">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="date_itr.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id799078"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="all_date_names_put.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="date_names_put"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template date_names_put</span></h2>
+<p>boost::date_time::date_names_put &#8212; Output facet base class for gregorian dates. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Config, <span class="bold"><strong>typename</strong></span> charT = <span class="bold"><strong>char</strong></span>, 
+         <span class="bold"><strong>typename</strong></span> <a href="OutputIterator.html" title="Concept OutputIterator">OutputIterator</a> = std::ostreambuf_iterator&lt;charT&gt; &gt; 
+<span class="bold"><strong>class</strong></span> date_names_put {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> OutputIterator             iter_type;         
+  <span class="bold"><strong>typedef</strong></span> Config::month_type         month_type;        
+  <span class="bold"><strong>typedef</strong></span> Config::month_enum         month_enum;        
+  <span class="bold"><strong>typedef</strong></span> Config::weekday_enum       weekday_enum;      
+  <span class="bold"><strong>typedef</strong></span> Config::special_value_enum special_value_enum;
+  <span class="bold"><strong>typedef</strong></span> std::basic_string&lt; charT &gt; string_type;       
+  <span class="bold"><strong>typedef</strong></span> charT                      char_type;         
+
+  <span class="emphasis"><em>// <a href="date_names_put.html#date_names_putconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="date_names_put.html#id732793-bb">date_names_put</a>();
+
+  <span class="emphasis"><em>// <a href="date_names_put.html#id803354-bb">public member functions</a></em></span>
+  <span class="type">std::locale::id &amp;</span> <a href="date_names_put.html#id859568-bb">__get_id</a>(<span class="bold"><strong>void</strong></span>) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id859590-bb">put_special_value</a>(iter_type &amp;, special_value_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id836028-bb">put_month_short</a>(iter_type &amp;, month_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id733621-bb">put_month_long</a>(iter_type &amp;, month_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id733652-bb">put_weekday_short</a>(iter_type &amp;, weekday_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id931996-bb">put_weekday_long</a>(iter_type &amp;, weekday_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="date_names_put.html#id766206-bb">has_date_sep_chars</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id766218-bb">year_sep_char</a>(iter_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id837366-bb">month_sep_char</a>(iter_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id837391-bb">day_sep_char</a>(iter_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">ymd_order_spec</span> <a href="date_names_put.html#id975909-bb">date_order</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">month_format_spec</span> <a href="date_names_put.html#id732776-bb">month_format</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="date_names_put.html#id895841-bb">protected member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id969708-bb">do_put_month_short</a>(iter_type &amp;, month_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id832764-bb">do_put_month_long</a>(iter_type &amp;, month_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id799740-bb">do_put_special_value</a>(iter_type &amp;, special_value_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id894987-bb">do_put_weekday_short</a>(iter_type &amp;, weekday_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id766238-bb">do_put_weekday_long</a>(iter_type &amp;, weekday_enum) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a href="date_names_put.html#id832387-bb">do_has_date_sep_chars</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id832399-bb">do_year_sep_char</a>(iter_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id974693-bb">do_month_sep_char</a>(iter_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id729779-bb">do_day_sep_char</a>(iter_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> ymd_order_spec</span> <a href="date_names_put.html#id867518-bb">do_date_order</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> month_format_spec</span> <a href="date_names_put.html#id867534-bb">do_month_format</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id856851-bb">put_string</a>(iter_type &amp;, <span class="bold"><strong>const</strong></span> charT *<span class="bold"><strong>const</strong></span>) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="date_names_put.html#id732739-bb">put_string</a>(iter_type &amp;, <span class="bold"><strong>const</strong></span> string_type &amp;) <span class="bold"><strong>const</strong></span>;
+
+  <span class="bold"><strong>static</strong></span> const char_type default_special_value_names;
+  <span class="bold"><strong>static</strong></span> const char_type separator;
+  <span class="bold"><strong>static</strong></span> std::locale::id id;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1006692"></a><h2>Description</h2>
+<p>This class is a base class for date facets used to localize the names of months and the names of days in the week.</p>
+<p>Requirements of Config</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>define an enumeration month_enum that enumerates the months. The enumeration should be '1' based eg: Jan==1</p></li>
+<li><p>define as_short_string and as_long_string</p></li>
+</ul></div>
+<p>(see langer &amp; kreft p334). </p>
+<div class="refsect2" lang="en">
+<a name="id1006715"></a><h3>
+<a name="date_names_putconstruct-copy-destruct"></a><code class="computeroutput">date_names_put</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1"><li><pre class="literallayout"><a name="id732793-bb"></a>date_names_put();</pre></li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1006749"></a><h3>
+<a name="id803354-bb"></a><code class="computeroutput">date_names_put</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">std::locale::id &amp;</span> <a name="id859568-bb"></a>__get_id(<span class="bold"><strong>void</strong></span> ) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id859590-bb"></a>put_special_value(iter_type &amp; oitr, special_value_enum sv) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id836028-bb"></a>put_month_short(iter_type &amp; oitr, month_enum moy) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id733621-bb"></a>put_month_long(iter_type &amp; oitr, month_enum moy) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id733652-bb"></a>put_weekday_short(iter_type &amp; oitr, weekday_enum wd) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id931996-bb"></a>put_weekday_long(iter_type &amp; oitr, weekday_enum wd) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id766206-bb"></a>has_date_sep_chars() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id766218-bb"></a>year_sep_char(iter_type &amp; oitr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id837366-bb"></a>month_sep_char(iter_type &amp; oitr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id837391-bb"></a>day_sep_char(iter_type &amp; oitr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">ymd_order_spec</span> <a name="id975909-bb"></a>date_order() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">month_format_spec</span> <a name="id732776-bb"></a>month_format() <span class="bold"><strong>const</strong></span>;</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1007080"></a><h3>
+<a name="id895841-bb"></a><code class="computeroutput">date_names_put</code> protected member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id969708-bb"></a>do_put_month_short(iter_type &amp; oitr, month_enum moy) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id832764-bb"></a>do_put_month_long(iter_type &amp; oitr, month_enum moy) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> 
+<a name="id799740-bb"></a>do_put_special_value(iter_type &amp; oitr, special_value_enum sv) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id894987-bb"></a>do_put_weekday_short(iter_type &amp; , weekday_enum ) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id766238-bb"></a>do_put_weekday_long(iter_type &amp; , weekday_enum ) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a name="id832387-bb"></a>do_has_date_sep_chars() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id832399-bb"></a>do_year_sep_char(iter_type &amp; oitr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id974693-bb"></a>do_month_sep_char(iter_type &amp; oitr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>void</strong></span></span> <a name="id729779-bb"></a>do_day_sep_char(iter_type &amp; oitr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> ymd_order_spec</span> <a name="id867518-bb"></a>do_date_order() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> month_format_spec</span> <a name="id867534-bb"></a>do_month_format() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id856851-bb"></a>put_string(iter_type &amp; oi, <span class="bold"><strong>const</strong></span> charT *<span class="bold"><strong>const</strong></span> s) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id732739-bb"></a>put_string(iter_type &amp; oi, <span class="bold"><strong>const</strong></span> string_type &amp; s1) <span class="bold"><strong>const</strong></span>;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="date_itr.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id799078"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="all_date_names_put.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Builtin target types</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../../advanced.html" title="Chapter 24. User documentation">
+<link rel="prev" href="../build_process.html" title="The Build Process">
+<link rel="next" href="features.html" title="Builtin features">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../build_process.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../../advanced.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="features.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.advanced.builtins.targets"></a>Builtin target types</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="targets.html#id1356849">Programs</a></span></dt>
+<dt><span class="section"><a href="targets.html#id1356911">Libraries</a></span></dt>
+<dt><span class="section"><a href="targets.html#bbv2.builtins.alias">Alias</a></span></dt>
+<dt><span class="section"><a href="targets.html#bbv2.builtins.stage">Installing</a></span></dt>
+<dt><span class="section"><a href="targets.html#bbv2.builtins.testing">Testing</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1356849"></a>Programs</h3></div></div></div>
+<p>Programs are created using the <code class="computeroutput">exe</code> rule, which
+        follows the <a href="../jamfiles.html#bbv2.main-target-rule-syntax">common
+          syntax</a>. For example:
+</p>
+<pre class="programlisting">
+exe hello : hello.cpp some_library.lib /some_project//library 
+          : &lt;threading&gt;multi 
+          ;
+</pre>
+<p>
+        This will create an executable file from the sources -- in this case,
+        one C++ file, one library file present in the same directory, and
+        another library that is created by Boost.Build. Generally, sources
+        can include C and C++ files, object files and libraries. Boost.Build
+        will automatically try to convert targets of other types.
+      </p>
+<div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Tip</h3>
+<p>         
+          On Windows, if an application uses dynamic libraries, and both
+          the application and the libraries are built by Boost.Build, its not
+          possible to immediately run the application, because the
+          <code class="literal">PATH</code> environment variable should include the path
+          to the libraries. It means you have to either add the paths
+          manually, or place the application and the libraries to the same
+          directory, for example using the <a href="targets.html#bbv2.builtins.stage" title="Installing">
+            stage</a> rule.
+        </p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1356911"></a>Libraries</h3></div></div></div>
+<p>Libraries are created using the <code class="computeroutput">lib</code> rule, which
+        follows the <a href="../jamfiles.html#bbv2.main-target-rule-syntax">common
+          syntax</a>. For example:
+</p>
+<pre class="programlisting">
+lib helpers : helpers.cpp : &lt;include&gt;boost : : &lt;include&gt;. ;
+</pre>
+<p>In the most common case, the <code class="computeroutput">lib</code> creates a library
+        from the specified sources. Depending on the value of
+        &lt;link&gt; feature the library will be either static or
+        shared. There are two other cases. First is when the library is
+        installed somewhere in compiler's search paths, and should be
+        searched by the compiler (typically, using the <code class="option">-l</code>
+        option). The second case is where the library is available as a 
+        prebuilt file and the full path is known.          
+        </p>
+<p>
+        The syntax for these case is given below:
+</p>
+<pre class="programlisting">
+lib z : : &lt;name&gt;z &lt;search&gt;/home/ghost ;            
+lib compress : : &lt;file&gt;/opt/libs/compress.a ;
+</pre>
+<p>
+        The <code class="computeroutput">name</code> property specifies the name that should be
+        passed to the <code class="option">-l</code> option, and the <code class="computeroutput">file</code>
+        property specifies the file location. The <code class="varname">search</code> feature
+        specifies paths in which to search for the library. That feature can
+        be specified several times, or it can be omitted, in which case only
+        default compiler paths will be searched.
+      </p>
+<p>The difference between using the <code class="varname">file</code> feature as
+        opposed to the <code class="varname">name</code> feature together with the
+        <code class="varname">search</code> feature is that <code class="varname">file</code> is more
+        precise. A specific file will be used. On the other hand, the
+        <code class="varname">search</code> feature only adds a library path, and the
+        <code class="varname">name</code> feature gives the basic name of the library. The
+        search rules are specific to the linker. For example, given these
+        definition:
+</p>
+<pre class="programlisting">
+lib a : : &lt;variant&gt;release &lt;file&gt;/pool/release/a.so ;
+lib a : : &lt;variant&gt;debug &lt;file&gt;/pool/debug/a.so ;
+lib b : : &lt;variant&gt;release &lt;file&gt;/pool/release/b.so ;
+lib b : : &lt;variant&gt;debug &lt;file&gt;/pool/debug/b.so ;
+</pre>
+<p>
+        It's possible to use release version of <code class="computeroutput">a</code> and debug
+        version of <code class="computeroutput">b</code>. Had we used the <code class="varname">name</code> and
+        <code class="varname">search</code> features, the linker would always pick either
+        release or debug versions.
+        </p>
+<p>
+        For convenience, the following syntax is allowed:
+</p>
+<pre class="programlisting">
+lib z ;
+lib gui db aux ;
+</pre>
+<p>
+          and is does exactly the same as:
+</p>
+<pre class="programlisting">
+lib z : : &lt;name&gt;z ;            
+lib gui : : &lt;name&gt;gui ;            
+lib db : : &lt;name&gt;db ;            
+lib aux : : &lt;name&gt;aux ;            
+</pre>
+<p>When a library uses another library you should put that another
+        library in the list of sources. This will do the right thing in all
+        cases. For portability, you should specify library dependencies even
+        for searched and prebuilt libraries, othewise, static linking on
+        Unix won't work. For example:
+</p>
+<pre class="programlisting">
+lib z ;
+lib png : z : &lt;name&gt;png ;
+</pre>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>
+<p>When a library (say, <code class="computeroutput">a</code>), that has another
+          library, (say, <code class="computeroutput">b</code>) 
+          
+          is linked dynamically, the <code class="computeroutput">b</code>
+          library will be incorporated 
+          
+          in <code class="computeroutput">a</code>. (If <code class="computeroutput">b</code>
+          is dynamic library as well, then <code class="computeroutput">a</code> will only refer to
+          it, and not include any extra code.) 
+          
+          When the <code class="computeroutput">a</code>
+          library is linked statically, Boost.Build will assure that all
+          executables that link to <code class="computeroutput">a</code> will also link to
+          <code class="computeroutput">b</code>.
+        </p>
+</div>
+<p>One feature of Boost.Build that is very important for libraries
+        is usage requirements. 
+        
+        For example, if you write:
+</p>
+<pre class="programlisting">
+lib helpers : helpers.cpp : : : &lt;include&gt;. ;
+</pre>
+<p>
+        then the compiler include path for all targets that use
+        <code class="computeroutput">helpers</code> will contain the directory 
+        
+        where the target is defined.path to "helpers.cpp". The user
+        only needs to add <code class="computeroutput">helpers</code> to the list of sources,
+        and needn't consider the requirements its use imposes on a
+        dependent target. This feature greatly simplifies Jamfiles.
+        </p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>
+<p>If you don't want shared libraries to include all libraries
+          that are specified in sources (especially statically linked ones),
+          you'd need to use the following:
+</p>
+<pre class="programlisting">
+lib b : a.cpp ;
+lib a : a.cpp : &lt;use&gt;b : : &lt;library&gt;b ;
+</pre>
+<p>
+          This specifies that <code class="computeroutput">a</code> uses <code class="computeroutput">b</code>, and causes
+          all executables that link to <code class="computeroutput">a</code> also link to
+          <code class="computeroutput">b</code>. In this case, even for shared linking, the
+          <code class="computeroutput">a</code> library won't even refer to <code class="computeroutput">b</code>.
+        </p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.builtins.alias"></a>Alias</h3></div></div></div>
+<p>The <code class="computeroutput">alias</code> rule follows the <a href="../jamfiles.html#bbv2.main-target-rule-syntax">common syntax</a>. For
+        example:
+</p>
+<pre class="programlisting">
+alias core : im reader writer ;
+</pre>
+<p>
+        will build the sources
+        
+        and return
+        
+        the generated source targets
+        without modification. 
+      </p>
+<p>
+        The <code class="computeroutput">alias</code> rule is a convenience tool. If you often build
+        the same group of targets at the same time, you can define an alias
+        to save typing.        
+      </p>
+<p>
+        Another use of the <code class="computeroutput">alias</code> rule is to change build
+        properties. For example, if you always want static linking for a
+        specific C++ Boost library, you can write the following:
+</p>
+<pre class="programlisting">
+alias threads : /boost/thread//boost_thread : &lt;link&gt;static ;
+</pre>
+<p>
+        and use only the <code class="computeroutput">threads</code> alias in your Jamfiles.
+        </p>
+<p>
+        You can also specify usage requirements for the
+        <code class="computeroutput">alias</code> target. If you write the following:
+</p>
+<pre class="programlisting">
+alias header_only_library : : : :  &lt;include&gt;/usr/include/header_only_library ; 
+</pre>
+<p>
+        then using <code class="computeroutput">header_only_library</code> in sources will only add an
+        include path. Also note that when there are some sources, their usage
+        requirements are propagated, too. For example:
+</p>
+<pre class="programlisting">
+lib lib : lib.cpp : : : &lt;include&gt;. ;
+alias lib_alias ; 
+exe main : main.cpp lib_alias ;
+</pre>
+<p>
+        will compile <code class="filename">main.cpp</code> with the additional include.
+      </p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.builtins.stage"></a>Installing</h3></div></div></div>
+<p>For installing a built target you should use the
+        <code class="computeroutput">install</code> rule, which follows the <a href="../jamfiles.html#bbv2.main-target-rule-syntax">common syntax</a>. For
+        example:
+</p>
+<pre class="programlisting">
+install dist : hello helpers ;
+</pre>
+<p>
+        will cause the targets <code class="computeroutput">hello</code> and <code class="computeroutput">helpers</code> to
+        be moved to the <code class="filename">dist</code> directory, relative to
+        Jamfile's directory. The directory can
+        be changed with the <code class="computeroutput">location</code> property:
+</p>
+<pre class="programlisting">
+install dist : hello helpers : &lt;location&gt;/usr/bin ;
+</pre>
+<p>
+        While you can achieve the same effect by changing the target name to
+        <code class="filename">/usr/bin</code>, using the <code class="computeroutput">location</code>
+        property is better, because it allows you to use a memnonic target
+        name.
+      </p>
+<p>The <code class="computeroutput">location</code> property is especially handy when the location
+        is not fixed, but depends on build variant or environment variables:
+</p>
+<pre class="programlisting">
+install dist : hello helpers : &lt;variant&gt;release:&lt;location&gt;dist/release
+                             &lt;variant&gt;debug:&lt;location&gt;dist/debug ;
+install dist2 : hello helpers : &lt;location&gt;$(DIST) ;
+</pre>
+<p> 
+        See also <a href="../../reference/definitions.html#bbv2.reference.variants.propcond" title="Conditional properties">conditional
+          properties</a> and <a href="../../faq/envar.html" title="
+      Accessing environment variables
+      ">environment variables</a></p>
+<p>
+        Specifying the names of all libraries to install can be boring. The
+        <code class="computeroutput">install</code> allows you to specify only the top-level executable
+        targets to install, and automatically install all dependencies:
+</p>
+<pre class="programlisting">
+install dist : hello 
+           : &lt;install-dependencies&gt;on &lt;install-type&gt;EXE
+             &lt;install-type&gt;LIB
+           ;
+</pre>
+<p>
+        will find all targets that <code class="computeroutput">hello</code> depends on, and install
+        all of the which are either executables or libraries. More
+        specifically, for each target, other targets that were specified as
+        sources or as dependency properties, will be recursively found.  One
+        exception is that targets referred with the <a href="features.html#bbv2.builtin.features.use"><code class="computeroutput">use</code></a> feature
+        are not considered, because that feature is typically used to refer to
+        header-only libraries.
+        If the set of target types is specified, only targets of that type
+        will be installed, otherwise, all found target will be installed.
+      </p>
+<p>The <a href="targets.html#bbv2.builtins.alias" title="Alias"><code class="computeroutput">alias</code></a>
+      rule can be used when targets must be installed into several
+      directories:
+</p>
+<pre class="programlisting">
+install install : install-bin install-lib ;
+install install-bin : applications : /usr/bin ;
+install install-lib : helper : /usr/lib ;
+</pre>
+<p>Because the <code class="computeroutput">install</code> rule just copies targets, most 
+    free features <sup>[<a name="id1357529" href="#ftn.id1357529">6</a>]</sup>
+    have no effect when used in requirements of the <code class="computeroutput">install</code>. 
+    The only two which matter are  
+    <a href="features.html#bbv2.builtin.features.dependency"><code class="varname">dependency</code></a> and, on Unix,
+    <code class="varname">dll-path</code>. 
+    </p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>
+<p>
+        (Unix specific). On Unix, executables built with Boost.Build typically
+        contain the list of paths to all used dynamic libraries. For
+        installing, this is not desired, so Boost.Build relinks the executable
+        with an empty list of paths. You can also specify additional paths for
+        installed executables with the <code class="varname">dll-path</code> feature.
+      </p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="bbv2.builtins.testing"></a>Testing</h3></div></div></div>
+<p>Boost.Build has convenient support for running unit tests. The
+        simplest way is the <code class="computeroutput">unit-test</code> rule, which follows the
+        <a href="../jamfiles.html#bbv2.main-target-rule-syntax">common syntax</a>. For
+        example:
+</p>
+<pre class="programlisting">
+unit-test helpers_test : helpers_test.cpp helpers ;
+</pre>
+<p>The <code class="computeroutput">unit-test</code> rule behaves like the
+        <code class="computeroutput">exe</code> rule, but after the executable is created it is
+        run. If the executable returns an error code, the build system will also
+        return an error and will try running the executable on the next
+        invocation until it runs successfully. This behaviour ensures that you
+        can't miss a unit test failure.
+      </p>
+<p>There are rules for more elaborate testing: <code class="computeroutput">compile</code>,
+        <code class="computeroutput">compile-fail</code>, <code class="computeroutput">run</code> and
+        <code class="computeroutput">run-fail</code>. They are more suitable for automated testing, and
+        are not covered here.
+      </p>
+</div>
+<div class="footnotes">
+<br><hr width="100" align="left">
+<div class="footnote"><p><sup>[<a name="ftn.id1357529" href="#id1357529">6</a>] </sup>see the definition of "free" in <a href="../../reference/definitions.html#bbv2.reference.features.attributes" title="Feature Attributes">the section called &#8220;Feature Attributes&#8221;</a>.</p></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../build_process.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../../advanced.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="features.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

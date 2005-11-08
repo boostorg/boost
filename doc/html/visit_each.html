@@ -1,0 +1,76 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Function template visit_each</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="signals/reference.html#id697881" title="Header &lt;boost/visit_each.hpp&gt;">
+<link rel="prev" href="scoped_connection.html" title="Class scoped_connection">
+<link rel="next" href="last_value.html" title="Class template last_value">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="scoped_connection.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#id697881"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="last_value.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="visit_each"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Function template visit_each</span></h2>
+<p>boost::visit_each &#8212; Allow limited exploration of class members.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Visitor, <span class="bold"><strong>typename</strong></span> T&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> visit_each(<span class="bold"><strong>const</strong></span> Visitor&amp; visitor, <span class="bold"><strong>const</strong></span> T&amp; t, <span class="bold"><strong>int</strong></span> );</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1185204"></a><h2>Description</h2>
+<p>The <code class="computeroutput"><a href="visit_each.html" title="Function template visit_each">visit_each</a></code> mechanism
+        allows a visitor to be applied to every subobject in a given
+        object. It is used by the Signals library to discover
+        <code class="computeroutput"><a href="trackable.html" title="Class trackable">signals::trackable</a></code> objects within a
+        function object, but other uses may surface if used
+        universally (e.g., conservative garbage collection). To fit
+        within the <code class="computeroutput"><a href="visit_each.html" title="Function template visit_each">visit_each</a></code> framework,
+        a <code class="computeroutput"><a href="visit_each.html" title="Function template visit_each">visit_each</a></code> overload must be
+        supplied for each object type. </p>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    <code class="computeroutput">visitor(t)</code>, and for
+      every subobject <code class="computeroutput">x</code> of
+      <code class="computeroutput">t</code>: 
+        <div class="itemizedlist"><ul type="disc">
+<li><p>If <code class="computeroutput">x</code> is a reference, <code class="computeroutput">visit_each(visitor, <a href="reference_wrapper.html#id962103">ref</a>(x), 0)</code></p></li>
+<li><p>Otherwise, <code class="computeroutput">visit_each(visitor, x, 0)</code></p></li>
+</ul></div><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    The third parameter is
+      <code class="computeroutput">long</code> for the fallback version
+      of <a href="visit_each.html" title="Function template visit_each">visit_each</a> and the argument
+      supplied to this third paramter must always be 0. The third
+      parameter is an artifact of the widespread lack of proper
+      function template ordering, and will be removed in the future.<p>Library authors will be expected to add additional
+      overloads that specialize the T argument for their classes, so
+      that subobjects can be visited.</p><p>Calls to visit_each are required to be unqualified, to
+      enable argument-dependent lookup.</p></p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="scoped_connection.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#id697881"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="last_value.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template signalN</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="signals/reference.html#header.boost.signal.hpp" title="Header &lt;boost/signal.hpp&gt;">
+<link rel="prev" href="signals/reference.html" title="Reference">
+<link rel="next" href="signal.html" title="Class template signal">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="signals/reference.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#header.boost.signal.hpp"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="signal.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="signalN"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template signalN</span></h2>
+<p>boost::signalN &#8212; Set of safe multicast callback types.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> R, <span class="bold"><strong>typename</strong></span> T1, <span class="bold"><strong>typename</strong></span> T2, ..., <span class="bold"><strong>typename</strong></span> TN, 
+         <span class="bold"><strong>typename</strong></span> Combiner = <a href="last_value.html" title="Class template last_value">last_value</a>&lt;R&gt;, <span class="bold"><strong>typename</strong></span> Group = <span class="bold"><strong>int</strong></span>, 
+         <span class="bold"><strong>typename</strong></span> GroupCompare = std::less&lt;Group&gt;, 
+         <span class="bold"><strong>typename</strong></span> SlotFunction = <a href="functionN.html" title="Class template functionN">functionN</a>&lt;R, T1, T2, ..., TN&gt; &gt; 
+<span class="bold"><strong>class</strong></span> signalN : <span class="bold"><strong>public</strong></span> <a href="trackable.html" title="Class trackable">signals::trackable</a>,
+                <span class="bold"><strong>private</strong></span> noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
+{
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> <span class="bold"><strong>typename</strong></span> Combiner::result_type result_type;         
+  <span class="bold"><strong>typedef</strong></span> Combiner                       combiner_type;       
+  <span class="bold"><strong>typedef</strong></span> Group                          group_type;          
+  <span class="bold"><strong>typedef</strong></span> GroupCompare                   group_compare_type;  
+  <span class="bold"><strong>typedef</strong></span> SlotFunction                   slot_function_type;  
+  <span class="bold"><strong>typedef</strong></span> <a href="slot.html" title="Class template slot">slot</a>&lt;SlotFunction&gt;             slot_type;           
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span>                    slot_result_type;    
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span>                    slot_call_iterator;  
+  <span class="bold"><strong>typedef</strong></span> T1                             argument_type;         <span class="emphasis"><em>// If N == 1</em></span>
+  <span class="bold"><strong>typedef</strong></span> T1                             first_argument_type;   <span class="emphasis"><em>// If N == 2</em></span>
+  <span class="bold"><strong>typedef</strong></span> T2                             second_argument_type;  <span class="emphasis"><em>// If N == 2</em></span>
+  <span class="bold"><strong>typedef</strong></span> T1                             arg1_type;           
+  <span class="bold"><strong>typedef</strong></span> T2                             arg2_type;           
+     .
+     .
+     .
+  <span class="bold"><strong>typedef</strong></span> TN                             argN_type;           
+
+  <span class="emphasis"><em>// static constants</em></span>
+  <span class="bold"><strong>static</strong></span> <span class="bold"><strong>const</strong></span> <span class="bold"><strong>int</strong></span> arity = N;
+
+  <span class="emphasis"><em>// <a href="signalN.html#signalNconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="signalN.html#id730806-bb">signalN</a>(<span class="bold"><strong>const</strong></span> combiner_type&amp; = combiner_type(), 
+          <span class="bold"><strong>const</strong></span> group_compare_type&amp; = group_compare_type());
+  <a href="signalN.html#id752791-bb">~signalN</a>();
+
+  <span class="emphasis"><em>// <a href="signalN.html#id620467-bb">connection management</a></em></span>
+  <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
+  <a href="signalN.html#id691444-bb">connect</a>(<span class="bold"><strong>const</strong></span> slot_type&amp;, signals::connect_position = signals::at_back);
+  <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
+  <a href="signalN.html#id758724-bb">connect</a>(<span class="bold"><strong>const</strong></span> group_type&amp;, <span class="bold"><strong>const</strong></span> slot_type&amp;, 
+          signals::connect_position = signals::at_back);
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id1107314-bb">disconnect</a>(<span class="bold"><strong>const</strong></span> group_type&amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Slot&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id1082051-bb">disconnect</a>(<span class="bold"><strong>const</strong></span> Slot&amp;);
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id688217-bb">disconnect_all_slots</a>();
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="signalN.html#id1011811-bb">empty</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">std::size_t</span> <a href="signalN.html#id1067953-bb">num_slots</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="signalN.html#id900090-bb">invocation</a></em></span>
+  <span class="type">result_type</span> <a href="signalN.html#id652452-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type);
+  <span class="type">result_type</span> <a href="signalN.html#id967132-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type) <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="signalN.html#id1038775-bb">combiner access</a></em></span>
+  <span class="type">combiner_type&amp;</span> <a href="signalN.html#id648456-bb">combiner</a>();
+  <span class="type"><span class="bold"><strong>const</strong></span> combiner_type&amp;</span> <a href="signalN.html#id1003041-bb">combiner</a>() <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1181608"></a><h2>Description</h2>
+<p>The class template <a href="signalN.html" title="Class template signalN">signalN</a> covers
+         several related classes signal0, signal1, signal2, etc.,
+         where the number suffix describes the number of function
+         parameters the signal and its connected slots will
+         take. Instead of enumerating all classes, a single pattern
+         <a href="signalN.html" title="Class template signalN">signalN</a> will be described, where N
+         represents the number of function parameters.</p>
+<div class="refsect2" lang="en">
+<a name="id1181634"></a><h3>
+<a name="signalNconstruct-copy-destruct"></a><code class="computeroutput">signalN</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id730806-bb"></a>signalN(<span class="bold"><strong>const</strong></span> combiner_type&amp; combiner = combiner_type(), 
+        <span class="bold"><strong>const</strong></span> group_compare_type&amp; compare = group_compare_type());</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Initializes the signal to contain no slots, copies the given combiner into internal storage, and stores the given group comparison function object to compare groups.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">this-&gt;<a href="signalN.html#id1011811-bb">empty</a>()</code></p>
+</li>
+<li>
+<pre class="literallayout"><a name="id752791-bb"></a>~signalN();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Disconnects all slots connected to <code class="computeroutput">*this</code>.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1181742"></a><h3>
+<a name="id620467-bb"></a><code class="computeroutput">signalN</code> connection management</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<p><a name="id593410-bb"></a></p>
+<pre class="literallayout"><span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
+<a name="id691444-bb"></a>connect(<span class="bold"><strong>const</strong></span> slot_type&amp; slot, 
+        signals::connect_position at = signals::at_back);
+<span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
+<a name="id758724-bb"></a>connect(<span class="bold"><strong>const</strong></span> group_type&amp; group, <span class="bold"><strong>const</strong></span> slot_type&amp; slot, 
+        signals::connect_position at = signals::at_back);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Connects the signal this to the incoming
+          slot. If the slot is inactive, i.e., any of the trackable
+          objects bound by the slot call have been destroyed, then the
+          call to connect is a no-op. If the second version of
+          <code class="computeroutput">connect</code> is invoked, the
+          slot is associated with the given group. The <code class="computeroutput">at</code>
+          parameter specifies where the slot should be connected:
+          <code class="computeroutput">at_front</code> indicates that the slot will be
+          connected at the front of the list or group of slots and
+          <code class="computeroutput">at_back</code> indicates that the slot will be
+          connected at the back of the list or group of
+          slots.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    A
+          <code class="computeroutput"><a href="connection.html" title="Class connection">signals::connection</a></code>
+          object that references the newly-created connection between
+          the signal and the slot; if the slot is inactive, returns a
+          disconnected connection.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    This routine meets the strong exception guarantee,
+          where any exception thrown will cause the slot to not be
+          connected to the signal.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Complexity</span></b>:
+
+    Constant time when connecting a slot
+          without a group name or logarithmic in the number of groups
+          when connecting to a particular
+          group.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    It is unspecified whether connecting a slot while the
+          signal is calling will result in the slot being called
+          immediately.</p>
+</li>
+<li>
+<p><a name="id692956-bb"></a></p>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1107314-bb"></a>disconnect(<span class="bold"><strong>const</strong></span> group_type&amp; group);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Slot&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1082051-bb"></a>disconnect(<span class="bold"><strong>const</strong></span> Slot&amp; slot);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If the parameter is (convertible to) a
+          group name, any slots in the given group are
+          disconnected. Otherwise, any slots equal to the given slot
+          are disconnected.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw unless a user destructor or
+          equality operator <code class="computeroutput">==</code> throws. If either throws,
+          not all slots may be disconnected.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Complexity</span></b>:
+
+    If a group is given, O(lg g) + k where
+          g is the number of groups in the signal and k is the
+          number of slots in the group. Otherwise, linear in the
+          number of slots connected to the
+          signal.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id688217-bb"></a>disconnect_all_slots();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Disconnects all slots connected to the signal.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">this-&gt;<a href="signalN.html#id1011811-bb">empty</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If disconnecting a slot causes an exception to be
+          thrown, not all slots may be disconnected.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Complexity</span></b>:
+
+    Linear in the number of slots known to the
+          signal.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    May be called at any time within the lifetime of the
+          signal, including during calls to the signal's slots.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1011811-bb"></a>empty() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if no slots
+          are connected to the signal, and
+          <code class="computeroutput">false</code> otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Complexity</span></b>:
+
+    Linear in the number of slots known to the
+          signal.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    Slots can disconnect at any point in time,
+          including while those same slots are being invoked. It is
+          therefore possible that the implementation must search
+          through a list of disconnected slots to determine if any
+          slots are still connected.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type">std::size_t</span> <a name="id1067953-bb"></a>num_slots() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    The number of slots connected to the signal<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Complexity</span></b>:
+
+    Linear in the number of slots known to the
+          signal.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    Slots can disconnect at any point in time,
+          including while those same slots are being invoked. It is
+          therefore possible that the implementation must search
+          through a list of disconnected slots to determine how many
+          slots are still connected.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1182220"></a><h3>
+<a name="id900090-bb"></a><code class="computeroutput">signalN</code> invocation</h3>
+<div class="orderedlist"><ol type="1"><li>
+<p><a name="id902120-bb"></a></p>
+<pre class="literallayout"><span class="type">result_type</span> <a name="id652452-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN);
+<span class="type">result_type</span> <a name="id967132-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Invokes the combiner with a
+          <code class="computeroutput">slot_call_iterator</code> range
+          [first, last) corresponding to the sequence of calls to the
+          slots connected to signal
+          <code class="computeroutput">*this</code>. Dereferencing an
+          iterator in this range causes a slot call with the given set
+          of parameters <code class="computeroutput">(a1, a2, ...,
+          aN)</code>, the result of which is returned from
+          the iterator dereference operation.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    The result returned by the combiner.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    If an exception is thrown by a slot call, or if the
+          combiner does not dereference any slot past some given slot,
+          all slots after that slot in the internal list of connected
+          slots will not be invoked.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    Only the slots associated with iterators that are
+          actually dereferenced will be invoked. Multiple dereferences
+          of the same iterator will not result in multiple slot
+          invocations, because the return value of the slot will be
+          cached.<p>The <code class="computeroutput">const</code> version of
+          the function call operator will invoke the combiner as
+          <code class="computeroutput">const</code>, whereas the
+          non-<code class="computeroutput">const</code> version will
+          invoke the combiner as
+          non-<code class="computeroutput">const</code>.</p><p>Calling the function call operator may invoke undefined
+          behavior if no slots are connected to the signal, depending
+          on the combiner used. The default combiner is well-defined
+          for zero slots when the return type is void but is undefined
+          when the return type is any other type (because there is no
+          way to synthesize a return value).</p></p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1182382"></a><h3>
+<a name="id1038775-bb"></a><code class="computeroutput">signalN</code> combiner access</h3>
+<div class="orderedlist"><ol type="1"><li>
+<p><a name="id966421-bb"></a></p>
+<pre class="literallayout"><span class="type">combiner_type&amp;</span> <a name="id648456-bb"></a>combiner();
+<span class="type"><span class="bold"><strong>const</strong></span> combiner_type&amp;</span> <a name="id1003041-bb"></a>combiner() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    A reference to the stored combiner.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li></ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="signals/reference.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#header.boost.signal.hpp"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="signal.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

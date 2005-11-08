@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title> User Defined Specializations</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../boost_typetraits.html" title="Chapter 14. Boost.TypeTraits">
+<link rel="prev" href="category.html" title=" Type Traits by Category">
+<link rel="next" href="intrinsics.html" title=" Support for Compiler Intrinsics">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="category.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_typetraits.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="intrinsics.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_typetraits.user_defined"></a> User Defined Specializations</h3></div></div></div>
+<p>
+Occationally the end user may need to provide their own specialization 
+for one of the type traits - typically where intrinsic compiler support 
+is required to implement a specific trait fully.  
+These specializations should derive from boost::<a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">true_type</a> or boost::<a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">false_type</a> 
+as appropriate:</p>
+<pre class="programlisting"><code class="literal"><span class="preprocessor">#include</span><span class="special"> &lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">type_traits</span><span class="special">/</span><span class="identifier">is_pod</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span><span class="preprocessor">
+#include</span><span class="special"> &lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">type_traits</span><span class="special">/</span><span class="identifier">is_class</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span><span class="preprocessor">
+#include</span><span class="special"> &lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">type_traits</span><span class="special">/</span><span class="identifier">is_union</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span><span class="keyword">
+
+struct</span><span class="identifier"> my_pod</span><span class="special">{};</span><span class="keyword">
+struct</span><span class="identifier"> my_union</span><span class="special">
+{</span><span class="keyword">
+   char</span><span class="identifier"> c</span><span class="special">;</span><span class="keyword">
+   int</span><span class="identifier"> i</span><span class="special">;</span><span class="special">
+};</span><span class="keyword">
+
+namespace</span><span class="identifier"> boost</span><span class="special">
+{</span><span class="keyword">
+   template</span><span class="special">&lt;&gt;</span><span class="keyword">
+   struct</span> <a href="reference.html#boost_typetraits.is_pod" title=" is_pod">is_pod</a><span class="special">&lt;</span><span class="identifier">my_pod</span><span class="special">&gt;</span><span class="special"> :</span><span class="keyword"> public</span> <a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">true_type</a><span class="special">{};</span><span class="keyword">
+      
+   template</span><span class="special">&lt;&gt;</span><span class="keyword">
+   struct</span> <a href="reference.html#boost_typetraits.is_pod" title=" is_pod">is_pod</a><span class="special">&lt;</span><span class="identifier">my_union</span><span class="special">&gt;</span><span class="special"> :</span><span class="keyword"> public</span> <a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">true_type</a><span class="special">{};</span><span class="keyword">
+   
+   template</span><span class="special">&lt;&gt;</span><span class="keyword">
+   struct</span> <a href="reference.html#boost_typetraits.is_union" title=" is_union">is_union</a><span class="special">&lt;</span><span class="identifier">my_union</span><span class="special">&gt;</span><span class="special"> :</span><span class="keyword"> public</span> <a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">true_type</a><span class="special">{};</span><span class="keyword">
+   
+   template</span><span class="special">&lt;&gt;</span><span class="keyword">
+   struct</span> <a href="reference.html#boost_typetraits.is_class" title=" is_class">is_class</a><span class="special">&lt;</span><span class="identifier">my_union</span><span class="special">&gt;</span><span class="special"> :</span><span class="keyword"> public</span> <a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">false_type</a><span class="special">{};</span><span class="special">
+}</span></code></pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2000, 2005 Adobe Systems Inc, David Abrahams, Steve Cleary, 
+    Beman Dawes, Aleksey Gurtovoy, Howard Hinnant, Jesse Jones, Mat Marcus, 
+    Itay Maman, John Maddock, Thorsten Ottosen, Robert Ramey and Jeremy Siek</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="category.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_typetraits.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="intrinsics.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

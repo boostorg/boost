@@ -1,0 +1,74 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Design Rationale</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../array.html" title="Chapter 2. Boost.Array">
+<link rel="prev" href="../boost/array.html" title="Class template array">
+<link rel="next" href="more/info.html" title="For more information...">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../boost/array.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../array.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="more/info.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="array.rationale"></a>Design Rationale</h3></div></div></div>
+<p>There was an important design tradeoff regarding the
+  constructors: We could implement array as an "aggregate" (see
+  Section 8.5.1, [dcl.init.aggr], of the C++ Standard). This would
+  mean:
+    </p>
+<div class="itemizedlist"><ul type="disc"><li>
+<p>An array can be initialized with a
+      brace-enclosing, comma-separated list of initializers for the
+      elements of the container, written in increasing subscript
+      order:</p>
+<pre class="programlisting"><code class="computeroutput"><a href="../boost/array.html" title="Class template array">boost::array</a></code>&lt;int,4&gt; a = { { 1, 2, 3 } };</pre>
+<p>Note that if there are fewer elements in the
+      initializer list, then each remaining element gets
+      default-initialized (thus, it has a defined value).</p>
+</li></ul></div>
+<p>However, this approach has its drawbacks: <span class="bold"><strong> passing no initializer list means that the elements
+  have an indetermined initial value</strong></span>, because the rule says
+  that aggregates may have:
+    </p>
+<div class="itemizedlist"><ul type="disc">
+<li>No user-declared constructors.</li>
+<li>No private or protected non-static data members.</li>
+<li>No base classes.</li>
+<li>No virtual functions.</li>
+</ul></div>
+<p>Nevertheless, The current implementation uses this approach.</p>
+<p>Note that for standard conforming compilers it is possible to
+  use fewer braces (according to 8.5.1 (11) of the Standard). That is,
+  you can initialize an array as follows:</p>
+<pre class="programlisting"><code class="computeroutput"><a href="../boost/array.html" title="Class template array">boost::array</a></code>&lt;int,4&gt; a = { 1, 2, 3 };
+</pre>
+<p>I'd appreciate any constructive feedback. <span class="bold"><strong>Please note: I don't have time to read all boost
+  mails. Thus, to make sure that feedback arrives to me, please send
+  me a copy of each mail regarding this class.</strong></span></p>
+<p>The code is provided "as is" without expressed or implied
+  warranty.</p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2004 Nicolai M. Josuttis</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../boost/array.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../array.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="more/info.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

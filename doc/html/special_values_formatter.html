@@ -1,0 +1,95 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template special_values_formatter</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id933417" title="Header &lt;boost/date_time/special_values_formatter.hpp&gt;">
+<link rel="prev" href="period_parser.html" title="Class template period_parser">
+<link rel="next" href="special_values_parser.html" title="Class template special_values_parser">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="period_parser.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id933417"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="special_values_parser.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="special_values_formatter"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template special_values_formatter</span></h2>
+<p>boost::date_time::special_values_formatter &#8212; Class that provides generic formmatting ostream formatting for special values. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> CharT, 
+         <span class="bold"><strong>typename</strong></span> OutItrT = std::ostreambuf_iterator&lt;CharT, std::char_traits&lt;CharT&gt; &gt; &gt; 
+<span class="bold"><strong>class</strong></span> special_values_formatter {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> std::basic_string&lt; CharT &gt; string_type;    
+  <span class="bold"><strong>typedef</strong></span> CharT                      char_type;      
+  <span class="bold"><strong>typedef</strong></span> std::vector&lt; string_type &gt; collection_type;
+
+  <span class="emphasis"><em>// <a href="special_values_formatter.html#special_values_formatterconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="special_values_formatter.html#id933540-bb">special_values_formatter</a>();
+  <a href="special_values_formatter.html#id933556-bb">special_values_formatter</a>(<span class="bold"><strong>const</strong></span> char_type *<span class="bold"><strong>const</strong></span> *, <span class="bold"><strong>const</strong></span> char_type *<span class="bold"><strong>const</strong></span> *);
+  <a href="special_values_formatter.html#id933599-bb">special_values_formatter</a>(<span class="bold"><strong>typename</strong></span> collection_type::iterator, 
+                           <span class="bold"><strong>typename</strong></span> collection_type::iterator);
+
+  <span class="emphasis"><em>// <a href="special_values_formatter.html#id933501-bb">public member functions</a></em></span>
+  <span class="type">OutItrT</span> <a href="special_values_formatter.html#id933506-bb">put_special</a>(OutItrT, <span class="bold"><strong>const</strong></span> boost::date_time::special_values &amp;) <span class="bold"><strong>const</strong></span>;
+
+  <span class="bold"><strong>static</strong></span> const char_type default_special_value_names;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1041931"></a><h2>Description</h2>
+<p>This class provides for the formmating of special values to an output stream. In particular, it produces strings for the values of negative and positive infinity as well as not_a_date_time.</p>
+<p>While not a facet, this class is used by the date and time facets for formatting special value types. </p>
+<div class="refsect2" lang="en">
+<a name="id1041944"></a><h3>
+<a name="special_values_formatterconstruct-copy-destruct"></a><code class="computeroutput">special_values_formatter</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id933540-bb"></a>special_values_formatter();</pre>
+<p>Default strings are not-a-date-time -infinity +infinity </p>
+</li>
+<li>
+<pre class="literallayout"><a name="id933556-bb"></a>special_values_formatter(<span class="bold"><strong>const</strong></span> char_type *<span class="bold"><strong>const</strong></span> * begin, 
+                         <span class="bold"><strong>const</strong></span> char_type *<span class="bold"><strong>const</strong></span> * end);</pre>
+<p>This constructor will take pair of iterators from an array of strings that represent the special values and copy them for use in formatting special values. </p>
+<pre class="programlisting">  const char* const special_value_names[]={"nadt","-inf","+inf" };
+
+  special_value_formatter svf(&amp;special_value_names[0], &amp;special_value_names[3]);
+     *
+</pre>
+</li>
+<li><pre class="literallayout"><a name="id933599-bb"></a>special_values_formatter(<span class="bold"><strong>typename</strong></span> collection_type::iterator beg, 
+                         <span class="bold"><strong>typename</strong></span> collection_type::iterator end);</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1042062"></a><h3>
+<a name="id933501-bb"></a><code class="computeroutput">special_values_formatter</code> public member functions</h3>
+<div class="orderedlist"><ol type="1"><li><pre class="literallayout"><span class="type">OutItrT</span> <a name="id933506-bb"></a>put_special(OutItrT next, 
+                    <span class="bold"><strong>const</strong></span> boost::date_time::special_values &amp; value) <span class="bold"><strong>const</strong></span>;</pre></li></ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="period_parser.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id933417"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="special_values_parser.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

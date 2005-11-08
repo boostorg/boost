@@ -1,0 +1,113 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class trackable</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="signals/reference.html#id835297" title="Header &lt;boost/signals/trackable.hpp&gt;">
+<link rel="prev" href="slot.html" title="Class template slot">
+<link rel="next" href="connection.html" title="Class connection">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="slot.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#id835297"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="connection.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="trackable"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class trackable</span></h2>
+<p>boost::signals::trackable &#8212; Enables safe use of multicast callbacks.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> trackable {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="trackable.html#trackableconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="trackable.html#id1000158-bb">trackable</a>();
+  <a href="trackable.html#id857516-bb">trackable</a>(<span class="bold"><strong>const</strong></span> <a href="trackable.html" title="Class trackable">trackable</a>&amp;);
+  trackable&amp; <a href="trackable.html#id1044009-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> <a href="trackable.html" title="Class trackable">trackable</a>&amp;);
+  <a href="trackable.html#id790073-bb">~trackable</a>();
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1183094"></a><h2>Description</h2>
+<p>The <code class="computeroutput">trackable</code> class provides automatic
+          disconnection of signals and slots when objects bound in
+          slots (via pointer or reference) are destroyed. The
+          <code class="computeroutput">trackable</code> class may only be used as a public
+          base class for some other class; when used as such, that
+          class may be bound to function objects used as part of
+          slots. The manner in which a <code class="computeroutput">trackable</code> object
+          tracks the set of signal-slot connections it is a part of is
+          unspecified.</p>
+<p>The actual use of <code class="computeroutput">trackable</code> is contingent
+          on the presence of appropriate
+          <a href="visit_each.html" title="Function template visit_each">visit_each</a> overloads for any
+          type that may contain pointers or references to trackable
+          objects.</p>
+<div class="refsect2" lang="en">
+<a name="id1183143"></a><h3>
+<a name="trackableconstruct-copy-destruct"></a><code class="computeroutput">trackable</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id1000158-bb"></a>trackable();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Sets the list of connected slots to empty.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id857516-bb"></a>trackable(<span class="bold"><strong>const</strong></span> <a href="trackable.html" title="Class trackable">trackable</a>&amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Sets the list of connected slots to empty.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    Signal-slot connections can only be created via calls to an explicit connect method, and therefore cannot be created here when trackable objects are copied.</p>
+</li>
+<li>
+<pre class="literallayout">trackable&amp; <a name="id1044009-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> <a href="trackable.html" title="Class trackable">trackable</a>&amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Sets the list of connected slots to empty.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">*this</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    Signal-slot connections can only be created via calls to an explicit connect method, and therefore cannot be created here when trackable objects are copied.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id790073-bb"></a>~trackable();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Disconnects all signal/slot connections that
+          contain a pointer or reference to this trackable object that
+          can be found by
+          <a href="visit_each.html" title="Function template visit_each">visit_each</a>.</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="slot.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#id835297"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="connection.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

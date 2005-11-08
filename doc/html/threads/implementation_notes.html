@@ -1,0 +1,65 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Implementation Notes</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
+<link rel="prev" href="../thread/build.html" title="Build">
+<link rel="next" href="release_notes.html" title="Release Notes">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../thread/build.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="release_notes.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="threads.implementation_notes"></a>Implementation Notes</h3></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="implementation_notes.html#threads.implementation_notes.win32">Win32</a></span></dt></dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="threads.implementation_notes.win32"></a>Win32</h4></div></div></div>
+<p>
+			In the current Win32 implementation, creating a boost::thread object
+			during dll initialization will result in deadlock because the thread 
+			class constructor causes the current thread to wait on the thread that 
+			is being created until it signals that it has finished its initialization, 
+			and, as stated in the
+			<a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/dllmain.asp" target="_top">MSDN Library, "DllMain" article, "Remarks" section</a>,
+			"Because DLL notifications are serialized, entry-point functions should not
+			attempt to communicate with other threads or processes. Deadlocks may occur as a result."
+			(Also see <a href="http://www.microsoft.com/msj/archive/S220.aspx" target="_top">"Under the Hood", January 1996</a> 
+			for a more detailed discussion of this issue).
+		</p>
+<p>
+			The following non-exhaustive list details some of the situations that
+			should be avoided until this issue can be addressed:
+			</p>
+<div class="itemizedlist"><ul type="disc">
+<li>Creating a boost::thread object in DllMain() or in any function called by it.</li>
+<li>Creating a boost::thread object in the constructor of a global static object or in any function called by one.</li>
+<li>Creating a boost::thread object in MFC's CWinApp::InitInstance() function or in any function called by it.</li>
+<li>Creating a boost::thread object in the function pointed to by MFC's _pRawDllMain function pointer or in any function called by it.</li>
+</ul></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><small><p>Last revised: July 17, 2004 at 04:33:59 GMT</p></small></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../thread/build.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="release_notes.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

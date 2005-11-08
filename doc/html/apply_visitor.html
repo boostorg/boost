@@ -1,0 +1,103 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Function apply_visitor</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="variant/reference.html#id1143203" title="Header &lt;boost/variant/apply_visitor.hpp&gt;">
+<link rel="prev" href="apply_visitor_delayed_t.html" title="Class template apply_visitor_delayed_t">
+<link rel="next" href="bad_get.html" title="Class bad_get">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="apply_visitor_delayed_t.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="variant/reference.html#id1143203"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="bad_get.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="apply_visitor"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Function apply_visitor</span></h2>
+<p>boost::apply_visitor &#8212; <p>Allows compile-time checked type-safe application of the
+        given visitor to the content of the given variant, ensuring that all
+        types are handled by the visitor.</p></p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Visitor, <span class="bold"><strong>typename</strong></span> Variant&gt; 
+  <span class="type"><span class="bold"><strong>typename</strong></span> Visitor::result_type</span> 
+  apply_visitor(Visitor &amp; visitor, Variant &amp; operand);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Visitor, <span class="bold"><strong>typename</strong></span> Variant&gt; 
+  <span class="type"><span class="bold"><strong>typename</strong></span> Visitor::result_type</span> 
+  apply_visitor(<span class="bold"><strong>const</strong></span> Visitor &amp; visitor, Variant &amp; operand);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> BinaryVisitor, <span class="bold"><strong>typename</strong></span> Variant1, <span class="bold"><strong>typename</strong></span> Variant2&gt; 
+  <span class="type"><span class="bold"><strong>typename</strong></span> BinaryVisitor::result_type</span> 
+  apply_visitor(BinaryVisitor &amp; visitor, Variant1 &amp; operand1, 
+                Variant2 &amp; operand2);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> BinaryVisitor, <span class="bold"><strong>typename</strong></span> Variant1, <span class="bold"><strong>typename</strong></span> Variant2&gt; 
+  <span class="type"><span class="bold"><strong>typename</strong></span> BinaryVisitor::result_type</span> 
+  apply_visitor(<span class="bold"><strong>const</strong></span> BinaryVisitor &amp; visitor, Variant1 &amp; operand1, 
+                Variant2 &amp; operand2);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Visitor&gt; 
+  <span class="type"><a href="apply_visitor_delayed_t.html" title="Class template apply_visitor_delayed_t">apply_visitor_delayed_t</a>&lt;Visitor&gt;</span> apply_visitor(Visitor &amp; visitor);</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1321222"></a><h2>Description</h2>
+<p>The behavior of <code class="computeroutput">apply_visitor</code> is dependent on
+        the number of arguments on which it operates (i.e., other than the
+        visitor). The function behaves as follows:
+
+          <div class="itemizedlist"><ul type="disc">
+<li>Overloads accepting one operand invoke the unary function
+              call operator of the given visitor on the content of the given
+              <code class="computeroutput"><a href="boost/variant.html" title="Class template variant">variant</a></code> operand.</li>
+<li>Overloads accepting two operands invoke the binary
+              function call operator of the given visitor on the content of
+              the given <code class="computeroutput"><a href="boost/variant.html" title="Class template variant">variant</a></code>
+              operands.</li>
+<li>The overload accepting only a visitor returns a
+              <code class="computeroutput"><a href="apply_visitor_delayed_t.html" title="Class template apply_visitor_delayed_t">generic function object</a></code>
+              that accepts either one or two arguments and invokes
+              <code class="computeroutput"><a href="apply_visitor.html" title="Function apply_visitor">apply_visitor</a></code> using
+              these arguments and <code class="computeroutput">visitor</code>, thus behaving as
+              specified above. (This behavior is particularly useful, for
+              example, when one needs to operate on each element of a sequence
+              of variant objects using a standard library
+              algorithm.)</li>
+</ul></div></p>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    The overloads acccepting operands return the result of
+        applying the given visitor to the content of the given operands.
+        The overload accepting only a visitor return a function object, thus
+        delaying application of the visitor to any operands.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    The given visitor must fulfill the
+        <a href="variant/reference.html#variant.concepts.static-visitor" title="StaticVisitor"><span class="emphasis"><em>StaticVisitor</em></span></a>
+        concept requirements with respect to each of the bounded types of the
+        given <code class="computeroutput">variant</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    The overloads accepting operands throw only if the given
+        visitor throws when applied. The overload accepting only a visitor
+        will not throw. (Note, however, that the returned
+        <a href="apply_visitor_delayed_t.html" title="Class template apply_visitor_delayed_t">function object</a>
+        may throw when invoked.)</p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2002, 2003 Eric Friedman, Itay Maman</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="apply_visitor_delayed_t.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="variant/reference.html#id1143203"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="bad_get.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Generators</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../reference.html" title="Chapter 26. Detailed reference">
+<link rel="prev" href="definitions.html" title="Definitions">
+<link rel="next" href="../faq.html" title="Chapter 27. Frequently Asked Questions">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="definitions.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../faq.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.reference.generators"></a>Generators</h2></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="generators.html#id1361082">Selecting and ranking viable generators</a></span></dt>
+<dt><span class="section"><a href="generators.html#id1361123">Running generators</a></span></dt>
+<dt><span class="section"><a href="generators.html#id1361148">Selecting dependency graph</a></span></dt>
+<dt><span class="section"><a href="generators.html#id1361160">Property adjustment</a></span></dt>
+<dt><span class="section"><a href="generators.html#id1361195">Transformations cache</a></span></dt>
+</dl></div>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p>The information is this section is likely to be outdated
+        and misleading. 
+      </p>
+</div>
+<p>To construct a main target with given properties from sources,
+      it is required to create a dependency graph for that main target,
+      which will also include actions to be run. The algorithm for
+      creating the dependency graph is described here.</p>
+<p>The fundamental concept is <span class="emphasis"><em>generator</em></span>. If encapsulates
+      the notion of build tool and is capable to converting a set of
+      input targets into a set of output targets, with some properties.
+      Generator matches a build tool as closely as possible: it works
+      only when the tool can work with requested properties (for
+      example, msvc compiler can't work when requested toolset is gcc),
+      and should produce exactly the same targets as the tool (for
+      example, if Borland's linker produces additional files with debug
+      information, generator should also).</p>
+<p>Given a set of generators, the fundamental operation is to
+      construct a target of a given type, with given properties, from a
+      set of targets. That operation is performed by rule
+      <code class="literal">generators.construct</code> and the used algorithm is described
+      below.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1361082"></a>Selecting and ranking viable generators</h3></div></div></div>
+<p>Each generator, in addition to target types that it can
+        produce, have attribute that affects its applicability in
+        particular sitiation. Those attributes are:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+            Required properties, which are properties absolutely
+            necessary for the generator to work. For example, generator
+            encapsulating the gcc compiler would have &lt;toolset&gt;gcc as
+            required property.
+          </li>
+<li>
+            Optional properties, which increase the generators
+            suitability for a particual build.
+          </li>
+</ol></div>
+<p>
+        Generator's required and optional properties may not include
+        either free or incidental properties. (Allowing this would
+        greatly complicate caching targets).
+      </p>
+<p>When trying to construct a target, the first step is to select
+        all possible generators for the requested target type, which
+        required properties are a subset of requested properties.
+        Generators that were already selected up the call stack are
+        excluded. In addition, if any composing generators were selected
+        up the call stack, all other composing generators are ignored
+        (TODO: define composing generators). The found generators
+        are assigned a rank, which is the number of optional properties
+        present in requested properties. Finally, generators with highest
+        rank are selected for futher processing.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1361123"></a>Running generators</h3></div></div></div>
+<p>When generators are selected, each is run to produce a list of
+        created targets. This list might include targets that are not of
+        requested types, because generators create the same targets as
+        some tool, and tool's behaviour is fixed. (Note: should specify
+        that in some cases we actually want extra targets). If generator
+        fails, it returns an empty list. Generator is free to call
+        'construct' again, to convert sources to the types it can handle.
+        It also can pass modified properties to 'construct'. However, a
+        generator is not allowed to modify any propagated properties,
+        otherwise when actually consuming properties we might discover
+        that the set of propagated properties is different from what was
+        used for building sources.</p>
+<p>For all targets that are not of requested types, we try to
+        convert them to requested type, using a second call to
+        <code class="literal">construct</code>. This is done in order to support
+        transformation sequences where single source file expands to
+        several later. See <a href="http://groups.yahoo.com/group/jamboost/message/1667" target="_top">this
+          message</a> for details.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1361148"></a>Selecting dependency graph</h3></div></div></div>
+<p>
+        After all generators are run,
+        it is necessary to decide which of successfull invocation will be
+        taken as final result. At the moment, this is not done. Instead,
+        it is checked whether all successfull generator invocation
+        returned the same target list. Error is issued otherwise.
+      </p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1361160"></a>Property adjustment</h3></div></div></div>
+<p>Because target location is determined by the build system, it
+        is sometimes necessary to adjust properties, in order to not
+        break actions. For example, if there's an action that generates
+        a header, say "a_parser.h", and a source file "a.cpp" which
+        includes that file, we must make everything work as if a_parser.h
+        is generated in the same directory where it would be generated
+        without any subvariants.</p>
+<p>Correct property adjustment can be done only after all targets
+        are created, so the approach taken is:</p>
+<div class="orderedlist"><ol type="1">
+<li><p>
+            When dependency graph is constructed, each action can be
+            assigned a rule for property adjustment.
+          </p></li>
+<li><p>
+            When virtual target is actualized, that rule is run and
+            return the final set of properties. At this stage it can use
+            information of all created virtual targets.
+          </p></li>
+</ol></div>
+<p>In case of quoted includes, no adjustment can give 100% correct
+        results. If target dirs are not changed by build system, quoted
+        includes are searched in "." and then in include path, while angle
+        includes are searched only in include path. When target dirs are
+        changed, we'd want to make quoted includes to be search in "." then in
+        additional dirs and then in the include path and make angle includes
+        be searched in include path, probably with additional paths added at
+        some position. Unless, include path already has "." as the first
+        element, this is not possible. So, either generated headers should not
+        be included with quotes, or first element of include path should be
+        ".", which essentially erases the difference between quoted and angle
+        includes. <span class="bold"><strong>Note:</strong></span> the only way to get
+        "." as include path into compiler command line is via verbatim
+        compiler option. In all other case, Boost.Build will convert "." into
+        directory where it occurs.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="id1361195"></a>Transformations cache</h3></div></div></div>
+<p>
+        Under certain conditions, an
+        attempt is made to cache results of transformation search. First,
+        the sources are replaced with targets with special name and the
+        found target list is stored. Later, when properties, requested
+        type, and source type are the same, the store target list is
+        retrieved and cloned, with appropriate change in names.
+      </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="definitions.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../reference.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../faq.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Template"
+content="C:\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\html.dot">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title></title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h2 align="center">Coding Guidelines for Integral Constant
+Expressions</h2>
+
+<p>Integral Constant Expressions are used in many places in C++;
+as array bounds, as bit-field lengths, as enumerator
+initialisers, and as arguments to non-type template parameters.
+However many compilers have problems handling integral constant
+expressions; as a result of this, programming using non-type
+template parameters in particular can be fraught with difficulty,
+often leading to the incorrect assumption that non-type template
+parameters are unsupported by a particular compiler. This short
+article is designed to provide a set of guidelines and
+workarounds that, if followed, will allow integral constant
+expressions to be used in a manner portable to all the compilers
+currently supported by boost. Although this article is mainly
+targeted at boost library authors, it may also be useful for
+users who want to understand why boost code is written in a
+particular way, or who want to write portable code themselves.</p>
+
+<h3>What is an Integral Constant Expression?</h3>
+
+<p>Integral constant expressions are described in section 5.19 of
+the standard, and are sometimes referred to as &quot;compile time
+constants&quot;. An integral constant expression can be one of
+the following:</p>
+
+<ol>
+    <li>A literal integral value, for example 0u or 3L.</li>
+    <li>An enumerator value.</li>
+    <li>Global integral constants, for example: <font
+        face="Courier New"><code><br>
+        </code></font><code>const int my_INTEGRAL_CONSTANT = 3;</code></li>
+    <li>Static member constants, for example: <br>
+        <code>struct myclass<br>
+        { static const int value = 0; };</code></li>
+    <li>Member enumerator values, for example:<br>
+        <code>struct myclass<br>
+        { enum{ value = 0 }; };</code></li>
+    <li>Non-type template parameters of integral or enumerator
+        type.</li>
+    <li>The result of a <code>sizeof</code> expression, for
+        example:<br>
+        <code>sizeof(foo(a, b, c))</code></li>
+    <li>The result of a <code>static_cast</code>, where the
+        target type is an integral or enumerator type, and the
+        argument is either another integral constant expression,
+        or a floating-point literal.</li>
+    <li>The result of applying a binary operator to two integral
+        constant expressions: <br>
+        <code>INTEGRAL_CONSTANT1 op INTEGRAL_CONSTANT2 <br>
+        p</code>rovided that the operator is not an assignment
+        operator, or comma operator.</li>
+    <li>The result of applying a unary operator to an integral
+        constant expression: <br>
+        <code>op INTEGRAL_CONSTANT1<br>
+        </code>provided that the operator is not the increment or
+        decrement operator.</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<h3>Coding Guidelines</h3>
+
+<p>The following guidelines are declared in no particular order (in
+other words you need to obey all of them - sorry!), and may also
+be incomplete, more guidelines may be added as compilers change
+and/or more problems are encountered.</p>
+
+<p><b><i>When declaring constants that are class members always
+use the macro BOOST_STATIC_CONSTANT.</i></b></p>
+
+<pre>template &lt;class T&gt;
+struct myclass
+{
+   BOOST_STATIC_CONSTANT(int, value = sizeof(T));
+};</pre>
+
+<p>Rationale: not all compilers support inline initialisation of
+member constants, others treat member enumerators in strange ways
+(they're not always treated as integral constant expressions).
+The BOOST_STATIC_CONSTANT macro uses the most appropriate method
+for the compiler in question.</p>
+
+<p><b><i>Don't declare integral constant expressions whose type
+is wider than int.</i></b></p>
+
+<p>Rationale: while in theory all integral types are usable in
+integral constant expressions, in practice many compilers limit
+integral constant expressions to types no wider than <b>int</b>.</p>
+
+<p><b><i>Don't use logical operators in integral constant
+expressions; use template meta-programming instead.</i></b></p>
+
+<p>The header &lt;boost/type_traits/ice.hpp&gt; contains a number
+of workaround templates, that fulfil the role of logical
+operators, for example instead of:</p>
+
+<p><code>INTEGRAL_CONSTANT1 || INTEGRAL_CONSTANT2</code></p>
+
+<p>Use:</p>
+
+<p><code>::boost::type_traits::ice_or&lt;INTEGRAL_CONSTANT1,INTEGRAL_CONSTANT2&gt;::value</code></p>
+
+<p>Rationale: A number of compilers (particularly the Borland and
+Microsoft compilers), tend to not to recognise integral constant
+expressions involving logical operators as genuine integral
+constant expressions. The problem generally only shows up when
+the integral constant expression is nested deep inside template
+code, and is hard to reproduce and diagnose.</p>
+
+<p><b><i>Don't use any operators in an integral constant
+expression used as a non-type template parameter</i></b></p>
+
+<p>Rather than:</p>
+
+<p><code>typedef myclass&lt;INTEGRAL_CONSTANT1 ==
+INTEGRAL_CONSTANT2&gt; mytypedef;</code></p>
+
+<p>Use:</p>
+
+<p><code>typedef myclass&lt; some_symbol&gt; mytypedef;</code></p>
+
+<p>Where <code>some_symbol</code> is the symbolic name of a an
+integral constant expression whose value is <code>(INTEGRAL_CONSTANT1
+== INTEGRAL_CONSTANT2).</code></p>
+
+<p>Rationale: the older EDG based compilers (some of which are
+used in the most recent version of that platform's compiler),
+don't recognise expressions containing operators as non-type
+template parameters, even though such expressions can be used as
+integral constant expressions elsewhere.</p>
+
+<p><b><i>Always use a fully qualified name to refer to an
+integral constant expression.</i></b></p>
+
+<p>For example:</p>
+
+<pre><code>typedef</code> myclass&lt; ::boost::is_integral&lt;some_type&gt;::value&gt; mytypedef;</pre>
+
+<p>Rationale: at least one compiler (Borland's), doesn't
+recognise the name of a constant as an integral constant
+expression unless the name is fully qualified (which is to say it
+starts with ::).</p>
+
+<p><b><i>Always leave a space after a '&lt;' and before '::'</i></b></p>
+
+<p>For example:</p>
+
+<pre><code>typedef</code> myclass&lt; ::boost::is_integral&lt;some_type&gt;::value&gt; mytypedef;
+                ^
+                ensure there is space here!</pre>
+
+<p>Rationale: &lt;: is a legal digraph in it's own right, so &lt;::
+is interpreted as the same as [:.</p>
+
+<p><b><i>Don't use local names as integral constant expressions</i></b></p>
+
+<p>Example:</p>
+
+<pre>template &lt;class T&gt;
+struct foobar
+{
+   BOOST_STATIC_CONSTANT(int, temp = computed_value);
+   typedef myclass&lt;temp&gt; mytypedef;  // error
+};</pre>
+
+<p>Rationale: At least one compiler (Borland's) doesn't accept
+this.</p>
+
+<p>Although it is possible to fix this by using:</p>
+
+<pre>template &lt;class T&gt;
+struct foobar
+{
+   BOOST_STATIC_CONSTANT(int, temp = computed_value);
+   typedef foobar self_type;
+   typedef myclass&lt;(self_type::temp)&gt; mytypedef;  // OK
+};</pre>
+
+<p>This breaks at least one other compiler (VC6), it is better to
+move the integral constant expression computation out into a
+separate traits class:</p>
+
+<pre>template &lt;class T&gt;
+struct foobar_helper
+{
+   BOOST_STATIC_CONSTANT(int, temp = computed_value);
+};
+
+template &lt;class T&gt;
+struct foobar
+{
+   typedef myclass&lt; ::foobar_helper&lt;T&gt;::value&gt; mytypedef;  // OK
+};</pre>
+
+<p><b><i>Don't use dependent default parameters for non-type
+template parameters.</i></b></p>
+
+<p>For example:</p>
+
+<pre>template &lt;class T, int I = ::boost::is_integral&lt;T&gt;::value&gt;  // Error can't deduce value of I in some cases.
+struct foobar;</pre>
+
+<p>Rationale: this kind of usage fails for Borland C++. Note that
+this is only an issue where the default value is dependent upon a
+previous template parameter, for example the following is fine:</p>
+
+<pre>template &lt;class T, int I = 3&gt;  // OK, default value is not dependent
+struct foobar;</pre>
+
+<p>&nbsp;</p>
+
+<h3>Unresolved Issues</h3>
+
+<p>The following issues are either unresolved or have fixes that
+are compiler specific, and/or break one or more of the coding
+guidelines.</p>
+
+<p><b><i>Be careful of numeric_limits</i></b></p>
+
+<p>There are three issues here:</p>
+
+<ol>
+    <li>The header &lt;limits&gt; may be absent - it is
+        recommended that you never include &lt;limits&gt;
+        directly but use &lt;boost/pending/limits.hpp&gt; instead.
+        This header includes the &quot;real&quot; &lt;limits&gt;
+        header if it is available, otherwise it supplies it's own
+        std::numeric_limits definition. Boost also defines the
+        macro BOOST_NO_LIMITS if &lt;limits&gt; is absent.</li>
+    <li>The implementation of std::numeric_limits may be defined
+        in such a way that its static-const members may not be
+        usable as integral constant expressions. This contradicts
+        the standard but seems to be a bug that affects at least
+        two standard library vendors; boost defines
+        BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS in &lt;boost/config.hpp&gt;
+        when this is the case.</li>
+    <li>There is a strange bug in VC6, where the members of std::numeric_limits
+        can be &quot;prematurely evaluated&quot; in template
+        code, for example:</li>
+</ol>
+
+<pre>template &lt;class T&gt;
+struct limits_test
+{
+   BOOST_STATIC_ASSERT(::std::numeric_limits&lt;T&gt;::is_specialized);
+};</pre>
+
+<p>This code fails to compile with VC6 even though no instances
+of the template are ever created; for some bizarre reason <code>::std::numeric_limits&lt;T&gt;::is_specialized
+</code>always evaluates to false, irrespective of what the
+template parameter T is. The problem seems to be confined to
+expressions which depend on std::numeric_limts: for example if
+you replace <code>::std::numeric_limits&lt;T&gt;::is_specialized</code>
+with <code>::boost::is_arithmetic&lt;T&gt;::value</code>, then
+everything is fine. The following workaround also works but
+conflicts with the coding guidelines:</p>
+
+<pre>template &lt;class T&gt;
+struct limits_test
+{
+   BOOST_STATIC_CONSTANT(bool, check = ::std::numeric_limits&lt;T&gt;::is_specialized);
+   BOOST_STATIC_ASSERT(check);
+};</pre>
+
+<p>So it is probably best to resort to something like this:</p>
+
+<pre>template &lt;class T&gt;
+struct limits_test
+{
+#ifdef BOOST_MSVC
+   BOOST_STATIC_CONSTANT(bool, check = ::std::numeric_limits&lt;T&gt;::is_specialized);
+   BOOST_STATIC_ASSERT(check);
+#else
+   BOOST_STATIC_ASSERT(::std::numeric_limits&lt;T&gt;::is_specialized);
+#endif
+};</pre>
+
+<p><b><i>Be careful how you use the sizeof operator</i></b></p>
+
+<p>As far as I can tell, all compilers treat sizeof expressions
+correctly when the argument is the name of a type (or a template-id),
+however problems can occur if:</p>
+
+<ol>
+    <li>The argument is the name of a member-variable, or a local
+        variable (code may not compile with VC6).</li>
+    <li>The argument is an expression which involves the creation
+        of a temporary (code will not compile with Borland C++).</li>
+    <li>The argument is an expression involving an overloaded
+        function call (code compiles but the result is a garbage
+        value with Metroworks C++).</li>
+</ol>
+
+<p><b><i>Don't use boost::is_convertible unless you have to</i></b></p>
+
+<p>Since is_convertible is implemented in terms of the sizeof
+operator, it consistently gives the wrong value when used with
+the Metroworks compiler, and may not compile with the Borland's
+compiler (depending upon the template arguments used).</p>
+
+<hr>
+
+<p><i>© Copyright Dr John Maddock 2001</i></p>
+<p><i>Use, modification and distribution are subject to the Boost Software License, 
+    Version 1.0. (See accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a>
+    or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

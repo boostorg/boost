@@ -1,0 +1,733 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Concepts</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
+<link rel="prev" href="design.html" title="Design">
+<link rel="next" href="rationale.html" title="Rationale">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="design.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="rationale.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="threads.concepts"></a>Concepts</h3></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="concepts.html#threads.concepts.mutexes">Mutexes</a></span></dt></dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="threads.concepts.mutexes"></a>Mutexes</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="concepts.html#threads.concepts.locking-strategies">Locking Strategies</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.sheduling-policies">Scheduling Policies</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.mutex-concepts">Mutex Concepts</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.mutex-models">Mutex Models</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.lock-concepts">Lock Concepts</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.lock-models">Lock Models</a></span></dt>
+</dl></div>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>Certain changes to the mutexes and lock concepts are
+		currently under discussion. In particular, the combination of
+		the multiple lock concepts into a single lock concept
+		is likely, and the combination of the multiple mutex
+		concepts into a single mutex concept is also possible.</div>
+<p>A mutex (short for mutual-exclusion) object is used to serialize
+		access to a resource shared between multiple threads. The
+		<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> concept, with
+		<a href="concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a> and
+		<a href="concepts.html#threads.concepts.TimedMutex" title="TimedMutex Concept">TimedMutex</a> refinements,
+		formalize the requirements. A model that implements Mutex and its
+		refinements has two states: <span class="bold"><strong>locked</strong></span> and
+		<span class="bold"><strong>unlocked</strong></span>. Before using a shared resource, a
+		thread locks a <span class="bold"><strong>Boost.Threads</strong></span> mutex object
+		(an object whose type is a model of
+		<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> or one of it's
+		refinements), ensuring
+		<a href="../threads.html#threads.glossary.thread-safe">thread-safe</a> access to
+		the shared resource. When use of the shared resource is complete, the thread
+		unlocks the mutex object, allowing another thread to acquire the lock and
+		use the shared resource.</p>
+<p>Traditional C thread APIs, like POSIX threads or the Windows thread
+		APIs, expose functions to lock and unlock a mutex object. This is dangerous
+		since it's easy to forget to unlock a locked mutex. When the flow of control
+		is complex, with multiple return points, the likelihood of forgetting to
+		unlock a mutex object becomes even greater. When exceptions are thrown,
+		it becomes nearly impossible to ensure that the mutex object is unlocked
+		properly when using these traditional API's. The result is
+		<a href="../threads.html#threads.glossary.deadlock">deadlock</a>.</p>
+<p>Many C++ threading libraries use a pattern known as <span class="emphasis"><em>Scoped
+		Locking</em></span>[<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>] to free the programmer from
+		the need to explicitly lock and unlock mutex objects. With this pattern, a
+		<a href="concepts.html#threads.concepts.lock-concepts" title="Lock Concepts">Lock</a> concept is employed where
+		the lock object's constructor locks the associated mutex object and the
+		destructor automatically does the unlocking. The
+		<span class="bold"><strong>Boost.Threads</strong></span> library takes this pattern to
+		the extreme in that Lock concepts are the only way to lock and unlock a
+		mutex object: lock and unlock functions are not exposed by any
+		<span class="bold"><strong>Boost.Threads</strong></span> mutex objects. This helps to
+		ensure safe usage patterns, especially when code throws exceptions.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.concepts.locking-strategies"></a>Locking Strategies</h5></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="concepts.html#threads.concepts.recursive-locking-strategy">Recursive Locking Strategy</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.checked-locking-strategy">Checked Locking Strategy</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.unchecked-locking-strategy">Unchecked Locking Strategy</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.unspecified-locking-strategy">Unspecified Locking Strategy</a></span></dt>
+</dl></div>
+<p>Every mutex object follows one of several locking strategies. These
+			strategies define the semantics for the locking operation when the calling
+			thread already owns a lock on the mutex object.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.recursive-locking-strategy"></a>Recursive Locking Strategy</h6></div></div></div>
+<p>With a recursive locking strategy, when a thread attempts to acquire
+				a lock on the mutex object for which it already owns a lock, the operation
+				is successful. Note the distinction between a thread, which may have
+				multiple locks outstanding on a recursive mutex object, and a lock object,
+				which even for a recursive mutex object cannot have any of its lock
+				functions called multiple times without first calling unlock.</p>
+<p>Internally a lock count is maintained and the owning thread must
+				unlock the mutex object the same number of times that it locked it before
+				the mutex object's state returns to unlocked. Since mutex objects in
+				<span class="bold"><strong>Boost.Threads</strong></span> expose locking
+				functionality only through lock concepts, a thread will always unlock a
+				mutex object the same number of times that it locked it. This helps to
+				eliminate a whole set of errors typically found in traditional C style
+				thread APIs.</p>
+<p>Classes <code class="computeroutput"><a href="../recursive_mutex.html" title="Class recursive_mutex">boost::recursive_mutex</a></code>,
+				<code class="computeroutput"><a href="../recursive_try_mutex.html" title="Class recursive_try_mutex">boost::recursive_try_mutex</a></code> and
+				<code class="computeroutput"><a href="../recursive_timed_mutex.html" title="Class recursive_timed_mutex">boost::recursive_timed_mutex</a></code> use this locking
+				strategy.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.checked-locking-strategy"></a>Checked Locking Strategy</h6></div></div></div>
+<p>With a checked locking strategy, when a thread attempts to acquire a
+				lock on the mutex object for which the thread already owns a lock, the
+				operation will fail with some sort of error indication. Further, attempts
+				by a thread to unlock a mutex object that was not locked by the thread
+				will also return some sort of error indication. In
+				<span class="bold"><strong>Boost.Threads</strong></span>, an exception of type
+				<code class="computeroutput"><a href="../lock_error.html" title="Class lock_error">boost::lock_error</a></code> 
+				would be thrown in these cases.</p>
+<p><span class="bold"><strong>Boost.Threads</strong></span> does not currently
+				provide any mutex objects that use this strategy.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.unchecked-locking-strategy"></a>Unchecked Locking Strategy</h6></div></div></div>
+<p>With an unchecked locking strategy, when a thread attempts to acquire
+				a lock on a mutex object for which the thread already owns a lock the
+				operation will
+				<a href="../threads.html#threads.glossary.deadlock">deadlock</a>. In general
+				this locking strategy is less safe than a checked or recursive strategy,
+				but it's also a faster strategy and so is employed by many libraries.</p>
+<p><span class="bold"><strong>Boost.Threads</strong></span> does not currently
+				provide any mutex objects that use this strategy.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.unspecified-locking-strategy"></a>Unspecified Locking Strategy</h6></div></div></div>
+<p>With an unspecified locking strategy, when a thread attempts to
+				acquire a lock on a mutex object for which the thread already owns a lock
+				the operation results in 
+				<a href="../threads.html#threads.glossary.undefined-behavior">undefined behavior</a>.
+				</p>
+<p>In general a mutex object with an unspecified locking strategy is
+				unsafe, and it requires programmer discipline to use the mutex object
+				properly. However, this strategy allows an implementation to be as fast as
+				possible with no restrictions on its implementation. This is especially
+				true for portable implementations that wrap the native threading support
+				of a platform. For this reason, the classes
+				<code class="computeroutput"><a href="../mutex.html" title="Class mutex">boost::mutex</a></code>,
+				<code class="computeroutput"><a href="../try_mutex.html" title="Class try_mutex">boost::try_mutex</a></code> and
+				<code class="computeroutput"><a href="../timed_mutex.html" title="Class timed_mutex">boost::timed_mutex</a></code> use this locking strategy
+				despite the lack of safety.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.concepts.sheduling-policies"></a>Scheduling Policies</h5></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="concepts.html#threads.concepts.FIFO-scheduling-policy">FIFO Scheduling Policy</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.priority-driven-scheduling-policy">Priority Driven Policy</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.unspecified-scheduling-policy">Unspecified Policy</a></span></dt>
+</dl></div>
+<p>Every mutex object follows one of several scheduling policies. These
+			policies define the semantics when the mutex object is unlocked and there is
+			more than one thread waiting to acquire a lock. In other words, the policy
+			defines which waiting thread shall acquire the lock.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.FIFO-scheduling-policy"></a>FIFO Scheduling Policy</h6></div></div></div>
+<p>With a FIFO ("First In First Out") scheduling policy, threads waiting 
+				for the lock will acquire it in a first-come-first-served order.
+				This can help prevent a high priority thread from starving lower priority
+				threads that are also waiting on the mutex object's lock.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.priority-driven-scheduling-policy"></a>Priority Driven Policy</h6></div></div></div>
+<p>With a Priority Driven scheduling policy, the thread with the
+				highest priority acquires the lock. Note that this means that low-priority
+				threads may never acquire the lock if the mutex object has high contention
+				and there is always at least one high-priority thread waiting. This is
+				known as thread starvation. When multiple threads of the same priority are
+				waiting on the mutex object's lock one of the other scheduling priorities
+				will determine which thread shall acquire the lock.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.unspecified-scheduling-policy"></a>Unspecified Policy</h6></div></div></div>
+<p>The mutex object does not specify a scheduling policy. In order to
+				ensure portability, all <span class="bold"><strong>Boost.Threads</strong></span>
+				mutex objects use an unspecified scheduling policy.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.concepts.mutex-concepts"></a>Mutex Concepts</h5></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="concepts.html#threads.concepts.Mutex">Mutex Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.TryMutex">TryMutex Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.TimedMutex">TimedMutex Concept</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.Mutex"></a>Mutex Concept</h6></div></div></div>
+<p>A Mutex object has two states: locked and unlocked. Mutex object
+				state can only be determined by a lock object meeting the
+				appropriate lock concept requirements
+				and constructed for the Mutex object.</p>
+<p>A Mutex is
+				<a href="../../../libs/utility/utility.htm#Class%20noncopyable" target="_top">
+				NonCopyable</a>.</p>
+<p>For a Mutex type <code class="computeroutput">M</code>
+				and an object <code class="computeroutput">m</code> of that type, 
+				the following expressions must be well-formed
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1211666"></a><p class="title"><b>Table 12.1. Mutex Expressions</b></p>
+<table class="table" summary="Mutex Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>M m;</td>
+<td>
+<p>Constructs a mutex object m.</p>
+<p>Postcondition: m is unlocked.</p>
+</td>
+</tr>
+<tr>
+<td>(&amp;m)-&gt;~M();</td>
+<td>Precondition: m is unlocked. Destroys a mutex object
+								m.</td>
+</tr>
+<tr>
+<td>M::scoped_lock</td>
+<td>A model of
+								<a href="concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.TryMutex"></a>TryMutex Concept</h6></div></div></div>
+<p>A TryMutex is a refinement of
+				<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a>. 
+				For a TryMutex type <code class="computeroutput">M</code>
+				and an object <code class="computeroutput">m</code> of that type, 
+				the following expressions must be well-formed 
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1211744"></a><p class="title"><b>Table 12.2. TryMutex Expressions</b></p>
+<table class="table" summary="TryMutex Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody><tr>
+<td>M::scoped_try_lock</td>
+<td>A model of
+								<a href="concepts.html#threads.concepts.ScopedTryLock" title="ScopedTryLock Concept">ScopedTryLock</a>
+</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.TimedMutex"></a>TimedMutex Concept</h6></div></div></div>
+<p>A TimedMutex is a refinement of
+				<a href="concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a>. 
+				For a TimedMutex type <code class="computeroutput">M</code>
+				and an object <code class="computeroutput">m</code> of that type, 
+				the following expressions must be well-formed
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1211804"></a><p class="title"><b>Table 12.3. TimedMutex Expressions</b></p>
+<table class="table" summary="TimedMutex Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody><tr>
+<td>M::scoped_timed_lock</td>
+<td>A model of
+								<a href="concepts.html#threads.concepts.ScopedTimedLock" title="ScopedTimedLock Concept">ScopedTimedLock</a>
+</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.concepts.mutex-models"></a>Mutex Models</h5></div></div></div>
+<p><span class="bold"><strong>Boost.Threads</strong></span> currently supplies six models of
+			<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a>
+			and its refinements.</p>
+<div class="table">
+<a name="id1211857"></a><p class="title"><b>Table 12.4. Mutex Models</b></p>
+<table class="table" summary="Mutex Models">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Concept</th>
+<th>Refines</th>
+<th>Models</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a></td>
+<td> </td>
+<td>
+<p><code class="computeroutput"><a href="../mutex.html" title="Class mutex">boost::mutex</a></code></p>
+<p><code class="computeroutput"><a href="../recursive_mutex.html" title="Class recursive_mutex">boost::recursive_mutex</a></code></p>
+</td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a></td>
+<td><a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a></td>
+<td>
+<p><code class="computeroutput"><a href="../try_mutex.html" title="Class try_mutex">boost::try_mutex</a></code></p>
+<p><code class="computeroutput"><a href="../recursive_try_mutex.html" title="Class recursive_try_mutex">boost::recursive_try_mutex</a></code></p>
+</td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.TimedMutex" title="TimedMutex Concept">TimedMutex</a></td>
+<td><a href="concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a></td>
+<td>
+<p><code class="computeroutput"><a href="../timed_mutex.html" title="Class timed_mutex">boost::timed_mutex</a></code></p>
+<p><code class="computeroutput"><a href="../recursive_timed_mutex.html" title="Class recursive_timed_mutex">boost::recursive_timed_mutex</a></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.concepts.lock-concepts"></a>Lock Concepts</h5></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="concepts.html#threads.concepts.Lock">Lock Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.ScopedLock">ScopedLock Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.TryLock">TryLock Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.ScopedTryLock">ScopedTryLock Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.TimedLock">TimedLock Concept</a></span></dt>
+<dt><span class="section"><a href="concepts.html#threads.concepts.ScopedTimedLock">ScopedTimedLock Concept</a></span></dt>
+</dl></div>
+<p>A lock object provides a safe means for locking and unlocking a mutex
+			object (an object whose type is a model of <a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> or one of its refinements). In
+			other words they are an implementation of the <span class="emphasis"><em>Scoped
+			Locking</em></span>[<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>] pattern. The <a href="concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>,
+			<a href="concepts.html#threads.concepts.ScopedTryLock" title="ScopedTryLock Concept">ScopedTryLock</a>, and 
+			<a href="concepts.html#threads.concepts.ScopedTimedLock" title="ScopedTimedLock Concept">ScopedTimedLock</a>
+			concepts formalize the requirements.</p>
+<p>Lock objects are constructed with a reference to a mutex object and
+			typically acquire ownership of the mutex object by setting its state to
+			locked. They also ensure ownership is relinquished in the destructor. Lock
+			objects also expose functions to query the lock status and to manually lock
+			and unlock the mutex object.</p>
+<p>Lock objects are meant to be short lived, expected to be used at block
+			scope only. The lock objects are not <a href="../threads.html#threads.glossary.thread-safe">thread-safe</a>. Lock objects must
+			maintain state to indicate whether or not they've been locked and this state
+			is not protected by any synchronization concepts. For this reason a lock
+			object should never be shared between multiple threads.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.Lock"></a>Lock Concept</h6></div></div></div>
+<p>For a Lock type <code class="computeroutput">L</code> 
+				and an object <code class="computeroutput">lk</code> 
+				and const object <code class="computeroutput">clk</code> of that type, 
+				the following expressions must be well-formed
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1212089"></a><p class="title"><b>Table 12.5. Lock Expressions</b></p>
+<table class="table" summary="Lock Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code class="computeroutput">(&amp;lk)-&gt;~L();</code></td>
+<td><code class="computeroutput">if (locked()) unlock();</code></td>
+</tr>
+<tr>
+<td><code class="computeroutput">(&amp;clk)-&gt;operator const void*()</code></td>
+<td>Returns type void*, non-zero if the associated mutex
+								object has been locked by <code class="computeroutput">clk</code>, otherwise 0.</td>
+</tr>
+<tr>
+<td><code class="computeroutput">clk.locked()</code></td>
+<td>Returns a <code class="computeroutput">bool</code>, <code class="computeroutput">(&amp;clk)-&gt;operator
+								const void*() != 0</code>
+</td>
+</tr>
+<tr>
+<td><code class="computeroutput">lk.lock()</code></td>
+<td>
+<p>Throws <code class="computeroutput"><a href="../lock_error.html" title="Class lock_error">boost::lock_error</a></code>
+									if <code class="computeroutput">locked()</code>.</p>
+<p>If the associated mutex object is
+									already locked by some other thread, places the current thread in the 
+									<a href="../threads.html#threads.glossary.thread-state">Blocked</a> state until
+									the associated mutex is unlocked, after which the current thread
+									is placed in the <a href="../threads.html#threads.glossary.thread-state">Ready</a> state,
+									eventually to be returned to the <a href="../threads.html#threads.glossary.thread-state">Running</a> state. If
+									the associated mutex object is already locked by the same thread
+									the behavior is dependent on the <a href="concepts.html#threads.concepts.locking-strategies" title="Locking Strategies">locking
+									strategy</a> of the associated mutex object.</p>
+<p>Postcondition: <code class="computeroutput">locked() == true</code></p>
+</td>
+</tr>
+<tr>
+<td><code class="computeroutput">lk.unlock()</code></td>
+<td>
+<p>Throws <code class="computeroutput"><a href="../lock_error.html" title="Class lock_error">boost::lock_error</a></code>
+									if <code class="computeroutput">!locked()</code>.</p>
+<p>Unlocks the associated mutex.</p>
+<p>Postcondition: <code class="computeroutput">!locked()</code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.ScopedLock"></a>ScopedLock Concept</h6></div></div></div>
+<p>A ScopedLock is a refinement of <a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a>. 
+				For a ScopedLock type <code class="computeroutput">L</code> 
+				and an object <code class="computeroutput">lk</code> of that type, 
+				and an object <code class="computeroutput">m</code> of a type meeting the 
+				<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> requirements, 
+				and an object <code class="computeroutput">b</code> of type <code class="computeroutput">bool</code>, 
+				the following expressions must be well-formed 
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1212325"></a><p class="title"><b>Table 12.6. ScopedLock Expressions</b></p>
+<table class="table" summary="ScopedLock Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code class="computeroutput">L lk(m);</code></td>
+<td>Constructs an object <code class="computeroutput">lk</code>, and associates mutex
+								object <code class="computeroutput">m</code> with it, then calls
+								<code class="computeroutput">lock()</code>
+</td>
+</tr>
+<tr>
+<td><code class="computeroutput">L lk(m,b);</code></td>
+<td>Constructs an object <code class="computeroutput">lk</code>, and associates mutex
+								object <code class="computeroutput">m</code> with it, then if <code class="computeroutput">b</code>, calls
+								<code class="computeroutput">lock()</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.TryLock"></a>TryLock Concept</h6></div></div></div>
+<p>A TryLock is a refinement of <a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a>. 
+				For a TryLock type <code class="computeroutput">L</code> 
+				and an object <code class="computeroutput">lk</code> of that type, 
+				the following expressions must be well-formed 
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1212428"></a><p class="title"><b>Table 12.7. TryLock Expressions</b></p>
+<table class="table" summary="TryLock Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody><tr>
+<td><code class="computeroutput">lk.try_lock()</code></td>
+<td>
+<p>Throws  <code class="computeroutput"><a href="../lock_error.html" title="Class lock_error">boost::lock_error</a></code>
+									if locked().</p>
+<p>Makes a
+									non-blocking attempt to lock the associated mutex object,
+									returning <code class="computeroutput">true</code> if the lock attempt is successful,
+									otherwise <code class="computeroutput">false</code>. If the associated mutex object is
+									already locked by the same thread the behavior is dependent on the
+									<a href="concepts.html#threads.concepts.locking-strategies" title="Locking Strategies">locking
+									strategy</a> of the associated mutex object.</p>
+</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.ScopedTryLock"></a>ScopedTryLock Concept</h6></div></div></div>
+<p>A ScopedTryLock is a refinement of <a href="concepts.html#threads.concepts.TryLock" title="TryLock Concept">TryLock</a>. 
+				For a ScopedTryLock type <code class="computeroutput">L</code> 
+				and an object <code class="computeroutput">lk</code> of that type, 
+				and an object <code class="computeroutput">m</code> of a type meeting the 
+				<a href="concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a> requirements, 
+				and an object <code class="computeroutput">b</code> of type <code class="computeroutput">bool</code>, 
+				the following expressions must be well-formed 
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1212550"></a><p class="title"><b>Table 12.8. ScopedTryLock Expressions</b></p>
+<table class="table" summary="ScopedTryLock Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code class="computeroutput">L lk(m);</code></td>
+<td>Constructs an object <code class="computeroutput">lk</code>, and associates mutex
+								object <code class="computeroutput">m</code> with it, then calls
+								<code class="computeroutput">try_lock()</code>
+</td>
+</tr>
+<tr>
+<td><code class="computeroutput">L lk(m,b);</code></td>
+<td>Constructs an object <code class="computeroutput">lk</code>, and associates mutex
+								object <code class="computeroutput">m</code> with it, then if <code class="computeroutput">b</code>, calls
+								<code class="computeroutput">lock()</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.TimedLock"></a>TimedLock Concept</h6></div></div></div>
+<p>A TimedLock is a refinement of <a href="concepts.html#threads.concepts.TryLock" title="TryLock Concept">TryLock</a>. 
+				For a TimedLock type <code class="computeroutput">L</code> 
+				and an object <code class="computeroutput">lk</code> of that type, 
+				and an object <code class="computeroutput">t</code> of type <code class="computeroutput"><a href="../xtime.html" title="Struct xtime">boost::xtime</a></code>, 
+				the following expressions must be well-formed 
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1212671"></a><p class="title"><b>Table 12.9. TimedLock Expressions</b></p>
+<table class="table" summary="TimedLock Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody><tr>
+<td><code class="computeroutput">lk.timed_lock(t)</code></td>
+<td>
+<p>Throws <code class="computeroutput"><a href="../lock_error.html" title="Class lock_error">boost::lock_error</a></code>
+									if locked().</p>
+<p>Makes a blocking attempt
+									to lock the associated mutex object, and returns <code class="computeroutput">true</code>
+									if successful within the specified time <code class="computeroutput">t</code>, otherwise
+									<code class="computeroutput">false</code>. If the associated mutex object is already
+									locked by the same thread the behavior is dependent on the <a href="concepts.html#threads.concepts.locking-strategies" title="Locking Strategies">locking
+									strategy</a> of the associated mutex object.</p>
+</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="threads.concepts.ScopedTimedLock"></a>ScopedTimedLock Concept</h6></div></div></div>
+<p>A ScopedTimedLock is a refinement of <a href="concepts.html#threads.concepts.TimedLock" title="TimedLock Concept">TimedLock</a>. 
+				For a ScopedTimedLock type <code class="computeroutput">L</code> 
+				and an object <code class="computeroutput">lk</code> of that type, 
+				and an object <code class="computeroutput">m</code> of a type meeting the 
+				<a href="concepts.html#threads.concepts.TimedMutex" title="TimedMutex Concept">TimedMutex</a> requirements, 
+				and an object <code class="computeroutput">b</code> of type <code class="computeroutput">bool</code>, 
+				and an object <code class="computeroutput">t</code> of type <code class="computeroutput"><a href="../xtime.html" title="Struct xtime">boost::xtime</a></code>, 
+				the following expressions must be well-formed 
+				and have the indicated effects.</p>
+<div class="table">
+<a name="id1212816"></a><p class="title"><b>Table 12.10. ScopedTimedLock Expressions</b></p>
+<table class="table" summary="ScopedTimedLock Expressions">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Expression</th>
+<th>Effects</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code class="computeroutput">L lk(m,t);</code></td>
+<td>Constructs an object <code class="computeroutput">lk</code>, and associates mutex
+								object <code class="computeroutput">m</code> with it, then calls
+								<code class="computeroutput">timed_lock(t)</code>
+</td>
+</tr>
+<tr>
+<td><code class="computeroutput">L lk(m,b);</code></td>
+<td>Constructs an object <code class="computeroutput">lk</code>, and associates mutex
+								object <code class="computeroutput">m</code> with it, then if <code class="computeroutput">b</code>, calls
+								<code class="computeroutput">lock()</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.concepts.lock-models"></a>Lock Models</h5></div></div></div>
+<p><span class="bold"><strong>Boost.Threads</strong></span> currently supplies twelve models of
+			<a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a>
+			and its refinements.</p>
+<div class="table">
+<a name="id1212910"></a><p class="title"><b>Table 12.11. Lock Models</b></p>
+<table class="table" summary="Lock Models">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Concept</th>
+<th>Refines</th>
+<th>Models</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a></td>
+<td><a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a></td>
+<td>
+<p><code class="computeroutput">boost::mutex::scoped_lock</code></p>
+<p><code class="computeroutput">boost::recursive_mutex::scoped_lock</code></p>
+<p><code class="computeroutput">boost::try_mutex::scoped_lock</code></p>
+<p><code class="computeroutput">boost::recursive_try_mutex::scoped_lock</code></p>
+<p><code class="computeroutput">boost::timed_mutex::scoped_lock</code></p>
+<p><code class="computeroutput">boost::recursive_timed_mutex::scoped_lock</code></p>
+</td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.TryLock" title="TryLock Concept">TryLock</a></td>
+<td><a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a></td>
+<td> </td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.ScopedTryLock" title="ScopedTryLock Concept">ScopedTryLock</a></td>
+<td><a href="concepts.html#threads.concepts.TryLock" title="TryLock Concept">TryLock</a></td>
+<td>
+<p><code class="computeroutput">boost::try_mutex::scoped_try_lock</code></p>
+<p><code class="computeroutput">boost::recursive_try_mutex::scoped_try_lock</code></p>
+<p><code class="computeroutput">boost::timed_mutex::scoped_try_lock</code></p>
+<p><code class="computeroutput">boost::recursive_timed_mutex::scoped_try_lock</code></p>
+</td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.TimedLock" title="TimedLock Concept">TimedLock</a></td>
+<td><a href="concepts.html#threads.concepts.TryLock" title="TryLock Concept">TryLock</a></td>
+<td> </td>
+</tr>
+<tr>
+<td><a href="concepts.html#threads.concepts.ScopedTimedLock" title="ScopedTimedLock Concept">ScopedTimedLock</a></td>
+<td><a href="concepts.html#threads.concepts.TimedLock" title="TimedLock Concept">TimedLock</a></td>
+<td>
+<p><code class="computeroutput">boost::timed_mutex::scoped_timed_lock</code></p>
+<p><code class="computeroutput">boost::recursive_timed_mutex::scoped_timed_lock</code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><small><p>Last revised: October 16, 2005 at 14:37:34 GMT</p></small></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="design.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="rationale.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

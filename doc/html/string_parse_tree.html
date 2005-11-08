@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Struct template string_parse_tree</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id758171" title="Header &lt;boost/date_time/string_parse_tree.hpp&gt;">
+<link rel="prev" href="parse_match_result.html" title="Struct template parse_match_result">
+<link rel="next" href="gather_month_strings.html" title="Function template gather_month_strings">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="parse_match_result.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id758171"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="gather_month_strings.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="string_parse_tree"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Struct template string_parse_tree</span></h2>
+<p>boost::date_time::string_parse_tree &#8212; Recursive data structure to allow efficient parsing of various strings. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> charT&gt; 
+<span class="bold"><strong>struct</strong></span> string_parse_tree {
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> std::multimap&lt; charT, <a href="string_parse_tree.html" title="Struct template string_parse_tree">string_parse_tree</a> &gt; ptree_coll;             
+  <span class="bold"><strong>typedef</strong></span> ptree_coll::value_type                    value_type;             
+  <span class="bold"><strong>typedef</strong></span> ptree_coll::iterator                      iterator;               
+  <span class="bold"><strong>typedef</strong></span> ptree_coll::const_iterator                const_iterator;         
+  <span class="bold"><strong>typedef</strong></span> std::basic_string&lt; charT &gt;                string_type;            
+  <span class="bold"><strong>typedef</strong></span> std::vector&lt; std::basic_string&lt; charT &gt; &gt; collection_type;        
+  <span class="bold"><strong>typedef</strong></span> parse_match_result&lt; charT &gt;               parse_match_result_type;
+
+  <span class="emphasis"><em>// <a href="string_parse_tree.html#string_parse_treeconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="string_parse_tree.html#id753160-bb">string_parse_tree</a>(collection_type, <span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>int</strong></span> = 0);
+  <a href="string_parse_tree.html#id753198-bb">string_parse_tree</a>(<span class="bold"><strong>short</strong></span> = -1);
+
+  <span class="emphasis"><em>// <a href="string_parse_tree.html#id799521-bb">public member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="string_parse_tree.html#id799526-bb">insert</a>(<span class="bold"><strong>const</strong></span> string_type &amp;, <span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>short</strong></span>) ;
+  <span class="type"><span class="bold"><strong>short</strong></span></span> <a href="string_parse_tree.html#id799558-bb">match</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+              std::istreambuf_iterator&lt; charT &gt; &amp;, parse_match_result_type &amp;, 
+              <span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>int</strong></span> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">parse_match_result_type</span> 
+  <a href="string_parse_tree.html#id803717-bb">match</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+        std::istreambuf_iterator&lt; charT &gt; &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="string_parse_tree.html#id793265-bb">printme</a>(std::ostream &amp;, <span class="bold"><strong>int</strong></span> &amp;) ;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="string_parse_tree.html#id793297-bb">print</a>(std::ostream &amp;) ;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="string_parse_tree.html#id756118-bb">printmatch</a>(std::ostream &amp;, charT) ;
+
+  ptree_coll m_next_chars;
+  short m_value;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1043591"></a><h2>Description</h2>
+<p>This class provides a quick lookup by building what amounts to a tree data structure. It also features a match function which can can handle nasty input interators by caching values as it recurses the tree so that it can backtrack as needed. </p>
+<div class="refsect2" lang="en">
+<a name="id1043601"></a><h3>
+<a name="string_parse_treeconstruct-copy-destruct"></a><code class="computeroutput">string_parse_tree</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id753160-bb"></a>string_parse_tree(collection_type names, <span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>int</strong></span> starting_point = 0);</pre>
+<p>Parameter "starting_point" desingates where the numbering begins. A starting_point of zero will start the numbering at zero (Sun=0, Mon=1, ...) were a starting_point of one starts the numbering at one (Jan=1, Feb=2, ...). The default is zero, negative vaules are not allowed </p>
+</li>
+<li><pre class="literallayout"><a name="id753198-bb"></a>string_parse_tree(<span class="bold"><strong>short</strong></span> value = -1);</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1043672"></a><h3>
+<a name="id799521-bb"></a><code class="computeroutput">string_parse_tree</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id799526-bb"></a>insert(<span class="bold"><strong>const</strong></span> string_type &amp; s, <span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>short</strong></span> value) ;</pre></li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>short</strong></span></span> <a name="id799558-bb"></a>match(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+            std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+            parse_match_result_type &amp; result, <span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>int</strong></span> &amp; level) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Must check match_results::has_remaining() after match() is called. This is required so the user can determine if stream iterator is already pointing to the expected character or not (match() might advance sitr to next char in stream).</p>
+<p>A parse_match_result that has been returned from a failed match attempt can be sent in to the match function of a different string_parse_tree to attempt a match there. Use the iterators for the partially consumed stream, the parse_match_result object, and '0' for the level parameter. </p>
+</li>
+<li>
+<pre class="literallayout"><span class="type">parse_match_result_type</span> 
+<a name="id803717-bb"></a>match(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+      std::istreambuf_iterator&lt; charT &gt; &amp; stream_end) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Must check match_results::has_remaining() after match() is called. This is required so the user can determine if stream iterator is already pointing to the expected character or not (match() might advance sitr to next char in stream). </p>
+</li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id793265-bb"></a>printme(std::ostream &amp; os, <span class="bold"><strong>int</strong></span> &amp; level) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id793297-bb"></a>print(std::ostream &amp; os) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id756118-bb"></a>printmatch(std::ostream &amp; os, charT c) ;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="parse_match_result.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id758171"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="gather_month_strings.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
