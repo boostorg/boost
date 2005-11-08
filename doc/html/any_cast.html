@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Function any_cast</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
 <link rel="start" href="index.html" title="The Boost C++ Libraries">
 <link rel="up" href="any/reference.html#header.boost.any.hpp" title="Header &lt;boost/any.hpp&gt;">
 <link rel="prev" href="boost/any.html" title="Class any">
@@ -32,29 +32,27 @@
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
-<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <span class="type">ValueType</span> any_cast(<span class="bold"><strong>const</strong></span> <a href="boost/any.html" title="Class any">any</a> &amp; operand);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <span class="type">T</span> any_cast(<a href="boost/any.html" title="Class any">any</a> &amp; operand);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T&gt; <span class="type">T</span> any_cast(<span class="bold"><strong>const</strong></span> <a href="boost/any.html" title="Class any">any</a> &amp; operand);
 <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <span class="type"><span class="bold"><strong>const</strong></span> ValueType *</span> any_cast(<span class="bold"><strong>const</strong></span> <a href="boost/any.html" title="Class any">any</a> * operand);
 <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> ValueType&gt; <span class="type">ValueType *</span> any_cast(<a href="boost/any.html" title="Class any">any</a> * operand);</pre></div>
 <div class="refsect1" lang="en">
-<a name="id971581"></a><h2>Description</h2>
+<a name="id899698"></a><h2>Description</h2>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
 
      If passed a pointer, it returns a
           similarly qualified pointer to the value content if
-          successful, otherwise null is returned. If passed a value or
-          reference, it returns a copy of the value content if
-          successful.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+	  successful, otherwise null is returned.
+	  If T is ValueType, it returns a copy of the held value, otherwise, if T is a reference 
+	  to (possibly const qualified) ValueType, it returns a reference to the held 
+	  value.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
 
     Overloads taking an
           <code class="computeroutput"><a href="boost/any.html" title="Class any">any</a></code> pointer do not
-          throw; the overload taking an
+          throw; overloads taking an
           <code class="computeroutput"><a href="boost/any.html" title="Class any">any</a></code> value or reference
           throws <code class="computeroutput"><a href="bad_any_cast.html" title="Class bad_any_cast">bad_any_cast</a></code> if
-          unsuccessful.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
-
-    The value/reference version returns a
-          copy because the C++ keyword casts return
-          copies.</p>
+          unsuccessful.</p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>

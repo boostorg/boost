@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Rationale</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
 <link rel="prev" href="concepts.html" title="Concepts">
@@ -26,21 +26,21 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="threads.rationale"></a>Rationale</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="rationale.html#threads.rationale.Boost.Threads">Rationale for the Creation of </a></span></dt>
-<dt><span class="section"><a href="rationale.html#threads.rationale.primitives">Rationale for the Low Level Primitives Supported in </a></span></dt>
+<dt><span class="section"><a href="rationale.html#threads.rationale.Boost.Threads">Rationale for the Creation of <span class="bold"><strong>Boost.Threads</strong></span></a></span></dt>
+<dt><span class="section"><a href="rationale.html#threads.rationale.primitives">Rationale for the Low Level Primitives Supported in <span class="bold"><strong>Boost.Threads</strong></span></a></span></dt>
 <dt><span class="section"><a href="rationale.html#threads.rationale.locks">Rationale for the Lock Design</a></span></dt>
 <dt><span class="section"><a href="rationale.html#threads.rationale.non-copyable">Rationale for NonCopyable Thread Type</a></span></dt>
 <dt><span class="section"><a href="rationale.html#threads.rationale.events">Rationale for not providing <span class="emphasis"><em>Event Variables</em></span></a></span></dt>
 </dl></div>
 <p>This page explains the rationale behind various design decisions in the
-   library. Having the rationale documented here should explain
+  <span class="bold"><strong>Boost.Threads</strong></span> library. Having the rationale documented here should explain
   how we arrived at the current design as well as prevent future rehashing of
   discussions and thought processes that have already occurred. It can also give
   users a lot of insight into the design process required for this
   library.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="threads.rationale.Boost.Threads"></a>Rationale for the Creation of </h4></div></div></div>
+<a name="threads.rationale.Boost.Threads"></a>Rationale for the Creation of <span class="bold"><strong>Boost.Threads</strong></span></h4></div></div></div>
 <p>Processes often have a degree of "potential parallelism" and it can
 	often be more intuitive to design systems with this in mind. Further, these
 	parallel processes can result in more responsive programs. The benefits for
@@ -60,7 +60,7 @@
 <p>What's truly needed is C++ language support for threads. However, the
 	C++ standards committee needs existing practice or a good proposal as a
 	starting point for adding this to the standard.</p>
-<p>The  library was developed to provide a C++ developer
+<p>The <span class="bold"><strong>Boost.Threads</strong></span> library was developed to provide a C++ developer
 	with a portable interface for writing multithreaded programs on numerous
 	platforms. There's a hope that the library can be the basis for a more
 	detailed proposal for the C++ standards committee to consider for inclusion
@@ -68,17 +68,17 @@
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="threads.rationale.primitives"></a>Rationale for the Low Level Primitives Supported in </h4></div></div></div>
-<p>The  library supplies a set of low level primitives for
+<a name="threads.rationale.primitives"></a>Rationale for the Low Level Primitives Supported in <span class="bold"><strong>Boost.Threads</strong></span></h4></div></div></div>
+<p>The <span class="bold"><strong>Boost.Threads</strong></span> library supplies a set of low level primitives for
 	writing multithreaded programs, such as mutexes and condition variables. In
-	fact, the first release of  supports only these low level
+	fact, the first release of <span class="bold"><strong>Boost.Threads</strong></span> supports only these low level
 	primitives. However, computer science research has shown that use of these
 	primitives is difficult since it's difficult to mathematically prove that a
 	usage pattern is correct, meaning it doesn't result in race conditions or
 	deadlocks. There are several algebras (such as CSP, CCS and Join calculus)
 	that have been developed to help write provably correct parallel
 	processes. In order to prove the correctness these processes must be coded
-	using higher level abstractions. So why does  support the
+	using higher level abstractions. So why does <span class="bold"><strong>Boost.Threads</strong></span> support the
 	lower level concepts?</p>
 <p>The reason is simple: the higher level concepts need to be implemented
 	using at least some of the lower level concepts. So having portable lower
@@ -96,7 +96,7 @@
 <div class="titlepage"><div><div><h4 class="title">
 <a name="threads.rationale.locks"></a>Rationale for the Lock Design</h4></div></div></div>
 <p>Programmers who are used to multithreaded programming issues will
-	quickly note that the  design for mutex lock concepts is not
+	quickly note that the <span class="bold"><strong>Boost.Threads</strong></span> design for mutex lock concepts is not
 	<a href="../threads.html#threads.glossary.thread-safe">thread-safe</a> (this is
 	clearly documented as well). At first this may seem like a serious design
 	flaw. Why have a multithreading primitive that's not thread-safe
@@ -120,7 +120,7 @@
 	since checking the state can occur only by a call after construction, we'd
 	have a race condition if the lock object were shared between threads.</p>
 <p>So, to avoid the overhead of synchronizing access to the state
-	information and to avoid the race condition, the  library
+	information and to avoid the race condition, the <span class="bold"><strong>Boost.Threads</strong></span> library
 	simply does nothing to make lock objects thread-safe. Instead, sharing a
 	lock object between threads results in undefined behavior. Since the only
 	proper usage of lock objects is within block scope this isn't a problem, and
@@ -147,7 +147,7 @@
 	  between multiple objects.</a></span></dt>
 </dl></div>
 <p>Programmers who are used to C libraries for multithreaded programming
-	are likely to wonder why  uses a noncopyable design for
+	are likely to wonder why <span class="bold"><strong>Boost.Threads</strong></span> uses a noncopyable design for
 	<code class="computeroutput"><a href="../thread.html" title="Class thread">boost::thread</a></code>. After all, the C thread types are
 	copyable, and you often have a need for copying them within user
 	code. However, careful comparison of C designs to C++ designs shows a flaw
@@ -449,7 +449,7 @@
 	prevails.</p>
 <p>Given this analysis, and the fact that noncopyable objects for system
 	resources are the normal designs that C++ programmers are used to dealing
-	with, the  library has gone with a noncopyable design.</p>
+	with, the <span class="bold"><strong>Boost.Threads</strong></span> library has gone with a noncopyable design.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
@@ -464,7 +464,7 @@
 	multithreading practitioners believe event variables are so inherently
 	error-prone that they should never be used, and thus should not be part of a
 	multithreading library.</p>
-<p>Per Brinch Hansen  analyzed event variables in some
+<p>Per Brinch Hansen [<span class="citation"><a href="../threads.html#threads.bib.Hansen73">Hansen73</a></span>] analyzed event variables in some
 	detail, pointing out [emphasis his] that "<span class="emphasis"><em>event operations force
 	the programmer to be aware of the relative speeds of the sending and
 	receiving processes</em></span>". His summary:</p>
@@ -482,7 +482,7 @@
 	is, the programs appear to work correctly, but contain hidden timing
 	dependencies which will cause them to fail when environmental factors or
 	usage patterns change, altering relative thread timings.</p>
-<p>The decision to exclude event variables from  has been
+<p>The decision to exclude event variables from <span class="bold"><strong>Boost.Threads</strong></span> has been
 	surprising to some Windows programmers. They have written programs which
 	work using event variables, and wonder what the problem is. It seems similar
 	to the "goto considered harmful" controversy of 30 years ago. It isn't that

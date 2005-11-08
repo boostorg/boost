@@ -3,10 +3,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Frequently Asked Questions</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../signals.html" title="Chapter 9. Boost.Signals">
-<link rel="prev" href="../id906590-bb.html" title="Class last_value&lt;void&gt;">
+<link rel="prev" href="../id906280-bb.html" title="Class last_value&lt;void&gt;">
 <link rel="next" href="s05.html" title="Design Overview">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,19 +20,19 @@
 </table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="../id906590-bb.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../signals.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="s05.html"><img src="../images/next.png" alt="Next"></a>
+<a accesskey="p" href="../id906280-bb.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../signals.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="s05.html"><img src="../images/next.png" alt="Next"></a>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a name="id1287277"></a>Frequently Asked Questions</h3></div></div></div>
+<a name="id1185837"></a>Frequently Asked Questions</h3></div></div></div>
 <div class="qandaset">
 <dl>
-<dt>1. <a href="s04.html#id1287287">Don't noncopyable signal semantics mean that a class
+<dt>1. <a href="s04.html#id1185847">Don't noncopyable signal semantics mean that a class
         with a signal member will be noncopyable as well?</a>
 </dt>
-<dt>2. <a href="s04.html#id1287301">Is Boost.Signals thread-safe?</a>
+<dt>2. <a href="s04.html#id1185861">Is Boost.Signals thread-safe?</a>
 </dt>
-<dt>3. <a href="s04.html#id1287313">How do I get Boost.Signals to work with Qt?</a>
+<dt>3. <a href="s04.html#id1185873">How do I get Boost.Signals to work with Qt?</a>
 </dt>
 </dl>
 <table border="0" summary="Q and A Set">
@@ -40,7 +40,7 @@
 <tbody>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1287287"></a><a name="id1287288"></a><b>1.</b>
+<a name="id1185847"></a><a name="id1185848"></a><b>1.</b>
 </td>
 <td align="left" valign="top"><p>Don't noncopyable signal semantics mean that a class
         with a signal member will be noncopyable as well?</p></td>
@@ -55,7 +55,7 @@
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1287301"></a><a name="id1287302"></a><b>2.</b>
+<a name="id1185861"></a><a name="id1185862"></a><b>2.</b>
 </td>
 <td align="left" valign="top"><p>Is Boost.Signals thread-safe?</p></td>
 </tr>
@@ -68,7 +68,7 @@
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1287313"></a><a name="id1287314"></a><b>3.</b>
+<a name="id1185873"></a><a name="id1185874"></a><b>3.</b>
 </td>
 <td align="left" valign="top"><p>How do I get Boost.Signals to work with Qt?</p></td>
 </tr>
@@ -80,7 +80,10 @@
         preprocessor macros, causing programs using Boost.Signals and
         Qt together to fail to compile. Although this is a problem
         with Qt and not Boost.Signals, a user can use the two systems
-        together by defining the <code class="computeroutput">BOOST_SIGNALS_NAMESPACE</code>
+        together with a little extra effort. There are two ways to do
+        this:</p>
+<p>The first way involves defining
+        the <code class="computeroutput">BOOST_SIGNALS_NAMESPACE</code> 
         macro to some other identifier (e.g., <code class="computeroutput">signalslib</code>)
         when building and using the Boost.Signals library. Then the
         namespace of the Boost.Signals library will be
@@ -93,6 +96,23 @@
     namespace signals = BOOST_SIGNALS_NAMESPACE;
   }
 </pre>
+<p>The second way, provided by Frank Hess, involves
+        creating a header <code class="computeroutput">signalslib.hpp</code> that contains
+          the following code:</p>
+<pre class="programlisting">#ifdef signals
+#error "signalslib.hpp must be included before any qt header"
+#endif
+
+#include &lt;boost/signal.hpp&gt;
+namespace boost
+{
+  namespace signalslib = signals;
+}</pre>
+<p>This header must be included before any Qt headers. Once
+        it has been included, you can refer to the Signals library via
+        the namespace <code class="computeroutput">boost::signalslib</code>. This option is
+        preferable to the first option because it can be used without
+        recompiling the Signals library binary. </p>
 </td>
 </tr>
 </tbody>
@@ -100,12 +120,12 @@
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><small><p>Last revised: March 12, 2003 at 23:27:23 GMT</p></small></td>
+<td align="left"><small><p>Last revised: September 23, 2005 at 11:45:10 GMT</p></small></td>
 <td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="../id906590-bb.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../signals.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="s05.html"><img src="../images/next.png" alt="Next"></a>
+<a accesskey="p" href="../id906280-bb.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../signals.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="s05.html"><img src="../images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

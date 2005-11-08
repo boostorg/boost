@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Tutorial</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../program_options.html" title="Chapter 7. Boost.Program_options">
 <link rel="prev" href="../program_options.html" title="Chapter 7. Boost.Program_options">
@@ -26,9 +26,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="program_options.tutorial"></a>Tutorial</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="tutorial.html#id1246788">Getting Started</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1246925">Option Details</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1247078">Multiple Sources</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id1174916">Getting Started</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id1175058">Option Details</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id1175224">Multiple Sources</a></span></dt>
 </dl></div>
 <p>In this section, we'll take a look at the most common usage scenarios
   of the program_options library, starting with the simplest one. The examples
@@ -39,7 +39,7 @@
 <pre class="programlisting">namespace po = boost::program_options;</pre>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1246788"></a>Getting Started</h4></div></div></div>
+<a name="id1174916"></a>Getting Started</h4></div></div></div>
 <p>The first example is the simplest possible: it only handles two
     options. Here's the source code (the full program is in
     "example/first.cpp"):
@@ -70,7 +70,7 @@ if (vm.count("compression")) {
 }
 </pre>
 <p>We start by declaring all allowed options using the
-     class. The <code class="computeroutput">add_options</code> method of that
+    <code class="computeroutput">options_description</code> class. The <code class="computeroutput">add_options</code> method of that
     class returns a special proxy object that defines
     <code class="computeroutput">operator()</code>. Calls to that operator actually declare
     options. The parameters are option name, information about value, and option
@@ -106,7 +106,7 @@ Compression level was set to 10.
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1246925"></a>Option Details</h4></div></div></div>
+<a name="id1175058"></a>Option Details</h4></div></div></div>
 <p>An option value, surely, can have other types than <code class="computeroutput">int</code>, and
   can have other interesting properties, which we'll discuss right now. The
   complete version of the code snipped below can be found in
@@ -170,8 +170,8 @@ po::notify(vm);
 <p>
     The first two lines say that all positional options should be translated
     into "input-file" options. Also note that we use the
-     class to parse the command
-    line, not the 
+    <code class="computeroutput">command_line_parser</code> class to parse the command
+    line, not the <code class="computeroutput">parse_command_line</code>
     function. The latter is a convenient wrapper for simple cases, but now we
     need to pass additional information.
   </p>
@@ -220,7 +220,7 @@ Optimization level is 4
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1247078"></a>Multiple Sources</h4></div></div></div>
+<a name="id1175224"></a>Multiple Sources</h4></div></div></div>
 <p>It's quite likely that specifying all options to our compiler on the
     command line will annoy users. What if a user installs a new library and
     wants to always pass an additional command line element? What if he has
@@ -291,7 +291,7 @@ visible.add(generic).add(config);
       </pre>
 <p>The parsing and storing of values follows the usual pattern, except that
       we additionally call <code class="computeroutput">parse_config_file</code>, and
-      call the  function twice. But what
+      call the <code class="computeroutput">store</code> function twice. But what
       happens if the same value is specified both on the command line and in
       config file? Usually, the value stored first is preferred. This is what
       happens for the "--optimization" option. For "composing" options, like

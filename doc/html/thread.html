@@ -3,10 +3,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Class thread</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
 <link rel="start" href="index.html" title="The Boost C++ Libraries">
-<link rel="up" href="threads/reference.html#id1248802" title="Header &lt;boost/thread/thread.hpp&gt;">
-<link rel="prev" href="timed_read_write_mutex.html" title="Class timed_read_write_mutex">
+<link rel="up" href="threads/reference.html#id619529" title="Header &lt;boost/thread/thread.hpp&gt;">
+<link rel="prev" href="recursive_timed_mutex.html" title="Class recursive_timed_mutex">
 <link rel="next" href="thread_group.html" title="Class thread_group">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -20,7 +20,7 @@
 </table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="timed_read_write_mutex.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id1248802"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="thread_group.html"><img src="images/next.png" alt="Next"></a>
+<a accesskey="p" href="recursive_timed_mutex.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id619529"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="thread_group.html"><img src="images/next.png" alt="Next"></a>
 </div>
 <div class="refentry" lang="en">
 <a name="thread"></a><div class="titlepage"></div>
@@ -28,7 +28,7 @@
 <h2><span class="refentrytitle">Class thread</span></h2>
 <p>boost::thread &#8212; <p>The <a href="thread.html" title="Class thread">thread</a> class represents threads of
 			execution, and provides the functionality to create and manage 
-			threads within the  library. See 
+			threads within the <span class="bold"><strong>Boost.Threads</strong></span> library. See 
 			<a href="threads.html#threads.glossary" title="Glossary">Glossary</a> for a precise description of 
 			<a href="threads.html#threads.glossary.thread">thread of execution</a>,
 			and for definitions of threading-related terms and of thread states such as 
@@ -40,23 +40,23 @@
 {
 <span class="bold"><strong>public</strong></span>:
   <span class="emphasis"><em>// <a href="thread.html#threadconstruct-copy-destruct">construct/copy/destruct</a></em></span>
-  <a href="thread.html#id698281-bb">thread</a>();
-  <span class="bold"><strong>explicit</strong></span> <a href="thread.html#id1291929-bb">thread</a>(<span class="bold"><strong>const</strong></span> boost::function0&lt;<span class="bold"><strong>void</strong></span>&gt;&amp;);
-  <a href="thread.html#id732677-bb">~thread</a>();
+  <a href="thread.html#id724204-bb">thread</a>();
+  <span class="bold"><strong>explicit</strong></span> <a href="thread.html#id627097-bb">thread</a>(<span class="bold"><strong>const</strong></span> boost::function0&lt;<span class="bold"><strong>void</strong></span>&gt;&amp;);
+  <a href="thread.html#id764927-bb">~thread</a>();
 
-  <span class="emphasis"><em>// <a href="thread.html#id1145095-bb">comparison</a></em></span>
-  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="thread.html#id1138943-bb"><span class="bold"><strong>operator</strong></span>==</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="thread.html#id1288634-bb"><span class="bold"><strong>operator</strong></span>!=</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="emphasis"><em>// <a href="thread.html#id1114807-bb">comparison</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="thread.html#id613911-bb"><span class="bold"><strong>operator</strong></span>==</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="thread.html#id756439-bb"><span class="bold"><strong>operator</strong></span>!=</a>() <span class="bold"><strong>const</strong></span>;
 
-  <span class="emphasis"><em>// <a href="thread.html#id1007431-bb">modifier</a></em></span>
-  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread.html#id1253588-bb">join</a>();
+  <span class="emphasis"><em>// <a href="thread.html#id833795-bb">modifier</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread.html#id793347-bb">join</a>();
 
-  <span class="emphasis"><em>// <a href="thread.html#id1178459-bb">static</a></em></span>
-  <span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread.html#id974656-bb">sleep</a>(<span class="bold"><strong>const</strong></span> <a href="xtime.html" title="Struct xtime">xtime</a>&amp;);
-  <span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread.html#id1245828-bb">yield</a>();
+  <span class="emphasis"><em>// <a href="thread.html#id619231-bb">static</a></em></span>
+  <span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread.html#id1147428-bb">sleep</a>(<span class="bold"><strong>const</strong></span> <a href="xtime.html" title="Struct xtime">xtime</a>&amp;);
+  <span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread.html#id767298-bb">yield</a>();
 };</pre></div>
 <div class="refsect1" lang="en">
-<a name="id1563475"></a><h2>Description</h2>
+<a name="id1219191"></a><h2>Description</h2>
 <p>A <a href="threads.html#threads.glossary.thread">thread of execution</a>
 			has an initial function. For the program's initial thread, the initial 
 			function is <code class="computeroutput">main()</code>. For other threads, the initial 
@@ -71,7 +71,7 @@
 <p>A thread object has an associated state which is either
 			"joinable" or "non-joinable".</p>
 <p>Except as described below, the policy used by an implementation
-			of  to schedule transitions between thread states is 
+			of <span class="bold"><strong>Boost.Threads</strong></span> to schedule transitions between thread states is 
 			unspecified.</p>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Note</h3>Just as the lifetime of a file may be different from the
@@ -86,11 +86,11 @@
 			<code class="computeroutput">join()</code> first having been called, the thread of execution 
 			continues until its initial function completes.</div>
 <div class="refsect2" lang="en">
-<a name="id1563577"></a><h3>
+<a name="id1219300"></a><h3>
 <a name="threadconstruct-copy-destruct"></a><code class="computeroutput">thread</code> construct/copy/destruct</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><a name="id698281-bb"></a>thread();</pre>
+<pre class="literallayout"><a name="id724204-bb"></a>thread();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Constructs a <a href="thread.html" title="Class thread">thread</a> object 
@@ -101,7 +101,7 @@
     <span class="bold"><strong>Danger:</strong></span><code class="computeroutput">*this</code> is valid only within the current thread.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="bold"><strong>explicit</strong></span> <a name="id1291929-bb"></a>thread(<span class="bold"><strong>const</strong></span> boost::function0&lt;<span class="bold"><strong>void</strong></span>&gt;&amp; threadfunc);</pre>
+<pre class="literallayout"><span class="bold"><strong>explicit</strong></span> <a name="id627097-bb"></a>thread(<span class="bold"><strong>const</strong></span> boost::function0&lt;<span class="bold"><strong>void</strong></span>&gt;&amp; threadfunc);</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     
@@ -121,7 +121,7 @@
 			of execution cannot be started.</p>
 </li>
 <li>
-<pre class="literallayout"><a name="id732677-bb"></a>~thread();</pre>
+<pre class="literallayout"><a name="id764927-bb"></a>~thread();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Destroys <code class="computeroutput">*this</code>. The actual thread of 
@@ -139,11 +139,11 @@
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1563816"></a><h3>
-<a name="id1145095-bb"></a><code class="computeroutput">thread</code> comparison</h3>
+<a name="id1219538"></a><h3>
+<a name="id1114807-bb"></a><code class="computeroutput">thread</code> comparison</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1138943-bb"></a><span class="bold"><strong>operator</strong></span>==( rhs) <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id613911-bb"></a><span class="bold"><strong>operator</strong></span>==( rhs) <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
 
     The thread is non-terminated or <code class="computeroutput">*this</code>
@@ -154,7 +154,7 @@
 				execution.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1288634-bb"></a><span class="bold"><strong>operator</strong></span>!=( rhs) <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id756439-bb"></a><span class="bold"><strong>operator</strong></span>!=( rhs) <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
 
     The thread is non-terminated or <code class="computeroutput">*this</code>
@@ -165,10 +165,10 @@
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1563958"></a><h3>
-<a name="id1007431-bb"></a><code class="computeroutput">thread</code> modifier</h3>
+<a name="id1219680"></a><h3>
+<a name="id833795-bb"></a><code class="computeroutput">thread</code> modifier</h3>
 <div class="orderedlist"><ol type="1"><li>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1253588-bb"></a>join();</pre>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id793347-bb"></a>join();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
 
     <code class="computeroutput">*this</code> is joinable.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
@@ -186,18 +186,18 @@
 </li></ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1564044"></a><h3>
-<a name="id1178459-bb"></a><code class="computeroutput">thread</code> static</h3>
+<a name="id1219767"></a><h3>
+<a name="id619231-bb"></a><code class="computeroutput">thread</code> static</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id974656-bb"></a>sleep(<span class="bold"><strong>const</strong></span> <a href="xtime.html" title="Struct xtime">xtime</a>&amp; xt);</pre>
+<pre class="literallayout"><span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1147428-bb"></a>sleep(<span class="bold"><strong>const</strong></span> <a href="xtime.html" title="Struct xtime">xtime</a>&amp; xt);</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     The current thread of execution blocks until 
 				<code class="computeroutput">xt</code> is reached.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1245828-bb"></a>yield();</pre>
+<pre class="literallayout"><span class="bold"><strong>static</strong></span> <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id767298-bb"></a>yield();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     The current thread of execution is placed in the
@@ -218,7 +218,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="timed_read_write_mutex.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id1248802"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="thread_group.html"><img src="images/next.png" alt="Next"></a>
+<a accesskey="p" href="recursive_timed_mutex.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id619529"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="thread_group.html"><img src="images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

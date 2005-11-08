@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Design Topics</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../string_algo.html" title="Chapter 11. Boost String Algorithms Library">
 <link rel="prev" href="quickref.html" title="Quick Reference">
@@ -62,7 +62,7 @@
 <p>
             In addition some algorithms have additional requirements on the string-type. Particularly, it is required
             that an algorithm can create a new string of the given type. In this case, it is required that
-            the type satisfies the sequence (Std 23.1.1) requirements.
+            the type satisfies the sequence (Std §23.1.1) requirements.
         </p>
 <p>
             In the reference and also in the code, requirement on the string type is designated by the name of
@@ -82,16 +82,16 @@
             of a particular container.
         </p>
 <p>
-            Sequence traits allow one to specify additional properties of a sequence container (see Std.32.2).
+            Sequence traits allow one to specify additional properties of a sequence container (see Std.§32.2).
             These properties are then used by algorithms to select optimized handling for some operations.
             The sequence traits are declared in the header 
-            <code class="computeroutput"><a href="reference.html#id657172" title="Header &lt;boost/algorithm/string/sequence_traits.hpp&gt;">boost/algorithm/string/sequence_traits.hpp</a></code>.
+            <code class="computeroutput"><a href="reference.html#id893825" title="Header &lt;boost/algorithm/string/sequence_traits.hpp&gt;">boost/algorithm/string/sequence_traits.hpp</a></code>.
         </p>
 <p>
             In the table C denotes a container and c is an object of C.
         </p>
 <div class="table">
-<a name="id1311010"></a><p class="title"><b>Table 11.11. Sequence Traits</b></p>
+<a name="id1208871"></a><p class="title"><b>Table 11.11. Sequence Traits</b></p>
 <table class="table" summary="Sequence Traits">
 <colgroup>
 <col>
@@ -104,12 +104,12 @@
 <tbody>
 <tr>
 <td align="left">
-<code class="computeroutput"><a href="../has_native_replace.html" title="Class template has_native_replace">has_native_replace&lt;C&gt;</a></code>::value</td>
+<code class="computeroutput">has_native_replace&lt;C&gt;</code>::value</td>
 <td align="left">Specifies that the sequence has std::string like replace method</td>
 </tr>
 <tr>
 <td align="left">
-<code class="computeroutput"><a href="../has_stable_iterators.html" title="Class template has_stable_iterators">has_stable_iterators&lt;C&gt;</a></code>::value</td>
+<code class="computeroutput">has_stable_iterators&lt;C&gt;</code>::value</td>
 <td align="left">
                             Specifies that the sequence has stable iterators. It means,
                             that operations like <code class="computeroutput">insert</code>/<code class="computeroutput">erase</code>/<code class="computeroutput">replace</code> 
@@ -118,7 +118,7 @@
 </tr>
 <tr>
 <td align="left">
-<code class="computeroutput"><a href="../has_const_time_insert.html" title="Class template has_const_time_insert">has_const_time_insert&lt;C&gt;</a></code>::value</td>
+<code class="computeroutput">has_const_time_insert&lt;C&gt;</code>::value</td>
 <td align="left">
                             Specifies that the insert method of the sequence has 
                             constant time complexity.
@@ -126,7 +126,7 @@
 </tr>
 <tr>
 <td align="left">
-<code class="computeroutput"><a href="../has_const_time_erase.html" title="Class template has_const_time_erase">has_const_time_erase&lt;C&gt;</a></code>::value</td>
+<code class="computeroutput">has_const_time_erase&lt;C&gt;</code>::value</td>
 <td align="left">
                             Specifies that the erase method of the sequence has constant time complexity
                         </td>
@@ -194,11 +194,11 @@
             Find iterators are a logical extension of the <a href="design.html#string_algo.find" title="Find Algorithms">find facility</a>.
             Instead of searching for one match, the whole input can be iteratively searched for multiple matches.
             The result of the search is then used to partition the input. It depends on the algorithms which parts 
-            are returned as the result. They can be the matching parts (<code class="computeroutput"><a href="../find_iterator.html" title="Class template find_iterator">find_iterator</a></code>) of the parts in
-            between (<code class="computeroutput"><a href="../split_iterator.html" title="Class template split_iterator">split_iterator</a></code>). 
+            are returned as the result. They can be the matching parts (<code class="computeroutput">find_iterator</code>) of the parts in
+            between (<code class="computeroutput">split_iterator</code>). 
         </p>
 <p>
-            In addition the split algorithms like <code class="computeroutput"><a href="../find_all.html" title="Function template find_all">find_all()</a></code> and <code class="computeroutput"><a href="../id726784.html" title="Function template split">split()</a></code>
+            In addition the split algorithms like <code class="computeroutput">find_all()</code> and <code class="computeroutput">split()</code>
             can simplify the common operations. They use a find iterator to search the whole input and copy the 
             matches they found into the supplied container.
         </p>
