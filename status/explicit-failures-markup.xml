@@ -2257,6 +2257,15 @@ for more information.
               double)</code> on this platform.
             </note>
        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="complex_test"/>
+            <test name="log1p_expm1_test"/>
+            <toolset name="sunpro-*"/>
+            <note author="John Maddock">
+              std::numeric_limits&gt;long double&lt;::infinity() is apparently
+              broken in this compiler: it's filed as bug 6347520 with Sun.
+            </note>
+       </mark-expected-failures>
     </library>
 
     <!-- numeric/conversion -->
@@ -3629,3 +3638,5 @@ for more information.
         been researched.
     </note>
 </explicit-failures-markup>
+
+
