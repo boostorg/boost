@@ -1,11 +1,11 @@
 project boost/doc ;
 import boostbook : boostbook ;
 
-# The <dependency> below allows Boost.Build to see Doxygen
-# main target, which is necessary to correctly build
-# documentation
 boostbook doc : src/boost.xml 
     : 
+     
+     ## Build the various generated docs (Doxygen and QuickBook)...
+     
      <dependency>../libs/program_options/doc//autodoc.xml 
      <dependency>../libs/algorithm/string/doc//autodoc.xml
      <dependency>../libs/logic/doc//reference.xml
@@ -18,6 +18,10 @@ boostbook doc : src/boost.xml
      <dependency>../libs/xpressive/doc//autodoc.xml
      <dependency>../libs/xpressive/doc//xpressive
      <dependency>../more/whos_using//using
+     <dependency>../tools/jam/doc//bjam
+     
+     ## Add path references to the QuickBook generated docs...
+     
      <implicit-dependency>../libs/functional/hash/doc//hash
      <implicit-dependency>../libs/type_traits/doc//type_traits
      <implicit-dependency>../libs/static_assert/doc//static_assert
@@ -27,8 +31,6 @@ boostbook doc : src/boost.xml
      <implicit-dependency>../libs/xpressive/doc//xpressive
      <implicit-dependency>../more/whos_using//using
      <implicit-dependency>../tools/jam/doc//bjam
+     
      <xsl:param>boost.libraries=../../libs/libraries.htm
     ;
-
-
-
