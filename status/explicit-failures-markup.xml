@@ -3180,6 +3180,30 @@ for more information.
                 native TR1 support.
             </note>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_regex"/>
+            <test name="std_test_regex"/>
+            <toolset name="mingw*"/>
+            <note author="John Maddock">
+               These tests fail on this platform due to a lack of
+               wide character support.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_type_traits"/>
+            <test name="std_type_traits"/>
+            <toolset name="gcc-3.3.*"/>
+            <toolset name="gcc-3_3.*"/>
+            <note author="John Maddock">
+               These tests fail due to a known compiler bug 
+               that is fixed in more recent releases.  Users are
+               very unlikely to encounter this as a real problem 
+               in practice.
+            </note>
+        </mark-expected-failures>
+
         <mark-expected-failures>
             <test name="tr1_function_traits_test"/>
             <test name="tr1_remove_bounds_test"/>
