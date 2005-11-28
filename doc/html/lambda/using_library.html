@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Using the library</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../lambda.html" title="Chapter 6. Boost.Lambda">
 <link rel="prev" href="s03.html" title="Introduction">
@@ -52,7 +52,7 @@ list&lt;int&gt; v(10);
 for_each(v.begin(), v.end(), _1 = 1);</pre>
 <p>
 
-	The expression <code class="literal">_1 = 1</code> creates a lambda functor which assigns the value <code class="literal">1</code> to every element in <code class="literal">v</code>.<sup>[<a name="id1151327" href="#ftn.id1151327">1</a>]</sup></p>
+	The expression <code class="literal">_1 = 1</code> creates a lambda functor which assigns the value <code class="literal">1</code> to every element in <code class="literal">v</code>.<sup>[<a name="id1222487" href="#ftn.id1222487">1</a>]</sup></p>
 <p>
 	Next, we create a container of pointers and make them point to the elements in the first container <code class="literal">v</code>:
 
@@ -291,7 +291,7 @@ This is to prevent pointer arithmetic making non-const arrays const.
 </div>
 <div class="footnotes">
 <br><hr width="100" align="left">
-<div class="footnote"><p><sup>[<a name="ftn.id1151327" href="#id1151327">1</a>] </sup>
+<div class="footnote"><p><sup>[<a name="ftn.id1222487" href="#id1222487">1</a>] </sup>
 Strictly taken, the C++ standard defines <code class="literal">for_each</code> as a <span class="emphasis"><em>non-modifying sequence operation</em></span>, and the function object passed to <code class="literal">for_each</code> should not modify its argument. 
 The requirements for the arguments of <code class="literal">for_each</code> are unnecessary strict, since as long as the iterators are <span class="emphasis"><em>mutable</em></span>, <code class="literal">for_each</code> accepts a function object that can have side-effects on their argument.
 Nevertheless, it is straightforward to provide another function template with the functionality of<code class="literal">std::for_each</code> but more fine-grained requirements for its arguments.

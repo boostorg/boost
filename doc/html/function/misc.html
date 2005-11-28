@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Miscellaneous Notes</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../function.html" title="Chapter 4. Boost.Function">
 <link rel="prev" href="faq.html" title="Frequently Asked Questions">
@@ -26,14 +26,14 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="function.misc"></a>Miscellaneous Notes</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="misc.html#id1143226">Boost.Function vs. Function Pointers</a></span></dt>
-<dt><span class="section"><a href="misc.html#id1143276">Performance</a></span></dt>
-<dt><span class="section"><a href="misc.html#id1143317">Combatting virtual function "bloat"</a></span></dt>
-<dt><span class="section"><a href="misc.html#id1143337">Acknowledgements</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214396">Boost.Function vs. Function Pointers</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214446">Performance</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214488">Combatting virtual function "bloat"</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214508">Acknowledgements</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1143226"></a>Boost.Function vs. Function Pointers</h4></div></div></div>
+<a name="id1214396"></a>Boost.Function vs. Function Pointers</h4></div></div></div>
 <p>Boost.Function has several advantages over function pointers, namely:
 
 </p>
@@ -54,37 +54,37 @@
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1143276"></a>Performance</h4></div></div></div>
+<a name="id1214446"></a>Performance</h4></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="misc.html#id1143279">Function object wrapper size</a></span></dt>
-<dt><span class="section"><a href="misc.html#id1143289">Copying efficiency</a></span></dt>
-<dt><span class="section"><a href="misc.html#id1143307">Invocation efficiency</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214450">Function object wrapper size</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214460">Copying efficiency</a></span></dt>
+<dt><span class="section"><a href="misc.html#id1214477">Invocation efficiency</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1143279"></a>Function object wrapper size</h5></div></div></div>
+<a name="id1214450"></a>Function object wrapper size</h5></div></div></div>
 <p> Function object wrappers will be the size of two function pointers plus one function pointer or data pointer (whichever is larger). On common 32-bit platforms, this amounts to 12 bytes per wrapper. Additionally, the function object target will be allocated on the heap.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1143289"></a>Copying efficiency</h5></div></div></div>
+<a name="id1214460"></a>Copying efficiency</h5></div></div></div>
 <p> Copying function object wrappers may require allocating memory for a copy of the function object target. The default allocator may be replaced with a faster custom allocator or one may choose to allow the function object wrappers to only store function object targets by reference (using <code class="computeroutput">ref</code>) if the cost of this cloning becomes prohibitive.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1143307"></a>Invocation efficiency</h5></div></div></div>
+<a name="id1214477"></a>Invocation efficiency</h5></div></div></div>
 <p> With a properly inlining compiler, an invocation of a function object requires one call through a function pointer. If the call is to a free function pointer, an additional call must be made to that function pointer (unless the compiler has very powerful interprocedural analysis).</p>
 </div>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1143317"></a>Combatting virtual function "bloat"</h4></div></div></div>
+<a name="id1214488"></a>Combatting virtual function "bloat"</h4></div></div></div>
 <p> The use of virtual functions tends to cause 'code bloat' on many compilers. When a class contains a virtual function, it is necessary to emit an additional function that classifies the type of the object. It has been our experience that these auxiliary functions increase the size of the executable significantly when many <code class="computeroutput">boost::function</code> objects are used. </p>
 <p> In Boost.Function, an alternative but equivalent approach was taken using free functions instead of virtual functions. The Boost.Function object essentially holds two pointers to make a valid target call: a void pointer to the function object it contains and a void pointer to an "invoker" that can call the function object, given the function pointer. This invoker function performs the argument and return value conversions Boost.Function provides. A third pointer points to a free function called the "manager", which handles the cloning and destruction of function objects. The scheme is typesafe because the only functions that actually handle the function object, the invoker and the manager, are instantiated given the type of the function object, so they can safely cast the incoming void pointer (the function object pointer) to the appropriate type.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1143337"></a>Acknowledgements</h4></div></div></div>
+<a name="id1214508"></a>Acknowledgements</h4></div></div></div>
 <p> Many people were involved in the construction of this
     library. William Kempf, Jesse Jones and Karl Nelson were all
     extremely helpful in isolating an interface and scope for the

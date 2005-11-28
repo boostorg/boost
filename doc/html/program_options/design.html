@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Design Discussion</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../program_options.html" title="Chapter 7. Boost.Program_options">
 <link rel="prev" href="howto.html" title="How To">
@@ -112,34 +112,34 @@
       </p>
 <div class="itemizedlist"><ul type="disc">
 <li><p>Use a fully templated implementation: given a string of a
-            certain type, a parser will return a <code class="computeroutput">parsed_options</code> instance
-            with strings of the same type (i.e. the <code class="computeroutput">parsed_options</code> class
+            certain type, a parser will return a  instance
+            with strings of the same type (i.e. the  class
             will be templated).</p></li>
 <li><p>Use internal encoding: same as above, but strings will be converted to and
             from the internal encoding.</p></li>
 <li><p>Use and partly expose the internal encoding: same as above,
-            but the strings in the <code class="computeroutput">parsed_options</code> instance will be in the
+            but the strings in the  instance will be in the
             internal encoding. This might avoid a conversion if
-            <code class="computeroutput">parsed_options</code> instance is passed directly to other components,
+             instance is passed directly to other components,
             but can be also dangerous or confusing for a user.
           </p></li>
 </ul></div>
 <p>The second solution appears to be the best -- it does not increase
     the code size much and is cleaner than the third. To avoid extra
-    conversions, the Unicode version of <code class="computeroutput">parsed_options</code> can also store
+    conversions, the Unicode version of  can also store
     strings in internal encoding.
     </p>
 <p>For the options descriptions component, we don't have much
       choice. Since it's not desirable to have either all options use ascii or all
       of them use Unicode, but rather have some ascii and some Unicode options, the
-      interface of the <code class="computeroutput">value_semantic</code> must work with both. The only way is
+      interface of the  must work with both. The only way is
       to pass an additional flag telling if strings use ascii or internal encoding.
-      The instance of <code class="computeroutput">value_semantic</code> can then convert into some
+      The instance of  can then convert into some
       other encoding if needed.
     </p>
-<p>For the storage component, the only affected function is <code class="computeroutput">store</code>.
-      For Unicode input, the <code class="computeroutput">store</code> function should convert the value to the
-      internal encoding.  It should also inform the <code class="computeroutput">value_semantic</code> class
+<p>For the storage component, the only affected function is .
+      For Unicode input, the  function should convert the value to the
+      internal encoding.  It should also inform the  class
       about the used encoding.
     </p>
 <p>Finally, what internal encoding should we use? The

@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Concepts</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
 <link rel="prev" href="design.html" title="Design">
@@ -51,7 +51,7 @@
 		formalize the requirements. A model that implements Mutex and its
 		refinements has two states: <span class="bold"><strong>locked</strong></span> and
 		<span class="bold"><strong>unlocked</strong></span>. Before using a shared resource, a
-		thread locks a <span class="bold"><strong>Boost.Threads</strong></span> mutex object
+		thread locks a  mutex object
 		(an object whose type is a model of
 		<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> or one of it's
 		refinements), ensuring
@@ -68,15 +68,15 @@
 		properly when using these traditional API's. The result is
 		<a href="../threads.html#threads.glossary.deadlock">deadlock</a>.</p>
 <p>Many C++ threading libraries use a pattern known as <span class="emphasis"><em>Scoped
-		Locking</em></span>[<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>] to free the programmer from
+		Locking</em></span> to free the programmer from
 		the need to explicitly lock and unlock mutex objects. With this pattern, a
 		<a href="concepts.html#threads.concepts.lock-concepts" title="Lock Concepts">Lock</a> concept is employed where
 		the lock object's constructor locks the associated mutex object and the
 		destructor automatically does the unlocking. The
-		<span class="bold"><strong>Boost.Threads</strong></span> library takes this pattern to
+		 library takes this pattern to
 		the extreme in that Lock concepts are the only way to lock and unlock a
 		mutex object: lock and unlock functions are not exposed by any
-		<span class="bold"><strong>Boost.Threads</strong></span> mutex objects. This helps to
+		 mutex objects. This helps to
 		ensure safe usage patterns, especially when code throws exceptions.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
@@ -102,7 +102,7 @@
 <p>Internally a lock count is maintained and the owning thread must
 				unlock the mutex object the same number of times that it locked it before
 				the mutex object's state returns to unlocked. Since mutex objects in
-				<span class="bold"><strong>Boost.Threads</strong></span> expose locking
+				 expose locking
 				functionality only through lock concepts, a thread will always unlock a
 				mutex object the same number of times that it locked it. This helps to
 				eliminate a whole set of errors typically found in traditional C style
@@ -120,10 +120,10 @@
 				operation will fail with some sort of error indication. Further, attempts
 				by a thread to unlock a mutex object that was not locked by the thread
 				will also return some sort of error indication. In
-				<span class="bold"><strong>Boost.Threads</strong></span>, an exception of type
+				, an exception of type
 				<code class="computeroutput"><a href="../lock_error.html" title="Class lock_error">boost::lock_error</a></code> 
 				would be thrown in these cases.</p>
-<p><span class="bold"><strong>Boost.Threads</strong></span> does not currently
+<p> does not currently
 				provide any mutex objects that use this strategy.</p>
 </div>
 <div class="section" lang="en">
@@ -135,7 +135,7 @@
 				<a href="../threads.html#threads.glossary.deadlock">deadlock</a>. In general
 				this locking strategy is less safe than a checked or recursive strategy,
 				but it's also a faster strategy and so is employed by many libraries.</p>
-<p><span class="bold"><strong>Boost.Threads</strong></span> does not currently
+<p> does not currently
 				provide any mutex objects that use this strategy.</p>
 </div>
 <div class="section" lang="en">
@@ -193,7 +193,7 @@
 <div class="titlepage"><div><div><h6 class="title">
 <a name="threads.concepts.unspecified-scheduling-policy"></a>Unspecified Policy</h6></div></div></div>
 <p>The mutex object does not specify a scheduling policy. In order to
-				ensure portability, all <span class="bold"><strong>Boost.Threads</strong></span>
+				ensure portability, all 
 				mutex objects use an unspecified scheduling policy.</p>
 </div>
 </div>
@@ -220,7 +220,7 @@
 				the following expressions must be well-formed
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1211666"></a><p class="title"><b>Table 12.1. Mutex Expressions</b></p>
+<a name="id1357700"></a><p class="title"><b>Table 12.1. Mutex Expressions</b></p>
 <table class="table" summary="Mutex Expressions">
 <colgroup>
 <col>
@@ -263,7 +263,7 @@
 				the following expressions must be well-formed 
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1211744"></a><p class="title"><b>Table 12.2. TryMutex Expressions</b></p>
+<a name="id1357777"></a><p class="title"><b>Table 12.2. TryMutex Expressions</b></p>
 <table class="table" summary="TryMutex Expressions">
 <colgroup>
 <col>
@@ -292,7 +292,7 @@
 				the following expressions must be well-formed
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1211804"></a><p class="title"><b>Table 12.3. TimedMutex Expressions</b></p>
+<a name="id1357837"></a><p class="title"><b>Table 12.3. TimedMutex Expressions</b></p>
 <table class="table" summary="TimedMutex Expressions">
 <colgroup>
 <col>
@@ -315,11 +315,11 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="threads.concepts.mutex-models"></a>Mutex Models</h5></div></div></div>
-<p><span class="bold"><strong>Boost.Threads</strong></span> currently supplies six models of
+<p> currently supplies six models of
 			<a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a>
 			and its refinements.</p>
 <div class="table">
-<a name="id1211857"></a><p class="title"><b>Table 12.4. Mutex Models</b></p>
+<a name="id1357885"></a><p class="title"><b>Table 12.4. Mutex Models</b></p>
 <table class="table" summary="Mutex Models">
 <colgroup>
 <col>
@@ -374,7 +374,7 @@
 <p>A lock object provides a safe means for locking and unlocking a mutex
 			object (an object whose type is a model of <a href="concepts.html#threads.concepts.Mutex" title="Mutex Concept">Mutex</a> or one of its refinements). In
 			other words they are an implementation of the <span class="emphasis"><em>Scoped
-			Locking</em></span>[<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>] pattern. The <a href="concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>,
+			Locking</em></span> pattern. The <a href="concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a>,
 			<a href="concepts.html#threads.concepts.ScopedTryLock" title="ScopedTryLock Concept">ScopedTryLock</a>, and 
 			<a href="concepts.html#threads.concepts.ScopedTimedLock" title="ScopedTimedLock Concept">ScopedTimedLock</a>
 			concepts formalize the requirements.</p>
@@ -397,7 +397,7 @@
 				the following expressions must be well-formed
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1212089"></a><p class="title"><b>Table 12.5. Lock Expressions</b></p>
+<a name="id1358107"></a><p class="title"><b>Table 12.5. Lock Expressions</b></p>
 <table class="table" summary="Lock Expressions">
 <colgroup>
 <col>
@@ -465,7 +465,7 @@
 				the following expressions must be well-formed 
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1212325"></a><p class="title"><b>Table 12.6. ScopedLock Expressions</b></p>
+<a name="id1358344"></a><p class="title"><b>Table 12.6. ScopedLock Expressions</b></p>
 <table class="table" summary="ScopedLock Expressions">
 <colgroup>
 <col>
@@ -503,7 +503,7 @@
 				the following expressions must be well-formed 
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1212428"></a><p class="title"><b>Table 12.7. TryLock Expressions</b></p>
+<a name="id1358446"></a><p class="title"><b>Table 12.7. TryLock Expressions</b></p>
 <table class="table" summary="TryLock Expressions">
 <colgroup>
 <col>
@@ -542,7 +542,7 @@
 				the following expressions must be well-formed 
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1212550"></a><p class="title"><b>Table 12.8. ScopedTryLock Expressions</b></p>
+<a name="id1358568"></a><p class="title"><b>Table 12.8. ScopedTryLock Expressions</b></p>
 <table class="table" summary="ScopedTryLock Expressions">
 <colgroup>
 <col>
@@ -581,7 +581,7 @@
 				the following expressions must be well-formed 
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1212671"></a><p class="title"><b>Table 12.9. TimedLock Expressions</b></p>
+<a name="id1358689"></a><p class="title"><b>Table 12.9. TimedLock Expressions</b></p>
 <table class="table" summary="TimedLock Expressions">
 <colgroup>
 <col>
@@ -620,7 +620,7 @@
 				the following expressions must be well-formed 
 				and have the indicated effects.</p>
 <div class="table">
-<a name="id1212816"></a><p class="title"><b>Table 12.10. ScopedTimedLock Expressions</b></p>
+<a name="id1358832"></a><p class="title"><b>Table 12.10. ScopedTimedLock Expressions</b></p>
 <table class="table" summary="ScopedTimedLock Expressions">
 <colgroup>
 <col>
@@ -653,11 +653,11 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
 <a name="threads.concepts.lock-models"></a>Lock Models</h5></div></div></div>
-<p><span class="bold"><strong>Boost.Threads</strong></span> currently supplies twelve models of
+<p> currently supplies twelve models of
 			<a href="concepts.html#threads.concepts.Lock" title="Lock Concept">Lock</a>
 			and its refinements.</p>
 <div class="table">
-<a name="id1212910"></a><p class="title"><b>Table 12.11. Lock Models</b></p>
+<a name="id1358923"></a><p class="title"><b>Table 12.11. Lock Models</b></p>
 <table class="table" summary="Lock Models">
 <colgroup>
 <col>

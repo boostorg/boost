@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Library Overview</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../program_options.html" title="Chapter 7. Boost.Program_options">
 <link rel="prev" href="tutorial.html" title="Tutorial">
@@ -26,11 +26,11 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="program_options.overview"></a>Library Overview</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="overview.html#id1175437">Options Description Component</a></span></dt>
-<dt><span class="section"><a href="overview.html#id1175865">Parsers Component</a></span></dt>
-<dt><span class="section"><a href="overview.html#id1175943">Storage Component</a></span></dt>
-<dt><span class="section"><a href="overview.html#id1176025">Specific parsers</a></span></dt>
-<dt><span class="section"><a href="overview.html#id1176179">Annotated List of Symbols</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1246545">Options Description Component</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1246935">Parsers Component</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1246990">Storage Component</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1247072">Specific parsers</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1247195">Annotated List of Symbols</a></span></dt>
 </dl></div>
 <p>In the tutorial section, we saw several examples of library usage.
     Here we will describe the overall library design including the primary
@@ -72,23 +72,23 @@
   </p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1175437"></a>Options Description Component</h4></div></div></div>
+<a name="id1246545"></a>Options Description Component</h4></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="overview.html#id1175634">Syntactic Information</a></span></dt>
-<dt><span class="section"><a href="overview.html#id1175760">Semantic Information</a></span></dt>
-<dt><span class="section"><a href="overview.html#id1175796">Positional Options</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1246695">Syntactic Information</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1246832">Semantic Information</a></span></dt>
+<dt><span class="section"><a href="overview.html#id1246873">Positional Options</a></span></dt>
 </dl></div>
 <p>The options description component has three main classes:
-      <code class="computeroutput">option_description</code>, <code class="computeroutput">value_semantic</code> and <code class="computeroutput">options_description</code>. The
-      first two together describe a single option. The <code class="computeroutput">option_description</code>
-      class contains the option's name, description and a pointer to <code class="computeroutput">value_semantic</code>,
+      ,  and . The
+      first two together describe a single option. The 
+      class contains the option's name, description and a pointer to ,
       which, in turn, knows the type of the option's value and can parse the value,
-      apply the default value, and so on. The <code class="computeroutput">options_description</code> class is a
-      container for instances of <code class="computeroutput">option_description</code>.
+      apply the default value, and so on. The  class is a
+      container for instances of .
     </p>
 <p>For almost every library, those classes could be created in a
       conventional way: that is, you'd create new options using constructors and
-      then call the <code class="computeroutput">add</code> method of <code class="computeroutput">options_description</code>. However,
+      then call the <code class="computeroutput">add</code> method of . However,
       that's overly verbose for declaring 20 or 30 options. This concern led
       to creation of the syntax that you've already seen:
 </p>
@@ -140,12 +140,12 @@ desc.add_options()
 <pre class="screen">calc --expression="1 + 2/3"</pre>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1175634"></a>Syntactic Information</h5></div></div></div>
-<div class="toc"><dl><dt><span class="section"><a href="overview.html#id1175697">Description formatting</a></span></dt></dl></div>
+<a name="id1246695"></a>Syntactic Information</h5></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="overview.html#id1246769">Description formatting</a></span></dt></dl></div>
 <p>The syntactic information is provided by the
-        <code class="computeroutput">boost::program_options::options_description</code> class
+        <code class="computeroutput"><a href="../options_description.html" title="Class options_description">boost::program_options::options_description</a></code> class
         and some methods of the
-        <code class="computeroutput">boost::program_options::value_semantic</code> class
+        <code class="computeroutput"><a href="../value_semantic.html" title="Class value_semantic">boost::program_options::value_semantic</a></code> class
         and includes:        
         </p>
 <div class="itemizedlist"><ul type="disc">
@@ -185,7 +185,7 @@ desc.add_options()
       </pre>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h6 class="title">
-<a name="id1175697"></a>Description formatting</h6></div></div></div>
+<a name="id1246769"></a>Description formatting</h6></div></div></div>
 <p>
           Sometimes the description can get rather long, for example, when
           several option's values need separate documentation. Below we
@@ -279,9 +279,9 @@ bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla");
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1175760"></a>Semantic Information</h5></div></div></div>
+<a name="id1246832"></a>Semantic Information</h5></div></div></div>
 <p>The semantic information is completely provided by the 
-        <code class="computeroutput">boost::program_options::value_semantic</code> class. For
+        <code class="computeroutput"><a href="../value_semantic.html" title="Class value_semantic">boost::program_options::value_semantic</a></code> class. For
         example:
 </p>
 <pre class="programlisting">
@@ -302,7 +302,7 @@ desc.add_options()
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1175796"></a>Positional Options</h5></div></div></div>
+<a name="id1246873"></a>Positional Options</h5></div></div></div>
 <p>Our definition of option as (name, value) pairs is simple and
         useful, but in one special case of the command line, there's a
         problem. A command line can include a <em class="firstterm">positional option</em>,
@@ -323,7 +323,7 @@ desc.add_options()
 <pre class="screen">
           archiver --compression=9 --input-file=/etc/passwd
         </pre>
-<p>The <code class="computeroutput">positional_options_description</code> class allows the command line
+<p>The  class allows the command line
         parser to assign the names. The class specifies how many positional options
         are allowed, and for each allowed option, specifies the name. For example:
 </p>
@@ -348,13 +348,13 @@ pd.add("output-file", 2).add_optional("input-file", -1);
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1175865"></a>Parsers Component</h4></div></div></div>
+<a name="id1246935"></a>Parsers Component</h4></div></div></div>
 <p>The parsers component splits input sources into (name, value) pairs.
       Each parser looks for possible options and consults the options
       description component to determine if the option is known and how its value
       is specified. In the simplest case, the name is explicitly specified,
       which allows the library to decide if such option is known. If it is known, the
-      <code class="computeroutput">value_semantic</code> instance determines how the value is specified. (If
+       instance determines how the value is specified. (If
       it is not known, an exception is thrown.) Common
       cases are when the value is explicitly specified by the user, and when
       the value cannot be specified by the user, but the presence of the
@@ -365,7 +365,7 @@ pd.add("output-file", 2).add_optional("input-file", -1);
 <p>
       To invoke a parser you typically call a function, passing the options
       description and command line or config file or something else.
-      The results of parsing are returned as an instance of the <code class="computeroutput">parsed_options</code>
+      The results of parsing are returned as an instance of the 
       class. Typically, that object is passed directly to the storage
       component. However, it also can be used directly, or undergo some additional
       processing. 
@@ -397,7 +397,7 @@ pd.add("output-file", 2).add_optional("input-file", -1);
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1175943"></a>Storage Component</h4></div></div></div>
+<a name="id1246990"></a>Storage Component</h4></div></div></div>
 <p>The storage component is responsible for:
       </p>
 <div class="itemizedlist"><ul type="disc">
@@ -435,11 +435,11 @@ notify(vm);
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176025"></a>Specific parsers</h4></div></div></div>
-<div class="toc"><dl><dt><span class="section"><a href="overview.html#id1176029">Environment variables</a></span></dt></dl></div>
+<a name="id1247072"></a>Specific parsers</h4></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="overview.html#id1247076">Environment variables</a></span></dt></dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1176029"></a>Environment variables</h5></div></div></div>
+<a name="id1247076"></a>Environment variables</h5></div></div></div>
 <p><em class="firstterm">Environment variables</em> are string variables
       which are available to all programs via the <code class="computeroutput">getenv</code> function
       of C runtime library. The operating system allows to set initial values
@@ -453,8 +453,8 @@ notify(vm);
       they are particularly suitable for options which apply to all programs.
       </p>
 <p>The environment variables can be parsed with the
-      <code class="computeroutput">parse_environment</code> function. The function have several overloaded
-      versions. The first parameter is always an <code class="computeroutput">options_description</code>
+       function. The function have several overloaded
+      versions. The first parameter is always an 
       instance, and the second specifies what variables must be processed, and
       what option names must correspond to it. To describe the second
       parameter we need to consider naming conventions for environment
@@ -467,14 +467,14 @@ notify(vm);
       name <code class="literal">proxy</code> the environment variable might be called
       <code class="envar">BOOST_PROXY</code>. During parsing, we need to perform reverse
       conversion of the names. This is accomplished by passing the choosen
-      prefix as the second parameter of the <code class="computeroutput">parse_environment</code> function.
+      prefix as the second parameter of the  function.
       Say, if you pass <code class="literal">BOOST_</code> as the prefix, and there are
       two variables, <code class="envar">CVSROOT</code> and <code class="envar">BOOST_PROXY</code>, the
       first variable will be ignored, and the second one will be converted to
       option <code class="literal">proxy</code>. 
       </p>
 <p>The above logic is sufficient in many cases, but it is also
-      possible to pass, as the second parameter of the <code class="computeroutput">parse_environment</code>
+      possible to pass, as the second parameter of the 
       function, any function taking a <code class="computeroutput">std::string</code> and returning
       <code class="computeroutput">std::string</code>. That function will be called for each
       environment variable and should return either the name of the option, or
@@ -484,7 +484,7 @@ notify(vm);
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176179"></a>Annotated List of Symbols</h4></div></div></div>
+<a name="id1247195"></a>Annotated List of Symbols</h4></div></div></div>
 <p>The following table describes all the important symbols in the
       library, for quick access.</p>
 <div class="informaltable"><table class="table" width="100%">
@@ -499,29 +499,29 @@ notify(vm);
 <tbody>
 <tr><td colspan="2">Options description component</td></tr>
 <tr>
-<td><code class="computeroutput">options_description</code></td>
+<td> </td>
 <td>describes a number of options</td>
 </tr>
 <tr>
-<td><code class="computeroutput">value</code></td>
+<td> </td>
 <td>defines the option's value</td>
 </tr>
 <tr><td colspan="2">Parsers component</td></tr>
 <tr>
-<td><code class="computeroutput">parse_command_line</code></td>
+<td> </td>
 <td>parses command line</td>
 </tr>
 <tr>
-<td><code class="computeroutput">parse_config_file</code></td>
+<td> </td>
 <td>parses config file</td>
 </tr>
 <tr>
-<td><code class="computeroutput">parse_environment</code></td>
+<td> </td>
 <td>parses environment</td>
 </tr>
 <tr><td colspan="2">Storage component</td></tr>
 <tr>
-<td><code class="computeroutput">variables_map</code></td>
+<td> </td>
 <td>storage for option values</td>
 </tr>
 </tbody>

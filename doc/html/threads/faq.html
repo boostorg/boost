@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Frequently Asked Questions</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
 <link rel="prev" href="../xtime.html" title="Struct xtime">
@@ -27,35 +27,35 @@
 <a name="threads.faq"></a>Frequently Asked Questions</h3></div></div></div>
 <div class="qandaset">
 <dl>
-<dt>1. <a href="faq.html#id1221711">Are lock objects thread safe?</a>
+<dt>1. <a href="faq.html#id1559772">Are lock objects thread safe?</a>
 </dt>
-<dt>2. <a href="faq.html#id1221752">Why was Boost.Threads modeled after (specific library
+<dt>2. <a href="faq.html#id1559813">Why was  modeled after (specific library
 		name)?</a>
 </dt>
-<dt>3. <a href="faq.html#id1221784">Why wasn't Boost.Threads modeled after (specific library
+<dt>3. <a href="faq.html#id1559828">Why wasn't  modeled after (specific library
 	    name)?</a>
 </dt>
-<dt>4. <a href="faq.html#id1221817">Why do Mutexes
+<dt>4. <a href="faq.html#id1559844">Why do Mutexes
 		have noncopyable semantics?</a>
 </dt>
-<dt>5. <a href="faq.html#id1221840">How can you prevent deadlock from occurring when
+<dt>5. <a href="faq.html#id1559867">How can you prevent deadlock from occurring when
 		a thread must lock multiple mutexes?</a>
 </dt>
-<dt>6. <a href="faq.html#id1221866">Don't noncopyable Mutex semantics mean that a
+<dt>6. <a href="faq.html#id1559887">Don't noncopyable Mutex semantics mean that a
 		class with a mutex member will be noncopyable as well?</a>
 </dt>
-<dt>7. <a href="faq.html#id1221906">How can you lock a Mutex member in a const member
+<dt>7. <a href="faq.html#id1559927">How can you lock a Mutex member in a const member
 		function, in order to implement the Monitor Pattern?</a>
 </dt>
-<dt>8. <a href="faq.html#id1221943">Why supply boost::condition variables rather than
+<dt>8. <a href="faq.html#id1559952">Why supply boost::condition variables rather than
 		event variables?</a>
 </dt>
-<dt>9. <a href="faq.html#id1222000">Why isn't thread cancellation or termination provided?</a>
+<dt>9. <a href="faq.html#id1559986">Why isn't thread cancellation or termination provided?</a>
 </dt>
-<dt>10. <a href="faq.html#id1222017">Is it safe for threads to share automatic storage duration (stack)
+<dt>10. <a href="faq.html#id1559998">Is it safe for threads to share automatic storage duration (stack)
 		objects via pointers or references?</a>
 </dt>
-<dt>11. <a href="faq.html#id1222033">Why has class semaphore disappeared?</a>
+<dt>11. <a href="faq.html#id1560014">Why has class semaphore disappeared?</a>
 </dt>
 </dl>
 <table border="0" summary="Q and A Set">
@@ -63,7 +63,7 @@
 <tbody>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221711"></a><a name="id1221712"></a><b>1.</b>
+<a name="id1559772"></a><a name="id1559773"></a><b>1.</b>
 </td>
 <td align="left" valign="top"><p>Are lock objects <a href="../threads.html#threads.glossary.thread-safe">thread safe</a>?</p></td>
 </tr>
@@ -79,25 +79,25 @@
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221752"></a><a name="id1221753"></a><b>2.</b>
+<a name="id1559813"></a><a name="id1559814"></a><b>2.</b>
 </td>
-<td align="left" valign="top"><p>Why was <span class="bold"><strong>Boost.Threads</strong></span> modeled after (specific library
+<td align="left" valign="top"><p>Why was  modeled after (specific library
 		name)?</p></td>
 </tr>
 <tr class="answer">
 <td align="left" valign="top"><b></b></td>
-<td align="left" valign="top"><p>It wasn't. <span class="bold"><strong>Boost.Threads</strong></span> was designed from scratch. Extensive
+<td align="left" valign="top"><p>It wasn't.  was designed from scratch. Extensive
 		design discussions involved numerous people representing a wide range of
 		experience across many platforms. To ensure portability, the initial
 		implements were done in parallel using POSIX Threads and the Win32
-		threading API. But the <span class="bold"><strong>Boost.Threads</strong></span> design is very much in the spirit
+		threading API. But the  design is very much in the spirit
 		of C++, and thus doesn't model such C based APIs.</p></td>
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221784"></a><a name="id1221785"></a><b>3.</b>
+<a name="id1559828"></a><a name="id1559829"></a><b>3.</b>
 </td>
-<td align="left" valign="top"><p>Why wasn't <span class="bold"><strong>Boost.Threads</strong></span> modeled after (specific library
+<td align="left" valign="top"><p>Why wasn't  modeled after (specific library
 	    name)?</p></td>
 </tr>
 <tr class="answer">
@@ -108,11 +108,11 @@
 		libraries couldn't meet our C++ requirements, and were also missing
 		certain features. For instance, the WIN32 thread API lacks condition
 		variables, even though these are critical for the important Monitor
-		pattern [<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>].</p></td>
+		pattern .</p></td>
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221817"></a><a name="id1221818"></a><b>4.</b>
+<a name="id1559844"></a><a name="id1559845"></a><b>4.</b>
 </td>
 <td align="left" valign="top"><p>Why do <a href="concepts.html#threads.concepts.mutexes" title="Mutexes">Mutexes</a>
 		have noncopyable semantics?</p></td>
@@ -131,7 +131,7 @@
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221840"></a><a name="id1221841"></a><b>5.</b>
+<a name="id1559867"></a><a name="id1559868"></a><b>5.</b>
 </td>
 <td align="left" valign="top"><p>How can you prevent <a href="../threads.html#threads.glossary.deadlock">deadlock</a> from occurring when
 		a thread must lock multiple mutexes?</p></td>
@@ -140,12 +140,12 @@
 <td align="left" valign="top"><b></b></td>
 <td align="left" valign="top"><p>Always lock them in the same order. One easy way of doing this is
 		to use each mutex's address to determine the order in which they are
-		locked. A future <span class="bold"><strong>Boost.Threads</strong></span> concept may wrap this pattern up in a
+		locked. A future  concept may wrap this pattern up in a
 		reusable class.</p></td>
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221866"></a><a name="id1221867"></a><b>6.</b>
+<a name="id1559887"></a><a name="id1559888"></a><b>6.</b>
 </td>
 <td align="left" valign="top"><p>Don't noncopyable <a href="concepts.html#threads.concepts.mutexes" title="Mutexes">Mutex</a> semantics mean that a
 		class with a mutex member will be noncopyable as well?</p></td>
@@ -205,14 +205,14 @@ private:
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221906"></a><a name="id1221907"></a><b>7.</b>
+<a name="id1559927"></a><a name="id1559928"></a><b>7.</b>
 </td>
 <td align="left" valign="top"><p>How can you lock a <a href="concepts.html#threads.concepts.mutexes" title="Mutexes">Mutex</a> member in a const member
 		function, in order to implement the Monitor Pattern?</p></td>
 </tr>
 <tr class="answer">
 <td align="left" valign="top"><b></b></td>
-<td align="left" valign="top"><p>The Monitor Pattern [<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>] mutex
+<td align="left" valign="top"><p>The Monitor Pattern  mutex
 		should simply be declared as mutable. See the example code above. The
 		internal state of mutex types could have been made mutable, with all
 		lock calls made via const functions, but this does a poor job of
@@ -223,7 +223,7 @@ private:
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1221943"></a><a name="id1221944"></a><b>8.</b>
+<a name="id1559952"></a><a name="id1559953"></a><b>8.</b>
 </td>
 <td align="left" valign="top"><p>Why supply <code class="computeroutput"><a href="../condition.html" title="Class condition">boost::condition</a></code> variables rather than
 		event variables?</p></td>
@@ -232,24 +232,24 @@ private:
 <td align="left" valign="top"><b></b></td>
 <td align="left" valign="top"><p>Condition variables result in user code much less prone to <a href="../threads.html#threads.glossary.race-condition">race conditions</a> than
 		event variables. See <a href="rationale.html#threads.rationale.events" title="Rationale for not providing Event Variables">the section called &#8220;Rationale for not providing <span class="emphasis"><em>Event Variables</em></span>&#8221;</a> 
-		for analysis. Also see [<span class="citation"><a href="../threads.html#threads.bib.Hoare74">Hoare74</a></span>] and [<span class="citation"><a href="../threads.html#threads.bib.SchmidtStalRohnertBuschmann">SchmidtStalRohnertBuschmann</a></span>].
+		for analysis. Also see  and .
 		</p></td>
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1222000"></a><a name="id1222001"></a><b>9.</b>
+<a name="id1559986"></a><a name="id1559988"></a><b>9.</b>
 </td>
 <td align="left" valign="top"><p>Why isn't thread cancellation or termination provided?</p></td>
 </tr>
 <tr class="answer">
 <td align="left" valign="top"><b></b></td>
 <td align="left" valign="top"><p>There's a valid need for thread termination, so at some point
-		<span class="bold"><strong>Boost.Threads</strong></span> probably will include it, but only after we can find a
+		 probably will include it, but only after we can find a
 		truly safe (and portable) mechanism for this concept.</p></td>
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1222017"></a><a name="id1222018"></a><b>10.</b>
+<a name="id1559998"></a><a name="id1559999"></a><b>10.</b>
 </td>
 <td align="left" valign="top"><p>Is it safe for threads to share automatic storage duration (stack)
 		objects via pointers or references?</p></td>
@@ -266,7 +266,7 @@ private:
 </tr>
 <tr class="question">
 <td align="left" valign="top">
-<a name="id1222033"></a><a name="id1222034"></a><b>11.</b>
+<a name="id1560014"></a><a name="id1560016"></a><b>11.</b>
 </td>
 <td align="left" valign="top"><p>Why has class semaphore disappeared?</p></td>
 </tr>

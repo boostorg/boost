@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>How To</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../program_options.html" title="Chapter 7. Boost.Program_options">
 <link rel="prev" href="overview.html" title="Library Overview">
@@ -26,23 +26,24 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="program_options.howto"></a>How To</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="howto.html#id1176300">Non-conventional Syntax</a></span></dt>
-<dt><span class="section"><a href="howto.html#id1176344">Response Files</a></span></dt>
-<dt><span class="section"><a href="howto.html#id1176406">Winmain Command Line</a></span></dt>
-<dt><span class="section"><a href="howto.html#id1176447">Option Groups and Hidden Options</a></span></dt>
-<dt><span class="section"><a href="howto.html#id1176504">Custom Validators</a></span></dt>
-<dt><span class="section"><a href="howto.html#id1176605">Unicode Support</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247288">Non-conventional Syntax</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247332">Response Files</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247394">Winmain Command Line</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247435">Option Groups and Hidden Options</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247475">Custom Validators</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247575">Unicode Support</a></span></dt>
+<dt><span class="section"><a href="howto.html#id1247709">Allowing Unknown Options</a></span></dt>
 </dl></div>
 <p>This section describes how the library can be used in specific
   situations.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176300"></a>Non-conventional Syntax</h4></div></div></div>
+<a name="id1247288"></a>Non-conventional Syntax</h4></div></div></div>
 <p>Sometimes, standard command line syntaxes are not enough. For
     example, the gcc compiler has "-frtti" and -fno-rtti" options, and this
     syntax is not directly supported.
     </p>
-<a class="indexterm" name="id1176309"></a><p>For such cases, the library allows the user to provide an
+<a class="indexterm" name="id1247297"></a><p>For such cases, the library allows the user to provide an
     <em class="firstterm">additional parser</em> -- a function which will be called on each
     command line element, before any processing by the library. If the
     additional parser recognises the syntax, it returns the option name and
@@ -77,8 +78,8 @@ store(command_line_parser(ac, av).options(desc).extra_parser(reg_foo)
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176344"></a>Response Files</h4></div></div></div>
-<a class="indexterm" name="id1176348"></a><p>Some operating system have very low limits of the command line
+<a name="id1247332"></a>Response Files</h4></div></div></div>
+<a class="indexterm" name="id1247336"></a><p>Some operating system have very low limits of the command line
       length. The common way to work around those limitations is using
       <em class="firstterm">response files</em>.  A response file is just a
       configuration file which uses the same syntax as the command line. If
@@ -105,7 +106,6 @@ pair&lt;string, string&gt; at_option_parser(string const&amp;s)
     else
         return pair&lt;string, string&gt;();
 }
-
 </pre>
 <p>Finally, when the "response-file" option is found, you'll have to
     load that file and pass it to the command line parser. This part is the
@@ -131,7 +131,6 @@ if (vm.count("response-file")) {
      // Parse the file and store the options
      store(command_line_parser(args).options(desc).run(), vm);     
 }
-
 </pre>
 <p>
       The complete example can be found in the "example/response_file.cpp"
@@ -140,7 +139,7 @@ if (vm.count("response-file")) {
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176406"></a>Winmain Command Line</h4></div></div></div>
+<a name="id1247394"></a>Winmain Command Line</h4></div></div></div>
 <p>On the Windows operating system, GUI applications receive the
     command line as a single string, not split into elements. For that reason,
     the command line parser cannot be used directly. At least on some
@@ -162,8 +161,8 @@ store(command_line_parser(args).options(desc).run(), vm);
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176447"></a>Option Groups and Hidden Options</h4></div></div></div>
-<p>Having a single instance of the <code class="computeroutput">options_description</code> class with all
+<a name="id1247435"></a>Option Groups and Hidden Options</h4></div></div></div>
+<p>Having a single instance of the  class with all
     the program's options can be problematic:
       </p>
 <div class="itemizedlist"><ul type="disc">
@@ -173,13 +172,13 @@ store(command_line_parser(args).options(desc).run(), vm);
 <li><p>Some options shouldn't appear in the generated help message at all.</p></li>
 </ul></div>
 <p>To solve the above issues, the library allows a programmer to create several
-      instances of the <code class="computeroutput">options_description</code> class, which can be merged in
+      instances of the  class, which can be merged in
       different combinations. The following example will define three groups of
       options: command line specific, and two options group for specific program
       modules, only one of which is shown in the generated help message.
     </p>
 <p>Each group is defined using standard syntax. However, you should
-      use reasonable names for each <code class="computeroutput">options_description</code> instance:
+      use reasonable names for each  instance:
 </p>
 <pre class="programlisting">
 options_description general("General options");
@@ -255,7 +254,7 @@ if (vm.count("num-threads")) {
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176504"></a>Custom Validators</h4></div></div></div>
+<a name="id1247475"></a>Custom Validators</h4></div></div></div>
 <p>By default, the conversion of option's value from string into C++
       type is done using iostreams, which sometimes is not convenient. The
       library allows the user to customize the conversion for specific
@@ -298,7 +297,6 @@ void validate(boost::any&amp; v,
         throw validation_error("invalid value");
     }        
 }
-        
 </pre>
 <p>The function takes four parameters. The first is the storage
       for the value, and in this case is either empty or contains an instance of
@@ -318,7 +316,7 @@ void validate(boost::any&amp; v,
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1176605"></a>Unicode Support</h4></div></div></div>
+<a name="id1247575"></a>Unicode Support</h4></div></div></div>
 <p>To use the library with Unicode, you'd need to:
       </p>
 <div class="itemizedlist"><ul type="disc">
@@ -326,7 +324,7 @@ void validate(boost::any&amp; v,
 <li><p>Require Unicode support for options which need it</p></li>
 </ul></div>
 <p>Most of the parsers have Unicode versions. For example, the
-      <code class="computeroutput">parse_command_line</code> function has an overload which takes
+       function has an overload which takes
       <code class="computeroutput">wchar_t</code> strings, instead of ordinary <code class="computeroutput">char</code>.
     </p>
 <p>Even if some of the parsers are Unicode-aware, it does not mean you
@@ -379,6 +377,39 @@ $ export LC_CTYPE=ru_RU.KOI8-R
             everything's OK. Otherwise, locale support on your system might be
             broken.</p></li>
 </ol></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="id1247709"></a>Allowing Unknown Options</h4></div></div></div>
+<p>Usually, the library throws an exception on unknown option names. This 
+      behaviour can be changed. For example, only some part of your application uses 
+      <a href="../program_options.html" title="Chapter 7. Boost.Program_options">Program_options</a>, and you wish to pass unrecognized options to another part of
+      the program, or even to another application.</p>
+<p>To allow unregistered options on the command line, you need to use 
+      the  class for parsing (not )
+      and call the <code class="computeroutput"><a href="../basic_command_line_parser.html#id730280-bb">allow_unregistered</a></code> 
+      method of that class:
+      </p>
+<pre class="programlisting">
+parsed_options parsed = 
+    command_line_parser(argv, argc).options(desc).allow_unregistered().run();      
+      </pre>
+<p>
+      
+      For each token that looks like an option, but does not have a known name, 
+      an instance of  will be added to the result. 
+      The <code class="computeroutput">string_key</code> and <code class="computeroutput">value</code> fields of the instance will contain results 
+      of syntactic parsing of the token, the <code class="computeroutput">unregistered</code> field will be set to <code class="computeroutput">true</code>,
+      and the <code class="computeroutput">original_tokens</code> field will contain the token as it appeared on the command line.
+      </p>
+<p>If you want to pass the unrecognized options further, the 
+      <code class="computeroutput"><a href="../collect_unrecognized.html" title="Function template collect_unrecognized">collect_unrecognized</a></code> function can be used.
+      The function will collect original tokens for all unrecognized values, and optionally, all found positional options.
+      Say, if your code handles a few options, but does not handles positional options at all, you can use the function like this:
+      </p>
+<pre class="programlisting">
+vector&lt;string&gt; to_pass_further = collect_arguments(parsed.option, include_positional);
+      </pre>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>

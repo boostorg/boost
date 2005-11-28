@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Class template signalN</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="index.html" title="The Boost C++ Libraries">
 <link rel="up" href="signals/reference.html#header.boost.signal.hpp" title="Header &lt;boost/signal.hpp&gt;">
 <link rel="prev" href="signals/reference.html" title="Reference">
@@ -30,62 +30,62 @@
 </div>
 <h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> R, <span class="bold"><strong>typename</strong></span> T1, <span class="bold"><strong>typename</strong></span> T2, ..., <span class="bold"><strong>typename</strong></span> TN, 
-         <span class="bold"><strong>typename</strong></span> Combiner = <a href="last_value.html" title="Class template last_value">last_value</a>&lt;R&gt;, <span class="bold"><strong>typename</strong></span> Group = <span class="bold"><strong>int</strong></span>, 
-         <span class="bold"><strong>typename</strong></span> GroupCompare = std::less&lt;Group&gt;, 
-         <span class="bold"><strong>typename</strong></span> SlotFunction = <a href="functionN.html" title="Class template functionN">functionN</a>&lt;R, T1, T2, ..., TN&gt; &gt; 
+         <span class="bold"><strong>typename</strong></span> Combiner = <a href="last_value.html" title="Class template last_value">last_value</a>&lt;R&gt;, <span class="bold"><strong>typename</strong></span> Group = <span class="bold"><strong>int</strong></span>, 
+         <span class="bold"><strong>typename</strong></span> GroupCompare = std::less&lt;Group&gt;, 
+         <span class="bold"><strong>typename</strong></span> SlotFunction = <a href="functionN.html" title="Class template functionN">functionN</a>&lt;R, T1, T2, ..., TN&gt; &gt; 
 <span class="bold"><strong>class</strong></span> signalN : <span class="bold"><strong>public</strong></span> <a href="trackable.html" title="Class trackable">signals::trackable</a>,
-                <span class="bold"><strong>private</strong></span> noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
+                <span class="bold"><strong>private</strong></span> noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
 {
 <span class="bold"><strong>public</strong></span>:
-  <span class="emphasis"><em>// types</em></span>
-  <span class="bold"><strong>typedef</strong></span> <span class="bold"><strong>typename</strong></span> Combiner::result_type result_type;         
-  <span class="bold"><strong>typedef</strong></span> Combiner                       combiner_type;       
-  <span class="bold"><strong>typedef</strong></span> Group                          group_type;          
-  <span class="bold"><strong>typedef</strong></span> GroupCompare                   group_compare_type;  
-  <span class="bold"><strong>typedef</strong></span> SlotFunction                   slot_function_type;  
-  <span class="bold"><strong>typedef</strong></span> <a href="slot.html" title="Class template slot">slot</a>&lt;SlotFunction&gt;             slot_type;           
-  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span>                    slot_result_type;    
-  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span>                    slot_call_iterator;  
-  <span class="bold"><strong>typedef</strong></span> T1                             argument_type;         <span class="emphasis"><em>// If N == 1</em></span>
-  <span class="bold"><strong>typedef</strong></span> T1                             first_argument_type;   <span class="emphasis"><em>// If N == 2</em></span>
-  <span class="bold"><strong>typedef</strong></span> T2                             second_argument_type;  <span class="emphasis"><em>// If N == 2</em></span>
-  <span class="bold"><strong>typedef</strong></span> T1                             arg1_type;           
-  <span class="bold"><strong>typedef</strong></span> T2                             arg2_type;           
-     .
-     .
-     .
-  <span class="bold"><strong>typedef</strong></span> TN                             argN_type;           
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> <span class="bold"><strong>typename</strong></span> Combiner::result_type result_type;         
+  <span class="bold"><strong>typedef</strong></span> Combiner                       combiner_type;       
+  <span class="bold"><strong>typedef</strong></span> Group                          group_type;          
+  <span class="bold"><strong>typedef</strong></span> GroupCompare                   group_compare_type;  
+  <span class="bold"><strong>typedef</strong></span> SlotFunction                   slot_function_type;  
+  <span class="bold"><strong>typedef</strong></span> <a href="slot.html" title="Class template slot">slot</a>&lt;SlotFunction&gt;             slot_type;           
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span>                    slot_result_type;    
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>unspecified</em></span>                    slot_call_iterator;  
+  <span class="bold"><strong>typedef</strong></span> T1                             argument_type;         <span class="emphasis"><em>// If N == 1</em></span>
+  <span class="bold"><strong>typedef</strong></span> T1                             first_argument_type;   <span class="emphasis"><em>// If N == 2</em></span>
+  <span class="bold"><strong>typedef</strong></span> T2                             second_argument_type;  <span class="emphasis"><em>// If N == 2</em></span>
+  <span class="bold"><strong>typedef</strong></span> T1                             arg1_type;           
+  <span class="bold"><strong>typedef</strong></span> T2                             arg2_type;           
+     .
+     .
+     .
+  <span class="bold"><strong>typedef</strong></span> TN                             argN_type;           
 
-  <span class="emphasis"><em>// static constants</em></span>
-  <span class="bold"><strong>static</strong></span> <span class="bold"><strong>const</strong></span> <span class="bold"><strong>int</strong></span> arity = N;
+  <span class="emphasis"><em>// static constants</em></span>
+  <span class="bold"><strong>static</strong></span> <span class="bold"><strong>const</strong></span> <span class="bold"><strong>int</strong></span> arity = N;
 
-  <span class="emphasis"><em>// <a href="signalN.html#signalNconstruct-copy-destruct">construct/copy/destruct</a></em></span>
-  <a href="signalN.html#id730806-bb">signalN</a>(<span class="bold"><strong>const</strong></span> combiner_type&amp; = combiner_type(), 
-          <span class="bold"><strong>const</strong></span> group_compare_type&amp; = group_compare_type());
-  <a href="signalN.html#id752791-bb">~signalN</a>();
+  <span class="emphasis"><em>// <a href="signalN.html#signalNconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="signalN.html#id727096-bb">signalN</a>(<span class="bold"><strong>const</strong></span> combiner_type&amp; = combiner_type(), 
+          <span class="bold"><strong>const</strong></span> group_compare_type&amp; = group_compare_type());
+  <a href="signalN.html#id659519-bb">~signalN</a>();
 
-  <span class="emphasis"><em>// <a href="signalN.html#id620467-bb">connection management</a></em></span>
-  <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
-  <a href="signalN.html#id691444-bb">connect</a>(<span class="bold"><strong>const</strong></span> slot_type&amp;, signals::connect_position = signals::at_back);
-  <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
-  <a href="signalN.html#id758724-bb">connect</a>(<span class="bold"><strong>const</strong></span> group_type&amp;, <span class="bold"><strong>const</strong></span> slot_type&amp;, 
-          signals::connect_position = signals::at_back);
-  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id1107314-bb">disconnect</a>(<span class="bold"><strong>const</strong></span> group_type&amp;);
-  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Slot&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id1082051-bb">disconnect</a>(<span class="bold"><strong>const</strong></span> Slot&amp;);
-  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id688217-bb">disconnect_all_slots</a>();
-  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="signalN.html#id1011811-bb">empty</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type">std::size_t</span> <a href="signalN.html#id1067953-bb">num_slots</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="emphasis"><em>// <a href="signalN.html#id654410-bb">connection management</a></em></span>
+  <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
+  <a href="signalN.html#id723321-bb">connect</a>(<span class="bold"><strong>const</strong></span> slot_type&amp;, signals::connect_position = signals::at_back);
+  <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
+  <a href="signalN.html#id654765-bb">connect</a>(<span class="bold"><strong>const</strong></span> group_type&amp;, <span class="bold"><strong>const</strong></span> slot_type&amp;, 
+          signals::connect_position = signals::at_back);
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id800538-bb">disconnect</a>(<span class="bold"><strong>const</strong></span> group_type&amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Slot&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id973727-bb">disconnect</a>(<span class="bold"><strong>const</strong></span> Slot&amp;);
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="signalN.html#id719029-bb">disconnect_all_slots</a>();
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="signalN.html#id1180961-bb">empty</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">std::size_t</span> <a href="signalN.html#id1037419-bb">num_slots</a>() <span class="bold"><strong>const</strong></span>;
 
-  <span class="emphasis"><em>// <a href="signalN.html#id900090-bb">invocation</a></em></span>
-  <span class="type">result_type</span> <a href="signalN.html#id652452-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type);
-  <span class="type">result_type</span> <a href="signalN.html#id967132-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type) <span class="bold"><strong>const</strong></span>;
+  <span class="emphasis"><em>// <a href="signalN.html#id663249-bb">invocation</a></em></span>
+  <span class="type">result_type</span> <a href="signalN.html#id1141602-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type);
+  <span class="type">result_type</span> <a href="signalN.html#id1035401-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type) <span class="bold"><strong>const</strong></span>;
 
-  <span class="emphasis"><em>// <a href="signalN.html#id1038775-bb">combiner access</a></em></span>
-  <span class="type">combiner_type&amp;</span> <a href="signalN.html#id648456-bb">combiner</a>();
-  <span class="type"><span class="bold"><strong>const</strong></span> combiner_type&amp;</span> <a href="signalN.html#id1003041-bb">combiner</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="emphasis"><em>// <a href="signalN.html#id1116353-bb">combiner access</a></em></span>
+  <span class="type">combiner_type&amp;</span> <a href="signalN.html#id792830-bb">combiner</a>();
+  <span class="type"><span class="bold"><strong>const</strong></span> combiner_type&amp;</span> <a href="signalN.html#id768627-bb">combiner</a>() <span class="bold"><strong>const</strong></span>;
 };</pre></div>
 <div class="refsect1" lang="en">
-<a name="id1181608"></a><h2>Description</h2>
+<a name="id1282596"></a><h2>Description</h2>
 <p>The class template <a href="signalN.html" title="Class template signalN">signalN</a> covers
          several related classes signal0, signal1, signal2, etc.,
          where the number suffix describes the number of function
@@ -94,20 +94,20 @@
          <a href="signalN.html" title="Class template signalN">signalN</a> will be described, where N
          represents the number of function parameters.</p>
 <div class="refsect2" lang="en">
-<a name="id1181634"></a><h3>
+<a name="id1282622"></a><h3>
 <a name="signalNconstruct-copy-destruct"></a><code class="computeroutput">signalN</code> construct/copy/destruct</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><a name="id730806-bb"></a>signalN(<span class="bold"><strong>const</strong></span> combiner_type&amp; combiner = combiner_type(), 
-        <span class="bold"><strong>const</strong></span> group_compare_type&amp; compare = group_compare_type());</pre>
+<pre class="literallayout"><a name="id727096-bb"></a>signalN(<span class="bold"><strong>const</strong></span> combiner_type&amp; combiner = combiner_type(), 
+        <span class="bold"><strong>const</strong></span> group_compare_type&amp; compare = group_compare_type());</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Initializes the signal to contain no slots, copies the given combiner into internal storage, and stores the given group comparison function object to compare groups.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
 
-    <code class="computeroutput">this-&gt;<a href="signalN.html#id1011811-bb">empty</a>()</code></p>
+    <code class="computeroutput">this-&gt;<a href="signalN.html#id1180961-bb">empty</a>()</code></p>
 </li>
 <li>
-<pre class="literallayout"><a name="id752791-bb"></a>~signalN();</pre>
+<pre class="literallayout"><a name="id659519-bb"></a>~signalN();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Disconnects all slots connected to <code class="computeroutput">*this</code>.</p>
@@ -115,17 +115,17 @@
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1181742"></a><h3>
-<a name="id620467-bb"></a><code class="computeroutput">signalN</code> connection management</h3>
+<a name="id1282730"></a><h3>
+<a name="id654410-bb"></a><code class="computeroutput">signalN</code> connection management</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<p><a name="id593410-bb"></a></p>
+<p><a name="id1142047-bb"></a></p>
 <pre class="literallayout"><span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
-<a name="id691444-bb"></a>connect(<span class="bold"><strong>const</strong></span> slot_type&amp; slot, 
-        signals::connect_position at = signals::at_back);
+<a name="id723321-bb"></a>connect(<span class="bold"><strong>const</strong></span> slot_type&amp; slot, 
+        signals::connect_position at = signals::at_back);
 <span class="type"><a href="connection.html" title="Class connection">signals::connection</a></span> 
-<a name="id758724-bb"></a>connect(<span class="bold"><strong>const</strong></span> group_type&amp; group, <span class="bold"><strong>const</strong></span> slot_type&amp; slot, 
-        signals::connect_position at = signals::at_back);</pre>
+<a name="id654765-bb"></a>connect(<span class="bold"><strong>const</strong></span> group_type&amp; group, <span class="bold"><strong>const</strong></span> slot_type&amp; slot, 
+        signals::connect_position at = signals::at_back);</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Connects the signal this to the incoming
@@ -161,9 +161,9 @@
           immediately.</p>
 </li>
 <li>
-<p><a name="id692956-bb"></a></p>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1107314-bb"></a>disconnect(<span class="bold"><strong>const</strong></span> group_type&amp; group);
-<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Slot&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1082051-bb"></a>disconnect(<span class="bold"><strong>const</strong></span> Slot&amp; slot);</pre>
+<p><a name="id1181436-bb"></a></p>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id800538-bb"></a>disconnect(<span class="bold"><strong>const</strong></span> group_type&amp; group);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Slot&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id973727-bb"></a>disconnect(<span class="bold"><strong>const</strong></span> Slot&amp; slot);</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     If the parameter is (convertible to) a
@@ -182,12 +182,12 @@
           signal.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id688217-bb"></a>disconnect_all_slots();</pre>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id719029-bb"></a>disconnect_all_slots();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Disconnects all slots connected to the signal.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
 
-    <code class="computeroutput">this-&gt;<a href="signalN.html#id1011811-bb">empty</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+    <code class="computeroutput">this-&gt;<a href="signalN.html#id1180961-bb">empty</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
 
     If disconnecting a slot causes an exception to be
           thrown, not all slots may be disconnected.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Complexity</span></b>:
@@ -199,7 +199,7 @@
           signal, including during calls to the signal's slots.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1011811-bb"></a>empty() <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1180961-bb"></a>empty() <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
 
     <code class="computeroutput">true</code> if no slots
@@ -218,7 +218,7 @@
           slots are still connected.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type">std::size_t</span> <a name="id1067953-bb"></a>num_slots() <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type">std::size_t</span> <a name="id1037419-bb"></a>num_slots() <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
 
     The number of slots connected to the signal<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
@@ -237,12 +237,12 @@
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1182220"></a><h3>
-<a name="id900090-bb"></a><code class="computeroutput">signalN</code> invocation</h3>
+<a name="id1283207"></a><h3>
+<a name="id663249-bb"></a><code class="computeroutput">signalN</code> invocation</h3>
 <div class="orderedlist"><ol type="1"><li>
-<p><a name="id902120-bb"></a></p>
-<pre class="literallayout"><span class="type">result_type</span> <a name="id652452-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN);
-<span class="type">result_type</span> <a name="id967132-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN) <span class="bold"><strong>const</strong></span>;</pre>
+<p><a name="id685007-bb"></a></p>
+<pre class="literallayout"><span class="type">result_type</span> <a name="id1141602-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN);
+<span class="type">result_type</span> <a name="id1035401-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN) <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Invokes the combiner with a
@@ -280,12 +280,12 @@
 </li></ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1182382"></a><h3>
-<a name="id1038775-bb"></a><code class="computeroutput">signalN</code> combiner access</h3>
+<a name="id1283371"></a><h3>
+<a name="id1116353-bb"></a><code class="computeroutput">signalN</code> combiner access</h3>
 <div class="orderedlist"><ol type="1"><li>
-<p><a name="id966421-bb"></a></p>
-<pre class="literallayout"><span class="type">combiner_type&amp;</span> <a name="id648456-bb"></a>combiner();
-<span class="type"><span class="bold"><strong>const</strong></span> combiner_type&amp;</span> <a name="id1003041-bb"></a>combiner() <span class="bold"><strong>const</strong></span>;</pre>
+<p><a name="id653872-bb"></a></p>
+<pre class="literallayout"><span class="type">combiner_type&amp;</span> <a name="id792830-bb"></a>combiner();
+<span class="type"><span class="bold"><strong>const</strong></span> combiner_type&amp;</span> <a name="id768627-bb"></a>combiner() <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
 
     A reference to the stored combiner.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:

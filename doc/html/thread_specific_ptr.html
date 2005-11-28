@@ -3,11 +3,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Class thread_specific_ptr</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
 <link rel="start" href="index.html" title="The Boost C++ Libraries">
-<link rel="up" href="threads/reference.html#id1106370" title="Header &lt;boost/thread/tss.hpp&gt;">
+<link rel="up" href="threads/reference.html#id1006178" title="Header &lt;boost/thread/tss.hpp&gt;">
 <link rel="prev" href="thread_group.html" title="Class thread_group">
-<link rel="next" href="id758453.html" title="Type xtime_clock_types">
+<link rel="next" href="id1114649.html" title="Type xtime_clock_types">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
@@ -20,7 +20,7 @@
 </table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="thread_group.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id1106370"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id758453.html"><img src="images/next.png" alt="Next"></a>
+<a accesskey="p" href="thread_group.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id1006178"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id1114649.html"><img src="images/next.png" alt="Next"></a>
 </div>
 <div class="refentry" lang="en">
 <a name="thread_specific_ptr"></a><div class="titlepage"></div>
@@ -36,22 +36,22 @@
 <span class="bold"><strong>class</strong></span> thread_specific_ptr : <span class="bold"><strong>private</strong></span> boost::noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
 {
 <span class="bold"><strong>public</strong></span>:
-  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#thread_specific_ptrconstruct-copy-destruct">construct/copy/destruct</a></em></span>
-  <a href="thread_specific_ptr.html#id908685-bb">thread_specific_ptr</a>();
-  <a href="thread_specific_ptr.html#id1151581-bb">thread_specific_ptr</a>(<span class="bold"><strong>void</strong></span> (*cleanup)(<span class="bold"><strong>void</strong></span>*));
-  <a href="thread_specific_ptr.html#id1104569-bb">~thread_specific_ptr</a>();
+  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#thread_specific_ptrconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="thread_specific_ptr.html#id682038-bb">thread_specific_ptr</a>();
+  <a href="thread_specific_ptr.html#id763159-bb">thread_specific_ptr</a>(<span class="bold"><strong>void</strong></span> (*cleanup)(<span class="bold"><strong>void</strong></span>*));
+  <a href="thread_specific_ptr.html#id1146818-bb">~thread_specific_ptr</a>();
 
-  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#id727204-bb">modifier functions</a></em></span>
-  <span class="type">T*</span> <a href="thread_specific_ptr.html#id584972-bb">release</a>();
-  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread_specific_ptr.html#id1113282-bb">reset</a>(T* = 0);
+  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#id724814-bb">modifier functions</a></em></span>
+  <span class="type">T*</span> <a href="thread_specific_ptr.html#id1217006-bb">release</a>();
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread_specific_ptr.html#id731047-bb">reset</a>(T* = 0);
 
-  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#id1108798-bb">observer functions</a></em></span>
-  <span class="type">T*</span> <a href="thread_specific_ptr.html#id620296-bb">get</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type">T*</span> <a href="thread_specific_ptr.html#id1069056-bb"><span class="bold"><strong>operator</strong></span>-&gt;</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type">T&amp;</span> <a href="thread_specific_ptr.html#id934551-bb"><span class="bold"><strong>operator</strong></span>*()</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#id761500-bb">observer functions</a></em></span>
+  <span class="type">T*</span> <a href="thread_specific_ptr.html#id768309-bb">get</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">T*</span> <a href="thread_specific_ptr.html#id1041314-bb"><span class="bold"><strong>operator</strong></span>-&gt;</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">T&amp;</span> <a href="thread_specific_ptr.html#id1212181-bb"><span class="bold"><strong>operator</strong></span>*()</a>() <span class="bold"><strong>const</strong></span>;
 };</pre></div>
 <div class="refsect1" lang="en">
-<a name="id1220710"></a><h2>Description</h2>
+<a name="id1558780"></a><h2>Description</h2>
 <p>Thread specific storage is data associated with 
 				individual threads and is often used to make operations
 				that rely on global data 
@@ -81,11 +81,11 @@
 						being explicitly passed.</li>
 </ul></div>
 <div class="refsect2" lang="en">
-<a name="id1220781"></a><h3>
+<a name="id1558851"></a><h3>
 <a name="thread_specific_ptrconstruct-copy-destruct"></a><code class="computeroutput">thread_specific_ptr</code> construct/copy/destruct</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><a name="id908685-bb"></a>thread_specific_ptr();</pre>
+<pre class="literallayout"><a name="id682038-bb"></a>thread_specific_ptr();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
 
     The expression <code class="computeroutput">delete get()</code> is well
@@ -121,7 +121,7 @@
 				called instead.</p>
 </li>
 <li>
-<pre class="literallayout"><a name="id1151581-bb"></a>thread_specific_ptr(<span class="bold"><strong>void</strong></span> (*cleanup)(<span class="bold"><strong>void</strong></span>*) cleanup);</pre>
+<pre class="literallayout"><a name="id763159-bb"></a>thread_specific_ptr(<span class="bold"><strong>void</strong></span> (*cleanup)(<span class="bold"><strong>void</strong></span>*) cleanup);</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     A thread-specific data key is allocated and visible to
@@ -154,7 +154,7 @@
 				 </p>
 </li>
 <li>
-<pre class="literallayout"><a name="id1104569-bb"></a>~thread_specific_ptr();</pre>
+<pre class="literallayout"><a name="id1146818-bb"></a>~thread_specific_ptr();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     Deletes the thread-specific data key allocated by the
@@ -179,11 +179,11 @@
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1221102"></a><h3>
-<a name="id727204-bb"></a><code class="computeroutput">thread_specific_ptr</code> modifier functions</h3>
+<a name="id1559172"></a><h3>
+<a name="id724814-bb"></a><code class="computeroutput">thread_specific_ptr</code> modifier functions</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><span class="type">T*</span> <a name="id584972-bb"></a>release();</pre>
+<pre class="literallayout"><span class="type">T*</span> <a name="id1217006-bb"></a>release();</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
 
     <code class="computeroutput">*this</code> holds the null pointer
@@ -196,7 +196,7 @@
 					thread-specific key.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id1113282-bb"></a>reset(T* p = 0);</pre>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id731047-bb"></a>reset(T* p = 0);</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
 
     If <code class="computeroutput">this-&gt;get() != p &amp;&amp; 
@@ -209,11 +209,11 @@
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1221222"></a><h3>
-<a name="id1108798-bb"></a><code class="computeroutput">thread_specific_ptr</code> observer functions</h3>
+<a name="id1559294"></a><h3>
+<a name="id761500-bb"></a><code class="computeroutput">thread_specific_ptr</code> observer functions</h3>
 <div class="orderedlist"><ol type="1">
 <li>
-<pre class="literallayout"><span class="type">T*</span> <a name="id620296-bb"></a>get() <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type">T*</span> <a name="id768309-bb"></a>get() <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
 
     The object stored in thread specific storage for
@@ -222,13 +222,13 @@
     Each thread initially returns 0.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type">T*</span> <a name="id1069056-bb"></a><span class="bold"><strong>operator</strong></span>-&gt;() <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type">T*</span> <a name="id1041314-bb"></a><span class="bold"><strong>operator</strong></span>-&gt;() <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
 
     <code class="computeroutput">this-&gt;get()</code>.</p>
 </li>
 <li>
-<pre class="literallayout"><span class="type">T&amp;</span> <a name="id934551-bb"></a><span class="bold"><strong>operator</strong></span>*()() <span class="bold"><strong>const</strong></span>;</pre>
+<pre class="literallayout"><span class="type">T&amp;</span> <a name="id1212181-bb"></a><span class="bold"><strong>operator</strong></span>*()() <span class="bold"><strong>const</strong></span>;</pre>
 <p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
 
     <code class="computeroutput">this-&gt;get() != 0</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
@@ -245,7 +245,7 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="thread_group.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id1106370"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id758453.html"><img src="images/next.png" alt="Next"></a>
+<a accesskey="p" href="thread_group.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id1006178"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id1114649.html"><img src="images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>
