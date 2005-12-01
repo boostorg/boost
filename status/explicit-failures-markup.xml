@@ -3159,6 +3159,15 @@ for more information.
 
     <!-- tr1 -->
     <library name="tr1">
+        <mark-unusable>
+            <toolset name="msvc*"/>
+            <note author="John Maddock">
+                VC6 has a buggy using declaration syntax which
+                basically makes it impossible to implement the 
+                namespace forwarding that this library relies upon.
+                See KB article 263630 here: http://support.microsoft.com/default.aspx?scid=kb;en-us;263630
+            </note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="test_array_tricky"/>
             <test name="test_mem_fn_tricky"/>
