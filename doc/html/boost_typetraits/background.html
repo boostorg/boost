@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title> Background and Tutorial</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../boost_typetraits.html" title="Chapter 14. Boost.TypeTraits">
 <link rel="prev" href="../boost_typetraits.html" title="Chapter 14. Boost.TypeTraits">
@@ -53,7 +53,7 @@ determine the length of a null terminated string, safe in the knowledge
 that specializations of <code class="computeroutput"><span class="identifier">char_traits</span></code> will use the most appropriate method 
 available to them.</p>
 <a name="background.type_traits"></a><h4>
-<a name="id1566392"></a>Type Traits</h4>
+<a name="id2793747"></a>Type Traits</h4>
 <p>
 Class <code class="computeroutput"><span class="identifier">char_traits</span></code> is a classic example of a collection of type specific 
 properties wrapped up in a single class - what Nathan Myers termed a 
@@ -75,7 +75,7 @@ that is the result of the transformation. All of the type-traits
 classes are defined inside namespace <code class="computeroutput"><span class="identifier">boost</span></code>; for brevity, namespace-qualification 
 is omitted in most of the code samples given.</p>
 <a name="background.implementation"></a><h4>
-<a name="id1566487"></a>Implementation</h4>
+<a name="id2793849"></a>Implementation</h4>
 <p>
 There are far too many separate classes contained in the type-traits library 
 to give a full implementation here - see the source code in the Boost library 
@@ -148,7 +148,7 @@ default template. However, the number of parameters that appear after the
 class name do have to match the number and type of the parameters in the 
 default template.</p>
 <a name="background.optimized_copy"></a><h4>
-<a name="id1567351"></a>Optimized copy</h4>
+<a name="id2794767"></a>Optimized copy</h4>
 <p>
 As an example of how the type traits classes can be used, consider the 
 standard library algorithm copy:</p>
@@ -206,7 +206,7 @@ to actually be pointers to the same type, and the final parameter must be a
 to the optimized version where appropriate, otherwise it will call the 
 "slow but safe version".</p>
 <a name="background.was_it_worth_it_"></a><h4>
-<a name="id1567774"></a>Was it worth it?</h4>
+<a name="id2795198"></a>Was it worth it?</h4>
 <p>
 It has often been repeated in these columns that "premature optimization is the 
 root of all evil" <a href="background.html#background.references">[4]</a>. So the question must be asked: was our optimization 
@@ -234,7 +234,7 @@ the grounds that there are better, more heavily optimized versions available.
 </ul></div>
 <div class="informaltable">
 <h4>
-<a name="id1567818"></a><span class="table-title">Time taken to copy 1000 elements using `copy&lt;const T*, T*&gt;` (times in micro-seconds)</span>
+<a name="id2795251"></a><span class="table-title">Time taken to copy 1000 elements using `copy&lt;const T*, T*&gt;` (times in micro-seconds)</span>
 </h4>
 <table class="table">
 <colgroup>
@@ -272,7 +272,7 @@ the grounds that there are better, more heavily optimized versions available.
 </table>
 </div>
 <a name="background.pair_of_references"></a><h4>
-<a name="id1567880"></a>Pair of References</h4>
+<a name="id2795312"></a>Pair of References</h4>
 <p>
 The optimized copy example shows how type traits may be used to perform 
 optimization decisions at compile-time. Another important usage of type traits 
@@ -304,7 +304,7 @@ would have to be in order to allow "pair" to hold non-reference types,
 references, and constant references:</p>
 <div class="informaltable">
 <h4>
-<a name="id1568156"></a><span class="table-title">Required Constructor Argument Types</span>
+<a name="id2795604"></a><span class="table-title">Required Constructor Argument Types</span>
 </h4>
 <table class="table">
 <colgroup>
@@ -340,7 +340,7 @@ transformation <a href="reference.html#boost_typetraits.add_reference" title=" a
 unless it is already a reference.</p>
 <div class="informaltable">
 <h4>
-<a name="id1568220"></a><span class="table-title">Using add_reference to synthesize the correct constructor type</span>
+<a name="id2795669"></a><span class="table-title">Using add_reference to synthesize the correct constructor type</span>
 </h4>
 <table class="table">
 <colgroup>
@@ -405,7 +405,7 @@ specialization approach. Using type traits in this fashion allows
 programmers to delegate partial specialization to the type traits classes, 
 resulting in code that is easier to maintain and easier to understand.</p>
 <a name="background.conclusion"></a><h4>
-<a name="id1568658"></a>Conclusion</h4>
+<a name="id2796119"></a>Conclusion</h4>
 <p>
 We hope that in this article we have been able to give you some idea of 
 what type-traits are all about. A more complete listing of the available 
@@ -415,12 +415,12 @@ code reuse that generic programming brings; hopefully this article has
 shown that generic programming does not have to sink to the lowest common 
 denominator, and that templates can be optimal as well as generic.</p>
 <a name="background.acknowledgements"></a><h4>
-<a name="id1568670"></a>Acknowledgements</h4>
+<a name="id2796140"></a>Acknowledgements</h4>
 <p>
 The authors would like to thank Beman Dawes and Howard Hinnant for their 
 helpful comments when preparing this article.</p>
 <a name="background.references"></a><h4>
-<a name="id1568684"></a>References</h4>
+<a name="id2796154"></a>References</h4>
 <div class="orderedlist"><ol type="1">
 <li>
 Nathan C. Myers, C++ Report, June 1995. 
@@ -448,7 +448,7 @@ For those of you who are wondering why this shouldn't be const-qualified, rememb
 </li>
 </ol></div>
 </div>
-<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<table width="100%"><tr>
 <td align="left"></td>
 <td align="right"><small>Copyright © 2000, 2005 Adobe Systems Inc, David Abrahams, Steve Cleary, 
     Beman Dawes, Aleksey Gurtovoy, Howard Hinnant, Jesse Jones, Mat Marcus, 

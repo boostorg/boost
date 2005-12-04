@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Tutorial</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../signals.html" title="Chapter 9. Boost.Signals">
 <link rel="prev" href="../signals.html" title="Chapter 9. Boost.Signals">
@@ -26,18 +26,18 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="signals.tutorial"></a>Tutorial</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="tutorial.html#id1279560">How to Read this Tutorial</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1279618">Compatibility Note</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1279692">Hello, World! (Beginner)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1279822">Calling multiple slots</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1280169">Passing values to and from slots</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1280959">Connection Management</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281622">Example: Document-View</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281735">Linking against the Signals library</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731274">How to Read this Tutorial</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731333">Compatibility Note</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731417">Hello, World! (Beginner)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731552">Calling multiple slots</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731908">Passing values to and from slots</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2732772">Connection Management</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2733461">Example: Document-View</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2733607">Linking against the Signals library</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1279560"></a>How to Read this Tutorial</h4></div></div></div>
+<a name="id2731274"></a>How to Read this Tutorial</h4></div></div></div>
 <p>This tutorial is not meant to be read linearly. Its top-level
 structure roughly separates different concepts in the library
 (e.g., handling calling multiple slots, passing values to and from
@@ -57,7 +57,7 @@ will not need to read the <span class="emphasis"><em>Advanced</em></span> sectio
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1279618"></a>Compatibility Note</h4></div></div></div>
+<a name="id2731333"></a>Compatibility Note</h4></div></div></div>
 <p>Boost.Signals has two syntactical forms: the preferred form and
 the compatibility form. The preferred form fits more closely with the
 C++ language and reduces the number of separate template parameters
@@ -101,7 +101,7 @@ we can keep this table up-to-date.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1279692"></a>Hello, World! (Beginner)</h4></div></div></div>
+<a name="id2731417"></a>Hello, World! (Beginner)</h4></div></div></div>
 <p>The following example writes "Hello, World!" using signals and
 slots. First, we create a signal <code class="computeroutput">sig</code>, a signal that
 takes no arguments and has a void return value. Next, we connect
@@ -136,7 +136,7 @@ struct HelloWorld
 
 // Connect a HelloWorld slot
 HelloWorld hello;
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(hello);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(hello);
 
 // Call all of the slots
 sig();
@@ -157,7 +157,7 @@ struct HelloWorld
 
 // Connect a HelloWorld slot
 HelloWorld hello;
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(hello);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(hello);
 
 // Call all of the slots
 sig();
@@ -167,14 +167,14 @@ sig();
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1279822"></a>Calling multiple slots</h4></div></div></div>
+<a name="id2731552"></a>Calling multiple slots</h4></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="tutorial.html#id1279826">Connecting multiple slots (Beginner)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1279978">Ordering slot call groups (Intermediate)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731556">Connecting multiple slots (Beginner)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731712">Ordering slot call groups (Intermediate)</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1279826"></a>Connecting multiple slots (Beginner)</h5></div></div></div>
+<a name="id2731556"></a>Connecting multiple slots (Beginner)</h5></div></div></div>
 <p>Calling a single slot from a signal isn't very interesting, so
 we can make the Hello, World program more interesting by splitting
 the work of printing "Hello, World!" into two completely separate
@@ -217,15 +217,15 @@ signal, and when we call the signal both slots will be called.</p>
 <tbody><tr>
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signal.html" title="Class template signal">boost::signal</a></code>&lt;void ()&gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(Hello());
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(World());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(Hello());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(World());
 
 sig();
 </pre></td>
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signalN.html" title="Class template signalN">boost::signal0</a></code>&lt;void&gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(Hello());
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(World());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(Hello());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(World());
 
 sig();
 </pre></td>
@@ -239,7 +239,7 @@ Hello, World!
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1279978"></a>Ordering slot call groups (Intermediate)</h5></div></div></div>
+<a name="id2731712"></a>Ordering slot call groups (Intermediate)</h5></div></div></div>
 <p>Slots are free to have side effects, and that can mean that some
 slots will have to be called before others even if they are not connected in that order. The Boost.Signals
 library allows slots to be placed into groups that are ordered in
@@ -261,13 +261,13 @@ are, by default, <code class="computeroutput">int</code>s, and are ordered by th
 </tr></thead>
 <tbody><tr>
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signal.html" title="Class template signal">boost::signal</a></code>&lt;void ()&gt; sig;
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(1, World());
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(0, Hello());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(1, World());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(0, Hello());
 sig();
 </pre></td>
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signalN.html" title="Class template signalN">boost::signal0</a></code>&lt;void&gt; sig;
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(1, World());
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(0, Hello());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(1, World());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(0, Hello());
 sig();
 </pre></td>
 </tr></tbody>
@@ -282,7 +282,7 @@ group parameter and those that don't? The "unnamed" slots (i.e., those
 that have been connected without specifying a group name) can be
 placed at the front or back of the slot list (by passing
 <code class="computeroutput">boost::signals::at_front</code> or <code class="computeroutput">boost::signals::at_back</code>
-as the last parameter to <code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>, respectively), and defaults to the end of the list. When
+as the last parameter to <code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>, respectively), and defaults to the end of the list. When
 a group is specified, the final parameter describes where the slot
 will be placed within the group ordering. If we add a new slot
 to our example like this:</p>
@@ -295,7 +295,7 @@ struct GoodMorning
   }
 };
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(GoodMorning());
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(GoodMorning());
 </pre>
 <p>... we will get the result we wanted:</p>
 <pre class="programlisting">
@@ -306,14 +306,14 @@ Hello, World!
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1280169"></a>Passing values to and from slots</h4></div></div></div>
+<a name="id2731908"></a>Passing values to and from slots</h4></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="tutorial.html#id1280173">Slot Arguments (Beginner)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1280387">Signal Return Values (Advanced)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2731912">Slot Arguments (Beginner)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2732146">Signal Return Values (Advanced)</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1280173"></a>Slot Arguments (Beginner)</h5></div></div></div>
+<a name="id2731912"></a>Slot Arguments (Beginner)</h5></div></div></div>
 <p>Signals can propagate arguments to each of the slots they call.
 For instance, a signal that propagates mouse motion events might
 want to pass along the new mouse coordinates and whether the mouse
@@ -355,19 +355,19 @@ void print_quotient(float x, float y)
 <tbody><tr>
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signal.html" title="Class template signal">boost::signal</a></code>&lt;void (float, float)&gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_difference);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_quotient);
 
 sig(5, 3);
 </pre></td>
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signalN.html" title="Class template signalN">boost::signal2</a></code>&lt;void, float, float&gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_difference);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;print_quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;print_quotient);
 
 sig(5, 3);
 </pre></td>
@@ -391,7 +391,7 @@ connected to <code class="computeroutput">sig</code> must therefore be able to t
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1280387"></a>Signal Return Values (Advanced)</h5></div></div></div>
+<a name="id2732146"></a>Signal Return Values (Advanced)</h5></div></div></div>
 <p>Just as slots can receive arguments, they can also return
 values. These values can then be returned back to the caller of the
 signal through a <em class="firstterm">combiner</em>. The combiner is a mechanism
@@ -424,10 +424,10 @@ float difference(float x, float y) { return x-y; }
 
 <code class="computeroutput"><a href="../signal.html" title="Class template signal">boost::signal</a></code>&lt;float (float x, float y)&gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;quotient);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;difference);
 
 std::cout &lt;&lt; sig(5, 3) &lt;&lt; std::endl;
 </pre></td>
@@ -439,10 +439,10 @@ float difference(float x, float y) { return x-y; }
 
 <code class="computeroutput"><a href="../signalN.html" title="Class template signalN">boost::signal2</a></code>&lt;float, float, float&gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;quotient);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;difference);
 
 std::cout &lt;&lt; sig(5, 3) &lt;&lt; std::endl;
 </pre></td>
@@ -517,10 +517,10 @@ follows the signal's calling signature:</p>
 <p>Now we can connect slots that perform arithmetic functions and
 use the signal:</p>
 <pre class="programlisting">
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;quotient);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;difference);
 
 std::cout &lt;&lt; sig(5, 3) &lt;&lt; std::endl;
 </pre>
@@ -560,10 +560,10 @@ Again, we can create a signal with this new combiner:
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signal.html" title="Class template signal">boost::signal</a></code>&lt;float (float, float), 
     aggregate_values&lt;std::vector&lt;float&gt; &gt; &gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;quotient);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;difference);
 
 std::vector&lt;float&gt; results = sig(5, 3);
 std::copy(results.begin(), results.end(), 
@@ -572,10 +572,10 @@ std::copy(results.begin(), results.end(),
 <td align="left"><pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting"><code class="computeroutput"><a href="../signalN.html" title="Class template signalN">boost::signal2</a></code>&lt;float, float, float,
     aggregate_values&lt;std::vector&lt;float&gt; &gt; &gt; sig;
 
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;quotient);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;product);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;sum);
-sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(&amp;difference);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;quotient);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;product);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;sum);
+sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(&amp;difference);
 
 std::vector&lt;float&gt; results = sig(5, 3);
 std::copy(results.begin(), results.end(), 
@@ -625,19 +625,19 @@ struct DistributeRequest {
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1280959"></a>Connection Management</h4></div></div></div>
+<a name="id2732772"></a>Connection Management</h4></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="tutorial.html#id1280966">Disconnecting Slots (Beginner)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281080">Blocking Slots (Beginner)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281154">Scoped connections (Intermediate)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281198">Disconnecting equivalent slots (Intermediate)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281258">Automatic connection management (Intermediate)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281429">When can disconnections occur? (Intermediate)</a></span></dt>
-<dt><span class="section"><a href="tutorial.html#id1281490">Passing slots (Intermediate)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2732775">Disconnecting Slots (Beginner)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2732896">Blocking Slots (Beginner)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2732970">Scoped connections (Intermediate)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2733016">Disconnecting equivalent slots (Intermediate)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2733076">Automatic connection management (Intermediate)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2733266">When can disconnections occur? (Intermediate)</a></span></dt>
+<dt><span class="section"><a href="tutorial.html#id2733327">Passing slots (Intermediate)</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1280966"></a>Disconnecting Slots (Beginner)</h5></div></div></div>
+<a name="id2732775"></a>Disconnecting Slots (Beginner)</h5></div></div></div>
 <p>Slots aren't expected to exist indefinately after they are
 connected. Often slots are only used to receive a few events and
 are then disconnected, and the programmer needs control to decide
@@ -646,14 +646,14 @@ when a slot should no longer be connected.</p>
 <code class="computeroutput"><a href="../connection.html" title="Class connection">boost::signals::connection</a></code> class. The
 <code class="computeroutput"><a href="../connection.html" title="Class connection">connection</a></code> class uniquely represents the connection
 between a particular signal and a particular slot. The
-<code class="computeroutput"><a href="../connection.html#id1115436-bb">connected</a>()</code> method checks if the signal and slot are
-still connected, and the <code class="computeroutput"><a href="../connection.html#id1179642-bb">disconnect()</a></code> method
+<code class="computeroutput"><a href="../connection.html#id2558732-bb">connected</a>()</code> method checks if the signal and slot are
+still connected, and the <code class="computeroutput"><a href="../connection.html#id2558792-bb">disconnect()</a></code> method
 disconnects the signal and slot if they are connected before it is
 called. Each call to the signal's <code class="computeroutput">connect()</code> method
 returns a connection object, which can be used to determine if the
 connection still exists or to disconnect the signal and slot.</p>
 <pre class="programlisting">
-boost::signals::connection c = sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(HelloWorld());
+boost::signals::connection c = sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(HelloWorld());
 if (c.<code class="computeroutput">connected</code>()) {
 <span class="emphasis"><em>// c is still connected to the signal</em></span>
   sig(); <span class="emphasis"><em>// Prints "Hello, World!"</em></span>
@@ -666,7 +666,7 @@ sig(); <span class="emphasis"><em>// Does nothing: there are no connected slots<
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1281080"></a>Blocking Slots (Beginner)</h5></div></div></div>
+<a name="id2732896"></a>Blocking Slots (Beginner)</h5></div></div></div>
 <p>Slots can be temporarily "blocked", meaning that they will be
 ignored when the signal is invoked but have not been disconnected. The
 <code class="computeroutput">block</code> member function
@@ -674,7 +674,7 @@ temporarily blocks a slot, which can be unblocked via
 <code class="computeroutput">unblock</code>. Here is an example of
 blocking/unblocking slots:</p>
 <pre class="programlisting">
-boost::signals::connection c = sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(HelloWorld());
+boost::signals::connection c = sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(HelloWorld());
 sig(); <span class="emphasis"><em>// Prints "Hello, World!"</em></span>
 
 c.<code class="computeroutput">block</code>(); <span class="emphasis"><em>// block the slot</em></span>
@@ -686,7 +686,7 @@ sig(); <span class="emphasis"><em>// Prints "Hello, World!"</em></span></pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1281154"></a>Scoped connections (Intermediate)</h5></div></div></div>
+<a name="id2732970"></a>Scoped connections (Intermediate)</h5></div></div></div>
 <p>The <code class="computeroutput">boost::signals::scoped_connection</code> class
 references a signal/slot connection that will be disconnected when
 the <code class="computeroutput">scoped_connection</code> class goes out of scope. This
@@ -694,17 +694,17 @@ ability is useful when a connection need only be temporary,
 e.g.,</p>
 <pre class="programlisting">
 {
-  boost::signals::scoped_connection c = sig.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(ShortLived());
+  boost::signals::scoped_connection c = sig.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(ShortLived());
   sig(); <span class="emphasis"><em>// will call ShortLived function object</em></span>
 }
 sig(); <span class="emphasis"><em>// ShortLived function object no longer connected to sig</em></span></pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1281198"></a>Disconnecting equivalent slots (Intermediate)</h5></div></div></div>
+<a name="id2733016"></a>Disconnecting equivalent slots (Intermediate)</h5></div></div></div>
 <p>One can disconnect slots that are equivalent to a given function
 object using a form of the
-<code class="computeroutput"><a href="../signalN.html#id1181436-bb">disconnect</a></code> method, so long as
+<code class="computeroutput"><a href="../signalN.html#id2582644-bb">disconnect</a></code> method, so long as
 the type of the function object has an accessible <code class="computeroutput">==</code>
 operator. For instance:
 
@@ -748,7 +748,7 @@ sig.disconnect(&amp;foo);
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1281258"></a>Automatic connection management (Intermediate)</h5></div></div></div>
+<a name="id2733076"></a>Automatic connection management (Intermediate)</h5></div></div></div>
 <p>Boost.Signals can automatically track the lifetime of objects
 involved in signal/slot connections, including automatic
 disconnection of slots when objects involved in the slot call are
@@ -799,7 +799,7 @@ public:
 // ...
 NewsMessageArea newsMessageArea = new NewsMessageArea(/* ... */);
 // ...
-deliverNews.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(boost::bind(&amp;NewsMessageArea::displayNews, 
+deliverNews.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(boost::bind(&amp;NewsMessageArea::displayNews, 
                                 newsMessageArea, _1));
 </pre>
 <p>However, what if the user closes the news message area,
@@ -832,7 +832,7 @@ this limitation.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1281429"></a>When can disconnections occur? (Intermediate)</h5></div></div></div>
+<a name="id2733266"></a>When can disconnections occur? (Intermediate)</h5></div></div></div>
 <p>Signal/slot disconnections occur when any of these conditions
 occur:</p>
 <div class="itemizedlist"><ul type="disc">
@@ -859,7 +859,7 @@ signal.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
-<a name="id1281490"></a>Passing slots (Intermediate)</h5></div></div></div>
+<a name="id2733327"></a>Passing slots (Intermediate)</h5></div></div></div>
 <p>Slots in the Boost.Signals library are created from arbitrary
 function objects, and therefore have no fixed type. However, it is
 commonplace to require that slots be passed through interfaces that
@@ -893,7 +893,7 @@ void Button::doOnClick(
       const OnClick::slot_type&amp; slot
     )
 {
-  onClick.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(slot);
+  onClick.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(slot);
 }
 
 void printCoordinates(long x, long y)
@@ -922,7 +922,7 @@ void Button::doOnClick(
       const OnClick::slot_type&amp; slot
     )
 {
-  onClick.<code class="computeroutput"><a href="../signalN.html#id1142047-bb">connect</a></code>(slot);
+  onClick.<code class="computeroutput"><a href="../signalN.html#id2551390-bb">connect</a></code>(slot);
 }
 
 void printCoordinates(long x, long y)
@@ -945,7 +945,7 @@ hidden in an implementation detail file.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1281622"></a>Example: Document-View</h4></div></div></div>
+<a name="id2733461"></a>Example: Document-View</h4></div></div></div>
 <p>Signals can be used to implement flexible Document-View
   architectures. The document will contain a signal to which each of
   the views can connect. The following <code class="computeroutput">Document</code> class
@@ -1070,7 +1070,7 @@ public:
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1281735"></a>Linking against the Signals library</h4></div></div></div>
+<a name="id2733607"></a>Linking against the Signals library</h4></div></div></div>
 <p>Part of the Boost.Signals library is compiled into a binary
   library that must be linked into your application to use Signals. To
   build this library, execute the command <span><strong class="command">bjam</strong></span> in
@@ -1090,7 +1090,7 @@ public:
   <code class="computeroutput">BOOST_SIGNALS_STATIC_LINK</code>. </p>
 </div>
 </div>
-<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<table width="100%"><tr>
 <td align="left"><small><p>Last revised: May 18, 2005 at 16:09:34 GMT</p></small></td>
 <td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
 </tr></table>

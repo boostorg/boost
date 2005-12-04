@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Design</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
 <link rel="prev" href="../threads.html" title="Chapter 12. Boost.Threads">
@@ -27,10 +27,10 @@
 <a name="threads.design"></a>Design</h3></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="design.html#threads.design.goals">Goals</a></span></dt>
-<dt><span class="section"><a href="design.html#id1357106">Iterative Phases</a></span></dt>
-<dt><span class="section"><a href="design.html#id1357117">Phase 1, Synchronization Primitives</a></span></dt>
+<dt><span class="section"><a href="design.html#id2775596">Iterative Phases</a></span></dt>
+<dt><span class="section"><a href="design.html#id2775636">Phase 1, Synchronization Primitives</a></span></dt>
 <dt><span class="section"><a href="design.html#threads.design.phase2">Phase 2, Thread Management and Thread Specific Storage</a></span></dt>
-<dt><span class="section"><a href="design.html#id1357259">The Next Phase</a></span></dt>
+<dt><span class="section"><a href="design.html#id2775808">The Next Phase</a></span></dt>
 </dl></div>
 <p>With client/server and three-tier architectures becoming common place
   in today's world, it's becoming increasingly important for programs to be
@@ -41,24 +41,24 @@
   Further, these APIs are almost universally C APIs and fail to take
   advantage of C++'s strengths, or to address concepts unique to C++, such as
   exceptions.</p>
-<p>The  library is an attempt to define a portable interface
+<p>The <span class="bold"><strong>Boost.Threads</strong></span> library is an attempt to define a portable interface
   for writing parallel processes in C++.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a name="threads.design.goals"></a>Goals</h4></div></div></div>
-<p>The  library has several goals that should help to set
+<p>The <span class="bold"><strong>Boost.Threads</strong></span> library has several goals that should help to set
 	it apart from other solutions. These goals are listed in order of precedence
 	with full descriptions below.
     </p>
 <div class="variablelist"><dl>
 <dt><span class="term">Portability</span></dt>
-<dd><p> was designed to be highly portable. The goal is
+<dd><p><span class="bold"><strong>Boost.Threads</strong></span> was designed to be highly portable. The goal is
 		  for the interface to be easily implemented on any platform that
 		  supports threads, and possibly even on platforms without native thread
 		  support.</p></dd>
 <dt><span class="term">Safety</span></dt>
 <dd>
-<p> was designed to be as safe as possible. Writing
+<p><span class="bold"><strong>Boost.Threads</strong></span> was designed to be as safe as possible. Writing
 		  <a href="../threads.html#threads.glossary.thread-safe">thread-safe</a>
 		  code is very difficult and successful libraries must strive to
 		  insulate the programmer from dangerous constructs as much as
@@ -78,19 +78,19 @@
 </ul></div>
 </dd>
 <dt><span class="term">Flexibility</span></dt>
-<dd><p> was designed to be flexible. This goal is often
+<dd><p><span class="bold"><strong>Boost.Threads</strong></span> was designed to be flexible. This goal is often
 		  at odds with <span class="emphasis"><em>safety</em></span>. When functionality might be
-		  compromised by the desire to keep the interface safe, 
+		  compromised by the desire to keep the interface safe, <span class="bold"><strong>Boost.Threads</strong></span>
 		  has been designed to provide the functionality, but to make it's use
 		  prohibitive for general use. In other words, the interfaces have been
 		  designed such that it's usually obvious when something is unsafe, and
 		  the documentation is written to explain why.</p></dd>
 <dt><span class="term">Efficiency</span></dt>
-<dd><p> was designed to be as efficient as
+<dd><p><span class="bold"><strong>Boost.Threads</strong></span> was designed to be as efficient as
 		  possible. When building a library on top of another library there is
 		  always a danger that the result will be so much slower than the
 		  "native" API that programmers are inclined to ignore the higher level
-		  API.  was designed to minimize the chances of this
+		  API. <span class="bold"><strong>Boost.Threads</strong></span> was designed to minimize the chances of this
 		  occurring. The interfaces have been crafted to allow an implementation
 		  the greatest chance of being as efficient as possible. This goal is
 		  often at odds with the goal for <span class="emphasis"><em>safety</em></span>. Every
@@ -101,24 +101,24 @@
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1357106"></a>Iterative Phases</h4></div></div></div>
-<p>Another goal of  was to take a dynamic, iterative
+<a name="id2775596"></a>Iterative Phases</h4></div></div></div>
+<p>Another goal of <span class="bold"><strong>Boost.Threads</strong></span> was to take a dynamic, iterative
 	approach in its development. The computing industry is still exploring the
 	concepts of parallel programming. Most thread libraries supply only simple
 	primitive concepts for thread synchronization. These concepts are very
 	simple, but it is very difficult to use them safely or to provide formal
 	proofs for constructs built on top of them. There has been a lot of research
 	into other concepts, such as in "Communicating Sequential Processes."
-	 was designed in iterative steps, with each step providing 
+	<span class="bold"><strong>Boost.Threads</strong></span> was designed in iterative steps, with each step providing 
 	the building blocks necessary for the next step and giving the researcher 
 	the tools necessary to explore new concepts in a portable manner.</p>
 <p>Given the goal of following a dynamic, iterative approach
-	 shall go through several growth cycles. Each phase in its
+	<span class="bold"><strong>Boost.Threads</strong></span> shall go through several growth cycles. Each phase in its
 	development shall be roughly documented here.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1357117"></a>Phase 1, Synchronization Primitives</h4></div></div></div>
+<a name="id2775636"></a>Phase 1, Synchronization Primitives</h4></div></div></div>
 <p>Boost is all about providing high quality libraries with
 	implementations for many platforms. Unfortunately, there's a big problem
 	faced by developers wishing to supply such high quality libraries, namely
@@ -130,7 +130,7 @@
 	allow the library developer to create <a href="../threads.html#threads.glossary.thread-safe">thread-safe</a>
 	implementations. This need far out weighs the need for portable methods to
 	create and manage threads.</p>
-<p>Because of this need, the first phase of  focuses
+<p>Because of this need, the first phase of <span class="bold"><strong>Boost.Threads</strong></span> focuses
 	solely on providing portable primitive concepts for thread
 	synchronization. Types provided in this phase include the
 	<code class="computeroutput"><a href="../mutex.html" title="Class mutex">boost::mutex</a></code>, 
@@ -151,19 +151,19 @@
     thread instance). Thread management is a tricky issue in C++, so this
     phase addresses only the basic needs of multithreaded program. Later
     phases are likely to add additional functionality in this area. This
-    phase of  adds the <code class="computeroutput"><a href="../thread.html" title="Class thread">boost::thread</a></code> and
+    phase of <span class="bold"><strong>Boost.Threads</strong></span> adds the <code class="computeroutput"><a href="../thread.html" title="Class thread">boost::thread</a></code> and
 	<code class="computeroutput"><a href="../thread_specific_ptr.html" title="Class thread_specific_ptr">boost::thread_specific_ptr</a></code> types. With these
-	additions the  library can be considered minimal but
+	additions the <span class="bold"><strong>Boost.Threads</strong></span> library can be considered minimal but
 	complete.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1357259"></a>The Next Phase</h4></div></div></div>
+<a name="id2775808"></a>The Next Phase</h4></div></div></div>
 <p>The next phase will address more advanced synchronization concepts,
     such as read/write mutexes and barriers.</p>
 </div>
 </div>
-<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<table width="100%"><tr>
 <td align="left"><small><p>Last revised: July 17, 2004 at 04:33:59 GMT</p></small></td>
 <td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
 </tr></table>

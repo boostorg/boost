@@ -3,9 +3,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Class time_zone</title>
 <link rel="stylesheet" href="boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
 <link rel="start" href="index.html" title="The Boost C++ Libraries">
-<link rel="up" href="date_time/doxy.html#id1073348" title="Header &lt;boost/date_time/local_time/time_zone.hpp&gt;">
+<link rel="up" href="date_time/doxy.html#id2448620" title="Header &lt;boost/date_time/local_time/time_zone.hpp&gt;">
 <link rel="prev" href="posix_time_zone.html" title="Class posix_time_zone">
 <link rel="next" href="function.html" title="Chapter 4. Boost.Function">
 </head>
@@ -20,7 +20,7 @@
 </table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="posix_time_zone.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id1073348"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="function.html"><img src="images/next.png" alt="Next"></a>
+<a accesskey="p" href="posix_time_zone.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2448620"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="function.html"><img src="images/next.png" alt="Next"></a>
 </div>
 <div class="refentry" lang="en">
 <a name="time_zone"></a><div class="titlepage"></div>
@@ -32,68 +32,68 @@
 <div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
 <span class="bold"><strong>class</strong></span> time_zone {
 <span class="bold"><strong>public</strong></span>:
-  <span class="emphasis"><em>// types</em></span>
-  <span class="bold"><strong>typedef</strong></span> boost::posix_time::time_duration time_duration_type;
-  <span class="bold"><strong>typedef</strong></span> time_zone_base                   base_type;         
-  <span class="bold"><strong>typedef</strong></span> base_type::string_type           string_type;       
-  <span class="bold"><strong>typedef</strong></span> base_type::stringstream_type     stringstream_type; 
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> boost::posix_time::time_duration time_duration_type;
+  <span class="bold"><strong>typedef</strong></span> time_zone_base                   base_type;         
+  <span class="bold"><strong>typedef</strong></span> base_type::string_type           string_type;       
+  <span class="bold"><strong>typedef</strong></span> base_type::stringstream_type     stringstream_type; 
 
-  <span class="emphasis"><em>// <a href="time_zone.html#time_zoneconstruct-copy-destruct">construct/copy/destruct</a></em></span>
-  <a href="time_zone.html#id1078772-bb">time_zone</a>(<span class="bold"><strong>const</strong></span> time_zone_names &amp;, <span class="bold"><strong>const</strong></span> time_duration_type &amp;, 
-            <span class="bold"><strong>const</strong></span> dst_adjustment_offsets &amp;, 
-            boost::shared_ptr&lt; dst_calc_rule &gt;);
-  <a href="time_zone.html#id976714-bb">~time_zone</a>();
+  <span class="emphasis"><em>// <a href="time_zone.html#time_zoneconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="time_zone.html#id2448859-bb">time_zone</a>(<span class="bold"><strong>const</strong></span> time_zone_names &amp;, <span class="bold"><strong>const</strong></span> time_duration_type &amp;, 
+            <span class="bold"><strong>const</strong></span> dst_adjustment_offsets &amp;, 
+            boost::shared_ptr&lt; dst_calc_rule &gt;);
+  <a href="time_zone.html#id2448902-bb">~time_zone</a>();
 
-  <span class="emphasis"><em>// <a href="time_zone.html#id1076935-bb">public member functions</a></em></span>
-  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id1066649-bb">dst_zone_abbrev</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id1036944-bb">std_zone_abbrev</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id826546-bb">dst_zone_name</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id971292-bb">std_zone_name</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a href="time_zone.html#id1066823-bb">has_dst</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a href="time_zone.html#id904540-bb">dst_local_start_time</a>(gregorian::greg_year) <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a href="time_zone.html#id1002674-bb">dst_local_end_time</a>(gregorian::greg_year) <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a href="time_zone.html#id800023-bb">base_utc_offset</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a href="time_zone.html#id961883-bb">dst_offset</a>() <span class="bold"><strong>const</strong></span>;
-  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone.html#id1068456-bb">to_posix_string</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="emphasis"><em>// <a href="time_zone.html#id2448681-bb">public member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id2448686-bb">dst_zone_abbrev</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id2448698-bb">std_zone_abbrev</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id2448711-bb">dst_zone_name</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="time_zone.html#id2448724-bb">std_zone_name</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a href="time_zone.html#id2448736-bb">has_dst</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a href="time_zone.html#id2448753-bb">dst_local_start_time</a>(gregorian::greg_year) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a href="time_zone.html#id2448780-bb">dst_local_end_time</a>(gregorian::greg_year) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a href="time_zone.html#id2448807-bb">base_utc_offset</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a href="time_zone.html#id2448823-bb">dst_offset</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone.html#id2448840-bb">to_posix_string</a>() <span class="bold"><strong>const</strong></span>;
 };</pre></div>
 <div class="refsect1" lang="en">
-<a name="id1185073"></a><h2>Description</h2>
+<a name="id2687354"></a><h2>Description</h2>
 <div class="refsect2" lang="en">
-<a name="id1185077"></a><h3>
+<a name="id2687357"></a><h3>
 <a name="time_zoneconstruct-copy-destruct"></a><code class="computeroutput">time_zone</code> construct/copy/destruct</h3>
 <div class="orderedlist"><ol type="1">
-<li><pre class="literallayout"><a name="id1078772-bb"></a>time_zone(<span class="bold"><strong>const</strong></span> time_zone_names &amp; zone_names, 
-          <span class="bold"><strong>const</strong></span> time_duration_type &amp; base_utc_offset, 
-          <span class="bold"><strong>const</strong></span> dst_adjustment_offsets &amp; dst_offset, 
-          boost::shared_ptr&lt; dst_calc_rule &gt; calc_rule);</pre></li>
-<li><pre class="literallayout"><a name="id976714-bb"></a>~time_zone();</pre></li>
+<li><pre class="literallayout"><a name="id2448859-bb"></a>time_zone(<span class="bold"><strong>const</strong></span> time_zone_names &amp; zone_names, 
+          <span class="bold"><strong>const</strong></span> time_duration_type &amp; base_utc_offset, 
+          <span class="bold"><strong>const</strong></span> dst_adjustment_offsets &amp; dst_offset, 
+          boost::shared_ptr&lt; dst_calc_rule &gt; calc_rule);</pre></li>
+<li><pre class="literallayout"><a name="id2448902-bb"></a>~time_zone();</pre></li>
 </ol></div>
 </div>
 <div class="refsect2" lang="en">
-<a name="id1185148"></a><h3>
-<a name="id1076935-bb"></a><code class="computeroutput">time_zone</code> public member functions</h3>
+<a name="id2687429"></a><h3>
+<a name="id2448681-bb"></a><code class="computeroutput">time_zone</code> public member functions</h3>
 <div class="orderedlist"><ol type="1">
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id1066649-bb"></a>dst_zone_abbrev() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id1036944-bb"></a>std_zone_abbrev() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id826546-bb"></a>dst_zone_name() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id971292-bb"></a>std_zone_name() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a name="id1066823-bb"></a>has_dst() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a name="id904540-bb"></a>dst_local_start_time(gregorian::greg_year y) <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a name="id1002674-bb"></a>dst_local_end_time(gregorian::greg_year y) <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a name="id800023-bb"></a>base_utc_offset() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a name="id961883-bb"></a>dst_offset() <span class="bold"><strong>const</strong></span>;</pre></li>
-<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id1068456-bb"></a>to_posix_string() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id2448686-bb"></a>dst_zone_abbrev() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id2448698-bb"></a>std_zone_abbrev() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id2448711-bb"></a>dst_zone_name() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id2448724-bb"></a>std_zone_name() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a name="id2448736-bb"></a>has_dst() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a name="id2448753-bb"></a>dst_local_start_time(gregorian::greg_year y) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> posix_time::ptime</span> <a name="id2448780-bb"></a>dst_local_end_time(gregorian::greg_year y) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a name="id2448807-bb"></a>base_utc_offset() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a name="id2448823-bb"></a>dst_offset() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id2448840-bb"></a>to_posix_string() <span class="bold"><strong>const</strong></span>;</pre></li>
 </ol></div>
 </div>
 </div>
 </div>
-<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<table width="100%"><tr>
 <td align="left"></td>
 <td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="posix_time_zone.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id1073348"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="function.html"><img src="images/next.png" alt="Next"></a>
+<a accesskey="p" href="posix_time_zone.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2448620"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="function.html"><img src="images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>

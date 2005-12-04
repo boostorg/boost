@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Usage</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
 <link rel="start" href="../index.html" title="The Boost C++ Libraries">
 <link rel="up" href="../string_algo.html" title="Chapter 11. Boost String Algorithms Library">
 <link rel="prev" href="release_notes.html" title="Release Notes">
@@ -26,18 +26,18 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="string_algo.usage"></a>Usage</h3></div></div></div>
 <div class="toc"><dl>
-<dt><span class="section"><a href="usage.html#id1290233">First Example</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290403">Case conversion</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290457">Predicates and Classification</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290527">Trimming</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290587">Find algorithms</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290698">Replace Algorithms</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290808">Find Iterator</a></span></dt>
-<dt><span class="section"><a href="usage.html#id1290894">Split</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2742478">First Example</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2742674">Case conversion</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2742730">Predicates and Classification</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2742817">Trimming</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2742878">Find algorithms</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2742991">Replace Algorithms</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2743115">Find Iterator</a></span></dt>
+<dt><span class="section"><a href="usage.html#id2743220">Split</a></span></dt>
 </dl></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290233"></a>First Example</h4></div></div></div>
+<a name="id2742478"></a>First Example</h4></div></div></div>
 <p>
             Using the algorithms is straightforward. Let us have a look at the first example:
         </p>
@@ -102,14 +102,14 @@
                 </p></li>
 </ul></div>
 <p>
-            To use the library, include the <code class="computeroutput"><a href="reference.html#id1139882" title="Header &lt;boost/algorithm/string.hpp&gt;">boost/algorithm/string.hpp</a></code> header. 
+            To use the library, include the <code class="computeroutput"><a href="reference.html#id2552179" title="Header &lt;boost/algorithm/string.hpp&gt;">boost/algorithm/string.hpp</a></code> header. 
             If the regex related functions are needed, include the 
-            <code class="computeroutput"><a href="reference.html#id1139893" title="Header &lt;boost/algorithm/string_regex.hpp&gt;">boost/algorithm/string_regex.hpp</a></code> header.
+            <code class="computeroutput"><a href="reference.html#id2573542" title="Header &lt;boost/algorithm/string_regex.hpp&gt;">boost/algorithm/string_regex.hpp</a></code> header.
         </p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290403"></a>Case conversion</h4></div></div></div>
+<a name="id2742674"></a>Case conversion</h4></div></div></div>
 <p>
             STL has a nice way of converting character case. Unfortunately, it works only
             for a single character and we want to convert a string, 
@@ -122,12 +122,12 @@
             characters in a string using a specified locale.
         </p>
 <p>
-            For more information see the reference for <code class="computeroutput"><a href="reference.html#id718020" title="Header &lt;boost/algorithm/string/case_conv.hpp&gt;">boost/algorithm/string/case_conv.hpp</a></code>.
+            For more information see the reference for <code class="computeroutput"><a href="reference.html#id2352615" title="Header &lt;boost/algorithm/string/case_conv.hpp&gt;">boost/algorithm/string/case_conv.hpp</a></code>.
         </p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290457"></a>Predicates and Classification</h4></div></div></div>
+<a name="id2742730"></a>Predicates and Classification</h4></div></div></div>
 <p>
             A part of the library deals with string related predicates. Consider this example:
         </p>
@@ -160,20 +160,20 @@
             under various conditions. The conditions are: a string starts with the substring, 
             ends with the substring, 
             simply contains the substring or if both strings are equal. See the reference for 
-            <code class="computeroutput"><a href="reference.html#id1211129" title="Header &lt;boost/algorithm/string/predicate.hpp&gt;">boost/algorithm/string/predicate.hpp</a></code> for more details. 
+            <code class="computeroutput"><a href="reference.html#id2589054" title="Header &lt;boost/algorithm/string/predicate.hpp&gt;">boost/algorithm/string/predicate.hpp</a></code> for more details. 
         </p>
 <p>  
             In addition the algorithm <code class="computeroutput"><a href="../all.html" title="Function template all">all()</a></code> checks
             all elements of a container to satisfy a condition specified by a predicate. 
             This predicate can be any unary predicate, but the library provides a bunch of 
             useful string-related predicates and combinators ready for use.
-            These are located in the <code class="computeroutput"><a href="reference.html#id730865" title="Header &lt;boost/algorithm/string/classification.hpp&gt;">boost/algorithm/string/classification.hpp</a></code> header.
+            These are located in the <code class="computeroutput"><a href="reference.html#id2336200" title="Header &lt;boost/algorithm/string/classification.hpp&gt;">boost/algorithm/string/classification.hpp</a></code> header.
             Classification predicates can be combined using logical combinators to form
             a more complex expressions. For example: <code class="computeroutput">is_from_range('a','z') || is_digit()</code></p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290527"></a>Trimming</h4></div></div></div>
+<a name="id2742817"></a>Trimming</h4></div></div></div>
 <p>
             When parsing the input from a user, strings usually have unwanted leading or trailing 
             characters. To get rid of them, we need trim functions:
@@ -194,12 +194,12 @@
             are <span class="emphasis"><em>_if</em></span> variants. Using these, a user can specify a functor which will 
             select the <span class="emphasis"><em>space</em></span> to be removed. It is possible to use classification 
             predicates like <code class="computeroutput"><a href="../is_digit.html" title="Function is_digit">is_digit()</a></code> mentioned in the previous paragraph.
-            See the reference for the <code class="computeroutput"><a href="reference.html#id1139905" title="Header &lt;boost/algorithm/string/trim.hpp&gt;">boost/algorithm/string/trim.hpp</a></code>.
+            See the reference for the <code class="computeroutput"><a href="reference.html#id2573553" title="Header &lt;boost/algorithm/string/trim.hpp&gt;">boost/algorithm/string/trim.hpp</a></code>.
         </p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290587"></a>Find algorithms</h4></div></div></div>
+<a name="id2742878"></a>Find algorithms</h4></div></div></div>
 <p>
             The library contains a set of find algorithms. Here is an example:
         </p>
@@ -234,12 +234,12 @@
             Also it is convertible to bool therefore it is easy to use find algorithms for a simple containment checking.
         </p>
 <p>
-            Find algorithms are located in <code class="computeroutput"><a href="reference.html#id683084" title="Header &lt;boost/algorithm/string/find.hpp&gt;">boost/algorithm/string/find.hpp</a></code>.
+            Find algorithms are located in <code class="computeroutput"><a href="reference.html#id2487443" title="Header &lt;boost/algorithm/string/find.hpp&gt;">boost/algorithm/string/find.hpp</a></code>.
         </p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290698"></a>Replace Algorithms</h4></div></div></div>
+<a name="id2742991"></a>Replace Algorithms</h4></div></div></div>
 <p>
             Find algorithms can be used for searching for a specific part of string. Replace goes one step
             further. After a matching part is found, it is substituted with something else. The substitution is computed
@@ -265,13 +265,13 @@
             substitute for it. Replace algorithm puts these two together and makes the desired substitution. 
         </p>
 <p>
-            Check <code class="computeroutput"><a href="reference.html#id724456" title="Header &lt;boost/algorithm/string/replace.hpp&gt;">boost/algorithm/string/replace.hpp</a></code>, <code class="computeroutput"><a href="reference.html#id1184328" title="Header &lt;boost/algorithm/string/erase.hpp&gt;">boost/algorithm/string/erase.hpp</a></code> and
-            <code class="computeroutput"><a href="reference.html#id731558" title="Header &lt;boost/algorithm/string/find_format.hpp&gt;">boost/algorithm/string/find_format.hpp</a></code> for reference.
+            Check <code class="computeroutput"><a href="reference.html#id2553153" title="Header &lt;boost/algorithm/string/replace.hpp&gt;">boost/algorithm/string/replace.hpp</a></code>, <code class="computeroutput"><a href="reference.html#id2571451" title="Header &lt;boost/algorithm/string/erase.hpp&gt;">boost/algorithm/string/erase.hpp</a></code> and
+            <code class="computeroutput"><a href="reference.html#id2441187" title="Header &lt;boost/algorithm/string/find_format.hpp&gt;">boost/algorithm/string/find_format.hpp</a></code> for reference.
         </p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290808"></a>Find Iterator</h4></div></div></div>
+<a name="id2743115"></a>Find Iterator</h4></div></div></div>
 <p>
             An extension to find algorithms it the Find Iterator. Instead of searching for just a one part of a string, 
             the find iterator allows us to iterate over the substrings matching the specified criteria.
@@ -324,12 +324,12 @@
             to construct a find iterator for a particular range.
         </p>
 <p>
-            See the reference in <code class="computeroutput"><a href="reference.html#id719241" title="Header &lt;boost/algorithm/string/find_iterator.hpp&gt;">boost/algorithm/string/find_iterator.hpp</a></code>.
+            See the reference in <code class="computeroutput"><a href="reference.html#id2382464" title="Header &lt;boost/algorithm/string/find_iterator.hpp&gt;">boost/algorithm/string/find_iterator.hpp</a></code>.
         </p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a name="id1290894"></a>Split</h4></div></div></div>
+<a name="id2743220"></a>Split</h4></div></div></div>
 <p>
             Split algorithms are an extension to the find iterator for one common usage scenario.
             These algorithms use a find iterator and store all matches into the provided
@@ -338,7 +338,7 @@
         </p>
 <p>
             Two algorithms are provided. <code class="computeroutput"><a href="../find_all.html" title="Function template find_all">find_all()</a></code> finds all copies
-            of a string in the input. <code class="computeroutput"><a href="../id1151683.html" title="Function template split">split()</a></code> splits the input into parts.
+            of a string in the input. <code class="computeroutput"><a href="../id2580251.html" title="Function template split">split()</a></code> splits the input into parts.
         </p>
 <pre class="programlisting">
     string str1("hello abc-*-ABC-*-aBc goodbye");
@@ -361,17 +361,17 @@
             to all substrings that are in case-insensitive manner equal to "abc".
         </p>
 <p>
-            Second example uses <code class="computeroutput"><a href="../id1151683.html" title="Function template split">split()</a></code> to split string str1 into parts
+            Second example uses <code class="computeroutput"><a href="../id2580251.html" title="Function template split">split()</a></code> to split string str1 into parts
             separated by characters '-' or '*'. These parts are then put into the SplitVec.
             It is possible to specify if adjacent separators are concatenated or not.
         </p>
 <p>
-            More information can be found in the reference: <code class="computeroutput"><a href="reference.html#id658733" title="Header &lt;boost/algorithm/string/split.hpp&gt;">boost/algorithm/string/split.hpp</a></code>.
+            More information can be found in the reference: <code class="computeroutput"><a href="reference.html#id2541245" title="Header &lt;boost/algorithm/string/split.hpp&gt;">boost/algorithm/string/split.hpp</a></code>.
         </p>
 </div>
 </div>
-<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
-<td align="left"><small><p>Last revised: May 14, 2005 at 19:11:09 GMT</p></small></td>
+<table width="100%"><tr>
+<td align="left"><small><p>Last revised: December 01, 2005 at 13:42:02 GMT</p></small></td>
 <td align="right"><small>Copyright © 2002-2004 Pavol Droba</small></td>
 </tr></table>
 <hr>
