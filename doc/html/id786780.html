@@ -1,0 +1,166 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template time_duration</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.67.2">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id786765" title="Header &lt;boost/date_time/time_duration.hpp&gt;">
+<link rel="prev" href="second_clock.html" title="Class template second_clock">
+<link rel="next" href="subsecond_duration.html" title="Class template subsecond_duration">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="second_clock.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id786765"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="subsecond_duration.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="id786780"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template time_duration</span></h2>
+<p>boost::date_time::time_duration &#8212; Represents some amount of elapsed time measure to a given resolution. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T, <span class="bold"><strong>typename</strong></span> rep_type&gt; 
+<span class="bold"><strong>class</strong></span> time_duration {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> T                                 duration_type;          
+  <span class="bold"><strong>typedef</strong></span> rep_type                          traits_type;            
+  <span class="bold"><strong>typedef</strong></span> rep_type::day_type                day_type;               
+  <span class="bold"><strong>typedef</strong></span> rep_type::hour_type               hour_type;              
+  <span class="bold"><strong>typedef</strong></span> rep_type::min_type                min_type;               
+  <span class="bold"><strong>typedef</strong></span> rep_type::sec_type                sec_type;               
+  <span class="bold"><strong>typedef</strong></span> rep_type::fractional_seconds_type fractional_seconds_type;
+  <span class="bold"><strong>typedef</strong></span> rep_type::tick_type               tick_type;              
+  <span class="bold"><strong>typedef</strong></span> rep_type::impl_type               impl_type;              
+
+  <span class="emphasis"><em>// <a href="id786780.html#id786780construct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="id786780.html#id763895-bb">time_duration</a>();
+  <a href="id786780.html#id763898-bb">time_duration</a>(hour_type, min_type, sec_type = 0, 
+                fractional_seconds_type = 0);
+  <a href="id786780.html#id798154-bb">time_duration</a>(<span class="bold"><strong>const</strong></span> <a href="id786780.html" title="Class template time_duration">time_duration</a>&lt; T, rep_type &gt; &amp;);
+  <a href="id786780.html#id798176-bb">time_duration</a>(special_values);
+  <a href="id786780.html#id792633-bb">time_duration</a>(impl_type);
+
+  <span class="emphasis"><em>// <a href="id786780.html#id786907-bb">public member functions</a></em></span>
+  <span class="type">hour_type</span> <a href="id786780.html#id786912-bb">hours</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">min_type</span> <a href="id786780.html#id786928-bb">minutes</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">sec_type</span> <a href="id786780.html#id786944-bb">seconds</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">sec_type</span> <a href="id786780.html#id786960-bb">total_seconds</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">tick_type</span> <a href="id786780.html#id786976-bb">total_milliseconds</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">tick_type</span> <a href="id786780.html#id800060-bb">total_nanoseconds</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">tick_type</span> <a href="id786780.html#id800077-bb">total_microseconds</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">fractional_seconds_type</span> <a href="id786780.html#id800093-bb">fractional_seconds</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id729889-bb">invert_sign</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id729901-bb">is_negative</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id729913-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> <a href="id786780.html" title="Class template time_duration">time_duration</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id1043119-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="id786780.html" title="Class template time_duration">time_duration</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id1043144-bb"><span class="bold"><strong>operator</strong></span>-</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id1043160-bb"><span class="bold"><strong>operator</strong></span>-</a>(<span class="bold"><strong>const</strong></span> duration_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id1043182-bb"><span class="bold"><strong>operator</strong></span>+</a>(<span class="bold"><strong>const</strong></span> duration_type &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id1043204-bb"><span class="bold"><strong>operator</strong></span>/</a>(<span class="bold"><strong>int</strong></span>) <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id1043226-bb"><span class="bold"><strong>operator</strong></span>-=</a>(<span class="bold"><strong>const</strong></span> duration_type &amp;) ;
+  <span class="type">duration_type</span> <a href="id786780.html#id755958-bb"><span class="bold"><strong>operator</strong></span>+=</a>(<span class="bold"><strong>const</strong></span> duration_type &amp;) ;
+  <span class="type">duration_type</span> <a href="id786780.html#id822323-bb"><span class="bold"><strong>operator</strong></span>/=</a>(<span class="bold"><strong>int</strong></span>) ;
+  <span class="type">duration_type</span> <a href="id786780.html#id754592-bb"><span class="bold"><strong>operator</strong></span> *</a>(<span class="bold"><strong>int</strong></span>) <span class="bold"><strong>const</strong></span>;
+  <span class="type">duration_type</span> <a href="id786780.html#id685338-bb"><span class="bold"><strong>operator</strong></span> *=</a>(<span class="bold"><strong>int</strong></span>) ;
+  <span class="type">tick_type</span> <a href="id786780.html#id685359-bb">ticks</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id685370-bb">is_special</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id763830-bb">is_pos_infinity</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id763846-bb">is_neg_infinity</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="id786780.html#id763862-bb">is_not_a_date_time</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">impl_type</span> <a href="id786780.html#id763878-bb">get_rep</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="id786780.html#id798193-bb">public static functions</a></em></span>
+  <span class="type">duration_type</span> <a href="id786780.html#id794382-bb">unit</a>() ;
+  <span class="type">tick_type</span> <a href="id786780.html#id768921-bb">ticks_per_second</a>() ;
+  <span class="type">time_resolutions</span> <a href="id786780.html#id768937-bb">resolution</a>() ;
+  <span class="type"><span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>short</strong></span></span> <a href="id786780.html#id768953-bb">num_fractional_digits</a>() ;
+
+  <span class="emphasis"><em>// <a href="id786780.html#id792628-bb">protected member functions</a></em></span>
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id1046965"></a><h2>Description</h2>
+<p>This class represents a standard set of capabilities for all counted time durations. Time duration implementations should derive from this class passing their type as the first template parameter. This design allows the subclass duration types to provide custom construction policies or other custom features not provided here.</p>
+<p></p>
+<div class="refsect2" lang="en">
+<a name="id1046977"></a><h3>
+<a name="id786780construct-copy-destruct"></a><code class="computeroutput">time_duration</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><a name="id763895-bb"></a>time_duration();</pre></li>
+<li><pre class="literallayout"><a name="id763898-bb"></a>time_duration(hour_type hours, min_type minutes, sec_type seconds = 0, 
+              fractional_seconds_type frac_sec = 0);</pre></li>
+<li><pre class="literallayout"><a name="id798154-bb"></a>time_duration(<span class="bold"><strong>const</strong></span> <a href="id786780.html" title="Class template time_duration">time_duration</a>&lt; T, rep_type &gt; &amp; other);</pre></li>
+<li><pre class="literallayout"><a name="id798176-bb"></a>time_duration(special_values sv);</pre></li>
+<li><pre class="literallayout"><a name="id792633-bb"></a>time_duration(impl_type in);</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1047080"></a><h3>
+<a name="id786907-bb"></a><code class="computeroutput">time_duration</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">hour_type</span> <a name="id786912-bb"></a>hours() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">min_type</span> <a name="id786928-bb"></a>minutes() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">sec_type</span> <a name="id786944-bb"></a>seconds() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">sec_type</span> <a name="id786960-bb"></a>total_seconds() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">tick_type</span> <a name="id786976-bb"></a>total_milliseconds() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">tick_type</span> <a name="id800060-bb"></a>total_nanoseconds() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">tick_type</span> <a name="id800077-bb"></a>total_microseconds() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">fractional_seconds_type</span> <a name="id800093-bb"></a>fractional_seconds() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id729889-bb"></a>invert_sign() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id729901-bb"></a>is_negative() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id729913-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> <a href="id786780.html" title="Class template time_duration">time_duration</a> &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id1043119-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="id786780.html" title="Class template time_duration">time_duration</a> &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id1043144-bb"></a><span class="bold"><strong>operator</strong></span>-() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id1043160-bb"></a><span class="bold"><strong>operator</strong></span>-(<span class="bold"><strong>const</strong></span> duration_type &amp; d) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id1043182-bb"></a><span class="bold"><strong>operator</strong></span>+(<span class="bold"><strong>const</strong></span> duration_type &amp; d) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id1043204-bb"></a><span class="bold"><strong>operator</strong></span>/(<span class="bold"><strong>int</strong></span> divisor) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id1043226-bb"></a><span class="bold"><strong>operator</strong></span>-=(<span class="bold"><strong>const</strong></span> duration_type &amp; d) ;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id755958-bb"></a><span class="bold"><strong>operator</strong></span>+=(<span class="bold"><strong>const</strong></span> duration_type &amp; d) ;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id822323-bb"></a><span class="bold"><strong>operator</strong></span>/=(<span class="bold"><strong>int</strong></span> divisor) ;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id754592-bb"></a><span class="bold"><strong>operator</strong></span> *(<span class="bold"><strong>int</strong></span> rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id685338-bb"></a><span class="bold"><strong>operator</strong></span> *=(<span class="bold"><strong>int</strong></span> divisor) ;</pre></li>
+<li><pre class="literallayout"><span class="type">tick_type</span> <a name="id685359-bb"></a>ticks() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id685370-bb"></a>is_special() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id763830-bb"></a>is_pos_infinity() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id763846-bb"></a>is_neg_infinity() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id763862-bb"></a>is_not_a_date_time() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">impl_type</span> <a name="id763878-bb"></a>get_rep() <span class="bold"><strong>const</strong></span>;</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1047826"></a><h3>
+<a name="id798193-bb"></a><code class="computeroutput">time_duration</code> public static functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">duration_type</span> <a name="id794382-bb"></a>unit() ;</pre></li>
+<li><pre class="literallayout"><span class="type">tick_type</span> <a name="id768921-bb"></a>ticks_per_second() ;</pre></li>
+<li><pre class="literallayout"><span class="type">time_resolutions</span> <a name="id768937-bb"></a>resolution() ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>unsigned</strong></span> <span class="bold"><strong>short</strong></span></span> <a name="id768953-bb"></a>num_fractional_digits() ;</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id1047921"></a><h3>
+<a name="id792628-bb"></a><code class="computeroutput">time_duration</code> protected member functions</h3>
+<div class="orderedlist"><ol type="1"></ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="second_clock.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id786765"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="subsecond_duration.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

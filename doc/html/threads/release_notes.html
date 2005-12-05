@@ -1,0 +1,172 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Release Notes</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
+<link rel="prev" href="implementation_notes.html" title="Implementation Notes">
+<link rel="next" href="../thread/acknowledgements.html" title="Acknowledgements">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="implementation_notes.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../thread/acknowledgements.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="threads.release_notes"></a>Release Notes</h3></div></div></div>
+<div class="toc"><dl><dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0">Boost 1.32.0</a></span></dt></dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="threads.release_notes.boost_1_32_0"></a>Boost 1.32.0</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.documentation">Documentation converted to BoostBook</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.static_link">Statically-link build option added</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.barrier">Barrier functionality added</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.read_write_mutex">Read/write mutex functionality added</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.thread_specific_ptr">Thread-specific pointer functionality changed</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.mutex">Mutex implementation changed for Win32</a></span></dt>
+<dt><span class="section"><a href="release_notes.html#threads.release_notes.boost_1_32_0.change_log.wince">Windows CE support improved</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.documentation"></a>Documentation converted to BoostBook</h5></div></div></div>
+<p>The documentation was converted to BoostBook format,
+			and a number of errors and inconsistencies were
+			fixed in the process.
+			Since this was a fairly large task, there are likely to be 
+			more errors and inconsistencies remaining. If you find any,
+			please report them!</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.static_link"></a>Statically-link build option added</h5></div></div></div>
+<p>The option to link <span class="bold"><strong>Boost.Threads</strong></span> as a static
+			library has been added (with some limitations on Win32 platforms).
+			This feature was originally removed from an earlier version
+			of Boost because <code class="computeroutput"><a href="../thread_specific_ptr.html" title="Class thread_specific_ptr">boost::thread_specific_ptr</a></code>
+			required that <span class="bold"><strong>Boost.Threads</strong></span> be dynamically linked in order
+			for its cleanup functionality to work on Win32 platforms.
+			Because this limitation never applied to non-Win32 platforms,
+			because significant progress has been made in removing
+			the limitation on Win32 platforms (many thanks to
+			Aaron LaFramboise and Roland Scwarz!), and because the lack
+			of static linking is one of the most common complaints of
+			<span class="bold"><strong>Boost.Threads</strong></span> users, this decision was reversed.</p>
+<p>On non-Win32 platforms: 
+			To choose the dynamically linked version of <span class="bold"><strong>Boost.Threads</strong></span> 
+			using Boost's auto-linking feature, #define BOOST_THREAD_USE_DLL;
+			to choose the statically linked version, 
+			#define BOOST_THREAD_USE_LIB. 
+			If neither symbols is #defined, the default will be chosen.
+			Currently the default is the statically linked version.</p>
+<p>On Win32 platforms using VC++: 
+			Use the same #defines as for non-Win32 platforms 
+			(BOOST_THREAD_USE_DLL and BOOST_THREAD_USE_LIB).
+			If neither is #defined, the default will be chosen. 
+			Currently the default is the statically linked version
+			if the VC++ run-time library is set to
+			"Multi-threaded" or "Multi-threaded Debug", and
+			the dynamically linked version
+			if the VC++ run-time library is set to 
+			"Multi-threaded DLL" or "Multi-threaded Debug DLL".</p>
+<p>On Win32 platforms using compilers other than VC++:
+			Use the same #defines as for non-Win32 platforms 
+			(BOOST_THREAD_USE_DLL and BOOST_THREAD_USE_LIB).
+			If neither is #defined, the default will be chosen. 
+			Currently the default is the dynamically linked version
+			because it has not yet been possible to implement automatic
+			tss cleanup in the statically linked version for compilers
+			other than VC++, although it is hoped that this will be
+			possible in a future version of <span class="bold"><strong>Boost.Threads</strong></span>.
+			
+			Note for advanced users: <span class="bold"><strong>Boost.Threads</strong></span> provides several "hook"
+			functions to allow users to experiment with the statically
+			linked version on Win32 with compilers other than VC++.
+			These functions are on_process_enter(), on_process_exit(),
+			on_thread_enter(), and on_thread_exit(), and are defined
+			in tls_hooks.cpp. See the comments in that file for more
+			information.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.barrier"></a>Barrier functionality added</h5></div></div></div>
+<p>A new class, <code class="computeroutput"><a href="../barrier.html" title="Class barrier">boost::barrier</a></code>, was added.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.read_write_mutex"></a>Read/write mutex functionality added</h5></div></div></div>
+<p>New classes, 
+			<code class="computeroutput">boost::read_write_mutex</code>,
+			<code class="computeroutput">boost::try_read_write_mutex</code>, and
+			<code class="computeroutput">boost::timed_read_write_mutex</code>
+			were added.
+			
+			</p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>Since the read/write mutex and related classes are new,
+			both interface and implementation are liable to change
+			in future releases of <span class="bold"><strong>Boost.Threads</strong></span>.
+			The lock concepts and lock promotion in particular are
+			still under discussion and very likely to change.</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.thread_specific_ptr"></a>Thread-specific pointer functionality changed</h5></div></div></div>
+<p>The <code class="computeroutput"><a href="../thread_specific_ptr.html" title="Class thread_specific_ptr">boost::thread_specific_ptr</a></code> 
+			constructor now takes an optional pointer to a cleanup function that
+			is called to release the thread-specific data that is being pointed
+			to by <code class="computeroutput"><a href="../thread_specific_ptr.html" title="Class thread_specific_ptr">boost::thread_specific_ptr</a></code> objects.</p>
+<p>Fixed: the number of available thread-specific storage "slots"
+			is too small on some platforms.</p>
+<p>Fixed: <code class="computeroutput">thread_specific_ptr::reset()</code>
+			doesn't check error returned by <code class="computeroutput">tss::set()</code>
+			(the <code class="computeroutput">tss::set()</code> function now throws
+			if it fails instead of returning an error code).</p>
+<p>Fixed: calling 
+			<code class="computeroutput">boost::thread_specific_ptr::reset()</code> or 
+			<code class="computeroutput">boost::thread_specific_ptr::release()</code>
+			causes double-delete: once when 
+			<code class="computeroutput">boost::thread_specific_ptr::reset()</code> or
+			<code class="computeroutput">boost::thread_specific_ptr::release()</code> 
+			is called and once when 
+			<code class="computeroutput">boost::thread_specific_ptr::~thread_specific_ptr()</code>
+			is called.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.mutex"></a>Mutex implementation changed for Win32</h5></div></div></div>
+<p>On Win32, <code class="computeroutput"><a href="../mutex.html" title="Class mutex">boost::mutex</a></code>, 
+			<code class="computeroutput"><a href="../try_mutex.html" title="Class try_mutex">boost::try_mutex</a></code>, <code class="computeroutput"><a href="../recursive_mutex.html" title="Class recursive_mutex">boost::recursive_mutex</a></code>,
+			and <code class="computeroutput"><a href="../recursive_try_mutex.html" title="Class recursive_try_mutex">boost::recursive_try_mutex</a></code> now use a Win32 critical section 
+			whenever possible; otherwise they use a Win32 mutex. As before, 
+			<code class="computeroutput"><a href="../timed_mutex.html" title="Class timed_mutex">boost::timed_mutex</a></code> and 
+			<code class="computeroutput"><a href="../recursive_timed_mutex.html" title="Class recursive_timed_mutex">boost::recursive_timed_mutex</a></code> use a Win32 mutex.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="threads.release_notes.boost_1_32_0.change_log.wince"></a>Windows CE support improved</h5></div></div></div>
+<p>Minor changes were made to make Boost.Threads work on Windows CE.</p>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"><small><p>Last revised: August 05, 2004 at 18:07:20 GMT</p></small></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="implementation_notes.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../thread/acknowledgements.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

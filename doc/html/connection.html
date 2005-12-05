@@ -1,0 +1,237 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class connection</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="signals/reference.html#id2543701" title="Header &lt;boost/signals/connection.hpp&gt;">
+<link rel="prev" href="trackable.html" title="Class trackable">
+<link rel="next" href="scoped_connection.html" title="Class scoped_connection">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="trackable.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#id2543701"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="scoped_connection.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="connection"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class connection</span></h2>
+<p>boost::signals::connection &#8212; Query/disconnect a signal-slot connection.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> connection {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="connection.html#connectionconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="connection.html#id2553533-bb">connection</a>();
+  <a href="connection.html#id2583129-bb">connection</a>(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp;);
+  connection&amp; <a href="connection.html#id2578224-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp;);
+
+  <span class="emphasis"><em>// <a href="connection.html#id2558787-bb">connection management</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="connection.html#id2558792-bb">disconnect</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="connection.html#id2558732-bb">connected</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="connection.html#id2575036-bb">blocking</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="connection.html#id2542286-bb">block</a>(<span class="bold"><strong>bool</strong></span> = true);
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="connection.html#id2587349-bb">unblock</a>();
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="connection.html#id2583758-bb">blocked</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="connection.html#id2553604-bb">modifiers</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="connection.html#id2560411-bb">swap</a>(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp;);
+
+  <span class="emphasis"><em>// <a href="connection.html#id2583629-bb">comparisons</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="connection.html#id2591430-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="connection.html#id2566739-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp;) <span class="bold"><strong>const</strong></span>;
+};
+
+<span class="emphasis"><em>// <a href="connection.html#id2539555-bb">specialized algorithms</a></em></span>
+<span class="type"><span class="bold"><strong>void</strong></span></span> <a href="connection.html#id2558035">swap</a>(<a href="connection.html" title="Class connection">connection</a>&amp;, <a href="connection.html" title="Class connection">connection</a>&amp;);</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2736771"></a><h2>Description</h2>
+<p>The <a href="connection.html" title="Class connection">connection</a> class represents
+          a connection between a Signal and a Slot. It is a
+          lightweight object that has the ability to query whether the
+          signal and slot are currently connected, and to disconnect
+          the signal and slot. It is always safe to query or
+          disconnect a connection.</p>
+<div class="refsect2" lang="en">
+<a name="id2736789"></a><h3>
+<a name="connectionconstruct-copy-destruct"></a><code class="computeroutput">connection</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id2553533-bb"></a>connection();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Sets the currently represented connection to the
+          NULL connection.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">!this-&gt;<a href="connection.html#id2558732-bb">connected</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2583129-bb"></a>connection(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    <code class="computeroutput">this</code> references
+          the connection referenced by
+          <code class="computeroutput">other</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout">connection&amp; <a name="id2578224-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    <code class="computeroutput">this</code> references
+          the connection referenced by
+          <code class="computeroutput">other</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2736977"></a><h3>
+<a name="id2558787-bb"></a><code class="computeroutput">connection</code> connection management</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2558792-bb"></a>disconnect() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If
+             <code class="computeroutput">this-&gt;<a href="connection.html#id2558732-bb">connected</a>()</code>,
+             disconnects the signal and slot referenced by this;
+             otherwise, this operation is a no-op.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">!this-&gt;<a href="connection.html#id2558732-bb">connected</a>()</code>.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2558732-bb"></a>connected() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if this
+            references a non-NULL connection that is still active
+            (connected), and <code class="computeroutput">false</code>
+            otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2737123"></a><h3>
+<a name="id2575036-bb"></a><code class="computeroutput">connection</code> blocking</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2542286-bb"></a>block(<span class="bold"><strong>bool</strong></span> should_block = true);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">connected()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">blocked() == should_block</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2587349-bb"></a>unblock();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">connected()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">!blocked()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2583758-bb"></a>blocked() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if the associated slot is either disconnected or blocked, <code class="computeroutput">false</code> otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2737308"></a><h3>
+<a name="id2553604-bb"></a><code class="computeroutput">connection</code> modifiers</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2560411-bb"></a>swap(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp; other);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Swaps the connections referenced in
+            <code class="computeroutput">this</code> and
+            <code class="computeroutput">other</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2737390"></a><h3>
+<a name="id2583629-bb"></a><code class="computeroutput">connection</code> comparisons</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2591430-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp; other) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if
+            <code class="computeroutput">this</code> and
+            <code class="computeroutput">other</code> reference the same
+            connection or both reference the NULL connection, and
+            <code class="computeroutput">false</code>
+            otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2566739-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> <a href="connection.html" title="Class connection">connection</a>&amp; other) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if the
+            connection referenced by
+            <code class="computeroutput">this</code> precedes the
+            connection referenced by
+            <code class="computeroutput">other</code> based on some
+            unspecified ordering, and
+            <code class="computeroutput">false</code>
+            otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2737582"></a><h3>
+<a name="id2539555-bb"></a><code class="computeroutput">connection</code> specialized algorithms</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2558035"></a>swap(<a href="connection.html" title="Class connection">connection</a>&amp; x, <a href="connection.html" title="Class connection">connection</a>&amp; y);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    <code class="computeroutput">x.swap(y)</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li></ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="trackable.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="signals/reference.html#id2543701"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="scoped_connection.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

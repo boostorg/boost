@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template time_zone_base</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id2443927" title="Header &lt;boost/date_time/time_zone_base.hpp&gt;">
+<link rel="prev" href="split_timedate_system.html" title="Class template split_timedate_system">
+<link rel="next" href="id2473370.html" title="Class template dst_adjustment_offsets">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="split_timedate_system.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2443927"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id2473370.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="time_zone_base"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template time_zone_base</span></h2>
+<p>boost::date_time::time_zone_base &#8212; Interface class for dynamic time zones. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> time_type, <span class="bold"><strong>typename</strong></span> CharT = <span class="bold"><strong>char</strong></span>&gt; 
+<span class="bold"><strong>class</strong></span> time_zone_base {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> std::basic_string&lt; CharT &gt;       string_type;       
+  <span class="bold"><strong>typedef</strong></span> std::basic_stringstream&lt; CharT &gt; stringstream_type; 
+  <span class="bold"><strong>typedef</strong></span> time_type::date_type::year_type  year_type;         
+  <span class="bold"><strong>typedef</strong></span> time_type::time_duration_type    time_duration_type;
+
+  <span class="emphasis"><em>// <a href="time_zone_base.html#time_zone_baseconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="time_zone_base.html#id2473364-bb">time_zone_base</a>();
+  <a href="time_zone_base.html#id2473366-bb">~time_zone_base</a>();
+
+  <span class="emphasis"><em>// <a href="time_zone_base.html#id2413510-bb">public member functions</a></em></span>
+  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone_base.html#id2413514-bb">dst_zone_abbrev</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone_base.html#id2413532-bb">std_zone_abbrev</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone_base.html#id2413549-bb">dst_zone_name</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone_base.html#id2413567-bb">std_zone_name</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a href="time_zone_base.html#id2413585-bb">has_dst</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> time_type</span> <a href="time_zone_base.html#id2413602-bb">dst_local_start_time</a>(year_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> time_type</span> <a href="time_zone_base.html#id2413629-bb">dst_local_end_time</a>(year_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a href="time_zone_base.html#id2413657-bb">base_utc_offset</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a href="time_zone_base.html#id2413674-bb">dst_offset</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a href="time_zone_base.html#id2413690-bb">to_posix_string</a>() <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2664273"></a><h2>Description</h2>
+<p>This class represents the base interface for all timezone representations. Subclasses may provide different systems for identifying a particular zone. For example some may provide a geographical based zone construction while others may specify the offset from GMT. Another possible implementation would be to convert from POSIX timezone strings. Regardless of the construction technique, this is the interface that these time zone types must provide.</p>
+<p>Note that this class is intended to be used as a shared resource (hence the derivation from boost::counted_base. </p>
+<div class="refsect2" lang="en">
+<a name="id2664290"></a><h3>
+<a name="time_zone_baseconstruct-copy-destruct"></a><code class="computeroutput">time_zone_base</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><a name="id2473364-bb"></a>time_zone_base();</pre></li>
+<li><pre class="literallayout"><a name="id2473366-bb"></a>~time_zone_base();</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2664339"></a><h3>
+<a name="id2413510-bb"></a><code class="computeroutput">time_zone_base</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id2413514-bb"></a>dst_zone_abbrev() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id2413532-bb"></a>std_zone_abbrev() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id2413549-bb"></a>dst_zone_name() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id2413567-bb"></a>std_zone_name() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> <span class="bold"><strong>bool</strong></span></span> <a name="id2413585-bb"></a>has_dst() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_type</span> <a name="id2413602-bb"></a>dst_local_start_time(year_type y) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_type</span> <a name="id2413629-bb"></a>dst_local_end_time(year_type y) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a name="id2413657-bb"></a>base_utc_offset() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> time_duration_type</span> <a name="id2413674-bb"></a>dst_offset() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> string_type</span> <a name="id2413690-bb"></a>to_posix_string() <span class="bold"><strong>const</strong></span>;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="split_timedate_system.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2443927"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id2473370.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

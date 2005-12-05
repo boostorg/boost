@@ -1,0 +1,402 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template function</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../function/reference.html#header.boost.function.hpp" title="Header &lt;boost/function.hpp&gt;">
+<link rel="prev" href="../functionN.html" title="Class template functionN">
+<link rel="next" href="../function_equal.html" title="Function template function_equal">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../functionN.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../function/reference.html#header.boost.function.hpp"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../function_equal.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="boost.function"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template function</span></h2>
+<p>boost::function &#8212; A generalized function pointer that can be used for
+    callbacks or wrapping function objects.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="emphasis"><em>  // Function type R (T1, T2, ..., TN)</em></span>
+         <span class="bold"><strong>typename</strong></span> Allocator = std::allocator&lt;<span class="bold"><strong>void</strong></span>&gt; &gt; 
+<span class="bold"><strong>class</strong></span> function : <span class="bold"><strong>public</strong></span> <a href="../functionN.html" title="Class template functionN">functionN</a>&lt;R, T1, T2, ..., TN, Allocator&gt; {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> R         result_type;         
+  <span class="bold"><strong>typedef</strong></span> Allocator allocator_type;      
+  <span class="bold"><strong>typedef</strong></span> T1        argument_type;         <span class="emphasis"><em>// If N == 1</em></span>
+  <span class="bold"><strong>typedef</strong></span> T1        first_argument_type;   <span class="emphasis"><em>// If N == 2</em></span>
+  <span class="bold"><strong>typedef</strong></span> T2        second_argument_type;  <span class="emphasis"><em>// If N == 2</em></span>
+  <span class="bold"><strong>typedef</strong></span> T1        arg1_type;           
+  <span class="bold"><strong>typedef</strong></span> T2        arg2_type;           
+     .
+     .
+     .
+  <span class="bold"><strong>typedef</strong></span> TN        argN_type;           
+
+  <span class="emphasis"><em>// static constants</em></span>
+  <span class="bold"><strong>static</strong></span> <span class="bold"><strong>const</strong></span> <span class="bold"><strong>int</strong></span> arity = N;
+
+  <span class="emphasis"><em>// <a href="../lambda.html" title="Chapter 6. Boost.Lambda">Lambda</a> library support</em></span>
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Args&gt; 
+  <span class="bold"><strong>struct</strong></span> sig {
+    <span class="emphasis"><em>// types</em></span>
+    <span class="bold"><strong>typedef</strong></span> result_type type;
+  };
+
+  <span class="emphasis"><em>// <a href="function.html#boost.functionconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="function.html#id2349250-bb">function</a>();
+  <a href="function.html#id2369646-bb">function</a>(<span class="bold"><strong>const</strong></span> <a href="../functionN.html" title="Class template functionN">functionN</a>&amp;);
+  <a href="function.html#id2339094-bb">function</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&amp;);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> F&gt; <a href="function.html#id2380764-bb">function</a>(F);
+  function&amp; <a href="function.html#id2350723-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> <a href="../functionN.html" title="Class template functionN">functionN</a>&amp;);
+  function&amp; <a href="function.html#id2406303-bb"><span class="bold"><strong>operator</strong></span>=</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&amp;);
+  <a href="function.html#id2360840-bb">~function</a>();
+
+  <span class="emphasis"><em>// <a href="function.html#id2342120-bb">modifiers</a></em></span>
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="function.html#id2342124-bb">swap</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&amp;);
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="function.html#id2434373-bb">clear</a>();
+
+  <span class="emphasis"><em>// <a href="function.html#id2396338-bb">capacity</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2396343-bb">empty</a>() <span class="bold"><strong>const</strong></span>;
+  <a href="function.html#id2336149-bb"><span class="bold"><strong>operator</strong></span> safe_bool</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2371599-bb"><span class="bold"><strong>operator</strong></span>!</a>() <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="function.html#id2378753-bb">target access</a></em></span>
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Functor&gt; <span class="type">Functor*</span> <a href="function.html#id2378762-bb">target</a>();
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Functor&gt; <span class="type"><span class="bold"><strong>const</strong></span> Functor*</span> <a href="function.html#id2376534-bb">target</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Functor&gt; <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2426358-bb">contains</a>(<span class="bold"><strong>const</strong></span> Functor&amp;) <span class="bold"><strong>const</strong></span>;
+
+  <span class="emphasis"><em>// <a href="function.html#id2404064-bb">invocation</a></em></span>
+  <span class="type">result_type</span> <a href="function.html#id2404069-bb"><span class="bold"><strong>operator</strong></span>()</a>(arg1_type, arg2_type, ..., argN_type) <span class="bold"><strong>const</strong></span>;
+};
+
+<span class="emphasis"><em>// <a href="function.html#id2408546-bb">specialized algorithms</a></em></span>
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="function.html#id2408551">swap</a>(<a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;, <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;);
+
+<span class="emphasis"><em>// <a href="function.html#id2420066-bb">comparison operators</a></em></span>
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2341297-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;, Functor);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2399796-bb"><span class="bold"><strong>operator</strong></span>==</a>(Functor, <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2444136-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;, 
+                  <a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2477463-bb"><span class="bold"><strong>operator</strong></span>==</a>(<a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature1, <span class="bold"><strong>typename</strong></span> Allocator1, <span class="bold"><strong>typename</strong></span> Signature2, 
+         <span class="bold"><strong>typename</strong></span> Allocator2&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="function.html#id2378044-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature1, Allocator1&gt;&amp;, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature2, Allocator2&gt;&amp;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2336228-bb"><span class="bold"><strong>operator</strong></span>!=</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;, Functor);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2337224-bb"><span class="bold"><strong>operator</strong></span>!=</a>(Functor, <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2508816-bb"><span class="bold"><strong>operator</strong></span>!=</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;, 
+                  <a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="function.html#id2407103-bb"><span class="bold"><strong>operator</strong></span>!=</a>(<a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp;);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature1, <span class="bold"><strong>typename</strong></span> Allocator1, <span class="bold"><strong>typename</strong></span> Signature2, 
+         <span class="bold"><strong>typename</strong></span> Allocator2&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="function.html#id2469309-bb"><span class="bold"><strong>operator</strong></span>!=</a>(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature1, Allocator1&gt;&amp;, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature2, Allocator2&gt;&amp;);</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2696608"></a><h2>Description</h2>
+<p>Class template <a href="function.html" title="Class template function">function</a> is a thin
+      wrapper around the numbered class templates <a href="../functionN.html" title="Class template functionN">function0</a>, <a href="../functionN.html" title="Class template functionN">function1</a>, etc. It accepts a
+      function type with N arguments and will will derive from
+      <a href="../functionN.html" title="Class template functionN">functionN</a> instantiated with the arguments
+      it receives.</p>
+<p>The semantics of all operations in class template
+      <a href="function.html" title="Class template function">function</a> are equivalent to that of the
+      underlying <a href="../functionN.html" title="Class template functionN">functionN</a> object, although
+      additional member functions are required to allow proper copy
+      construction and copy assignment of function objects.</p>
+<div class="refsect2" lang="en">
+<a name="id2696664"></a><h3>
+<a name="boost.functionconstruct-copy-destruct"></a><code class="computeroutput">function</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id2349250-bb"></a>function();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2369646-bb"></a>function(<span class="bold"><strong>const</strong></span> <a href="../functionN.html" title="Class template functionN">functionN</a>&amp; f);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    Contains a copy of the <code class="computeroutput">f</code>'s target, if it has one, or is empty if <code class="computeroutput">f.<a href="function.html#id2396343-bb">empty</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw unless copying the target of <code class="computeroutput">f</code> throws.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2339094-bb"></a>function(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&amp; f);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    Contains a copy of the <code class="computeroutput">f</code>'s target, if it has one, or is empty if <code class="computeroutput">f.<a href="function.html#id2396343-bb">empty</a>()</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw unless copying the target of <code class="computeroutput">f</code> throws.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> F&gt; <a name="id2380764-bb"></a>function(F f);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    F is a function object Callable from <code class="computeroutput">this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">*this</code> targets a copy of <code class="computeroutput">f</code> if <code class="computeroutput">f</code> is nonempty, or <code class="computeroutput">this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code> if <code class="computeroutput">f</code> is empty.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw when <code class="computeroutput">f</code> is a stateless function object.</p>
+</li>
+<li>
+<pre class="literallayout">function&amp; <a name="id2350723-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> <a href="../functionN.html" title="Class template functionN">functionN</a>&amp; f);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">*this</code> targets a copy of <code class="computeroutput">f</code>'s target, if it has one, or is empty if <code class="computeroutput">f.<a href="function.html#id2396343-bb">empty</a>()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw when the target of <code class="computeroutput">f</code> is a stateless function object or a reference to the function object.</p>
+</li>
+<li>
+<pre class="literallayout">function&amp; <a name="id2406303-bb"></a><span class="bold"><strong>operator</strong></span>=(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&amp; f);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">*this</code> targets a copy of <code class="computeroutput">f</code>'s target, if it has one, or is empty if <code class="computeroutput">f.<a href="function.html#id2396343-bb">empty</a>()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw when the target of <code class="computeroutput">f</code> is a stateless function object or a reference to the function object.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2360840-bb"></a>~function();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If <code class="computeroutput">!this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code>, destroys the target of <code class="computeroutput">this</code>.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2697164"></a><h3>
+<a name="id2342120-bb"></a><code class="computeroutput">function</code> modifiers</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2342124-bb"></a>swap(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&amp; f);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Interchanges the targets of <code class="computeroutput">*this</code> and <code class="computeroutput">f</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2434373-bb"></a>clear();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2697294"></a><h3>
+<a name="id2396338-bb"></a><code class="computeroutput">function</code> capacity</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2396343-bb"></a>empty() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">false</code> if <code class="computeroutput">this</code> has a target, and <code class="computeroutput">true</code> otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2336149-bb"></a><span class="bold"><strong>operator</strong></span> safe_bool() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    A <code class="computeroutput">safe_bool</code> that evaluates <code class="computeroutput">false</code> in a boolean context when <code class="computeroutput">this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code>, and <code class="computeroutput">true</code> otherwise.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2371599-bb"></a><span class="bold"><strong>operator</strong></span>!() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2697505"></a><h3>
+<a name="id2378753-bb"></a><code class="computeroutput">function</code> target access</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<p><a name="id2378757-bb"></a></p>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Functor&gt; <span class="type">Functor*</span> <a name="id2378762-bb"></a>target();
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Functor&gt; <span class="type"><span class="bold"><strong>const</strong></span> Functor*</span> <a name="id2376534-bb"></a>target() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    If <code class="computeroutput">this</code> stores a target of type
+        <code class="computeroutput">Functor</code>, returns the address of the
+        target. Otherwise, returns the NULL
+        pointer.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Functor&gt; <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2426358-bb"></a>contains(<span class="bold"><strong>const</strong></span> Functor&amp; f) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">true</code> if <code class="computeroutput">this-&gt;<a href="function.html#id2378757-bb">target</a>&lt;Functor&gt;()</code> is non-NULL and <code class="computeroutput"><a href="../function_equal.html" title="Function template function_equal">function_equal</a>(*(this-&gt;target&lt;Functor&gt;()), f)</code></p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2697705"></a><h3>
+<a name="id2404064-bb"></a><code class="computeroutput">function</code> invocation</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type">result_type</span> <a name="id2404069-bb"></a><span class="bold"><strong>operator</strong></span>()(arg1_type a1, arg2_type a2, ... , argN_type aN) <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    <code class="computeroutput">f(a1, a2, ..., aN)</code>, where <code class="computeroutput">f</code> is the target of <code class="computeroutput">*this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    if <code class="computeroutput">R</code> is <code class="computeroutput">void</code>, nothing is returned; otherwise, the return value of the call to <code class="computeroutput">f</code> is returned.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <code class="computeroutput"><a href="../bad_function_call.html" title="Class bad_function_call">bad_function_call</a></code> if <code class="computeroutput">this-&gt;<a href="function.html#id2396343-bb">empty</a>()</code>. Otherwise, may through any exception thrown by the target function <code class="computeroutput">f</code>.</p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2697840"></a><h3>
+<a name="id2408546-bb"></a><code class="computeroutput">function</code> specialized algorithms</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2408551"></a>swap(<a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f1, 
+            <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f2);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    <code class="computeroutput">f1.<a href="function.html#id2342124-bb">swap</a>(f2)</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    Will not throw.</p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2697942"></a><h3>
+<a name="id2420066-bb"></a><code class="computeroutput">function</code> comparison operators</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<p><a name="id2341292"></a></p>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2341297-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f, Functor g);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2399796-bb"></a><span class="bold"><strong>operator</strong></span>==(Functor g, <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2444136-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f, 
+                  <a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt; g);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2477463-bb"></a><span class="bold"><strong>operator</strong></span>==(<a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt; g, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature1, <span class="bold"><strong>typename</strong></span> Allocator1, <span class="bold"><strong>typename</strong></span> Signature2, 
+         <span class="bold"><strong>typename</strong></span> Allocator2&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2378044-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature1, Allocator1&gt;&amp; f1, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature2, Allocator2&gt;&amp; f2);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    True when <code class="computeroutput">f</code> stores an object of
+        type <code class="computeroutput">Functor</code> and one of the following conditions applies:
+          <div class="itemizedlist"><ul type="disc">
+<li>
+<code class="computeroutput">g</code> is of type
+            <code class="computeroutput"><a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;</code>
+            and <code class="computeroutput">f.target&lt;Functor&gt;() == g.<a href="../reference_wrapper.html#id2490294-bb">get_pointer</a>()</code>.</li>
+<li>
+<code class="computeroutput">g</code> is not of type
+            <code class="computeroutput"><a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;</code>
+            and <code class="computeroutput">function_equals(*(f.target&lt;Functor&gt;()), g)</code>.</li>
+</ul></div><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    <code class="computeroutput"><a href="function.html" title="Class template function">function</a></code>
+        objects are not
+        <a href="../EqualityComparable.html" title="Concept EqualityComparable">EqualityComparable</a>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    The <code class="computeroutput">safe_bool</code> conversion
+        opens a loophole whereby two <code class="computeroutput">function</code>
+        instances can be compared via <code class="computeroutput">==</code>, although this
+        is not feasible to implement. The undefined <code class="computeroutput">void
+        operator==</code> closes the loophole and ensures a
+        compile-time or link-time error.</p>
+</li>
+<li>
+<p><a name="id2352115"></a></p>
+<pre class="literallayout"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2336228-bb"></a><span class="bold"><strong>operator</strong></span>!=(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f, Functor g);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2337224-bb"></a><span class="bold"><strong>operator</strong></span>!=(Functor g, <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2508816-bb"></a><span class="bold"><strong>operator</strong></span>!=(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f, 
+                  <a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt; g);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature, <span class="bold"><strong>typename</strong></span> Allocator, <span class="bold"><strong>typename</strong></span> Functor&gt; 
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2407103-bb"></a><span class="bold"><strong>operator</strong></span>!=(<a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt; g, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature, Allocator&gt;&amp; f);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> Signature1, <span class="bold"><strong>typename</strong></span> Allocator1, <span class="bold"><strong>typename</strong></span> Signature2, 
+         <span class="bold"><strong>typename</strong></span> Allocator2&gt; 
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2469309-bb"></a><span class="bold"><strong>operator</strong></span>!=(<span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature1, Allocator1&gt;&amp; f1, 
+                  <span class="bold"><strong>const</strong></span> <a href="function.html" title="Class template function">function</a>&lt;Signature2, Allocator2&gt;&amp; f2);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    True when <code class="computeroutput">f</code> does not store an
+        object of type <code class="computeroutput">Functor</code> or it stores an object of
+        type <code class="computeroutput">Functor</code> and one of the following conditions
+        applies:
+          <div class="itemizedlist"><ul type="disc">
+<li>
+<code class="computeroutput">g</code> is of type
+            <code class="computeroutput"><a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;</code>
+            and <code class="computeroutput">f.target&lt;Functor&gt;() != g.<a href="../reference_wrapper.html#id2490294-bb">get_pointer</a>()</code>.</li>
+<li>
+<code class="computeroutput">g</code> is not of type
+            <code class="computeroutput"><a href="../reference_wrapper.html" title="Class template reference_wrapper">reference_wrapper</a>&lt;Functor&gt;</code>
+            and <code class="computeroutput">!function_equals(*(f.target&lt;Functor&gt;()), g)</code>.</li>
+</ul></div><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    <code class="computeroutput"><a href="function.html" title="Class template function">function</a></code>
+        objects are not
+        <a href="../EqualityComparable.html" title="Concept EqualityComparable">EqualityComparable</a>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    The <code class="computeroutput">safe_bool</code> conversion
+        opens a loophole whereby two <code class="computeroutput">function</code>
+        instances can be compared via <code class="computeroutput">!=</code>, although this
+        is not feasible to implement. The undefined <code class="computeroutput">void
+        operator!=</code> closes the loophole and ensures a
+        compile-time or link-time error.</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2004 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../functionN.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../function/reference.html#header.boost.function.hpp"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../function_equal.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

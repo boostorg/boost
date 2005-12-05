@@ -1,0 +1,177 @@
+#
+# This is Boost Jamfile for Boost.Build V2.
+# 
+# Pass --v2 option to bjam to use this file. For example:
+#
+#    bjam --v2 link=static
+#
+
+# TODO:
+#  - handle boost version
+
+
+import modules ;
+import set ;
+import stage ;
+import package ;
+
+constant BOOST_VERSION : 1.33.1 ;
+
+project boost
+    : requirements <include>.
+      # disable auto-linking for all targets here,
+      # primarily because it caused troubles with V2
+      <define>BOOST_ALL_NO_LIB=1
+      # Used to encode variant in target name. See the
+      # 'tag' rule below.
+      <tag>@$(__name__).tag
+    : usage-requirements <include>.
+    : build-dir bin.v2  
+    ;
+
+# Decides which libraries are to be installed by looking at --with-<library>
+# --without-<library> arguments. Returns the list of directories under "libs"
+# which must be built at installed.
+rule libraries-to-install ( existing-libraries * )
+{
+   local argv = [ modules.peek : ARGV ] ;
+   local with-parameter = [ MATCH --with-(.*) : $(argv) ] ;
+   local without-parameter = [ MATCH --without-(.*) : $(argv) ] ;
+
+   # Do some checks
+   if $(with-parameter) && $(without-parameter)
+   {
+       ECHO "error: both --with-<library> and --without-<library> specified" ;
+       EXIT ;
+   }
+   
+   local wrong = [ set.difference $(with-parameter) : $(existing-libraries) ] ;
+   if $(wrong)
+   {
+       ECHO "error: wrong library name '$(wrong[1])' in the --with-<library> option." ;
+       EXIT ;
+   }
+   local wrong = [ set.difference $(without-parameter) : $(existing-libraries) ] ;
+   if $(wrong)
+   {
+       ECHO "error: wrong library name '$(wrong[1])' in the --without-<library> option." ;
+       EXIT ;
+   }
+
+   if $(with-parameter)
+   {
+       return [ set.intersection $(existing-libraries) : $(with-parameter) ] ;
+   }
+   else
+   {
+       return [ set.difference $(existing-libraries) : $(without-parameter) ] ;
+   }         
+}
+
+# what kind of layout are we doing?
+layout = [ MATCH "^--layout=(.*)" : $(ARGV) ] ;
+layout ?= versioned ;
+layout-$(layout) = true ;
+
+# possible stage only location
+local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
+stage-locate ?= stage ;
+
+path-constant BOOST_STAGE_LOCATE : $(stage-locate) ;
+
+
+# location of python
+local python-root = [ MATCH "^--with-python-root=(.*)" : $(ARGV) ] ;
+PYTHON_ROOT ?= $(python-root) ;
+
+# Select the libraries to install.
+libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ] ;
+libraries = [ libraries-to-install $(libraries) ] ;
+
+
+# This rule is called by Boost.Build to determine the name of 
+# target. We use it to encode build variant, compiler name and
+# boost version in the target name 
+rule tag ( name : type ? : property-set )
+{
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
+    {        
+        if $(layout) = versioned
+        {
+            name = [ stage.add-variant-and-compiler $(name) 
+              : $(type) : $(property-set) ] ;
+            
+            local version-tag = [ MATCH "^([^.]+)[.]([^.]+)" : $(BOOST_VERSION[1]) ] ;
+            version-tag = $(version-tag:J="_") ;
+            
+            # On NT, library with version suffix won't be recognized
+            # by linkers. On CYGWIN, we get strage duplicate symbol
+            # errors when library is generated with version suffix.
+            # On OSX, version suffix is not needed -- the linker expets
+            # libFoo.1.2.3.dylib format.
+            # AIX linkers don't accept version suffixes either.
+            if [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
+            {
+                return $(name:B)-$(version-tag)$(name:S) ;
+            }
+            else
+            {
+                return $(name:B)-$(version-tag)$(name:S).$(BOOST_VERSION)  ;
+            }
+        }
+        else
+        {
+            return [ stage.add-variant-and-compiler $(name) 
+              : $(type) : $(property-set) ] ;
+        }
+    }
+}
+
+# Install to system location.
+
+local patterns = *.hpp *.ipp *.h *.inc ;
+local dirs = boost boost/* boost/*/* ;
+
+# Complete install
+package.install install 
+    : <install-source-root>. # No specific requirements
+    : # No binaries
+    : libs/$(libraries)/build
+    : [ glob $(dirs)/$(patterns) ]
+    ;
+
+# Install just library.
+install stage : libs/$(libraries)/build 
+  : <location>$(stage-locate)
+  ;
+
+# Just build the libraries, don't install them anywhere.
+# This is what happend with just "bjam --v2".
+alias build_all : libs/$(libraries)/build ;
+
+# This rule should be called from libraries' Jamfiles and will
+# create two targets, "install" and "stage", that will install
+# or stage that library. The --prefix option is respected, by
+# --with and --without options, naturally, are ignored.
+#
+# - libraries -- list of library targets to install.
+rule boost-install ( libraries * )
+{
+    package.install install 
+        : <dependency>/boost//install-headers
+        : # No binaries
+        : $(libraries)
+        : # No headers, it's handled by the dependency
+    ;
+
+    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;            
+}
+
+
+
+# Make project ids of all libraries known.
+for local l in $(libraries)
+{
+    use-project /boost/$(l) : libs/$(l)/build ;
+}
+    

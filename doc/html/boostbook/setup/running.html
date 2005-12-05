@@ -1,0 +1,106 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Running BoostBook</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../getting/started.html" title="Chapter 17. Getting Started">
+<link rel="prev" href="manual.html" title="Manual setup for all systems">
+<link rel="next" href="troubleshooting.html" title="Troubleshooting">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="manual.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../getting/started.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="troubleshooting.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="boostbook.setup.running"></a>Running BoostBook</h2></div></div></div>
+<p>Once BoostBook has been configured, we can build some
+    documentation. First, change to the directory
+    <code class="computeroutput">$BOOST_ROOT/doc</code> and remove (or make writable) the
+    <code class="computeroutput">.html</code> files in
+    <code class="computeroutput">$BOOST_ROOT/doc/html</code>. Then, run <code class="computeroutput">bjam
+    --v2</code> to build HTML documentation. You should see several
+    warnings like these while DocBook documentation is being built
+    from BoostBook documentation:</p>
+<pre class="programlisting">Cannot find function named 'checked_delete'
+Cannot find function named 'checked_array_delete'
+Cannot find function named 'next'</pre>
+<p>These warnings are emitted when the Boost documentation
+    tools cannot find documentation for functions, methods, or classes
+    that are referenced in the source, and are not harmful in any
+    way. Once Boost.Jam has completed its execution, HTML
+    documentation for Boost will be available in
+    <code class="computeroutput">$BOOST_ROOT/doc/html</code>. You can also create HTML
+    documentation in a single (large!) HTML file with the command line
+    <code class="computeroutput">bjam --v2 onehtml</code>, or Unix man pages with the command
+    line <code class="computeroutput">bjam --v2 man</code>. The complete list of output
+    formats is listed in <a href="running.html#boostbook.output.formats" title="Table 17.1. BoostBook Output Formats">Table 17.1, &#8220;BoostBook Output Formats&#8221;</a>. Several output formats can
+    be passed to a single invocation of <code class="computeroutput">bjam</code>, e.g.,
+    <code class="computeroutput">bjam --v2 html man docbook</code> would generate HTML
+    (multiple files), man pages, and DocBook documentation.</p>
+<div class="table">
+<a name="boostbook.output.formats"></a><p class="title"><b>Table 17.1. BoostBook Output Formats</b></p>
+<table class="table" summary="BoostBook Output Formats">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>Format</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>html</td>
+<td><p>HTML output (multiple files). This is the default</p></td>
+</tr>
+<tr>
+<td>onehtml</td>
+<td><p>HTML output in a single HTML file.</p></td>
+</tr>
+<tr>
+<td>man</td>
+<td><p>Unix man pages.</p></td>
+</tr>
+<tr>
+<td>pdf</td>
+<td><p>PDF. Requires <a href="http://xml.apache.org/fop/index.html" target="_top">Apache FOP</a>.</p></td>
+</tr>
+<tr>
+<td>ps</td>
+<td><p>Postscript. Requires <a href="http://xml.apache.org/fop/index.html" target="_top">Apache FOP</a>.</p></td>
+</tr>
+<tr>
+<td>docbook</td>
+<td>
+<a href="http://www.docbook.org/" target="_top">DocBook</a>.</td>
+</tr>
+<tr>
+<td>fo</td>
+<td><a href="http://www.w3.org/TR/xsl/" target="_top">XSL Formatting Objects</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2003-2005 Douglas Gregor</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="manual.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../getting/started.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="troubleshooting.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

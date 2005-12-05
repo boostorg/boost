@@ -1,0 +1,117 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class barrier</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="threads/reference.html#id2616214" title="Header &lt;boost/thread/barrier.hpp&gt;">
+<link rel="prev" href="threads/reference.html" title="Reference">
+<link rel="next" href="condition.html" title="Class condition">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="threads/reference.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2616214"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="condition.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="barrier"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class barrier</span></h2>
+<p>boost::barrier &#8212; <p>An object of class <a href="barrier.html" title="Class barrier">barrier</a> is a synchronization 
+        primitive used  to cause a set of threads to wait until they each perform a 
+        certain function or each reach a particular point in their execution.</p></p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> barrier : <span class="bold"><strong>private</strong></span> boost::noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
+{
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="barrier.html#barrierconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="barrier.html#id2605020-bb">barrier</a>(size_t);
+  <a href="barrier.html#id2535874-bb">~barrier</a>();
+
+  <span class="emphasis"><em>// <a href="barrier.html#id2435312-bb">waiting</a></em></span>
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="barrier.html#id2620360-bb">wait</a>();
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2778820"></a><h2>Description</h2>
+<p>When a barrier is created, it is initialized with a thread count N.
+		The first N-1 calls to <code class="computeroutput">wait()</code> will all cause their threads to be blocked. 
+		The Nth call to <code class="computeroutput">wait()</code> will allow all  of the waiting threads, including 
+		the Nth thread, to be placed in a ready state.  The Nth call will also "reset"
+		the barrier such that, if an additional N+1th call is made to <code class="computeroutput">wait()</code>, 
+		it will be as though this were the first call to <code class="computeroutput">wait()</code>; in other
+		words, the N+1th to 2N-1th calls to <code class="computeroutput">wait()</code> will cause their
+		threads to be blocked, and the 2Nth call to <code class="computeroutput">wait()</code> will allow all of 
+		the waiting threads, including the 2Nth thread, to be placed in a ready state
+		and reset the barrier. This functionality allows the same set of N threads to re-use 
+		a barrier object to  synchronize their execution at multiple points during their 
+		execution.</p>
+<p>See <a href="threads.html#threads.glossary" title="Glossary">Glossary</a> for definitions of thread 
+		states <a href="threads.html#threads.glossary.thread-state">blocked</a>
+		and <a href="threads.html#threads.glossary.thread-state">ready</a>.
+		Note that "waiting" is a synonym for blocked.</p>
+<div class="refsect2" lang="en">
+<a name="id2778899"></a><h3>
+<a name="barrierconstruct-copy-destruct"></a><code class="computeroutput">barrier</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id2605020-bb"></a>barrier(size_t count);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Constructs a <a href="barrier.html" title="Class barrier">barrier</a> object that 
+        will cause <code class="computeroutput">count</code> threads to block on a call to <code class="computeroutput">wait()</code>.
+        </p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2535874-bb"></a>~barrier();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Destroys <code class="computeroutput">*this</code>. If threads are still executing 
+		their <code class="computeroutput">wait()</code> operations, the behavior for these threads is undefined.
+		</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2779000"></a><h3>
+<a name="id2435312-bb"></a><code class="computeroutput">barrier</code> waiting</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2620360-bb"></a>wait();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Wait until N threads call <code class="computeroutput">wait()</code>, where
+          N equals the <code class="computeroutput">count</code> provided to the constructor for the 
+          barrier object.<p><span class="bold"><strong>Note</strong></span> that if the barrier is 
+          destroyed before <code class="computeroutput">wait()</code> can return, the behavior is 
+          undefined.</p><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    Exactly one of the N threads will receive a return value
+		  of <code class="computeroutput">true</code>, the others will receive a value of <code class="computeroutput">false</code>. 
+		  Precisely which thread receives the return value of <code class="computeroutput">true</code> will 
+		  be implementation-defined. Applications can use this value to designate one 
+		  thread as a leader that will take a certain action, and the other threads 
+		  emerging from the barrier can wait for that action to take place.</p>
+</li></ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="threads/reference.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2616214"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="condition.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title> Type Traits by Category</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../boost_typetraits.html" title="Chapter 14. Boost.TypeTraits">
+<link rel="prev" href="background.html" title=" Background and Tutorial">
+<link rel="next" href="user_defined.html" title=" User Defined Specializations">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="background.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_typetraits.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="user_defined.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_typetraits.category"></a> Type Traits by Category</h3></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="category.html#boost_typetraits.value_traits"> Type Traits that Describe the Properties of a Type</a></span></dt>
+<dt><span class="section"><a href="category.html#boost_typetraits.transform"> Type Traits that Transform One Type to Another</a></span></dt>
+<dt><span class="section"><a href="category.html#boost_typetraits.alignment"> Synthesizing Types with Specific Alignments</a></span></dt>
+<dt><span class="section"><a href="category.html#boost_typetraits.function"> Decomposing Function Types</a></span></dt>
+</dl></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_typetraits.value_traits"></a> Type Traits that Describe the Properties of a Type</h4></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="category.html#boost_typetraits.primary"> Categorizing a Type</a></span></dt>
+<dt><span class="section"><a href="category.html#boost_typetraits.properties"> General Type Properties</a></span></dt>
+<dt><span class="section"><a href="category.html#boost_typetraits.relate"> Relationships Between Two Types</a></span></dt>
+</dl></div>
+<p>
+These traits are all <span class="emphasis"><em>value traits</em></span>, which is to say the traits classes all
+inherit from <a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">integral_constant</a>, and are used to access some numerical
+property of a type.  Often this is a simple true or false Boolean value, 
+but in a few cases may be some other integer value (for example when dealing
+with type alignments, or array bounds: see <code class="computeroutput"><a href="reference.html#boost_typetraits.alignment_of" title=" alignment_of">alignment_of</a></code>, <code class="computeroutput"><a href="reference.html#boost_typetraits.rank" title=" rank">rank</a></code> and <code class="computeroutput"><a href="reference.html#boost_typetraits.extent" title=" extent">extent</a></code>).</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_typetraits.primary"></a> Categorizing a Type</h5></div></div></div>
+<p>
+These traits identify what "kind" of type some type <code class="computeroutput"><span class="identifier">T</span></code> is.  These are split into
+two groups: primary traits which are all mutually exclusive, and composite traits
+that are compositions of one or more primary traits.</p>
+<p>
+For any given type, exactly one primary type trait will inherit from
+<a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">true_type</a>, and all the others will inherit from <a href="reference.html#boost_typetraits.integral_constant" title=" integral_constant">false_type</a>, in other
+words these traits are mutually exclusive.</p>
+<p>
+This means that <code class="computeroutput"><a href="reference.html#boost_typetraits.is_integral" title=" is_integral">is_integral</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span></code> and <code class="computeroutput"><a href="reference.html#boost_typetraits.is_floating_point" title=" is_floating_point">is_floating_point</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;::</span><span class="identifier">value</span></code> 
+will only ever be true for built-in types; if you want to check for a 
+user-defined class type that behaves "as if" it is an integral or floating point type, 
+then use the <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="keyword"> template</span></code> instead.</p>
+<p><span class="bold"><strong>Synopsis:</strong></span></p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_array" title=" is_array">is_array</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_class" title=" is_class">is_class</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_enum" title=" is_enum">is_enum</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_floating_point" title=" is_floating_point">is_floating_point</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_function" title=" is_function">is_function</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_integral" title=" is_integral">is_integral</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_member_function_pointer" title=" is_member_function_pointer">is_member_function_pointer</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_member_object_pointer" title=" is_member_object_pointer">is_member_object_pointer</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_pointer" title=" is_pointer">is_pointer</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_reference" title=" is_reference">is_reference</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_union" title=" is_union">is_union</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span><span class="keyword">
+  
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_void" title=" is_void">is_void</a><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;;</span></code></pre>
+<p>
+The following traits are made up of the union of one or more type
+categorizations. A type may belong to more than one of these categories, 
+in addition to one of the primary categories.</p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_arithmetic" title=" is_arithmetic">is_arithmetic</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_compound" title=" is_compound">is_compound</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_fundamental" title=" is_fundamental">is_fundamental</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_member_pointer" title=" is_member_pointer">is_member_pointer</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_object" title=" is_object">is_object</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_scalar" title=" is_scalar">is_scalar</a><span class="special">;</span></code></pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_typetraits.properties"></a> General Type Properties</h5></div></div></div>
+<p>
+The following templates describe the general properties of a type.</p>
+<p><span class="bold"><strong>Synopsis:</strong></span></p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.alignment_of" title=" alignment_of">alignment_of</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_nothrow_assign" title=" has_nothrow_assign">has_nothrow_assign</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_nothrow_constructor" title=" has_nothrow_constructor">has_nothrow_constructor</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_nothrow_copy" title=" has_nothrow_copy">has_nothrow_copy</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_trivial_assign" title=" has_trivial_assign">has_trivial_assign</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_trivial_constructor" title=" has_trivial_constructor">has_trivial_constructor</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_trivial_copy" title=" has_trivial_copy">has_trivial_copy</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_trivial_destructor" title=" has_trivial_destructor">has_trivial_destructor</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.has_virtual_destructor" title=" has_virtual_destructor">has_virtual_destructor</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_abstract" title=" is_abstract">is_abstract</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_const" title=" is_const">is_const</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_empty" title=" is_empty">is_empty</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_stateless" title=" is_stateless">is_stateless</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_pod" title=" is_pod">is_pod</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_polymorphic" title=" is_polymorphic">is_polymorphic</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_volatile" title=" is_volatile">is_volatile</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">,</span><span class="identifier"> std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> N</span><span class="special"> =</span><span class="number"> 0</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.extent" title=" extent">extent</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.rank" title=" rank">rank</a><span class="special">;</span></code></pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_typetraits.relate"></a> Relationships Between Two Types</h5></div></div></div>
+<p>
+These templates determine the whether there is a relationship 
+between two types:</p>
+<p><span class="bold"><strong>Synopsis:</strong></span></p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> Base</span><span class="special">,</span><span class="keyword"> class</span><span class="identifier"> Derived</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_base_of" title=" is_base_of">is_base_of</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> From</span><span class="special">,</span><span class="keyword"> class</span><span class="identifier"> To</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_convertible" title=" is_convertible">is_convertible</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">,</span><span class="keyword"> class</span><span class="identifier"> U</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.is_same" title=" is_same">is_same</a><span class="special">;</span></code></pre>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_typetraits.transform"></a> Type Traits that Transform One Type to Another</h4></div></div></div>
+<p>
+The following templates transform one type to another, 
+based upon some well-defined rule. 
+Each template has a single member called <code class="computeroutput"><span class="identifier">type</span></code> that is the 
+result of applying the transformation to the template argument <code class="computeroutput"><span class="identifier">T</span></code>.</p>
+<p><span class="bold"><strong>Synopsis:</strong></span></p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.add_const" title=" add_const">add_const</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.add_cv" title=" add_cv">add_cv</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.add_pointer" title=" add_pointer">add_pointer</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.add_reference" title=" add_reference">add_reference</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.add_volatile" title=" add_volatile">add_volatile</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_all_extents" title=" remove_all_extents">remove_all_extents</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_const" title=" remove_const">remove_const</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_cv" title=" remove_cv">remove_cv</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_extent" title=" remove_extent">remove_extent</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_pointer" title=" remove_pointer">remove_pointer</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_reference" title=" remove_reference">remove_reference</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="keyword">class</span><span class="identifier"> T</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.remove_volatile" title=" remove_volatile">remove_volatile</a><span class="special">;</span></code></pre>
+<a name="transform.broken_compiler_workarounds_"></a><h4>
+<a name="id2798818"></a>Broken Compiler Workarounds:</h4>
+<p>
+For all of these templates support for partial specialization of class templates is 
+required to correctly implement the transformation. 
+On the other hand, practice shows that many of the templates from this 
+category are very useful, and often essential for implementing some 
+generic libraries. Lack of these templates is often one of the major 
+limiting factors in porting those libraries to compilers that do not yet 
+support this language feature. As some of these compilers are going to be 
+around for a while, and at least one of them is very wide-spread, 
+it was decided that the library should provide workarounds where possible.</p>
+<p>
+The basic idea behind the workaround is to manually define full 
+specializations of all type transformation templates for all fundamental types, 
+and all their 1st and 2nd rank cv-[un]qualified derivative pointer types, and to 
+provide a user-level macro that will define all the explicit specializations needed 
+for any user-defined type T.</p>
+<p>
+The first part guarantees the successful compilation of something like this:</p>
+<pre class="programlisting"><code class="literal"><span class="identifier">BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="special">,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="special">&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> volatile</span><span class="special">,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> volatile</span><span class="special">&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">*,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">*&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="special">*,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="special">*&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="special">
+...</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">*</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">*</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">*</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">*</span><span class="keyword"> const</span><span class="keyword"> volatile</span><span class="special">&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span></code></pre>
+<p>
+and the second part provides the library's users with a mechanism to make the 
+above code work not only for <code class="computeroutput"><span class="keyword">char</span></code>, <code class="computeroutput"><span class="keyword">int</span></code> or other built-in type, 
+but for they own types as well:</p>
+<pre class="programlisting"><code class="literal"><span class="keyword">namespace</span><span class="identifier"> myspace</span><span class="special">{</span><span class="keyword">
+   struct</span><span class="identifier"> MyClass</span><span class="special"> {};</span><span class="special">
+}</span><span class="comment">
+// declare this at global scope:
+</span><span class="identifier">BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION</span><span class="special">(</span><span class="identifier">myspace</span><span class="special">::</span><span class="identifier">MyClass</span><span class="special">)</span><span class="comment">
+// transformations on myspace::MyClass now work:
+</span><span class="identifier">BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="identifier">myspace</span><span class="special">::</span><span class="identifier">MyClass</span><span class="special">,</span><span class="identifier"> remove_reference</span><span class="special">&lt;</span><span class="identifier">myspace</span><span class="special">::</span><span class="identifier">MyClass</span><span class="special">&amp;&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="identifier">
+BOOST_STATIC_ASSERT</span><span class="special">((</span><span class="identifier">is_same</span><span class="special">&lt;</span><span class="identifier">myspace</span><span class="special">::</span><span class="identifier">MyClass</span><span class="special">,</span><span class="identifier"> remove_const</span><span class="special">&lt;</span><span class="identifier">myspace</span><span class="special">::</span><span class="identifier">MyClass</span><span class="keyword"> const</span><span class="special">&gt;::</span><span class="identifier">type</span><span class="special">&gt;::</span><span class="identifier">value</span><span class="special">));</span><span class="comment">
+// etc.
+</span></code></pre>
+<p>
+Note that the macro BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION evaluates 
+to nothing on those compilers that <span class="bold"><strong>do</strong></span> support partial specialization.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_typetraits.alignment"></a> Synthesizing Types with Specific Alignments</h4></div></div></div>
+<p>
+Some low level memory management routines need to synthesize a POD type with
+specific alignment properties.  The template <code class="computeroutput"><a href="reference.html#boost_typetraits.type_with_alignment" title=" type_with_alignment">type_with_alignment</a></code> finds the smallest
+type with a specified alignment, while template <code class="computeroutput"><a href="reference.html#boost_typetraits.aligned_storage" title=" aligned_storage">aligned_storage</a></code> creates a type 
+with a specific size and alignment.</p>
+<p><span class="bold"><strong>Synopsis</strong></span></p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> Align</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.type_with_alignment" title=" type_with_alignment">type_with_alignment</a><span class="special">;</span><span class="keyword">
+
+template</span><span class="special"> &lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> Size</span><span class="special">,</span><span class="identifier"> std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> Align</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.aligned_storage" title=" aligned_storage">aligned_storage</a><span class="special">;</span></code></pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_typetraits.function"></a> Decomposing Function Types</h4></div></div></div>
+<p>
+The class template <a href="reference.html#boost_typetraits.function_traits" title=" function_traits">function_traits</a> extracts information from function types
+(see also <a href="reference.html#boost_typetraits.is_function" title=" is_function">is_function</a>).  This traits class allows you to tell how many arguments
+a function takes, what those argument types are, and what the return type is.</p>
+<p><span class="bold"><strong>Synopsis</strong></span></p>
+<pre class="programlisting"><code class="literal"><span class="keyword">template</span><span class="special"> &lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> Align</span><span class="special">&gt;</span><span class="keyword">
+struct</span> <a href="reference.html#boost_typetraits.function_traits" title=" function_traits">function_traits</a><span class="special">;</span></code></pre>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2000, 2005 Adobe Systems Inc, David Abrahams, Steve Cleary, 
+    Beman Dawes, Aleksey Gurtovoy, Howard Hinnant, Jesse Jones, Mat Marcus, 
+    Itay Maman, John Maddock, Thorsten Ottosen, Robert Ramey and Jeremy Siek</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="background.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_typetraits.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="user_defined.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

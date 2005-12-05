@@ -1,0 +1,251 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class thread_specific_ptr</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="threads/reference.html#id2547002" title="Header &lt;boost/thread/tss.hpp&gt;">
+<link rel="prev" href="thread_group.html" title="Class thread_group">
+<link rel="next" href="id2545607.html" title="Type xtime_clock_types">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="thread_group.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2547002"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id2545607.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="thread_specific_ptr"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class thread_specific_ptr</span></h2>
+<p>boost::thread_specific_ptr &#8212; 
+				The <a href="thread_specific_ptr.html" title="Class thread_specific_ptr">thread_specific_ptr</a> class defines 
+				an interface for using thread specific storage.
+			</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> thread_specific_ptr : <span class="bold"><strong>private</strong></span> boost::noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
+{
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#thread_specific_ptrconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="thread_specific_ptr.html#id2626071-bb">thread_specific_ptr</a>();
+  <a href="thread_specific_ptr.html#id2597011-bb">thread_specific_ptr</a>(<span class="bold"><strong>void</strong></span> (*cleanup)(<span class="bold"><strong>void</strong></span>*));
+  <a href="thread_specific_ptr.html#id2529847-bb">~thread_specific_ptr</a>();
+
+  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#id2624424-bb">modifier functions</a></em></span>
+  <span class="type">T*</span> <a href="thread_specific_ptr.html#id2624428-bb">release</a>();
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="thread_specific_ptr.html#id2616183-bb">reset</a>(T* = 0);
+
+  <span class="emphasis"><em>// <a href="thread_specific_ptr.html#id2532919-bb">observer functions</a></em></span>
+  <span class="type">T*</span> <a href="thread_specific_ptr.html#id2600607-bb">get</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">T*</span> <a href="thread_specific_ptr.html#id2535273-bb"><span class="bold"><strong>operator</strong></span>-&gt;</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">T&amp;</span> <a href="thread_specific_ptr.html#id2354136-bb"><span class="bold"><strong>operator</strong></span>*()</a>() <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2785561"></a><h2>Description</h2>
+<p>Thread specific storage is data associated with 
+				individual threads and is often used to make operations
+				that rely on global data 
+				<a href="threads.html#threads.glossary.thread-safe">thread-safe</a>.
+				</p>
+<p>Template <a href="thread_specific_ptr.html" title="Class thread_specific_ptr">thread_specific_ptr</a> 
+				stores a pointer to an object obtained on a thread-by-thread
+				basis and calls a specified cleanup handler on the contained
+				pointer when the thread terminates. The cleanup handlers are
+				called in the reverse order of construction of the 
+				<a href="thread_specific_ptr.html" title="Class thread_specific_ptr">thread_specific_ptr</a>s, and for the 
+				initial thread are called by the destructor, providing the 
+				same ordering guarantees as for normal declarations. Each
+				thread initially stores the null pointer in each
+				<a href="thread_specific_ptr.html" title="Class thread_specific_ptr">thread_specific_ptr</a> instance.</p>
+<p>The template <a href="thread_specific_ptr.html" title="Class thread_specific_ptr">thread_specific_ptr</a>
+				is useful in the following cases:
+					</p>
+<div class="itemizedlist"><ul type="disc">
+<li>An interface was originally written assuming 
+						a single thread of control and it is being ported to a
+						multithreaded environment.</li>
+<li>Each thread of control invokes sequences of
+						methods that share data that are physically unique
+						for each thread, but must be logically accessed
+						through a globally visible access point instead of 
+						being explicitly passed.</li>
+</ul></div>
+<div class="refsect2" lang="en">
+<a name="id2785631"></a><h3>
+<a name="thread_specific_ptrconstruct-copy-destruct"></a><code class="computeroutput">thread_specific_ptr</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id2626071-bb"></a>thread_specific_ptr();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    The expression <code class="computeroutput">delete get()</code> is well
+				formed.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    A thread-specific data key is allocated and visible to
+				all threads in the process. Upon creation, the value 
+				<code class="computeroutput">NULL</code> will be associated with the new key in all 
+				active threads. A cleanup method is registered with the key 
+				that will call <code class="computeroutput">delete</code> on the value associated 
+				with the key for a thread when it exits. When a thread exits,
+				if a key has a registered cleanup method and the thread has a
+				non-<code class="computeroutput">NULL</code> value associated with that key, the value
+				of the key is set to <code class="computeroutput">NULL</code> and then the cleanup 
+				method is called with the previously associated value as its 
+				sole argument. The order in which registered cleanup methods 
+				are called when a thread exits is undefined. If after all the
+				cleanup methods have been called for all non-<code class="computeroutput">NULL</code>
+				values, there are still some non-<code class="computeroutput">NULL</code> values
+				with associated cleanup handlers the result is undefined
+				behavior.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <a href="thread_resource_error.html" title="Class thread_resource_error">boost::thread_resource_error</a> if
+				the necessary resources can not be obtained.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    There may be an implementation specific limit to the 
+				number of thread specific storage objects that can be created,
+				and this limit may be small.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    The most common need for cleanup will be to call 
+				<code class="computeroutput">delete</code> on the associated value. If other forms
+				of cleanup are required the overloaded constructor should be
+				called instead.</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2597011-bb"></a>thread_specific_ptr(<span class="bold"><strong>void</strong></span> (*cleanup)(<span class="bold"><strong>void</strong></span>*) cleanup);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    A thread-specific data key is allocated and visible to
+				all threads in the process. Upon creation, the value 
+				<code class="computeroutput">NULL</code> will be associated with the new key in all 
+				active threads. The <code class="computeroutput">cleanup</code> method is registered
+				with the key and will be called for a thread with the value 
+				associated with the key for that thread when it exits. When a
+				thread exits, if a key has a registered cleanup method and the
+				thread has a non-<code class="computeroutput">NULL</code> value associated with that
+				key, the value of the key is set to <code class="computeroutput">NULL</code> and then
+				the cleanup method is called with the previously associated
+				value as its sole argument. The order in which registered
+				cleanup methods are called when a thread exits is undefined.
+				If after all the cleanup methods have been called for all 
+				non-<code class="computeroutput">NULL</code> values, there are still some 
+				non-<code class="computeroutput">NULL</code> values with associated cleanup handlers
+				the result is undefined behavior.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    <a href="thread_resource_error.html" title="Class thread_resource_error">boost::thread_resource_error</a> if
+				the necessary resources can not be obtained.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    There may be an implementation specific limit to the 
+				number of thread specific storage objects that can be created,
+				 and this limit may be small.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    There is the occasional need to register 
+				 specialized cleanup methods, or to register no cleanup method
+				 at all (done by passing <code class="computeroutput">NULL</code> to this constructor.
+				 </p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2529847-bb"></a>~thread_specific_ptr();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Deletes the thread-specific data key allocated by the
+				constructor. The thread-specific data values associated with
+				the key need not be <code class="computeroutput">NULL</code>. It is the responsibility
+				of the application to perform any cleanup actions for data
+				associated with the key.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    Does not destroy any data that may be stored in any
+				thread's thread specific storage. For this reason you should
+				not destroy a <a href="thread_specific_ptr.html" title="Class thread_specific_ptr">thread_specific_ptr</a> object
+				until you are certain there are no threads running that have
+				made use of its thread specific storage.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    Associated data is not cleaned up because registered
+				cleanup methods need to be run in the thread that allocated the
+				associated data to be guarranteed to work correctly. There's no
+				safe way to inject the call into another thread's execution
+				path, making it impossible to call the cleanup methods safely.
+				</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2785956"></a><h3>
+<a name="id2624424-bb"></a><code class="computeroutput">thread_specific_ptr</code> modifier functions</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type">T*</span> <a name="id2624428-bb"></a>release();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">*this</code> holds the null pointer
+					for the current thread.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">this-&gt;get()</code> prior to the call.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Rationale</span></b>:
+
+    This method provides a mechanism for the user to
+					relinquish control of the data associated with the 
+					thread-specific key.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2616183-bb"></a>reset(T* p = 0);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If <code class="computeroutput">this-&gt;get() != p &amp;&amp; 
+					this-&gt;get() != NULL</code> then call the 
+					associated cleanup function.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">*this</code> holds the pointer 
+					<code class="computeroutput">p</code> for the current thread.</p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2786079"></a><h3>
+<a name="id2532919-bb"></a><code class="computeroutput">thread_specific_ptr</code> observer functions</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type">T*</span> <a name="id2600607-bb"></a>get() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    The object stored in thread specific storage for
+					the current thread for <code class="computeroutput">*this</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    Each thread initially returns 0.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type">T*</span> <a name="id2535273-bb"></a><span class="bold"><strong>operator</strong></span>-&gt;() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">this-&gt;get()</code>.</p>
+</li>
+<li>
+<pre class="literallayout"><span class="type">T&amp;</span> <a name="id2354136-bb"></a><span class="bold"><strong>operator</strong></span>*()() <span class="bold"><strong>const</strong></span>;</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">this-&gt;get() != 0</code><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">this-&gt;get()</code>.</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="thread_group.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2547002"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id2545607.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

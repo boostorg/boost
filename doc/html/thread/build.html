@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Build</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../threads.html" title="Chapter 12. Boost.Threads">
+<link rel="prev" href="configuration.html" title="Configuration">
+<link rel="next" href="../threads/implementation_notes.html" title="Implementation Notes">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="configuration.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../threads/implementation_notes.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="thread.build"></a>Build</h3></div></div></div>
+<div class="toc"><dl>
+<dt><span class="section"><a href="build.html#thread.build.building">Building the <span class="bold"><strong>Boost.Threads</strong></span> Libraries</a></span></dt>
+<dt><span class="section"><a href="build.html#thread.build.testing">Testing the <span class="bold"><strong>Boost.Threads</strong></span> Libraries</a></span></dt>
+</dl></div>
+<p>
+	How you build the <span class="bold"><strong>Boost.Threads</strong></span> libraries, and how you build your own applications
+	that use those libraries, are some of the most frequently asked questions. Build
+	processes are difficult to deal with in a portable manner. That's one reason
+	why <span class="bold"><strong>Boost.Threads</strong></span> makes use of <span class="bold"><strong>Boost.Build</strong></span>.
+	In general you should refer to the documentation for <span class="bold"><strong>Boost.Build</strong></span>.
+	This document will only supply you with some simple usage examples for how to
+	use <span class="emphasis"><em>bjam</em></span> to build and test <span class="bold"><strong>Boost.Threads</strong></span>. In addition, this document
+	will try to explain the build requirements so that users may create their own
+	build processes (for instance, create an IDE specific project), both for building
+	and testing <span class="bold"><strong>Boost.Threads</strong></span>, as well as for building their own projects using
+	<span class="bold"><strong>Boost.Threads</strong></span>.
+	</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="thread.build.building"></a>Building the <span class="bold"><strong>Boost.Threads</strong></span> Libraries</h4></div></div></div>
+<p>
+	To build the <span class="bold"><strong>Boost.Threads</strong></span> libraries using <span class="bold"><strong>Boost.Build</strong></span>, simply change to the
+	directory <span class="emphasis"><em>boost_root</em></span>/libs/thread/build and execute the command:
+		</p>
+<pre class="programlisting">bjam -sTOOLS=<span class="emphasis"><em>toolset</em></span></pre>
+<p>
+	This will create the debug and the release builds of the <span class="bold"><strong>Boost.Threads</strong></span> library.
+	</p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>Invoking the above command in <span class="emphasis"><em>boost_root</em></span> will build all of 
+	the Boost distribution, including <span class="bold"><strong>Boost.Threads</strong></span>.</div>
+<p>
+	The Jamfile supplied with <span class="bold"><strong>Boost.Threads</strong></span> produces a dynamic link library named
+	<span class="emphasis"><em>boost_thread{build-specific-tags}.{extension}</em></span>, where the build-specific
+	tags indicate the toolset used to build the library, whether it's a debug or release
+	build, what version of Boost was used, etc.; and the extension is the appropriate extension
+	for a dynamic link library for the platform for which <span class="bold"><strong>Boost.Threads</strong></span> is being built.
+	For instance, a debug library built for Win32 with VC++ 7.1 using Boost 1.31 would
+	be named <span class="emphasis"><em>boost_thread-vc71-mt-gd-1_31.dll</em></span>.
+		</p>
+<p>
+	The source files that are used to create the <span class="bold"><strong>Boost.Threads</strong></span> library
+	are all of the *.cpp files found in <span class="emphasis"><em>boost_root</em></span>/libs/thread/src.
+	These need to be built with the compiler's and linker's multi-threading support enabled.
+	If you want to create your own build solution you'll have to follow these same
+	guidelines. One of the most frequently reported problems when trying to do this
+	occurs from not enabling the compiler's and linker's support for multi-threading.
+		</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="thread.build.testing"></a>Testing the <span class="bold"><strong>Boost.Threads</strong></span> Libraries</h4></div></div></div>
+<p>
+	To test the <span class="bold"><strong>Boost.Threads</strong></span> libraries using <span class="bold"><strong>Boost.Build</strong></span>, simply change to the
+	directory <span class="emphasis"><em>boost_root</em></span>/libs/thread/test and execute the command:
+			</p>
+<pre class="programlisting">bjam -sTOOLS=<span class="emphasis"><em>toolset</em></span> test</pre>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"><small><p>Last revised: July 17, 2004 at 04:33:59 GMT</p></small></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="configuration.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../threads.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../threads/implementation_notes.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

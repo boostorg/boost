@@ -1,0 +1,111 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template partial_date</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id2508942" title="Header &lt;boost/date_time/date_generators.hpp&gt;">
+<link rel="prev" href="year_based_generator.html" title="Class template year_based_generator">
+<link rel="next" href="nth_kday_of_month.html" title="Class template nth_kday_of_month">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="year_based_generator.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2508942"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="nth_kday_of_month.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="partial_date"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template partial_date</span></h2>
+<p>boost::date_time::partial_date &#8212; Generates a date by applying the year to the given month and day. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> date_type&gt; 
+<span class="bold"><strong>class</strong></span> partial_date
+  :  : <span class="bold"><strong>public</strong></span> boost::date_time::year_based_generator&lt; date_type &gt;
+{
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> date_type::calendar_type    calendar_type;
+  <span class="bold"><strong>typedef</strong></span> calendar_type::day_type     day_type;     
+  <span class="bold"><strong>typedef</strong></span> calendar_type::month_type   month_type;   
+  <span class="bold"><strong>typedef</strong></span> calendar_type::year_type    year_type;    
+  <span class="bold"><strong>typedef</strong></span> date_type::duration_type    duration_type;
+  <span class="bold"><strong>typedef</strong></span> duration_type::duration_rep duration_rep; 
+
+  <span class="emphasis"><em>// <a href="partial_date.html#partial_dateconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="partial_date.html#id2464976-bb">partial_date</a>(day_type, month_type);
+  <a href="partial_date.html#id2456480-bb">partial_date</a>(duration_rep);
+
+  <span class="emphasis"><em>// <a href="partial_date.html#id2472423-bb">public member functions</a></em></span>
+  <span class="type">date_type</span> <a href="partial_date.html#id2472427-bb">get_date</a>(year_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type">date_type</span> <a href="partial_date.html#id2489992-bb"><span class="bold"><strong>operator</strong></span>()</a>(year_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="partial_date.html#id2417278-bb"><span class="bold"><strong>operator</strong></span>==</a>(<span class="bold"><strong>const</strong></span> <a href="partial_date.html" title="Class template partial_date">partial_date</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>bool</strong></span></span> <a href="partial_date.html#id2498407-bb"><span class="bold"><strong>operator</strong></span>&lt;</a>(<span class="bold"><strong>const</strong></span> <a href="partial_date.html" title="Class template partial_date">partial_date</a> &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">month_type</span> <a href="partial_date.html#id2478664-bb">month</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type">day_type</span> <a href="partial_date.html#id2507935-bb">day</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a href="partial_date.html#id2507947-bb">to_string</a>() <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2624612"></a><h2>Description</h2>
+<p>Example usage: </p>
+<pre class="programlisting">    partial_date pd(1, Jan);
+    partial_date pd2(70);
+    date d = pd.get_date(2002); //2002-Jan-01
+    date d2 = pd2.get_date(2002); //2002-Mar-10
+</pre>
+<div class="refsect2" lang="en">
+<a name="id2624625"></a><h3>
+<a name="partial_dateconstruct-copy-destruct"></a><code class="computeroutput">partial_date</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><a name="id2464976-bb"></a>partial_date(day_type d, month_type m);</pre></li>
+<li>
+<pre class="literallayout"><a name="id2456480-bb"></a>partial_date(duration_rep days);</pre>
+<p>Allowable values range from 1 to 366. 1=Jan1, 366=Dec31. If argument exceeds range, partial_date will be created with closest in-range value. 60 will always be Feb29, if get_date() is called with a non-leap year an exception will be thrown </p>
+</li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2624678"></a><h3>
+<a name="id2472423-bb"></a><code class="computeroutput">partial_date</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><span class="type">date_type</span> <a name="id2472427-bb"></a>get_date(year_type y) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Will throw an 'invalid_argument' exception if a partial_date object, instantiated with Feb-29, has get_date called with a non-leap year. Example: </p>
+<pre class="programlisting"> partial_date pd(29, Feb);
+ pd.get_date(2003); // throws invalid_argument exception
+ pg.get_date(2000); // returns 2000-2-29
+</pre>
+</li>
+<li><pre class="literallayout"><span class="type">date_type</span> <a name="id2489992-bb"></a><span class="bold"><strong>operator</strong></span>()(year_type y) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2417278-bb"></a><span class="bold"><strong>operator</strong></span>==(<span class="bold"><strong>const</strong></span> <a href="partial_date.html" title="Class template partial_date">partial_date</a> &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>bool</strong></span></span> <a name="id2498407-bb"></a><span class="bold"><strong>operator</strong></span>&lt;(<span class="bold"><strong>const</strong></span> <a href="partial_date.html" title="Class template partial_date">partial_date</a> &amp; rhs) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">month_type</span> <a name="id2478664-bb"></a>month() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">day_type</span> <a name="id2507935-bb"></a>day() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>virtual</strong></span> std::string</span> <a name="id2507947-bb"></a>to_string() <span class="bold"><strong>const</strong></span>;</pre>
+<p>Returns string formatted with up to 3 digits: Jan-01 == "0" Feb-29 == "58" Dec-31 == "365" </p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="year_based_generator.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2508942"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="nth_kday_of_month.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

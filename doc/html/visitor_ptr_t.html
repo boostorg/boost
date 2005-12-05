@@ -1,0 +1,90 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template visitor_ptr_t</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="variant/reference.html#id2551546" title="Header &lt;boost/variant/visitor_ptr.hpp&gt;">
+<link rel="prev" href="static_visitor.html" title="Class template static_visitor">
+<link rel="next" href="visitor_ptr.html" title="Function template visitor_ptr">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="static_visitor.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="variant/reference.html#id2551546"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="visitor_ptr.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="visitor_ptr_t"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template visitor_ptr_t</span></h2>
+<p>boost::visitor_ptr_t &#8212; Adapts a function pointer for use as a static visitor.</p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> T, <span class="bold"><strong>typename</strong></span> R&gt; 
+<span class="bold"><strong>class</strong></span> visitor_ptr_t : <span class="bold"><strong>public</strong></span> <a href="static_visitor.html" title="Class template static_visitor">static_visitor</a>&lt;R&gt; {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// <a href="visitor_ptr_t.html#visitor_ptr_tconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <span class="bold"><strong>explicit</strong></span> <a href="visitor_ptr_t.html#id2661204-bb">visitor_ptr_t</a>(R (*)(T));
+
+  <span class="emphasis"><em>// <a href="visitor_ptr_t.html#id2670414-bb">static visitor interfaces</a></em></span>
+  <span class="type">R</span> <a href="visitor_ptr_t.html#id2662567-bb"><span class="bold"><strong>operator</strong></span>()</a>(<span class="emphasis"><em>unspecified-forwarding-type</em></span>);
+  <span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="visitor_ptr_t.html#id2572591-bb"><span class="bold"><strong>operator</strong></span>()</a>(<span class="bold"><strong>const</strong></span> U&amp;);
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2840130"></a><h2>Description</h2>
+<p>Adapts the function given at construction for use as a
+        <a href="variant/reference.html#variant.concepts.static-visitor" title="StaticVisitor">static visitor</a>
+        of type <code class="computeroutput">T</code> with result type <code class="computeroutput">R</code>.</p>
+<div class="refsect2" lang="en">
+<a name="id2840156"></a><h3>
+<a name="visitor_ptr_tconstruct-copy-destruct"></a><code class="computeroutput">visitor_ptr_t</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="bold"><strong>explicit</strong></span> <a name="id2661204-bb"></a>visitor_ptr_t(R (*)(T) );</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Constructs the visitor with the given function.</p>
+</li></ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2840207"></a><h3>
+<a name="id2670414-bb"></a><code class="computeroutput">visitor_ptr_t</code> static visitor interfaces</h3>
+<div class="orderedlist"><ol type="1"><li>
+<p><a name="id2633804-bb"></a></p>
+<pre class="literallayout"><span class="type">R</span> <a name="id2662567-bb"></a><span class="bold"><strong>operator</strong></span>()(<span class="emphasis"><em>unspecified-forwarding-type</em></span> operand);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> U&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2572591-bb"></a><span class="bold"><strong>operator</strong></span>()(<span class="bold"><strong>const</strong></span> U&amp; );</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    If passed a value or reference of type
+              <code class="computeroutput">T</code>, it invokes the function given at
+              construction, appropriately forwarding
+              <code class="computeroutput">operand</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    Returns the result of the function invocation.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    The overload taking a value or reference of type
+              <code class="computeroutput">T</code> throws if the invoked function throws.
+              The overload taking all other values <span class="emphasis"><em>always</em></span>
+              throws <code class="computeroutput"><a href="bad_visit.html" title="Class bad_visit">bad_visit</a></code>.</p>
+</li></ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2002, 2003 Eric Friedman, Itay Maman</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="static_visitor.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="variant/reference.html#id2551546"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="visitor_ptr.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

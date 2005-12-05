@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <title>Updating The Boost Website</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+  <table border="1" bgcolor="#007F7F" cellpadding="2" summary="Quick Links">
+    <tr>
+      <td bgcolor="#FFFFFF"><img src="../boost.png" alt=
+      "boost.png (6897 bytes)" width="277" height="86" /></td>
+
+      <td><a href="../index.htm"><font face="Arial" color=
+      "#FFFFFF"><big>Home</big></font></a></td>
+
+      <td><a href="../libs/libraries.htm"><font face="Arial" color=
+      "#FFFFFF"><big>Libraries</big></font></a></td>
+
+      <td><a href="../people/people.htm"><font face="Arial" color=
+      "#FFFFFF"><big>People</big></font></a></td>
+
+      <td><a href="faq.htm"><font face="Arial" color=
+      "#FFFFFF"><big>FAQ</big></font></a></td>
+
+      <td><a href="index.htm"><font face="Arial" color=
+      "#FFFFFF"><big>More</big></font></a></td>
+    </tr>
+  </table>
+
+  <h1>Making Updates to the Boost Website Content</h1>
+
+  <p>Any boost developer can update the Boost website content between
+  releases.</p>
+
+  <ul>
+    <li>We <em>strongly</em> recommend the use of <a href=
+    "http://tidy.sourceforge.net/">HTML Tidy</a> when editing HTML and XHTML
+    files intented for the website. Using <code>tidy</code> helps in
+    preventing errors in the HTML, in keeping a clear revision history, and
+    in conforming to Web standards to help make the website readable by the
+    majority of people. The Boost web pages currently have a variety of
+    different types of HTML and XHTML content. Each needs to be dealt with
+    differently by <code>tidy</code>. Most pages are regular HTML 3.x/4.x,
+    for these use a <code>tidy</code> invocation of:
+      <pre>
+tidy --tidy-mark no -i -wrap 78 -m <i>some_page.html</i>
+</pre>Other pages are using the more recent XHTML 1.0 and XHTML 1.0 Strict
+standards. Most notably this include the <a href="../index.htm">home
+page</a>. Some additional options are needed to make <code>tidy</code>
+enforce the XHTML standard:
+      <pre>
+tidy --tidy-mark no -i -wrap 78 -m -asxhtml <i>some_page.html</i>
+</pre>That command is also useful if one is converting from HTML to XHTML. To
+have <code>tidy</code> check for the XHTML 1.0 Strict format use:
+      <pre>
+tidy --tidy-mark no -i -wrap 78 -m -asxhtml --doctype strict <i>some_page.html</i>
+</pre>If you have a choice as to what format to use, prefer the XHTML 1.0
+Strict format as that opens the content to the widest audience.
+    </li>
+
+    <li>If the change you are making is intended to be part of a release, you
+    should first make the change in our CVS repository, so it doesn't get
+    lost or overwritten by the next person that updates the page between
+    releases. Of course if you don't check in (say because the change is not
+    supposed to be in the next release), and someone else changes the page
+    after you, the change may be lost. This procedure does not account for
+    that case; you'll have to use your head and figure out what to do.</li>
+
+    <li>You will upload the file(s) by <code>scp</code>'ing to the
+    appropriate subdirectory of
+    <code>shell.sf.net:/home/groups/b/bo/boost/htdocs/</code>. For example,
+    to update the page you are reading, I would issue
+      <pre>
+scp updating_the_website.html david_abrahams@shell.sf.net:/home/groups/b/bo/boost/htdocs/more/
+</pre>
+    </li>
+
+    <li>It is <b>crucial</b> to ensure that you set group write permission on
+    every file you upload. If you don't do that, nobody else will be able to
+    change it, which is particularly deadly at release time. If you are on
+    Unix or Cygwin, you may be able to do that with a <tt>chmod</tt> command
+    before uploading the file. The absolutely failsafe thing to do is to <tt>
+      ssh</tt> into <tt>shell.sf.net</tt> and do the <tt>chmod</tt> there.
+      The files also need to have general read permission, and any
+      directories should have general execute permission and the "set user or
+      group ID on execution" (s) bit should also be set. If you're not
+      touching any directories, you can do it all with one command, e.g.
+      <pre>
+ssh david_abrahams@shell.sf.net "chmod a+r,g+rw /home/groups/b/bo/boost/htdocs/more/updating_the_website.html"
+</pre>
+    </li>
+  </ul>
+  <hr />
+
+  <p>Revised <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B,
+                            %Y" startspan -->$Date$ 
+  <!--webbot bot="Timestamp" endspan
+                            i-checksum="38708" --></p>
+
+  <p>&copy; Copyright David Abrahams 2005</p>
+
+  <p>&copy; Copyright Rene Rivera 2005</p>
+
+  <p>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy
+  at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a>)</p>
+</body>
+</html>

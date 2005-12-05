@@ -1,0 +1,213 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Release Procedures</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF">
+    <img src="../boost.png" alt="boost.png (6897 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="../more/faq.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="../more/index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+
+
+<h1>Boost Release Procedures</h1>
+<p><a href="#Introduction">Introduction</a><br>
+<a href="#Overview">Procedure Overview</a><br>
+<a href="#Developers">Procedures for Developers</a><br>
+<a href="#Manager">Procedures for the Release Manager</a><br>
+<a href="#FAQ">FAQ</a><br>
+<a href="#Acknowledgements">Acknowledgements</a></p>
+<h2><a name="Introduction">Introduction</a></h2>
+<p>Each release of Boost software is overseen by a release manager, who 
+coordinates release activities via the Boost mailing list, as well as performing 
+the detailed procedures for the release.</p>
+<p>Boost developers assist the release manager by reviewing regression test 
+logs, and committing fixes  to CVS.</p>
+<h2>Release Procedure <a name="Overview">Overview</a></h2>
+<ul>
+  <li>Discussion on the main Boost mailing list to determine the target date for 
+  release candidate branch and tag of the CVS main trunk.<br>
+&nbsp;</li>
+  <li>Release manager performs release candidate branch, and also tags the 
+  branch point in main trunk.<br>
+&nbsp;</li>
+  <li>Regression tests run on release candidate branch.<br>
+&nbsp;</li>
+  <li>Developers fix problems, test, and commit fixes. See below for details.<br>
+&nbsp;</li>
+  <li>Repeat previous two steps until release manager is satisfied.<br>
+&nbsp;</li>
+  <li>Release manager rolls out the actual release.</li>
+</ul>
+<h2>Release Procedures for <a name="Developers">Developers</a></h2>
+<ul>
+  <li>As the release candidate branch date approaches (as announced on the main 
+  mailing list), bring the main trunk CVS files you are responsible for into a 
+  stable state.<br>
+&nbsp;</li>
+  <li>If you know of changes in either your code or its dependencies, start 
+  checking regression test results to ensure your tests still pass.&nbsp; Don't 
+  necessarily wait for the initial release tagging.<br>
+&nbsp;</li>
+  <li>After the release manager announces that the release candidate branch has 
+  occurred, check the latest regression test results to be sure 
+  your tests haven't broken.<br>
+&nbsp;</li>
+  <li>Developers can continue working on main trunk code changes after 
+  the release candidate branch has occurred. There is no need to wait until the release 
+  itself.&nbsp; 
+  Modified files committed to CVS on the main trunk will not be included in the release unless the 
+  developer explicitly commits the changes to the release candidate branch.<br>
+&nbsp;</li>
+  <li>If specific to the release candidate only, the fixes should be committed 
+  directly to the release candidate branch. In the more common case of fixes 
+  which apply to both the main trunk and the release branch, the fixes are best 
+  made to the main trunk, and then merged into the release candidate branch. See 
+  FAQ for <a href="#merged_to_RC_n_n_n">tag rationale</a>.<br>
+  <br>
+  After a fix has been committed to the main trunk, here is a 
+  typical procedure (assuming the release candidate branch is named RC_1_26_2) 
+  to merge the fixed main trunk into the release candidate branch:</li>
+</ul>
+<blockquote>
+  <ul>
+    <li>Command Line CVS:</li>
+  </ul>
+  <blockquote>
+    <ul>
+      <li>Fixed code is committed to main branch <br>
+&nbsp;</li>
+      <li>Switch to the release candidate branch
+         <blockquote>
+           <code>cvs update -r RC_1_26_2</code></blockquote>
+      </li>
+      <li>Merge changes in a trunk since previous merge to branch
+      <blockquote>
+<pre>cvs update -j<a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a> -jHEAD buggycode.hpp
+ --&gt; RCS file: /cvsroot/boost/.../buggycode.hpp,v
+ --&gt;    retrieving revision 1.4
+ --&gt;    retrieving revision 1.6
+ --&gt;    Merging differences between 1.4 and 1.6 into buggycode.hpp</pre>
+      </blockquote>
+      </li>
+      <li>Commit merged branch
+      <blockquote>
+<pre>cvs commit -m &quot;Merged fix for problem xyz from trunk to branch&quot; buggycode.hpp</pre>
+      </blockquote>
+      </li>
+      <li>Go back to main trunk
+      <blockquote>
+<pre>cvs update -A</pre>
+      </blockquote>
+      </li>
+      <li>Move tag to a new merged point
+      <blockquote>
+<pre>cvs tag -F -c merged_to_RC_1_28_2 buggycode.hpp</pre>
+      </blockquote>
+      </li>
+      <li>Repeat as needed
+      </li>
+    </ul>
+  </blockquote>
+  <ul>
+    <li>WinCVS:</li>
+  </ul>
+  <blockquote>
+    <ul>
+      <li>After fixed code is committed to main branch, switch to the release 
+    candidate branch:</li>
+    </ul>
+    <blockquote>
+      <blockquote>
+    <p>Select file(s) if not already selected.</p>
+    <p>Modify | Update selection... | 
+    Update settings | Sticky options | Retrieve rev/tag/branch: <code>RC_1_26_2</code> | OK</p>
+      </blockquote>
+    </blockquote>
+    <ul>
+      <li>Merge changes from main trunk into the release candidate branch:</li>
+    </ul>
+    <blockquote>
+      <blockquote>
+      <p>Modify | Update selection... | 
+    Update settings | Merge options | Only this rev/tag: <code>
+      <a href="#merged_to_RC_n_n_n">merged_to_RC_1_26_2</a></code> 
+      | Plus with this rev/tag: <code>HEAD</code> | OK</p>
+      </blockquote>
+    </blockquote>
+      <ul>
+        <li>Commit merge results:</li>
+    </ul>
+    <blockquote>
+      <blockquote>
+      <p>Modify | Commit... | Enter log message: ... | OK</p>
+      </blockquote>
+    </blockquote>
+      <ul>
+        <li>Go back to main trunk:</li>
+    </ul>
+    <blockquote>
+      <blockquote>
+      <p>Modify | Update selection... | Update settings | Reset any sticky 
+      date/tag/-k options | OK</p>
+      </blockquote>
+    </blockquote>
+      <ul>
+        <li>Tag as new merge point:</li>
+    </ul>
+    <blockquote>
+    <blockquote>
+    <p>Modify | Create tag on selection... | Create tag settings | Enter the tag 
+    name to create: <code>merged_to_RC_1_26_2</code>, Overwrite existing tags 
+    with same name | OK.</p>
+    </blockquote>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<h2>Release Procedures for the Release <a name="Manager">Manager</a></h2>
+<p>At time of branch-for-release:</p>
+<ul>
+  <li>Tag the main trunk&nbsp; <code>merged_to_RC_n_n_n</code>.</li>
+  <li>Branch the main trunk with the tag <code>RC_n_n_n</code>.</li>
+</ul>
+<p>See <a href="release_mgr_checklist.html">Release Manager's Checklist</a> for 
+full details.</p>
+<h2><a name="FAQ">FAQ</a></h2>
+<p><b>What is the purpose of the <i><a name="merged_to_RC_n_n_n">
+merged_to_RC_n_n_n</a></i> tag?</b> This tag allows multiple merges from the 
+main trunk to the release candidate branch. Without it, merging an initial main 
+trunk fix&nbsp; into the release candidate branch would work, but merging a 
+second fix from main trunk to release candidate branch would result in a merge 
+conflict. Although this procedure seems convoluted, it works much better in 
+practice than several prior procedures we tried.</p>
+<h2><a name="Acknowledgements">Acknowledgements</a></h2>
+<p>This web page was written by Beman Dawes, with helpful suggestions from Dave 
+Abrahams and Steve Robbins. Jim Hyslop contributed the original CVS procedures. 
+Updated by Jeff Garland after 1.29 release based on list discussions.</p>
+<hr>
+<p>Revised:
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->02 October, 2003<!--webbot bot="Timestamp" i-checksum="38549" endspan --></p>
+
+<p>© Copyright Beman Dawes 2002</p>
+
+<p> Use, modification, and distribution are subject to the Boost Software 
+License, Version 1.0. (See accompanying file <a href="../LICENSE_1_0.txt">
+LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
+www.boost.org/LICENSE_1_0.txt</a>)</p>
+
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Struct xtime</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="threads/reference.html#id2416096" title="Header &lt;boost/thread/xtime.hpp&gt;">
+<link rel="prev" href="id2545607.html" title="Type xtime_clock_types">
+<link rel="next" href="threads/faq.html" title="Frequently Asked Questions">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id2545607.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2416096"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="threads/faq.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="xtime"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Struct xtime</span></h2>
+<p>boost::xtime &#8212; <p>An object of type <a href="xtime.html" title="Struct xtime">xtime</a>
+			defines a time that is used to perform high-resolution time operations.
+			This is a temporary solution that will be replaced by a more robust time 
+			library once available in Boost.</p></p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>struct</strong></span> xtime {
+
+  <span class="emphasis"><em>platform-specific-type</em></span> sec;
+};
+
+<span class="emphasis"><em>// <a href="xtime.html#id2583643-bb">creation</a></em></span>
+<span class="type"><span class="bold"><strong>int</strong></span></span> <a href="xtime.html#xtime_get">xtime_get</a>(<a href="xtime.html" title="Struct xtime">xtime</a>*, <span class="bold"><strong>int</strong></span>);</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2786430"></a><h2>Description</h2>
+<p>The <a href="xtime.html" title="Struct xtime">xtime</a> type is used to represent a point on 
+			some time scale or a duration in time. This type may be proposed for the C standard by 
+			Markus Kuhn. <span class="bold"><strong>Boost.Threads</strong></span> provides only a very minimal implementation of this
+			proposal; it is expected that a full implementation (or some other time
+			library) will be provided in Boost as a separate library, at which time <span class="bold"><strong>Boost.Threads</strong></span>
+			will deprecate its own implementation.</p>
+<p><span class="bold"><strong>Note</strong></span> that the resolution is 
+			implementation specific. For many implementations the best resolution 
+			of time is far more than one nanosecond, and even when the resolution 
+			is reasonably good, the latency of a call to <code class="computeroutput">xtime_get()</code>
+			may be significant. For maximum portability, avoid durations of less than
+			one second.</p>
+<div class="refsect2" lang="en">
+<a name="id2786479"></a><h3>
+<a name="id2583643-bb"></a><code class="computeroutput">xtime</code> creation</h3>
+<div class="orderedlist"><ol type="1"><li>
+<pre class="literallayout"><span class="type"><span class="bold"><strong>int</strong></span></span> <a name="xtime_get"></a>xtime_get(<a href="xtime.html" title="Struct xtime">xtime</a>* xtp, <span class="bold"><strong>int</strong></span> clock_type);</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">xtp</code> represents the current point in
+					time as a duration since the epoch specified by
+					<code class="computeroutput">clock_type</code>.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Returns</span></b>:
+
+    <code class="computeroutput">clock_type</code> if successful, otherwise 0.</p>
+</li></ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="id2545607.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2416096"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="threads/faq.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

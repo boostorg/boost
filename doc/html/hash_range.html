@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Function hash_range</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="hash/reference_.html#id2350414" title="Header &lt;boost/functional/hash/hash.hpp&gt;">
+<link rel="prev" href="hash_combine.html" title="Function template hash_combine">
+<link rel="next" href="id2510242.html" title="Function hash_value">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="hash_combine.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="hash/reference_.html#id2350414"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id2510242.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="hash_range"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Function hash_range</span></h2>
+<p>boost::hash_range &#8212; 
+            Calculate the combined hash value of the elements of an iterator
+            range.
+        </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> It&gt; <span class="type">std::size_t</span> hash_range(It first, It last);
+<span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> It&gt; <span class="type"><span class="bold"><strong>void</strong></span></span> hash_range(std::size_t&amp; seed, It first, It last);</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2704839"></a><h2>Description</h2>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    For the two argument overload:
+<pre class="programlisting">
+size_t seed = 0;
+
+for(; first != last; ++first)
+{
+    <a href="hash_combine.html" title="Function template hash_combine">hash_combine</a>(seed, *first);
+}
+
+return seed;
+</pre>For the three arguments overload:
+<pre class="programlisting">
+for(; first != last; ++first)
+{
+    <a href="hash_combine.html" title="Function template hash_combine">hash_combine</a>(seed, *first);
+}
+</pre><p></p><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    <code class="computeroutput">hash_range</code> is sensitive to the order of the elements
+            so it wouldn't be appropriate to use this with an unordered
+            container.
+          <p>This is an extension to TR1</p><br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Throws</span></b>:
+
+    
+          Only throws if <code class="computeroutput"><a href="id2510242.html" title="Function hash_value">hash_value</a>(std::iterator_traits&lt;It&gt;::value_type)</code>
+          throws. <code class="computeroutput">hash_range(std::size_t&amp;, It, It)</code> has basic exception safety as long as
+          <code class="computeroutput"><a href="id2510242.html" title="Function hash_value">hash_value</a>(std::iterator_traits&lt;It&gt;::value_type)</code>
+          has basic exception safety.
+        </p>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2005 Daniel James</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="hash_combine.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="hash/reference_.html#id2350414"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="id2510242.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

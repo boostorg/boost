@@ -1,0 +1,262 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Features</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../extender.html" title="Chapter 25. Extender Manual">
+<link rel="prev" href="tools.html" title="Tools and generators">
+<link rel="next" href="rules.html" title="Main target rules">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="tools.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../extender.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="rules.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.extending.features"></a>Features</h2></div></div></div>
+<p>
+        Often, we need to control the options passed the invoked tools. This 
+        is done with features. Consider an example:
+</p>
+<pre class="programlisting">
+# Declare a new free feature
+import feature : feature ;
+feature verbatim-options : : free ;
+
+# Cause the value of the 'verbatim-options' feature to be
+# available as 'OPTIONS' variable inside verbatim.inline-file
+import toolset : flags ;
+flags verbatim.inline-file OPTIONS &lt;verbatim-options&gt; ;
+
+# Use the "OPTIONS" variable
+actions inline-file
+{
+    "./inline-file.py" $(OPTIONS) $(&lt;) $(&gt;)
+}
+</pre>
+<p>
+        We first define a new feature. Then, the <code class="computeroutput">flags</code> invocation
+        says that whenever verbatin.inline-file action is run, the value of
+        the <code class="computeroutput">verbatim-options</code> feature will be added to the
+        <code class="computeroutput">OPTIONS</code> variable, an can be used inside the action body.
+        You'd need to consult online help (--help) to find all the features of
+        the <code class="computeroutput">toolset.flags</code> rule.
+        </p>
+<p>
+      Although you can define any set of features and interpret their values
+      in any way, Boost.Build suggests the following coding standard for
+      designing features.
+    </p>
+<p>Most features should have a fixed set of values that is portable
+      (tool neutral) across the class of tools they are designed to work
+      with. The user does not have to adjust the values for a exact tool.  For
+      example, <code class="computeroutput">&lt;optimization&gt;speed</code> has the same meaning for
+      all C++ compilers and the user does not have to worry about the exact
+      options passed to the compiler's command line.
+    </p>
+<p>
+      Besides such portable features there are special 'raw' features that
+      allow the user to pass any value to the command line parameters for a
+      particular tool, if so desired. For example, the
+      <code class="computeroutput">&lt;cxxflags&gt;</code> feature allows you to pass any command line
+      options to a C++ compiler. The <code class="computeroutput">&lt;include&gt;</code> feature
+      allows you to pass any string preceded by <code class="computeroutput">-I</code> and the interpretation
+      is tool-specific.  (See <a href="../faq/external.html" title="Can I get output of external program as a variable in a Jamfile?
+    ">the section called &#8220;Can I get output of external program as a variable in a Jamfile?
+    &#8221;</a> for an example of very smart usage of that
+      feature).  Of course one should always strive to use portable
+      features, but these are still be provided as a backdoor just to make
+      sure Boost.Build does not take away any control from the user. 
+    </p>
+<p>
+      Using portable features is a good idea because:
+      </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>When a portable feature is given a fixed set of
+          values, you can build your project with two different
+          settings of the feature and Boost.Build will automatically
+          use two different directories for generated files.
+          Boost.Build does not try to separate targets built with
+          different raw options.
+            </p></li>
+<li><p>Unlike with &#8220;raw&#8221; features, you don't need to use
+          specific command-line flags in your Jamfile, and it will be
+          more likely to work with other tools.
+          </p></li>
+</ul></div>
+<h3>
+<a name="id2859332"></a>Steps for adding a feauture</h3>
+<p>Adding a feature requires three steps:
+
+        </p>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>Declaring a feature. For that, the "feature.feature"
+              rule is used. You have to decide on the set of <a href="../reference/definitions.html#bbv2.reference.features.attributes" title="Feature Attributes">feature
+              attributes</a>:
+
+              </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>if a feature has several values and
+                    significally affects the build, make it &#8220;propagated,&#8221; so that the 
+                    whole project is built with the same value by
+                    default</p></li>
+<li><p>if a feature does not have a fixed
+                list of values, it must be &#8220;free.&#8221;  For example, the
+                <code class="computeroutput">include</code> feature is a free
+                feature.</p></li>
+<li><p>if a feature is used to refer to a
+                path relative to the Jamfile, it must be a &#8220;path&#8221;
+                feature.  <code class="computeroutput">include</code> is also a path
+                feature.</p></li>
+<li><p>if feature is used to refer to some target, it
+                must be a &#8220;dependency&#8221; feature. </p></li>
+</ul></div>
+</li>
+<li><p>Representing the feature value in a
+          target-specific variable. Build actions are command
+          templates modified by Boost.Jam variable expansions.  The
+          <code class="computeroutput">toolset.flags</code> rule sets a target-specific
+          variable to the value of a feature.</p></li>
+<li><p>Using the variable. The variable set in step 2 can
+              be used in a build action to form command parameters or
+              files.</p></li>
+</ol></div>
+<h3>
+<a name="id2859422"></a>Another example</h3>
+<p>Here's another example.
+        Let's see how we can make a feature that refers to a target. For example,
+        when linking dynamic libraries on windows, one sometimes needs to specify
+        "DEF file", telling what functions should be exported. It would be nice to
+        use this file like this:
+</p>
+<pre class="programlisting">
+        lib a : a.cpp : &lt;def-file&gt;a.def ;
+</pre>
+<p>
+        Actually, this feature is already supported, but anyway...
+        </p>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>Since the feature refers to a target, it must be "dependency".
+</p>
+<pre class="programlisting">
+feature def-file : : free dependency ;
+</pre>
+</li>
+<li>
+<p>One of the toolsets that cares about
+        
+        DEF files is msvc. The following line should be added to it.
+        </p>
+<pre class="programlisting">
+flags msvc.link DEF_FILE &lt;def-file&gt; ;
+</pre>
+</li>
+<li>
+<p>Since the DEF_FILE variable is not used by the
+msvc.link action, 
+
+we need to modify it to be:
+
+</p>
+<pre class="programlisting">
+actions link bind DEF_FILE
+{
+    $(.LD) .... /DEF:$(DEF_FILE) ....
+}
+</pre>
+<p> Note the <code class="computeroutput">bind DEF_FILE</code> part. It tells
+          bjam to translate the internal target name in
+          <code class="varname">DEF_FILE</code> to a corresponding filename in
+          the <code class="computeroutput">link</code> action.  Without it the expansion of
+          <code class="computeroutput">$(DEF_FILE)</code> would be a strange symbol that is
+          not likely to make sense for the linker.
+          </p>
+<p>
+            We've almost done, but should stop for a small workaround. Add the following
+            code to msvc.jam
+
+</p>
+<pre class="programlisting">
+rule link
+{
+    DEPENDS $(&lt;) : [ on $(&lt;) return $(DEF_FILE) ] ;
+}
+</pre>
+<p>
+
+            This is needed to accomodate some bug in bjam, which hopefully
+            will be fixed one day.
+            </p>
+</li>
+</ol></div>
+<h3>
+<a name="id2859520"></a>Variants and composite features.</h3>
+<p>Sometimes you want to create a shorcut for some set of
+        features. For example, <code class="computeroutput">release</code> is a value of 
+        <code class="computeroutput">&lt;variant&gt;</code> and is a shortcut for a set of features.
+      </p>
+<p>It is possible to define your own build variants. For example:
+</p>
+<pre class="programlisting">
+variant crazy : &lt;optimization&gt;speed &lt;inlining&gt;off
+                &lt;debug-symbols&gt;on &lt;profiling&gt;on ;
+</pre>
+<p>
+        will define a new variant with the specified set of properties. You
+        can also extend an existing variant:
+</p>
+<pre class="programlisting">
+variant super_release : release : &lt;define&gt;USE_ASM ;
+</pre>
+<p>
+        In this case, <code class="computeroutput">super_release</code> will expand to all properties
+        specified by <code class="computeroutput">release</code>, and the additional one you've specified.
+      </p>
+<p>You are not restricted to using the <code class="computeroutput">variant</code> feature
+      only. 
+      
+      Here's example that defines a brand new feature:
+</p>
+<pre class="programlisting">
+feature parallelism : mpi fake none : composite link-incompatible ;
+feature.compose &lt;parallelism&gt;mpi : &lt;library&gt;/mpi//mpi/&lt;parallelism&gt;none ;
+feature.compose &lt;parallelism&gt;fake : &lt;library&gt;/mpi//fake/&lt;parallelism&gt;none ;
+</pre>
+<p>
+        This will allow you to specify value of feature
+        <code class="computeroutput">parallelism</code>, which will expand to link to the necessary
+        library. 
+      </p>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="tools.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../extender.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="rules.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

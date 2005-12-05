@@ -1,0 +1,139 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class try_mutex</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="threads/reference.html#id2534429" title="Header &lt;boost/thread/mutex.hpp&gt;">
+<link rel="prev" href="mutex.html" title="Class mutex">
+<link rel="next" href="timed_mutex.html" title="Class timed_mutex">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="mutex.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2534429"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="timed_mutex.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="try_mutex"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class try_mutex</span></h2>
+<p>boost::try_mutex &#8212; <p>The <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> class is a model of the 
+			<a href="threads/concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a> concept.</p></p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis">
+<span class="bold"><strong>class</strong></span> try_mutex : <span class="bold"><strong>private</strong></span> boost::noncopyable   <span class="emphasis"><em>// Exposition only</em></span>
+{
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>implementation-defined</em></span> scoped_lock;    
+  <span class="bold"><strong>typedef</strong></span> <span class="emphasis"><em>implementation-defined</em></span> scoped_try_lock;
+
+  <span class="emphasis"><em>// <a href="try_mutex.html#try_mutexconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="try_mutex.html#id2597718-bb">try_mutex</a>();
+  <a href="try_mutex.html#id2596969-bb">~try_mutex</a>();
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2781196"></a><h2>Description</h2>
+<p>The <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> class is a model of the 
+			<a href="threads/concepts.html#threads.concepts.TryMutex" title="TryMutex Concept">TryMutex</a> concept. 
+			It should be used to synchronize access to shared resources using
+			<a href="threads/concepts.html#threads.concepts.unspecified-locking-strategy" title="Unspecified Locking Strategy">Unspecified</a>
+			locking mechanics.</p>
+<p>For classes that model related mutex concepts, see 
+			<a href="mutex.html" title="Class mutex">mutex</a> and <a href="timed_mutex.html" title="Class timed_mutex">timed_mutex</a>.</p>
+<p>For <a href="threads/concepts.html#threads.concepts.recursive-locking-strategy" title="Recursive Locking Strategy">Recursive</a>
+			locking mechanics, see <a href="recursive_mutex.html" title="Class recursive_mutex">recursive_mutex</a>,
+			<a href="recursive_try_mutex.html" title="Class recursive_try_mutex">recursive_try_mutex</a>, and <a href="recursive_timed_mutex.html" title="Class recursive_timed_mutex">recursive_timed_mutex</a>.
+			</p>
+<p>The <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> class supplies the following typedefs,
+			which <a href="threads/concepts.html#threads.concepts.lock-models" title="Lock Models">model</a>
+			the specified locking strategies:
+
+			</p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th align="left">Lock Name</th>
+<th align="left">Lock Concept</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">scoped_lock</td>
+<td align="left"><a href="threads/concepts.html#threads.concepts.ScopedLock" title="ScopedLock Concept">ScopedLock</a></td>
+</tr>
+<tr>
+<td align="left">scoped_try_lock</td>
+<td align="left"><a href="threads/concepts.html#threads.concepts.ScopedTryLock" title="ScopedTryLock Concept">ScopedTryLock</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>The <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> class uses an 
+			<a href="threads/concepts.html#threads.concepts.unspecified-locking-strategy" title="Unspecified Locking Strategy">Unspecified</a>
+			locking strategy, so attempts to recursively lock a <a href="try_mutex.html" title="Class try_mutex">try_mutex</a>
+			object or attempts to unlock one by threads that don't own a lock on it result in
+			<span class="bold"><strong>undefined behavior</strong></span>.
+			This strategy allows implementations to be as efficient as possible
+			on any given platform. It is, however, recommended that
+			implementations include debugging support to detect misuse when
+			<code class="computeroutput">NDEBUG</code> is not defined.</p>
+<p>Like all
+			<a href="threads/concepts.html#threads.concepts.mutex-models" title="Mutex Models">mutex models</a>
+			in <span class="bold"><strong>Boost.Threads</strong></span>, <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> leaves the 
+			<a href="threads/concepts.html#threads.concepts.sheduling-policies" title="Scheduling Policies">scheduling policy</a>
+			as <a href="threads/concepts.html#threads.concepts.unspecified-scheduling-policy" title="Unspecified Policy">Unspecified</a>. 
+			Programmers should make no assumptions about the order in which
+			waiting threads acquire a lock.</p>
+<div class="refsect2" lang="en">
+<a name="id2781416"></a><h3>
+<a name="try_mutexconstruct-copy-destruct"></a><code class="computeroutput">try_mutex</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li>
+<pre class="literallayout"><a name="id2597718-bb"></a>try_mutex();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Constructs a <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> object.
+			<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Postconditions</span></b>:
+
+    <code class="computeroutput">*this</code> is in an unlocked state.
+			</p>
+</li>
+<li>
+<pre class="literallayout"><a name="id2596969-bb"></a>~try_mutex();</pre>
+<p><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Effects</span></b>:
+
+    Destroys a <a href="try_mutex.html" title="Class try_mutex">try_mutex</a> object.
+			<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Requires</span></b>:
+
+    <code class="computeroutput">*this</code> is in an unlocked state.<br><b xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision"><span class="term">Notes</span></b>:
+
+    <span class="bold"><strong>Danger:</strong></span> Destruction of a
+			locked mutex is a serious programming error resulting in undefined
+			behavior such as a program crash.</p>
+</li>
+</ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2003 William E. Kempf</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="mutex.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="threads/reference.html#id2534429"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="timed_mutex.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

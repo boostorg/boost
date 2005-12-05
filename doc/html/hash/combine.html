@@ -1,0 +1,106 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title> Combining hash values</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../hash.html" title="Chapter 5. Boost.Functional/Hash">
+<link rel="prev" href="custom.html" title=" Extending boost::hash for a custom data type">
+<link rel="next" href="portability.html" title=" Portability">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
+<td align="center"><a href="../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="custom.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../hash.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="portability.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="hash.combine"></a> Combining hash values</h3></div></div></div>
+<p>
+Say you have a point class, representing a two dimensional location:</p>
+<pre class="programlisting"><code class="literal"><span class="keyword">class</span><span class="identifier"> point</span><span class="special">
+{</span><span class="keyword">
+    int</span><span class="identifier"> x</span><span class="special">;</span><span class="keyword">
+    int</span><span class="identifier"> y</span><span class="special">;</span><span class="keyword">
+public</span><span class="special">:</span><span class="identifier">
+    point</span><span class="special">()</span><span class="special"> :</span><span class="identifier"> x</span><span class="special">(</span><span class="number">0</span><span class="special">),</span><span class="identifier"> y</span><span class="special">(</span><span class="number">0</span><span class="special">)</span><span class="special"> {}</span><span class="identifier">
+    point</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> x</span><span class="special">,</span><span class="keyword"> int</span><span class="identifier"> y</span><span class="special">)</span><span class="special"> :</span><span class="identifier"> x</span><span class="special">(</span><span class="identifier">x</span><span class="special">),</span><span class="identifier"> y</span><span class="special">(</span><span class="identifier">y</span><span class="special">)</span><span class="special"> {}</span><span class="keyword">
+
+    bool</span><span class="keyword"> operator</span><span class="special">==(</span><span class="identifier">point</span><span class="keyword"> const</span><span class="special">&amp;</span><span class="identifier"> other</span><span class="special">)</span><span class="keyword"> const</span><span class="special">
+    {</span><span class="keyword">
+        return</span><span class="identifier"> x</span><span class="special"> ==</span><span class="identifier"> other</span><span class="special">.</span><span class="identifier">x</span><span class="special"> &amp;&amp;</span><span class="identifier"> y</span><span class="special"> ==</span><span class="identifier"> other</span><span class="special">.</span><span class="identifier">y</span><span class="special">;</span><span class="special">
+    }</span><span class="special">
+};</span></code></pre>
+<p>
+and you wish to use it as the key for an <code class="computeroutput"><span class="identifier">unordered_map</span></code>. You need to
+customise the hash for this structure. To do this we need to combine
+the hash values for <code class="computeroutput"><span class="identifier">x</span></code> and <code class="computeroutput"><span class="identifier">y</span></code>. The function
+<code class="computeroutput"><a href="../hash_combine.html" title="Function template hash_combine">boost::hash_combine</a></code> is supplied for this purpose:</p>
+<pre class="programlisting"><code class="literal"><span class="keyword">class</span><span class="identifier"> point</span><span class="special">
+{</span><span class="special">
+    ...</span><span class="keyword">
+
+    friend</span><span class="identifier"> std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> hash_value</span><span class="special">(</span><span class="identifier">point</span><span class="keyword"> const</span><span class="special">&amp;</span><span class="identifier"> p</span><span class="special">)</span><span class="special">
+    {</span><span class="identifier">
+        std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> seed</span><span class="special"> =</span><span class="number"> 0</span><span class="special">;</span>
+        <code class="computeroutput"><a href="../hash_combine.html" title="Function template hash_combine">boost::hash_combine</a></code><span class="special">(</span><span class="identifier">seed</span><span class="special">,</span><span class="identifier"> p</span><span class="special">.</span><span class="identifier">x</span><span class="special">);</span>
+        <code class="computeroutput"><a href="../hash_combine.html" title="Function template hash_combine">boost::hash_combine</a></code><span class="special">(</span><span class="identifier">seed</span><span class="special">,</span><span class="identifier"> p</span><span class="special">.</span><span class="identifier">y</span><span class="special">);</span><span class="keyword">
+
+        return</span><span class="identifier"> seed</span><span class="special">;</span><span class="special">
+    }</span><span class="special">
+
+    ...</span><span class="special">
+};</span></code></pre>
+<p>
+Calls to hash_combine incrementally build the hash from the different members
+of point, it can be repeatedly called for any number of elements. It calls
+<code class="computeroutput"><a href="../id2510242.html" title="Function hash_value">hash_value</a></code> on the supplied element, and combines it with the seed.</p>
+<p>
+Full code for this example is at
+<a href="../../../libs/functional/hash/examples/point.cpp" target="_top">/libs/functional/hash/examples/point.cpp</a>.</p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb">
+When using __hash_combine the order of the
+calls matters.
+<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting">
+    std::size_t seed = 0;
+    boost::hash_combine(seed, 1);
+    boost::hash_combine(seed, 2);
+</pre>
+results in a different seed to:
+<pre xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="table-programlisting">
+    std::size_t seed = 0;
+    boost::hash_combine(seed, 2);
+    boost::hash_combine(seed, 1);
+</pre>
+If you are calculating a hash value for data where the order of the data
+doesn't matter in comparisons (e.g. a set) you will have to ensure that the
+data is always supplied in the same order.
+
+</td></tr></tbody>
+</table></div>
+<p>
+To calculate the hash of an iterator range you can use <code class="computeroutput"><a href="../hash_range.html" title="Function hash_range">boost::hash_range</a></code>:</p>
+<pre class="programlisting"><code class="literal"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;</span><span class="identifier"> some_strings</span><span class="special">;</span><span class="identifier">
+std</span><span class="special">::</span><span class="identifier">size_t</span><span class="identifier"> hash</span><span class="special"> =</span> <code class="computeroutput"><a href="../hash_range.html" title="Function hash_range">boost::hash_range</a></code><span class="special">(</span><span class="identifier">some_strings</span><span class="special">.</span><span class="identifier">begin</span><span class="special">(),</span><span class="identifier"> some_strings</span><span class="special">.</span><span class="identifier">end</span><span class="special">());</span></code></pre>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2005 Daniel James</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="custom.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../hash.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="portability.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

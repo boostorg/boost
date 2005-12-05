@@ -1,0 +1,184 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Class template format_date_parser</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<link rel="start" href="index.html" title="The Boost C++ Libraries">
+<link rel="up" href="date_time/doxy.html#id2400160" title="Header &lt;boost/date_time/format_date_parser.hpp&gt;">
+<link rel="prev" href="time_from_ftime.html" title="Function template time_from_ftime">
+<link rel="next" href="fixed_string_to_int.html" title="Function template fixed_string_to_int">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../boost.png"></td>
+<td align="center"><a href="../../index.htm">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../people/people.htm">People</a></td>
+<td align="center"><a href="../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="time_from_ftime.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2400160"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="fixed_string_to_int.html"><img src="images/next.png" alt="Next"></a>
+</div>
+<div class="refentry" lang="en">
+<a name="format_date_parser"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Class template format_date_parser</span></h2>
+<p>boost::date_time::format_date_parser &#8212; Class with generic date parsing using a format string. </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="bold"><strong>template</strong></span>&lt;<span class="bold"><strong>typename</strong></span> date_type, <span class="bold"><strong>typename</strong></span> charT&gt; 
+<span class="bold"><strong>class</strong></span> format_date_parser {
+<span class="bold"><strong>public</strong></span>:
+  <span class="emphasis"><em>// types</em></span>
+  <span class="bold"><strong>typedef</strong></span> std::basic_string&lt; charT &gt;                string_type;          
+  <span class="bold"><strong>typedef</strong></span> std::basic_stringstream&lt; charT &gt;          stringstream_type;    
+  <span class="bold"><strong>typedef</strong></span> std::istreambuf_iterator&lt; charT &gt;         stream_itr_type;      
+  <span class="bold"><strong>typedef</strong></span> string_type::const_iterator               const_itr;            
+  <span class="bold"><strong>typedef</strong></span> date_type::year_type                      year_type;            
+  <span class="bold"><strong>typedef</strong></span> date_type::month_type                     month_type;           
+  <span class="bold"><strong>typedef</strong></span> date_type::day_type                       day_type;             
+  <span class="bold"><strong>typedef</strong></span> date_type::duration_type                  duration_type;        
+  <span class="bold"><strong>typedef</strong></span> date_type::day_of_week_type               day_of_week_type;     
+  <span class="bold"><strong>typedef</strong></span> date_type::day_of_year_type               day_of_year_type;     
+  <span class="bold"><strong>typedef</strong></span> <a href="string_parse_tree.html" title="Struct template string_parse_tree">string_parse_tree</a>&lt; charT &gt;                parse_tree_type;      
+  <span class="bold"><strong>typedef</strong></span> parse_tree_type::parse_match_result_type  match_results;        
+  <span class="bold"><strong>typedef</strong></span> std::vector&lt; std::basic_string&lt; charT &gt; &gt; input_collection_type;
+
+  <span class="emphasis"><em>// <a href="format_date_parser.html#format_date_parserconstruct-copy-destruct">construct/copy/destruct</a></em></span>
+  <a href="format_date_parser.html#id2507706-bb">format_date_parser</a>(<span class="bold"><strong>const</strong></span> string_type &amp;, <span class="bold"><strong>const</strong></span> input_collection_type &amp;, 
+                     <span class="bold"><strong>const</strong></span> input_collection_type &amp;, 
+                     <span class="bold"><strong>const</strong></span> input_collection_type &amp;, 
+                     <span class="bold"><strong>const</strong></span> input_collection_type &amp;);
+  <a href="format_date_parser.html#id2467385-bb">format_date_parser</a>(<span class="bold"><strong>const</strong></span> string_type &amp;, <span class="bold"><strong>const</strong></span> std::locale &amp;);
+  <a href="format_date_parser.html#id2517547-bb">format_date_parser</a>(<span class="bold"><strong>const</strong></span> <a href="format_date_parser.html" title="Class template format_date_parser">format_date_parser</a>&lt; date_type, charT &gt; &amp;);
+
+  <span class="emphasis"><em>// <a href="format_date_parser.html#id2403096-bb">public member functions</a></em></span>
+  <span class="type">string_type</span> <a href="format_date_parser.html#id2403101-bb">format</a>() <span class="bold"><strong>const</strong></span>;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="format_date_parser.html#id2395288-bb">format</a>(string_type) ;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="format_date_parser.html#id2457121-bb">short_month_names</a>(<span class="bold"><strong>const</strong></span> input_collection_type &amp;) ;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="format_date_parser.html#id2511711-bb">long_month_names</a>(<span class="bold"><strong>const</strong></span> input_collection_type &amp;) ;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="format_date_parser.html#id2412980-bb">short_weekday_names</a>(<span class="bold"><strong>const</strong></span> input_collection_type &amp;) ;
+  <span class="type"><span class="bold"><strong>void</strong></span></span> <a href="format_date_parser.html#id2452167-bb">long_weekday_names</a>(<span class="bold"><strong>const</strong></span> input_collection_type &amp;) ;
+  <span class="type">date_type</span> <a href="format_date_parser.html#id2467484-bb">parse_date</a>(<span class="bold"><strong>const</strong></span> string_type &amp;, <span class="bold"><strong>const</strong></span> string_type &amp;, 
+                       <span class="bold"><strong>const</strong></span> <a href="special_values_parser.html" title="Class template special_values_parser">special_values_parser</a>&lt; date_type, charT &gt; &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">date_type</span> <a href="format_date_parser.html#id2509809-bb">parse_date</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                       std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                       <span class="bold"><strong>const</strong></span> <a href="special_values_parser.html" title="Class template special_values_parser">special_values_parser</a>&lt; date_type, charT &gt; &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">date_type</span> <a href="format_date_parser.html#id2397783-bb">parse_date</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                       std::istreambuf_iterator&lt; charT &gt; &amp;, string_type, 
+                       <span class="bold"><strong>const</strong></span> <a href="special_values_parser.html" title="Class template special_values_parser">special_values_parser</a>&lt; date_type, charT &gt; &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">month_type</span> <a href="format_date_parser.html#id2526045-bb">parse_month</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                         std::istreambuf_iterator&lt; charT &gt; &amp;, string_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type">month_type</span> <a href="format_date_parser.html#id2420245-bb">parse_month</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                         std::istreambuf_iterator&lt; charT &gt; &amp;, string_type, 
+                         match_results &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">day_type</span> <a href="format_date_parser.html#id2516555-bb">parse_day_of_month</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                              std::istreambuf_iterator&lt; charT &gt; &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">day_of_week_type</span> 
+  <a href="format_date_parser.html#id2422160-bb">parse_weekday</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                std::istreambuf_iterator&lt; charT &gt; &amp;, string_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type">day_of_week_type</span> 
+  <a href="format_date_parser.html#id2478555-bb">parse_weekday</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                std::istreambuf_iterator&lt; charT &gt; &amp;, string_type, 
+                match_results &amp;) <span class="bold"><strong>const</strong></span>;
+  <span class="type">year_type</span> <a href="format_date_parser.html#id2392536-bb">parse_year</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                       std::istreambuf_iterator&lt; charT &gt; &amp;, string_type) <span class="bold"><strong>const</strong></span>;
+  <span class="type">year_type</span> <a href="format_date_parser.html#id2402260-bb">parse_year</a>(std::istreambuf_iterator&lt; charT &gt; &amp;, 
+                       std::istreambuf_iterator&lt; charT &gt; &amp;, string_type, 
+                       match_results &amp;) <span class="bold"><strong>const</strong></span>;
+};</pre></div>
+<div class="refsect1" lang="en">
+<a name="id2635064"></a><h2>Description</h2>
+<p>The following is the set of recognized format specifiers</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>a - Short weekday name</p></li>
+<li><p>A - Long weekday name</p></li>
+<li><p>b - Abbreviated month name</p></li>
+<li><p>B - Full month name</p></li>
+<li><p>d - Day of the month as decimal 01 to 31</p></li>
+<li><p>j - Day of year as decimal from 001 to 366</p></li>
+<li><p>m - Month name as a decimal 01 to 12</p></li>
+<li><p>U - Week number 00 to 53 with first Sunday as the first day of week 1?</p></li>
+<li><p>w - Weekday as decimal number 0 to 6 where Sunday == 0</p></li>
+<li><p>W - Week number 00 to 53 where Monday is first day of week 1</p></li>
+<li><p>x - facet default date representation</p></li>
+<li><p>y - Year without the century - eg: 04 for 2004</p></li>
+<li><p>Y - Year with century</p></li>
+</ul></div>
+<p>The weekday specifiers (a and A) do not add to the date construction, but they provide a way to skip over the weekday names for formats that provide them.</p>
+<p>todo -- Another interesting feature that this approach could provide is an option to fill in any missing fields with the current values from the clock. So if you have m-%d the parser would detect the missing year value and fill it in using the clock.</p>
+<p>todo -- What to do with the x. x in the classic facet is just bad... </p>
+<div class="refsect2" lang="en">
+<a name="id2635138"></a><h3>
+<a name="format_date_parserconstruct-copy-destruct"></a><code class="computeroutput">format_date_parser</code> construct/copy/destruct</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><a name="id2507706-bb"></a>format_date_parser(<span class="bold"><strong>const</strong></span> string_type &amp; format, 
+                   <span class="bold"><strong>const</strong></span> input_collection_type &amp; month_short_names, 
+                   <span class="bold"><strong>const</strong></span> input_collection_type &amp; month_long_names, 
+                   <span class="bold"><strong>const</strong></span> input_collection_type &amp; weekday_short_names, 
+                   <span class="bold"><strong>const</strong></span> input_collection_type &amp; weekday_long_names);</pre></li>
+<li><pre class="literallayout"><a name="id2467385-bb"></a>format_date_parser(<span class="bold"><strong>const</strong></span> string_type &amp; format, <span class="bold"><strong>const</strong></span> std::locale &amp; locale);</pre></li>
+<li><pre class="literallayout"><a name="id2517547-bb"></a>format_date_parser(<span class="bold"><strong>const</strong></span> <a href="format_date_parser.html" title="Class template format_date_parser">format_date_parser</a>&lt; date_type, charT &gt; &amp; fdp);</pre></li>
+</ol></div>
+</div>
+<div class="refsect2" lang="en">
+<a name="id2635269"></a><h3>
+<a name="id2403096-bb"></a><code class="computeroutput">format_date_parser</code> public member functions</h3>
+<div class="orderedlist"><ol type="1">
+<li><pre class="literallayout"><span class="type">string_type</span> <a name="id2403101-bb"></a>format() <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2395288-bb"></a>format(string_type format) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2457121-bb"></a>short_month_names(<span class="bold"><strong>const</strong></span> input_collection_type &amp; month_names) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2511711-bb"></a>long_month_names(<span class="bold"><strong>const</strong></span> input_collection_type &amp; month_names) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2412980-bb"></a>short_weekday_names(<span class="bold"><strong>const</strong></span> input_collection_type &amp; weekday_names) ;</pre></li>
+<li><pre class="literallayout"><span class="type"><span class="bold"><strong>void</strong></span></span> <a name="id2452167-bb"></a>long_weekday_names(<span class="bold"><strong>const</strong></span> input_collection_type &amp; weekday_names) ;</pre></li>
+<li><pre class="literallayout"><span class="type">date_type</span> <a name="id2467484-bb"></a>parse_date(<span class="bold"><strong>const</strong></span> string_type &amp; value, <span class="bold"><strong>const</strong></span> string_type &amp; format, 
+                     <span class="bold"><strong>const</strong></span> <a href="special_values_parser.html" title="Class template special_values_parser">special_values_parser</a>&lt; date_type, charT &gt; &amp; sv_parser) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">date_type</span> <a name="id2509809-bb"></a>parse_date(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                     std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+                     <span class="bold"><strong>const</strong></span> <a href="special_values_parser.html" title="Class template special_values_parser">special_values_parser</a>&lt; date_type, charT &gt; &amp; sv_parser) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li>
+<pre class="literallayout"><span class="type">date_type</span> <a name="id2397783-bb"></a>parse_date(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                     std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+                     string_type format, 
+                     <span class="bold"><strong>const</strong></span> <a href="special_values_parser.html" title="Class template special_values_parser">special_values_parser</a>&lt; date_type, charT &gt; &amp; sv_parser) <span class="bold"><strong>const</strong></span>;</pre>
+<p>Of all the objects that the format_date_parser can parse, only a date can be a special value. Therefore, only parse_date checks for special_values. </p>
+</li>
+<li><pre class="literallayout"><span class="type">month_type</span> <a name="id2526045-bb"></a>parse_month(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                       std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+                       string_type format) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">month_type</span> <a name="id2420245-bb"></a>parse_month(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                       std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+                       string_type format, match_results &amp; mr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">day_type</span> <a name="id2516555-bb"></a>parse_day_of_month(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                            std::istreambuf_iterator&lt; charT &gt; &amp; stream_end) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">day_of_week_type</span> 
+<a name="id2422160-bb"></a>parse_weekday(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+              std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+              string_type format) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">day_of_week_type</span> 
+<a name="id2478555-bb"></a>parse_weekday(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+              std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+              string_type format, match_results &amp; mr) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">year_type</span> <a name="id2392536-bb"></a>parse_year(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                     std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+                     string_type format) <span class="bold"><strong>const</strong></span>;</pre></li>
+<li><pre class="literallayout"><span class="type">year_type</span> <a name="id2402260-bb"></a>parse_year(std::istreambuf_iterator&lt; charT &gt; &amp; sitr, 
+                     std::istreambuf_iterator&lt; charT &gt; &amp; stream_end, 
+                     string_type format, match_results &amp; mr) <span class="bold"><strong>const</strong></span>;</pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small>Copyright © 2001-2005 CrystalClear Software, Inc</small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="time_from_ftime.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="date_time/doxy.html#id2400160"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="fixed_string_to_int.html"><img src="images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

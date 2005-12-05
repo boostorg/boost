@@ -1,0 +1,124 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Toolset modules</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.69.1">
+<style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
+       background-repeat: no-repeat;
+       background-position: top left;
+       /* The following properties make the watermark "fixed" on the page. */
+       /* I think that's just a bit too distracting for the reader... */
+       /* background-attachment: fixed; */
+       /* background-position: center center; */
+     }</style>
+<link rel="start" href="../../index.html" title="The Boost C++ Libraries">
+<link rel="up" href="../extender.html" title="Chapter 25. Extender Manual">
+<link rel="prev" href="rules.html" title="Main target rules">
+<link rel="next" href="../reference.html" title="Chapter 26. Detailed reference">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%">
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../boost.png"></td>
+<td align="center"><a href="../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="rules.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../extender.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../reference.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="bbv2.extending.toolset_modules"></a>Toolset modules</h2></div></div></div>
+<p>If your extensions will be used only on one project, they can be
+      placed in a separate <code class="filename">.jam</code> file that will be
+      imported by your <code class="filename">project-root.jam</code>. If the
+      extensions will be used on many projects, users will thank you for 
+      a finishing touch.
+    </p>
+<p>The <code class="computeroutput">using</code> rule provides a standard mechanism
+    for loading and configuring extensions.  To make it work, your module
+    
+    should provide an <code class="computeroutput">init</code> rule. The rule will be called
+    with the same parameters that were passed to the
+    <code class="computeroutput">using</code> rule. The set of allowed parameters is
+    determined by you. For example, you can allow the user to specify
+    paths, tool versions, and other options.
+    </p>
+<p>Here are some guidelines that help to make Boost.Build more
+      consistent:
+      </p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>The <code class="computeroutput">init</code> rule should never fail. Even if
+          the user provided an incorrect path, you should emit a warning and go
+          on. Configuration may be shared between different machines, and
+          wrong values on one machine can be OK on another.
+          </p></li>
+<li>
+<p>Prefer specifying the command to be executed
+        to specifying the tool's installation path. First of all, this
+        gives more control: it's possible to specify
+</p>
+<pre class="programlisting">
+/usr/bin/g++-snapshot
+time g++
+</pre>
+<p>
+            as the command. Second, while some tools have a logical
+            "installation root", it's better if user doesn't have to remember whether
+            a specific tool requires a full command or a path.
+            </p>
+</li>
+<li>
+<p>Check for multiple initialization. A user can try to
+            initialize the module several times. You need to check for this
+            and decide what to do. Typically, unless you support several
+            versions of a tool, duplicate initialization is a user error. 
+            
+            If the
+            tool's version can be specified during initialization, make sure the
+            version is either always specified, or never specified (in which
+            case the tool is initialied only once). For example, if you allow:
+</p>
+<pre class="programlisting">
+using yfc ;
+using yfc : 3.3 ;
+using yfc : 3.4 ;
+</pre>
+<p>
+            Then it's not clear if the first initialization corresponds to
+            version 3.3 of the tool, version 3.4 of the tool, or some other
+            version. This can lead to building twice with the same version.
+            </p>
+</li>
+<li>
+<p>If possible, <code class="computeroutput">init</code> must be callable
+          with no parameters. In which case, it should try to autodetect all
+          the necessary information, for example, by looking for a tool in
+          <code class="envar">PATH</code> or in common installation locations. Often this
+          is possible and allows the user to simply write:
+</p>
+<pre class="programlisting">
+using yfc ;
+</pre>
+</li>
+<li><p>Consider using facilities in the
+          <code class="computeroutput">tools/common</code> module. You can take a look at how
+          <code class="computeroutput">tools/gcc.jam</code> uses that module in the <code class="computeroutput">init</code> rule.
+          </p></li>
+</ul></div>
+</div>
+<table width="100%"><tr>
+<td align="left"></td>
+<td align="right"><small></small></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="rules.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../extender.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../reference.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
