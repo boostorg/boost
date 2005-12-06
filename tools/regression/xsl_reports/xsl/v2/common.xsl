@@ -23,6 +23,23 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <xsl:variable name="output_directory" select="'output'"/>
 
+    <!-- general -->
+
+    <func:function name="meta:iif">
+        <xsl:param name="condition"/>
+        <xsl:param name="if_true"/>
+        <xsl:param name="if_false"/>
+
+        <xsl:choose>
+            <xsl:when test="$condition">
+                <func:result select="$if_true"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <func:result select="$if_false"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </func:function>
+
     <!-- structural -->
 
     <func:function name="meta:test_structure">
@@ -446,7 +463,8 @@ http://www.boost.org/LICENSE_1_0.txt)
         <tr>
             <td colspan="{$colspan}">&#160;</td>
             <xsl:for-each select="$run_toolsets//runs/run[ count(toolset) > 0 ]">
-                <xsl:variable name="age" select="meta:timestamp_difference( @timestamp, $run_date )"/>
+                <xsl:variable name="timestamp_diff" select="meta:timestamp_difference( @timestamp, $run_date )"/>
+                <xsl:variable name="age" select="meta:iff( $timestamp_diff &lt; 30, $timestamp_diff, 30 )"/>
                 <td colspan="{count(toolset)}" class="timestamp">
                     <span class="timestamp-{$age}"><xsl:value-of select="meta:format_timestamp( @timestamp )"/></span>
                     <xsl:if test="@run-type != 'full'">
