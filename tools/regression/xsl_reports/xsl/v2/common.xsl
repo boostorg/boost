@@ -464,7 +464,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <td colspan="{$colspan}">&#160;</td>
             <xsl:for-each select="$run_toolsets//runs/run[ count(toolset) > 0 ]">
                 <xsl:variable name="timestamp_diff" select="meta:timestamp_difference( @timestamp, $run_date )"/>
-                <xsl:variable name="age" select="meta:iff( $timestamp_diff &lt; 30, $timestamp_diff, 30 )"/>
+                <xsl:variable name="age" select="meta:iif( $timestamp_diff &lt; 30, $timestamp_diff, 30 )"/>
                 <td colspan="{count(toolset)}" class="timestamp">
                     <span class="timestamp-{$age}"><xsl:value-of select="meta:format_timestamp( @timestamp )"/></span>
                     <xsl:if test="@run-type != 'full'">
