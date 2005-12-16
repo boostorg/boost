@@ -236,7 +236,7 @@ class merge_xml_action( action ):
                         max_size = pow( 2, 16 )
                         self.character_content += content
                         if len( self.character_content ) > max_size:
-                            self.character_content = self.character_content[ : max_size ] + "\n\n... content has been trimmed by the report system because it exceeds %d bytes." % max_size
+                            self.character_content = self.character_content[ : max_size ] + "...\n\n[The content has been trimmed by the report system because it exceeds %d bytes]" % max_size
                             self.trimmed = 1
 
             o = open( dest, "w" )
