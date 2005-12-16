@@ -204,19 +204,64 @@ class merge_xml_action( action ):
 
         self.relevant_paths_.extend( [ self.source_ ] )
         self.boost_paths_.extend( [ self.expected_results_file_, self.failures_markup_file_ ] ) 
+
+
         
     def update( self ):
+        def filter_xml( src, dest ):
+            
+            class xmlgen( xml.sax.saxutils.XMLGenerator ):
+                def __init__( self, writer ):
+                   xml.sax.saxutils.XMLGenerator.__init__( self, writer )
+                  
+                   self.trimmed = 0
+                   self.character_content = ""
+
+                def startElement( self, name, attrs):
+                    self.flush()
+                    xml.sax.saxutils.XMLGenerator.startElement( self, name, attrs )
+
+                def endElement( self, name ):
+                    self.flush()
+                    xml.sax.saxutils.XMLGenerator.endElement( self, name )
+                    
+                def flush( self ):
+                    content = self.character_content
+                    self.character_content = ""
+                    self.trimmed = 0
+                    xml.sax.saxutils.XMLGenerator.characters( self, content )
+
+                def characters( self, content ):
+                    if not self.trimmed:
+                        max_size = pow( 2, 16 )
+                        self.character_content += content
+                        if len( self.character_content ) > max_size:
+                            self.character_content = self.character_content[ : max_size ] + "\n\n... content has been trimmed by the report system because it exceeds %d bytes." % max_size
+                            self.trimmed = 1
+
+            o = open( dest, "w" )
+            try: 
+                gen = xmlgen( o )
+                xml.sax.parse( src, gen )
+            finally:
+                o.close()
+
+            return dest
+
+            
         utils.log( 'Merging "%s" with expected results...' % shorten( self.source_ ) )
+        trimmed_source = filter_xml( self.source_, '%s-trimmed.xml' % os.path.splitext( self.source_ )[0] )
         utils.libxslt( 
-            utils.log
-            , self.source_
+              utils.log
+            , trimmed_source
             , xsl_path( 'add_expected_results.xsl' )
             , os.path.join( self.file_path_ )
             , {
-              "expected_results_file" : self.expected_results_file_
+                "expected_results_file" : self.expected_results_file_
               , "failures_markup_file": self.failures_markup_file_
               }
             )
+        os.unlink( trimmed_source )
         
     def _xml_timestamp( xml_path ):
 
