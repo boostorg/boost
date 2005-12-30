@@ -72,7 +72,7 @@ Subject: Regression status script failed on """
         sys.exit(-1)
         
     return failing_libraries
-   
+
 # Parses the file $BOOST_ROOT/libs/maintainers.txt to create a hash
 # mapping from the library name to the list of maintainers.
 def get_library_maintainers():
@@ -93,6 +93,38 @@ def get_library_maintainers():
                 email = at_regex.sub('@', email)
                 maintainers[lib].append((name, email))  
   return maintainers
+
+# Determine if any platforms are completely broken, e.g., have more
+# than a certain (high) number of failures.
+def broken_platforms():
+    num_failures_per_platform = dict()
+    lib_start_regex = re.compile('\|(\S+)\|')
+    failure_regex = re.compile('  ([^:]*):  (.*)')
+    current_lib = '<none>'
+    for line in file('issues-email.txt', 'r'):
+        lib_start = lib_start_regex.match(line)
+        if lib_start:
+            current_lib = lib_start.group(1)
+        else:
+            failure = failure_regex.match(line)
+            if failure:
+                testname = failure.group(1)
+                platforms = re.split('\s*', failure.group(2))
+                for platform in platforms:
+                    if platform != '':
+                        if num_failures_per_platform.has_key(platform):
+                            num_failures_per_platform[platform] += 1
+                        else:
+                            num_failures_per_platform[platform] = 1
+                pass
+            pass
+        pass
+
+    for platform in num_failures_per_platform:
+        count = num_failures_per_platform[platform]
+        if count > 300:
+            print 'Platform',platform,'is completely broken with',count,'failures.'
+    return
 
 # Send a message to "person" (a maintainer of a library that is
 # failing).
@@ -237,6 +269,8 @@ for arg in sys.argv:
         branch = arg[len("--branch="):]
 
 failing_libraries = get_issues_email(branch)
+
+broken_platforms()
 
 # Compute the set of maintainers that should receive notification        
 cc_list = {}
