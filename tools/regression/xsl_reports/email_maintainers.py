@@ -18,13 +18,22 @@ import sys
 # something wonky is happening.
 # Returns the list of failing libraries
 def get_issues_email(branch):
+    base_url = "http://engineering.meta-comm.com/boost-regression/CVS-"
+    base_url += branch
+    base_url += "/developer/";
     got_issues = False
+
+    # Ping the server by looking for an HTML file
+    if not ('--no-get' in sys.argv):
+        print "Pinging the server to initiate extraction..."
+        ping_url = base_url + "issues.html"
+        os.system('curl -O ' + ping_url)
+        os.system('rm -f issues.html')
+        
     for x in range(30):
         if not ('--no-get' in sys.argv):
             # Update issues-email.txt
-            url = "http://engineering.meta-comm.com/boost-regression/CVS-"
-            url += branch
-            url += "/developer/issues-email.txt"
+            url = base_url + "issues-email.txt"
             print 'Retrieving issues email from ' + url
             os.system('rm -f issues-email.txt')
             os.system('curl -O ' + url)
