@@ -100,10 +100,19 @@ def make_tarball(
     tar.close()
 
     tarball_timestamp_path = os.path.join( working_dir, 'boost-%s.timestamp' % tag )
+
+    utils.log( 'Writing timestamp into "%s"...' % tarball_timestamp_path )
     timestamp_file = open( tarball_timestamp_path, 'w' )
     timestamp_file.write( '%f' % timestamp )
     timestamp_file.close()
 
+    md5sum_path = os.path.join( working_dir, 'boost-%s.md5' % tag )
+    utils.log( 'Writing md5 checksum into "%s"...' % md5sum_path )
+    old_dir = os.getcwd()
+    os.chdir( os.path.dirname( tarball_path ) )
+    os.system( 'md5sum -b "%s" >"%s"' % ( os.path.basename( tarball_path ), md5sum_path ) )
+    os.chdir( old_dir )
+    
     if site_dir is not None:
         utils.log( 'Moving "%s" to the site location "%s"...' % ( tarball_name, site_dir ) )
         temp_site_dir = os.path.join( site_dir, 'temp' )
@@ -113,6 +122,7 @@ def make_tarball(
         shutil.move( tarball_path, temp_site_dir )
         shutil.move( os.path.join( temp_site_dir, tarball_name ), site_dir )
         shutil.move( tarball_timestamp_path, site_dir )
+        shutil.move( md5sum_path, site_dir )
         utils.log( 'Removing "%s"...' % timestamped_dir )
         rmtree( timestamped_dir )
 
