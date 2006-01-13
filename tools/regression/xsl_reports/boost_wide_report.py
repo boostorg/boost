@@ -644,6 +644,24 @@ def make_result_pages(
         , os.path.join( output_dir, 'master.css' )
         )
 
+    fix_file_names( output_dir )
+
+
+def fix_file_names( dir ):
+    """
+    The current version of xslproc doesn't correctly handle
+    spaces on posix systems. We have to manually go through the
+    result set and correct decode encoded spaces (%20).
+    """
+    if os.name == 'posix':
+        for root, dirs, files in os.walk( dir ):
+            for file in files:
+                if file.find( "%20" ) > -1:
+                    new_name = file.replace( "%20", " " )
+                    old_file_path = os.path.join( root, file )
+                    new_file_path = os.path.join( root, new_name )
+                    print "renaming %s %s" % ( old_file_path, new_file_path )
+                    os.rename ( old_file_path, new_file_path )
 
 def build_xsl_reports( 
           locate_root_dir
