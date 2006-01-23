@@ -3602,7 +3602,25 @@ for more information.
                 specialization.
             </note>
         </mark-unusable>
-
+        <mark-unusable>
+            <toolset name="borland-5_6_4"/>
+            <note author="Eric Niebler">
+                Boost.Fusion doesn't work on this compiler.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="cw-8_3"/>
+            <note author="Eric Niebler">
+                This compiler doesn't support SFINAE / enable_if
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="dmc*"/>
+            <note author="Eric Niebler">
+                Digital Mars cannot seem to handle dependent default template parameters,
+                such as "template &lt; class T, bool B = is_foo &lt; T &gt; ::value &gt;"
+            </note>
+        </mark-unusable>
     </library>
 
     <!-- /////////////// Standard note definitions /////////////// -->
