@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 # Copyright (c) MetaCommunications, Inc. 2003-2005
 #
