@@ -2334,29 +2334,26 @@ for more information.
             <toolset name="vc-6_5*"/>
             <toolset name="vc-7_0"/>
         </mark-unusable>
-        <test name="test_float">
-            <mark-failure>
-                <toolset name="borland-5_5_1"/>
-                <toolset name="iw-7_1-vc6"/>
-                <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
-                <note author="G. Melquiond">
-                    This test ensures the inclusion property of interval
-                    arithmetic is available for built-in floating-point types
-                    <code>float</code> and <code>double</code>. If the test
-                    fails, <code>interval&lt;float&gt;</code> and
-                    <code>interval&lt;double&gt;</code> should not be used
-                    on this compiler/platform since there will be no
-                    numerical guarantee.
-                </note>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="det"/>
+            <test name="mul"/>
+            <test name="overflow"/>
+            <toolset name="tru64cxx*"/>
+            <note author="G. Melquiond">
+                This test ensures the inclusion property of interval
+                arithmetic is available for built-in floating-point types
+                <code>float</code> and <code>double</code>. If the test
+                fails, <code>interval&lt;float&gt;</code> and
+                <code>interval&lt;double&gt;</code> should not be used
+                on this compiler/platform since there will be no
+                numerical guarantee.
+            </note>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="cmp_exn"/>
             <test name="cmp_set"/>
             <test name="cmp_tribool"/>
             <toolset name="gcc-2.95.3-linux"/>
-            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
-            <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <note author="Aleksey Gurtovoy" refid="2"/>
         </mark-expected-failures>
         <mark-expected-failures>
