@@ -59,17 +59,20 @@ build-project ../libs/random/test ;            # test-suite random
 build-project ../libs/range/test ;             # test-suite range
 build-project ../libs/regex/test ;             # test-suite regex
 build-project ../libs/regex/example ;          # test-suite regex-examples
-#build-project ../libs/serialization/test ;     # test-suite serialization
+build-project ../libs/serialization/test ;     # test-suite serialization
 build-project ../libs/signals/test ;           # test-suite signals
 build-project ../libs/smart_ptr/test ;         # test-suite smart_ptr
 build-project ../libs/spirit/test ;            # test-suite spirit
 build-project ../libs/static_assert ;          # test-suite static_assert
 build-project ../libs/test/test ;              # test-suite test
 build-project ../libs/thread/test ;            # test-suite thread
+build-project ../libs/tr1/test ;               # test-suite tr1
 build-project ../libs/type_traits/test ;       # test-suite type_traits
+build-project ../libs/typeof/test ;            # test-suite typeof
 build-project ../libs/utility/enable_if/test ; # test-suite utility/enable_if
 build-project ../libs/utility/test ;           # test-suite utility
 build-project ../libs/variant/test ;           # test-suite variant
+build-project ../libs/wave/test/build ;        # test-suite wave
 build-project ../libs/xpressive/test ;         # test-suite xpressive
 
 # Tests specified in this Jamfile
@@ -105,16 +108,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/array/array4.cpp ]
           [ run libs/array/array5.cpp ]
         ;
-
-
-    test-suite concept_check
-        : [ compile libs/concept_check/concept_check_test.cpp ]
-          [ compile libs/concept_check/class_concept_check_test.cpp ]
-          [ compile-fail libs/concept_check/concept_check_fail_expected.cpp ]
-          [ compile-fail libs/concept_check/class_concept_fail_expected.cpp ]
-        ;
     
-
     run libs/crc/crc_test.cpp test_exec_monitor ;
 
 
