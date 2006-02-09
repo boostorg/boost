@@ -210,3 +210,80 @@ for local l in $(libraries)
     use-project /boost/$(l) : libs/$(l)/build ;
 }
     
+project-help = "
+Usage:
+    bjam [options] [install|stage]
+
+    * install               Installs to the configured location(s).
+    * stage                 Stages the build products only to common stage
+                            location.
+
+Options:
+    --help                  This message.
+    
+    -sTOOLS=<toolsets>      Indicates the tools to build with.
+    
+    --show-libraries        Displays the list of Boost libraries that require
+                            build and installation steps, then exit.
+
+    --layout=<layout>       Determines what kind of build layout to use. This
+                            allows one to control the naming of the resulting
+                            libraries, and the locations of the installed
+                            files. Default is 'versioned'. Possible values:
+                            
+                                versioned - Uses the Boost standard names
+                                which include version number for Boost the
+                                release and version and name of the
+                                compiler as part of the library names. Also
+                                installs the includes to a versioned
+                                sub-directory.
+                                
+                                system - Builds an install without the
+                                Boost standard names, and does not install
+                                includes to a versioned sub-directory. This
+                                is intended for system integrators to build
+                                for packaging of distributions.
+
+Locations:
+    --prefix=PREFIX         Install architecture independent files here.
+                            Default; C:\\Boost on Win32
+                            Default; /usr/local on Unix. Linux, etc.
+                            
+    --exec-prefix=EPREFIX   Install architecture dependent files here.
+                            Default; PREFIX
+                            
+    --libdir=DIR            Install libraries here.
+                            Default; EPREFIX/lib
+                            
+    --includedir=DIR        Install source headers here.
+                            Default; PREFIX/include
+                            
+    --builddir=DIR          Build in this location instead of building
+                            within the distribution tree. Recommended!
+                            
+    --stagedir=DIR          When staging only, stage to the location.
+                            Default; ./stage
+
+Features:
+    --with-<library>        Build, stage, or install the specified <library>
+                            If used, the default becomes to only build
+                            indicated libraries.
+                            
+    --without-<library>     Do not build, stage, or install the specified
+                            <library>. By default all libraries attempt to
+                            build.
+                            
+    --with-python-root[=PYTHON_ROOT]
+                            Build Boost.Python libraries with the Python
+                            devel packages located at PYTHON_ROOT.
+                            Default PYTHON_ROOT; C:\\Python24 on Win32.
+                            Default PYTHON_ROOT; /usr on Unix, Linux, Cygwin, etc.
+                            
+    --with-python-version[=2.4]
+                            Build Boost.Python libraries with the Python
+                            version indicated.
+                            Default; 2.4.
+                            
+    --with-pydebug          Build Boost.Python libraries using the
+                            Python debug runtime.
+" ;
