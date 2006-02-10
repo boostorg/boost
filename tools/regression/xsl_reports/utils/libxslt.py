@@ -31,5 +31,7 @@ def libxslt( log, xml_file, xsl_file, output_file, parameters = None ):
     transform_command = transform_command + ' "%s" ' % xslt_param( xsl_file )
     transform_command = transform_command + ' "%s" ' % xslt_param( xml_file )
     log( transform_command )
-    os.system( transform_command )    
+    rc = os.system( transform_command )
+    if rc != 0:
+        raise Exception( '"%s" failed with return code %d' % ( transform_command, rc ) )
 
