@@ -250,18 +250,26 @@ class merge_xml_action( action ):
 
             
         utils.log( 'Merging "%s" with expected results...' % shorten( self.source_ ) )
-        trimmed_source = filter_xml( self.source_, '%s-trimmed.xml' % os.path.splitext( self.source_ )[0] )
-        utils.libxslt( 
-              utils.log
-            , trimmed_source
-            , xsl_path( 'add_expected_results.xsl' )
-            , os.path.join( self.file_path_ )
-            , {
-                "expected_results_file" : self.expected_results_file_
-              , "failures_markup_file": self.failures_markup_file_
-              }
-            )
-        os.unlink( trimmed_source )
+        try:
+            trimmed_source = filter_xml( self.source_, '%s-trimmed.xml' % os.path.splitext( self.source_ )[0] )
+            utils.libxslt(
+                  utils.log
+                , trimmed_source
+                , xsl_path( 'add_expected_results.xsl' )
+                , self.file_path_
+                , {
+                    "expected_results_file" : self.expected_results_file_
+                  , "failures_markup_file": self.failures_markup_file_
+                  }
+                )
+
+            os.unlink( trimmed_source )
+
+        except Exception, msg:
+            utils.log( '  Skipping "%s" due to errors (%s)' % ( self.source_, msg ) )
+            if os.path.exists( self.file_path_ ):
+                os.unlink( self.file_path_ )
+
         
     def _xml_timestamp( xml_path ):
 
@@ -310,6 +318,7 @@ class make_links_action( action ):
         
         open( self.file_path_, "w" ).close()
 
+
 class unzip_action( action ):
     def __init__( self, source, destination, unzip_func ):
         action.__init__( self, destination )
@@ -323,6 +332,7 @@ class unzip_action( action ):
             self.unzip_func_( self.source_, os.path.dirname( self.file_path_ ) )
         except Exception, msg:
             utils.log( '  Skipping "%s" due to errors (%s)' % ( self.source_, msg ) )
+
 
 def ftp_task( site, site_path , destination ):
     __log__ = 1
@@ -405,7 +415,7 @@ def make_links_task( input_dir, output_dir, tag, run_date, comment_file, extende
 
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
     document_started = 0
-        
+    
     def startDocument(self):
         if not self.document_started:
             xml.sax.saxutils.XMLGenerator.startDocument( self )
@@ -417,20 +427,24 @@ def merge_processed_test_runs( test_runs_dir, tag, writer ):
     utils.log( 'merge_processed_test_runs: merging processed test runs into a single XML... %s' % test_runs_dir )
     __log__ = 1
     
-    all_runs_xml = xmlgen( writer )
+    all_runs_xml = xmlgen( writer, encoding='utf-8' )
     all_runs_xml.startDocument()
     all_runs_xml.startElement( 'all-test-runs', {} )
     
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
+        file_pos = writer.stream.tell()
         try:
             utils.log( '    Writing "%s" into the resulting XML...' % test_run )
             xml.sax.parse( test_run, all_runs_xml  )
         except Exception, msg:
             utils.log( '    Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
+            writer.stream.seek( file_pos )
+            writer.stream.truncate()
 
     all_runs_xml.endElement( 'all-test-runs' )
     all_runs_xml.endDocument()
+
 
 def execute_tasks(
           tag
