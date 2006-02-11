@@ -2911,6 +2911,30 @@ for more information.
             <toolset name="gcc-2.95.3*"/>
             <note author="Andreas Huber" refid="17"/>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="DllTestNormal">
+                <toolset name="gcc-3_3-darwin"/>
+                <toolset name="mingw*"/>
+                <toolset name="tru64cxx*"/>
+                <note author="Andreas Huber">
+                    A runtime failure of this test indicates that this platform
+                    *dynamically* links code in a manner such that under certain
+                    circumstances more than one instance of a header-defined static
+                    class member can exist at runtime.
+                    See http://tinyurl.com/d2yng for more information.
+                </note>
+            </test>
+            <test name="LibTestNormal">
+                <toolset name="tru64cxx71*"/>
+                <note author="Andreas Huber">
+                    A runtime failure of this test indicates that this platform
+                    *statically* links code in a manner such that under certain
+                    circumstances more than one instance of a header-defined static
+                    class member can exist at runtime.
+                    See http://tinyurl.com/d2yng for more information.
+                </note>
+            </test>
+        </mark-expected-failures>
     </library>
 
     <!-- static_assert -->
