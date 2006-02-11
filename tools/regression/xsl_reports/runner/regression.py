@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) MetaCommunications, Inc. 2003-2005
+# Copyright (c) MetaCommunications, Inc. 2003-2006
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -97,7 +97,7 @@ def rmtree( path ):
     if os.path.exists( path ):
         if sys.platform == 'win32':
             os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
-            shutil.rmtree( path )
+            shutil.rmtree( unicode( path ) )
         else:
             os.system( 'rm -f -r "%s"' % path )
 
