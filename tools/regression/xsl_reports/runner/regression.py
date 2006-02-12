@@ -61,7 +61,7 @@ else:
 
 bjam[ 'default_toolset' ] = ''
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
-bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'build', 'jam_src' )
+bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'jam', 'src' )
 bjam[ 'build_path_root' ] = bjam[ 'source_dir' ]
 
 process_jam_log[ 'path' ] = os.path.join( regression_root, process_jam_log[ 'name' ] )
