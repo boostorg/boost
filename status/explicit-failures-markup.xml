@@ -892,6 +892,18 @@
             </note>
         </mark-expected-failures>
 
+        <mark-expected-failures>
+            <test name="testfacet"/>
+            <test name="testfacet_dll"/>
+            <test name="testgreg_wstream"/>
+            <test name="teststreams"/>
+            <test name="testtime_wstream"/>
+            <test name="testwcustom_timezone"/>
+            <test name="testwposix_timezone"/>
+            <toolset name="qcc-3.3.5-gpp"/>
+            <note author="Jim Douglas" date="12 Feb 06" id="36"/>
+        </mark-expected-failures>
+
     </library>
 
 
@@ -1271,6 +1283,14 @@
             <toolset name="gcc-2.95.3*"/>
             <note author="Jonathan Turkanis" refid="2"/>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="code_converter_test"/>
+            <test name="wide_stream_test"/>
+            <toolset name="qcc-3.3.5-gpp"/>
+            <note author="Jim Douglas" date="12 Feb 06" id="36"/>
+        </mark-expected-failures>
+
     </library>
 
     <!-- lambda -->
@@ -1967,6 +1987,13 @@ for more information.
                 Therefore serialization of variants doesn't work.
             </note>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="*_warchive"/>
+            <test name="*_warchive_dll"/>
+            <toolset name="qcc-3.3.5-gpp"/>
+            <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
+        </mark-expected-failures>
     </library>
 
 
@@ -2520,6 +2547,13 @@ for more information.
           <toolset name="*-darwin"/>
           <note refid="35" author="Doug Gregor"/>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="unicode_test*"/>
+            <toolset name="qcc-3.3.5-gpp"/>
+            <note author="Jim Douglas" date="12 Feb 06" id="36"/>
+        </mark-expected-failures>
+
     </library>
 
      <!-- pointer container -->
@@ -2550,6 +2584,7 @@ for more information.
                 It should be fixed in newer versions of the compiler.
             </note>
         </mark-expected-failures>
+
     </library>
 
 
@@ -3893,6 +3928,12 @@ for more information.
         properly when using static libraries. This problem has not
         been researched.
     </note>
+
+    <note id="36">
+        Wide character support is disabled in the GNU Standard C++ library as
+		supplied on the QNX Neutrino version 6.3.0 distribution. 
+    </note>
+
 </explicit-failures-markup>
 
 
