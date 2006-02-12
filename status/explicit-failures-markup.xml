@@ -2952,23 +2952,40 @@ for more information.
                 <toolset name="mingw*"/>
                 <toolset name="tru64cxx*"/>
                 <note author="Andreas Huber">
-                    A runtime failure of this test indicates that this platform
-                    *dynamically* links code in a manner such that under certain
-                    circumstances more than one instance of a header-defined static
-                    class member can exist at runtime.
+                    A runtime failure of this test indicates that this
+                    platform *dynamically* links code in a manner such that
+                    under certain circumstances more than one instance of a
+                    header-defined static class member can exist at runtime.
                     See http://tinyurl.com/d2yng for more information.
                 </note>
             </test>
             <test name="LibTestNormal">
                 <toolset name="tru64cxx71*"/>
                 <note author="Andreas Huber">
-                    A runtime failure of this test indicates that this platform
-                    *statically* links code in a manner such that under certain
-                    circumstances more than one instance of a header-defined static
-                    class member can exist at runtime.
+                    A runtime failure of this test indicates that this
+                    platform *statically* links code in a manner such that
+                    under certain circumstances more than one instance of a
+                    header-defined static class member can exist at runtime.
                     See http://tinyurl.com/d2yng for more information.
                 </note>
             </test>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="InStateReactionTestNormal"/>
+            <test name="InStateReactionTestNative"/>
+            <test name="InStateReactionTestRelaxed"/>
+            <test name="InStateReactionTestBoth"/>
+            <toolset name="gcc-3_3*"/>
+            <toolset name="gcc-3.2*"/>
+            <toolset name="gcc-3.3*"/>
+            <toolset name="qcc-3.3*"/>
+            <note author="Andreas Huber">
+                This failure is due to a known compiler bug. As a workaround,
+                an equivalent custom_reaction should be used instead. This is
+                only necessary when the pAction argument passed to the
+                in_state_reaction class template is a member of the same
+                simple_state subclass also declaring the in_state_reaction.
+            </note>
         </mark-expected-failures>
     </library>
 
