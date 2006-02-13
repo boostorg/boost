@@ -6,15 +6,17 @@
     <!--
     PLEASE VALIDATE THE XML BEFORE COMMITTING YOUR CHANGES!
 
-    The following online services can be used to validate your changes to this file:
+    The following online services can be used to validate your changes to this
+    file:
 
-        - http://apps.gotdotnet.com/xmltools/xsdvalidator/
+        - http://syseng.nist.gov/b2bTestbed/projects/xmlvalidation/instance_validation.html
+        - http://xmlvalidation.com/
 
-     When using the gotdotnet tool you need to provide both the explicit-failures-markup.xml
-     file as the XML document and the explicit-failures.xsd as the schema document.  Use the
-     browse buttons to select them from your local hard drive.
+     With both tools you need to provide both the explicit-failures-markup.xml
+     file as the XML document and the explicit-failures.xsd as the schema
+     document. Use the browse buttons to select them from your local hard
+     drive.
 
-        - http://tools.decisionsoft.com/schemaValidate.html
     -->
 
     <!-- /////////////// Toolsets /////////////// -->
@@ -2949,6 +2951,7 @@ for more information.
             <toolset name="vc-6_5*"/>
             <toolset name="vc7*"/>
             <toolset name="vc-7_0*"/>            
+            <toolset name="tru64cxx65*"/>            
             <toolset name="gcc-2.95.3*"/>
             <note author="Andreas Huber" refid="17"/>
         </mark-unusable>
@@ -2977,6 +2980,21 @@ for more information.
                 See <a href="http://tinyurl.com/d2yng">here</a> for more
                 information.
             </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="CustomReactionTest*"/>
+            <test name="DllTest*"/>
+            <test name="LibTest*"/>
+            <toolset name="cw-9_4"/>
+            <toolset name="cw-9_5-darwin"/>
+            <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="CustomReactionTest*"/>
+            <test name="FifoSchedulerTest*"/>
+            <test name="TransitionTest*"/>
+            <toolset name="tru64cxx71*"/>
+            <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
     </library>
 
