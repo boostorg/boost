@@ -963,6 +963,13 @@
           <toolset name="mingw-3_4_5"/>
           <note author="Beman Dawes" refid="19"/> <!-- no wchar_t, wstring support -->
         </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="mbcopy"/>
+          <test name="mbpath"/>
+          <test name="wide_test"/>
+          <toolset name="qcc-3.3.5-gpp"/>
+          <note author="Jim Douglas" refid="36"/>
+        </mark-expected-failures>
       </library>
 
     <!-- foreach -->
@@ -2362,6 +2369,11 @@ for more information.
               (the complex trig functions are absent).
             </note>
        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="complex_test"/>
+            <toolset name="qcc-3.3.5-cpp"/>
+            <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
+       </mark-expected-failures>
     </library>
 
     <!-- numeric/conversion -->
@@ -2439,6 +2451,11 @@ for more information.
             <toolset name="gcc-2.95*"/>
             <note author="M.Stevens" refid="30"/>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="test3"/>
+            <toolset name="qcc-3.3.5-cpp"/>
+            <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
+       </mark-expected-failures>
     </library>
 
     <!-- program_options -->
@@ -3046,6 +3063,12 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="token_iterator_test"/>
+            <toolset name="qcc-3.3.5-gpp"/>
+            <note author="Jim Douglas" date="14 Feb 06" refid="36"/>
+       </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="test_fp_comparisons"/>
             <toolset name="msvc*"/>
             <toolset name="vc-6_5*"/>
@@ -3144,7 +3167,7 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_mutex"/>
-            <test name="test_mutex_dll"/>
+            <test name="test_mutex_lib"/>
             <toolset name="qcc-3.3*"/>
             <note author="Jim Douglas" date="13 Feb 06" refid="16"/>
         </mark-expected-failures>
