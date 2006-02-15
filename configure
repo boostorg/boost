@@ -173,7 +173,7 @@ my_dir="."
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" == x; then
-  TOOLSET=`$my_dir/tools/build/jam_src/build.sh --guess-toolset`
+  TOOLSET=`$my_dir/tools/jam/src/build.sh --guess-toolset`
 fi
 
 rm -f config.log
@@ -182,11 +182,11 @@ rm -f config.log
 if test "x$BJAM" == x; then
   echo -n "Building Boost.Jam with toolset $TOOLSET... "
   pwd=`pwd`
-  cd "$my_dir/tools/build/jam_src" && ./build.sh "$TOOLSET" > config.log 2>&1
+  cd "$my_dir/tools/jam/src" && ./build.sh "$TOOLSET" > config.log 2>&1
   cd $pwd
-  arch=`cd $my_dir/tools/build/jam_src && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
-  BJAM="$my_dir/tools/build/jam_src/$arch/bjam"
-  echo "tools/build/jam_src/$arch/bjam"
+  arch=`cd $my_dir/tools/jam/src && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
+  BJAM="$my_dir/tools/jam/src/$arch/bjam"
+  echo "tools/jam/src/$arch/bjam"
 fi
 
 # TBD: Turn BJAM into an absolute path
