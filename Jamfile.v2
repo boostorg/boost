@@ -214,14 +214,39 @@ constant project-help : "
 Usage:
     bjam [options] [install|stage]
 
-    * install               Installs to the configured location(s).
-    * stage                 Stages the build products only to common stage
-                            location.
+Builds and installs Boost.
+      
+Targets and Related Options:
+      
+    install                 Install headers and compiled library files to the 
+    =======                 configured locations (below).
 
-Options:
-    --help                  This message.
-    
-    -sTOOLS=<toolsets>      Indicates the tools to build with.
+      --prefix=PREFIX       Install architecture independent files here.
+                            Default; C:\\Boost on Win32
+                            Default; /usr/local on Unix. Linux, etc.
+                            
+      --exec-prefix=EPREFIX Install architecture dependent files here.
+                            Default; PREFIX
+                            
+      --libdir=DIR          Install library files here.
+                            Default; EPREFIX/lib
+                            
+      --includedir=DIR      Install header files here.
+                            Default; PREFIX/include
+
+  
+    stage                   Build and install only compiled library files
+    =====                   to the stage directory.
+                              
+      --stagedir=DIR        install library files here
+                            Default; ./stage
+
+Other Options:
+  
+    --builddir=DIR          Build in this location instead of building
+                            within the distribution tree. Recommended!
+                            
+    --toolset=toolset       Indicates the toolset to build with.
     
     --show-libraries        Displays the list of Boost libraries that require
                             build and installation steps, then exit.
@@ -244,34 +269,14 @@ Options:
                                 is intended for system integrators to build
                                 for packaging of distributions.
 
-Locations:
-    --prefix=PREFIX         Install architecture independent files here.
-                            Default; C:\\Boost on Win32
-                            Default; /usr/local on Unix. Linux, etc.
-                            
-    --exec-prefix=EPREFIX   Install architecture dependent files here.
-                            Default; PREFIX
-                            
-    --libdir=DIR            Install libraries here.
-                            Default; EPREFIX/lib
-                            
-    --includedir=DIR        Install source headers here.
-                            Default; PREFIX/include
-                            
-    --builddir=DIR          Build in this location instead of building
-                            within the distribution tree. Recommended!
-                            
-    --stagedir=DIR          When staging only, stage to the location.
-                            Default; ./stage
-
-Features:
-    --with-<library>        Build, stage, or install the specified <library>
-                            If used, the default becomes to only build
-                            indicated libraries.
+    --help                  This message.
+    
+    --with-<library>        Build and install the specified <library>
+                            If this option is used, only libraries
+                            specified using this option will be built.
                             
     --without-<library>     Do not build, stage, or install the specified
-                            <library>. By default all libraries attempt to
-                            build.
+                            <library>. By default, all libraries are built.
                             
     --with-python-root[=PYTHON_ROOT]
                             Build Boost.Python libraries with the Python
@@ -284,6 +289,6 @@ Features:
                             version indicated.
                             Default; 2.4.
                             
-    --with-pydebug          Build Boost.Python libraries using the
-                            Python debug runtime.
+    --with-pydebug          Build Boost.Python libraries for use with a
+                            debug build of Python.
 " ;
