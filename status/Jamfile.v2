@@ -79,13 +79,22 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
 # Tests specified in this Jamfile
         
     test-suite config
-        : [ run libs/config/test/config_test.cpp test_exec_monitor
+        : 
+          # FIXME: Ideally, this should be just an alias to 'main' test suite
+          # defined in libs/config/test/Jamfile.v2
+          # That way, we'll avoid code duplication and won't run additional
+          # tests in 'auxilliary' test suites, that need to be run and
+          # interpreted by humans.
+          # But such change will require tweaking libs/config/tools/generate.cpp
+          # so postponing to later.       
+          [ run libs/config/test/config_test.cpp test_exec_monitor
                 : #args
                 : #input-files
                 : #requirements
                 <threading>multi #!!!<no-warn>config_test.cpp
           ]
            [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
+           [ run libs/config/test/math_info.cpp : : : <test-info>always_show_run_output <toolset>borland:<runtime-link>static ]
            [ run libs/config/test/abi/abi_test.cpp libs/config/test/abi/main.cpp ]
            [ run libs/config/test/limits_test.cpp test_exec_monitor ]
            [ run libs/config/test/link/main.cpp ../libs/config/test/link//link_test
