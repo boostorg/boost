@@ -413,10 +413,11 @@ def make_links_task( input_dir, output_dir, tag, run_date, comment_file, extende
     for a in actions:
         a.run()
 
+
 class xmlgen( xml.sax.saxutils.XMLGenerator ):
     document_started = 0
     
-    def startDocument(self):
+    def startDocument( self ):
         if not self.document_started:
             xml.sax.saxutils.XMLGenerator.startDocument( self )
             self.document_started = 1
@@ -424,7 +425,7 @@ class xmlgen( xml.sax.saxutils.XMLGenerator ):
 
 def merge_processed_test_runs( test_runs_dir, tag, writer ):
     utils.log( '' )
-    utils.log( 'merge_processed_test_runs: merging processed test runs into a single XML... %s' % test_runs_dir )
+    utils.log( 'merge_processed_test_runs: merging processed test runs from %s into a single XML...' % test_runs_dir )
     __log__ = 1
     
     all_runs_xml = xmlgen( writer, encoding='utf-8' )
@@ -433,14 +434,17 @@ def merge_processed_test_runs( test_runs_dir, tag, writer ):
     
     files = glob.glob( os.path.join( test_runs_dir, '*.xml' ) )
     for test_run in files:
-        file_pos = writer.stream.tell()
+        #file_pos = writer.stream.tell()
+        file_pos = writer.tell()
         try:
             utils.log( '    Writing "%s" into the resulting XML...' % test_run )
-            xml.sax.parse( test_run, all_runs_xml  )
+            xml.sax.parse( test_run, all_runs_xml )
         except Exception, msg:
             utils.log( '    Skipping "%s" due to errors (%s)' % ( test_run, msg ) )
-            writer.stream.seek( file_pos )
-            writer.stream.truncate()
+            #writer.stream.seek( file_pos )
+            #writer.stream.truncate()
+            writer.seek( file_pos )
+            writer.truncate()
 
     all_runs_xml.endElement( 'all-test-runs' )
     all_runs_xml.endDocument()
@@ -460,11 +464,6 @@ def execute_tasks(
         , expected_results_file
         , failures_markup_file
         ):
-
-    
-    # results_xml_path = os.path.join( results_dir, results_xml )
-    # utils.log( 'Merging test runs into "%s"...' % results_xml_path )
-
 
     incoming_dir = os.path.join( results_dir, 'incoming', tag )
     processed_dir = os.path.join( incoming_dir, 'processed' )
@@ -493,8 +492,9 @@ def execute_tasks(
                      , failures_markup_file )
 
 
-    results_xml_path = os.path.join( output_dir, "extended_test_results.xml" )
-    writer = codecs.open( results_xml_path, 'w', "utf-8" )
+    results_xml_path = os.path.join( output_dir, 'extended_test_results.xml' )
+    #writer = codecs.open( results_xml_path, 'w', 'utf-8' )
+    writer = open( results_xml_path, 'w' )
     merge_processed_test_runs( merged_dir, tag, writer )
     writer.close()
 
