@@ -37,9 +37,10 @@ cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot
 bjam = {}
 process_jam_log = {}
 
+
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
-    bjam[ 'build_cmd' ] = lambda toolset: 'build.bat %s' % toolset
+    bjam[ 'build_cmd' ] = lambda toolset: bjam_build_script_cmd( 'build.bat %s' % toolset )
     bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'borland', 'como', 'gcc', 'gcc-nocygwin' \
                                                     , 'intel-win32', 'metrowerks', 'mingw' \
                                                     , 'msvc', 'vc7' \
@@ -49,7 +50,7 @@ if sys.platform == 'win32':
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
-    bjam[ 'build_cmd' ] = lambda toolset:'./build.sh %s' % toolset
+    bjam[ 'build_cmd' ] = lambda toolset: bjam_build_script_cmd( './build.sh %s' % toolset )
     bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'acc', 'como', 'darwin', 'gcc' \
                                                     , 'intel-linux', 'kcc', 'kylix' \
                                                     , 'mipspro', 'sunpro', 'tru64cxx' \
@@ -441,6 +442,14 @@ def setup(
         else:
             log( 'Warning: Test monitoring is not supported on this platform (yet).' )
             log( '         Please consider contributing this piece!' )
+
+
+def bjam_build_script_cmd( cmd ):
+    env_setup_key = 'BJAM_ENVIRONMENT_SETUP'
+    if os.environ.has_key( env_setup_key ):
+        return '%s & %s' % ( os.environ[env_setup_key], cmd )
+
+    return cmd
 
 
 def bjam_command( toolsets ):
