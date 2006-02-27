@@ -58,7 +58,7 @@ else:
                                                     ]
     process_jam_log[ 'name' ] = 'process_jam_log'
     process_jam_log[ 'default_toolset' ] = 'gcc'
-    patch_boost_name = './patch_boost'
+    patch_boost_name = 'patch_boost'
 
 bjam[ 'default_toolset' ] = ''
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
@@ -427,10 +427,12 @@ def setup(
         , **unused
         ):
     import_utils()
-    
-    if os.path.exists( patch_boost_name ):
-        log( 'Found patch file "%s". Executing it.' % patch_boost_name )
-        utils.system( [ patch_boost_name ] )
+
+    patch_boost_path = os.path.join( regression_root, patch_boost_name )
+    if os.path.exists( patch_boost_path ):
+        log( 'Found patch file "%s". Executing it.' % patch_boost_path )
+        os.chdir( regression_root )
+        utils.system( [ patch_boost_path ] )
 
     build_if_needed( bjam, bjam_toolset, toolsets )
     build_if_needed( process_jam_log, pjl_toolset, toolsets )
