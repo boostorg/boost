@@ -17,6 +17,12 @@ import sys
 report_author = "Douglas Gregor <dgregor@cs.indiana.edu>"
 boost_dev_list = "Boost Developer List <boost@lists.boost.org>"
 
+def sorted_keys( dict ):
+    result = dict.keys()
+    result.sort()
+    return result
+
+
 class Platform:
     """
     All of the failures for a particular platform.
@@ -392,7 +398,7 @@ Detailed report:
         if any_broken_platforms:
             message += """The following platforms have a large number of failures:
 """
-            for platform in self.platforms:
+            for platform in sorted_keys( self.platforms ):
                 if self.platforms[platform].isBroken():
                     message += '  ' + platform + '\n'
 
@@ -407,7 +413,8 @@ Detailed report:
         message += '\n'
 
         # Display the number of failures per library
-        for library in self.libraries.itervalues():
+        for k in sorted_keys( self.libraries ):
+            library = self.libraries[k]
             num_failures = library.numFailures()
             message += ('  ' + library.name + ' (' 
                         + str(library.numReportableFailures()))
@@ -428,7 +435,8 @@ library such as Test or Config."""
         message += '\n'
 
         # Provide the details for the failures in each library.
-        for library in self.libraries.itervalues():
+        for k in sorted_keys( self.libraries ):
+            library = self.libraries[k]
             message += '\n|' + library.name + '|\n'
             for test in library.tests:
                 message += '  ' + test.name + ':'
