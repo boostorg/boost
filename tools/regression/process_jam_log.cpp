@@ -462,7 +462,7 @@ namespace
 
         // add the "run" stop_message action
         tl.add_action( action_name,
-          result == "succeed" && note() ? "note" : result,
+           result == "succeed" && note() ? std::string("note") : result,
           timestamp, content );
       }
 
