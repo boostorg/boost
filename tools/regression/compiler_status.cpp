@@ -400,13 +400,13 @@ const fs::path find_bin_path(const string& relative)
                        bool always_show_run_output = false )
   {
     // compile msgs sometimes modified, so make a local copy
-    string compile( (pass && no_warn)
-      ? empty_string :  element_content( db, "compile" ) );
+    string compile( ((pass && no_warn)
+      ? empty_string :  element_content( db, "compile" )) );
 
     const string & link( pass ? empty_string : element_content( db, "link" ) );
     const string & run( (pass && !always_show_run_output)
       ? empty_string : element_content( db, "run" ) );
-    string lib( pass ? empty_string : element_content( db, "lib" ) );
+    string lib( (pass ? empty_string : element_content( db, "lib" )) );
 
     // some compilers output the filename even if there are no errors or
     // warnings; detect this if one line of output and it contains no space.
