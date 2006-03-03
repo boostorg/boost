@@ -40,39 +40,54 @@ process_jam_log = {}
 
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
-    bjam[ 'build_cmd' ] = lambda toolset: bjam_build_script_cmd( 'build.bat %s' % toolset )
+    bjam[ 'build_cmd' ] = lambda toolset, v2: bjam_build_script_cmd( 'build.bat %s' % toolset )
     bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'borland', 'como', 'gcc', 'gcc-nocygwin' \
                                                     , 'intel-win32', 'metrowerks', 'mingw' \
                                                     , 'msvc', 'vc7' \
                                                     ]
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
-    process_jam_log[ 'default_toolset' ] = 'vc-7_1'
+
+    def default_toolset(v2):
+        if v2:
+            return 'msvc'
+        else:
+            return 'vc-7_1'
+
+    process_jam_log[ 'default_toolset' ] = default_toolset
     patch_boost_name = 'patch_boost.bat'
 else:
     bjam[ 'name' ] = 'bjam'
-    bjam[ 'build_cmd' ] = lambda toolset: bjam_build_script_cmd( './build.sh %s' % toolset )
+    bjam[ 'build_cmd' ] = lambda toolset, v2: bjam_build_script_cmd( './build.sh %s' % toolset )
     bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'acc', 'como', 'darwin', 'gcc' \
                                                     , 'intel-linux', 'kcc', 'kylix' \
                                                     , 'mipspro', 'sunpro', 'tru64cxx' \
                                                     , 'vacpp'\
                                                     ]
     process_jam_log[ 'name' ] = 'process_jam_log'
-    process_jam_log[ 'default_toolset' ] = 'gcc'
+    process_jam_log[ 'default_toolset' ] = lambda x: 'gcc'
     patch_boost_name = 'patch_boost'
 
-bjam[ 'default_toolset' ] = ''
+bjam[ 'default_toolset' ] = lambda x: ''
 bjam[ 'path' ] = os.path.join( regression_root, bjam[ 'name' ] )
 bjam[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'jam', 'src' )
-bjam[ 'build_path_root' ] = bjam[ 'source_dir' ]
+bjam[ 'build_path_root' ] = lambda unused: bjam[ 'source_dir' ]
 
 process_jam_log[ 'path' ] = os.path.join( regression_root, process_jam_log[ 'name' ] )
 process_jam_log[ 'source_dir' ] = os.path.join( boost_root, 'tools', 'regression', 'build' )
-process_jam_log[ 'build_path_root' ] = os.path.join( 
-      boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
-    , process_jam_log[ 'name' ]
-    )
 
-process_jam_log[ 'build_cmd' ] = lambda toolset: bjam_command( toolset )
+
+def process_jam_build_root(v2):
+    if v2:
+        return os.path.join(boost_root, 'dist', 'bin')
+    else:
+        return os.path.join( 
+            boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
+            , process_jam_log[ 'name' ])
+
+
+process_jam_log[ 'build_path_root' ] = process_jam_build_root
+
+process_jam_log[ 'build_cmd' ] = lambda toolset, v2: bjam_command( toolset, v2 )
 process_jam_log[ 'is_supported_toolset' ] = lambda x : True
 
 build_monitor_url = 'http://www.meta-comm.com/engineering/resources/build_monitor.zip'
@@ -82,6 +97,8 @@ utils = None
 
 
 def log( message ):
+    sys.stdout.flush()
+    sys.stderr.flush()
     sys.stderr.write( '# %s\n' % message )
     sys.stderr.flush()
 
@@ -90,6 +107,8 @@ def platform_name():
     # See http://article.gmane.org/gmane.comp.lib.boost.testing/933
     if sys.platform == 'win32':
         return 'Windows'
+    elif sys.platform == 'cygwin':
+        return 'Windows/Cygwin'
 
     return platform.system()
 
@@ -128,6 +147,10 @@ def cleanup( args, **unused ):
         boost_bin_dir = os.path.join( boost_root, 'bin' )
         log( 'Cleaning up "%s" directory ...' % boost_bin_dir )
         rmtree( boost_bin_dir )
+
+        boost_binv2_dir = os.path.join( boost_root, 'bin.v2' )
+        log( 'Cleaning up "%s" directory ...' % boost_binv2_dir )
+        rmtree( boost_binv2_dir )
 
         log( 'Cleaning up "%s" directory ...' % regression_results )
         rmtree( regression_results )
@@ -195,7 +218,7 @@ def unpack_tarball( tarball_path, destination  ):
         mode = os.path.splitext( extension )[1][1:]
         tar = tarfile.open( tarball_path, 'r:%s' % mode )
         for tarinfo in tar:
-            tar.extract( tarinfo, destination )        
+            tar.extract( tarinfo, destination )
             if sys.platform == 'win32' and not tarinfo.isdir():
                 # workaround what appears to be a Win32-specific bug in 'tarfile'
                 # (modification times for extracted files are not set properly)
@@ -328,7 +351,7 @@ def update_source( user, tag, proxy, args, **unused ):
         get_source( user, tag, proxy, args )
 
 
-def tool_path( name_or_spec ):
+def tool_path( name_or_spec, v2=None ):
     if isinstance( name_or_spec, basestring ):
         return os.path.join( regression_root, name_or_spec )
 
@@ -338,7 +361,7 @@ def tool_path( name_or_spec ):
     if name_or_spec.has_key( 'build_path' ):
         return name_or_spec[ 'build_path' ]
 
-    build_path_root = name_or_spec[ 'build_path_root' ]
+    build_path_root = name_or_spec[ 'build_path_root' ]( v2 )
     log( 'Searching for "%s" in "%s"...' % ( name_or_spec[ 'name' ], build_path_root ) )
     for root, dirs, files in os.walk( build_path_root ):
         if name_or_spec[ 'name' ] in files:
@@ -350,7 +373,7 @@ def tool_path( name_or_spec ):
         ) )
 
 
-def build_if_needed( tool, toolset, toolsets ):
+def build_if_needed( tool, toolset, toolsets, v2 ):
     if os.path.exists( tool[ 'path' ] ):
         log( 'Found preinstalled "%s"; will use it.' % tool[ 'path' ] )
         return
@@ -364,16 +387,16 @@ def build_if_needed( tool, toolset, toolsets ):
                 log( 'Warning: Specified toolset (%s) cannot be used to bootstrap "%s".'\
                      % ( toolset, tool[ 'name' ] ) )
 
-                toolset = tool[ 'default_toolset' ]
+                toolset = tool[ 'default_toolset' ](v2)
                 log( '         Using default toolset for the platform (%s).' % toolset )
         else:
-            toolset = tool[ 'default_toolset' ]
+            toolset = tool[ 'default_toolset' ](v2)
             log( 'Warning: No bootstrap toolset for "%s" was specified.' % tool[ 'name' ] )
             log( '         Using default toolset for the platform (%s).' % toolset )
 
     if os.path.exists( tool[ 'source_dir' ] ):
         log( 'Found "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
-        build_cmd = tool[ 'build_cmd' ]( toolset )
+        build_cmd = tool[ 'build_cmd' ]( toolset, v2 )
         log( 'Building "%s" (%s)...' % ( tool[ 'name'], build_cmd ) )
         utils.system( [ 
               'cd "%s"' % tool[ 'source_dir' ]
@@ -383,7 +406,7 @@ def build_if_needed( tool, toolset, toolsets ):
         raise 'Could not find "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
 
     if not tool.has_key( 'build_path' ):
-        tool[ 'build_path' ] = tool_path( tool )
+        tool[ 'build_path' ] = tool_path( tool, v2 )
 
     if not os.path.exists( tool[ 'build_path' ] ):
         raise 'Failed to find "%s" after build.' % tool[ 'build_path' ]
@@ -423,6 +446,7 @@ def setup(
         , pjl_toolset
         , monitored
         , proxy
+        , v2
         , args
         , **unused
         ):
@@ -434,8 +458,8 @@ def setup(
         os.chdir( regression_root )
         utils.system( [ patch_boost_path ] )
 
-    build_if_needed( bjam, bjam_toolset, toolsets )
-    build_if_needed( process_jam_log, pjl_toolset, toolsets )
+    build_if_needed( bjam, bjam_toolset, toolsets, v2 )
+    build_if_needed( process_jam_log, pjl_toolset, toolsets, v2 )
     
     if monitored:
         if sys.platform == 'win32':
@@ -454,18 +478,25 @@ def bjam_build_script_cmd( cmd ):
     return cmd
 
 
-def bjam_command( toolsets ):
+def bjam_command( toolsets, v2 ):
     build_path = regression_root
     if build_path[-1] == '\\': build_path += '\\'
-    result = '"%s" "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
+    v2_option = ""
+    if v2:
+        v2_option = "--v2"
+    result = '"%s" %s "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
         % (
-            tool_path( bjam )
+            tool_path( bjam, v2 )
+          , v2_option
           , build_path
           , boost_root
           )
     
     if not toolsets is None:
-        result += ' "-sTOOLS=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
+        if v2:
+            result += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
+        else:
+            result += ' "-sTOOLS=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
 
     return result
 
@@ -498,23 +529,30 @@ def stop_build_monitor():
             utils.system( [ '"%s" build_monitor' %  tool_path( 'pskill.exe' ) ] )
 
 
-def run_process_jam_log():
+def run_process_jam_log(v2):
     log( 'Getting test case results out of "%s"...' % regression_log )
 
+    if v2:
+        v2 = "--v2"
+    else:
+        v2 = ""
+
     utils.checked_system( [ 
-        '"%s" "%s" <"%s"' % (
-              tool_path( process_jam_log )
+        '"%s" %s "%s" <"%s"' % (
+              tool_path( process_jam_log, v2 )
+            , v2  
             , regression_results
             , regression_log
             )
         ] )
-    
+
 
 def test( 
           toolsets
         , bjam_options
         , monitored
         , timeout
+        , v2  
         , args
         , **unused
         ):
@@ -541,8 +579,8 @@ def test(
             rmtree( results_status )
 
         if "test" in args:
-            test_cmd = '%s -d2 --dump-tests %s "-sALL_LOCATE_TARGET=%s" >>"%s" 2>&1' % (
-                  bjam_command( toolsets )
+            test_cmd = '%s -d2 --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
+                  bjam_command( toolsets, v2 )
                 , bjam_options
                 , regression_results
                 , regression_log
@@ -552,7 +590,7 @@ def test(
             utils.system( [ test_cmd ] )
 
         if "process" in args:
-            run_process_jam_log()
+            run_process_jam_log(v2)
 
         os.chdir( cd )
     finally:
@@ -684,6 +722,7 @@ def regression(
         , proxy = None
         , ftp_proxy = None
         , debug_level = 0
+        , v2 = 0
         , args = []
         ):
 
@@ -715,8 +754,9 @@ def regression(
                 cleanup( [] )
                 get_source( user, tag, proxy, [] )
 
-        setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy, [] )
-        test( toolsets, bjam_options, monitored, timeout, [] )
+        setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy,
+               v2, [] )
+        test( toolsets, bjam_options, monitored, timeout, v2, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
         upload_logs( tag, runner, user, ftp_proxy, debug_level )
         update_itself( tag )
@@ -777,6 +817,7 @@ def accept_args( args ):
         , 'force-update'
         , 'monitored'
         , 'help'
+        , 'v2'  
         ]
     
     options = {
@@ -824,6 +865,7 @@ def accept_args( args ):
         , 'proxy'           : options[ '--proxy' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
+        , 'v2'              : options.has_key( '--v2' )  
         , 'args'            : other_args
         }
 
@@ -875,6 +917,7 @@ Options:
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
 \t--debug-level   debugging level; controls the amount of debugging 
 \t                output printed; 0 by default (no debug output)
+\t--v2            Use Boost.Build V2
 ''' % '\n\t'.join( commands.keys() )
 
     print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )
