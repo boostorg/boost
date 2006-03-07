@@ -578,10 +578,15 @@ def test(
             rmtree( results_libs )
             rmtree( results_status )
 
+        build_dir_option = "-sALL_LOCATE_TARGET"
+        if v2:
+            build_dir_option = "--build-dir"
+
         if "test" in args:
-            test_cmd = '%s -d2 --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
+            test_cmd = '%s -d2 --dump-tests %s "%s=%s" >>"%s" 2>&1' % (
                   bjam_command( toolsets, v2 )
                 , bjam_options
+                , build_dir_option  
                 , regression_results
                 , regression_log
                 )
