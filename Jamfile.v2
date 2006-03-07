@@ -131,15 +131,17 @@ rule tag ( name : type ? : property-set )
             
             local version-tag = [ MATCH "^([^.]+)[.]([^.]+)" : $(BOOST_VERSION[1]) ] ;
             version-tag = $(version-tag:J="_") ;
-            
-            # On NT, library with version suffix won't be recognized
-            # by linkers. On CYGWIN, we get strage duplicate symbol
-            # errors when library is generated with version suffix.
-            # On OSX, version suffix is not needed -- the linker expets
-            # libFoo.1.2.3.dylib format.
-            # AIX linkers don't accept version suffixes either.
-            if [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
+                    
+            # Optionally add version suffix.
+            if $(type) != SHARED_LIB ||
+              [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
             {
+                # On NT, library with version suffix won't be recognized
+                # by linkers. On CYGWIN, we get strage duplicate symbol
+                # errors when library is generated with version suffix.
+                # On OSX, version suffix is not needed -- the linker expets
+                # libFoo.1.2.3.dylib format.
+                # AIX linkers don't accept version suffixes either.
                 return $(name:B)-$(version-tag)$(name:S) ;
             }
             else
