@@ -16,10 +16,11 @@ project status
     : source-location $(BOOST_ROOT) 
     : requirements <hardcode-dll-paths>true  
     ;
-    
+        
 import testing ;    
 
 alias test_exec_monitor : ../libs/test/build//boost_test_exec_monitor/<link>static ;
+alias unit_test_framework : ../libs/test/build//boost_unit_test_framework/<link>static ;
 
 # Tests from Jamfiles in individual library test subdirectories
 # Please keep these in alphabetic order by test-suite name
@@ -175,7 +176,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
 
     test-suite rational
         : [ run libs/rational/rational_example.cpp ]
-          [ run libs/rational/rational_test.cpp test_exec_monitor ]
+          [ run libs/rational/rational_test.cpp unit_test_framework ]
         ;
 
     
