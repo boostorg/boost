@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content=
+    "text/html; charset=windows-1252">
+
+    <title>Error and Exception Handling</title>
+  </head>
+
+  <body>
+    <h1>Error and Exception Handling</h1>
+
+    <h2>References</h2>
+
+    <p>The following paper is a good introduction to some of the issues of
+    writing robust generic components:</p>
+
+    <blockquote>
+      <a href="generic_exception_safety.html">D. Abrahams: ``Exception Safety
+      in Generic Components''</a>, originally published in <a href=
+      "http://www.springer.de/cgi-bin/search_book.pl?isbn=3-540-41090-2">M.
+      Jazayeri, R. Loos, D. Musser (eds.): Generic Programming, Proc. of a
+      Dagstuhl Seminar, Lecture Notes on Computer Science. Volume. 1766</a>
+    </blockquote>
+
+    <h2>Guidelines</h2>
+
+    <h3>When should I use exceptions?</h3>
+
+    <p>The simple answer is: ``whenever the semantic and performance
+    characteristics of exceptions are appropriate.''</p>
+
+    <p>An oft-cited guideline is to ask yourself the question ``is this an
+    exceptional (or unexpected) situation?'' This guideline has an attractive
+    ring to it, but is usually a mistake. The problem is that one person's
+    ``exceptional'' is another's ``expected'': when you really look at the
+    terms carefully, the distinction evaporates and you're left with no
+    guideline. After all, if you check for an error condition, then in some
+    sense you expect it to happen, or the check is wasted code.</p>
+
+    <p>A more appropriate question to ask is: ``do we want stack
+    unwinding here?'' Because actually handling an exception is likely
+    to be significantly slower than executing mainline code, you
+    should also ask: ``Can I afford stack unwinding here?'' For
+    example, a desktop application performing a long computation might
+    periodically check to see whether the user had pressed a cancel
+    button. Throwing an exception could allow the operation to be
+    cancelled gracefully. On the other hand, it would probably be
+    inappropriate to throw and <i>handle</i> exceptions in the inner
+    loop of this computation because that could have a significant
+    performance impact.  The guideline mentioned above has a grain of
+    truth in it: in time critical code, throwing an exception
+    should <em>be</em> the exception, not the rule.</p>
+
+    <h3>How should I design my exception classes?</h3>
+
+    <ol>
+      <li><b>Derive your exception class
+      from <code>std::exception</code></b>. Except in *very* rare
+      circumstances where you can't afford the cost of a virtual
+      table,
+      <code>std::exception</code> makes a reasonable exception base class,
+      and when used universally, allows programmers to catch "everything"
+      without resorting to <code>catch(...)</code>. For more about
+      <code>catch(...)</code>, see below.  
+
+      <li><b>Use <i>virtual</i> inheritance.</b> This insight is due
+      to Andrew Koenig.  Using virtual inheritance from your
+      exception's base class(es) prevents ambiguity problems at the
+      catch-site in case someone throws an exception derived from
+      multiple bases which have a base class in common:
+
+<pre>
+#include &lt;iostream&gt;
+struct my_exc1 : std::exception { char const* what() const throw(); };
+struct my_exc2 : std::exception { char const* what() const throw(); };
+struct your_exc3 : my_exc1, my_exc2 {};
+
+int main()
+{
+   try { throw your_exc3(); }
+   catch(std::exception const&amp; e) {}
+   catch(...) { std::cout &lt;&lt; &quot;whoops!&quot; &lt;&lt; std::endl; }
+}
+</pre>
+
+The program above prints <code>&quot;whoops&quot;</code> because the
+C++ runtime can't resolve which <code>exception</code> instance to
+match in the first catch clause.
+
+      </li>
+
+      <li>
+        <b><i>Don't</i> embed a std::string object</b> or any other data
+        member or base class whose copy constructor could throw an exception.
+        That could lead directly to std::terminate() at the throw point.
+        Similarly, it's a bad idea to use a base or member whose ordinary
+        constructor(s) might throw, because, though not necessarily fatal to
+        your program, you may report a different exception than intended from
+        a <i>throw-expression</i> that includes construction such as: 
+
+        <blockquote>
+<pre>
+throw some_exception();    
+</pre>
+        </blockquote>
+
+        <p>There are various ways to avoid copying string objects when
+        exceptions are copied, including embedding a fixed-length buffer in
+        the exception object, or managing strings via reference-counting.
+        However, consider the next point before pursuing either of these
+        approaches.</p>
+      </li>
+
+      <li><b>Format the <code>what()</code> message on demand</b>, if you
+      feel you really must format the message. Formatting an exception error
+      message is typically a memory-intensive operation that could
+      potentially throw an exception. This is an operation best delayed until
+      after stack unwinding has occurred, and presumably, released some
+      resources. It's a good idea in this case to protect your
+      <code>what()</code> function with a <code>catch(...)</code> block so
+      that you have a fallback in case the formatting code throws</li>
+
+      <li><b>Don't worry <i>too</i> much about the <code>what()</code>
+      message</b>. It's nice to have a message that a programmer stands a
+      chance of figuring out, but you're very unlikely to be able to compose
+      a relevant and <i>user</i>-comprehensible error message at the point an
+      exception is thrown. Certainly, internationalization is beyond the
+      scope of the exception class author. <a href=
+      "../people/peter_dimov.htm">Peter Dimov</a> makes an excellent argument
+      that the proper use of a <code>what()</code> string is to serve as a
+      key into a table of error message formatters. Now if only we could get
+      standardized <code>what()</code> strings for exceptions thrown by the
+      standard library...</li>
+
+      <li><b>Expose relevant information about the cause of the error</b> in
+      your exception class' public interface. A fixation on the
+      <code>what()</code> message is likely to mean that you neglect to
+      expose information someone might need in order to make a coherent
+      message for users. For example, if your exception reports a numeric
+      range error, it's important to have the actual numbers involved
+      available <i>as numbers</i> in the exception class' public interface
+      where error reporting code can do something intelligent with them. If
+      you only expose a textual representation of those numbers in the
+      <code>what()</code> string, you will make life very difficult for
+      programmers who need to do something more (e.g. subtraction) with them
+      than dumb output.</li>
+
+      <li><b>Make your exception class immune to double-destruction</b> if
+      possible. Unfortunately, several popular compilers occasionally cause
+      exception objects to be destroyed twice. If you can arrange for that to
+      be harmless (e.g. by zeroing deleted pointers) your code will be more
+      robust.</li>
+    </ol>
+
+    <h3>What About Programmer Errors?</h3>
+
+    <p>As a developer, if I have violated a precondition of a library I'm
+    using, I don't want stack unwinding. What I want is a core dump or the
+    equivalent - a way to inspect the state of the program at the exact point
+    where the problem was detected. That usually means <tt>assert()</tt> or
+    something like it.</p>
+
+    <p>Sometimes it is necessary to have resilient APIs which can stand up to
+    nearly any kind of client abuse, but there is usually a significant cost
+    to this approach. For example, it usually requires that each object used
+    by a client be tracked so that it can be checked for validity. If you
+    need that sort of protection, it can usually be provided as a layer on
+    top of a simpler API. Beware half-measures, though. An API which promises
+    resilience against some, but not all abuse is an invitation to disaster.
+    Clients will begin to rely on the protection and their expectations will
+    grow to cover unprotected parts of the interface.</p>
+
+    <p><b>Note for Windows developers</b>: unfortunately, the native
+    exception-handling used by most Windows compilers actually throws an
+    exception when you use <tt>assert()</tt>. Actually, this is true of other
+    programmer errors such as segmentation faults and divide-by-zero errors.
+    One problem with this is that if you use JIT (Just In Time) debugging,
+    there will be collateral exception-unwinding before the debugger comes up
+    because <code>catch(...)</code> will catch these not-really-C++
+    exceptions. Fortunately, there is a simple but little-known workaround,
+    which is to use the following incantation:</p>
+
+    <blockquote>
+<pre>
+extern "C" void straight_to_debugger(unsigned int, EXCEPTION_POINTERS*)
+{
+    throw;
+}
+extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
+         = _set_se_translator(straight_to_debugger);
+</pre>
+    </blockquote>
+    This technique doesn't work if the SEH is raised from within a catch
+    block (or a function called from within a catch block), but it still
+    eliminates the vast majority of JIT-masking problems. 
+
+    <h3>How should I handle exceptions?</h3>
+
+    <p>Often the best way to deal with exceptions is to not handle them at
+    all. If you can let them pass through your code and allow destructors to
+    handle cleanup, your code will be cleaner.</p>
+
+    <h4>Avoid <code>catch(...)</code> when possible</h4>
+    Unfortunately, operating systems other than Windows also wind non-C++
+    "exceptions" (such as thread cancellation) into the C++ EH machinery, and
+    there is sometimes no workaround corresponding to the
+    <code>_set_se_translator</code> hack described above. The result is that
+    <code>catch(...)</code> can have the effect of making some unexpected
+    system notification at a point where recovery is impossible look just
+    like a C++ exception thrown from a reasonable place, invalidating the
+    usual safe assumptions that destructors and catch blocks have taken valid
+    steps to ensure program invariants during unwinding. 
+
+    <p>I reluctantly concede this point to Hillel Y. Sims, after many
+    long debates in the newsgroups: until all OSes are "fixed", if
+    every exception were derived from <code>std::exception</code> and
+    everyone substituted
+    <code>catch(std::exception&amp;)</code> for <code>catch(...)</code>, the
+    world would be a better place.</p>
+
+    <p>Sometimes, <code>catch(...)</code>, is still the most appropriate
+    pattern, in spite of bad interactions with OS/platform design choices. If
+    you have no idea what kind of exception might be thrown and you really
+    <i>must</i> stop unwinding it's probably still your best bet. One obvious
+    place where this occurs is at language boundaries.</p>
+    <hr>
+
+    <p>&copy; Copyright David Abrahams 2001-2003. All rights reserved.</p>
+
+    <p>Revised 
+    <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->
+     21 August, 2003<!--webbot bot="Timestamp" endspan i-checksum="34359" -->
+    </p>
+  </body>
+</html>
+

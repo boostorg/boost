@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.10: http://docutils.sourceforge.net/" />
+<title>Running Boost Regression Tests</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger
+:Contact: goodger@users.sourceforge.net
+:date: $Date$
+:version: $Revision$
+:copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+*/
+
+body {
+    background-color: #fffff5;
+}
+
+h2 {
+    text-decoration: underline;
+}
+
+.first {
+  margin-top: 0 }
+
+.last {
+  margin-bottom: 0 }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dd {
+  margin-bottom: 0.5em }
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.attention, div.caution, div.danger, div.error, div.hint,
+div.important, div.note, div.tip, div.warning, div.admonition {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.hint p.admonition-title, div.important p.admonition-title,
+div.note p.admonition-title, div.tip p.admonition-title,
+div.admonition p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em }
+
+div.footer, div.header {
+  font-size: smaller }
+
+div.sidebar {
+  margin-left: 1em ;
+  border: medium outset ;
+  padding: 0em 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr {
+  width: 75% }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font-family: serif ;
+  font-size: 100% }
+
+pre.line-block {
+  font-family: serif ;
+  font-size: 100% }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em ;
+  background-color: #eeeeee }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.option-argument {
+  font-style: italic }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+table {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.citation {
+  border-left: solid thin gray ;
+  padding-left: 0.5ex }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.footnote {
+  border-left: solid thin black ;
+  padding-left: 0.5ex }
+
+td, th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+th.docinfo-name, th.field-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap }
+
+h1 tt, h2 tt, h3 tt, h4 tt, h5 tt, h6 tt {
+  font-size: 100% }
+
+tt {
+  background-color: #eeeeee }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="running-boost-regression-tests">
+<h1 class="title">Running Boost Regression Tests</h1>
+<div class="section">
+<h1><a id="requirements" name="requirements">Requirements</a></h1>
+<ul class="simple">
+<li>Python 2.3 or higher</li>
+<li>Some spare disk space (~5 Gb per each tested compiler)</li>
+</ul>
+<p>That's it! You don't even need a CVS client installed.</p>
+</div>
+<div class="section">
+<h1><a id="installation" name="installation">Installation</a></h1>
+<ul class="simple">
+<li>Download regression driver <tt class="docutils literal"><span class="pre">regression.py</span></tt> from <a class="reference" href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression/xsl_reports/runner/regression.py">here</a> (<a class="reference" href="http://tinyurl.com/4fp4g">http://tinyurl.com/4fp4g</a>)
+and put it in the directory where you want all the regression 
+test files to be placed.</li>
+</ul>
+<ul>
+<li><p class="first"><strong>Optional</strong>: If you already have <tt class="docutils literal"><span class="pre">bjam</span></tt> and/or <tt class="docutils literal"><span class="pre">process_jam_log</span></tt> executables
+you'd like to use, just put them in the same directory with <tt class="docutils literal"><span class="pre">regression.py</span></tt>, e.g.:</p>
+<pre class="literal-block">
+my_boost_regressions/
+    regression.py
+    bjam<em>[.exe]</em>
+</pre>
+</li>
+</ul>
+</div>
+<div class="section">
+<h1><a id="running-tests" name="running-tests">Running tests</a></h1>
+<p>To start a regression run, simply run <tt class="docutils literal"><span class="pre">regression.py</span></tt> providing it with the following
+two arguments:</p>
+<ul class="simple">
+<li>runner id (something unique of your choice that will identify your 
+results in the reports <a class="footnote-reference" href="#runnerid1" id="id2" name="id2">[1]</a>, <a class="footnote-reference" href="#runnerid2" id="id3" name="id3">[2]</a>)</li>
+<li>a particular set of toolsets you want to test with <a class="footnote-reference" href="#toolsets" id="id4" name="id4">[3]</a>.</li>
+</ul>
+<p>For example:</p>
+<pre class="literal-block">
+python regression.py --runner=Metacomm --toolsets=gcc,vc7
+</pre>
+<p>If you are interested in seeing all available options, run <tt class="docutils literal"><span class="pre">python</span> <span class="pre">regression.py</span></tt>
+or <tt class="docutils literal"><span class="pre">python</span> <span class="pre">regression.py</span> <span class="pre">--help</span></tt>. See also the <a class="reference" href="#advanced-use">Advanced use</a> section below.</p>
+<p><strong>Note</strong>: If you are behind a firewall/proxy server, everything should still &quot;just work&quot;. 
+In the rare cases when it doesn't, you can explicitly specify the proxy server 
+parameters through the <tt class="docutils literal"><span class="pre">--proxy</span></tt> option, e.g.:</p>
+<pre class="literal-block">
+python regression.py ... <strong>--proxy=http://www.someproxy.com:3128</strong>
+</pre>
+</div>
+<div class="section">
+<h1><a id="details" name="details">Details</a></h1>
+<p>The regression run procedure will:</p>
+<ul class="simple">
+<li>Download the most recent tarball from <a class="reference" href="http://www.meta-comm.com/engineering/boost/snapshot/">http://www.meta-comm.com/engineering/boost/snapshot/</a>,
+unpack it in the subdirectory <tt class="docutils literal"><span class="pre">boost</span></tt>.</li>
+<li>Build <tt class="docutils literal"><span class="pre">bjam</span></tt> and <tt class="docutils literal"><span class="pre">process_jam_log</span></tt> if needed. (<tt class="docutils literal"><span class="pre">process_jam_log</span></tt> is an
+utility, which extracts the test results from the log file produced by 
+Boost.Build).</li>
+<li>Run regression tests, process and collect the results.</li>
+<li>Upload the results to <a class="reference" href="ftp://fx.meta-comm.com/boost-regression">ftp://fx.meta-comm.com/boost-regression</a>.</li>
+</ul>
+<p>The report merger process running continuously on MetaCommunications site will 
+merge all submitted test runs and publish them at 
+<a class="reference" href="http://boost.sourceforge.net/regression-logs/developer">http://boost.sourceforge.net/regression-logs/developer</a>.</p>
+</div>
+<div class="section">
+<h1><a id="advanced-use" name="advanced-use">Advanced use</a></h1>
+<div class="section">
+<h2><a id="providing-detailed-information-about-your-environment" name="providing-detailed-information-about-your-environment">Providing detailed information about your environment</a></h2>
+<p>Once you have your regression results displayed in the Boost-wide
+reports, you may consider providing a bit more information about
+yourself and your test environment. This additional information will
+be presented in the reports on a page associated with your runner ID.</p>
+<p>By default, the page's content is just a single line coming from the
+<tt class="docutils literal"><span class="pre">comment.html</span></tt> file in your <tt class="docutils literal"><span class="pre">regression.py</span></tt> directory, specifying
+the tested platform. You can put online a more detailed description of
+your environment, such as your hardware configuration, compiler builds,
+and test schedule, by simply altering the file's content. Also, please
+consider providing your name and email address for cases where Boost
+developers have questions specific to your particular set of results.</p>
+</div>
+<div class="section">
+<h2><a id="incremental-runs" name="incremental-runs">Incremental runs</a></h2>
+<p>You can run <tt class="docutils literal"><span class="pre">regression.py</span></tt> in incremental mode <a class="footnote-reference" href="#incremental" id="id5" name="id5">[4]</a> by simply passing 
+it an identically named command-line flag:</p>
+<pre class="literal-block">
+python regression.py ... <strong>--incremental</strong>
+</pre>
+</div>
+<div class="section">
+<h2><a id="dealing-with-misbehaved-tests-compilers" name="dealing-with-misbehaved-tests-compilers">Dealing with misbehaved tests/compilers</a></h2>
+<p>Depending on the environment/C++ runtime support library the test is compiled with, 
+a test failure/termination may cause an appearance of a dialog window, requiring
+human intervention to proceed. Moreover, the test (or even of the compiler itself)
+can fall into infinite loop, or simply run for too long. To allow <tt class="docutils literal"><span class="pre">regression.py</span></tt> 
+to take care of these obstacles, add the <tt class="docutils literal"><span class="pre">--monitored</span></tt> flag to the script 
+invocation:</p>
+<pre class="literal-block">
+python regression.py ... <strong>--monitored</strong>
+</pre>
+<p>That's it. Knowing your intentions, the script will be able to automatically deal 
+with the listed issues <a class="footnote-reference" href="#monitored" id="id6" name="id6">[5]</a>.</p>
+</div>
+<div class="section">
+<h2><a id="getting-sources-from-cvs" name="getting-sources-from-cvs">Getting sources from CVS</a></h2>
+<p>If you already have a CVS client installed and configured, you might prefer to get
+the sources directly from the Boost CVS repository. To communicate this to the 
+script, you just need to pass it your SourceForge user ID using the <tt class="docutils literal"><span class="pre">--user</span></tt> 
+option; for instance:</p>
+<pre class="literal-block">
+python regression.py ... <strong>--user=agurtovoy</strong>
+</pre>
+<p>You can also specify the user as <tt class="docutils literal"><span class="pre">anonymous</span></tt>, requesting anonymous CVS access. 
+Note, though, that the files obtained this way tend to lag behind the actual CVS 
+state by several hours, sometimes up to twelve. By contrast, the tarball the script 
+downloads by default is at most one hour behind.</p>
+</div>
+<div class="section">
+<h2><a id="integration-with-a-custom-driver-script" name="integration-with-a-custom-driver-script">Integration with a custom driver script</a></h2>
+<p>Even if you've already been using a custom driver script, and for some 
+reason you don't  want <tt class="docutils literal"><span class="pre">regression.py</span></tt> to take over of the entire test cycle, 
+getting your regression results into <a class="reference" href="http://www.boost.org/regression-logs/developer/">Boost-wide reports</a> is still easy!</p>
+<p>In fact, it's just a matter of modifying your script to perform two straightforward 
+operations:</p>
+<ol class="arabic">
+<li><p class="first"><em>Timestamp file creation</em> needs to be done before the CVS update/checkout.
+The file's location doesn't matter (nor does the content), as long as you know how 
+to access it later. Making your script to do something as simple as
+<tt class="docutils literal"><span class="pre">echo</span> <span class="pre">&gt;timestamp</span></tt> would work just fine.</p>
+</li>
+<li><p class="first"><em>Collecting and uploading logs</em> can be done any time after <tt class="docutils literal"><span class="pre">process_jam_log</span></tt>' s
+run, and is as simple as an invocation of the local copy of
+<tt class="docutils literal"><span class="pre">$BOOST_ROOT/tools/regression/xsl_reports/runner/collect_and_upload_logs.py</span></tt>
+script that was just obtained from the CVS with the rest of the sources.
+You'd need to provide <tt class="docutils literal"><span class="pre">collect_and_upload_logs.py</span></tt> with the following three
+arguments:</p>
+<pre class="literal-block">
+--locate-root   directory to to scan for &quot;test_log.xml&quot; files
+--runner        runner ID (e.g. &quot;Metacomm&quot;)
+--timestamp     path to a file which modification time will be used 
+                as a timestamp of the run (&quot;timestamp&quot; by default)
+</pre>
+<p>For example, assuming that the run's resulting  binaries are in the
+<tt class="docutils literal"><span class="pre">$BOOST_ROOT/bin</span></tt> directory (the default Boost.Build setup), the 
+<tt class="docutils literal"><span class="pre">collect_and_upload_logs.py</span></tt> invocation might look like this:</p>
+<pre class="literal-block">
+python $BOOST_ROOT/tools/regression/xsl_reports/runner/collect_and_upload_logs.py 
+   --locate-root=$BOOST_ROOT/bin
+   --runner=Metacomm
+   --timestamp=timestamp
+</pre>
+</li>
+</ol>
+</div>
+<div class="section">
+<h2><a id="patching-boost-sources" name="patching-boost-sources">Patching Boost sources</a></h2>
+<p>You might encounter an occasional need to make local modifications to
+the Boost codebase before running the tests, without disturbing the
+automatic nature of the regression process. To implement this under
+<tt class="docutils literal"><span class="pre">regression.py</span></tt>:</p>
+<ol class="arabic simple">
+<li>Codify applying the desired modifications to the sources
+located in the <tt class="docutils literal"><span class="pre">./boost</span></tt> subdirectory in a single executable
+script named <tt class="docutils literal"><span class="pre">patch_boost</span></tt> (<tt class="docutils literal"><span class="pre">patch_boost.bat</span></tt> on Windows).</li>
+<li>Place the script in the <tt class="docutils literal"><span class="pre">regression.py</span></tt> directory.</li>
+</ol>
+<p>The driver will check for the existence of the <tt class="docutils literal"><span class="pre">patch_boost</span></tt> script,
+and, if found, execute it after obtaining the Boost sources.</p>
+</div>
+</div>
+<div class="section">
+<h1><a id="feedback" name="feedback">Feedback</a></h1>
+<p>Please send all comments/suggestions regarding this document and the testing procedure 
+itself to the <a class="reference" href="http://lists.boost.org/mailman/listinfo.cgi/boost-testing">Boost Testing list</a>.</p>
+</div>
+<div class="section">
+<h1><a id="notes" name="notes">Notes</a></h1>
+<table class="docutils footnote" frame="void" id="runnerid1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2" name="runnerid1">[1]</a></td><td>If you are running regressions interlacingly with a different 
+set of compilers (e.g. for Intel in the morning and GCC at the end of the day), you need 
+to provide a <em>different</em> runner id for each of these runs, e.g. <tt class="docutils literal"><span class="pre">your_name-intel</span></tt>, and
+<tt class="docutils literal"><span class="pre">your_name-gcc</span></tt>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="runnerid2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3" name="runnerid2">[2]</a></td><td>The limitations of the reports' format/medium impose a direct dependency
+between the number of compilers you are testing with and the amount of space available 
+for your runner id. If you are running regressions for a single compiler, please make 
+sure to choose a short enough id that does not significantly disturb the reports' layout.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="toolsets" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4" name="toolsets">[3]</a></td><td>If <tt class="docutils literal"><span class="pre">--toolsets</span></tt> option is not provided, the script will try to use the 
+platform's default toolset (<tt class="docutils literal"><span class="pre">gcc</span></tt> for most Unix-based systems).</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="incremental" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5" name="incremental">[4]</a></td><td><p class="first">By default, the script runs in what is known as <em>full mode</em>: on 
+each <tt class="docutils literal"><span class="pre">regression.py</span></tt> invocation all the files that were left in place by the 
+previous run -- including the binaries for the successfully built tests and libraries 
+-- are deleted, and everything is rebuilt once again from scratch. By contrast, in 
+<em>incremental mode</em> the already existing binaries are left intact, and only the 
+tests and libraries which source files has changed since the previous run are 
+re-built and re-tested.</p>
+<p>The main advantage of incremental runs is a significantly shorter turnaround time, 
+but unfortunately they don't always produce reliable results. Some type of changes
+to the codebase (changes to the bjam testing subsystem in particular)
+often require switching to a full mode for one cycle in order to produce 
+trustworthy reports.</p>
+<p class="last">As a general guideline, if you can afford it, testing in full mode is preferable.</p>
+</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="monitored" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6" name="monitored">[5]</a></td><td>Note that at the moment this functionality is available only if you 
+are running on a Windows platform. Contributions are welcome!</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="footer">
+<hr class="footer" />
+Generated on: 2006-02-27 13:46 UTC.
+Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
+
+</div>
+</body>
+</html>

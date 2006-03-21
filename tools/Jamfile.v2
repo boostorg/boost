@@ -1,0 +1,47 @@
+
+# Jamfile which builds all the tools.
+
+project 
+    :
+    requirements
+    <link>static
+    ;
+
+TOOLS =
+    bcp//bcp
+    inspect/build//inspect
+    quickbook//quickbook
+    regression/build//compiler_status
+    regression/build//process_jam_log
+    wave/build//wave
+    ;
+
+install dist-bin
+    :
+    $(TOOLS)
+    :
+    <install-type>EXE
+    <location>../dist/bin
+    :
+    release
+    ;
+
+install dist-lib
+    :
+    $(TOOLS)
+    :
+    <install-type>LIB
+    <location>../dist/lib
+    :
+    release
+    ;
+
+local patterns = *.dtd *.xml *.xsl LICENSE ;
+local dirs = boostbook/dtd boostbook/xsl ;
+install dist-share-boostbook
+    :
+    [ glob $(dirs)/$(patterns) $(dirs)/*/$(patterns) $(dirs)/*/*/$(patterns) ]
+    :
+    <location>../dist/share
+    <install-source-root>.
+    ;

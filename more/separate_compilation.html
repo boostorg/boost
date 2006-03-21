@@ -1,0 +1,452 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+   <head>
+      <title>Guidelines for Authors of Boost Libraries Containing Separate Source</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+      <LINK href="../boost.css" type="text/css" rel="stylesheet"></head>
+   <body>
+      <P>
+         <TABLE id="Table1" cellSpacing="1" cellPadding="1" width="100%" border="0">
+            <TR>
+               <td vAlign="top" width="300">
+                  <h3><A href="../index.htm"><IMG height="86" alt="C++ Boost" src="../boost.png" width="277" border="0"></A></h3>
+               </td>
+               <TD width="353">
+                  <H1 align="center">Guidelines for Authors of Boost Libraries Containing Separate 
+                     Source</H1>
+               </TD>
+            </TR>
+         </TABLE>
+      </P>
+      <HR>
+      <P>These guidelines are designed for the authors of Boost libraries which have 
+         separate source that need compiling in order to use the library. Throughout, 
+         this guide refers to a fictitious "whatever" library, so replace all 
+         occurrences of "whatever" or "WHATEVER" with your own library's name when 
+         copying the examples.</P>
+      <H2>Contents</H2>
+      <P>
+         <dl class="index">
+            <dt><A href="#source_changes">Changes Affecting Source Code</A>
+               <dd>
+                  <dl class="index">
+                     <dt><A href="#abi">Preventing Compiler ABI Clashes</A> <dt><A href="#dlls">Supporting 
+                              Windows Dll's</A> <dt><a href="#auto-link">Automatic Library Selection and Linking 
+                                 with auto_link.hpp</a> </dt>
+                  </dl>
+                  <dt><A href="#build_changes">Changes Affecting the Build System</A>
+                     <dd>
+                        <dl class="index">
+                           <dt><A href="#jamfile">Creating the Library Jamfile</A> <dt><A href="#testing">Testing 
+                                    Auto-linking</A> </dt>
+                        </dl>
+                        <dt><A href="#copyright">Copyright</A></dt>
+         </dl>
+      <P></P>
+      <h2><A name="source_changes"></A>Changes Affecting Source Code</h2>
+      <H3><A name="abi"></A>Preventing Compiler ABI Clashes</H3>
+      <P>There are some compilers (mostly Microsoft Windows compilers again!), which 
+         feature a range of compiler switches that alter the ABI of C++ classes and 
+         functions. By way of example, consider Borland's compiler which has the 
+         following options:</P>
+      <PRE>-b    (on or off - effects enum sizes).
+-Vx   (on or off - empty members).
+-Ve   (on or off - empty base classes).
+-aX   (alignment - 5 options).
+-pX   (Calling convention - 4 options).
+-VmX  (member pointer size and layout - 5 options).
+-VC   (on or off, changes name mangling).
+-Vl   (on or off, changes struct layout). 
+</PRE>
+      <P>These options are provided in addition to those affecting which runtime library 
+         is used (more on which later); the total number of combinations of options can 
+         be obtained by multiplying together the individual options above, so that gives 
+         2*2*2*5*4*5*2*2 = 3200 combinations!
+      </P>
+      <P>The problem is that users often expect to be able to build the Boost libraries 
+         and then just link to them and have everything just plain work, no matter what 
+         their project settings are. Irrespective of whether this is a reasonable 
+         expectation or not, without some means of managing this issue, the user may 
+         well find that their program will experience strange and hard to track down 
+         crashes at runtime unless the library they link to was built with the same 
+         options as their project (changes to the default alignment setting are a prime 
+         culprit). One way to manage this is with "prefix and suffix" headers: these 
+         headers invoke compiler specific #pragma directives to instruct the compiler 
+         that whatever code follows was built (or is to be built) with a specific set of 
+         compiler ABI settings.</P>
+      <P>Boost.config provides the macro BOOST_HAS_ABI_HEADERS which is set whenever 
+         there are prefix and suffix headers available for the compiler in use, typical 
+         usage in a header like this:</P>
+      <PRE>#ifndef BOOST_WHATEVER_HPP
+#define BOOST_WHATEVER_HPP
+
+#include &lt;boost/config.hpp&gt;
+
+// this must occur after all of the includes and before any code appears:
+#ifdef BOOST_HAS_ABI_HEADERS
+#  include BOOST_ABI_PREFIX
+#endif
+//
+// this header declares one class, and one function by way of examples:
+//
+class whatever
+{
+   // details.
+};
+
+whatever get_whatever();
+
+// the suffix header occurs after all of our code:
+#ifdef BOOST_HAS_ABI_HEADERS
+#  include BOOST_ABI_SUFFIX
+#endif
+
+#endif
+</PRE>
+      <P>You can include this code in your source files as well if you want - although 
+         you probably shouldn't need to - these headers fix the ABI to the default used 
+         by the compiler, and if the user attempts to compile the source with any other 
+         setting then they will get compiler errors if there are any conflicts.</P>
+      <H4>Rationale:</H4>
+      <P>Without some means of managing this issue, users often report bugs along the 
+         line of "Your silly library always crashes when I try and call it" and so on. 
+         These issues can be extremely difficult and time consuming to track down, only 
+         to discover in the end that it's a compiler setting that's changed the ABI of 
+         the class and/or function types of the program compared to those in the 
+         pre-compiled library. The use of prefix/suffix headers can minimize this 
+         problem, although probably not remove it completely.</P>
+      <H5>Counter Argument #1:</H5>
+      <P>Trust the user, if they want 13-byte alignment (!) let them have it.</P>
+      <H5>Counter Argument #2:</H5>
+      <P>Prefix/suffix headers have a tendency to "spread" to other boost libraries - 
+         for example if boost::shared_ptr&lt;&gt; forms part of your class's ABI, then 
+         including prefix/suffix headers in your code will be of no use unless 
+         shared_ptr.hpp also uses them. Authors of header-only boost libraries may not 
+         be so keen on this solution - with some justification - since they don't face 
+         the same problem.</P>
+      <h3><A name="dlls"></A>Supporting Windows Dll's</h3>
+      <p>On most Unix-like platforms no special annotations of source code are required 
+         in order for that source to be compiled as a shared library because all 
+         external symbols are exposed. However the majority of Windows compilers require 
+         that symbols that are to be imported or exported from a dll, be prefixed with 
+         __declspec(dllimport) or __declspec(dllexport). Without this mangling of source 
+         code, it is not possible to correctly build shared libraries on Windows 
+         (historical note - originally these declaration modifiers were required on 
+         16-bit Windows where the memory layout for exported classes was different from 
+         that of "local" classes - although this is no longer an issue, there is still 
+         no way to instruct the linker to "export everything", it also remains to be 
+         seen whether 64-bit Windows will resurrect the segmented architecture that led 
+         to this problem in the first place. Note also that the mangled names of 
+         exported symbols are different from non-exported ones, so __declspec(dllimport) 
+         is required in order to link to code within a dll).</p>
+      <p>In order to support the building of shared libraries on MS Windows your code 
+         will have to prefix all the symbols that your library exports with a macro 
+         (lets call it BOOST_WHATEVER_DECL) that your library will define to expand to 
+         either __declspec(dllexport) or __declspec(dllimport) or nothing, depending 
+         upon how your library is being built or used. Typical usage would look like 
+         this:</p>
+      <pre>#ifndef BOOST_WHATEVER_HPP
+#define BOOST_WHATEVER_HPP
+
+#include &lt;boost/config.hpp&gt;
+
+#ifdef BOOST_HAS_DECLSPEC // defined in config system
+// we need to import/export our code only if the user has specifically
+// asked for it by defining either BOOST_ALL_DYN_LINK if they want all boost
+// libraries to be dynamically linked, or BOOST_WHATEVER_DYN_LINK
+// if they want just this one to be dynamically liked:
+#if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_WHATEVER_DYN_LINK)
+// export if this is our own source, otherwise import:
+#ifdef BOOST_WHATEVER_SOURCE
+# define BOOST_WHATEVER_DECL __declspec(dllexport)
+#else
+# define BOOST_WHATEVER_DECL __declspec(dllimport)
+#endif  // BOOST_WHATEVER_SOURCE
+#endif  // DYN_LINK
+#endif  // BOOST_HAS_DECLSPEC
+//
+// if BOOST_WHATEVER_DECL isn't defined yet define it now:
+#ifndef BOOST_WHATEVER_DECL
+#define BOOST_WHATEVER_DECL
+#endif
+
+//
+// this header declares one class, and one function by way of examples:
+//
+class BOOST_WHATEVER_DECL whatever
+{
+   // details.
+};
+
+BOOST_WHATEVER_DECL whatever get_whatever();
+
+#endif
+</pre>
+      And then in the source code for this library one would use:
+      <pre> 
+// 
+// define BOOST_WHATEVER SOURCE so that our library's 
+// setup code knows that we are building the library (possibly exporting code), 
+// rather than using it (possibly importing code): 
+// 
+#define BOOST_WHATEVER_SOURCE 
+#include &lt;boost/whatever.hpp&gt; 
+
+// class members don't need any further annotation: 
+whatever::whatever() { } 
+// but functions do: 
+BOOST_WHATEVER_DECL whatever get_whatever() 
+{
+   return whatever();
+}
+</pre>
+      <H4>Importing/exporting dependencies</H4>
+      <P>As well as exporting your main classes and functions (those that are actually 
+         documented), Microsoft Visual C++ will warn loudly and often if you try to 
+         import/export a class whose dependencies are not also exported. Dependencies 
+         include: any base classes, any user defined types used as data members, plus 
+         all of the dependencies of your dependencies and so on. This causes particular 
+         problems when a dependency is a template class, because although it is 
+         technically possible to export these, it is not at all easy, especially if the 
+         template itself has dependencies which are implementation-specific details. In 
+         most cases it's probably better to simply suppress the warnings using:</P>
+      <PRE>#ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable : 4251 4231 4660)
+#endif
+
+// code here
+
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif
+</PRE>
+      <p>This is safe provided that there are no dependencies that are (template) 
+         classes with non-constant static data members, these really do need exporting, 
+         otherwise there will be multiple copies of the static data members in the 
+         program, and that's really really bad.
+      </p>
+      <p>Historical note: on 16-bit Windows you really did have to export all 
+         dependencies or the code wouldn't work, however since the latest Visual Studio 
+         .NET supports the import/export of individual member functions, it's a 
+         reasonably safe bet that Windows compilers won't do anything nasty - like 
+         changing the class's ABI - when importing/exporting a class.</p>
+      <h4>Rationale:</h4>
+      <p><EM>Why bother - doesn't the import/export mechanism take up more code that the 
+            classes themselves?</EM></p>
+      <P>A good point, and probably true, however there are some circumstances where 
+         library code must be placed in a shared library - for example when the 
+         application consists of multiple dll's as well as the executable, and more than 
+         one those dll's link to the same Boost library - in this case if the library 
+         isn't dynamically linked and it contains any global data (even if that data is 
+         private to the internals of the library) then really bad things can happen - 
+         even without global data, we will still get a code bloating effect. 
+         Incidentally, for larger applications, splitting the application into multiple 
+         dll's can be highly advantageous - by using Microsoft's "delay load" feature 
+         the application will load only those parts it really needs at any one time, 
+         giving the impression of a much more responsive and faster-loading application.</P>
+      <p><EM>Why static linking by default? </EM>
+      </p>
+      <P>In the worked example above, the code assumes that the library will be 
+         statically linked unless the user asks otherwise. Most users seem to prefer 
+         this (there are no separate dll's to distribute, and the overall distribution 
+         size is often significantly smaller this way as well: i.e. you pay for what you 
+         use and no more), but this is a subjective call, and some libraries may even 
+         only be available in dynamic versions (Boost.threads for example).</P>
+      <h3><A name="auto-link"></A>Automatic Library Selection and Linking with <a href="../boost/config/auto_link.hpp">
+            auto_link.hpp</a></h3>
+      <p>Many Windows compilers ship with multiple runtime libraries - for example 
+         Microsoft Visual Studio .NET comes with 6 versions of the C and C++ runtime. It 
+         is essential that the Boost library that the user links to is built against the 
+         same C runtime as the program is built against. If that is not the case, then 
+         the user will experience linker errors at best, and runtime crashes at worst. 
+         The Boost build system manages this by providing different build variants, each 
+         of which is build against a different runtime, and gets a slightly different 
+         mangled name depending upon which runtime it is built against. For example the 
+         regex libraries get named as follows when built with Visual Studio .NET 2003:</p>
+      <pre>boost_regex-vc71-mt-1_31.lib
+boost_regex-vc71-mt-gd-1_31.lib
+libboost_regex-vc71-mt-1_31.lib
+libboost_regex-vc71-mt-gd-1_31.lib
+libboost_regex-vc71-mt-s-1_31.lib
+libboost_regex-vc71-mt-sgd-1_31.lib
+libboost_regex-vc71-s-1_31.lib
+libboost_regex-vc71-sgd-1_31.lib
+</pre>
+      <p>The difficulty now is selecting which of these the user should link his or her 
+         code to.</p>
+      <p>In contrast, most Unix compilers typically only have one runtime (or sometimes 
+         two if there is a separate thread safe option). For these systems the only 
+         choice in selecting the right library variant is whether they want debugging 
+         info, and possibly thread safety.
+      </p>
+      <p>Historically Microsoft Windows compilers have managed this issue by providing a 
+         #pragma option that allows the header for a library to automatically select the 
+         library to link to. This makes everything automatic and extremely easy for the 
+         end user: as soon as they include a header file that has separate source code, 
+         the name of the right library build variant gets embedded in the object file, 
+         and as long as that library is in the linker search path, it will get pulled in 
+         by the linker without any user intervention.</p>
+      <p>Automatic library selection and linking can be enabled for a Boost library by 
+         including the header &lt;boost/config/auto_link.hpp&gt;, after first defining 
+         BOOST_LIB_NAME and, if applicable, BOOST_DYN_LINK.</p>
+      <pre>//
+// Automatically link to the correct build variant where possible. 
+// 
+#if !defined(BOOST_ALL_NO_LIB) &amp;&amp; !defined(BOOST_WHATEVER_NO_LIB) &amp;&amp; !defined(BOOST_WHATEVER_SOURCE)
+//
+// Set the name of our library, this will get undef'ed by auto_link.hpp
+// once it's done with it:
+//
+#define BOOST_LIB_NAME boost_whatever
+//
+// If we're importing code from a dll, then tell auto_link.hpp about it:
+//
+#if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_WHATEVER_DYN_LINK)
+#  define BOOST_DYN_LINK
+#endif
+//
+// And include the header that does the work:
+//
+#include &lt;boost/config/auto_link.hpp&gt;
+#endif  // auto-linking disabled
+</pre>
+      <P></P>
+      <p>The library's user documentation should note that the feature can be disabled 
+         by defining either BOOST_ALL_NO_LIB or BOOST_WHATEVER_NO_LIB:</p>
+      <P>If for any reason you need to debug this feature, the header 
+         &lt;boost/config/auto_link.hpp&gt; will output some helpful diagnostic messages 
+         if you first define BOOST_LIB_DIAGNOSTIC.</P>
+      <H2><A name="build_changes"></A>Changes Affecting the Build System</H2>
+      <H3><a name='build"'></a><A name="jamfile"></A>Creating the library Jamfile</H3>
+      <P>The Jamfile for building library "whatever" typically lives in 
+         boost-root/libs/whatever/build, start by defining the project root for the 
+         Jamfile:</P>
+      <PRE>subproject libs/whatever/build ; </PRE>
+      <P>Then add the static library build target (if supported):</P>
+      <PRE>lib 
+   boost_whatever
+      : # list all the sources for this
+      library:
+   ../src/whatever.cpp
+      : # all build requirements go
+      here. # the "common-variant-tag" rule ensures that the library will
+      # be named according to the rules used by the install
+      # and auto-link features:
+      common-variant-tag 
+      # set include path for Boost headers:
+      &lt;sysinclude&gt;$(BOOST_ROOT)
+   : 
+      # list default build variants here
+      debug release 
+   ; </PRE>
+      <P>Then add the dll build target (if supported).&nbsp;&nbsp;In this case the build 
+         requirements section get an extra define: so that our sources know to export 
+         their own symbols (and import those from any other boost libs on which we may 
+         be dependent).&nbsp; We also restict shared library builds to dynamic-runtime 
+         build variants, if we don't do this then dll's linked against static runtimes 
+         are unlikely to function correctly (the dll will have a separate runtime from 
+         the executable using it, this generally causing problems with new and 
+         delete,&nbsp;as well as exception handling runtimes).</P>
+      <PRE>dll 
+   boost_whatever
+      : # list all the sources for this
+      library:
+   ../src/whatever.cpp
+      : # all build requirements go
+      here. # the "common-variant-tag" rule ensures that the library will
+      # be named according to the rules used by the install
+      # and auto-link features:
+      common-variant-tag 
+      # tell our source that we're building (and maybe using) dll's:
+      &lt;define&gt;BOOST_ALL_DYN_LINK=1
+      # only build this for dynamic runtimes:
+      &lt;runtime-link&gt;dynamic
+      # set include path for Boost headers:
+      &lt;sysinclude&gt;$(BOOST_ROOT)
+   : 
+      # list default build variants here
+      debug release 
+   ; 
+</PRE>
+      <P>Now add an install target so that Boost.Install can find this library to 
+         install:</P>
+      <pre>install whatever lib
+    : &lt;dll&gt;boost_whatever &lt;lib&gt;boost_whatever
+    ;
+</pre>
+      <P>Finally add a stage target that will copy the built libraries to a common 
+         sub-directory (boost-root/stage/lib):</P>
+      <PRE>stage stage/lib : &lt;lib&gt;boost_whatever &lt;dll&gt;boost_whatever
+    :
+        # copy to a path rooted at BOOST_ROOT:
+        &lt;locate&gt;$(BOOST_ROOT)
+        # make sure the names of the libraries are correctly named:
+        common-variant-tag
+        # add this target to the "stage" and "all" psuedo-targets:
+        &lt;target&gt;stage
+        &lt;target&gt;all
+    :
+        debug release
+    ;
+</PRE>
+      <H3><A name="testing"></A>Testing Auto-linking</H3>
+      <P>Testing the auto-link feature&nbsp;reasonable straightforward using 
+         the&nbsp;Boost.build system: we need to build the "whatever" library's test 
+         files without explicitly specifying the library to link to in the Jamfile, for 
+         example:</P>
+      <PRE>subproject libs/whatever/test/auto-link-test ;
+
+# bring in the rules for testing
+import testing ;
+
+# start with a static linking version:
+
+run 
+   # sources
+      ../whatever_test.cpp
+   :
+   :	# input files
+   : 	# requirements
+      &lt;library-path&gt;../../../../stage/lib
+      &lt;define&gt;BOOST_LIB_DIAGNOSTIC=1
+   : 	# program name
+      whatever_test          
+   ;
+
+   # and then a dll linking version:
+   run 
+   # sources
+      ../whatever_test.cpp
+   :
+   :	# input files
+   : 	# requirements
+      &lt;library-path&gt;../../../../stage/lib
+      &lt;define&gt;BOOST_LIB_DIAGNOSTIC=1
+      &lt;define&gt;BOOST_ALL_DYN_LINK=1
+      &lt;runtime-link&gt;dynamic
+   : 	# program name
+      whatever_test_dll          
+   ;
+
+</PRE>
+      <P>Please note however that this Jamfile will only build with compilers that do 
+         actually support auto-linking, so it should not be added to the regular 
+         regression tests.&nbsp; The Jamfile should also be built for all possible build 
+         variants, for the Microsoft / Borland compilers that means doing a:</P>
+      <PRE>bjam -sBUILD="release debug &lt;threading&gt;multi/single &lt;runtime-link&gt;static/dynamic" test
+      </PRE>
+      <HR>
+      <p><A name="copyright"></A>Revised 
+         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan --> 
+         26 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
+      <p><i>© Copyright John Maddock&nbsp;1998- 
+            <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%Y" startspan -->  2003<!--webbot bot="Timestamp" endspan i-checksum="746" --></i></p>
+      <P><I>Use, modification and distribution are subject to the Boost Software License, 
+            Version 1.0. (See accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a>
+            or copy at <A href="http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</A>).</I></P>
+      <P><EM>The use of code snippets from this article does not require the reproduction 
+            of this copyright notice and license declaration; if you wish to provide 
+            attribution then please provide a link to this article.</EM></P>
+   </body>
+</html>

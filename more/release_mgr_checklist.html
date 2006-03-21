@@ -1,0 +1,276 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Release Manager's Checklist</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<table border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF">
+    <img src="../boost.png" alt="boost.png (6897 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="../more/faq.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="../more/index.htm"><font face="Arial,Helvetica" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+
+
+<h1>Release Manager's Checklist</h1>
+
+<p><a href="#Introduction">Introduction</a><br>
+<a href="#Pre-release">Pre-release activities</a><br>
+<a href="#Branch-for-release">CVS Branch for release</a><br>
+<a href="#CVS-release">CVS Release</a><br>
+<a href="#Distribution">Distribution</a></p>
+
+<h2><a name="Introduction">Introduction</a></h2>
+<p>Historically, items on this checklist were accomplished by scripts written 
+in Perl, Python, Bash, C++, and as Windows command files, or by point-and-click 
+on a FrontPage or other GUI based program. Long term the plan is to move as much 
+as possible of these to C++, as 
+the one language all Boost developers are comfortable with. </p>
+<h2><a name="Pre-release">Pre-release</a> activities</h2>
+<ul>
+  <li>After discussion on the main list, post the release schedule.<br>
+&nbsp;</li>
+  <li>Verify the <i><b>root/index.htm</b></i>, <i><b>root/boost/version.hpp</b></i>, <i><b>root/Jamfile.v2</b></i> and 
+  <i><b>root/Jamrules</b></i>
+  release numbers are correct and agree. <br>
+&nbsp;</li>
+  <li>Verify via <a href="mailto:jamboost@yahoogroups.com">jamboost@yahoogroups.com</a> 
+  that bjam pre-built executables up-to-date.<br>
+&nbsp;</li>
+  <li>Remove the oldest &quot;Latest News&quot; from root/index.htm.<br>
+&nbsp;</li>
+  <li>For each new library added this release:</li>
+</ul>
+<blockquote>
+  <ul>
+    <li>Verify root/index.htm Latest News entry has been made and reads well.<br>
+&nbsp;</li>
+    <li>Verify root/libs/libraries.htm entry has been made, both in the 
+    alphabetic list and in the category lists.<br>
+&nbsp;</li>
+    <li>Verify the root/libs/xxx directory contains an index.htm or index.html 
+    file; either the main docs or a redirection to the main docs. <b><i>To do: 
+    automate this.</i></b><br>
+&nbsp;</li>
+    <li>Skim read the primary docs pages to make sure they meet Boost 
+    requirements and guidelines. <b><i>Don't leave this until too late; it has 
+    turned up lots of issues in the past.<br>
+&nbsp;</i></b></li>
+    <li>Generate the header dependency table and update the CVS.<b><i> To do: 
+    coordinate with John Maddock's new dependency tools.</i></b></li>
+  </ul>
+</blockquote>
+<ul>
+  <li>Monitor
+  <a href="http://boost.sourceforge.net/regression-logs/inspection_report.html">
+  http://boost.sourceforge.net/regression-logs/inspection_report.html</a> to 
+  verify problems are actively being reduced. Make sure none of the problems are 
+  in files the release manager is responsible for.<br>
+&nbsp;</li>
+  <li>Monitor regression tests (<a href="http://boost.sourceforge.net/regression-logs/inspection_report.html">http://boost.sourceforge.net/regression-logs</a>) 
+  to verify that errors are actively being reduced or accounted for on key 
+  platforms and compilers.<br>
+&nbsp;<ul>
+    <li>Boost errors are being actively worked on by library maintainers.</li>
+    <li>Compiler or standard library errors are at least identified, and 
+    preferably reported to the supplier.</li>
+    <li>No errors remain uninvestigated or unclassified.<br>
+&nbsp;</li>
+  </ul>
+  </li>
+  <li>Monitor the developer and user mailing lists to verify that all posted 
+  patches are being applied, rejected, or otherwise dealt with.<br>
+&nbsp;</li>
+  <li>Monitor the developer and user mailing lists, and the SourceForge bug 
+  tracker, to verify that all posted bug reports are being investigated, fixed, 
+  rejected, or otherwise dealt with.<br>
+&nbsp;</li>
+  <li>Monitor CVS commits to verify that all the expected and/or promised 
+  content actually gets committed. Try to get developers to avoid last minute 
+  commits of major changes.</li>
+</ul>
+<h2><a name="Branch-for-release">CVS Branch for release</a></h2>
+<ul>
+  <li>Pre-release activities complete enough to justify branch-for-release?<br>
+&nbsp;</li>
+  <li>Everybody happy?<br>
+&nbsp;</li>
+  <li>Branch for release:<ul>
+  <li>Tag the main trunk&nbsp; <code>merged_to_RC_n_n_n</code>.</li>
+  <li>Branch the main trunk with the tag <code>RC_n_n_n</code>.<br>
+&nbsp;</li>
+</ul>
+  </li>
+  <li>Post notice on main list.&nbsp;Remind developers that fixes which apply 
+  to both Main Trunk and Branch have to be committed separately to both.</li>
+</ul>
+<h2><a name="CVS-release">CVS Release</a></h2>
+<ul>
+  <li>Pre-release activities all complete?<br>
+&nbsp;</li>
+  <li>Post notice to make sure all developers ready.<br>
+&nbsp;</li>
+  <li>Tag: WinCVS: Select site, then tag (Modify|Create tag..., toolbar T on doc). New 
+  tag name: Version_1_21_2 (or whatever). If prior release failed, select 
+  &quot;overwrite existing tags with the same name&quot;.</li>
+</ul>
+<h2><a name="Distribution">Distribution</a></h2>
+<p>These procedures are given for a particular release manager's machine. The 
+plan is to replace them with more generic procedures over time.</p>
+<ul>
+  <li>Create folders for export:<br>
+  <br>
+&nbsp;&nbsp;&nbsp; c:\boost\boost_1_28_0<br>
+&nbsp;&nbsp;&nbsp; c:\boost\temp\boost_1_28_0<br>
+  <br>
+  Note that several batch files assume these locations and naming schemes.<br>
+&nbsp;</li>
+  <li>Export Win32 distribution: WinCVS | Remote | Checkout Module<br>
+  <br>
+  Checkout settings: module name and path on the server: boost, local folder to 
+  checkout to: c:\boost\boost_1_28_0<br>
+  <b><i>[for 1.29.0 export, put everything in a boost_1_29_0/boost subdirectory.&nbsp; 
+  Experiments with 1.30.0 tried boost/boost as the path on server, but that just 
+  resulted in getting the boost header subdirectory only.]</i></b><br>
+  <br>
+  Checkout options: (check) By revision/tab/branch: Version_1_28_0, (check) Do 
+  not create CVS directories (export)<br>
+  <br>
+  This results in the follow command: cvs -z9 export -r Version_1_28_0 boost (in 
+  directory C:\boost\boost_1_28_0)<br>
+  <br>
+  (takes about ten minutes)<br>
+  <br>
+  (rename boost-root if needed !!!!!!!!!!!!!!!!!!!)<br>
+&nbsp;</li>
+  <li>Export Unix distribution: similar to above, except target is c:\boost\temp\boost_1_28_0 
+  and set global for UNIX nl.<br>
+  &nbsp;</li>
+  <li>!!!!!! VERY IMPORTANT: WinCVS | Set Preferences | Global back to non-UNIX nl. 
+  !!!!!!!!!!!!!!!<br>
+&nbsp;</li>
+  <li>Add regression results web pages into package (new in 1.33 so this is just a shot at the process - jeff)<br>
+    download all the regression results from website (may need meta-comm help on this)<br>
+    unpack the regression results into tools/regression/latest_release<br>
+    <br>
+
+  </li>
+  <li>General ZIP and TAR.GZ files<br>
+  <br>
+  n_n_n is 1_28_0 or whatever<br>
+  <br>
+  cd \boost<br>
+  boost_zip 1_21_2 (creates zip.log) <br>
+  boost_tar_gz 1_21_2<br>
+  bash<br>
+&nbsp;&nbsp;&nbsp;
+  gunzip -c boost_1_21_2.tar.gz | bzip2 &gt; boost_1_21_2.tar.bz2<br>
+&nbsp;&nbsp;&nbsp; exit<br>
+  &nbsp;</li>
+  <li>Upload and unpack the .zip release candidate to a SourceForge web services 
+  sub-directory. Post a message to the main list asking developers to check 
+  contents. (Daniel Frey has volunteered to help check).<br>
+&nbsp;</li>
+  <li>Upload files for SourceForge release incoming directory<b><i>
+  </i></b>using WS_FTP Pro<ul>
+  <li>Start keep_isdn_awake</li>
+  <li>Connection: SourceForge Release Upload | connect</li>
+  <li>Select Local system: c:\boost</li>
+  <li>Select Remote system: /incoming</li>
+  <li>Drag-and-drop the three release files from Local system to Remote system</li>
+  <li>Disconnect</li>
+  <li>Stop keep_isdn_awake<br>
+&nbsp;</li>
+</ul>
+  </li>
+  <li>Complete the SourceForge
+  <a href="http://sourceforge.net/docman/display_doc.php?docid=6445&group_id=1#createrelease">
+  release procedure</a>.<ul>
+  <li>Admin | File Releases | Add Release for package name boost</li>
+  <li>New release name: 1.21.2 | create this release</li>
+  <li>Step 1: paste in release notes (in HTML). <b>Be sure to note difference 
+  between .zip and .gz/bz2 files.</b> Submit/Refresh</li>
+  <li>Step 2: Check appropriate files. Add Files and/or Refresh View</li>
+  <li>Step 3: For each file, select Processor and File Type, Update/Refresh</li>
+  <li>Setp 4: Email Release Notice: I'm sure. Send Notice.</li>
+  <li>Wait up to 30 minutes.</li>
+  <li>Check SourceForge release page and release notes with web browser.<br>
+&nbsp;</li>
+</ul>
+  </li>
+  <li><i><b>Consider putting up a temporary &quot;Update in progress&quot; root/index.html 
+  during site update<br>
+&nbsp;</b></i></li>
+  <li>Update the web site:<pre>cd ...\boost_1_28_0
+tar -cf site.tar *
+bzip2 -k site.tar
+
+dir site.tar.bz2
+pscp site.tar.bz2 beman_dawes@shell1.sourceforge.net:/home/groups/b/bo/boost/htdocs/
+
+keep_idsn_awake in another window.
+
+c:\bgd\util\putty\plink.exe beman_dawes@shell.sourceforge.net
+cd /home/groups/b/bo/boost/htdocs
+pwd
+ls -l site.tar.bz2
+
+rm -fr boost
+rm -fr doc
+rm -fr libs
+rm -fr more
+rm -fr people
+rm -fr status
+rm -fr tools
+bunzip2 -kc site.tar.bz2 | tar -x 
+ls
+exit
+
+stop keep_isdn_awake</pre>
+  </li>
+  <li>Check actual <a href="http://www.boost.org">www.boost.org</a> site with 
+  browser. Look at a bunch of files that should have been updated to make sure 
+  the updates actually &quot;took&quot;.<br>
+&nbsp;</li>
+  <li>Post a message announcing the release and recapping &quot;Latest News&quot;.&nbsp; 
+  Post as separate messages to: boost, boost-announce, boost-users, 
+  comp.lang.c++.moderated,
+  <a href="mailto:c++std-news@research.att.com">c++std-news@research.att.com</a><br>
+&nbsp;</li>
+  <li>Using the SourceForge shell services (sf_shell_svc.bat), cd /home/groups/b/bo/boost/htdocs, 
+  and rename regression tests as necessary.<br>
+&nbsp;</li>
+  <li>Burn &quot;Key Directories&quot; CD for off-site backup.<br>
+&nbsp;</li>
+  <li>Make sure CVS working copy is updated to main branch!<br>
+&nbsp;</li>
+  <li>Ready <i><b>root/index.htm</b></i>, <i><b>root/boost/version.hpp</b></i>, <b>root/Jamfile.v2</b> and 
+  <i><b>root/Jamrules</b></i> for the 
+  next release and commit to CVS so developers have a place to add &quot;Latest news&quot; 
+  blurbs.<br>
+&nbsp;</li>
+  <li>Delete obsolete files from yahoogroups files section.</li>
+</ul>
+<hr>
+<p>Revised:
+<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->21 November, 2005<!--webbot bot="Timestamp" endspan i-checksum="40405" --></p>
+<p>© Copyright Beman Dawes 2001</p>
+
+<p>Use, modification, and distribution are subject to the Boost Software License, 
+Version 1.0. (See accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy at
+<a href="http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a>)</p>
+
+</body>
+
+</html>
