@@ -501,14 +501,14 @@ def bjam_command( toolsets, v2 ):
     return result
 
 
-def install( toolsets, **unused ):
+def install( toolsets, v2, **unused ):
     import_utils()
     os.chdir( os.path.join( boost_root ) )
 
     log( 'Making "%s" directory...' % regression_results )
     utils.makedirs( regression_results )
     
-    install_cmd = '%s -d2 install >>%s 2>&1' % ( bjam_command( toolsets ), install_log )
+    install_cmd = '%s -d2 install >>%s 2>&1' % ( bjam_command( toolsets, v2 ), install_log )
     log( 'Installing libraries (%s)...' % install_cmd )
     utils.system( [ install_cmd ] )
 
