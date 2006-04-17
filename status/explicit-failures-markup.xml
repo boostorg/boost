@@ -1320,10 +1320,13 @@
             <note author="Jonathan Turkanis" refid="4"/>
         </mark-expected-failures>
         <mark-expected-failures>
+            <!-- Insufficient wide character support -->
             <test name="code_converter_test"/>
             <test name="wide_stream_test"/>
             <toolset name="gcc-2.95.3-linux"/>
-            <toolset name="*mingw*"/>
+            <!-- Must enumerate MinGW's since some use STLPort -->
+            <toolset name="mingw-3_4_2"/>
+            <toolset name="mingw-3_4_4"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-3.3.6-osf1"/>
             <note author="Jonathan Turkanis" refid="19"/>
