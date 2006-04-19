@@ -1,6 +1,88 @@
+# Usage:
+#
+#   bjam [options] [install|stage]
+#
+#   Builds and installs Boost.
+#
+# Targets and Related Options:
+#
+#   install                 Install headers and compiled library files to the
+#   =======                 configured locations (below).
+#
+#   --prefix=PREFIX         Install architecture independent files here.
+#                           Default; C:\Boost on Win32
+#                           Default; /usr/local on Unix. Linux, etc.
+#
+#   --exec-prefix=EPREFIX   Install architecture dependent files here.
+#                           Default; PREFIX
+#
+#   --libdir=DIR            Install library files here.
+#                           Default; EPREFIX/lib
+#
+#   --includedir=DIR        Install header files here.
+#                           Default; PREFIX/include
+#
+#   stage                   Build and install only compiled library files
+#   =====                   to the stage directory.
+#
+#   --stagedir=DIR          Install library files here
+#                           Default; ./stage
+#
+# Other Options:
+#
+#   --builddir=DIR          Build in this location instead of building
+#                           within the distribution tree. Recommended!
+#
+#   --toolset=toolset       Indicates the toolset to build with.
+#
+#   --show-libraries        Displays the list of Boost libraries that require
+#                           build and installation steps, then exit.
+#
+#   --layout=<layout>       Determines what kind of build layout to use. This
+#                           allows one to control the naming of the resulting
+#                           libraries, and the locations of the installed
+#                           files. Default is 'versioned'. Possible values:
+#
+#                               versioned - Uses the Boost standard names
+#                               which include version number for Boost the
+#                               release and version and name of the
+#                               compiler as part of the library names. Also
+#                               installs the includes to a versioned
+#                               sub-directory.
+#
+#                               system - Builds an install without the
+#                               Boost standard names, and does not install
+#                               includes to a versioned sub-directory. This
+#                               is intended for system integrators to build
+#                               for packaging of distributions.
+#
+#   --help                  This message.
+#
+#   --with-<library>        Build and install the specified <library>
+#                           If this option is used, only libraries
+#                           specified using this option will be built.
+#
+#   --without-<library>     Do not build, stage, or install the specified
+#                           <library>. By default, all libraries are built.
+#
+#   --with-python-root[=PYTHON_ROOT]
+#                           Build Boost.Python libraries with the Python
+#                           devel packages located at PYTHON_ROOT.
+#                           Default PYTHON_ROOT; C:\Python24 on Win32.
+#                           Default PYTHON_ROOT; /usr on Unix, Linux,
+#                               Cygwin, etc.
+#
+#   --with-python-version[=2.4]
+#                           Build Boost.Python libraries with the Python
+#                           version indicated.
+#                           Default; 2.4.
+#
+#   --with-pydebug          Build Boost.Python libraries for use with a
+#                           debug build of Python.
+
 #
 # This is Boost Jamfile for Boost.Build V2.
-# 
+#
 # Pass --v2 option to bjam to use this file. For example:
 #
 #    bjam --v2 link=static
@@ -26,14 +108,14 @@ project boost
       # 'tag' rule below.
       <tag>@$(__name__).tag
     : usage-requirements <include>.
-    : build-dir bin.v2  
+    : build-dir bin.v2
     ;
 
 # Setup convenient aliases for all libraries.
 
-all-libraries = [ MATCH .*libs/(.*)/build/.* 
+all-libraries = [ MATCH .*libs/(.*)/build/.*
                   : [ glob libs/*/build/Jamfile.v2 ] ] ;
-                  
+
 # First, the complicated libraries: where the target name in
 # Jamfile is different from directory name.
 alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
@@ -45,8 +127,8 @@ alias wserialization : libs/serialization//wserialization ;
 
 explicit prg_exec_monitor test_exec_monitor unit_test_framework
     bgl-vis serialization wserialization ;
-                  
-for local l in $(all-libraries) 
+
+for local l in $(all-libraries)
 {
     if ! $(l) in test graph serialization
     {
@@ -54,7 +136,7 @@ for local l in $(all-libraries)
         explicit $(l) ;
     }
 }
-    
+
 alias headers : : : : <include>. ;
 
 
@@ -73,7 +155,7 @@ rule libraries-to-install ( existing-libraries * )
        ECHO "error: both --with-<library> and --without-<library> specified" ;
        EXIT ;
    }
-   
+
    local wrong = [ set.difference $(with-parameter) : $(existing-libraries) ] ;
    if $(wrong)
    {
@@ -94,7 +176,7 @@ rule libraries-to-install ( existing-libraries * )
    else
    {
        return [ set.difference $(existing-libraries) : $(without-parameter) ] ;
-   }         
+   }
 }
 
 # what kind of layout are we doing?
@@ -117,21 +199,21 @@ PYTHON_ROOT ?= $(python-root) ;
 libraries = [ libraries-to-install $(all-libraries) ] ;
 
 
-# This rule is called by Boost.Build to determine the name of 
+# This rule is called by Boost.Build to determine the name of
 # target. We use it to encode build variant, compiler name and
-# boost version in the target name 
+# boost version in the target name
 rule tag ( name : type ? : property-set )
 {
     if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
-    {        
+    {
         if $(layout) = versioned
         {
-            name = [ stage.add-variant-and-compiler $(name) 
+            name = [ stage.add-variant-and-compiler $(name)
               : $(type) : $(property-set) ] ;
-            
+
             local version-tag = [ MATCH "^([^.]+)[.]([^.]+)" : $(BOOST_VERSION[1]) ] ;
             version-tag = $(version-tag:J="_") ;
-                    
+
             # Optionally add version suffix.
             if $(type) != SHARED_LIB ||
               [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
@@ -151,7 +233,7 @@ rule tag ( name : type ? : property-set )
         }
         else
         {
-            return [ stage.add-variant-and-compiler $(name) 
+            return [ stage.add-variant-and-compiler $(name)
               : $(type) : $(property-set) ] ;
         }
     }
@@ -163,7 +245,7 @@ local patterns = *.hpp *.ipp *.h *.inc ;
 local dirs = boost boost/* boost/*/* ;
 
 # Complete install
-package.install install 
+package.install install
     : <install-source-root>. # No specific requirements
     : # No binaries
     : libs/$(libraries)/build
@@ -171,7 +253,7 @@ package.install install
     ;
 
 # Install just library.
-install stage : libs/$(libraries)/build 
+install stage : libs/$(libraries)/build
   : <location>$(stage-locate)
   ;
 
@@ -187,7 +269,7 @@ alias build_all : libs/$(libraries)/build ;
 # - libraries -- list of library targets to install.
 rule boost-install ( libraries * )
 {
-    package.install install 
+    package.install install
         : <dependency>/boost//install-headers
         : # No binaries
         : $(libraries)
@@ -201,7 +283,7 @@ rule boost-install ( libraries * )
     module $(project-module)
     {
         explicit stage ;
-    }        
+    }
 }
 
 
@@ -211,86 +293,3 @@ for local l in $(libraries)
 {
     use-project /boost/$(l) : libs/$(l)/build ;
 }
-    
-constant project-help : "
-Usage:
-    bjam [options] [install|stage]
-
-Builds and installs Boost.
-      
-Targets and Related Options:
-      
-    install                 Install headers and compiled library files to the 
-    =======                 configured locations (below).
-
-      --prefix=PREFIX       Install architecture independent files here.
-                            Default; C:\\Boost on Win32
-                            Default; /usr/local on Unix. Linux, etc.
-                            
-      --exec-prefix=EPREFIX Install architecture dependent files here.
-                            Default; PREFIX
-                            
-      --libdir=DIR          Install library files here.
-                            Default; EPREFIX/lib
-                            
-      --includedir=DIR      Install header files here.
-                            Default; PREFIX/include
-
-  
-    stage                   Build and install only compiled library files
-    =====                   to the stage directory.
-                              
-      --stagedir=DIR        install library files here
-                            Default; ./stage
-
-Other Options:
-  
-    --builddir=DIR          Build in this location instead of building
-                            within the distribution tree. Recommended!
-                            
-    --toolset=toolset       Indicates the toolset to build with.
-    
-    --show-libraries        Displays the list of Boost libraries that require
-                            build and installation steps, then exit.
-
-    --layout=<layout>       Determines what kind of build layout to use. This
-                            allows one to control the naming of the resulting
-                            libraries, and the locations of the installed
-                            files. Default is 'versioned'. Possible values:
-                            
-                                versioned - Uses the Boost standard names
-                                which include version number for Boost the
-                                release and version and name of the
-                                compiler as part of the library names. Also
-                                installs the includes to a versioned
-                                sub-directory.
-                                
-                                system - Builds an install without the
-                                Boost standard names, and does not install
-                                includes to a versioned sub-directory. This
-                                is intended for system integrators to build
-                                for packaging of distributions.
-
-    --help                  This message.
-    
-    --with-<library>        Build and install the specified <library>
-                            If this option is used, only libraries
-                            specified using this option will be built.
-                            
-    --without-<library>     Do not build, stage, or install the specified
-                            <library>. By default, all libraries are built.
-                            
-    --with-python-root[=PYTHON_ROOT]
-                            Build Boost.Python libraries with the Python
-                            devel packages located at PYTHON_ROOT.
-                            Default PYTHON_ROOT; C:\\Python24 on Win32.
-                            Default PYTHON_ROOT; /usr on Unix, Linux, Cygwin, etc.
-                            
-    --with-python-version[=2.4]
-                            Build Boost.Python libraries with the Python
-                            version indicated.
-                            Default; 2.4.
-                            
-    --with-pydebug          Build Boost.Python libraries for use with a
-                            debug build of Python.
-" ;
