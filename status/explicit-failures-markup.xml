@@ -21,7 +21,7 @@
 
     <!-- /////////////// Toolsets /////////////// -->
     <mark-toolset name="borland-5_6_4" status="required"/>
-    <mark-toolset name="cw-9_4" status="required"/>
+    <mark-toolset name="cw-9.4" status="required"/>
     <mark-toolset name="cw-8_3" status="required"/>
     <mark-toolset name="cw-9_5-darwin" status="required"/>
     <mark-toolset name="msvc" status="required"/>
@@ -46,8 +46,8 @@
     <mark-toolset name="gcc-3_3-darwin" status="required"/>
     <mark-toolset name="gcc-4_0-darwin" status="required"/>
     <mark-toolset name="gcc-3.4.3_sunos" status="required"/>
-    <mark-toolset name="intel-win32-8_1" status="required"/>
-    <mark-toolset name="intel-win32-9_0" status="required"/>
+    <mark-toolset name="intel-win-8.1" status="required"/>
+    <mark-toolset name="intel-win-9.0" status="required"/>
     <mark-toolset name="intel-8.1-linux" status="required"/>
     <mark-toolset name="intel-9.0-linux" status="required"/>
     <mark-toolset name="hp_cxx-71_006_tru64" status="required"/>
@@ -157,7 +157,6 @@
             <toolset name="vc-7_0"/>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="tru64cxx65*"/>
-            <toolset name="intel-win32"/>
             <note refid="6" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -352,12 +351,6 @@
 
     <!-- config -->
     <library name="config">
-        <test name="config_test">
-            <mark-failure>
-                <toolset name="intel-win32"/>
-                <note author="B. Dawes" refid="3"/>
-            </mark-failure>
-        </test>
         <test name="config_link_test">
             <mark-failure>
                 <toolset name="*como-4_3_3-vc7*"/>
@@ -960,7 +953,7 @@
             <test name="testlocal_time_input_facet"/>
             <test name="testtime_input_facet"/>
             <toolset name="vc-8_0*"/>
-	    <toolset name="msvc-8.0*"/>
+            <toolset name="msvc-8.0*"/>
             <note author="J. Garland">
                These tests are failing with the beta2 version of VC_8.  At least
                one of them is directly a result of the new VC_8 standard library
@@ -1127,7 +1120,7 @@
             <toolset name="vacpp"/>
             <toolset name="cw-8_3"/>
             <toolset name="cw-9_4"/>
-	    <toolset name="cw-9.4"/>
+            <toolset name="cw-9.4"/>
             <toolset name="cw-9_5-darwin"/>
             <toolset name="sunpro*"/>
             <toolset name="mingw"/>
@@ -1327,7 +1320,6 @@
           <toolset name="cw-8_3"/>
           <toolset name="cw-9_3-darwin"/>
           <toolset name="cw-9_4-darwin"/>
-          <toolset name="cw-9_4"/>
           <toolset name="cw-9_4-darwin"/>
           <toolset name="cw-9_5-darwin"/>
           <toolset name="iw-7_1-vc6"/>
@@ -1370,11 +1362,6 @@
             <test name="ios_state_unit_test"/>
             <toolset name="gcc-2.95.3-*"/>
             <note refid="3" author="Doug Gregor"/>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="ios_state_unit_test"/>
-            <toolset name="intel-win32-8*"/>
-            <note refid="3" author="Stefan Slapeta"/>
         </mark-expected-failures>
     </library>
 
@@ -1430,13 +1417,6 @@
             <toolset name="*como-4_3_3*"/>
             <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
-        <!--
-        <mark-expected-failures>
-            <test name="mapped_file_test"/>
-            <toolset name="intel-win32-9_0"/>
-            <note author="Jonathan Turkanis" refid="0"/>
-        </mark-expected-failures>
-        -->
         <mark-expected-failures reason="?">
             <test name="direct_adapter_test"/>
             <test name="gzip_test"/>
@@ -1655,8 +1635,8 @@
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <note author="Ronald Garcia" date="08 Jan 2006">
                 <p>
-		  These compiler/standard library combinations don't
-		  support enable_if. 
+          These compiler/standard library combinations don't
+          support enable_if. 
                 </p>
             </note>
         </mark-unusable> -->
@@ -1849,7 +1829,6 @@ for more information.
              <toolset name="vc-6_5*"/>
              <toolset name="msvc-6.5*"/>
              <toolset name="iw*"/>
-             <toolset name="intel-win32-*"/>
              <note author="Robert Ramey" date="12 Feb 05" refid="2,29"/>
         </mark-expected-failures>
 
@@ -2358,7 +2337,7 @@ for more information.
         <mark-expected-failures>
             <test name="*_native"/>
             <toolset name="vc-8_0*"/>
-	    <toolset name="msvc-8.0*"/>
+            <toolset name="msvc-8.0*"/>
             <toolset name="intel-win*"/>
             <toolset name="como-4_3_3-vc7_1"/>
             <toolset name="tru64*"/>
@@ -2615,12 +2594,6 @@ for more information.
           <toolset name="gcc-2.95.3-*"/>
           <note author="Doug Gregor" refid="3"/>
         </mark-unusable>
-        <test name="quaternion_mult_incl_test">
-            <mark-failure>
-                <toolset name="intel-win32"/>
-                <note author="B. Dawes" refid="3"/>
-            </mark-failure>
-        </test>
         <mark-expected-failures>
             <test name="octonion_test"/>
             <test name="quaternion_test"/>
@@ -3062,15 +3035,15 @@ for more information.
                 <note author="B. Dawes" refid="2"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="intel-win32-*"/>
+                <toolset name="intel-win*"/>
                 <note author="S. Slapeta" refid="1"/>
             </mark-failure>
             <mark-failure>
                 <toolset name="qcc-3.3.5*"/>
                 <note author="Jim Douglas" date="13 Feb 06">
                     Test fails with ranlux*_O1 RNGs when saving and recalling the state due to a bug in the
-					double to string conversion. The problem has been reported to QNX as PR29252. 	
-				</note>
+                    double to string conversion. The problem has been reported to QNX as PR29252.
+                </note>
             </mark-failure>
         </test>
     </library>
@@ -3126,7 +3099,7 @@ for more information.
         <mark-expected-failures>
             <test name="sub_range"/>
             <toolset name="vc-8_0"/>
-	    <toolset name="msvc-8.0"/>
+            <toolset name="msvc-8.0"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
@@ -3404,9 +3377,8 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-          <test name="errors_handling_test"/>
           <test name="test_tools_test"/>
-          <toolset name="cw-9_4"/>
+          <toolset name="cw-9.4"/>
           <note refid="29" author="Doug Gregor"/>
         </mark-expected-failures>
     </library>
@@ -3485,10 +3457,6 @@ for more information.
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
         </mark-unusable>
-        <test name="io_test">
-            <toolset name="intel-win32"/>
-            <note author="B. Dawes" refid="3"/>
-        </test>
     </library>
 
     <!-- type_traits -->
@@ -3557,7 +3525,7 @@ for more information.
                 <toolset name="cw-9_3*"/>
                 <toolset name="cw-9_4*"/>
                 <toolset name="cw-9_5*"/>
-		<toolset name="cw-9.4"/>
+                <toolset name="cw-9.4"/>
                 <toolset name="cw-9.5"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5*"/>
@@ -4130,7 +4098,6 @@ for more information.
                 <note refid="3"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="intel-win32"/>
                 <toolset name="iw-7_1*"/>
                 <toolset name="intel-7.1*"/>
                 <note refid="2"/>
@@ -4172,9 +4139,9 @@ for more information.
         <mark-expected-failures>
             <test name="testwave"/>
             <toolset name="gcc-3.2.3-linux"/>
-	    <toolset name="gcc-3.2.3_linux"/>
+            <toolset name="gcc-3.2.3_linux"/>
             <toolset name="gcc-3.3.6-linux"/>
-            <toolset name="gcc-3.3.6"/>	    
+            <toolset name="gcc-3.3.6"/>
             <note author="Hartmut Kaiser" refid="29"/>
         </mark-expected-failures>
 
@@ -4391,7 +4358,7 @@ for more information.
 
     <note id="36">
         Wide character support is disabled in the GNU Standard C++ library as
-		supplied on the QNX Neutrino version 6.3.0 distribution. 
+        supplied on the QNX Neutrino version 6.3.0 distribution. 
     </note>
 
 </explicit-failures-markup>
