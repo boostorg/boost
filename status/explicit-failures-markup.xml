@@ -2844,11 +2844,14 @@ for more information.
             <toolset name="tru64cxx65-042"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5_8*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="vc-7_0"/>
-            <toolset name="dmc-8_43-stlport-4_5_3"/>
+            <toolset name="msvc-7.0"/>
+            <toolset name="dmc-8_47-stlport-4_5_3"/>
+            <toolset name="hp_cxx-65_042_tru64"/>
         </mark-unusable>
         <mark-expected-failures>
             <test name="ptr_list"/>
@@ -2866,7 +2869,115 @@ for more information.
                 It should be fixed in newer versions of the compiler.
             </note>
         </mark-expected-failures>
-
+        <mark-expected-failures>
+            <test name="incomplete_type_test"/>
+            <toolset name="cw-9.4"/>
+            <note author="Thorsten Ottosen">
+                This error seems to be a bug the compiler. Please submit a 
+                patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="iterator_test"/>
+            <toolset name="gcc-3.2.3*"/>
+            <toolset name="gcc-3.3.6*"/>
+            <toolset name="gcc"/>
+            <toolset name="qcc-3.3.5*"/>  
+            <note author="Thorsten Ottosen">
+                This error seems to be a bug the standard library. Please submit a 
+                patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="no_exceptions"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                This test fails because the test ptr_vector fails. Please see the note
+                for that test.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_deque"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>insert(iterator,range)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_list"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>insert(iterator,range)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_vector"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>insert(iterator,range)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_map"/>
+            <toolset name="hp_cxx-71_006_tru64"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For hp, this compiler bug is insignificant.
+                For sun the problem is that <code>transfer(range,ptr_map)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is not known so please submit a patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_set"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>transfer(range,ptr_map)</code> and
+                <code>insert(range)</code>code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable)..
+            </note>
+        </mark-expected-failures>
+           <mark-expected-failures>
+            <test name="serialization"/>
+            <toolset name="cw*"/>
+            <note author="Thorsten Ottosen">
+                This cause of this problem is unknown. Please submit a patch.
+            </note>
+        </mark-expected-failures>
+           <mark-expected-failures>
+               <test name="tree_test"/>
+               <toolset name="sun-5.8"/>
+               <note author="Thorsten Ottosen">
+                   For sun the problem is due to Boost.Test.                  
+               </note>
+           </mark-expected-failures>
+           <mark-expected-failures>
+               <test name="tut1"/>
+               <toolset name="cw-9.4"/>
+               <note author="Thorsten Ottosen">
+                   Seem like a bug in the compiler. Please submit a patch.                  
+               </note>
+           </mark-expected-failures>
+           <mark-expected-failures>
+               <test name="view_example"/>
+               <toolset name="cw-9.4"/>
+               <note author="Thorsten Ottosen">
+                   Seem like a bug in the compiler. Please submit a patch.                  
+               </note>
+           </mark-expected-failures>
     </library>
 
 
