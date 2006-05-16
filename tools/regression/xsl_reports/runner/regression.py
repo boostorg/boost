@@ -31,8 +31,8 @@ xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports'
 timestamp_path  = os.path.join( regression_root, 'timestamp' )
 
 cvs_command_line         = 'cvs -z9 %(command)s'
-cvs_ext_command_line     = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
-cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+cvs_ext_command_line     = 'cvs -d:ext:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
 
 bjam = {}
 process_jam_log = {}
