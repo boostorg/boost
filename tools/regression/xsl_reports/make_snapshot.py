@@ -38,7 +38,7 @@ def rmtree( path ):
 
 
 def cvs_command( user, command ):
-    cmd = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s' \
+    cmd = 'cvs -d:ext:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s' \
             % { 'user': user, 'command': command }
     
     utils.log( 'Executing CVS command "%s"' % cmd )
