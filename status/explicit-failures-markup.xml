@@ -1843,6 +1843,13 @@ for more information.
             <note author="J. L&#243;pez" date="05 Jul 2004" refid="17"/>
         </mark-unusable>
         <mark-unusable>
+            <toolset name="borland-5_8_1"/>
+            <toolset name="borland-5.8.1"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="borland-5.8.2"/>
+            <note author="Alisdair Meredith" date="26 May 2006"/>
+        </mark-unusable>
+        <mark-unusable>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
@@ -2800,6 +2807,17 @@ for more information.
           <toolset name="gcc-2.95.3-*"/>
           <note author="Doug Gregor" refid="3"/>
         </mark-unusable>
+        <mark-unusable>
+          <toolset name="borland-5_6_4"/>
+          <toolset name="borland-5.6.4"/>
+          <note author="A.Meredith"/>
+        </mark-unusable>
+        <test name="quaternion_mult_incl_test">
+            <mark-failure>
+                <toolset name="intel-win32"/>
+                <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+        </test>
         <mark-expected-failures>
             <test name="octonion_test"/>
             <test name="quaternion_test"/>
@@ -2808,7 +2826,7 @@ for more information.
               There appears to be a bug in gcc's <code>std::exp (long
               double)</code> on this platform.
             </note>
-       </mark-expected-failures>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="complex_test"/>
             <test name="log1p_expm1_test"/>
@@ -2817,15 +2835,33 @@ for more information.
               std::numeric_limits&gt;long double&lt;::infinity() is apparently
               broken in this compiler: it's filed as bug 6347520 with Sun.
             </note>
-       </mark-expected-failures>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="complex_test"/>
+            <test name="hypot_test"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="borland-5.8.2"/>
+            <note author="A.Meredith">
+              Not yet diagnosed the precise reason these tests give bad results.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="log1p_expm1_test"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="borland-5.8.2"/>
+            <note author="A.Meredith">
+              std::numeric_limits&gt;long double&lt;::infinity() is apparently
+              broken in this compiler.
+            </note>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="complex_test"/>
             <toolset name="msvc"/>
             <note author="John Maddock">
-              Incomplete std::complex support make these tests pointless 
+              Incomplete std::complex support make these tests pointless
               (the complex trig functions are absent).
             </note>
-       </mark-expected-failures>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="complex_test"/>
             <toolset name="qcc-3.3.5*cpp"/>
@@ -2879,6 +2915,16 @@ for more information.
                 <code>interval&lt;double&gt;</code> should not be used
                 on this compiler/platform since there will be no
                 numerical guarantee.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="det"/>
+            <test name="integer"/>
+            <test name="overflow"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="borland-5.8.2"/>
+            <note author="A.Meredith">
+                This compiler has some problems with name looup / overload resolution.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -3640,6 +3686,20 @@ for more information.
             <mark-failure>
                 <toolset name="sunpro-5_3-sunos"/>
                 <note author="J. Maddock" refid="4"/>
+            </mark-failure>
+        </test>
+        <test name="static_assert_test">
+            <mark-failure>
+                <toolset name="borland-5_6_4"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="borland-5_8_1"/>
+                <toolset name="borland-5.8.1"/>
+                <toolset name="borland-5_8_2"/>
+                <toolset name="borland-5.8.2"/>
+                <note author="A.Meredith" date="26 May 2006">
+                  This test runs without problem on Borland compilers,
+                  which means the static assertion is not being caught.
+                </note>
             </mark-failure>
         </test>
     </library>
@@ -4404,6 +4464,20 @@ for more information.
             <mark-failure>
                 <toolset name="como-win32"/>
                 <note author="B. Dawes" refid="4"/>
+            </mark-failure>
+        </test>
+        <test name="numeric_traits_test">
+            <mark-failure>
+                <toolset name="borland-5_6_4"/>
+                <toolset name="borland-5.6.4"/>
+                <toolset name="borland-5_8_1"/>
+                <toolset name="borland-5.8.1"/>
+                <toolset name="borland-5_8_2"/>
+                <toolset name="borland-5.8.2"/>
+                <note author="A.Meredith">
+                  Compiler has a problem with BOOST_STATIC_CONSTANT in nested templates
+                  inside class template specializations.
+                </note>
             </mark-failure>
         </test>
         <test name="result_of_test">
