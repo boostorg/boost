@@ -435,7 +435,9 @@
     <!-- date_time -->
     <library name="date_time">
         <mark-unusable>
+            <toolset name="como-4_3_3-vc7_1"/>
             <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="msvc"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
             <toolset name="vc-6_5"/>
@@ -1062,7 +1064,17 @@
             <toolset name="hp_cxx*"/>
             <note author="Markus Schoepflin">
             The failure is caused by a standard library bug. It doesn't
-            support used defined facets which are not default
+            support user defined facets which are not default
+            constructible. This has been reported to the compiler vendor.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="testtime_wstream"/>
+            <toolset name="hp_cxx-65_042_tru64"/>
+            <note author="Jeff Garland">
+            The failure is caused by a standard library bug. It doesn't
+            support user defined facets which are not default
             constructible. This has been reported to the compiler vendor.
             </note>
         </mark-expected-failures>
@@ -2370,6 +2382,7 @@ for more information.
             <toolset name="como-4_3_3-vc7_1"/>
             <toolset name="tru64*"/>
             <toolset name="hp_cxx*"/>
+            <toolset name="sun-5.8"/>
             <note author="Arkadiy Vertleyb">
                 Native mode is not supported for this compiler.
             </note>
