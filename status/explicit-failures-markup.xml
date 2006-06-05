@@ -113,6 +113,18 @@
 
     <!-- array -->
     <library name="array">
+        <test name="array0">
+            <mark-failure>
+                <toolset name="msvc"/>
+                <toolset name="vc-6_5"/>
+                <toolset name="msvc-6.5"/>
+                <toolset name="vc-7_0"/>
+                <note author="A.Meredith">
+                    Compilers need to support partial template specialization
+                    to work with zero length arrays.
+                </note>
+            </mark-failure>
+        </test>
         <test name="array3">
             <mark-failure>
                 <toolset name="borland"/>
@@ -3828,14 +3840,21 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="tricky_incomplete_type_test"/>
             <test name="decay_test"/>
             <test name="extent_test"/>
+            <test name="is_base_and_derived_test"/>
             <test name="is_base_of_test"/>
+            <test name="is_convertible_test"/>
             <test name="rank_test"/>
             <test name="remove_all_extents_test"/>
+            <test name="remove_bounds_test"/>
+            <test name="remove_const_test"/>
             <test name="remove_extent_test"/>
+            <test name="remove_pointer_test"/>
+            <test name="remove_volatile_test"/>
+            <test name="tricky_add_pointer_test"/>
             <test name="tricky_function_type_test"/>
+            <test name="tricky_incomplete_type_test"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="borland-5_8_1"/>
