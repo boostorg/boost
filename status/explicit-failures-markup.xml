@@ -213,6 +213,7 @@
         <mark-expected-failures>
             <test name="multi_index_container"/>
             <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="sun-5.8"/>
             <toolset name="tru64cxx65*"/>
             <toolset name="borland-5*"/>
             <toolset name="gcc-2.95.3*"/>
@@ -3330,6 +3331,7 @@ for more information.
             <toolset name="como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
+            <toolset name="sun-5.8"/>
             <toolset name="borland-5_8_1"/>
             <toolset name="borland-5.8.1"/>
             <toolset name="borland-5_8_2"/>
@@ -3363,6 +3365,7 @@ for more information.
             <toolset name="tru64cxx65"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
+            <toolset name="sun-5.8"/>
             <toolset name="borland-5_8_1"/>
             <toolset name="borland-5.8.1"/>
             <toolset name="borland-5_8_2"/>
@@ -3381,6 +3384,7 @@ for more information.
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
             <toolset name="vc-7_0"/>
+            <toolset name="vc-7_1-stlport"/>
             <toolset name="tru64cxx65"/>
             <note refid="6" author="Thorsten Ottosen">
                 For most compilers this is due to problems
@@ -3396,6 +3400,15 @@ for more information.
                 At the time of release I couldn't figure out why this was failing.
                 Anyway, the failure is not very important; also, the well-definedness of
                 "singularity" of an iterator range is likely to change.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="extension_mechanism"/>
+            <toolset name="vc-6_5*"/>
+            <toolset name="vc-7_0"/>
+            <note author="Thorsten Ottosen">
+                The test requires support for Argument Dependent Lookup (ADL)
+                which the compiler in question does not provide.
             </note>
         </mark-expected-failures>
     </library>
