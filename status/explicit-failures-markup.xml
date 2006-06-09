@@ -1170,9 +1170,16 @@
           <test name="operations_test_dll"/>
           <test name="path_test_dll"/>
           <toolset name="borland-5_6_4"/>
+          <toolset name="borland-5_8_2"/>
           <toolset name="borland-5.6.4"/>
           <toolset name="mingw-3_4_2"/>
-          <note author="Beman Dawes" refid="35"/>
+          <note author="Beman Dawes" refid="35"/> <!-- dll's don't work - use static -->
+        </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="operations_test"/>
+          <test name="operations_test_dll"/>
+            <toolset name="msvc*"/>
+          <note author="Beman Dawes" refid="31"/> <!-- esoteric features don't work -->
         </mark-expected-failures>
         <mark-expected-failures>
           <test name="mbcopy"/>
@@ -1193,6 +1200,7 @@
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="borland-5_8_1"/>
+            <toolset name="borland-5_8_2"/>
             <toolset name="cw-8_3"/>
             <toolset name="dmc-8_4_7*"/>
           <note author="Beman Dawes">
@@ -1204,7 +1212,7 @@
           <test name="mbcopy"/>
           <test name="mbpath"/>
           <test name="wide_test"/>
-          <toolset name="qcc-3.3.5*gpp"/>
+          <toolset name="qcc-3.3.5-gpp"/>
           <note author="Jim Douglas" refid="36"/>
         </mark-expected-failures>
       </library>
