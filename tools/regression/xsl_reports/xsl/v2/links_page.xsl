@@ -71,7 +71,7 @@ http://www.boost.org/LICENSE_1_0.txt)
          -->
 
     <xsl:template match="/">
-        <xsl:variable name="test_logs_to_show" select="//test-log[ meta:show_output( $explicit_markup, . ) ]"/>
+        <xsl:variable name="test_logs_to_show" select="//test-log"/>
         <xsl:variable name="libs_test_test_log_tree" select="meta:restructure_logs( $test_logs_to_show )"/>
         
         <exsl:document href="debug.xml"
@@ -90,7 +90,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:variable name="toolset_name" select="$toolset/@name"/>
             <xsl:message>Processing test "<xsl:value-of select="$runner_id"/>/<xsl:value-of select="$library_name"/>/<xsl:value-of select="$test_name"/>/<xsl:value-of select="$toolset_name"/>"</xsl:message>
 
-            <xsl:if test="count( $toolset/* ) != 1">
+            <xsl:if test="count( $toolset/* ) &gt; 1">
                 <xsl:message>  Processing variants</xsl:message>
 
                 <xsl:variable name="variants_file_path" select="meta:output_file_path( concat( $runner_id, '-', $library_name, '-', $toolset_name, '-', $test_name, '-variants' ) )"/>
@@ -119,27 +119,29 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:message>  Processing test-log</xsl:message>
                 <xsl:variable name="test_log" select="."/>
 
-                <xsl:variable name="log_file_path" select="meta:log_file_path( ., $runner_id )"/>
-                
-                <xsl:call-template name="write_test_result_file">
-                    <xsl:with-param name="path" select="$log_file_path"/>
-                    <xsl:with-param name="test_log" select="$test_log"/>
-                    <xsl:with-param name="runner_id" select="$runner_id"/>
-                </xsl:call-template>
-                
-                <xsl:for-each select="str:tokenize( string( ' |_release' ), '|')">
-                    <xsl:variable name="release_postfix" select="translate(.,' ','')"/>
-                    <xsl:for-each select="str:tokenize( string( 'developer|user' ), '|')">
-                        <xsl:variable name="directory" select="."/>
+                <xsl:if test="meta:show_output( $explicit_markup, $test_log )">
+                    <xsl:variable name="log_file_path" select="meta:log_file_path( ., $runner_id )"/>
+                    
+                    <xsl:call-template name="write_test_result_file">
+                        <xsl:with-param name="path" select="$log_file_path"/>
+                        <xsl:with-param name="test_log" select="$test_log"/>
+                        <xsl:with-param name="runner_id" select="$runner_id"/>
+                    </xsl:call-template>
+                    
+                    <xsl:for-each select="str:tokenize( string( ' |_release' ), '|')">
+                        <xsl:variable name="release_postfix" select="translate(.,' ','')"/>
+                        <xsl:for-each select="str:tokenize( string( 'developer|user' ), '|')">
+                            <xsl:variable name="directory" select="."/>
 
-                        <xsl:variable name="reference_file_path" select="concat( $directory, '/', meta:log_file_path( $test_log, $runner_id, $release_postfix ) )"/>
-                        <xsl:call-template name="write_test_results_reference_file">
-                            <xsl:with-param name="path" select="$reference_file_path"/>
-                            <xsl:with-param name="log_file_path" select="$log_file_path"/>
-                        </xsl:call-template>
+                            <xsl:variable name="reference_file_path" select="concat( $directory, '/', meta:log_file_path( $test_log, $runner_id, $release_postfix ) )"/>
+                            <xsl:call-template name="write_test_results_reference_file">
+                                <xsl:with-param name="path" select="$reference_file_path"/>
+                                <xsl:with-param name="log_file_path" select="$log_file_path"/>
+                            </xsl:call-template>
+                        </xsl:for-each>                
                     </xsl:for-each>
-        
-                </xsl:for-each>
+                </xsl:if>
+
             </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
