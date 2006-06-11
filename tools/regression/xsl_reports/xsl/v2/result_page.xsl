@@ -468,7 +468,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:text>&#160;&#160;&#160;&#160;</xsl:text>
             </xsl:when> 
  
-            <xsl:when test="$test_log/@result != 'success' and $test_log/@status = 'expected'">
+            <xsl:when test="count( $test_log[ @result != 'success' and @status = 'expected' ] ) &gt; 0">
                 <xsl:call-template name="insert_test_result">
                     <xsl:with-param name="result">
                         <xsl:choose>

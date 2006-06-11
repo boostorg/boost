@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 
-Copyright MetaCommunications, Inc. 2003-2005.
+Copyright MetaCommunications, Inc. 2003-2006.
 
 Distributed under the Boost Software License, Version 1.0. (See
 accompanying file LICENSE_1_0.txt or copy at
@@ -71,7 +71,7 @@ http://www.boost.org/LICENSE_1_0.txt)
          -->
 
     <xsl:template match="/">
-        <xsl:variable name="test_logs_to_show" select="//test-log[ meta:show_output( $explicit_markup, . ) ]"/>
+        <xsl:variable name="test_logs_to_show" select="//test-log"/>
         <xsl:variable name="libs_test_test_log_tree" select="meta:restructure_logs( $test_logs_to_show )"/>
         
         <exsl:document href="debug.xml"
@@ -90,7 +90,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:variable name="toolset_name" select="$toolset/@name"/>
             <xsl:message>Processing test "<xsl:value-of select="$runner_id"/>/<xsl:value-of select="$library_name"/>/<xsl:value-of select="$test_name"/>/<xsl:value-of select="$toolset_name"/>"</xsl:message>
 
-            <xsl:if test="count( $toolset/* ) != 1">
+            <xsl:if test="count( $toolset/* ) &gt; 1">
                 <xsl:message>  Processing variants</xsl:message>
 
                 <xsl:variable name="variants_file_path" select="meta:output_file_path( concat( $runner_id, '-', $library_name, '-', $toolset_name, '-', $test_name, '-variants' ) )"/>
@@ -98,6 +98,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:call-template name="write_variants_file">
                     <xsl:with-param name="path" select="$variants_file_path"/>
                     <xsl:with-param name="test_logs" select="$toolset/*"/>
+                    <xsl:with-param name="runner_id" select="$runner_id"/>
                 </xsl:call-template>
 
                 <xsl:for-each select="str:tokenize( string( ' |_release' ), '|')">
@@ -119,27 +120,29 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:message>  Processing test-log</xsl:message>
                 <xsl:variable name="test_log" select="."/>
 
-                <xsl:variable name="log_file_path" select="meta:log_file_path( ., $runner_id )"/>
-                
-                <xsl:call-template name="write_test_result_file">
-                    <xsl:with-param name="path" select="$log_file_path"/>
-                    <xsl:with-param name="test_log" select="$test_log"/>
-                    <xsl:with-param name="runner_id" select="$runner_id"/>
-                </xsl:call-template>
-                
-                <xsl:for-each select="str:tokenize( string( ' |_release' ), '|')">
-                    <xsl:variable name="release_postfix" select="translate(.,' ','')"/>
-                    <xsl:for-each select="str:tokenize( string( 'developer|user' ), '|')">
-                        <xsl:variable name="directory" select="."/>
+                <xsl:if test="meta:show_output( $explicit_markup, $test_log )">
+                    <xsl:variable name="log_file_path" select="meta:log_file_path( ., $runner_id )"/>
+                    
+                    <xsl:call-template name="write_test_result_file">
+                        <xsl:with-param name="path" select="$log_file_path"/>
+                        <xsl:with-param name="test_log" select="$test_log"/>
+                        <xsl:with-param name="runner_id" select="$runner_id"/>
+                    </xsl:call-template>
+                    
+                    <xsl:for-each select="str:tokenize( string( ' |_release' ), '|')">
+                        <xsl:variable name="release_postfix" select="translate(.,' ','')"/>
+                        <xsl:for-each select="str:tokenize( string( 'developer|user' ), '|')">
+                            <xsl:variable name="directory" select="."/>
 
-                        <xsl:variable name="reference_file_path" select="concat( $directory, '/', meta:log_file_path( $test_log, $runner_id, $release_postfix ) )"/>
-                        <xsl:call-template name="write_test_results_reference_file">
-                            <xsl:with-param name="path" select="$reference_file_path"/>
-                            <xsl:with-param name="log_file_path" select="$log_file_path"/>
-                        </xsl:call-template>
+                            <xsl:variable name="reference_file_path" select="concat( $directory, '/', meta:log_file_path( $test_log, $runner_id, $release_postfix ) )"/>
+                            <xsl:call-template name="write_test_results_reference_file">
+                                <xsl:with-param name="path" select="$reference_file_path"/>
+                                <xsl:with-param name="log_file_path" select="$log_file_path"/>
+                            </xsl:call-template>
+                        </xsl:for-each>                
                     </xsl:for-each>
-        
-                </xsl:for-each>
+                </xsl:if>
+
             </xsl:for-each>
         </xsl:for-each>
     </xsl:template>
@@ -200,9 +203,24 @@ http://www.boost.org/LICENSE_1_0.txt)
         
     </xsl:template>
 
+    <func:function name="meta:output_page_header">
+        <xsl:param name="test_log"/>
+        <xsl:param name="runner_id"/>
+        <xsl:choose>
+            <xsl:when test="$test_log/@test-name != ''">
+                <func:result select="concat( $runner_id, ' - ', $test_log/@library, ' - ', $test_log/@test-name, ' / ', $test_log/@toolset )"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <func:result select="$test_log/@target-dir"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </func:function>
+
+
     <xsl:template name="write_variants_file">
         <xsl:param name="path"/>
         <xsl:param name="test_logs"/>
+        <xsl:param name="runner_id"/>
         <xsl:message>    Writing variants file <xsl:value-of select="$path"/></xsl:message>
         <exsl:document href="{$path}"
             method="html" 
@@ -211,14 +229,32 @@ http://www.boost.org/LICENSE_1_0.txt)
             indent="yes">
             
             <html>
+                <xsl:variable name="component" select="meta:output_page_header( $test_logs[1], $runner_id )"/>
+
+                <head>
+                    <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
+                    <title>Test output: <xsl:value-of select="$component"/></title>
+                </head>
+
                 <body>
+                    <div>
+                        <div class="log-test-title">
+                            Test output: <xsl:value-of select="$component"/>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <b>Report Time: </b> <xsl:value-of select="meta:format_timestamp( $run_date )"/>
+                    </div>
+
+                    <p>Output by test variants:</p>
                     <table>
                         <xsl:for-each select="$test_logs">
                             <tr>
                                 <td>
                                      <xsl:choose>
                                          <xsl:when test="meta:log_file_path(.,$runner_id) != ''">
-                                             <a href="../{meta:log_file_path(.,$runner_id)}" target="_top" >
+                                             <a href="../{meta:log_file_path(.,$runner_id)}">
                                                  <xsl:value-of select="@target-directory"/>
                                              </a>
                                          </xsl:when>
@@ -248,28 +284,16 @@ http://www.boost.org/LICENSE_1_0.txt)
             indent="yes">
                         
             <html>
-                <xsl:variable name="component">
-                    <xsl:choose>
-                        <xsl:when test="$test_log/@test-name != ''">
-                            <div class="log-test-title">
-                                <xsl:value-of select="concat( $runner_id, ' - ', @library, ' - ', @test-name, ' / ', @toolset )"/>
-                            </div>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="@target-dir"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:variable>
-                
+                <xsl:variable name="component" select="meta:output_page_header( $test_log, $runner_id )"/>
+
                 <head>
                     <link rel="stylesheet" type="text/css" href="../master.css" title="master" />
                     <title>Test output: <xsl:value-of select="$component"/></title>
                 </head>
                 
                 <body>
-                    <div>
-                        <div class="log-test-title">
-                            Test output: <xsl:value-of select="$component"/>
+                    <div class="log-test-title">
+                        Test output: <xsl:value-of select="$component"/>
                     </div>
                     
                     <div>
@@ -288,47 +312,39 @@ http://www.boost.org/LICENSE_1_0.txt)
                     
                     <xsl:if test="compile">
                         <p>
-                            <div class="log-compiler-output-title">Compiler output [<xsl:value-of select="compile/@timestamp"/>]:
-                        </div>
-                        <pre>
-                            <xsl:copy-of select="compile/node()"/>
-                        </pre>
-                    </p>
-                </xsl:if>
+                            <div class="log-compiler-output-title">Compiler output [<xsl:value-of select="compile/@timestamp"/>]:</div>
+                            <pre><xsl:copy-of select="compile/node()"/></pre>
+                        </p>
+                    </xsl:if>
                 
-                <xsl:if test="link">
-                    <p>
-                        <div class="log-linker-output-title">Linker output [<xsl:value-of select="link/@timestamp"/>]:</div>
-                                    <pre>
-                                        <xsl:copy-of select="link/node()"/>
-                                    </pre>
-                                </p>
-                            </xsl:if>
+                    <xsl:if test="link">
+                        <p>
+                            <div class="log-linker-output-title">Linker output [<xsl:value-of select="link/@timestamp"/>]:</div>
+                            <pre><xsl:copy-of select="link/node()"/></pre>
+                        </p>
+                    </xsl:if>
                             
-                            <xsl:if test="lib">
-                                <p>
-                                    <div class="log-linker-output-title">Lib output [<xsl:value-of select="lib/@timestamp"/>]:</div>
-                                    <p>
-                                        See <a href="{meta:encode_path( concat( $runner_id, '-',  lib/node() )  ) }.html">
-                                        <xsl:copy-of select="lib/node()"/>
-                                    </a>
-                                </p>
-                            </p>
-                        </xsl:if>
-                        
-                        <xsl:if test="run">
+                    <xsl:if test="lib">
+                        <p>
+                            <div class="log-linker-output-title">Lib output [<xsl:value-of select="lib/@timestamp"/>]:</div>
                             <p>
-                                <div class="log-run-output-title">Run output [<xsl:value-of select="run/@timestamp"/>]:</div>
-                                <pre>
-                                    <xsl:copy-of select="run/node()"/>
-                                </pre>
+                                See <a href="{meta:encode_path( concat( $runner_id, '-',  lib/node() )  ) }.html">
+                                <xsl:copy-of select="lib/node()"/>
+                                </a>
                             </p>
-                        </xsl:if>
+                        </p>
+                    </xsl:if>
                         
-                    </div>
-                    
+                    <xsl:if test="run">
+                        <p>
+                            <div class="log-run-output-title">Run output [<xsl:value-of select="run/@timestamp"/>]:</div>
+                            <pre>
+                                <xsl:copy-of select="run/node()"/>
+                            </pre>
+                        </p>
+                    </xsl:if>
+                        
                     <xsl:copy-of select="document( 'html/make_tinyurl.html' )"/>
-                    
                 </body>
                 
             </html>
