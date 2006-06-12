@@ -1267,6 +1267,7 @@
             <toolset name="tru64cxx*"/>
             <toolset name="hp_cxx*"/>
             <toolset name="intel-win32-8_1"/>
+            <toolset name="sun-5.8"/>
             <note author="Eric Niebler">
                 This compiler does not support detection of
                 const rvalues.
@@ -1287,6 +1288,7 @@
             <toolset name="tru64cxx*"/>
             <toolset name="hp_cxx*"/>
             <toolset name="sunpro*"/>
+            <toolset name="sun-5.8"/>
             <note author="Eric Niebler">
                 This compiler does not support detection of
                 rvalues.
@@ -1313,6 +1315,16 @@
                 This failure is because the Boost.Range extension
                 mechanism is broken on these compilers. It requires
                 ADL which these compilers do not support.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="noncopyable"/>
+            <toolset name="sun-5.8"/>
+            <note author="Eric Niebler">
+                is_base_and_derived&lt;&gt; is broken on this compiler, but
+                the problem can be worked around by specializing
+                boost::foreach::is_noncopyable&lt;&gt; for collection
+                types that are noncopyable.
             </note>
         </mark-expected-failures>
     </library>
@@ -4644,6 +4656,11 @@ for more information.
                 Digital Mars cannot seem to handle dependent default template parameters,
                 such as "template &lt; class T, bool B = is_foo &lt; T &gt; ::value &gt;"
             </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="sun-5.8"/>
+            <note refid="17"/>
         </mark-unusable>
     </library>
 
