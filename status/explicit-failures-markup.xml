@@ -178,6 +178,8 @@
             <toolset name="vc-7_0"/>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
+            <toolset name="intel-win32"/>
             <note refid="6" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -192,6 +194,7 @@
             <test name="list_of"/>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
@@ -215,6 +218,7 @@
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="sun-5.8"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5*"/>
             <toolset name="gcc-2.95.3*"/>
             <note refid="27" author="Thorsten Ottosen"/>
@@ -227,6 +231,7 @@
             <toolset name="vc-7_0"/>
             <toolset name="mipspro"/>
             <toolset name="tru64cxx65"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Thorsten Ottosen" >
                 The test would (most likely) compile and run properly if the workaround
                 syntax .to_container( c ) was applied to all list_of() expressions.
@@ -241,6 +246,7 @@
             <test name="ptr_list_inserter"/>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5*"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="msvc"/>
@@ -256,6 +262,7 @@
         <mark-expected-failures>
             <test name="ptr_list_of"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5*"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="msvc"/>
@@ -270,6 +277,7 @@
         <mark-expected-failures>
             <test name="ptr_map_inserter"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5*"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="msvc"/>
@@ -343,7 +351,8 @@
         <mark-expected-failures>
             <test name="bind_rv_sp_test"/>
             <toolset name="tru64cxx*"/>
-            <toolset name="hp_cxx*"/>
+            <toolset name="hp_cxx-65*"/>
+            <toolset name="hp_cxx-71*"/>
             <note author="Markus Schoepflin">
               This failure is caused by a bug in the compiler triggered by the
               use of the debug flag '-gall'. It has been reported to the
@@ -805,6 +814,7 @@
                 <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
                 <toolset name="tru64cxx65-042"/>
+                <toolset name="hp_cxx-65*"/>
                 <note author="B. Garst" refid="19,21,22"/>
             </mark-failure>
         </test>
@@ -826,6 +836,7 @@
                 <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
                 <toolset name="tru64cxx65-042"/>
+                <toolset name="hp_cxx-65*"/>
                 <note author="B. Garst" refid="19,21,22"/>
             </mark-failure>
         </test>
@@ -1093,7 +1104,7 @@
 
         <mark-expected-failures>
             <test name="testtime_wstream"/>
-            <toolset name="hp_cxx-65_042_tru64"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Jeff Garland">
             The failure is caused by a standard library bug. It doesn't
             support user defined facets which are not default
@@ -1284,6 +1295,7 @@
             <test name="dependent_type"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Eric Niebler">
                 These compilers cannot handle BOOST_FOREACH
                 in a template, where the collection type
@@ -1321,6 +1333,7 @@
             <test name="format_test2"/>
             <test name="format_test3"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Markus Schoepflin" refid="33"/>
         </mark-expected-failures>
     </library>
@@ -1500,6 +1513,7 @@
             <test name="ios_state_test"/>
             <test name="ios_state_unit_test"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note refid="34" author="Markus Schoepflin"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -1648,7 +1662,8 @@
           <toolset name="vc-6_5-stlport"/>
           <toolset name="gcc-2.95.3-linux"/>
           <toolset name="sunpro-5_3-sunos"/>
-          <toolset name="tru64cxx65-042"/>
+          <toolset name="tru64cxx65*"/>
+          <toolset name="hp_cxx-65*"/>
           <note author="Douglas Gregor" refid="4"/>
         </mark-failure>
       </test>
@@ -1938,8 +1953,8 @@ for more information.
         <mark-expected-failures>
             <test name="test_serialization"/>
             <toolset name="tru64cxx71-006"/>
-            <toolset name="hp_cxx-65_042_tru64"/>
-            <toolset name="hp_cxx-71_006_tru64"/>
+            <toolset name="hp_cxx-65*"/>
+            <toolset name="hp_cxx-71*"/>
             <note author="J. L&#243;pez" date="16 Mar 2006">
               This test fails due to limitations of the template
               instantiation model used in the testing environment
@@ -2259,6 +2274,7 @@ for more information.
         <mark-expected-failures>
             <test name="test_variant_*"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Markus Schoepflin">
                 The variant library is not supported for this compiler version.
                 Therefore serialization of variants doesn't work.
@@ -2996,7 +3012,8 @@ for more information.
         <mark-unusable>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="tru64cxx65-042"/>
+            <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="borland-5_8*"/>
@@ -3151,6 +3168,7 @@ for more information.
         </mark-unusable>
         <mark-unusable>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Markus Schoepflin">
             The library fails to compile because of an error in the C++
             standard library implementation on this platform. It incorrectly
@@ -3353,7 +3371,8 @@ for more information.
             <test name="iterator_range"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Thorsten Ottosen">
                 For most compilers this is due to problems
                 with built-in arrays (notably char arrays) and operator==()
@@ -3365,7 +3384,8 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="reversible_range"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Thorsten Ottosen">
                 This test probably fails because it uses built-in arrays. So do expect these
                 functions to work in normal code.
@@ -3373,7 +3393,8 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="string"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="sun-5.8"/>
@@ -3395,8 +3416,8 @@ for more information.
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
             <toolset name="vc-7_0"/>
-            <toolset name="vc-7_1-stlport"/>
-            <toolset name="tru64cxx65"/>
+            <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note refid="6" author="Thorsten Ottosen">
                 For most compilers this is due to problems
                 with built-in arrays (notably char arrays) and operator==()
@@ -3556,6 +3577,7 @@ for more information.
             <toolset name="msvc-7.0*"/>
             <toolset name="sun-5*"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="vc-6_5*"/>
             <toolset name="vc-7_0*"/>
             <note author="Andreas Huber" refid="17"/>
@@ -3658,7 +3680,8 @@ for more information.
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
-            <toolset name="tru64cxx65-042"/>
+            <toolset name="tru64cxx65-*"/>
+            <toolset name="hp_cxx-65*"/>
             <toolset name="sunpro*"/>
             <toolset name="borland*"/>
             <note author="Gennadiy Rozental" refid="3"/>
@@ -3884,7 +3907,8 @@ for more information.
                 <toolset name="gcc-3_3*"/>
                 <toolset name="qcc-3.3*"/>
                 <toolset name="sunpro-5_3-sunos"/>
-                <toolset name="tru64cxx65-042"/>
+                <toolset name="tru64cxx65-*"/>
+                <toolset name="hp_cxx-65*"/>
                 <toolset name="darwin"/>
                 <toolset name="mingw"/>
                 <note author="Aleksey Gurtovoy">
@@ -4273,7 +4297,8 @@ for more information.
                 <toolset name="gcc-3.3*"/>
                 <toolset name="gcc-3_3*"/>
                 <toolset name="sunpro-5_3-sunos"/>
-                <toolset name="tru64cxx65-042"/>
+                <toolset name="tru64cxx65*"/>
+                <toolset name="hp_cxx-65*"/>
                 <toolset name="darwin"/>
                 <toolset name="mingw"/>
                 <note author="Aleksey Gurtovoy">
@@ -4469,6 +4494,7 @@ for more information.
             <toolset name="mipspro"/>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note refid="2"/>
         </mark-unusable>
         <test name="recursive_variant_test">
@@ -4530,6 +4556,7 @@ for more information.
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <toolset name="tru64cxx65*"/>
+            <toolset name="hp_cxx-65*"/>
             <note refid="29"/>
         </mark-unusable>
        <mark-unusable>
@@ -4578,7 +4605,7 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_slex_lexer"/>
-            <toolset name="hp_cxx-65_042_tru64"/>
+            <toolset name="hp_cxx-65*"/>
             <note author="Hartmut Kaiser" refid="2"/>
         </mark-expected-failures>
 
