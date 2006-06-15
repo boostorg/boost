@@ -21,38 +21,37 @@
 
     <!-- /////////////// Toolsets /////////////// -->
     <mark-toolset name="borland-5_6_4" status="required"/>
-    <mark-toolset name="cw-9_4" status="required"/>
-    <mark-toolset name="cw-8_3" status="required"/>
-    <mark-toolset name="cw-9_5-darwin" status="required"/>
-    <mark-toolset name="msvc" status="required"/>
-    <mark-toolset name="msvc-stlport" status="required"/>
-    <mark-toolset name="vc7" status="required"/>
+    <mark-toolset name="borland-5_8_2" status="required"/>
+    <mark-toolset name="cw-9.4" status="required"/>
     <mark-toolset name="vc-6_5" status="required"/>
     <mark-toolset name="msvc-6.5" status="required"/>
     <mark-toolset name="vc-6_5-stlport" status="required"/>
     <mark-toolset name="vc-7_0" status="required"/>
-    <mark-toolset name="vc-7_1" status="required"/>
+    <mark-toolset name="vc-7_1-stlport" status="required"/>
+    <mark-toolset name="msvc-7.1" status="required"/>
+    <mark-toolset name="msvc-8.0" status="required"/>
     <mark-toolset name="mingw-3_4_2" status="required"/>
-    <mark-toolset name="gcc-2.95.3-linux" status="required"/>
-    <mark-toolset name="gcc-2.95.3-stlport-4.5.3-linux" status="required"/>
-    <mark-toolset name="gcc-2.95.3-stlport-4.6.2-linux" status="required"/>
-    <mark-toolset name="gcc-3.2.3-linux" status="required"/>
-    <mark-toolset name="gcc-3.3.6-linux" status="required"/>
-    <mark-toolset name="gcc-3.4.4-linux" status="required"/>
-    <mark-toolset name="gcc-3.4.5-linux" status="required"/>
-    <mark-toolset name="gcc-4.0.0-linux" status="required"/>
-    <mark-toolset name="gcc-4.0.1-linux" status="required"/>
-    <mark-toolset name="gcc-4.0.2-linux" status="required"/>
-    <mark-toolset name="gcc-3_3-darwin" status="required"/>
-    <mark-toolset name="gcc-4_0-darwin" status="required"/>
+    <mark-toolset name="mingw-3_4_5" status="required"/>
+    <mark-toolset name="gcc-3.3.6" status="required"/>
+    <mark-toolset name="gcc-3.4.4" status="required"/>
+    <mark-toolset name="gcc-3.2.3_linux" status="required"/>
+    <mark-toolset name="gcc-3.3.6_linux" status="required"/>
+    <mark-toolset name="gcc-3.4.5_linux" status="required"/>
+    <mark-toolset name="gcc-3.4.5_linux" status="required"/>
+    <mark-toolset name="gcc-4.0.3_linux" status="required"/>
+    <mark-toolset name="gcc-4.1.0_linux" status="required"/>
+    <mark-toolset name="gcc-3.4.5_linux_x86_64" status="required"/>
+    <mark-toolset name="gcc-4.1.0_linux_x86_64" status="required"/>
+    <mark-toolset name="gcc-3_4_4_tru64" status="required"/>
+    <mark-toolset name="gcc-4_0_3_tru64" status="required"/>
     <mark-toolset name="gcc-3.4.3_sunos" status="required"/>
-    <mark-toolset name="intel-win32-8_1" status="required"/>
-    <mark-toolset name="intel-win32-9_0" status="required"/>
-    <mark-toolset name="intel-8.1-linux" status="required"/>
-    <mark-toolset name="intel-9.0-linux" status="required"/>
     <mark-toolset name="hp_cxx-71_006_tru64" status="required"/>
     <mark-toolset name="qcc-3.3.5-cpp" status="required"/>
     <mark-toolset name="qcc-3.3.5-gpp" status="required"/>
+    <mark-toolset name="darwin-4.0.1" status="required"/>
+    <mark-toolset name="intel-win-9.1" status="required"/>
+    <mark-toolset name="intel-linux-9.0" status="required"/>
+    <mark-toolset name="sun-5.8" status="required"/>
 
     <!-- /////////////// Libraries /////////////// -->
 
@@ -82,10 +81,8 @@
         </mark-unusable>
         <test name="regex">
             <mark-failure>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="A.Meredith">
                     The reason for this failure has not been diagnosed yet.
                 </note>
@@ -117,6 +114,7 @@
             <mark-failure>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
+                <toolset name="vc-6_5-stlport"/>
                 <toolset name="msvc-6.5"/>
                 <toolset name="vc-7_0"/>
                 <note author="A.Meredith">
@@ -132,6 +130,7 @@
                 <toolset name="borland-5.6.4"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
+                <toolset name="vc-6_5-stlport"/>
                 <toolset name="msvc-6.5"/>
                 <toolset name="vc-7_0"/>
                 <note refid="3"/>
@@ -218,6 +217,7 @@
         <mark-expected-failures>
             <test name="multi_index_container"/>
             <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="sun-5.8"/>
             <toolset name="tru64cxx65*"/>
             <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5*"/>
@@ -390,12 +390,6 @@
 
     <!-- config -->
     <library name="config">
-        <test name="config_test">
-            <mark-failure>
-                <toolset name="intel-win32"/>
-                <note author="B. Dawes" refid="3"/>
-            </mark-failure>
-        </test>
         <test name="config_link_test">
             <mark-failure>
                 <toolset name="*como-4_3_3-vc7*"/>
@@ -425,10 +419,8 @@
         </test>
         <test name="limits_test">
             <mark-failure>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="A.Meredith">
                     This failure is due to NaNs trapping.
                 </note>
@@ -559,10 +551,8 @@
                 <toolset name="cw-8_3*"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="mingw*"/>
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="gcc-3.1-darwin"/>
@@ -589,10 +579,8 @@
             <mark-failure>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="*como-4_3_3*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
@@ -617,10 +605,8 @@
             <toolset name="*como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
@@ -640,10 +626,8 @@
             <toolset name="*como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
@@ -663,10 +647,8 @@
             <toolset name="*como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
@@ -683,10 +665,8 @@
             <toolset name="*como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="msvc"/>
             <toolset name="vc-7_0"/>
@@ -704,10 +684,8 @@
             <mark-failure>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="*como-4_3_3*"/>
             <toolset name="cw-8_3*"/>
             <toolset name="gcc-2.95.3-linux"/>
@@ -730,10 +708,8 @@
             <mark-failure>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="*como-4_3_3*"/>
             <toolset name="cw-8_3*"/>
             <toolset name="gcc-2.95.3-linux"/>
@@ -814,10 +790,8 @@
                 <toolset name="vc-7_0"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
                 <toolset name="tru64cxx65-042"/>
@@ -836,10 +810,8 @@
                 <toolset name="vc-7_0"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="mingw*"/>
                 <toolset name="*como-4_3_3*"/>
                 <toolset name="tru64cxx65-042"/>
@@ -853,10 +825,8 @@
                 <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="cw-8_3*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
@@ -875,10 +845,8 @@
                 <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="cw-8_3*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
@@ -897,10 +865,8 @@
                 <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="cw-8_3*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
@@ -950,10 +916,8 @@
                 <toolset name="mingw*"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="B. Garst" refid="18,19"/>
             </mark-failure>
         </test>
@@ -967,10 +931,8 @@
                 <toolset name="mingw*"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="*como-4_3_3*"/>
                 <note author="B. Garst" refid="18,19"/>
             </mark-failure>
@@ -989,10 +951,8 @@
                 <toolset name="vc-7_0"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="B. Garst" refid="18,20"/>
             </mark-failure>
         </test>
@@ -1014,10 +974,8 @@
                 <toolset name="vc-7_0"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="mingw-3*"/>
                 <toolset name="mingw"/>
                 <toolset name="*como-4_3_3*"/>
@@ -1076,7 +1034,7 @@
             <test name="testlocal_time_input_facet"/>
             <test name="testtime_input_facet"/>
             <toolset name="vc-8_0*"/>
-        <toolset name="msvc-8.0*"/>
+            <toolset name="msvc-8.0*"/>
             <note author="J. Garland">
                These tests are failing with the beta2 version of VC_8.  At least
                one of them is directly a result of the new VC_8 standard library
@@ -1256,10 +1214,8 @@
             <toolset name="vc-7_0"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2*"/>
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3_3-darwin"/>
@@ -1288,10 +1244,8 @@
             <toolset name="vc-7_0"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="tru64cxx*"/>
             <toolset name="hp_cxx*"/>
             <toolset name="sunpro*"/>
@@ -1420,10 +1374,8 @@
             <test name="point" />
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Daniel James">
                 It appears that Borland doesn't find friend functions defined
                 in a class by ADL. This is easily fixed but this example is
@@ -1436,10 +1388,8 @@
             <test name="hash_global_namespace_test" />
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Daniel James">
                 The test demonstrates a Borland bug - functions that aren't
                 in a namespace don't appear to be found by ADL.
@@ -1452,10 +1402,8 @@
         <mark-unusable>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
             <toolset name="msvc-6.5*"/>
@@ -1497,7 +1445,6 @@
           <toolset name="cw-8_3"/>
           <toolset name="cw-9_3-darwin"/>
           <toolset name="cw-9_4-darwin"/>
-          <toolset name="cw-9_4"/>
           <toolset name="cw-9_4-darwin"/>
           <toolset name="cw-9_5-darwin"/>
           <toolset name="iw-7_1-vc6"/>
@@ -1542,11 +1489,6 @@
             <toolset name="gcc-2.95.3-*"/>
             <note refid="3" author="Doug Gregor"/>
         </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="ios_state_unit_test"/>
-            <toolset name="intel-win32-8*"/>
-            <note refid="3" author="Stefan Slapeta"/>
-        </mark-expected-failures>
     </library>
 
     <!-- iostreams -->
@@ -1557,22 +1499,23 @@
             <note author="Jonathan Turkanis" refid="17"/>
         </mark-unusable>
         <mark-expected-failures>
+            <!-- STLPort bug -->
             <test name="seekable_file_test"/>
-            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
-            <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
-            <toolset name="msvc-stlport"/>
-            <toolset name="vc-6_5-stlport"/>
             <toolset name="*como-4_3_3*"/>
+            <toolset name="*stlport"/>
             <note author="Jonathan Turkanis" refid="4"/>
         </mark-expected-failures>
         <mark-expected-failures>
+            <!-- Insufficient wide character support -->
             <test name="code_converter_test"/>
             <test name="wide_stream_test"/>
             <toolset name="gcc-2.95.3-linux"/>
-            <toolset name="*mingw*"/>
+            <!-- Must enumerate MinGW's since some use STLPort -->
+            <toolset name="mingw-3_4_2"/>
+            <toolset name="mingw-3_4_4"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-3.3.6-osf1"/>
             <note author="Jonathan Turkanis" refid="19"/>
@@ -1600,13 +1543,6 @@
             <toolset name="*como-4_3_3*"/>
             <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
-        <!--
-        <mark-expected-failures>
-            <test name="mapped_file_test"/>
-            <toolset name="intel-win32-9_0"/>
-            <note author="Jonathan Turkanis" refid="0"/>
-        </mark-expected-failures>
-        -->
         <mark-expected-failures reason="?">
             <test name="direct_adapter_test"/>
             <test name="gzip_test"/>
@@ -1622,6 +1558,8 @@
             <test name="finite_state_filter_test"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
             <toolset name="msvc-6.5*"/>
@@ -1633,7 +1571,7 @@
         <mark-expected-failures>
             <test name="code_converter_test"/>
             <test name="wide_stream_test"/>
-            <toolset name="qcc-3.3.5-gpp"/>
+            <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
 
@@ -1665,10 +1603,8 @@
             <toolset name="borland-5_5_1"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="vc-7_0"/>
             <toolset name="sunpro-5_3-sunos"/>
             <note refid="17">
@@ -1732,10 +1668,8 @@
             <test name="has_xxx"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3*"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004">
                 This failure is caused by a deficient SFINAE implementation.
@@ -1787,10 +1721,8 @@
 
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004" refid="26"/>
         </mark-expected-failures>
 
@@ -1812,10 +1744,8 @@
             <test name="quote"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
             <toolset name="msvc-6.5*"/>
@@ -1832,10 +1762,8 @@
             <test name="set_c"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3*"/>
             <toolset name="mipspro"/>
             <note author="Aleksey Gurtovoy" date="17 Sep 2004">
@@ -1865,10 +1793,8 @@
             <toolset name="borland-5_5_1"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Alisdair Meredith" date="30 Jan 2004">
                 <p>
                 This library has never worked [on Borland 5.5.1 and 5.6.4], and the only tests
@@ -1931,10 +1857,8 @@ for more information.
             <note author="J. L&#243;pez" date="05 Jul 2004" refid="17"/>
         </mark-unusable>
         <mark-unusable>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Alisdair Meredith" date="26 May 2006"/>
         </mark-unusable>
         <mark-unusable>
@@ -2012,10 +1936,8 @@ for more information.
             <test name="optional_test_ref_fail1"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Fernando Cacciola" refid="2"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -2086,34 +2008,11 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-             <test name="test_demo_portable_archive_dll"/>
-             <toolset name="vc*"/>
-             <toolset name="borland-5_6_4"/>
-             <toolset name="borland-5.6.4"/>
-             <toolset name="msvc"/>
-             <toolset name="vc-6_5*"/>
-             <toolset name="msvc-6.5*"/>
-             <toolset name="iw*"/>
-             <toolset name="intel-win32-*"/>
-             <note author="Robert Ramey" date="12 Feb 05" refid="2,29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
              <test name="test_reset_object_address*"/>
              <toolset name="msvc"/>
              <toolset name="vc-6_5*"/>
              <toolset name="msvc-6.5*"/>
              <note author="Robert Ramey" date="12 Feb 05" refid="6,29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_array*"/>
-            <test name="test_demo_fast_archive"/>
-            <test name="test_demo_fast_archive_dll"/>
-            <toolset name="borland*"/>
-            <note author="Robert Ramey" date="12 Feb 05" refid="26">
-                Borland compilers don't handle templates with array type arguments properly.
-            </note>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -2222,15 +2121,10 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_no_rtti_*"/>
-            <test name="test_set_*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <note author="Aleksey Gurtovoy" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_array_binary_archive"/>
-            <test name="test_array_text_*"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="borland-5.8.2"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
 
@@ -2241,130 +2135,8 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_array_text_archive_dll"/>
-            <test name="test_array_text_warchive_dll"/>
-            <test name="test_array_xml_archive_dll"/>
-            <test name="test_array_xml_warchive_dll"/>
-            <test name="test_binary_text_archive_dll"/>
-            <test name="test_binary_text_warchive_dll"/>
-            <test name="test_binary_xml_archive_dll"/>
-            <test name="test_binary_xml_warchive_dll"/>
-            <test name="test_class_info_save_text_archive_dll"/>
-            <test name="test_class_info_save_text_warchive_dll"/>
-            <test name="test_class_info_save_xml_warchive_dll"/>
-            <test name="test_contained_class_text_archive_dll"/>
-            <test name="test_contained_class_text_warchive_dll"/>
-            <test name="test_contained_class_xml_archive_dll"/>
-            <test name="test_contained_class_xml_warchive_dll"/>
-            <test name="test_cyclic_ptrs_text_archive_dll"/>
-            <test name="test_cyclic_ptrs_text_warchive_dll"/>
-            <test name="test_cyclic_ptrs_xml_archive_dll"/>
-            <test name="test_cyclic_ptrs_xml_warchive_dll"/>
-            <test name="test_delete_pointer_text_archive_dll"/>
-            <test name="test_delete_pointer_text_warchive_dll"/>
-            <test name="test_delete_pointer_xml_archive_dll"/>
-            <test name="test_delete_pointer_xml_warchive_dll"/>
-            <test name="test_demo_auto_ptr_dll"/>
-            <test name="test_demo_dll"/>
-            <test name="test_demo_exception_dll"/>
-            <test name="test_demo_pimpl_dll"/>
-            <test name="test_demo_polymorphic_dll"/>
-            <test name="test_deque_text_archive_dll"/>
-            <test name="test_deque_text_warchive_dll"/>
-            <test name="test_deque_xml_archive_dll"/>
-            <test name="test_deque_xml_warchive_dll"/>
-            <test name="test_derived_class_ptr_text_archive_dll"/>
-            <test name="test_derived_class_ptr_text_warchive_dll"/>
-            <test name="test_derived_class_ptr_xml_archive_dll"/>
-            <test name="test_derived_class_ptr_xml_warchive_dll"/>
-            <test name="test_derived_class_text_archive_dll"/>
-            <test name="test_derived_class_text_warchive_dll"/>
-            <test name="test_derived_class_xml_archive_dll"/>
-            <test name="test_derived_class_xml_warchive_dll"/>
-            <test name="test_derived_text_archive_dll"/>
-            <test name="test_derived_text_warchive_dll"/>
-            <test name="test_derived_xml_warchive_dll"/>
-            <test name="test_list_ptrs_text_archive_dll"/>
-            <test name="test_list_ptrs_text_warchive_dll"/>
-            <test name="test_list_ptrs_xml_archive_dll"/>
-            <test name="test_list_ptrs_xml_warchive_dll"/>
-            <test name="test_list_text_archive_dll"/>
-            <test name="test_list_text_warchive_dll"/>
-            <test name="test_list_xml_archive_dll"/>
-            <test name="test_list_xml_warchive_dll"/>
-            <test name="test_map_text_archive_dll"/>
-            <test name="test_map_text_warchive_dll"/>
-            <test name="test_map_xml_archive_dll"/>
-            <test name="test_map_xml_warchive_dll"/>
-            <test name="test_multiple_ptrs_text_archive_dll"/>
-            <test name="test_multiple_ptrs_text_warchive_dll"/>
-            <test name="test_multiple_ptrs_xml_archive_dll"/>
-            <test name="test_multiple_ptrs_xml_warchive_dll"/>
-            <test name="test_non_default_ctor_text_archive_dll"/>
-            <test name="test_non_default_ctor_text_warchive_dll"/>
-            <test name="test_non_default_ctor_xml_archive_dll"/>
-            <test name="test_non_default_ctor_xml_warchive_dll"/>
-            <test name="test_non_intrusive_ctor_text_archive_dll"/>
-            <test name="test_non_intrusive_ctor_text_warchive_dll"/>
-            <test name="test_non_intrusive_ctor_xml_archive_dll"/>
-            <test name="test_non_intrusive_ctor_xml_warchive_dll"/>
-            <test name="test_non_intrusive_text_archive_dll"/>
-            <test name="test_non_intrusive_text_warchive_dll"/>
-            <test name="test_non_intrusive_xml_archive_dll"/>
-            <test name="test_non_intrusive_xml_warchive_dll"/>
-            <test name="test_null_ptr_text_archive_dll"/>
-            <test name="test_null_ptr_text_warchive_dll"/>
-            <test name="test_null_ptr_xml_archive_dll"/>
-            <test name="test_null_ptr_xml_warchive_dll"/>
-            <test name="test_nvp_text_archive_dll"/>
-            <test name="test_nvp_text_warchive_dll"/>
-            <test name="test_nvp_xml_archive_dll"/>
-            <test name="test_nvp_xml_warchive_dll"/>
-            <test name="test_object_text_warchive_dll"/>
-            <test name="test_object_xml_warchive_dll"/>
-            <test name="test_optional_text_archive_dll"/>
-            <test name="test_optional_text_warchive_dll"/>
-            <test name="test_optional_xml_archive_dll"/>
-            <test name="test_optional_xml_warchive_dll"/>
-            <test name="test_polymorphic_text_archive_dll"/>
-            <test name="test_polymorphic_text_warchive_dll"/>
-            <test name="test_polymorphic_xml_archive_dll"/>
-            <test name="test_polymorphic_xml_warchive_dll"/>
-            <test name="test_primitive_text_warchive_dll"/>
-            <test name="test_primitive_xml_warchive_dll"/>
-            <test name="test_private_ctor_dll"/>
-            <test name="test_recursion_text_archive_dll"/>
-            <test name="test_recursion_text_warchive_dll"/>
-            <test name="test_recursion_xml_archive_dll"/>
-            <test name="test_recursion_xml_warchive_dll"/>
-            <test name="test_reset_object_address_dll"/>
-            <test name="test_set_text_archive_dll"/>
-            <test name="test_set_text_warchive_dll"/>
-            <test name="test_set_xml_archive_dll"/>
-            <test name="test_set_xml_warchive_dll"/>
-            <test name="test_simple_class_ptr_text_archive_dll"/>
-            <test name="test_simple_class_ptr_text_warchive_dll"/>
-            <test name="test_simple_class_ptr_xml_archive_dll"/>
-            <test name="test_simple_class_ptr_xml_warchive_dll"/>
-            <test name="test_simple_class_text_archive_dll"/>
-            <test name="test_simple_class_text_warchive_dll"/>
-            <test name="test_simple_class_xml_archive_dll"/>
-            <test name="test_simple_class_xml_warchive_dll"/>
-            <test name="test_split_text_archive_dll"/>
-            <test name="test_split_text_warchive_dll"/>
-            <test name="test_split_xml_warchive_dll"/>
-            <test name="test_tracking_text_archive_dll"/>
-            <test name="test_tracking_text_warchive_dll"/>
-            <test name="test_tracking_xml_warchive_dll"/>
-            <test name="test_variant_text_archive_dll"/>
-            <test name="test_variant_text_warchive_dll"/>
-            <test name="test_variant_xml_archive_dll"/>
-            <test name="test_variant_xml_warchive_dll"/>
-            <test name="test_vector_text_archive_dll"/>
-            <test name="test_vector_text_warchive_dll"/>
-            <test name="test_vector_xml_archive_dll"/>
-            <test name="test_vector_xml_warchive_dll"/>
-            <toolset name="cw-9_5-darwin"/>
+            <test name="*_dll"/>
+            <toolset name="cw*"/>
             <note author="Doug Gregor" refid="35"/>
         </mark-expected-failures>
 
@@ -2415,6 +2187,8 @@ for more information.
             <test name="test_const_load_fail2_nvp"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="borland-5.8.2"/>
             <note author="Doug Gregor" refid="29"/>
         </mark-expected-failures>
 
@@ -2468,7 +2242,7 @@ for more information.
         <mark-expected-failures>
             <test name="*_warchive"/>
             <test name="*_warchive_dll"/>
-            <toolset name="qcc-3.3.5-gpp"/>
+            <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
     </library>
@@ -2521,10 +2295,8 @@ for more information.
             <toolset name="borland-5_5_1"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="vc-7_0"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
@@ -2686,10 +2458,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2702,10 +2472,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2718,10 +2486,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2738,10 +2504,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2758,10 +2522,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2778,10 +2540,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2802,10 +2562,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -2871,10 +2629,8 @@ for more information.
             <toolset name="borland"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="D. Abrahams">
                 This failure is caused by a compiler bug.  The
                 compiler tends to drop const-ness and as a result
@@ -2889,10 +2645,8 @@ for more information.
             <toolset name="borland"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Aleksey Gurtovoy" date="19 Sep 2004" refid="26"/>
         </mark-expected-failures>
 
@@ -2963,7 +2717,7 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="complex_test"/>
-            <toolset name="qcc-3.3.5-cpp"/>
+            <toolset name="qcc-3.3.5*cpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
        </mark-expected-failures>
     </library>
@@ -3047,10 +2801,8 @@ for more information.
             <toolset name="borland"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-3_3-darwin"/>
             <note author="M.Stevens" refid="17"/>
         </mark-unusable>
@@ -3066,7 +2818,7 @@ for more information.
         </mark-unusable>
         <mark-expected-failures>
             <test name="test3"/>
-            <toolset name="qcc-3.3.5-cpp"/>
+            <toolset name="qcc-3.3.5*cpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
        </mark-expected-failures>
     </library>
@@ -3185,7 +2937,7 @@ for more information.
 
         <mark-expected-failures>
             <test name="unicode_test*"/>
-            <toolset name="qcc-3.3.5-gpp"/>
+            <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
 
@@ -3200,11 +2952,14 @@ for more information.
             <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5_8*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="vc-7_0"/>
-            <toolset name="dmc-8_43-stlport-4_5_3"/>
+            <toolset name="msvc-7.0"/>
+            <toolset name="dmc-8_47-stlport-4_5_3"/>
+            <toolset name="hp_cxx-65_042_tru64"/>
         </mark-unusable>
         <mark-expected-failures>
             <test name="ptr_list"/>
@@ -3222,7 +2977,115 @@ for more information.
                 It should be fixed in newer versions of the compiler.
             </note>
         </mark-expected-failures>
-
+        <mark-expected-failures>
+            <test name="incomplete_type_test"/>
+            <toolset name="cw-9.4"/>
+            <note author="Thorsten Ottosen">
+                This error seems to be a bug the compiler. Please submit a 
+                patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="iterator_test"/>
+            <toolset name="gcc-3.2.3*"/>
+            <toolset name="gcc-3.3.6*"/>
+            <toolset name="gcc"/>
+            <toolset name="qcc-3.3.5*"/>  
+            <note author="Thorsten Ottosen">
+                This error seems to be a bug the standard library. Please submit a 
+                patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="no_exceptions"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                This test fails because the test ptr_vector fails. Please see the note
+                for that test.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_deque"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>insert(iterator,range)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_list"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>insert(iterator,range)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_vector"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>insert(iterator,range)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_map"/>
+            <toolset name="hp_cxx-71_006_tru64"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For hp, this compiler bug is insignificant.
+                For sun the problem is that <code>transfer(range,ptr_map)</code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is not known so please submit a patch.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="ptr_set"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="sun-5.8"/>
+            <note author="Thorsten Ottosen">
+                For sun the problem is that <code>transfer(range,ptr_map)</code> and
+                <code>insert(range)</code>code>
+                is not available due to partial ordering errors (the core library remains usable).
+                For codewarrior the problem is at least <code>std::auto_ptr</code> overloads (the core library remains usable)..
+            </note>
+        </mark-expected-failures>
+           <mark-expected-failures>
+            <test name="serialization"/>
+            <toolset name="cw*"/>
+            <note author="Thorsten Ottosen">
+                This cause of this problem is unknown. Please submit a patch.
+            </note>
+        </mark-expected-failures>
+           <mark-expected-failures>
+               <test name="tree_test"/>
+               <toolset name="sun-5.8"/>
+               <note author="Thorsten Ottosen">
+                   For sun the problem is due to Boost.Test.                  
+               </note>
+           </mark-expected-failures>
+           <mark-expected-failures>
+               <test name="tut1"/>
+               <toolset name="cw-9.4"/>
+               <note author="Thorsten Ottosen">
+                   Seem like a bug in the compiler. Please submit a patch.                  
+               </note>
+           </mark-expected-failures>
+           <mark-expected-failures>
+               <test name="view_example"/>
+               <toolset name="cw-9.4"/>
+               <note author="Thorsten Ottosen">
+                   Seem like a bug in the compiler. Please submit a patch.                  
+               </note>
+           </mark-expected-failures>
     </library>
 
     <!-- python -->
@@ -3232,10 +3095,8 @@ for more information.
             <toolset name="borland-5_5_1"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note refid="2"/>
             <note refid="17"/>
         </mark-unusable>
@@ -3392,18 +3253,16 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="B. Dawes" refid="2"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="intel-win32-*"/>
+                <toolset name="intel-win*"/>
                 <note author="S. Slapeta" refid="1"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="qcc-3.3.5-*"/>
+                <toolset name="qcc-3.3.5*"/>
                 <note author="Jim Douglas" date="13 Feb 06">
                     Test fails with ranlux*_O1 RNGs when saving and recalling the state due to a bug in the
                     double to string conversion. The problem has been reported to QNX as PR29252. 	
@@ -3433,10 +3292,9 @@ for more information.
             <toolset name="como-4_3_3*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="sun-5.8"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note refid="27" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -3469,10 +3327,9 @@ for more information.
             <toolset name="hp_cxx-65*"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="sun-5.8"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Thorsten Ottosen">
                 The string functionality is expected to work if
                 the user employs std::string and stays away from built-in
@@ -3482,7 +3339,7 @@ for more information.
         <mark-expected-failures>
             <test name="sub_range"/>
             <toolset name="vc-8_0"/>
-        <toolset name="msvc-8.0"/>
+            <toolset name="msvc-8.0"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
@@ -3503,6 +3360,15 @@ for more information.
                 At the time of release I couldn't figure out why this was failing.
                 Anyway, the failure is not very important; also, the well-definedness of
                 "singularity" of an iterator range is likely to change.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="extension_mechanism"/>
+            <toolset name="vc-6_5*"/>
+            <toolset name="vc-7_0"/>
+            <note author="Thorsten Ottosen">
+                The test requires support for Argument Dependent Lookup (ADL)
+                which the compiler in question does not provide.
             </note>
         </mark-expected-failures>
     </library>
@@ -3613,10 +3479,8 @@ for more information.
                 <toolset name="borland"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5"/>
                 <toolset name="msvc-6.5"/>
@@ -3712,10 +3576,8 @@ for more information.
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="A.Meredith" date="26 May 2006">
                   This test runs without problem on Borland compilers,
                   which means the static assertion is not being caught.
@@ -3766,7 +3628,7 @@ for more information.
 
         <mark-expected-failures>
             <test name="token_iterator_test"/>
-            <toolset name="qcc-3.3.5-gpp"/>
+            <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="36"/>
        </mark-expected-failures>
 
@@ -3779,10 +3641,8 @@ for more information.
             <toolset name="vc-7_0-stlport"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Gennadiy Rozental" refid="3"/>
         </mark-expected-failures>
 
@@ -3800,9 +3660,8 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-          <test name="errors_handling_test"/>
           <test name="test_tools_test"/>
-          <toolset name="cw-9_4"/>
+          <toolset name="cw-9.4"/>
           <note refid="29" author="Doug Gregor"/>
         </mark-expected-failures>
     </library>
@@ -3826,10 +3685,8 @@ for more information.
                 <toolset name="mingw*"/>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="cw-*"/>
                 <toolset name="vc-7_0"/>
                 <note author="Aleksey Gurtovoy" date="19 Sep 2004">
@@ -3885,10 +3742,6 @@ for more information.
         <mark-unusable>
             <toolset name="sunpro-5_3-sunos"/>
         </mark-unusable>
-        <test name="io_test">
-            <toolset name="intel-win32"/>
-            <note author="B. Dawes" refid="3"/>
-        </test>
     </library>
 
     <!-- type_traits -->
@@ -3938,20 +3791,16 @@ for more information.
             <test name="tricky_incomplete_type_test"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="John Maddock" refid="2"/>
         </mark-expected-failures>
         <test name="tricky_is_enum_test">
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5*"/>
                 <toolset name="msvc-6.5*"/>
@@ -3968,10 +3817,8 @@ for more information.
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="cw-8_3*"/>
                 <toolset name="cw-9_3*"/>
                 <toolset name="cw-9_4*"/>
@@ -4096,7 +3943,6 @@ for more information.
             <test name="test_bind_tricky"/>
             <test name="test_reference_wrapper_tricky"/>
             <test name="test_function_tricky"/>
-            <test name="std_test_array_tricky"/>
             <test name="std_test_mem_fn_tricky"/>
             <test name="std_test_bind_tricky"/>
             <test name="std_test_reference_wrapper_tricky"/>
@@ -4116,7 +3962,7 @@ for more information.
             <test name="test_hash"/>
             <test name="std_test_hash"/>
             <toolset name="mingw*"/>
-            <toolset name="qcc-3.3.5-gpp*"/>
+            <toolset name="qcc-3.3.5*gpp*"/>
             <toolset name="gcc-2*"/>
             <note author="John Maddock">
                These tests fail on this platform due to a lack of
@@ -4127,6 +3973,8 @@ for more information.
         <mark-expected-failures>
             <test name="test_array"/>
             <test name="std_test_array"/>
+            <test name="test_array_tricky"/>
+            <test name="std_test_array_tricky"/>
             <test name="test_complex"/>
             <test name="std_test_complex"/>
             <test name="test_function"/>
@@ -4145,6 +3993,8 @@ for more information.
             <test name="std_test_tr1_include"/>
             <test name="test_tuple"/>
             <test name="std_test_tuple"/>
+            <test name="test_tuple_tricky"/>
+            <test name="std_test_tuple_tricky"/>
             <test name="test_type_traits"/>
             <test name="std_test_type_traits"/>
             <test name="run_complex_overloads"/>
@@ -4152,57 +4002,58 @@ for more information.
             <test name="run_random"/>
             <test name="std_run_random"/>
             <test name="test_tuple_tricky"/>
-           <test name="tr1_add_const_test"/>
-           <test name="tr1_add_cv_test"/>
-           <test name="tr1_add_pointer_test"/>
-           <test name="tr1_add_reference_test"/>
-           <test name="tr1_add_volatile_test"/>
-           <test name="tr1_aligned_storage_test"/>
-           <test name="tr1_alignment_of_test"/>
-           <test name="tr1_has_nothrow_assign_test"/>
-           <test name="tr1_has_nothrow_constr_test"/>
-           <test name="tr1_has_nothrow_copy_test"/>
-           <test name="tr1_has_trivial_assign_test"/>
-           <test name="tr1_has_trivial_constr_test"/>
-           <test name="tr1_has_trivial_copy_test"/>
-           <test name="tr1_has_trivial_destructor_test"/>
-           <test name="tr1_has_virtual_destructor_test"/>
-           <test name="tr1_is_arithmetic_test"/>
-           <test name="tr1_is_array_test"/>
-           <test name="tr1_is_class_test"/>
-           <test name="tr1_is_compound_test"/>
-           <test name="tr1_is_const_test"/>
-           <test name="tr1_is_convertible_test"/>
-           <test name="tr1_is_empty_test"/>
-           <test name="tr1_is_enum_test"/>
-           <test name="tr1_is_floating_point_test"/>
-           <test name="tr1_is_function_test"/>
-           <test name="tr1_is_fundamental_test"/>
-           <test name="tr1_is_integral_test"/>
-           <test name="tr1_is_member_func_test"/>
-           <test name="tr1_is_member_obj_test"/>
-           <test name="tr1_is_member_pointer_test"/>
-           <test name="tr1_is_object_test"/>
-           <test name="tr1_is_pod_test"/>
-           <test name="tr1_is_pointer_test"/>
-           <test name="tr1_is_polymorphic_test"/>
-           <test name="tr1_is_reference_test"/>
-           <test name="tr1_is_same_test"/>
-           <test name="tr1_is_scalar_test"/>
-           <test name="tr1_is_signed_test"/>
-           <test name="tr1_is_union_test"/>
-           <test name="tr1_is_unsigned_test"/>
-           <test name="tr1_is_void_test"/>
-           <test name="tr1_is_volatile_test"/>
-           <test name="tr1_remove_const_test"/>
-           <test name="tr1_remove_cv_test"/>
-           <test name="tr1_remove_pointer_test"/>
-           <test name="tr1_remove_reference_test"/>
-           <test name="tr1_remove_volatile_test"/>
-           <test name="tr1_tricky_abstract_type_test"/>
-           <test name="tr1_tricky_add_pointer_test"/>
-           <test name="tr1_tricky_partial_spec_test"/>
-            <toolset name="borland*"/>
+            <test name="tr1_add_const_test"/>
+            <test name="tr1_add_cv_test"/>
+            <test name="tr1_add_pointer_test"/>
+            <test name="tr1_add_reference_test"/>
+            <test name="tr1_add_volatile_test"/>
+            <test name="tr1_aligned_storage_test"/>
+            <test name="tr1_alignment_of_test"/>
+            <test name="tr1_has_nothrow_assign_test"/>
+            <test name="tr1_has_nothrow_constr_test"/>
+            <test name="tr1_has_nothrow_copy_test"/>
+            <test name="tr1_has_trivial_assign_test"/>
+            <test name="tr1_has_trivial_constr_test"/>
+            <test name="tr1_has_trivial_copy_test"/>
+            <test name="tr1_has_trivial_destructor_test"/>
+            <test name="tr1_has_virtual_destructor_test"/>
+            <test name="tr1_is_arithmetic_test"/>
+            <test name="tr1_is_array_test"/>
+            <test name="tr1_is_class_test"/>
+            <test name="tr1_is_compound_test"/>
+            <test name="tr1_is_const_test"/>
+            <test name="tr1_is_convertible_test"/>
+            <test name="tr1_is_empty_test"/>
+            <test name="tr1_is_enum_test"/>
+            <test name="tr1_is_floating_point_test"/>
+            <test name="tr1_is_function_test"/>
+            <test name="tr1_is_fundamental_test"/>
+            <test name="tr1_is_integral_test"/>
+            <test name="tr1_is_member_func_test"/>
+            <test name="tr1_is_member_obj_test"/>
+            <test name="tr1_is_member_pointer_test"/>
+            <test name="tr1_is_object_test"/>
+            <test name="tr1_is_pod_test"/>
+            <test name="tr1_is_pointer_test"/>
+            <test name="tr1_is_polymorphic_test"/>
+            <test name="tr1_is_reference_test"/>
+            <test name="tr1_is_same_test"/>
+            <test name="tr1_is_scalar_test"/>
+            <test name="tr1_is_signed_test"/>
+            <test name="tr1_is_union_test"/>
+            <test name="tr1_is_unsigned_test"/>
+            <test name="tr1_is_void_test"/>
+            <test name="tr1_is_volatile_test"/>
+            <test name="tr1_remove_const_test"/>
+            <test name="tr1_remove_cv_test"/>
+            <test name="tr1_remove_pointer_test"/>
+            <test name="tr1_remove_reference_test"/>
+            <test name="tr1_remove_volatile_test"/>
+            <test name="tr1_tricky_abstract_type_test"/>
+            <test name="tr1_tricky_add_pointer_test"/>
+            <test name="tr1_tricky_partial_spec_test"/>
+            <toolset name="borland-5_6*"/>
+            <toolset name="borland-5.6*"/>
             <note author="John Maddock">
                Support for Borland C++ in the various TR1 libraries is pretty
                poor (due to numerous compiler bugs sadly).  The TR1 concept
@@ -4210,6 +4061,46 @@ for more information.
                compiler.  In addition most of the type_traits tests fail
                whenever debugging support is turned on with an internal
                compiler error.  More conservative uses are more likely to succeed
+               with this compiler however.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_complex"/>
+            <test name="std_test_complex"/>
+            <test name="test_function"/>
+            <test name="std_test_function"/>
+            <test name="test_mem_fn"/>
+            <test name="std_test_mem_fn"/>
+            <test name="test_random"/>
+            <test name="std_test_random"/>
+            <test name="test_result_of"/>
+            <test name="std_test_result_of"/>
+            <test name="test_shared_ptr"/>
+            <test name="std_test_shared_ptr"/>
+            <test name="test_tuple"/>
+            <test name="std_test_tuple"/>
+            <test name="test_tuple_tricky"/>
+            <test name="std_test_tuple_tricky"/>
+            <test name="test_type_traits"/>
+            <test name="std_test_type_traits"/>
+            <test name="run_complex_overloads"/>
+            <test name="std_run_complex_overloads"/>
+            <test name="run_random"/>
+            <test name="std_run_random"/>
+            <test name="test_tuple_tricky"/>
+            <test name="tr1_is_convertible_test"/>
+            <test name="tr1_remove_const_test"/>
+            <test name="tr1_remove_pointer_test"/>
+            <test name="tr1_remove_volatile_test"/>
+            <test name="tr1_tricky_add_pointer_test"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
+            <note author="John Maddock">
+               Support for Borland C++ in the various TR1 libraries is pretty
+               poor (due to numerous compiler bugs sadly).  The TR1 concept
+               checks are *very* strict, and are expected to fail with this
+               compiler.  More conservative uses are more likely to succeed
                with this compiler however.
             </note>
         </mark-expected-failures>
@@ -4286,7 +4177,7 @@ for more information.
            <test name="std_run_complex_overloads"/>
            <test name="std_test_complex"/>
            <test name="test_complex"/>
-           <toolset name="qcc-3.3.5-gpp"/>
+           <toolset name="qcc-3.3.5*gpp"/>
             <note author="John Maddock">
                These tests fail due to a known stdlib bug 
                that has been reported to the vendor.
@@ -4331,20 +4222,16 @@ for more information.
             <test name="tr1_tricky_function_type_test"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="John Maddock" refid="2"/>
         </mark-expected-failures>
         <test name="tr1_tricky_is_enum_test">
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="msvc"/>
                 <toolset name="vc-6_5*"/>
                 <toolset name="msvc-6.5*"/>
@@ -4361,10 +4248,8 @@ for more information.
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <toolset name="cw-8_3*"/>
                 <toolset name="cw-9_3*"/>
                 <toolset name="cw-9_4*"/>
@@ -4493,10 +4378,8 @@ for more information.
             <toolset name="borland"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="cw-8_3*"/>
             <toolset name="msvc"/>
             <toolset name="vc-6_5*"/>
@@ -4532,10 +4415,8 @@ for more information.
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
                 <toolset name="borland-5.6.4"/>
-                <toolset name="borland-5_8_1"/>
-                <toolset name="borland-5.8.1"/>
-                <toolset name="borland-5_8_2"/>
-                <toolset name="borland-5.8.2"/>
+                <toolset name="borland-5_8*"/>
+                <toolset name="borland-5.8*"/>
                 <note author="A.Meredith">
                   Compiler has a problem with BOOST_STATIC_CONSTANT in nested templates
                   inside class template specializations.
@@ -4597,10 +4478,8 @@ for more information.
             <toolset name="borland"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <note author="Aleksey Gurtovoy" refid="3"/>
         </mark-expected-failures>
         <test name="variant_reference_test">
@@ -4613,7 +4492,6 @@ for more information.
                 <note refid="3"/>
             </mark-failure>
             <mark-failure>
-                <toolset name="intel-win32"/>
                 <toolset name="iw-7_1*"/>
                 <toolset name="intel-7.1*"/>
                 <note refid="2"/>
@@ -4631,10 +4509,8 @@ for more information.
             <toolset name="borland-5_5_1"/>
             <toolset name="borland-5_6_4"/>
             <toolset name="borland-5.6.4"/>
-            <toolset name="borland-5_8_1"/>
-            <toolset name="borland-5.8.1"/>
-            <toolset name="borland-5_8_2"/>
-            <toolset name="borland-5.8.2"/>
+            <toolset name="borland-5_8*"/>
+            <toolset name="borland-5.8*"/>
             <toolset name="gcc-2.95.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
@@ -4661,16 +4537,16 @@ for more information.
         <mark-expected-failures>
             <test name="testwave"/>
             <toolset name="gcc-3.2.3-linux"/>
-        <toolset name="gcc-3.2.3_linux"/>
+            <toolset name="gcc-3.2.3_linux"/>
             <toolset name="gcc-3.3.6-linux"/>
-            <toolset name="gcc-3.3.6"/>	    
+            <toolset name="gcc-3.3.6"/>
             <note author="Hartmut Kaiser" refid="29"/>
         </mark-expected-failures>
 
         <mark-expected-failures>
             <test name="testwave"/>
-            <toolset name="qcc-3.3.5_gpp"/>
-            <toolset name="qcc-3.3.5-gpp"/>
+            <!-- <toolset name="qcc-3.3.5_gpp"/> -->
+            <toolset name="qcc-3.3.5*gpp"/>
             <note author="Hartmut Kaiser" refid="29"/>
         </mark-expected-failures>
 
@@ -4901,5 +4777,7 @@ for more information.
     </note>
 
 </explicit-failures-markup>
+
+
 
 
