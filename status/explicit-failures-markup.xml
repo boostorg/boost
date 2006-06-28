@@ -1018,6 +1018,37 @@
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="testdate_facet_new"/>
+            <test name="testdate_facet_new_dll"/>
+            <test name="testdate_input_facet"/>
+            <test name="testdate_input_facet_dll"/>
+            <test name="testdate_facet"/>
+            <test name="testdate_facet_dll"/>
+            <test name="testtime_facet"/>
+            <test name="testtime_input_facet"/>
+            <toolset name="sun-5.8"/>
+            <note author="J. Garland">
+               The sun 5.8 compiler and standard library have a problem with 
+               the classic facet which causes some of the io tests for date-time
+               to fail.  Overall this should not affect most uses of the library.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="testgreg_wstream"/>
+            <test name="testtime_facet"/>
+            <test name="testtime_input_facet"/>
+            <test name="testtime_wstream"/>
+            <toolset name="vc-7_1-stlport"/>
+            <note author="J. Garland">
+               MSVC 7.1 with its standard library passes all date-time tests.
+               For some reason when paired with stlport a few widestream
+               io tests do not format output correctly.   Overall this should 
+               not affect most uses of the library.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="testlocal_time_input_facet"/>
             <test name="testtime_input_facet"/>
             <toolset name="cw-9_4"/>
