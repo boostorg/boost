@@ -96,6 +96,7 @@ import modules ;
 import set ;
 import stage ;
 import package ;
+import path ;
 
 constant BOOST_VERSION : 1.35.0 ;
 
@@ -242,14 +243,28 @@ rule tag ( name : type ? : property-set )
 # Install to system location.
 
 local patterns = *.hpp *.ipp *.h *.inc ;
-local dirs = boost boost/* boost/*/* ;
+local dir = boost ;
+local headers ;
+while $(dir)
+{
+    local files = [ glob $(dir)/$(patterns) ] ;
+    if $(files)
+    {
+        headers += $(files) ;
+        dir = $(dir)/* ;
+    }
+    else
+    {
+        dir = ;
+    }
+}
 
 # Complete install
 package.install install
     : <install-source-root>. # No specific requirements
     : # No binaries
     : libs/$(libraries)/build
-    : [ glob $(dirs)/$(patterns) ]
+    : $(headers)
     ;
 
 # Install just library.
