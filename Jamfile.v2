@@ -100,6 +100,30 @@ import path ;
 
 constant BOOST_VERSION : 1.35.0 ;
 
+local version-tag = [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ] ;
+if $(version-tag[3]) = 0
+{
+    version-tag = $(version-tag[1-2]) ;
+}
+
+constant BOOST_VERSION_TAG : $(version-tag:J="_") ;
+
+local default-build ;
+if $(__file__:D) = ""
+{
+    default-build =
+        debug release
+        <threading>single <threading>multi
+        <runtime-link>shared <runtime-link>static
+        ;
+}
+else
+{
+    default-build =
+        debug
+        ;
+}
+
 project boost
     : requirements <include>.
       # disable auto-linking for all targets here,
@@ -110,15 +134,14 @@ project boost
       <tag>@$(__name__).tag
     : usage-requirements <include>.
     : build-dir bin.v2
+    : default-build $(default-build)
     ;
 
 # Setup convenient aliases for all libraries.
 
 all-libraries =
-    [ set.difference
-        [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ]
-        : graph
-        ] ;
+    [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ]
+    ;
 
 # First, the complicated libraries: where the target name in
 # Jamfile is different from directory name.
@@ -184,19 +207,19 @@ rule libraries-to-install ( existing-libraries * )
 }
 
 # what kind of layout are we doing?
-layout = [ MATCH "^--layout=(.*)" : $(ARGV) ] ;
+layout = [ MATCH "^--layout=(.*)" : [ modules.peek : ARGV ] ] ;
 layout ?= versioned ;
 layout-$(layout) = true ;
 
 # possible stage only location
-local stage-locate = [ MATCH "^--stagedir=(.*)" : $(ARGV) ] ;
+local stage-locate = [ MATCH "^--stagedir=(.*)" : [ modules.peek : ARGV ] ] ;
 stage-locate ?= stage ;
 
 path-constant BOOST_STAGE_LOCATE : $(stage-locate) ;
 
 
 # location of python
-local python-root = [ MATCH "^--with-python-root=(.*)" : $(ARGV) ] ;
+local python-root = [ MATCH "^--with-python-root=(.*)" : [ modules.peek : ARGV ] ] ;
 PYTHON_ROOT ?= $(python-root) ;
 
 # Select the libraries to install.
@@ -215,9 +238,6 @@ rule tag ( name : type ? : property-set )
             name = [ stage.add-variant-and-compiler $(name)
               : $(type) : $(property-set) ] ;
 
-            local version-tag = [ MATCH "^([^.]+)[.]([^.]+)" : $(BOOST_VERSION[1]) ] ;
-            version-tag = $(version-tag:J="_") ;
-
             # Optionally add version suffix.
             if $(type) != SHARED_LIB ||
               [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
@@ -228,11 +248,11 @@ rule tag ( name : type ? : property-set )
                 # On OSX, version suffix is not needed -- the linker expets
                 # libFoo.1.2.3.dylib format.
                 # AIX linkers don't accept version suffixes either.
-                return $(name:B)-$(version-tag)$(name:S) ;
+                return $(name:B)-$(BOOST_VERSION_TAG)$(name:S) ;
             }
             else
             {
-                return $(name:B)-$(version-tag)$(name:S).$(BOOST_VERSION)  ;
+                return $(name:B)-$(BOOST_VERSION_TAG)$(name:S).$(BOOST_VERSION)  ;
             }
         }
         else
@@ -262,18 +282,26 @@ while $(dir)
     }
 }
 
+local header-subdir ;
+if $(layout-versioned) { header-subdir = boost-$(BOOST_VERSION_TAG) ; }
+else { header-subdir = boost ; }
+
+
 # Complete install
 package.install install
-    : <install-source-root>. # No specific requirements
-    : # No binaries
-    : libs/$(libraries)/build
-    : $(headers)
+    :   <install-source-root>boost
+        <install-header-subdir>$(header-subdir)
+    :
+    :   libs/$(libraries)/build
+    :   $(headers)
     ;
 
 # Install just library.
-install stage : libs/$(libraries)/build
-  : <location>$(stage-locate)
-  ;
+install stage
+    :   libs/$(libraries)/build
+    :   <location>$(stage-locate)
+        <install-dependencies>on <install-type>LIB 
+    ;
 
 # Just build the libraries, don't install them anywhere.
 # This is what happend with just "bjam --v2".
