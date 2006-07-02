@@ -114,8 +114,11 @@ project boost
 
 # Setup convenient aliases for all libraries.
 
-all-libraries = [ MATCH .*libs/(.*)/build/.*
-                  : [ glob libs/*/build/Jamfile.v2 ] ] ;
+all-libraries =
+    [ set.difference
+        [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ]
+        : graph
+        ] ;
 
 # First, the complicated libraries: where the target name in
 # Jamfile is different from directory name.
