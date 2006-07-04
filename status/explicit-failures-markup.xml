@@ -469,6 +469,9 @@
             <toolset name="como-4_3_3-vc7_1"/>
             <toolset name="sunpro-5_3-sunos"/>
             <toolset name="msvc"/>
+            <toolset name="msvc-7.0"/>
+            <toolset name="msvc-7.0_stlport5"/>
+            <toolset name="msvc-6.5_stlport5"/>
             <toolset name="msvc-stlport"/>
             <toolset name="vc-6_5-stlport"/>
             <toolset name="vc-6_5"/>
@@ -1046,6 +1049,20 @@
                to fail.  Overall this should not affect most uses of the library.
             </note>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="testdate_facet_new"/>
+            <test name="testdate_facet_new_dll"/>
+            <test name="testtime_facet"/>
+            <toolset name="msvc-8.0_stlport5"/>
+            <note author="J. Garland">
+               The STLPort standard library has issues with the handling
+               of the classic facet which causes some fo the i/o tests
+               for date-time to fail.  Overall this should not affect 
+               most uses of the library.
+            </note>
+        </mark-expected-failures>
+
 
         <mark-expected-failures>
             <test name="testgreg_wstream"/>
