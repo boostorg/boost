@@ -2718,6 +2718,25 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="special_functions_test"/>
+            <test name="octonion_test"/>
+            <test name="quaternion_test"/>
+            <test name="quaternion_mult_incl_test"/>
+            <toolset name="sun-5.8"/>
+            <note author="John Maddock">
+              These have yet to fully investigated, but the code is known 
+              to compile with more conforming compilers, probably workarounds
+              are possible if someone is prepared to invest the time.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="quaternion_test"/>
+            <toolset name="vc-7_1-stlport"/>
+           <note author="John Maddock">
+              Appears to be a bug in STLport's complex abs function, but needs more investigation.
+           </note>
+       </mark-expected-failures>
+        <mark-expected-failures>
             <test name="complex_test"/>
             <toolset name="qcc-3.3.5*cpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
@@ -3900,6 +3919,27 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="decay_test"/>
+            <test name="extent_test"/>
+            <test name="is_abstract_test"/>
+            <test name="is_empty_test"/>
+            <test name="is_function_test"/>
+            <test name="is_member_func_test"/>
+            <test name="is_member_obj_test"/>
+            <test name="is_object_test"/>
+            <test name="is_reference_test"/>
+            <test name="rank_test"/>
+            <test name="tricky_function_type_test"/>
+            <toolset name="sunp-5.8"/>
+
+            <note author="John Maddock">
+                The Type Traits library is broken when used with Sunpro-5.8 and the
+                argument to the template is a function type.  Most other argument types
+                do work as expected: in other words the functionality is limited
+                with this compiler, but not so much as to render the library unuseable.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="is_empty_test"/>
             <test name="is_function_test"/>
             <test name="is_member_func_test"/>
@@ -3934,13 +3974,14 @@ for more information.
     <!-- tr1 -->
     <library name="tr1">
         <mark-unusable>
-            <toolset name="msvc"/>
-            <toolset name="vc-7.0"/>
-            <toolset name="msvc-7.0"/>
-            <toolset name="msvc-6*"/>
-            <toolset name="VC6*"/>
-            <toolset name="vc-6*"/>
-            <note author="John Maddock">
+           <toolset name="msvc"/>
+           <toolset name="vc-7.0"/>
+           <toolset name="vc-7_0"/>
+           <toolset name="msvc-7.0"/>
+           <toolset name="msvc-6*"/>
+           <toolset name="VC6*"/>
+           <toolset name="vc-6*"/>
+           <note author="John Maddock">
                 VC6/7 has a buggy using declaration syntax which
                 basically makes it impossible to implement the 
                 namespace forwarding that this library relies upon.
