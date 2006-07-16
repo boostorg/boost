@@ -4107,7 +4107,7 @@ for more information.
             <test name="test_hash"/>
             <test name="std_test_hash"/>
             <toolset name="mingw*"/>
-            <toolset name="qcc-3.3.5*gpp*"/>
+            <toolset name="qcc*gpp"/>
             <toolset name="gcc-2*"/>
             <note author="John Maddock">
                These tests fail on this platform due to a lack of
@@ -4253,7 +4253,7 @@ for more information.
         <mark-expected-failures>
             <test name="std_test_bind"/>
             <test name="test_bind"/>
-            <toolset name="gcc-4_0-darwin"/>
+            <toolset name="gcc-4*darwin"/>
             <note author="John Maddock">
                These tests fail on this platform due to a recuring GCC bug.
             </note>
@@ -4457,7 +4457,28 @@ for more information.
                 with this compiler, but not so much as to render the library unuseable.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="tr1_decay_test"/>
+          <test name="tr1_extent_test"/>
+          <test name="tr1_is_abstract_test"/>
+          <test name="tr1_is_empty_test"/>
+          <test name="tr1_is_function_test"/>
+          <test name="tr1_is_member_func_test"/>
+          <test name="tr1_is_member_obj_test"/>
+          <test name="tr1_is_object_test"/>
+          <test name="tr1_is_reference_test"/>
+          <test name="tr1_rank_test"/>
+          <test name="tr1_tricky_function_type_test"/>
+          <toolset name="sun-5.8"/>
+
+          <note author="John Maddock">
+             The Type Traits library is broken when used with Sunpro-5.8 and the
+             argument to the template is a function type.  Most other argument types
+             do work as expected: in other words the functionality is limited
+             with this compiler, but not so much as to render the library unuseable.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="tr1_is_empty_test"/>
             <test name="tr1_is_function_test"/>
             <test name="tr1_is_member_func_test"/>
