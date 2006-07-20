@@ -1173,6 +1173,12 @@
 
     <!-- dynamic_bitset -->
     <library name="dynamic_bitset">
+        <test name="dyn_bitset_unit_tests1">
+            <mark-failure>
+                <toolset name="vc-6_5-stlport"/>
+                <note author="Gennaro Prota" refid="37" />
+            </mark-failure>
+        </test>
         <test name="dyn_bitset_unit_tests4">
             <mark-failure>
                 <toolset name="cw-9_3"/>
@@ -3384,7 +3390,7 @@ for more information.
                 <toolset name="qcc-3.3.5*"/>
                 <note author="Jim Douglas" date="13 Feb 06">
                     Test fails with ranlux*_O1 RNGs when saving and recalling the state due to a bug in the
-                    double to string conversion. The problem has been reported to QNX as PR29252. 	
+                    double to string conversion. The problem has been reported to QNX as PR29252.
                 </note>
             </mark-failure>
             <mark-failure>
@@ -4940,6 +4946,26 @@ for more information.
     <note id="36">
         Wide character support is disabled in the GNU Standard C++ library as
         supplied on the QNX Neutrino version 6.3.0 distribution. 
+    </note>
+
+    <note id="37">
+        This problem is due to the non-conforming STLport
+        implementation of vector's swap: it can be easily
+        reproduced with the following code snippet:
+
+            typedef std::vector<int> vector_type;
+            typedef vector_type::reference reference_type;
+
+            vector_type v1(4u, 1);
+            vector_type v2(7u, 0);
+
+            reference_type ref = v1[2];
+            int x = ref;
+
+            std::swap(v1, v2);
+            BOOST_CHECK(v2[2] == x); // ok
+            v2[2] = 1 - v2[2];
+            BOOST_CHECK(ref != x);   // oops
     </note>
 
 </explicit-failures-markup>
