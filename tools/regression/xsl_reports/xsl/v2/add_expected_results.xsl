@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 
-Copyright MetaCommunications, Inc. 2003-2005.
+Copyright MetaCommunications, Inc. 2003-2006.
 
 Distributed under the Boost Software License, Version 1.0. (See
 accompanying file LICENSE_1_0.txt or copy at
@@ -24,6 +24,7 @@ http://www.boost.org/LICENSE_1_0.txt)
     <xsl:variable name="expected_results" select="document( $expected_results_file )" />
 
     <xsl:key name = "trk" match = "test-result" use = "concat( ../../@name, '-', ../@name, '-', @test-name )" />
+    <xsl:key name = "tak" match = "toolset-alias" use = "@name" />
 
     <xsl:variable name="failures_markup" select="document( $failures_markup_file )" />
     <xsl:template match="/">
@@ -64,11 +65,19 @@ http://www.boost.org/LICENSE_1_0.txt)
                  -->
 
             <xsl:for-each select="$expected_results">
-                
-                <xsl:variable name="expected_results_test_case" select="key( 'trk', concat( $toolset, '-', $library, '-', $test-name ) )"/>
-                <xsl:variable name="test_case_markup"      select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]"/>
-                <xsl:variable name="test_failures_markup"  select="$test_case_markup/mark-failure/toolset[ meta:re_match( @name, $toolset ) ]/.."/>
-                <xsl:variable name="test_failures_markup2" select="$failures_markup//library[@name=$library]/mark-expected-failures/test[ meta:re_match( @name, $test-name ) ]/../toolset[ meta:re_match( @name, $toolset ) ]/.."/>
+
+                <xsl:variable name="main_toolset" select="key( 'tak', $toolset )/../@name" />
+                <xsl:variable name="toolset_name">
+                    <xsl:choose>
+                        <xsl:when test="$main_toolset"><xsl:value-of select="$main_toolset"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="$toolset"/></xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+
+                <xsl:variable name="expected_results_test_case" select="key( 'trk', concat( $toolset_name, '-', $library, '-', $test-name ) )"/>
+                <xsl:variable name="test_case_markup"           select="$failures_markup//library[@name=$library]/test[ meta:re_match( @name, $test-name ) ]"/>
+                <xsl:variable name="test_failures_markup"       select="$test_case_markup/mark-failure/toolset[ meta:re_match( @name, $toolset ) ]/.."/>
+                <xsl:variable name="test_failures_markup2"      select="$failures_markup//library[@name=$library]/mark-expected-failures/test[ meta:re_match( @name, $test-name ) ]/../toolset[ meta:re_match( @name, $toolset ) ]/.."/>
 
                 <xsl:variable name="category">
                     <xsl:choose>
