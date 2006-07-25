@@ -268,22 +268,22 @@ INCLUDEDIR=$INCLUDEDIR
 LIBS=$LIBS
 
 all: .dummy
-	@echo "\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS)"
-	@\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS) || \\
-	echo "Not all Boost libraries built properly."
+    @echo "\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS)"
+    @\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) \$(LIBS) || \\
+    echo "Not all Boost libraries built properly."
 
 clean: .dummy
-	rm -rf bin
+    rm -rf bin
 
 distclean: clean
-	rm -rf Makefile config.log
+    rm -rf Makefile config.log
 
 check: .dummy
-	@cd status && ../\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) test || echo "Some Boost regression tests failed. This is normal."
+    @cd status && ../\$(BJAM) \$(BJAM_CONFIG) -sTOOLS=\$(TOOLSET) test || echo "Some Boost regression tests failed. This is normal."
 
 install: .dummy
-	@echo "\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install"
-	@\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install || echo "Not all Boost libraries built properly."
+    @echo "\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install"
+    @\$(BJAM) \$(BJAM_CONFIG) --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) -sTOOLS=\$(TOOLSET) \$(LIBS) install || echo "Not all Boost libraries built properly."
 
 .dummy:
 
