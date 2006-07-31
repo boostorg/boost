@@ -4,7 +4,7 @@
 //  Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-//  See http://www.boost.org/tools/regression for documentation.
+//  See http://www.boost.org/tools/regression/ for documentation.
 
 /*******************************************************************************
 
@@ -84,8 +84,9 @@ namespace
   const string empty_string;
 
   // prefix for library and test hyperlink prefix
-  string url_prefix_dir_view( "http://cvs.sourceforge.net/viewcvs.py/boost/boost" );
-  string url_prefix_checkout_view( "http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost" );
+  const string cvs_root ( "http://boost.cvs.sourceforge.net/" );
+  string url_prefix_dir_view( cvs_root + "boost/boost" );
+  string url_prefix_checkout_view( cvs_root + "*checkout*/boost/boost" );
   string url_suffix_text_view( "?view=markup&rev=HEAD" );
 
 //  build notes_bookmarks from notes HTML  -----------------------------------//
