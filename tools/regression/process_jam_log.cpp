@@ -229,7 +229,17 @@ namespace
         // old style build path, integrated build tree
         start_pos = dir.rfind( '!' );
         convert_path_separators( dir );
-        dir.insert( dir.find( '/', start_pos + 1), "/bin" );
+        string::size_type path_sep_pos = dir.find( '/', start_pos + 1 );
+        if ( path_sep_pos != string::npos )
+           dir.insert( path_sep_pos, "/bin" );
+        else
+        {
+          // see http://article.gmane.org/gmane.comp.lib.boost.devel/146688;
+          // the following code assumes that: a) 'dir' is not empty,
+          // b) 'end_pos != string::npos' and c) 'msg' always ends with '...'
+          if ( dir[dir.size() - 1] == '@' )
+            dir += "/" + msg.substr( end_pos + 1, msg.size() - end_pos - 1 - 3 );
+        }
       }
     }
     return end_pos;
