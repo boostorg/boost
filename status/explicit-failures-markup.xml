@@ -3562,6 +3562,14 @@ for more information.
             use and building of dll's mainly.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="regex_regress_threaded"/>
+            <toolset name="gcc-4_0_3_tru64"/>
+            <note author="J. Maddock">
+            GCC on tru64 appears not to cope with C++ exceptions
+            thrown from within threads.
+            </note>
+        </mark-expected-failures>
         <test name="concept_check">
             <mark-failure>
                 <toolset name="vc-8_0"/>
@@ -4111,6 +4119,8 @@ for more information.
             <test name="std_test_bind_tricky"/>
             <test name="std_test_ref_wrapper_tricky"/>
             <test name="std_test_function_tricky"/>
+            <test name="std_test_reference_wrapper_tricky"/>
+            <test name="test_reference_wrapper_tricky"/>
             <toolset name="*"/>
             <note author="John Maddock">
                 These tests test features that are not supported in the
@@ -4489,6 +4499,8 @@ for more information.
           <test name="tr1_is_reference_test"/>
           <test name="tr1_rank_test"/>
           <test name="tr1_tricky_function_type_test"/>
+          <test name="test_type_traits"/>
+          <test name="std_test_type_traits"/>
           <toolset name="sun-5.8"/>
 
           <note author="John Maddock">
