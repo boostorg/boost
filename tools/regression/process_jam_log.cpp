@@ -618,6 +618,8 @@ int cpp_main( int argc, char ** argv )
       || line.find( "Archive-action " ) != string::npos
       || line.find( "vc-Link " ) != string::npos 
       || line.find( ".compile.") != string::npos
+      || line.find( "compile-") != string::npos
+      || line.find( "-compile") != string::npos
       || ( line.find( ".link") != string::npos &&
            // .linkonce is present in gcc linker messages about
            // unresolved symbols. We don't have to parse those
