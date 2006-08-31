@@ -4494,6 +4494,30 @@ for more information.
           </note>
        </mark-expected-failures>
        <mark-expected-failures>
+          <test name="test_random"/>
+          <test name="std_test_random"/>
+          <toolset name="sun-5.8"/>
+
+          <note author="John Maddock">
+             These failures appear to represent a genuine issue with the
+             Boost.Random library that has yet to be addressed.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_boost"/>
+          <test name="test_hash"/>
+          <test name="test_random"/>
+          <test name="test_regex"/>
+          <toolset name="vc-7_1-stlport"/>
+
+          <note author="John Maddock">
+             These failures are completely spurious: they're caused by the tests
+             being run with bjam -j2 and the post-processing not coping with the
+             resulting output.  These failures should clear if these tests
+             are re-run at some point in the future.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="tr1_is_empty_test"/>
             <test name="tr1_is_function_test"/>
             <test name="tr1_is_member_func_test"/>
