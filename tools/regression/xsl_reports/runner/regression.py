@@ -2,8 +2,8 @@
 
 # Copyright (c) MetaCommunications, Inc. 2003-2006
 #
-# Distributed under the Boost Software License, Version 1.0. 
-# (See accompanying file LICENSE_1_0.txt or copy at 
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import urllib
@@ -80,7 +80,7 @@ def process_jam_build_root(v2):
     if v2:
         return os.path.join(boost_root, 'dist', 'bin')
     else:
-        return os.path.join( 
+        return os.path.join(
             boost_root, 'bin', 'boost', 'tools', 'regression', 'build'
             , process_jam_log[ 'name' ])
 
@@ -90,7 +90,7 @@ process_jam_log[ 'build_path_root' ] = process_jam_build_root
 process_jam_log[ 'build_cmd' ] = lambda toolset, v2: bjam_command( toolset, v2 )
 process_jam_log[ 'is_supported_toolset' ] = lambda x : True
 
-build_monitor_url = 'http://www.meta-comm.com/engineering/resources/build_monitor.zip'
+build_monitor_url = 'http://engineering.meta-comm.com/resources/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
 
 utils = None
@@ -128,7 +128,7 @@ def retry( f, args, max_attempts=5, sleep_secs=10 ):
             return f( *args )
         except Exception, msg:
             log( '%s failed with message "%s"' % ( f.__name__, msg ) )
-            if attempts == 0: 
+            if attempts == 0:
                 log( 'Giving up.' )
                 raise
 
@@ -142,7 +142,7 @@ def cleanup( args, **unused ):
     if 'source' in args:
         log( 'Cleaning up "%s" directory ...' % boost_root )
         rmtree( boost_root )
-    
+
     if 'bin' in args:
         boost_bin_dir = os.path.join( boost_root, 'bin' )
         log( 'Cleaning up "%s" directory ...' % boost_bin_dir )
@@ -180,7 +180,7 @@ def tarball_name_for_tag( tag, timestamp = False ):
 def download_boost_tarball( destination, tag, proxy, timestamp_only = False ):
     tarball_name = tarball_name_for_tag( tag, timestamp_only )
     tarball_path = os.path.join( destination, tarball_name )
-    tarball_url = 'http://www.meta-comm.com/engineering/boost/snapshot/%s' % tarball_name
+    tarball_url = 'http://engineering.meta-comm.com/boost/snapshot/%s' % tarball_name
 
     log( 'Downloading "%s" to "%s"...'  % ( tarball_url, os.path.dirname( tarball_path ) ) )
     if os.path.exists( tarball_path ):
@@ -203,10 +203,10 @@ def find_boost_dirs( path ):
 def unpack_tarball( tarball_path, destination  ):
     log( 'Looking for old unpacked archives...' )
     old_boost_dirs = find_boost_dirs( destination )
-    
+
     for old_boost_dir in old_boost_dirs:
         if old_boost_dir != tarball_path:
-            log( 'Deleting old directory %s.' % old_boost_dir ) 
+            log( 'Deleting old directory %s.' % old_boost_dir )
             rmtree( old_boost_dir )
 
     log( 'Unpacking boost tarball ("%s")...' % tarball_path )
@@ -228,11 +228,11 @@ def unpack_tarball( tarball_path, destination  ):
         tar.close()
     elif extension in ( ".zip" ):
         import zipfile
-        
-        z = zipfile.ZipFile( tarball_path, 'r', zipfile.ZIP_DEFLATED ) 
+
+        z = zipfile.ZipFile( tarball_path, 'r', zipfile.ZIP_DEFLATED )
         for f in z.infolist():
             destination_file_path = os.path.join( destination, f.filename )
-            if destination_file_path[-1] == "/": # directory 
+            if destination_file_path[-1] == "/": # directory
                 if not os.path.exists( destination_file_path  ):
                     os.makedirs( destination_file_path  )
             else: # file
@@ -245,7 +245,7 @@ def unpack_tarball( tarball_path, destination  ):
 
     boost_dir = find_boost_dirs( destination )[0]
     log( '    Unpacked into directory "%s"' % boost_dir )
-    
+
     if os.path.exists( boost_root ):
         log( 'Deleting "%s" directory...' % boost_root )
         rmtree( boost_root )
@@ -261,7 +261,7 @@ def cvs_command( user, command ):
         cmd = cvs_pserver_command_line % { 'user': user, 'command': command }
     else:
         cmd = cvs_ext_command_line % { 'user': user, 'command': command }
-    
+
     log( 'Executing CVS command "%s"' % cmd )
     rc = os.system( cmd )
     if rc != 0:
@@ -273,7 +273,7 @@ def cvs_checkout( user, tag, args ):
         command = 'checkout -r %s boost' % tag
     else:
         command = 'checkout boost'
-    
+
     os.chdir( regression_root )
     cvs_command( user, command )
 
@@ -283,13 +283,13 @@ def cvs_update( user, tag, args ):
         command = 'update -dPA -r %s' % tag
     else:
         command = 'update -dPA'
-    
+
     os.chdir( os.path.join( regression_root, 'boost' ) )
     cvs_command( user, command )
 
 
 def format_time( t ):
-    return time.strftime( 
+    return time.strftime(
           '%a, %d %b %Y %H:%M:%S +0000'
         , t
         )
@@ -328,12 +328,12 @@ def get_source( user, tag, proxy, args, **unused ):
     log( 'Getting sources (%s)...' % timestamp() )
 
     if user is not None:
-        retry( 
+        retry(
               cvs_checkout
             , ( user, tag, args )
             )
     else:
-        retry( 
+        retry(
               get_tarball
             , ( tag, proxy, args )
             )
@@ -343,7 +343,7 @@ def update_source( user, tag, proxy, args, **unused ):
     if user is not None or os.path.exists( os.path.join( boost_root, 'CVS' ) ):
         open( timestamp_path, 'w' ).close()
         log( 'Updating sources from CVS (%s)...' % timestamp() )
-        retry( 
+        retry(
               cvs_update
             , ( user, tag, args )
             )
@@ -366,7 +366,7 @@ def tool_path( name_or_spec, v2=None ):
     for root, dirs, files in os.walk( build_path_root ):
         if name_or_spec[ 'name' ] in files:
             return os.path.join( root, name_or_spec[ 'name' ] )
-    
+
     raise Exception( 'Cannot find "%s" in any of the following locations:\n%s' % (
           name_or_spec[ 'name' ]
         , '\n'.join( [ name_or_spec[ 'path' ], build_path_root ] )
@@ -398,7 +398,7 @@ def build_if_needed( tool, toolset, toolsets, v2 ):
         log( 'Found "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
         build_cmd = tool[ 'build_cmd' ]( toolset, v2 )
         log( 'Building "%s" (%s)...' % ( tool[ 'name'], build_cmd ) )
-        utils.system( [ 
+        utils.system( [
               'cd "%s"' % tool[ 'source_dir' ]
             , build_cmd
             ] )
@@ -427,7 +427,7 @@ def download_if_needed( tool_name, tool_url, proxy ):
     if not os.path.exists( path ):
         log( 'Preinstalled "%s" is not found.' % path )
         log( '  Downloading from %s...' % tool_url )
-        
+
         zip_path = '%s.zip' % os.path.splitext( path )[0]
         http_get( tool_url, zip_path, proxy )
 
@@ -460,7 +460,7 @@ def setup(
 
     build_if_needed( bjam, bjam_toolset, toolsets, v2 )
     build_if_needed( process_jam_log, pjl_toolset, toolsets, v2 )
-    
+
     if monitored:
         if sys.platform == 'win32':
             download_if_needed( 'build_monitor.exe', build_monitor_url, proxy )
@@ -491,7 +491,7 @@ def bjam_command( toolsets, v2 ):
           , build_path
           , boost_root
           )
-    
+
     if not toolsets is None:
         if v2:
             result += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
@@ -507,7 +507,7 @@ def install( toolsets, v2, **unused ):
 
     log( 'Making "%s" directory...' % regression_results )
     utils.makedirs( regression_results )
-    
+
     install_cmd = '%s -d2 install >>%s 2>&1' % ( bjam_command( toolsets, v2 ), install_log )
     log( 'Installing libraries (%s)...' % install_cmd )
     utils.system( [ install_cmd ] )
@@ -537,22 +537,22 @@ def run_process_jam_log(v2):
     else:
         v2 = ""
 
-    utils.checked_system( [ 
+    utils.checked_system( [
         '"%s" %s "%s" <"%s"' % (
               tool_path( process_jam_log, v2 )
-            , v2  
+            , v2
             , regression_results
             , regression_log
             )
         ] )
 
 
-def test( 
+def test(
           toolsets
         , bjam_options
         , monitored
         , timeout
-        , v2  
+        , v2
         , args
         , **unused
         ):
@@ -573,7 +573,7 @@ def test(
 
         results_libs = os.path.join( regression_results, 'libs' )
         results_status = os.path.join( regression_results, 'status' )
-        
+
         if "clean" in args:
             rmtree( results_libs )
             rmtree( results_status )
@@ -586,7 +586,7 @@ def test(
             test_cmd = '%s -d2 --dump-tests %s "%s=%s" >>"%s" 2>&1' % (
                   bjam_command( toolsets, v2 )
                 , bjam_options
-                , build_dir_option  
+                , build_dir_option
                 , regression_results
                 , regression_log
                 )
@@ -603,7 +603,7 @@ def test(
             stop_build_monitor()
 
 
-def collect_logs( 
+def collect_logs(
           tag
         , runner
         , platform
@@ -614,7 +614,7 @@ def collect_logs(
         , **unused
         ):
     import_utils()
-    
+
     if comment is None:
         comment = 'comment.html'
 
@@ -624,7 +624,7 @@ def collect_logs(
         f = open( comment_path, 'w' )
         f.write( '<p>Tests are run on %s platform.</p>' % platform_name() )
         f.close()
-    
+
     run_type = ''
     if incremental: run_type = 'incremental'
     else:           run_type = 'full'
@@ -636,9 +636,9 @@ def collect_logs(
             source = 'anonymous CVS'
         else:
             source = 'CVS'
-   
+
     from runner import collect_logs
-    collect_logs( 
+    collect_logs(
           regression_results
         , runner
         , tag
@@ -649,9 +649,9 @@ def collect_logs(
         , source
         , run_type
         )
-        
 
-def upload_logs( 
+
+def upload_logs(
           tag
         , runner
         , user
@@ -693,21 +693,21 @@ def send_mail( smtp_login, mail, subject, msg = '', debug_level = 0 ):
     else:
         server_name = smtp_login.split( '@' )[-1]
         ( user_name, password ) = string.split( smtp_login.split( '@' )[0], ':' )
-        
+
     log( '    Sending mail through "%s"...' % server_name )
     smtp_server = smtplib.SMTP( server_name )
     smtp_server.set_debuglevel( debug_level )
     if user_name:
         smtp_server.login( user_name, password )
-    
-    smtp_server.sendmail( 
+
+    smtp_server.sendmail(
           mail
         , [ mail ]
         , 'Subject: %s\nTo: %s\n\n%s' % ( subject, mail, msg )
         )
 
 
-def regression( 
+def regression(
           tag
         , local
         , runner
@@ -745,11 +745,11 @@ def regression(
 
         if local is not None:
             log( 'Using local file "%s"' % local )
-            
+
             b = os.path.basename( local )
             tag = b[ 0: b.find( '.' ) ]
             log( 'Tag: "%s"' % tag  )
-            
+
             unpack_tarball( local, regression_root )
         else:
             if incremental or force_update:
@@ -765,11 +765,11 @@ def regression(
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
         upload_logs( tag, runner, user, ftp_proxy, debug_level )
         update_itself( tag )
-        
+
         if mail:
             log( 'Sending report to "%s"' % mail )
             end_time = time.localtime()
-            send_mail( 
+            send_mail(
                   smtp_login
                 , mail
                 , '%s completed successfully at %s.' % ( mail_subject, format_time( end_time ) )
@@ -822,9 +822,9 @@ def accept_args( args ):
         , 'force-update'
         , 'monitored'
         , 'help'
-        , 'v2'  
+        , 'v2'
         ]
-    
+
     options = {
           '--tag'           : 'CVS-HEAD'
         , '--local'         : None
@@ -842,7 +842,7 @@ def accept_args( args ):
         , '--debug-level'   : 0
         , '--ftp-proxy'     : None
         }
-    
+
     ( option_pairs, other_args ) = getopt.getopt( args, '', args_spec )
     map( lambda x: options.__setitem__( x[0], x[1] ), option_pairs )
 
@@ -870,7 +870,7 @@ def accept_args( args ):
         , 'proxy'           : options[ '--proxy' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
-        , 'v2'              : options.has_key( '--v2' )  
+        , 'v2'              : options.has_key( '--v2' )
         , 'args'            : other_args
         }
 
@@ -906,7 +906,7 @@ Options:
 \t                checkout, even when performing a full run
 \t--monitored     do a monitored run
 \t--timeout       specifies the timeout, in minutes, for a single test
-\t                run/compilation (enforced only in monitored runs, 5 by 
+\t                run/compilation (enforced only in monitored runs, 5 by
 \t                default)
 \t--user          SourceForge user name for a shell/CVS account (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
@@ -917,10 +917,10 @@ Options:
 \t--mail          email address to send run notification to (optional)
 \t--smtp-login    STMP server address/login information, in the following
 \t                form: <user>:<password>@<host>[:<port>] (optional).
-\t--proxy         HTTP proxy server address and port (e.g. 
+\t--proxy         HTTP proxy server address and port (e.g.
 \t                'http://www.someproxy.com:3128', optional)
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
-\t--debug-level   debugging level; controls the amount of debugging 
+\t--debug-level   debugging level; controls the amount of debugging
 \t                output printed; 0 by default (no debug output)
 \t--v2            Use Boost.Build V2
 ''' % '\n\t'.join( commands.keys() )
