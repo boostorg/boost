@@ -90,7 +90,7 @@ process_jam_log[ 'build_path_root' ] = process_jam_build_root
 process_jam_log[ 'build_cmd' ] = lambda toolset, v2: bjam_command( toolset, v2 )
 process_jam_log[ 'is_supported_toolset' ] = lambda x : True
 
-build_monitor_url = 'http://www.meta-comm.com/engineering/resources/build_monitor.zip'
+build_monitor_url = 'http://engineering.meta-comm.com/resources/build_monitor.zip'
 pskill_url = 'http://www.sysinternals.com/files/pskill.zip'
 
 utils = None
@@ -180,7 +180,7 @@ def tarball_name_for_tag( tag, timestamp = False ):
 def download_boost_tarball( destination, tag, proxy, timestamp_only = False ):
     tarball_name = tarball_name_for_tag( tag, timestamp_only )
     tarball_path = os.path.join( destination, tarball_name )
-    tarball_url = 'http://www.meta-comm.com/engineering/boost/snapshot/%s' % tarball_name
+    tarball_url = 'http://engineering.meta-comm.com/boost/snapshot/%s' % tarball_name
 
     log( 'Downloading "%s" to "%s"...'  % ( tarball_url, os.path.dirname( tarball_path ) ) )
     if os.path.exists( tarball_path ):
