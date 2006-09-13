@@ -3062,6 +3062,22 @@ for more information.
 
     </library>
 
+    <!-- parameter -->
+    <library name="parameter">
+        <mark-expected-failures>
+            <test name="duplicates"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="borland-5.8*"/>
+            <note refid="32"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="unnamed_fail"/>
+            <toolset name="msvc-7.0"/>
+            <toolset name="msvc-6.0"/>
+            <note refid="32"/>
+        </mark-expected-failures>
+    </library>
+
      <!-- pointer container -->
     <library name="ptr_container">
         <mark-unusable>
@@ -3227,6 +3243,14 @@ for more information.
             standard library implementation on this platform. It incorrectly
             assumes that fpos_t is of an integral type, which is not always
             the case. This is fixed in a later release.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="sun-5.8*"/>
+            <note author="David Abrahams">
+            This compiler seems to be having trouble digesting
+            Boost.Tuple.  Until it can handle Boost.Tuple there's
+            little chance it will handle Boost.Python
             </note>
         </mark-unusable>
         <mark-expected-failures>
@@ -4529,7 +4553,7 @@ for more information.
             <toolset name="sunpro-5_3-sunos"/>
             <note author="John Maddock" refid="2"/>
         </mark-expected-failures>
-        <mark-expected-failures>
+       <mark-expected-failures>
             <test name="tr1_tricky_function_type_test"/>
             <test name="tr1_is_const_test"/>
             <test name="tr1_is_volatile_test"/>
@@ -4822,7 +4846,7 @@ for more information.
     </note>
 
     <note id="1">
-        The failure is caused by a problem in Boost code. The Boost developers is aware of
+        The failure is caused by a problem in Boost code. The Boost developers are aware of
         the problem and plan to fix it.
     </note>
 
@@ -4845,7 +4869,7 @@ for more information.
     </note>
 
     <note id="6">
-        The failure is probably caused by the test code, harness, or configuration. Thus
+        The failure is probably caused by the test code, harness, or configuration. Thus,
         it may not affect users of the library.
     </note>
 
@@ -4927,7 +4951,7 @@ for more information.
     </note>
 
     <note id="28">
-        Unresearched failure, please contact library developers for more
+        Unresearched failure -- please contact library developers for more
         information about possible causes.
     </note>
 
