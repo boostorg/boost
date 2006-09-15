@@ -2,16 +2,23 @@
 .. Software License, Version 1.0. (See accompanying
 .. file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-================================
- BoostCon 2007 • May 14-18 2007
-================================
+===========================================
+ BoostCon 2007 • May 14-18 2007 |(logo)|__ 
+===========================================
 
-Dateline: Sept 14, 2006.  This inaugural Boost conference promises
-to be the main face-to-face venue for all things Boost, from using
-libraries to writing them, from evangelizing Boost to deployment
-within your organization, from infrastructure and process to vision
-and mission, and from TR1 to TR2. Given the range and interests of
-the participants, the event is going to be intense and in-depth.
+.. |(logo)| image:: ../boost.png
+   :alt: Boost
+
+__ ../index.htm
+
+----------
+
+This inaugural Boost conference promises to be the main
+face-to-face venue for all things Boost, from using libraries to
+writing them, from evangelizing Boost to deployment within your
+organization, from infrastructure and process to vision and
+mission, and from TR1 to TR2. Given the range and interests of the
+participants, the event is going to be intense and in-depth.
 
 .. contents:: Index
 
