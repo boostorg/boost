@@ -3098,16 +3098,27 @@ for more information.
             <toolset name="borland-5.8*"/>
             <toolset name="borland-5_6*"/>
             <toolset name="borland-5_8*"/>
-            <note refid="32"/>
+            <note refid="32" author="David Abrahams"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="unnamed_fail"/>
             <toolset name="msvc-7.0"/>
-            <toolset name="msvc-6*"/>
-            <toolset name="vc-7_0"/>
             <toolset name="vc-6*"/>
-            <note refid="32"/>
+            <note refid="32" author="David Abrahams"/>
         </mark-expected-failures>
+        <test name="preprocessor">
+          <toolset name="[Ss]un-5.8"/>
+            <note>
+              Several compiler bugs were worked around in order to get
+              this test to pass, so it could be considered to be only
+              partially working.  However, the library's macro system,
+              which is really being tested here, does work on this
+              compiler, which is why we worked around the failures.
+              Please see the <a
+              href="http://www.boost.org/libs/parameter/test/preprocessor.cpp">test's
+              source file</a> for details.
+            </note>
+        </test>
     </library>
 
      <!-- pointer container -->
@@ -4465,6 +4476,12 @@ for more information.
                 <note author="John Maddock" refid="2"/>
             </mark-failure>
         </test>
+        <test name="tr1_tky_incomp_type_test">
+            <mark-failure>
+                <toolset name="iw-7_1*"/>
+                <note author="John Maddock" refid="2"/>
+            </mark-failure>
+        </test>
         <test name="tr1_is_abstract_test">
             <mark-failure>
                 <toolset name="borland-5_6_4"/>
@@ -5073,4 +5090,5 @@ for more information.
 
 
  
+
 
