@@ -11,6 +11,17 @@
 
 __ ../index.htm
 
+.. raw:: html
+
+ <style type="text/css">
+   table.borderless { 
+      border: 0;
+   }
+   table.borderless td {
+      border-style: none none none none;
+   }
+ </style>
+
 ----------
 
 This inaugural Boost conference promises to be the main
@@ -93,19 +104,35 @@ workshop, session, and talk ideas, and a request for submissions.
 Registration
 ============
 
-Registration is not yet open.  Watch this space for more details.
+Official Registration is not yet open, but an `informal attendee
+list`__ for those likely to attend has been set up on the Boost
+Wiki.  The conference organizers would very much appreciate it if
+you could add an entry to this list if you think you'll be there,
+to help us with planning.
+
+__ interest_
+
+.. Admonition:: `Register interest`__ in attending BoostCon 2007
+
+    Thank you!
+
+__ interest_
+
+
+.. _interest: http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?BoostCon
 
 Organizing Committee
 ====================
 
-* David Abrahams
-* Beman Dawes
-* Jeff Garland
-* Joel de Guzman
-* Kevlin Henney
-* Scott Meyers
-* Eric Niebler
-* Sean Parent
-* Rene Rivera
-* Jeremy Siek
-* Matthias Troyer 
+.. class:: borderless
+
+  +--------------------+--------------------+--------------------+
+  |David Abrahams      |Beman Dawes         |Jeff Garland        |
+  +--------------------+--------------------+--------------------+
+  |Joel de Guzman      |Kevlin Henney       |Scott Meyers        |
+  +--------------------+--------------------+--------------------+
+  |Eric Niebler        |Sean Parent         |Rene Rivera         |
+  +--------------------+--------------------+--------------------+
+  |Jeremy Siek         |Matthias Troyer     |                    |
+  +--------------------+--------------------+--------------------+
+
