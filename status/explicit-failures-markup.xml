@@ -1611,6 +1611,13 @@
             <note author="Jonathan Turkanis" refid="19"/>
         </mark-expected-failures>
         <mark-expected-failures>
+            <!-- Insufficient wide character support -->
+            <test name="code_converter_test"/>
+            <test name="wide_stream_test"/>
+            <toolset name="qcc-3.3.5*gpp"/>
+            <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="bzip2_test"/>
             <test name="file_descriptor_test"/>
             <test name="mapped_file_test"/>
@@ -1657,14 +1664,6 @@
             <toolset name="gcc-2.95.3*"/>
             <note author="Jonathan Turkanis" refid="2"/>
         </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="code_converter_test"/>
-            <test name="wide_stream_test"/>
-            <toolset name="qcc-3.3.5*gpp"/>
-            <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
-        </mark-expected-failures>
-
         <mark-expected-failures>
             <test name="mapped_file_test"/>
             <toolset name="qcc-3.3*"/>
@@ -1672,7 +1671,14 @@
                 Memory mapped files are not supported in QNX Neutrino version 6.3.0.
             </note>
         </mark-expected-failures>
-
+        <mark-expected-failures>
+            <test name="compose_test"/>
+            <toolset name="	borland- 5_6_4"/>
+            <note author="Jonathan Turkanis">
+				Fails to compile on some installations but not others; may 
+            	depend on which compiler updates have been installed
+            </note>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="bzip2_test"/>
             <toolset name="gcc-3.4.3_sunos"/>
