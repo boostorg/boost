@@ -3071,10 +3071,50 @@ for more information.
             <test name="optional_deduced_sfinae"/>
             <toolset name="vc-6*"/>
             <toolset name="vc-7_0"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="borland-5_8_2"/>
             <note author="Daniel Wallin">
               These compilers do not support SFINAE, so are expected to
               fail this test.
             </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="preprocessor_deduced"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="borland-5_8_2"/>
+            <note author="Daniel Wallin">
+              Borland does not support this feature. A compatibility syntax
+              might be developed later on.
+            </note>
+        </mark-expected-failures>       
+
+        <mark-expected-failures>
+            <test name="normalized_argument_types"/>
+            <toolset name="borland-5_6_4"/>
+            <toolset name="borland-5_8_2"/>
+            <toolset name="vc-6*"/>
+            <toolset name="vc-7_0"/>
+            <note author="Daniel Wallin">
+              This feature generally requires advanced compiler
+              features not supported by these compilers. It might
+              be possible to work around the issue on VC6/7, but
+              at this time no such workaround has been done.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="unnamed"/>
+            <toolset name="*"/>
+            <note author="Daniel Wallin">
+              This is old and should not be tested any more.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="deduced_dependent_predicate"/>
+            <toolset name="vc-6*"/>
+            <note refid="31" author="Daniel Wallin"/>
         </mark-expected-failures>
 
     </library>
