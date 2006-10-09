@@ -408,8 +408,7 @@ Detailed report:
         message += (str(self.numFailures()) + ' failures in ' + 
                     str(len(self.libraries)) + ' libraries')
         if any_broken_platforms:
-            diff = self.numFailures() - self.numReportableFailures()
-            message += ' (' + str(diff) + ' are from non-broken platforms)'
+            message += ' (' + str(self.numReportableFailures()) + ' are from non-broken platforms)'
         message += '\n'
 
         # Display the number of failures per library
