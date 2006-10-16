@@ -1,3 +1,12 @@
+# Copyright Vladimir Prus 2002-2006.
+# Copyright Dave Abrahams 2005-2006.
+# Copyright Rene Rivera 2005-2006.
+# Copyright Douglas Gregor 2005.
+#
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+
 # Usage:
 #
 #   bjam [options] [install|stage]
@@ -97,6 +106,7 @@ import set ;
 import stage ;
 import package ;
 import path ;
+import common ;
 
 constant BOOST_VERSION : 1.34.0 ;
 
@@ -235,30 +245,30 @@ rule tag ( name : type ? : property-set )
     {
         if $(layout) = versioned
         {
-            name = [ stage.add-variant-and-compiler $(name)
-              : $(type) : $(property-set) ] ;
-
+            local result = [ common.format-name
+                <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
+                : $(name) : $(type) : $(property-set) ] ;
+            
             # Optionally add version suffix.
-            if $(type) != SHARED_LIB ||
-              [ $(property-set).get <os> ] in NT CYGWIN MACOSX AIX
+            # On NT, library with version suffix won't be recognized
+            # by linkers. On CYGWIN, we get strage duplicate symbol
+            # errors when library is generated with version suffix.
+            # On OSX, version suffix is not needed -- the linker expets
+            # libFoo.1.2.3.dylib format.
+            # AIX linkers don't accept version suffixes either.
+            if $(type) = SHARED_LIB &&
+              ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix )
             {
-                # On NT, library with version suffix won't be recognized
-                # by linkers. On CYGWIN, we get strage duplicate symbol
-                # errors when library is generated with version suffix.
-                # On OSX, version suffix is not needed -- the linker expets
-                # libFoo.1.2.3.dylib format.
-                # AIX linkers don't accept version suffixes either.
-                return $(name:B)-$(BOOST_VERSION_TAG)$(name:S) ;
+                result = $(result).$(BOOST_VERSION)  ;
             }
-            else
-            {
-                return $(name:B)-$(BOOST_VERSION_TAG)$(name:S).$(BOOST_VERSION)  ;
-            }
+            
+            return $(result) ;
         }
         else
         {
-            return [ stage.add-variant-and-compiler $(name)
-              : $(type) : $(property-set) ] ;
+            return [ common.format-name
+                boost_ <base> <toolset> <threading> <runtime>
+                : $(name) : $(type) : $(property-set) ] ;
         }
     }
 }
@@ -266,8 +276,8 @@ rule tag ( name : type ? : property-set )
 # Install to system location.
 
 local headers =
-    [ path.glob-tree boost : *.hpp *.ipp *.h *.inc ]
-    [ path.glob-tree boost/compatibility/cpp_c_headers : c* ]
+    [ path.glob-tree boost : *.hpp *.ipp *.h *.inc : CVS ]
+    [ path.glob-tree boost/compatibility/cpp_c_headers : c* : CVS ]
     ;
 
 local header-subdir ;
