@@ -2099,6 +2099,25 @@ for more information.
         </mark-expected-failures>
     </library>
 
+    <!-- rational -->
+    <library name="rational">
+        <mark-expected-failures>
+            <test name="rational_test"/>
+            <toolset name="sun-5.8"/>
+            <note author="J. L&#243;pez" date="19 Oct 2006">
+              The test is exposing the following known error of Sun Studio 11:
+              overload resolution fails if
+              a) some class has a conversion operator to a reference to
+              a built-in type, and
+              b) overload resolution involves a user-defined operator as well
+              as a built-in operator, and
+              c) the built-in operator takes the result of the conversion
+              mentioned in a) as an operand.
+              A fix will be reportedly included in patch no 6 of Sun Studio 11.
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- serialization -->
     <library name="serialization">
         <mark-unusable>
