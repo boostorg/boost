@@ -142,6 +142,11 @@ project boost
       # Used to encode variant in target name. See the
       # 'tag' rule below.
       <tag>@$(__name__).tag
+      # This property combination is impossible on gcc.
+      # Until we have a more general mechanism for
+      # toolset to declare impossible properties,
+      # just hardcode this knowledge here
+      <toolset>gcc,<link>shared,<runtime-link>static:<build>no
     : usage-requirements <include>.
     : build-dir bin.v2
     : default-build $(default-build)
@@ -281,7 +286,7 @@ local headers =
     ;
 
 local header-subdir ;
-if $(layout-versioned) { header-subdir = boost-$(BOOST_VERSION_TAG) ; }
+if $(layout-versioned) { header-subdir = boost-$(BOOST_VERSION_TAG)/boost ; }
 else { header-subdir = boost ; }
 
 
