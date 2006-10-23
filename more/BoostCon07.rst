@@ -53,11 +53,11 @@ Sessions
 ========
 
 In the spirit of Boost, many sessions will be participatory and/or
-collaborative in nature.  The program committee is drafting a call
-for sessions that you can expect to see in the next few weeks.  In
-the meantime, please raise any questions about—or ideas for—the
+collaborative in nature.  The program committee has issued a `call
+for sessions`_.  Please raise any questions about—or ideas for—the
 conference on the `Boost mailing lists`__.
 
+.. _call for sessions: http://www.boost.org/more/BoostCon07_session_call.html
 __ http://www.boost.org/more/mailing_lists.htm
 
 Venue
