@@ -282,6 +282,22 @@ rule tag ( name : type ? : property-set )
 
 # Install to system location.
 
+local install-requirements =
+    <install-source-root>boost
+    ;
+if $(layout-versioned)
+{
+    install-requirements += <install-header-subdir>boost-$(BOOST_VERSION_TAG)/boost ;
+}
+if [ modules.peek : NT ]
+{
+    install-requirements += <install-default-prefix>C:/Boost ;
+}
+else if [ modules.peek : UNIX ]
+{
+    install-requirements += <install-default-prefix>/usr/local ;
+}
+
 local headers =
     [ path.glob-tree boost : *.hpp *.ipp *.h *.inc : CVS ]
     [ path.glob-tree boost/compatibility/cpp_c_headers : c* : CVS ]
@@ -294,8 +310,7 @@ else { header-subdir = boost ; }
 
 # Complete install
 package.install install
-    :   <install-source-root>boost
-        <install-header-subdir>$(header-subdir)
+    :   $(install-requirements)
     :
     :   libs/$(libraries)/build
     :   $(headers)
@@ -321,7 +336,7 @@ alias build_all : libs/$(libraries)/build ;
 rule boost-install ( libraries * )
 {
     package.install install
-        : <dependency>/boost//install-headers
+        : <dependency>/boost//install-headers $(install-requirements)
         : # No binaries
         : $(libraries)
         : # No headers, it's handled by the dependency
@@ -336,8 +351,6 @@ rule boost-install ( libraries * )
         explicit stage ;
     }
 }
-
-
 
 # Make project ids of all libraries known.
 for local l in $(libraries)
