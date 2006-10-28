@@ -107,6 +107,7 @@ import stage ;
 import package ;
 import path ;
 import common ;
+import os ;
 
 constant BOOST_VERSION : 1.34.0 ;
 
@@ -125,9 +126,13 @@ if $(__file__:D) = ""
         debug release
         <threading>single <threading>multi
 	<link>shared <link>static
-        # <runtime-link>shared <runtime-link>static
 	<runtime-debugging>off
         ;
+    
+    if [ os.name ] = NT
+    {
+        default-build += <runtime-link>shared <runtime-link>static ;
+    }
 }
 else
 {
