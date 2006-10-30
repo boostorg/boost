@@ -148,11 +148,13 @@ project boost
       # Used to encode variant in target name. See the
       # 'tag' rule below.
       <tag>@$(__name__).tag
-      # This property combination is impossible on gcc.
-      # Until we have a more general mechanism for
-      # toolset to declare impossible properties,
-      # just hardcode this knowledge here
-      <toolset>gcc,<link>shared,<runtime-link>static:<build>no
+      # This property combination is dangerous.
+      # Ideally, we'd add constaint to default build,
+      # so that user can build with property combination
+      # by hand. But we don't have any 'constaint' mechanism
+      # for default-build, so disable such builds in requirements.
+      <link>shared,<runtime-link>static:<build>no
+            
     : usage-requirements <include>.
     : build-dir bin.v2
     : default-build $(default-build)
