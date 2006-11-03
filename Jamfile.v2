@@ -65,6 +65,9 @@
 #                               is intended for system integrators to build
 #                               for packaging of distributions.
 #
+#   --buildid=ID            Adds the specified ID to the name of built
+#                           libraries. Default is to not add anything.
+#
 #   --help                  This message.
 #
 #   --with-<library>        Build and install the specified <library>
@@ -108,6 +111,7 @@ import package ;
 import path ;
 import common ;
 import os ;
+import regex ;
 
 constant BOOST_VERSION : 1.35.0 ;
 
@@ -248,6 +252,12 @@ PYTHON_ROOT ?= $(python-root) ;
 # Select the libraries to install.
 libraries = [ libraries-to-install $(all-libraries) ] ;
 
+# Custom build ID.
+local build-id = [ MATCH "^--buildid=(.*)" : [ modules.peek : ARGV ] ] ;
+if $(build-id)
+{
+    constant BUILD_ID : [ regex.replace $(build-id) "[*\\/:.\"\' ]" "_" ] ;
+}
 
 # This rule is called by Boost.Build to determine the name of
 # target. We use it to encode build variant, compiler name and
@@ -260,6 +270,7 @@ rule tag ( name : type ? : property-set )
         {
             local result = [ common.format-name
                 <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
+                -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
             
             # Optionally add version suffix.
@@ -280,7 +291,7 @@ rule tag ( name : type ? : property-set )
         else
         {
             return [ common.format-name
-                <base> <toolset> <threading> <runtime>
+                <base> <toolset> <threading> <runtime> -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
         }
     }
