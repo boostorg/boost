@@ -291,7 +291,7 @@ rule tag ( name : type ? : property-set )
         else
         {
             return [ common.format-name
-                <base> <toolset> <threading> <runtime> -$(BUILD_ID)
+                <base> <threading> <runtime> -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
         }
     }
@@ -306,6 +306,10 @@ if $(layout-versioned)
 {
     install-requirements += <install-header-subdir>boost-$(BOOST_VERSION_TAG)/boost ;
 }
+else
+{
+    install-requirements += <install-header-subdir>boost ;
+}
 if [ modules.peek : NT ]
 {
     install-requirements += <install-default-prefix>C:/Boost ;
@@ -319,10 +323,6 @@ local headers =
     [ path.glob-tree boost : *.hpp *.ipp *.h *.inc : CVS ]
     [ path.glob-tree boost/compatibility/cpp_c_headers : c* : CVS ]
     ;
-
-local header-subdir ;
-if $(layout-versioned) { header-subdir = boost-$(BOOST_VERSION_TAG)/boost ; }
-else { header-subdir = boost ; }
 
 
 # Complete install
