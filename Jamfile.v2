@@ -112,6 +112,9 @@ import path ;
 import common ;
 import os ;
 import regex ;
+import errors ;
+import "class" : new ;
+import common ;
 
 constant BOOST_VERSION : 1.34.0 ;
 
@@ -326,19 +329,96 @@ local headers =
 
 
 # Complete install
-package.install install
-    :   $(install-requirements)
+package.install install-proper
+    :   $(install-requirements) <install-no-version-symlinks>on
     :
     :   libs/$(libraries)/build
     :   $(headers)
     ;
 
 # Install just library.
-install stage
+install stage-proper
     :   libs/$(libraries)/build
-    :   <location>$(stage-locate)
+    :   <location>$(stage-locate)/lib
         <install-dependencies>on <install-type>LIB 
+        <install-no-version-symlinks>on
     ;
+
+
+if $(layout-versioned) 
+  && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
+{
+    rule make-unversioned-links ( project name ? : property-set : sources * )
+    {
+        local result ;
+        local filtered ;
+        local pattern ;        
+        local nt = [ modules.peek : NT ] ;
+        
+        # Collect the libraries that have the version number in 'filtered'.
+        for local s in $(sources)
+        {
+            local m ;
+            if $(nt)
+            {
+                m = [ MATCH "(.*[.]lib)" : [ $(s).name ] ] ;
+            }
+            else
+            {
+                m = [ MATCH "(.*[.]so[.0-9]+)" "(.*[.]a)" : [ $(s).name ] ] ;
+            }            
+            if $(m)
+            {
+                filtered += $(s) ;
+            }
+        }
+        
+        # Create hardlinks without version.
+        for local s in $(filtered)
+        {
+            local name = [ $(s).name ] ;
+            local ea = [ $(s).action ] ;
+            local ep = [ $(ea).properties ] ;
+            local a  = [
+              new non-scanning-action $(s) : common.hard-link : $(ep) ] ;
+            
+            local noversion-file ;
+            if $(nt)
+            {
+                noversion-file = [ MATCH "(.*)-[0-9_]+([.]lib)" : $(name) ] ;
+            }
+            else
+            {
+                noversion-file = 
+                  [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(name) ] 
+                  [ MATCH "(.*)-[0-9_]+([.]a)" : $(name) ] ;
+            }
+                        
+            local new-name = 
+               $(noversion-file[1])$(noversion-file[2]) ;
+            result += [ new file-target $(new-name) exact : [ $(s).type ] : $(project)
+                    : $(a) ] ;
+
+        }
+        return $(result) ;
+    }    
+            
+    generate stage-unversioned : stage-proper : 
+      <generating-rule>@make-unversioned-links ;
+    
+    generate install-unversioned : install-proper : 
+      <generating-rule>@make-unversioned-links ;
+}
+else
+{
+    # Create do-nothing aliases
+    alias stage-unversioned ;
+    alias install-unversioned ;
+}
+
+alias install : install-proper install-unversioned ;
+alias stage : stage-proper stage-unversioned ;
+
 
 # Just build the libraries, don't install them anywhere.
 # This is what happend with just "bjam --v2".
