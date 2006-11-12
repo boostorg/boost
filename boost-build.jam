@@ -6,12 +6,5 @@
 #~ LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 BOOST_ROOT = $(.boost-build-file:D) ;
-if --v2 in $(ARGV)
-{
-    JAMFILE = [Bb]uild.jam [Jj]amfile.v2 ;
-    boost-build tools/build/v2 ;
-}
-else
-{
-    boost-build tools/build/v1 ;
-}    
+JAMFILE = [Bb]uild.jam [Jj]amfile.v2 ;
+boost-build tools/build/v2 ;
