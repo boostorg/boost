@@ -41,6 +41,11 @@ def test_run_type( runner_idx ):
     else:              return "full"
 
 
+def test_type( i ):
+    types = [ "compile", "compile_fail", "link", "link_fail", "run", "run_fail", "run_pyd" ]
+    return types[ i % len( types) ]
+
+
 def make_test_results():
     if not os.path.exists( results_directory ):
         os.makedirs( results_directory )
@@ -95,14 +100,13 @@ def make_test_results():
                 for i_test in range( num_of_tests ):
                     test_name = "test_%02d_%02d" % ( i_lib, i_test )
                     test_result = ""
-                    test_type = "run"
                     show_run_output = "false"
                     
                     if num_of_runners - 1 == i_runner and i_test % 2:
                         continue
                     
                     if i_runner % 2: test_result = "success"
-                    else:             test_result = "fail"
+                    else:            test_result = "fail"
 
                     if i_runner == 1 and i_toolset == 2 and i_test % 6 == 0:
                         test_result = "fail"
@@ -120,7 +124,7 @@ def make_test_results():
                                               , library_idx = i_lib
                                               , toolset_idx = i_toolset
                                               , test_name = test_name
-                                              , test_type = test_type
+                                              , test_type = test_type( i_test )
                                               , test_result = test_result
                                               , show_run_output = show_run_output
                                               , variant = variant )
