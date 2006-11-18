@@ -102,6 +102,8 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:when test="$test_type='run_fail'">     <xsl:text>rf</xsl:text> </xsl:when>
             <xsl:when test="$test_type='compile'">      <xsl:text>c</xsl:text>  </xsl:when>
             <xsl:when test="$test_type='compile_fail'"> <xsl:text>cf</xsl:text> </xsl:when>
+            <xsl:when test="$test_type='link'">         <xsl:text>l</xsl:text> </xsl:when>
+            <xsl:when test="$test_type='link_fail'">    <xsl:text>lf</xsl:text> </xsl:when>
             <xsl:otherwise>
                 <xsl:message terminate="yes">Incorrect test type "<xsl:value-of select="$test_type"/>"</xsl:message>
             </xsl:otherwise>
