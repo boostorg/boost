@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="process_jam_log"
 	ProjectGUID="{9A751791-929F-496A-8DE7-B61020619BFA}"
+	RootNamespace="process_jam_log"
 	Keyword="MakeFileProj">
 	<Platforms>
 		<Platform
@@ -18,11 +19,13 @@
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="cd ..\..\..\..\tools\regression\build
-..\..\build\jam_src\bin.ntx86\bjam.exe -sBUILD=debug
+bjam --v2 msvc-7.1 debug
 "
 				ReBuildCommandLine="cd ..\..\..\..\tools\regression\build
-..\..\build\jam_src\bin.ntx86\bjam.exe -a -sBUILD=debug
-
+call bjam --v2 msvc-7.1 debug clean
+call bjam --v2 msvc-7.1 debug"
+				CleanCommandLine="cd ..\..\..\..\tools\regression\build
+call bjam --v2 msvc-7.1 debug clean
 "
 				Output="process_jam_log.exe"/>
 		</Configuration>
