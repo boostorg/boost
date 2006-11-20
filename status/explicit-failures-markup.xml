@@ -3404,7 +3404,7 @@ for more information.
                 <note author="Markus Schoepflin" refid="3"/>
             </mark-failure>
         </test>
-        <test name="grep">
+        <test name="test_grep">
             <mark-failure>
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="sunpro-5_3-sunos"/>
@@ -3421,7 +3421,17 @@ for more information.
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <note author="John Maddock" refid="29"/>
         </mark-expected-failures>
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="regex_regress"/>
+          <test name="regex_regress_threaded"/>
+          <test name="regex_regress_dll"/>
+          <toolset name="borland*"/>
+          <note author="John Maddock">
+             There appears to be a linker bug that prevents these
+             projects from building, see http://qc.borland.com/wc/qcmain.aspx?d=32020.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="unicode_iterator_test"/>
             <toolset name="borland-5.6.4"/>
             <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
