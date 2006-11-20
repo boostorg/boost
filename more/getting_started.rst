@@ -206,7 +206,7 @@ one by three, and writes them to standard output::
 Start by copying the text of this program into a file called
 ``example.cpp``.
 
-.. _*nix-header-only:
+.. _unix-header-only:
 
 \*nix (e.g. Unix, Linux, MacOS, Cygwin)
 ---------------------------------------
@@ -724,7 +724,7 @@ b. You can separately specify a directory to search (with ``-L``\
 In both cases above, the bold text is what you'd add to `the
 command lines we explored earlier`__.
 
-__ *nix-header-only_
+__ unix-header-only_
 
 Library Naming
 --------------
