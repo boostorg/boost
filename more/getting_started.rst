@@ -23,7 +23,7 @@ Have fun!
 .. |root| replace:: ``/``\ *path*\ ``/``\ *to*\ ``/``\ |boost_ver|
 .. |winroot| replace:: *C:*\ ``\``\ *path*\ ``\``\ *to*\ ``\``\ |boost_ver|
 .. |winroot-default| replace:: ``C:\Program Files\boost\``\ |boost_ver|
-.. |bold-winroot-default| replace:: **C:\\Program Files\\boost\\**\ |boost_ver|
+.. |bold-winroot-default| replace:: **C:\\Program Files\\boost\\**\ |boost_ver-bold|
 
 Getting Boost
 =============
@@ -511,7 +511,7 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam --build-dir=\ |build-directory|_ \\
+  bjam --build-dir=\ |build-directory|_ **\\**
        --toolset=\ |toolset-name|_ stage
 
 For example, on Windows, your session might look like:
@@ -519,8 +519,8 @@ For example, on Windows, your session might look like:
 .. parsed-literal::
 
    C:\WINDOWS> cd |winroot-default|
-   |winroot-default|> bjam \\
-     **--build-dir=**\ %HOMEDRIVE%%HOMEPATH%\\build-boost  \\
+   |winroot-default|> bjam   **\\**
+     **--build-dir=**\ %HOMEDRIVE%%HOMEPATH%\\build-boost    **\\**
      **--toolset=msvc stage**
 
 .. Note:: ``bjam`` is case-sensitive; it is important that all the
@@ -547,7 +547,7 @@ in the ``stage/`` subdirectory of your chosen `build directory`_:
 
 .. parsed-literal::
 
-  bjam --build-dir=\ |build-directory|_ \\
+  bjam --build-dir=\ |build-directory|_   **\\**
        --toolset=\ |toolset-name|_ stage
 
 .. _prefix directory:
@@ -569,8 +569,8 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam --build-dir=\ |build-directory|_ \\
-       --toolset=\ |toolset-name|_      \\
+  bjam --build-dir=\ |build-directory|_   **\\**
+       --toolset=\ |toolset-name|_        **\\**
         --prefix=\ |prefix-directory|_ install
 
 For example, on Windows your session might look like:
@@ -578,8 +578,8 @@ For example, on Windows your session might look like:
 .. parsed-literal::
 
    C:\WINDOWS> cd |winroot-default|
-   |winroot-default|> bjam \\
-       --build-dir=C:\\TEMP\\build-boost       \\
+   |winroot-default|> bjam   **\\**
+       --build-dir=C:\\TEMP\\build-boost         **\\**
        --prefix=C:\\boost
 
 And on Unix:
@@ -587,7 +587,7 @@ And on Unix:
 .. parsed-literal::
 
    ~$ cd ~/|boost_ver|
-   ~/|boost_ver|\ $ bjam --build-dir=/tmp/build-boost \\
+   ~/|boost_ver|\ $ bjam --build-dir=/tmp/build-boost **\\**
         --prefix=~/boost
 
 Linking A Program with a Boost Library
@@ -650,20 +650,20 @@ Visual C++ Command Line
 For example, we can compile and link the above program from the
 Visual C++ command-line by simply adding the **bold** text below to
 the command line we used earlier, assuming your Boost binaries are
-in |winroot-default|:
+in |winroot-default|\ ``\lib``:
 
 .. parsed-literal::
 
-   C:\PROMPT> cl /EHsc /I |winroot| example.cpp **\\**
-        **/link /LIBPATH:** |bold-winroot-default|
+   C:\PROMPT> cl /EHsc /I |winroot| example.cpp   **\\**
+        **/link /LIBPATH:** |bold-winroot-default|\ **\\lib**
 
 To link with a library that doesn't use auto-linking support, you
 need to specify the library name.  For example,
 
 .. parsed-literal::
 
-   C:\PROMPT> cl /EHsc /I |winroot| example.cpp \\
-        /link /LIBPATH: |winroot-default| **\\**
+   C:\PROMPT> cl /EHsc /I |winroot| example.cpp   **\\**
+        /link /LIBPATH: |winroot-default|    **\\**
         **boost_regex-msvc-7.1-mt-d-1_34.lib**
 
 See `Library Naming`_ for details about how to select the right

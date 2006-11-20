@@ -498,14 +498,14 @@ purpose in your current working directory.</p>
 <p>Change your current directory to the Boost root directory and
 invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> as follows:</p>
 <pre class="literal-block">
-bjam --build-dir=<a class="reference" href="#id10"><em>build-directory</em></a> \
+bjam --build-dir=<a class="reference" href="#id10"><em>build-directory</em></a> <strong>\</strong>
      --toolset=<a class="reference" href="#toolset-name"><em>toolset-name</em></a> stage
 </pre>
 <p>For example, on Windows, your session might look like:</p>
 <pre class="literal-block">
 C:WINDOWS&gt; cd <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
-<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>&gt; bjam \
-  <strong>--build-dir=</strong>%HOMEDRIVE%%HOMEPATH%\build-boost  \
+<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>&gt; bjam   <strong>\</strong>
+  <strong>--build-dir=</strong>%HOMEDRIVE%%HOMEPATH%\build-boost    <strong>\</strong>
   <strong>--toolset=msvc stage</strong>
 </pre>
 <div class="note">
@@ -529,7 +529,7 @@ prefer not to create an additional copy, instead of installing
 Boost you can simply “stage” the Boost binaries, which leaves them
 in the <tt class="docutils literal"><span class="pre">stage/</span></tt> subdirectory of your chosen <a class="reference" href="#build-directory">build directory</a>:</p>
 <pre class="literal-block">
-bjam --build-dir=<a class="reference" href="#id10"><em>build-directory</em></a> \
+bjam --build-dir=<a class="reference" href="#id10"><em>build-directory</em></a>   <strong>\</strong>
      --toolset=<a class="reference" href="#toolset-name"><em>toolset-name</em></a> stage
 </pre>
 </div>
@@ -544,21 +544,21 @@ leave you with the following subdirectories of the prefix directory:</p>
 <p>Change your current directory to the Boost root directory and
 invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> as follows:</p>
 <pre class="literal-block">
-bjam --build-dir=<a class="reference" href="#id10"><em>build-directory</em></a> \
-     --toolset=<a class="reference" href="#toolset-name"><em>toolset-name</em></a>      \
+bjam --build-dir=<a class="reference" href="#id10"><em>build-directory</em></a>   <strong>\</strong>
+     --toolset=<a class="reference" href="#toolset-name"><em>toolset-name</em></a>        <strong>\</strong>
       --prefix=<a class="reference" href="#id11"><em>prefix-directory</em></a> install
 </pre>
 <p>For example, on Windows your session might look like:</p>
 <pre class="literal-block">
 C:WINDOWS&gt; cd <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
-<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>&gt; bjam \
-    --build-dir=C:\TEMP\build-boost       \
+<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>&gt; bjam   <strong>\</strong>
+    --build-dir=C:\TEMP\build-boost         <strong>\</strong>
     --prefix=C:\boost
 </pre>
 <p>And on Unix:</p>
 <pre class="literal-block">
 ~$ cd ~/<tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
-~/<tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>$ bjam --build-dir=/tmp/build-boost \
+~/<tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>$ bjam --build-dir=/tmp/build-boost <strong>\</strong>
      --prefix=~/boost
 </pre>
 </div>
@@ -620,16 +620,16 @@ auto-linking:</p>
 <p>For example, we can compile and link the above program from the
 Visual C++ command-line by simply adding the <strong>bold</strong> text below to
 the command line we used earlier, assuming your Boost binaries are
-in <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>:</p>
+in <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">\lib</span></tt>:</p>
 <pre class="literal-block">
-C:PROMPT&gt; cl /EHsc /I <em>C:</em><tt class="docutils literal"><span class="pre">\</span></tt><em>path</em><tt class="docutils literal"><span class="pre">\</span></tt><em>to</em><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp <strong>\</strong>
-     <strong>/link /LIBPATH:</strong> <strong>C:\Program Files\boost\</strong><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
+C:PROMPT&gt; cl /EHsc /I <em>C:</em><tt class="docutils literal"><span class="pre">\</span></tt><em>path</em><tt class="docutils literal"><span class="pre">\</span></tt><em>to</em><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp   <strong>\</strong>
+     <strong>/link /LIBPATH:</strong> <strong>C:\Program Files\boost\</strong><strong>boost_1_34_0</strong><strong>\lib</strong>
 </pre>
 <p>To link with a library that doesn't use auto-linking support, you
 need to specify the library name.  For example,</p>
 <pre class="literal-block">
-C:PROMPT&gt; cl /EHsc /I <em>C:</em><tt class="docutils literal"><span class="pre">\</span></tt><em>path</em><tt class="docutils literal"><span class="pre">\</span></tt><em>to</em><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp \
-     /link /LIBPATH: <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> <strong>\</strong>
+C:PROMPT&gt; cl /EHsc /I <em>C:</em><tt class="docutils literal"><span class="pre">\</span></tt><em>path</em><tt class="docutils literal"><span class="pre">\</span></tt><em>to</em><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp   <strong>\</strong>
+     /link /LIBPATH: <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>    <strong>\</strong>
      <strong>boost_regex-msvc-7.1-mt-d-1_34.lib</strong>
 </pre>
 <p>See <a class="reference" href="#library-naming">Library Naming</a> for details about how to select the right
@@ -834,7 +834,8 @@ recommend it.</td></tr>
 </div>
 <div class="footer">
 <hr class="footer" />
-Generated on: 2006-11-20 04:00 UTC.
+<a class="reference" href="./getting_started.rst">View document source</a>.
+Generated on: 2006-11-20 13:06 UTC.
 Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
 
 </div>
