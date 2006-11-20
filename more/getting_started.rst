@@ -437,45 +437,45 @@ Identify Your Toolset
 First, find the toolset corresponding to your compiler in the
 following table.  
 
-+--------+--------------------+-----------------------------+
-|Toolset |Vendor              |Notes                        |
-|Name    |                    |                             |
-+========+====================+=============================+
-|acc     |Hewlett Packard     |Only very recent versions are|
-|        |                    |known to work well with Boost|
-+--------+--------------------+-----------------------------+
-|borland |Borland             |                             |
-+--------+--------------------+-----------------------------+
-|como    |Comeau Computing    |Using this toolset may       |
-|        |                    |require configuring__ another|
-|        |                    |toolset to act as its backend|
-+--------+--------------------+-----------------------------+
-|cw      |Metrowerks/FreeScale|The CodeWarrior compiler.  We|
-|        |                    |have not tested versions of  |
-|        |                    |this compiler produced since |
-|        |                    |it was sold to FreeScale.    |
-+--------+--------------------+-----------------------------+
-|dmc     |Digital Mars        |As of this Boost release, no |
-|        |                    |version of dmc is known to   |
-|        |                    |handle Boost well.           |
-+--------+--------------------+-----------------------------+
-|gcc     |The Gnu Project     |                             |
-+--------+--------------------+-----------------------------+
-|hp_cxx  |Hewlett Packard     |Targeted at the Tru64        |
-|        |                    |operating system.            |
-+--------+--------------------+-----------------------------+
-|intel   |Intel               |                             |
-+--------+--------------------+-----------------------------+
-|kylix   |Borland             |                             |
-+--------+--------------------+-----------------------------+
-|msvc    |Microsoft           |                             |
-+--------+--------------------+-----------------------------+
-|qcc     |QNX Software Systems|                             |
-+--------+--------------------+-----------------------------+
-|sun     |Sun                 |                             |
-+--------+--------------------+-----------------------------+
-|vacpp   |IBM                 |The VisualAge C++ compiler.  |
-+--------+--------------------+-----------------------------+
++-----------+--------------------+-----------------------------+
+|Toolset    |Vendor              |Notes                        |
+|Name       |                    |                             |
++===========+====================+=============================+
+|``acc``    |Hewlett Packard     |Only very recent versions are|
+|           |                    |known to work well with Boost|
++-----------+--------------------+-----------------------------+
+|``borland``|Borland             |                             |
++-----------+--------------------+-----------------------------+
+|``como``   |Comeau Computing    |Using this toolset may       |
+|           |                    |require configuring__ another|
+|           |                    |toolset to act as its backend|
++-----------+--------------------+-----------------------------+
+|``cw``     |Metrowerks/FreeScale|The CodeWarrior compiler.  We|
+|           |                    |have not tested versions of  |
+|           |                    |this compiler produced since |
+|           |                    |it was sold to FreeScale.    |
++-----------+--------------------+-----------------------------+
+|``dmc``    |Digital Mars        |As of this Boost release, no |
+|           |                    |version of dmc is known to   |
+|           |                    |handle Boost well.           |
++-----------+--------------------+-----------------------------+
+|``gcc``    |The Gnu Project     |                             |
++-----------+--------------------+-----------------------------+
+|``hp_cxx`` |Hewlett Packard     |Targeted at the Tru64        |
+|           |                    |operating system.            |
++-----------+--------------------+-----------------------------+
+|``intel``  |Intel               |                             |
++-----------+--------------------+-----------------------------+
+|``kylix``  |Borland             |                             |
++-----------+--------------------+-----------------------------+
+|``msvc``   |Microsoft           |                             |
++-----------+--------------------+-----------------------------+
+|``qcc``    |QNX Software Systems|                             |
++-----------+--------------------+-----------------------------+
+|``sun``    |Sun                 |                             |
++-----------+--------------------+-----------------------------+
+|``vacpp``  |IBM                 |The VisualAge C++ compiler.  |
++-----------+--------------------+-----------------------------+
 
 __ Boost.Build_
 
