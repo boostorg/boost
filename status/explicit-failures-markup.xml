@@ -3374,7 +3374,7 @@ for more information.
         </test>
         <mark-expected-failures>
             <test name="static_mutex_test"/>
-            <test name="grep"/>
+            <test name="test_grep"/>
             <toolset name="*como-4_3_3*"/>
             <note author="J. Maddock">
             This test requires features that are unsupported by Como:
@@ -3438,7 +3438,17 @@ for more information.
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <note author="John Maddock" refid="6"/>
         </mark-expected-failures>
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="regex_regress"/>
+          <test name="regex_regress_threaded"/>
+          <test name="regex_regress_dll"/>
+          <toolset name="borland*"/>
+          <note author="John Maddock">
+             There appears to be a linker bug that prevents these
+             projects from building, see http://qc.borland.com/wc/qcmain.aspx?d=32020.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="regex_timer"/>
             <toolset name="msvc-6.5_stlport4"/>
             <note author="John Maddock">
@@ -3516,7 +3526,6 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
-            <test name="FifoSchedulerTest*"/>
             <test name="TransitionTest*"/>
             <toolset name="hp_cxx-71*"/>
             <note author="Andreas Huber" refid="29"/>
