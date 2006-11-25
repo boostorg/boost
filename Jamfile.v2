@@ -335,6 +335,7 @@ package.install install-proper
     :   libs/$(libraries)/build
     :   $(headers)
     ;
+explicit install-proper ;
 
 # Install just library.
 install stage-proper
@@ -343,6 +344,7 @@ install stage-proper
         <install-dependencies>on <install-type>LIB 
         <install-no-version-symlinks>on
     ;
+explicit stage-proper ;
 
 
 if $(layout-versioned) 
@@ -405,9 +407,11 @@ if $(layout-versioned)
             
     generate stage-unversioned : stage-proper : 
       <generating-rule>@make-unversioned-links ;
+    explicit stage-unversioned ;
     
     generate install-unversioned : install-proper : 
       <generating-rule>@make-unversioned-links ;
+    explicit install-unversioned ;
 }
 else
 {
@@ -418,10 +422,12 @@ else
 
 alias install : install-proper install-unversioned ;
 alias stage : stage-proper stage-unversioned ;
+explicit install ;
+explicit stage ;
 
 
 # Just build the libraries, don't install them anywhere.
-# This is what happend with just "bjam --v2".
+# This is what happens with just "bjam --v2".
 alias build_all : libs/$(libraries)/build ;
 
 # This rule should be called from libraries' Jamfiles and will
