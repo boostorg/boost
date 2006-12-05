@@ -5,6 +5,10 @@
 
     <!--
     PLEASE VALIDATE THE XML BEFORE COMMITTING YOUR CHANGES!
+    
+    Locally, the xmlint tool can be used:
+    
+        xmllint <two-dashes>valid explicit-failures-markup.xml <two-dashes>schema explicit-failures.xsd
 
     The following online services can be used to validate your changes to this
     file:
@@ -2176,6 +2180,17 @@ for more information.
             <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
+	
+	<mark-expected-failures>
+            <test name="test_variant_*"/>
+            <toolset name="borland-5.8.2*"/>
+            <note author="Vladimir Prus">
+                The compiler fails with an error supposedly related to std::fpos&lt;&gt;::_Stz from the
+		&lt;iosfwd&gt; header. It is not known what causes the compiler to instantiate this
+		field and what causes the instantiation to fail.
+            </note>
+        </mark-expected-failures>
+		
     </library>
 
 
