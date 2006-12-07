@@ -494,7 +494,7 @@ def bjam_command( toolsets, v2 ):
 
     if not toolsets is None:
         if v2:
-            result += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
+            result += ' "toolset=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
         else:
             result += ' "-sTOOLS=%s"' % string.join( string.split( toolsets, ',' ), ' ' )
 
@@ -727,7 +727,7 @@ def regression(
         , proxy = None
         , ftp_proxy = None
         , debug_level = 0
-        , v2 = 0
+        , v2 = 1
         , args = []
         ):
 
@@ -823,6 +823,7 @@ def accept_args( args ):
         , 'monitored'
         , 'help'
         , 'v2'
+        , 'v1'
         ]
 
     options = {
@@ -870,7 +871,7 @@ def accept_args( args ):
         , 'proxy'           : options[ '--proxy' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
-        , 'v2'              : options.has_key( '--v2' )
+        , 'v2'              : not options.has_key( '--v1' )
         , 'args'            : other_args
         }
 
@@ -922,7 +923,8 @@ Options:
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
 \t--debug-level   debugging level; controls the amount of debugging
 \t                output printed; 0 by default (no debug output)
-\t--v2            Use Boost.Build V2
+\t--v1            Use Boost.Build V1
+\t--v2            Use Boost.Build V2 (default)
 ''' % '\n\t'.join( commands.keys() )
 
     print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )
