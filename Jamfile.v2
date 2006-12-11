@@ -18,23 +18,23 @@
 #   install                 Install headers and compiled library files to the
 #   =======                 configured locations (below).
 #
-#   --prefix=PREFIX         Install architecture independent files here.
+#   --prefix=<PREFIX>       Install architecture independent files here.
 #                           Default; C:\Boost on Win32
 #                           Default; /usr/local on Unix. Linux, etc.
 #
-#   --exec-prefix=EPREFIX   Install architecture dependent files here.
-#                           Default; PREFIX
+#   --exec-prefix=<EPREFIX> Install architecture dependent files here.
+#                           Default; <PREFIX>
 #
-#   --libdir=DIR            Install library files here.
-#                           Default; EPREFIX/lib
+#   --libdir=<DIR>          Install library files here.
+#                           Default; <EPREFIX>/lib
 #
-#   --includedir=DIR        Install header files here.
-#                           Default; PREFIX/include
+#   --includedir=<HDRDIR>   Install header files here.
+#                           Default; <PREFIX>/include
 #
 #   stage                   Build and install only compiled library files
 #   =====                   to the stage directory.
 #
-#   --stagedir=DIR          Install library files here
+#   --stagedir=<STAGEDIR>   Install library files here
 #                           Default; ./stage
 #
 # Other Options:
@@ -47,26 +47,29 @@
 #   --show-libraries        Displays the list of Boost libraries that require
 #                           build and installation steps, then exit.
 #
-#   --layout=<layout>       Determines what kind of build layout to use. This
-#                           allows one to control the naming of the resulting
-#                           libraries, and the locations of the installed
-#                           files. Default is 'versioned'. Possible values:
+#   --layout=<layout>       Determines whether to choose library names 
+#                           and header locations such that multiple 
+#                           versions of Boost or multiple compilers can
+#                           be used on the same system.
 #
-#                               versioned - Uses the Boost standard names
-#                               which include version number for Boost the
-#                               release and version and name of the
-#                               compiler as part of the library names. Also
-#                               installs the includes to a versioned
-#                               sub-directory.
+#                               versioned (default) - Names of boost
+#                               binaries include the Boost version
+#                               number and the name and version of the
+#                               compiler.  Boost headers are installed
+#                               in a subdirectory of <HDRDIR> whose
+#                               name contains the Boost version
+#                               number.
 #
-#                               system - Builds an install without the
-#                               Boost standard names, and does not install
-#                               includes to a versioned sub-directory. This
-#                               is intended for system integrators to build
-#                               for packaging of distributions.
+#                               system - Binaries names do not include
+#                               the Boost version number or the name
+#                               and version number of the compiler.
+#                               Boost headers are installed directly
+#                               into <HDRDIR>.  This option is
+#                               intended for system integrators who
+#                               are building distribution packages.
 #
 #   --buildid=ID            Adds the specified ID to the name of built
-#                           libraries. Default is to not add anything.
+#                           libraries.  The default is to not add anything.
 #
 #   --help                  This message.
 #
@@ -76,33 +79,10 @@
 #
 #   --without-<library>     Do not build, stage, or install the specified
 #                           <library>. By default, all libraries are built.
-#
-#   --with-python-root[=PYTHON_ROOT]
-#                           Build Boost.Python libraries with the Python
-#                           devel packages located at PYTHON_ROOT.
-#                           Default PYTHON_ROOT; C:\Python24 on Win32.
-#                           Default PYTHON_ROOT; /usr on Unix, Linux,
-#                               Cygwin, etc.
-#
-#   --with-python-version[=2.4]
-#                           Build Boost.Python libraries with the Python
-#                           version indicated.
-#                           Default; 2.4.
-#
-#   --with-pydebug          Build Boost.Python libraries for use with a
-#                           debug build of Python.
-
-#
-# This is Boost Jamfile for Boost.Build V2.
-#
-# Pass --v2 option to bjam to use this file. For example:
-#
-#    bjam --v2 link=static
-#
 
 # TODO:
 #  - handle boost version
-
+#  - handle python options such as pydebug
 
 import modules ;
 import set ;
