@@ -1,1554 +1,956 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
-<html>
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>Getting Started</title>
-  <meta content="HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org"
-  name="generator">
-  <meta content="Microsoft FrontPage 5.0" name="generator">
-  <meta http-equiv="Content-Language" content="en-us">
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
-  <link href="../boost.css" type="text/css" rel="stylesheet">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
+<title>Boost Getting Started</title>
+<link rel="stylesheet" href="../rst.css" type="text/css" />
 </head>
-
-<body text="#000000" bgcolor="#FFFFFF">
-  <table cellspacing="0" cellpadding="0" width="100%" summary="" border="0">
-    <tr valign="top">
-      <td valign="top" align="left"><img height="86" alt=
-      "boost.png (6897 bytes)" src="../boost.png" width="277"></td>
-
-      <td valign="top" align="right">
-        <table cellspacing="0" cellpadding="2" summary="" border="1">
-          <tr>
-            <td>
-              <table cellspacing="0" cellpadding="2" summary="" border="0">
-                <tr>
-                  <td bgcolor="#DDDDDD">
-                    <p>.&nbsp;<a href="../index.htm">Home</a><br>
-                    .&nbsp;<a href="../libs/libraries.htm">Libraries</a><br>
-                    .&nbsp;<a href="../people/people.htm">People</a><br>
-                    .&nbsp;<a href="faq.htm">FAQ</a><br>
-                    .&nbsp;<a href="index.htm">More</a></p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-
-  <h1>Getting Started</h1>
-
-  <ul>
-    <li><a href="#Introduction">Introduction</a></li>
-
-    <li>
-      <a href="#Download">Download</a>
-
-      <ul>
-        <li><a href="#.zip">.zip file</a></li>
-
-        <li><a href="#.tar.gz">.tar.gz and .tar.bz2 files</a></li>
-
-        <li><a href="#CVS">Boost CVS Repository</a></li>
-      </ul>
-    </li>
-
-    <li>
-      <a href="#Preparation">Preparation</a>
-      <ul>
-        <li><a href="#Configuring">Configuring the tools</a></li>
-
-        <li><a href="#Tools">Supported Toolsets</a></li>
-      </ul>
-    </li>
-
-    <li><a href="#Build_Install">Build and Install</a></li>
-
-    <li><a href="#Results">Results</a></li>
-
-    <li><a href="#auto-link">Automatic Linking on Windows</a></li>
-
-    <li><a href="#Additional_Steps">Additional Steps</a></li>
-  </ul>
-
-  <h2><a id="Introduction" name="Introduction">Introduction</a></h2>
-
-  <p>These instructions are intended to help you get started using the Boost
-  Libraries. This walks you through getting, building, and installing the
-  libraries. To summarize these are the steps to get Boost built and
-  installed:</p>
-
-  <ol>
-    <li><a href="#step1">Download Boost</a>.</li>
-
-    <li><a href="#step2">Install Boost.Jam</a>.</li>
-
-    <li><a href="#step3">Configure your compiler toolset</a>.</li>
-
-    <li><a href="#step4">Go to Boost distribution directory</a>.</li>
-
-    <li><a href="#step5">Build and install</a>.</li>
-  </ol>
-
-  <h2><a id="Download" name="Download"></a>Download</h2>
-
-  <table cellspacing="2" cellpadding="2" width="100%" summary="" border="0">
-    <tr valign="top" align="left">
-      <td valign="top" align="center" width="40" bgcolor="#FFFF66">
-      <font size="6"><b><a id="step1" name="step1"></a>1</b></font></td>
-
-      <td>The Boost Libraries are distributed through the SourceForge file
-      distribution system. Click here to <b><a href=
-      "http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041">
-      <font size="4">download releases from SourceForge</font></a></b>. And
-      unpack the release to a convenient location.</td>
-    </tr>
-  </table>
-
-  <p>The Boost release includes all of the libraries and other material from
-  the web site. It is available in <a href="#.zip">ZIP</a>, <a href=
-  "#.tar.gz">TAR.GZ</a>, and <a href="#.tar.gz">TAR.BZ2</a> formats. Past
-  releases are also available.</p>It is also possible to download current
-  snapshots of work-in-progress from Boost's <a href="#CVS">CVS
-  repository</a>.
-
-  <h3><a id="zip" name=".zip">.zip</a> file</h3>The .zip format is widely
-  supported by both free decoders and commercial compress/archive utilities.
-  If you don't already have a .zip file decoder, download one from the
-  <a href="http://www.info-zip.org/">Info-ZIP</a> web site, which supplies
-  versions for many operating systems.
-
-  <p>Text file line endings in the .zip file are as supplied by each library
-  developer.&nbsp; This works fine for Windows, but not for Unix/Linux.&nbsp;
-  The .tar.gz and .tar.bz2 files supply Unix/Linux friendly line endings.</p>
-
-  <h3><a id="tar_gz" name=".tar.gz">.tar.gz</a> and .tar.bz2 files</h3>
-
-  <p>The .tar.gz format is widely supported on Unix/Linux platforms. Some
-  Windows compress/archive utilities can read the format as well.&nbsp;
-  Because the gzip format compresses the archive as a single file rather than
-  compressing each file individually, the .tar.gz file is smaller that the
-  .zip file.</p>
-
-  <p>The .tar.bz2 format is becoming widely available on Unix/Linux platforms
-  and is built into many tar utilities. This format differs for the .tar.gz
-  format in the compression used, which is considerably better and therefore
-  creates smaller files.</p>
-
-  <p>Text file line endings in the .tar.gz and .tar.bz2 files have been
-  converted to newlines for ease of use on Unix/Linux platforms.</p>
-
-  <h3>Boost <a id="CVS" name="CVS">CVS</a> Repository</h3>
-
-  <p>All Boost files, including the entire distribution tree including web
-  site HTML is maintained in a CVS repository. Command line, GUI, or browser
-  access is available.</p>
-
-  <h4>Boost CVS access via command line or graphical clients</h4>For those
-  who have CVS clients installed, the libraries are also available from the
-  public <a href="http://sourceforge.net/cvs/?group_id=7586">Boost CVS
-  repository</a>. Free command line clients (often already installed on
-  Linux/Unix systems) are available for many systems, and free GUI clients
-  are available for Windows, Mac, and other systems.
-
-  <p>See the much improved <a href=
-  "http://sourceforge.net/docman/?group_id=1">CVS documentation</a> (Section
-  F) from SourceForge, which includes links to the home pages for various GUI
-  and command line clients.</p>
-
-  <p>The general procedure for command-line clients is something like
-  this:</p>
-
-  <blockquote>
-    <code>cvs -d:pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost
-    login</code><br>
-    [Hit &lt;return&gt; when it asks for a password]<br>
-    <code>cvs -z3 -d:pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost
-    checkout boost</code><br>
-    <code>cvs -d:pserver:anonymous@boost.cvs.sourceforge.net:/cvsroot/boost
-    logout</code>
-  </blockquote>Read the manual for your CVS client for further information.
-
-  <p>This access is read-only; if you are a library author and wish to have
-  CVS write access, please contact one of the <a href=
-  "moderators.html">moderators</a>.</p>
-
-  <h4>Boost CVS access via web <a id="Browser" name=
-  "Browser">Browser</a></h4>For access to the CVS archive from any modern web
-  browser, you can also use the <a href=
-  "http://boost.cvs.sourceforge.net/boost/boost/">web
-  browser&nbsp; interface</a>.&nbsp; Try one of the color diffs to see how a
-  file has changed over time. <b>Note:</b> this interface is only suitable
-  for viewing individual files and their revision histories.
-
-  <h4><a id="generated" name="generated">Documentation</a> generated from
-  BoostBook in CVS</h4>
-
-  <p>Some of the Boost documentation is generated from <a href=
-  "../doc/html/boostbook.html">BoostBook XML</a> source stored in the CVS
-  repository, and will not appear directly in the CVS tree as readable HTML.
-  View a nightly build of the generated HTML on the <a href=
-  "http://www.boost.org/regression-logs/cs-win32_metacomm/doc/html/libraries.html">
-  Nightly Generated Documentation</a> page. Where generated HTML is missing
-  from the CVS tree, an attempt has been made to include redirection to this
-  nightly build, but if you are away from an internet connection you may want
-  to download the generated documentation archive from the aforementioned
-  page so you can browse those documents offline.</p>
-
-  <h2><a id="Preparation" name="Preparation"></a>Preparation</h2>
-
-  <p>The recommended way to build and install the Boost Libraries is to use
-  <a href="../tools/build/v1/build_system.htm">Boost.Build</a>, the Boost
-  Build system. The rest of these instructions explain that use, but it is up
-  to you to use this method, or not. Note that some of the libraries also
-  include non Boost.Build makefiles and/or project files. But all include the
-  needed files for building with Boost.Build.</p>
-
-  <table cellspacing="2" cellpadding="2" width="100%" summary="" border="0">
-    <tr valign="top" align="left">
-      <td valign="top" align="center" width="40" bgcolor="#FFFF66">
-      <font size="6"><b><a id="step2" name="step2"></a>2</b></font></td>
-
-      <td>The build system uses <a href=
-      "../tools/jam/index.html">Boost.Jam</a>, an extension of the
-      <a href="http://www.perforce.com/jam/jam.html">Perforce Jam</a>
-      portable <i>make</i> replacement. The recommended way to get Boost.Jam
-      if you are using a Boost distribution is to <strong><a href=
-      "http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=72941">
-      download a prebuilt executable</a></strong> from SourceForge. If a
-      prebuilt executable is not provided for your platform or you are using
-      Boost's sources in an unreleased state, it may be necessary to <a href=
-      "../doc/html/jam/building.html">build <tt>bjam</tt>
-      from sources</a> included in the Boost source tree. To install
-      Boost.Jam, copy the <tt>bjam</tt> executable to a location accessible
-      in your <tt>PATH</tt>.</td>
-    </tr>
-  </table>
-
-  <h3><a id="Configuring" name="Configuring">Configuring the tools</a></h3>
-
-  <p>Before using Boost.Build you will need to configure the compiler tools
-  you are using. The build system's toolsets are designed to work in either
-  of two ways:</p>
-
-  <ol>
-    <li>The user sets up all of the environment for each toolset he wants to
-    use in the normal way. For example, for Microsoft VC++, ...VC98/Bin or
-    .../VC7/Bin is in the PATH environment variable, VCVARS32.BAT or
-    VSVARS32.BAT has been invoked, etc. For Metrowerks CodeWarrior, cwenv.bat
-    or equivalent has been called and ...Other Metrowerks Tools/Command Line
-    Tools is in the path. Many Unix operating systems come preconfigured this
-    way and require no user intervention.<br>
-    <br></li>
-
-    <li>The user doesn't want his environment cluttered with settings or has
-    nonstandard installations for some of his tools. Instead, he or she sets
-    variables which point to the toolset installation directories, either in
-    the command shell environment or on the <code>bjam</code> command-line.
-    These variables are used by the build system to locate the tools and
-    invoke the necessary setup. To set the variables on the <tt>bjam</tt>
-    command-line you use the "<tt>-s</tt>" option. For example:<br>
-    <br>
-    <tt>bjam "-sGCC_ROOT_DIRECTORY=/usr/local/gcc-3.3.2"</tt><br>
-    <br>
-    Some variables, like the toolset <tt>TOOLS</tt> variable, can accept
-    multiple values separated by spaces. Others, like the path above, can
-    contain spaces. For such circumstances you should use quotes appropriate
-    for your command interpreter.<br></li>
-  </ol>
-
-  <h3><a id="Tools" name="Tools">Supported Toolsets</a></h3>
-
-  <table cellspacing="2" cellpadding="2" width="100%" summary="" border="0">
-    <tr valign="top" align="left">
-      <td valign="top" align="center" width="40" bgcolor="#FFFF66">
-      <font size="6"><b><a id="step3" name="step3"></a>3</b></font></td>
-
-      <td>The following toolsets are supported by Boost.Build. For
-      information about <a href="#Configuring">configuring</a> each toolset,
-      click its name in the leftmost column.</td>
-    </tr>
-  </table><br>
-
-  <table cellpadding="5" summary="" border="1">
-    <tr>
-      <td><b>TOOLS Name</b></td>
-
-      <td><b>Description</b></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/borland-tools.html"><code>borland</code></a></td>
-
-      <td><a href=
-      "http://www.borland.com/bcppbuilder/freecompiler">Borland</a> C++</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/como-tools.html"><code>como</code></a></td>
-
-      <td><a href="http://www.comeaucomputing.com">Comeau C++</a> compiler
-      front-end for non-Windows platforms</td>
-    </tr>
-
-    <tr>
-      <td><code><a href=
-      "../tools/build/v1/como-tools.html">como-win32</a></code></td>
-
-      <td><a href="http://www.comeaucomputing.com">Comeau C++</a> compiler
-      front-end for Windows, using Microsoft <a href=
-      "http://msdn.microsoft.com/visualc/">Visual C++</a>as a back-end.</td>
-    </tr>
-
-    <tr>
-      <td><a href="../tools/build/v1/cw-tools.html"><code>cw</code></a></td>
-
-      <td><a href="http://www.metrowerks.com">Metrowerks CodeWarrior</a> Pro
-      6.x, 7.x, 8.x, and 9.x command-line tools</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/darwin-tools.html"><code>darwin</code></a></td>
-
-      <td>Apple Darwin OS hosted GNU <a href=
-      "http://developer.apple.com/tools/compilers.html">GCC</a></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/dmc-tools.html"><code>dmc</code></a></td>
-
-      <td><a href="http://www.digitalmars.com/">Digital Mars C++</a>.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/dmc-stlport-tools.html"><code>dmc-stlport</code></a></td>
-
-      <td><a href="http://www.digitalmars.com/">Digital Mars C++</a>, using
-      the <a href="http://www.stlport.org">STLport</a> standard library
-      implementation</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/edg-tools.html"><code>edg</code></a></td>
-
-      <td><a href="http://www.edg.com/">Edison Design Group</a> compiler
-      front-end (evaluation version)</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/gcc-tools.html"><code>gcc</code></a></td>
-
-      <td><a href="http://gcc.gnu.org">GNU GCC</a> on Unix and <a href=
-      "http://www.cygwin.com">Cygwin</a>.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/gcc-stlport-tools.html"><code>gcc-stlport</code></a></td>
-
-      <td><a href="http://gcc.gnu.org">GNU GCC</a> on Unix and <a href=
-      "http://www.cygwin.com">Cygwin</a>, using the <a href=
-      "http://www.stlport.org">STLport</a> standard library
-      implementation</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/gcc-nocygwin-tools.html"><code>gcc-nocygwin</code></a></td>
-
-      <td>GNU GCC Cygwin command line compiler tools running in "no-cygwin"
-      mode (produces commercially redistributable objects)</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/intel-linux-tools.html"><code>intel-linux</code></a></td>
-
-      <td><a href=
-      "http://www.intel.com/software/products/compilers/c60l/">Intel C++ for
-      Linux</a></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/intel-win32-tools.html"><code>intel-win32</code></a></td>
-
-      <td><a href=
-      "http://www.intel.com/software/products/compilers/c60/">Intel C++ for
-      Windows</a> using the Dinkumware standard library in the Intel-required
-      Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual C++</a> 6
-      or 7 installation</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/kcc-tools.html"><code>kcc</code></a></td>
-
-      <td>KAI C++</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/kylix-tools.html"><code>kylix</code></a></td>
-
-      <td><a href="http://www.borland.com/kylix">Borland C++ for Linux
-      (Kylix).</a></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/mingw-tools.html"><code>mingw</code></a></td>
-
-      <td>GNU GCC and associated tools in <a href=
-      "http://www.mingw.org">MinGW</a> configuration (produces commercially
-      redistributable objects)</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/mingw-stlport-tools.html"><code>mingw-stlport</code></a></td>
-
-      <td>GNU GCC and associated tools in <a href=
-      "http://www.mingw.org">MinGW</a> configuration (produces commercially
-      redistributable objects), using the <a href=
-      "http://www.stlport.org">STLport</a> standard library
-      implementation</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/mipspro-tools.html"><code>mipspro</code></a></td>
-
-      <td>SGI <a href=
-      "http://www.sgi.com/developers/devtools/languages/mipspro.html">MIPSpro
-      C and C++</a></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/msvc-tools.html"><code>msvc</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> version 6 command-line tools. NOTE; For version 7.x (the .NET
-      series) use the vc7, vc-7_1, or vc-8_0 toolsets below.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/msvc-stlport-tools.html"><code>msvc-stlport</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> version 6 command-line tools, using the <a href=
-      "http://www.stlport.org">STLport</a> standard library implementation.
-      NOTE; For version 7.x (the .NET series) use the vc7-stlport or
-      vc-7_1-stlport toolsets below.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/sunpro-tools.html"><code>sunpro</code></a></td>
-
-      <td><a href=
-      "http://wwws.sun.com/software/sundev/suncc/index.html">SunPRO C++</a>
-      compiler</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/tru64cxx-tools.html"><code>tru64cxx</code></a></td>
-
-      <td><a href="http://www.tru64unix.compaq.com/cplus/">Compaq C++</a> for
-      Tru64 UNIX (versions prior to 6.5)</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/tru64cxx-tools.html"><code>tru64cxx65</code></a></td>
-
-      <td><a href="http://www.tru64unix.compaq.com/cplus/">Compaq C++</a>
-      Version 6.5 for Tru64 UNIX</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vacpp-tools.html"><code>vacpp</code></a></td>
-
-      <td><a href="http://www-3.ibm.com/software/ad/vacpp/">IBM Visual Age
-      C++</a> command-line tools</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc7-tools.html"><code>vc7</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools from Visual Studio .NET.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc7-stlport-tools.html"><code>vc7-stlport</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools from Visual Studio .NET + STLPort.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc-7_1-tools.html"><code>vc-7_1</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools from Visual Studio .NET 2003.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc-7_1-stlport-tools.html"><code>vc-7_1-stlport</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools from Visual Studio .NET 2003 + STLPort.</td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc-8_0-tools.html"><code>vc-8_0</code></a></td>
-
-      <td>Microsoft <a href="http://msdn.microsoft.com/visualc/">Visual
-      C++</a> command-line tools from Visual Studio .NET 2005.</td>
-    </tr>
-  </table>
-
-  <h2><a id="Build_Install" name="Build_Install"></a>Build and Install</h2>
-
-  <p>The common build and install process is driven by the top-level build
-  file (<a href="../Jamfile">Jamfile</a>).</p>
-
-  <table cellspacing="2" cellpadding="2" width="100%" summary="" border="0">
-    <tr valign="top" align="left">
-      <td valign="top" align="center" width="40" bgcolor="#FFFF66">
-      <font size="6"><b><a id="step4" name="step4"></a>4</b></font></td>
-
-      <td>
-        <p>First you need to change to the directory where you have the Boost
-        distribution you downloaded. For example:</p>
-
-        <blockquote>
-          <p><code>chdir&nbsp;boost-1.31.0</code></p>
-        </blockquote>
-      </td>
-    </tr>
-  </table>
-
-  <p>The default build and install attempts to build all available libraries
-  and install to default locations the libraries and Boost header files. On
-  Unix systems the default install location is "<tt>/usr/local</tt>", and on
-  Windows systems the default is "<tt>C:\Boost</tt>". Within those
-  directories libraries are installed to the "<tt>lib</tt>" subdirectory, and
-  headers to an "<tt>include/boost-1_31</tt>" subdirectory, the version will
-  reflect the distribution you are installing.</p>
-
-  <table cellspacing="2" cellpadding="2" width="100%" summary="" border="0">
-    <tr valign="top" align="left">
-      <td valign="top" align="center" width="40" bgcolor="#FFFF66">
-      <font size="6"><b><a id="step5" name="step5"></a>5</b></font></td>
-
-      <td>
-        Invoke the build system, specifying the <a href=
-        "#Tools">toolset</a>(s) you wish to use, to build and install. For
-        example for GNU/GCC.
-
-        <blockquote>
-          <p><code>bjam&nbsp;"-sTOOLS=gcc" install</code></p>
-        </blockquote>
-
-        <p>Or if you are interested only in the built libraries you can have
-        them built and collected to a common directory without
-        installation.</p>
-
-        <blockquote>
-          <p><code>bjam&nbsp;"-sTOOLS=gcc" stage</code></p>
-        </blockquote>
-      </td>
-    </tr>
-  </table>
-
-  <p>The build and install system can be controlled through a set of options
-  similar in style to GNU configure options. The options allow you to, among
-  other things, change the install location, disable building of libraries,
-  etc. You can see a summary of the available options by invoking "<tt>bjam
-  --help</tt>". The full invocation takes the form:</p>
-
-  <blockquote>
-    <p><code>bjam&nbsp;[<i>options</i>...] [install|stage]</code></p>
-  </blockquote>
-
-  <table cellspacing="0" cellpadding="2" summary="" border="1">
-    <tr>
-      <th>Action</th>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><i>none</i></td>
-
-      <td valign="top" align="left">Only builds the Boost libraries. This
-      lets you do the first part of what the <tt>install</tt> action normally
-      does without copying the built libraries to the install location.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>install</tt></td>
-
-      <td valign="top" align="left">Builds and installs Boost libraries and
-      headers.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>stage</tt></td>
-
-      <td valign="top" align="left">Builds the Boost libraries and copies
-      them into a common directory.</td>
-    </tr>
-
-    <tr>
-      <th nowrap>Option</th>
-
-      <td valign="top" align="left">&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--help</tt></td>
-
-      <td valign="top" align="left">Shows a short summary of the options and
-      syntax of the command.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>-sTOOLS=&lt;<i>toolsets</i>&gt;</tt></td>
-
-      <td valign="top" align="left">The list of tools to compile with.
-      Usually only one is needed.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--prefix=PREFIX</tt></td>
-
-      <td valign="top" align="left">Install architecture independent files
-      here.<br>
-      Default; <tt>C:\Boost</tt> on Win32.<br>
-      Default; <tt>/usr/local</tt> on Unix. Linux, etc.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>--exec-prefix=EPREFIX</tt></td>
-
-      <td valign="top" align="left">Install architecture dependent files
-      here.<br>
-      Default; <tt>PREFIX</tt></td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--libdir=DIR</tt></td>
-
-      <td valign="top" align="left">Install libraries here.<br>
-      Default; <tt>EPREFIX/lib</tt></td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--includedir=DIR</tt></td>
-
-      <td valign="top" align="left">Install source headers here. The Boost
-      headers are installed in a version specific
-      "<tt>boost-&lt;version&gt;</tt>" subdirectory in this directory.<br>
-      Default; <tt>PREFIX/include</tt></td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--builddir=DIR</tt></td>
-
-      <td valign="top" align="left">Build in this location instead of
-      building within the distribution tree. This moves where the sources for
-      the libraries are compiled to before they are installed.
-      Recommended!</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--stagedir=DIR</tt></td>
-
-      <td valign="top" align="left">When staging only, with the
-      "<tt>stage</tt>" action, copy to the given location.<br>
-      Default; <tt>./stage</tt></td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>--without-&lt;<i>library</i>&gt;</tt></td>
-
-      <td valign="top" align="left">Do not build, stage, or install the
-      specified library.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>--with-&lt;<i>library</i>&gt;</tt></td>
-
-      <td valign="top" align="left">Build, stage, or install the specified
-      library. This changes the default from trying to build all possible
-      libraries, to only building the specified libraries.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>--with-python-root[=PYTHON_ROOT]</tt></td>
-
-      <td valign="top" align="left">Build Boost.Python libraries with the
-      Python devel packages located at <tt>PYTHON_ROOT</tt>. The Boost.Python
-      libraries are built only if the build can find the Python development
-      package at this location.<br>
-      Default; <tt>C:\Python24</tt> on Win32.<br>
-      Default; <tt>/usr</tt> on Unix, Linux, Cygwin, etc.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>--with-python-version[=2.4]</tt></td>
-
-      <td valign="top" align="left">Build Boost.Python libraries with the
-      Python version indicated.<br>
-      Default; 2.4.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>--with-pydebug</tt></td>
-
-      <td valign="top" align="left">Build Boost.Python libraries using the
-      Python debug runtime. This builds an additional set of libraries for
-      use with the debug version of Python. The regular versions of the
-      Boost.Python libraries are also built.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>-sHAVE_ICU=1</tt></td>
-
-      <td valign="top" align="left">Build Boost.Regex libraries with Unicode
-      support provided by the <a href=
-      "http://www-306.ibm.com/software/globalization/icu/index.jsp">ICU
-      libraries</a>. ICU must have been built with the same compiler that you
-      are using to build Boost, and must be installed into your compiler's
-      include and library search paths. See <a href=
-      "../libs/regex/doc/install.html#unicode">the Boost.Regex installation
-      documentation for more information</a>.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left">
-      <tt>-sICU_PATH=<i>path</i></tt></td>
-
-      <td valign="top" align="left">Build Boost.Regex libraries with Unicode
-      support provided by the <a href=
-      "http://www-306.ibm.com/software/globalization/icu/index.jsp">ICU
-      libraries</a>. ICU must have been built with the same compiler that you
-      are using to build Boost, and must have been built (or installed to)
-      directory <i>path</i>. For example if you configured ICU with
-      <tt>--prefix=/usr/local/icu/3.3</tt>, then use
-      <tt>-sICU_PATH=/usr/local/icu/3.3</tt>. See <a href=
-      "../libs/regex/doc/install.html#unicode">the Boost.Regex installation
-      documentation for more information</a>.</td>
-    </tr>
-
-    <tr>
-      <td valign="top" nowrap align="left"><tt>-sNO_COMPRESSION=1</tt></td>
-
-      <td valign="top" align="left">Build Boost.Iostreams without support for
-      the compression filters which rely on the non-Boost libraries zlib and
-      libbz2. If you use Windows, this option is enabled by default. If you
-      use UNIX, the compression filters will likely work with no
-      configuration, so this option should not be necessary. For full details
-      see <a href=
-      "http://www.boost.org/libs/iostreams/doc/index.html?path=7">Boost.Iostreams
-      Installation</a>.</td>
-    </tr>
-  </table>
-
-  <p>There are additional options as supported by <a href=
-  "../tools/build/v1/build_system.htm">Boost.Build</a> and <a href=
-  "../tools/jam/index.html">Boost.Jam</a>. Of the additional
-  options perhaps the most imporant is "<tt>-s<a href=
-  "../tools/build/v1/build_system.htm#build">BUILD</a>=&lt;features/variants&gt;</tt>"
-  which lets you override what is built by default. The
-  "<tt>&lt;features/variants&gt;</tt>" value is a list, separated by spaces,
-  of build requests. Features take the form of a tag and a value or values.
-  And variants are single symbolic names for a collection of features. For
-  example the default is to request "<tt>debug release
-  &lt;runtime-link&gt;static/dynamic &lt;threading&gt;single/multi</tt>", in
-  which "<tt>debug</tt>" and "<tt>release</tt>" are variants, and the rest
-  features with two values each.</p>
-
-  <p>If you have some feedback about the build and install process please
-  drop us a line at the <a href="mailing_lists.htm#jamboost">Boost.Build
-  mailing list</a>. We are particularly interested if it works for your
-  platform and if it there is anything that you feel could be done
-  better.</p>
-
-  <h2><a id="Results" name="Results"></a>Results</h2>
-
-  <p>The results of building come in to forms: static libraries, and dynamic
-  libraries. Depending on the platform the libraries produced have different
-  names to accommodate the platform requirements. For a single Boost library
-  the build with the default will produce eight different libraries. For
-  example building the Boost.Datetime library on Unix type system it would
-  produce:</p>
-
-  <ol>
-    <li><tt>libboost_date_time-gcc-d-1_31.so</tt></li>
-
-    <li><tt>libboost_date_time-gcc-mt-d-1_31.so</tt></li>
-
-    <li><tt>libboost_date_time-gcc-1_31.so</tt></li>
-
-    <li><tt>libboost_date_time-gcc-mt-1_31.so</tt></li>
-
-    <li><tt>libboost_date_time-gcc-d-1_31.a</tt></li>
-
-    <li><tt>libboost_date_time-gcc-mt-d-1_31.a</tt></li>
-
-    <li><tt>libboost_date_time-gcc-1_31.a</tt></li>
-
-    <li><tt>libboost_date_time-gcc-mt-1_31.a</tt><br></li>
-  </ol>
-
-  <table cellspacing="0" cellpadding="0" width="100%" summary="" border="0">
-    <tr>
-      <td colspan="11">
-        <table cellspacing="2" cellpadding="2" bgcolor="#CCCCCC" summary=""
-        border="0">
-          <tr>
-            <th>&middot; Library Prefix</th>
-          </tr>
-        </table>
-      </td>
-
-      <td width="80%">&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" bgcolor="#CCCCCC" rowspan="7"><tt><font size=
-      "+1">lib</font></tt></td>
-
-      <td colspan="11">
-        <table cellspacing="2" cellpadding="2" summary="" border="0">
-          <tr>
-            <th>&middot; Library Name</th>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" rowspan="6"><tt><font size=
-      "+1">boost_date_time</font></tt></td>
-
-      <td colspan="10">
-        <table cellspacing="2" cellpadding="2" bgcolor="#CCCCCC" summary=""
-        border="0">
-          <tr>
-            <th>&middot; Toolset</th>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" bgcolor="#CCCCCC" rowspan="5"><tt><font size=
-      "+1">-</font></tt></td>
-
-      <td valign="bottom" bgcolor="#CCCCCC" rowspan="5"><tt><font size=
-      "+1">gcc</font></tt></td>
-
-      <td colspan="8">
-        <table cellspacing="2" cellpadding="2" summary="" border="0">
-          <tr>
-            <th>&middot; Threading</th>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" rowspan="4"><tt><font size="+1">-</font></tt></td>
-
-      <td valign="bottom" rowspan="4"><tt><font size="+1">mt</font></tt></td>
-
-      <td colspan="6">
-        <table cellspacing="2" cellpadding="2" bgcolor="#CCCCCC" summary=""
-        border="0">
-          <tr>
-            <th>&middot; Runtime</th>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" bgcolor="#CCCCCC" rowspan="3"><tt><font size=
-      "+1">-</font></tt></td>
-
-      <td valign="bottom" bgcolor="#CCCCCC" rowspan="3"><tt><font size=
-      "+1">d</font></tt></td>
-
-      <td colspan="4">
-        <table cellspacing="2" cellpadding="2" summary="" border="0">
-          <tr>
-            <th>&middot; Boost Version</th>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" rowspan="2"><tt><font size="+1">-</font></tt></td>
-
-      <td valign="bottom" rowspan="2"><tt><font size=
-      "+1">1_31</font></tt></td>
-
-      <td colspan="2">
-        <table cellspacing="2" cellpadding="2" bgcolor="#CCCCCC" summary=""
-        border="0">
-          <tr>
-            <th>&middot; Library Type</th>
-          </tr>
-        </table>
-      </td>
-    </tr>
-
-    <tr>
-      <td valign="bottom" bgcolor="#CCCCCC"><tt><font size=
-      "+1">.a</font></tt></td>
-
-      <td>&nbsp;</td>
-    </tr>
-  </table>
-
-  <h3>Library Prefix</h3>
-
-  <p>The "lib" prefix on the libraries is a requirement on many platforms,
-  like Unix, and on others like GCC running on Windows. The prefix is
-  therefore added to all libraries on Unix type systems, and to static
-  libraries on Windows. That is on Unix shared libraries and static libraries
-  (object archives) are named respectively:</p>
-
-  <ul>
-    <li><tt>lib*.so</tt></li>
-
-    <li><tt>lib*.a</tt></li>
-  </ul>
-
-  <p>On Windows shared libraries do not have the prefix to differentiate the
-  import libraries from static libraries. Consequently on Windows the
-  libraries are named:</p>
-
-  <table id="Table1" cellspacing="1" cellpadding="1" width="300" border="0">
-    <tr>
-      <td><font face="Courier New">*.dll</font></td>
-
-      <td>Dynamic library version.</td>
-    </tr>
-
-    <tr>
-      <td><font face="Courier New">*.lib</font></td>
-
-      <td>Import library for the dll.</td>
-    </tr>
-
-    <tr>
-      <td><font face="Courier New">lib*.lib</font></td>
-
-      <td>Static library version.</td>
-    </tr>
-  </table><br>
-  <br>
-
-  <h3>Library Name</h3>
-
-  <p>For Boost libraries the name has the "<tt>boost_</tt>" prefix to
-  separate them from other libraries in your system.</p>
-
-  <h3>Toolset</h3>
-
-  <p>The toolset name is an abbreviation based on the compiler you are
-  building with. The abbreviation is composed of a short, 2 to 4 characters,
-  tag for the compiler and a version number of the compiler's major and minor
-  revision (if available). For example if your toolset is
-  "<tt>gcc-3_2_3</tt>" the toolset tag would be "<tt>gcc32</tt>". The toolset
-  abbreviations used are as follows:</p>
-
-  <table cellpadding="5" summary="" border="1">
-    <tr>
-      <td><b>TOOLS Name</b></td>
-
-      <td><b>Abbreviation</b></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/borland-tools.html"><code>borland</code></a></td>
-
-      <td><tt>bcb</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/como-tools.html"><code>como</code></a></td>
-
-      <td><tt>como</tt></td>
-    </tr>
-
-    <tr>
-      <td><code><a href=
-      "../tools/build/v1/como-tools.html">como-win32</a></code></td>
-
-      <td><tt>como</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href="../tools/build/v1/cw-tools.html"><code>cw</code></a></td>
-
-      <td><tt>cw</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/darwin-tools.html"><code>darwin</code></a></td>
-
-      <td><tt>osx</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/dmc-tools.html"><code>dmc</code></a></td>
-
-      <td><tt>dmc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/dmc-stlport-tools.html"><code>dmc-stlport</code></a></td>
-
-      <td><tt>dmc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/edg-tools.html"><code>edg</code></a></td>
-
-      <td><tt>edg</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/gcc-tools.html"><code>gcc</code></a></td>
-
-      <td><tt>gcc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/gcc-stlport-tools.html"><code>gcc-stlport</code></a></td>
-
-      <td><tt>gcc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/gcc-nocygwin-tools.html"><code>gcc-nocygwin</code></a></td>
-
-      <td><tt>gcc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/intel-linux-tools.html"><code>intel-linux</code></a></td>
-
-      <td><tt>il</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/intel-win32-tools.html"><code>intel-win32</code></a></td>
-
-      <td><tt>iw</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/kcc-tools.html"><code>kcc</code></a></td>
-
-      <td><tt>kcc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/kylix-tools.html"><code>kylix</code></a></td>
-
-      <td><tt>bck</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/mingw-tools.html"><code>mingw</code></a></td>
-
-      <td><tt>mgw</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/mingw-stlport-tools.html"><code>mingw-stlport</code></a></td>
-
-      <td><tt>mgw</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/mipspro-tools.html"><code>mipspro</code></a></td>
-
-      <td><tt>mp</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/msvc-tools.html"><code>msvc</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/msvc-stlport-tools.html"><code>msvc-stlport</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/sunpro-tools.html"><code>sunpro</code></a></td>
-
-      <td><tt>sw</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/tru64cxx-tools.html"><code>tru64cxx</code></a></td>
-
-      <td><tt>tru</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/tru64cxx-tools.html"><code>tru64cxx65</code></a></td>
-
-      <td><tt>tru</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vacpp-tools.html"><code>vacpp</code></a></td>
-
-      <td><tt>xlc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc7-tools.html"><code>vc7</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc7-stlport-tools.html"><code>vc7-stlport</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc-7_1-tools.html"><code>vc-7_1</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc-7_1-stlport-tools.html"><code>vc-7_1-stlport</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td><a href=
-      "../tools/build/v1/vc-8_0-tools.html"><code>vc-8_0</code></a></td>
-
-      <td><tt>vc</tt></td>
-    </tr>
-
-    <tr>
-      <td>Others</td>
-
-      <td>The first part of the toolset name.</td>
-    </tr>
-  </table>
-
-  <h3>Threading</h3>
-
-  <p>This tag indicates if the library is compiled with threading support. If
-  threading is enabled "<tt>-mt</tt>" is added, otherwise nothing is
-  added.</p>
-
-  <h3>Runtime</h3>
-
-  <p>This specifies the type of runtime the library was compiled against, and
-  the type of code that is compiled. More commonly this encodes the ABI
-  variation used in the code. For each feature of the runtime system and code
-  compilation option a single letter is added to this tag.</p>
-
-  <table cellpadding="5" summary="" border="1">
-    <tr>
-      <td><b>Key</b></td>
-
-      <td><b>Feature</b></td>
-    </tr>
-
-    <tr>
-      <td><tt>s</tt></td>
-
-      <td>Static link to runtime.</td>
-    </tr>
-
-    <tr>
-      <td><tt>g</tt></td>
-
-      <td>Debug runtime.</td>
-    </tr>
-
-    <tr>
-      <td><tt>y</tt></td>
-
-      <td>Debug Python system.</td>
-    </tr>
-
-    <tr>
-      <td><tt>d</tt></td>
-
-      <td>Debug enabled code.</td>
-    </tr>
-
-    <tr>
-      <td><tt>p</tt></td>
-
-      <td>STLport runtime, instead of the vendor toolset runtime.</td>
-    </tr>
-
-    <tr>
-      <td><tt>n</tt></td>
-
-      <td>STLport runtime using the "native" IO streams instead of the
-      STLport IO streams.</td>
-    </tr>
-  </table>
-
-  <p>For example if you compile debug code for STLport using native IO
-  streams, and statically link to the debug runtime the tag would be:
-  "<tt>-sgdpn</tt>".</p>
-
-  <h3>Boost Version</h3>
-
-  <p>This is the short label for the version of the Boost Libraries. The
-  major and minor version numbers are taken together separated by an
-  underscore. For example version 1.31.0 would be tagged as "<tt>-1_31</tt>".
-  For patch versions the patch number is also included, for example a version
-  of 1.31.1 would be tagged as "<tt>-1_31_1</tt>".</p>
-
-  <h3>Library Type</h3>
-
-  <p>The extension holds the type of library. This follows the platform
-  requirements. On Windows this is "<tt>.dll</tt>" for shared libraries, and
-  "<tt>.lib</tt>" for static libraries including import libraries. On Unix
-  this is ".a" for static libraries (archives), and ".so" for shared
-  libraries. For toolsets that support it in Unix they will also have a full
-  version extension (for example "<tt>.so.1.31.0</tt>") with a symbolic link
-  for the un-versioned library.</p>
-
-  <h2><a name="auto-link"></a>Automatic Linking on Windows</h2>
-
-  <p>For most Boost libraries that have separate source, the correct build
-  variant is linked against automatically when you include one of that
-  library's header files.&nbsp; For this feature to work, your compiler must
-  support the <code>#pragma comment(lib, name)</code> feature (Microsoft
-  Visual C++, Intel C++, Metrowerks C++ , and Borland C++ all support
-  this).</p>
-
-  <p>If you are linking to a dynamic runtime, then you can choose to link to
-  either a static or a dynamic Boost library, the default is to do a static
-  link.&nbsp; You can alter this for a specific library <em>whatever</em> by
-  defining BOOST_WHATEVER_DYN_LINK to force Boost library <em>whatever</em>
-  to be linked dynamically.&nbsp; Alternatively you can force all Boost
-  libraries to dynamic link by defining BOOST_ALL_DYN_LINK.</p>
-
-  <p>This feature can be disabled for Boost library <em>whatever</em> by
-  defining BOOST_WHATEVER_NO_LIB, or for all of Boost by defining
-  BOOST_ALL_NO_LIB.</p>
-
-  <p>If you want to observe which libraries are being linked against then
-  defining BOOST_LIB_DIAGNOSTIC will cause the auto-linking code to emit a
-  <code>#pragma message</code> each time a library is selected for
-  linking.</p>
-
-  <p>There are some Boost libraries (<a href=
-  "../libs/test/doc/index.html">Boost.Test</a> is one one special case),
-  where automatic linking is not supported for technical reasons: please
-  consult the documentation for each of the libraries you are using for more
-  information, and the <a href="../libs/config/index.html">Boost.Config</a>
-  documentation for more information on configuration macros.&nbsp; The
-  following table shows the current supported configurations, (Boost
-  libraries not listed here consist of headers only):</p>
-
-  <table id="Table2" cellspacing="1" cellpadding="1" width="100%" border="1">
-    <tr>
-      <td><strong>Library</strong></td>
-
-      <td><strong>Static Link</strong></td>
-
-      <td><strong>Dynamic Link</strong></td>
-
-      <td><strong>Default linkage</strong></td>
-
-      <td><strong>Automatic library selection</strong></td>
-
-      <td><strong>Comments</strong></td>
-    </tr>
-
-    <tr>
-      <td>Date-Time</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Filesystem</td>
-
-      <td>Yes</td>
-
-      <td>
-        <p>Yes</p>
-      </td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Graph</td>
-
-      <td>Yes</td>
-
-      <td>No</td>
-
-      <td>static</td>
-
-      <td>No</td>
-
-      <td>The separate Graph library source is needed only when <a href=
-      "../libs/graph/doc/read_graphviz.html">reading an AT&amp;T graphviz
-      file.</a></td>
-    </tr>
-
-    <tr>
-      <td>Iostreams</td>
-
-      <td>Yes</td>
-
-      <td>
-        <p>Yes</p>
-      </td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Program Options</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Python</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>dynamic</td>
-
-      <td>No</td>
-
-      <td>Since all Python extensions are DLL's it makes sense to dynamic
-      link to the Boost Python library&nbsp;by default (static linking is
-      only really an option if you are embedding python).</td>
-    </tr>
-
-    <tr>
-      <td>Regex</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Serialization</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Signals</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-      <td>Test</td>
-
-      <td>Yes</td>
-
-      <td>No</td>
-
-      <td>static</td>
-
-      <td>No</td>
-
-      <td>Which library you link to depends upon which program entry point
-      you define, rather than which Boost.Test features you use.</td>
-    </tr>
-
-    <tr>
-      <td>Thread</td>
-
-      <td>Partial</td>
-
-      <td>Yes</td>
-
-      <td>static (Visual C++), otherwise dynamic</td>
-
-      <td>Yes</td>
-
-      <td>For technical reasons static linking is supported on only one
-      Windows compiler (Visual C++).</td>
-    </tr>
-
-    <tr>
-      <td>Wave</td>
-
-      <td>Yes</td>
-
-      <td>Yes</td>
-
-      <td>static</td>
-
-      <td>Yes</td>
-
-      <td>&nbsp;</td>
-    </tr>
-  </table><br>
-  <br>
-
-  <h2><a id="Additional_Steps" name="Additional_Steps"></a>Additional
-  Steps</h2>
-
-  <p>Depending on your platform and configuration you may need to perform
-  some additional configuration to get Boost to build and install.</p>
-
-  <ul>
-    <li><a href="../libs/config/config.htm#configuring">Configure the boost
-    source code</a>. This step should not be required on the vast majority of
-    platforms, but if you're trying to build Boost on an untested or
-    unsupported platform it may be necessary.<br>
-    <br></li>
-
-    <li>If Boost.Build has problems detecting your Python installation it
-    will print a short messages about how to configure for finding the Python
-    installation. For more information, see these detailed <a href=
-    "../libs/python/doc/building.html#building">instructions</a>.</li>
-  </ul>
-  <hr>
-
-  <p>Revised $Date$</p>
-
-  <p>Copyright &copy; Rene Rivera 2003.<br>
-  Copyright &copy; Jens Maurer 2001.<br>
-  Copyright &copy; John Maddock 2004.</p>
-
-  <p><small>Distributed under the Boost Software License, Version 1.0. (See
-  accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy
-  at <a href=
-  "http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a>)</small></p>
+<body>
+<div class="document" id="logo-getting-started">
+<h1 class="title"><a class="reference" href="../index.htm"><img alt="Boost" class="boost-logo" src="../boost.png" /></a> Getting Started</h1>
+
+<div class="contents sidebar small topic">
+<p class="topic-title first"><a id="contents" name="contents">Contents</a></p>
+<ul class="auto-toc simple">
+<li><a class="reference" href="#introduction" id="id27" name="id27">1&nbsp;&nbsp;&nbsp;Introduction</a><ul class="auto-toc">
+<li><a class="reference" href="#what-s-here" id="id28" name="id28">1.1&nbsp;&nbsp;&nbsp;What's Here</a></li>
+<li><a class="reference" href="#preliminaries" id="id29" name="id29">1.2&nbsp;&nbsp;&nbsp;Preliminaries</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#get-boost" id="id30" name="id30">2&nbsp;&nbsp;&nbsp;Get Boost</a></li>
+<li><a class="reference" href="#the-structure-of-a-boost-distribution" id="id31" name="id31">3&nbsp;&nbsp;&nbsp;The Structure of a Boost Distribution</a></li>
+<li><a class="reference" href="#header-only-libraries" id="id32" name="id32">4&nbsp;&nbsp;&nbsp;Header-Only Libraries</a></li>
+<li><a class="reference" href="#build-a-simple-program-using-boost" id="id33" name="id33">5&nbsp;&nbsp;&nbsp;Build a Simple Program Using Boost</a><ul class="auto-toc">
+<li><a class="reference" href="#build-on-nix" id="id34" name="id34">5.1&nbsp;&nbsp;&nbsp;Build on *nix</a></li>
+<li><a class="reference" href="#build-from-the-visual-studio-command-prompt" id="id35" name="id35">5.2&nbsp;&nbsp;&nbsp;Build from the Visual Studio Command Prompt</a></li>
+<li><a class="reference" href="#build-in-the-visual-studio-ide" id="id36" name="id36">5.3&nbsp;&nbsp;&nbsp;Build in the Visual Studio IDE</a></li>
+<li><a class="reference" href="#errors-and-warnings" id="id37" name="id37">5.4&nbsp;&nbsp;&nbsp;Errors and Warnings</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#get-boost-library-binaries" id="id38" name="id38">6&nbsp;&nbsp;&nbsp;Get Boost Library Binaries</a><ul class="auto-toc">
+<li><a class="reference" href="#install-visual-studio-binaries" id="id39" name="id39">6.1&nbsp;&nbsp;&nbsp;Install Visual Studio Binaries</a></li>
+<li><a class="reference" href="#build-and-install-nix-binaries" id="id40" name="id40">6.2&nbsp;&nbsp;&nbsp;Build and Install *nix Binaries</a></li>
+<li><a class="reference" href="#build-and-install-other-binaries" id="id41" name="id41">6.3&nbsp;&nbsp;&nbsp;Build and Install Other Binaries</a></li>
+<li><a class="reference" href="#expected-build-output" id="id42" name="id42">6.4&nbsp;&nbsp;&nbsp;Expected Build Output</a></li>
+<li><a class="reference" href="#in-case-of-build-errors" id="id43" name="id43">6.5&nbsp;&nbsp;&nbsp;In Case of Build Errors</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#link-your-program-to-a-boost-library" id="id44" name="id44">7&nbsp;&nbsp;&nbsp;Link Your Program to a Boost Library</a><ul class="auto-toc">
+<li><a class="reference" href="#link-to-a-boost-library-on-windows" id="id45" name="id45">7.1&nbsp;&nbsp;&nbsp;Link to a Boost Library on Windows</a></li>
+<li><a class="reference" href="#link-to-a-boost-library-on-nix" id="id46" name="id46">7.2&nbsp;&nbsp;&nbsp;Link to a Boost Library On *nix</a></li>
+<li><a class="reference" href="#library-naming" id="id47" name="id47">7.3&nbsp;&nbsp;&nbsp;Library Naming</a></li>
+<li><a class="reference" href="#test-your-program" id="id48" name="id48">7.4&nbsp;&nbsp;&nbsp;Test Your Program</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#further-resources" id="id49" name="id49">8&nbsp;&nbsp;&nbsp;Further Resources</a></li>
+<li><a class="reference" href="#appendix-using-command-line-tools-in-windows" id="id50" name="id50">9&nbsp;&nbsp;&nbsp;Appendix: Using command-line tools in Windows</a></li>
+</ul>
+</div>
+<!-- ## Update this substitution for each release -->
+<div class="section">
+<h1><a class="toc-backref" href="#id27" id="introduction" name="introduction">1&nbsp;&nbsp;&nbsp;Introduction</a></h1>
+<p>Welcome to the Boost libraries!  By the time you've completed this
+tutorial, you'll be at least somewhat comfortable with the contents
+of a Boost distribution and how to go about using it.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id28" id="what-s-here" name="what-s-here">1.1&nbsp;&nbsp;&nbsp;What's Here</a></h2>
+<p>This document is designed to be an <em>extremely</em> gentle introduction,
+so we included a fair amount of material that may already be very
+familiar to you.  To keep things simple, we also left out some
+information intermediate and advanced users will probably want.  At
+the end of this document, we'll refer you on to resources that can
+help you pursue these topics further.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id29" id="preliminaries" name="preliminaries">1.2&nbsp;&nbsp;&nbsp;Preliminaries</a></h2>
+<p>We use one typographic convention that might not be immediately
+obvious: <em>italic</em> text in examples is meant as a descriptive
+placeholder for something else, usually information that you'll
+provide.  For example:</p>
+<pre class="literal-block">
+<strong>$</strong> echo &quot;My name is <em>your name</em>&quot;
+</pre>
+<p>Here you're expected to imagine replacing the text “your name” with
+your actual name.</p>
+<p>We identify Unix and its variants such as Linux, FreeBSD, and MacOS
+collectively as *nix.  If you're not targeting Microsoft Windows,
+the instructions for *nix users will probably work for you.
+Cygwin users working from the Cygwin <tt class="docutils literal"><span class="pre">bash</span></tt> prompt should also
+follow the *nix instructions.  To use your Cygwin compiler from
+the Windows command prompt, follow the instructions for Windows
+users.</p>
+<p>Although Boost supports a wide variety of Windows compilers
+(including older Microsoft compilers), most instructions for
+Windows users cover only the Visual Studio .NET 2003 and Visual
+Studio 2005.  We hope that gives you enough information to adapt
+them for your own compiler or IDE.</p>
+<div class="admonition-onward admonition">
+<p class="first admonition-title">Onward</p>
+<blockquote class="epigraph last">
+<p>Good luck, and have fun!</p>
+<p class="attribution">&mdash;the Boost Developers</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id30" id="get-boost" name="get-boost">2&nbsp;&nbsp;&nbsp;Get Boost</a></h1>
+<p>There are basically three ways to get Boost on your system:</p>
+<ol class="arabic">
+<li><p class="first"><strong>Windows Installer</strong>: Boost Consulting provides an <a class="reference" href="http://www.boost-consulting.com/download.html">installer</a>
+for Windows platforms that installs a complete Boost
+distribution, plus optional precompiled library binaries for
+Visual Studio, and (optionally) a prebuilt version of the
+<tt class="docutils literal"><span class="pre">bjam</span></tt> build tool.</p>
+</li>
+<li><p class="first"><strong>Download</strong>: users of other platforms—and Windows
+users who prefer to build everything from scratch—can <a class="reference" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041&amp;release_id=376197">download
+a complete Boost distribution</a> from SourceForge.</p>
+<!-- ## Update this link for each release -->
+<ul>
+<li><p class="first"><strong>Windows</strong>: Download and run <tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">.exe</span></tt>
+to unpack the distribution.<a class="footnote-reference" href="#zip" id="id3" name="id3"><sup>1</sup></a></p>
+</li>
+<li><p class="first"><strong>*nix</strong>: Download <tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">.tar.bz2</span></tt>.  Then, in the
+directory where you want to put the Boost installation,
+execute</p>
+<pre class="literal-block">
+tar --bzip2 -xf <em>/path/to/</em><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>.tar.bz2
+</pre>
+</li>
+</ul>
+</li>
+<li><p class="first"><strong>Boost packages</strong> from RedHat, Debian, or some other
+distribution packager: these instructions may not work for you
+if you use 3rd party packages, because other packagers sometimes
+choose to break Boost up into several packages or to reorganize
+the directory structure of the Boost distribution.<a class="footnote-reference" href="#packagers" id="id4" name="id4"><sup>2</sup></a></p>
+</li>
+</ol>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id31" id="the-structure-of-a-boost-distribution" name="the-structure-of-a-boost-distribution">3&nbsp;&nbsp;&nbsp;The Structure of a Boost Distribution</a></h1>
+<p>This is is a sketch of the directory structure you'll get when you
+unpack your Boost installation (windows users replace forward
+slashes with backslashes):</p>
+<pre class="literal-block">
+<strong>boost_1_34_0</strong><strong>/</strong> .................<em>The “boost root directory”</em>
+   <strong>index.htm</strong> .........<em>A copy of www.boost.org starts here</em>
+   <strong>boost/</strong> .........................<em>All Boost Header files</em>
+   <strong>libs/</strong> ............<em>Tests, .cpp</em>s<em>, docs, etc., by library</em><a class="footnote-reference" href="#installer-src" id="id5" name="id5"><sup>3</sup></a>
+     <strong>index.html</strong> ........<em>Library documentation starts here</em>
+     <strong>algorithm/</strong>
+     <strong>any/</strong>
+     <strong>array/</strong>
+                     <em>…more libraries…</em>
+   <strong>status/</strong> .........................<em>Boost-wide test suite</em>
+   <strong>tools/</strong> ...........<em>Utilities, e.g. bjam, quickbook, bcp</em>
+   <strong>more/</strong> ..........................<em>Policy documents, etc.</em>
+   <strong>doc/</strong> ...............<em>A subset of all Boost library docs</em>
+</pre>
+<div class="small sidebar">
+<p class="first sidebar-title">Header Organization</p>
+<p>The organization of Boost library headers isn't entirely uniform,
+but most libraries follow a few patterns:</p>
+<ul class="last simple">
+<li>Some older libraries and most very small libraries place all
+public headers directly into <tt class="docutils literal"><span class="pre">boost/</span></tt>.</li>
+<li>Most libraries' public headers live in a subdirectory of
+<tt class="docutils literal"><span class="pre">boost/</span></tt> named after the library.  For example, you'll find
+the Type Traits Library's <tt class="docutils literal"><span class="pre">is_void.hpp</span></tt> header in
+<tt class="docutils literal"><span class="pre">boost/type_traits/is_void.hpp</span></tt>.</li>
+<li>Some libraries have an “aggregate header” in <tt class="docutils literal"><span class="pre">boost/</span></tt> that
+<tt class="docutils literal"><span class="pre">#include</span></tt>s all of the library's other headers.  For
+example, <a class="reference" href="../libs/python/index.html">Boost.Python</a>'s aggregate header is
+<tt class="docutils literal"><span class="pre">boost/python.hpp</span></tt>.</li>
+<li>Most libraries place private headers in a subdirectory called
+<tt class="docutils literal"><span class="pre">detail/</span></tt> or <tt class="docutils literal"><span class="pre">aux_/</span></tt>.  Don't look in these directories and
+expect to find anything you can use.</li>
+</ul>
+</div>
+<p>A few things are worth noting right off the bat:</p>
+<ol class="arabic">
+<li><p class="first">The path to the “boost root directory” is sometimes referred to
+as <tt class="docutils literal"><span class="pre">$BOOST_ROOT</span></tt> in documentation and mailing lists.  If you
+used the Windows installer, that will usually be <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>.</p>
+</li>
+<li><p class="first">To compile anything in Boost, you need a directory containing
+the <tt class="docutils literal"><span class="pre">boost/</span></tt> subdirectory in your <tt class="docutils literal"><span class="pre">#include</span></tt> path.  For most
+compilers, that means adding</p>
+<pre class="literal-block">
+-I<tt class="docutils literal"><span class="pre">/</span></tt><em>path</em><tt class="docutils literal"><span class="pre">/</span></tt><em>to</em><tt class="docutils literal"><span class="pre">/</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
+</pre>
+<p>to the command line.  Specific steps for setting up <tt class="docutils literal"><span class="pre">#include</span></tt>
+paths in Microsoft Visual Studio follow later in this document;
+if you use another IDE, please consult your product's
+documentation for instructions.</p>
+</li>
+<li><p class="first">Since all of Boost's header files have the <tt class="docutils literal"><span class="pre">.hpp</span></tt> extension,
+and live in the <tt class="docutils literal"><span class="pre">boost/</span></tt> subdirectory of the boost root, your
+Boost <tt class="docutils literal"><span class="pre">#include</span></tt> directives will look like:</p>
+<pre class="literal-block">
+#include &lt;boost/<em>whatever</em>.hpp&gt;
+</pre>
+<p>or</p>
+<pre class="literal-block">
+#include &quot;boost/<em>whatever</em>.hpp&quot;
+</pre>
+</li>
+</ol>
+<blockquote>
+depending on your religion as regards the use of angle bracket
+includes.  Even Windows users can use forward slashes in
+<tt class="docutils literal"><span class="pre">#include</span></tt> directives; your compiler doesn't care.</blockquote>
+<ol class="arabic simple" start="4">
+<li>Don't be distracted by the <tt class="docutils literal"><span class="pre">doc/</span></tt> subdirectory; it only
+contains a subset of the Boost documentation.  Start with
+<tt class="docutils literal"><span class="pre">libs/index.html</span></tt> if you're looking for the whole enchilada.</li>
+</ol>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id32" id="header-only-libraries" name="header-only-libraries">4&nbsp;&nbsp;&nbsp;Header-Only Libraries</a></h1>
+<p>The first thing many people want to know is, “how do I build
+Boost?”  The good news is that often, there's nothing to build.</p>
+<div class="admonition-nothing-to-build admonition">
+<p class="first admonition-title">Nothing to Build</p>
+<p class="last">Most Boost libraries are <strong>header-only</strong>: they consist <em>entirely
+of header files</em> containing templates and inline functions, and
+require no separately-compiled library binaries or special
+treatment when linking.</p>
+</div>
+<p id="separate">The only Boost libraries that can't be used without separate
+compilation are:</p>
+<ul class="simple">
+<li>Boost.Filesystem</li>
+<li>Boost.IOStreams</li>
+<li>Boost.ProgramOptions</li>
+<li><a class="reference" href="../libs/python/index.html">Boost.Python</a></li>
+<li>Boost.Regex</li>
+<li>Boost.Serialization</li>
+<li>Boost.Signals</li>
+<li>Boost.Test</li>
+<li>Boost.Thread</li>
+<li>Boost.Wave</li>
+</ul>
+<p>The DateTime library has a separately-compiled component that
+is only needed if you're using its to/from_string and/or
+serialization features or if you're targeting Visual C++ 6.x or
+Borland.  The Graph library also has a separately-compiled part,
+but you won't need it unless you intend to <a class="reference" href="../libs/graph/doc/read_graphviz.html">parse GraphViz
+files</a>.</p>
+<!-- ## Keep the list of non-header-only libraries up-to-date -->
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id33" id="build-a-simple-program-using-boost" name="build-a-simple-program-using-boost">5&nbsp;&nbsp;&nbsp;Build a Simple Program Using Boost</a></h1>
+<p>To keep things simple, let's start by using a header-only library.
+The following program reads a sequence of integers from standard
+input, uses Boost.Lambda to multiply each number by three, and
+writes them to standard output:</p>
+<pre class="literal-block">
+#include &lt;boost/lambda/lambda.hpp&gt;
+#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;algorithm&gt;
+
+int main()
+{
+    using namespace boost::lambda;
+    typedef std::istream_iterator&lt;int&gt; in;
+
+    std::for_each(
+        in(std::cin), in(), std::cout &lt;&lt; (_1 * 3) &lt;&lt; &quot; &quot; );
+}
+</pre>
+<p>Copy the text of this program into a file called <tt class="docutils literal"><span class="pre">example.cpp</span></tt>.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id34" id="build-on-nix" name="build-on-nix"><span id="unix-header-only"></span>5.1&nbsp;&nbsp;&nbsp;Build on *nix</a></h2>
+<p>In the directory where you saved <tt class="docutils literal"><span class="pre">example.cpp</span></tt>, issue the
+following command:</p>
+<pre class="literal-block">
+c++ -I <tt class="docutils literal"><span class="pre">/</span></tt><em>path</em><tt class="docutils literal"><span class="pre">/</span></tt><em>to</em><tt class="docutils literal"><span class="pre">/</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp -o example
+</pre>
+<p>To test the result, type:</p>
+<pre class="literal-block">
+echo 1 2 3 | ./example
+</pre>
+<p><a class="reference" href="#errors-and-warnings"><em>next...</em></a></p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id35" id="build-from-the-visual-studio-command-prompt" name="build-from-the-visual-studio-command-prompt">5.2&nbsp;&nbsp;&nbsp;Build from the Visual Studio Command Prompt</a></h2>
+<p>From your computer's <em>Start</em> menu, if you are a Visual
+Studio 2005 user, select</p>
+<blockquote>
+<em>All Programs</em> &gt; <em>Microsoft Visual Studio 2005</em>
+&gt; <em>Visual Studio Tools</em> &gt; <em>Visual Studio 2005 Command Prompt</em></blockquote>
+<p>or, if you're a Visual Studio .NET 2003 user, select</p>
+<blockquote>
+<em>All Programs</em> &gt; <em>Microsoft Visual Studio .NET 2003</em>
+&gt; <em>Visual Studio .NET Tools</em> &gt; <em>Visual Studio .NET 2003 Command Prompt</em></blockquote>
+<p>to bring up a special <a class="reference" href="#command-prompt">command prompt</a> window set up for the Visual
+Studio compiler.  In that window, type the following command and
+hit the return key:</p>
+<pre class="literal-block">
+cl /EHsc /I<em>path</em><tt class="docutils literal"><span class="pre">\</span></tt><em>to</em><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> <em>path</em>\<em>to</em>\example.cpp
+</pre>
+<p>To test the result, type:</p>
+<pre class="literal-block">
+echo 1 2 3 | example
+</pre>
+<p><a class="reference" href="#errors-and-warnings"><em>next...</em></a></p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id36" id="build-in-the-visual-studio-ide" name="build-in-the-visual-studio-ide"><span id="vs-header-only"></span>5.3&nbsp;&nbsp;&nbsp;Build in the Visual Studio IDE</a></h2>
+<ul class="simple">
+<li>From Visual Studio's <em>File</em> menu, select <em>New</em> &gt; <em>Project…</em></li>
+<li>In the left-hand pane of the resulting <em>New Project</em> dialog,
+select <em>Visual C++</em> &gt; <em>Win32</em>.</li>
+<li>In the right-hand pane, select <em>Win32 Console Application</em>
+(VS8.0) or <em>Win32 Console Project</em> (VS7.1).</li>
+<li>In the <em>name</em> field, enter “example”</li>
+<li>Right-click <strong>example</strong> in the <em>Solution Explorer</em> pane and
+select <em>Properties</em> from the resulting pop-up menu</li>
+<li>In <em>Configuration Properties</em> &gt; <em>C/C++</em> &gt; <em>General</em> &gt; <em>Additional Include
+Directories</em>, enter the path to the Boost root directory, e.g.
+<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>.</li>
+<li>In <em>Configuration Properties</em> &gt; <em>C/C++</em> &gt; <em>Precompiled Headers</em>, change
+<em>Use Precompiled Header (/Yu)</em> to <em>Not Using Precompiled
+Headers</em>.<a class="footnote-reference" href="#pch" id="id9" name="id9"><sup>5</sup></a></li>
+<li>Replace the contents of the <tt class="docutils literal"><span class="pre">example.cpp</span></tt> generated by the IDE
+with the example code above.</li>
+<li>From the <em>Build</em> menu, select <em>Build Solution</em>.</li>
+</ul>
+<p>To test your application, hit the F5 key and type the following
+into the resulting window, followed by the return key:</p>
+<pre class="literal-block">
+1 2 3
+</pre>
+<p>Then hold down the control key and press &quot;Z&quot;, followed by the
+return key.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id37" id="errors-and-warnings" name="errors-and-warnings">5.4&nbsp;&nbsp;&nbsp;Errors and Warnings</a></h2>
+<p>Don't be alarmed if you see compiler warnings from Boost headers.
+We try to eliminate them, but doing so isn't always practical.<a class="footnote-reference" href="#warnings" id="id10" name="id10"><sup>4</sup></a></p>
+<p>Errors are another matter.  If you're seeing compilation errors at
+this point in the tutorial, check to be sure you've copied the
+example program correctly and that you've correctly identified the
+Boost root directory.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id38" id="get-boost-library-binaries" name="get-boost-library-binaries">6&nbsp;&nbsp;&nbsp;Get Boost Library Binaries</a></h1>
+<p>If you want to use any of the separately-compiled Boost libraries,
+you'll need library binaries.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id39" id="install-visual-studio-binaries" name="install-visual-studio-binaries">6.1&nbsp;&nbsp;&nbsp;Install Visual Studio Binaries</a></h2>
+<p>The <a class="reference" href="http://www.boost-consulting.com/download.html">Windows installer</a> supplied by Boost Consulting will download
+and install pre-compiled binaries into the <tt class="docutils literal"><span class="pre">lib\</span></tt> subdirectory of
+the boost root, typically <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">\lib\</span></tt>.</p>
+<p><a class="reference" href="#link-your-program-to-a-boost-library"><em>next...</em></a></p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id40" id="build-and-install-nix-binaries" name="build-and-install-nix-binaries">6.2&nbsp;&nbsp;&nbsp;Build and Install *nix Binaries</a></h2>
+<p>Issue the following commands in the shell (don't type <tt class="docutils literal"><span class="pre">$</span></tt>; it
+represents the shell's prompt):</p>
+<pre class="literal-block">
+<strong>$</strong> cd <tt class="docutils literal"><span class="pre">/</span></tt><em>path</em><tt class="docutils literal"><span class="pre">/</span></tt><em>to</em><tt class="docutils literal"><span class="pre">/</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
+<strong>$</strong> ./configure --help
+</pre>
+<p>Select your configuration options and invoke <tt class="docutils literal"><span class="pre">./configure</span></tt> again.
+Unless you have write permission in your system's <tt class="docutils literal"><span class="pre">/usr/local/</span></tt>
+directory, you'll probably want to at least use</p>
+<pre class="literal-block">
+<strong>$</strong> ./configure <strong>--prefix=</strong><em>path</em>/<em>to</em>/<em>installation</em>/<em>prefix</em>
+</pre>
+<p>to install somewhere else.  Finally,</p>
+<pre class="literal-block">
+<strong>$</strong> make install
+</pre>
+<p>which will leave Boost binaries in the <tt class="docutils literal"><span class="pre">lib/</span></tt> subdirectory of
+your installation prefix.  You will also find a copy of the Boost
+headers in the <tt class="docutils literal"><span class="pre">include/</span></tt> subdirectory of the installation
+prefix, so you can henceforth use that directory as an <tt class="docutils literal"><span class="pre">#include</span></tt>
+path in place of the Boost root directory.</p>
+<p><a class="reference" href="#expected-build-output"><em>next...</em></a></p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id41" id="build-and-install-other-binaries" name="build-and-install-other-binaries">6.3&nbsp;&nbsp;&nbsp;Build and Install Other Binaries</a></h2>
+<p>If you're not using Visual C++ 7.1 or 8.0, or you're a *nix user
+who wants want to build with a toolset other than your system's
+default, or if you want a nonstandard variant build of Boost
+(e.g. optimized, but with debug symbols), you'll need to use
+<a class="reference" href="../tools/build/index.html">Boost.Build</a> to create your own binaries.</p>
+<p><a class="reference" href="../tools/build/index.html">Boost.Build</a> is a text-based system for developing, testing, and
+installing software.  To use it, you'll need an executable called
+<tt class="docutils literal"><span class="pre">bjam</span></tt>.</p>
+<div class="section">
+<h3><a id="get-bjam" name="get-bjam">Get <tt class="docutils literal"><span class="pre">bjam</span></tt></a></h3>
+<p><tt class="docutils literal"><span class="pre">bjam</span></tt> is the <a class="reference" href="#command-line-tool">command-line tool</a> that drives the Boost Build
+system.  To build Boost binaries, you'll invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> from the
+Boost root.</p>
+<p>Boost provides <a class="reference" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=72941">pre-compiled <tt class="docutils literal"><span class="pre">bjam</span></tt> executables</a> for a variety of platforms.
+Alternatively, you can build <tt class="docutils literal"><span class="pre">bjam</span></tt> yourself using <a class="reference" href="http://www.boost.org/doc/html/jam/building.html">these
+instructions</a>.</p>
+</div>
+<div class="section">
+<h3><a id="identify-your-toolset" name="identify-your-toolset"><span id="toolset-name"></span><span id="toolset"></span>Identify Your Toolset</a></h3>
+<p>First, find the toolset corresponding to your compiler in the
+following table.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="33%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Toolset
+Name</th>
+<th class="head">Vendor</th>
+<th class="head">Notes</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">acc</span></tt></td>
+<td>Hewlett Packard</td>
+<td>Only very recent versions are
+known to work well with Boost</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">borland</span></tt></td>
+<td>Borland</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">como</span></tt></td>
+<td>Comeau Computing</td>
+<td>Using this toolset may
+require <a class="reference" href="../tools/build/index.html">configuring</a> another
+toolset to act as its backend</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">cw</span></tt></td>
+<td>Metrowerks/FreeScale</td>
+<td>The CodeWarrior compiler.  We
+have not tested versions of
+this compiler produced since
+it was sold to FreeScale.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">dmc</span></tt></td>
+<td>Digital Mars</td>
+<td>As of this Boost release, no
+version of dmc is known to
+handle Boost well.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">darwin</span></tt></td>
+<td>Apple Computer</td>
+<td>Apple's version of the GCC
+toolchain with support for
+Darwin and MacOS X features
+such as frameworks.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">gcc</span></tt></td>
+<td>The Gnu Project</td>
+<td>Includes support for Cygwin
+and MinGW compilers.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">hp_cxx</span></tt></td>
+<td>Hewlett Packard</td>
+<td>Targeted at the Tru64
+operating system.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">intel</span></tt></td>
+<td>Intel</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">kylix</span></tt></td>
+<td>Borland</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">msvc</span></tt></td>
+<td>Microsoft</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">qcc</span></tt></td>
+<td>QNX Software Systems</td>
+<td>&nbsp;</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">sun</span></tt></td>
+<td>Sun</td>
+<td>Only very recent versions are
+known to work well with
+Boost.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">vacpp</span></tt></td>
+<td>IBM</td>
+<td>The VisualAge C++ compiler.</td>
+</tr>
+</tbody>
+</table>
+<p>If you have multiple versions of a particular compiler installed,
+you can apend the version number to the toolset name, preceded by a
+hyphen, e.g. <tt class="docutils literal"><span class="pre">msvc-7.1</span></tt> or <tt class="docutils literal"><span class="pre">gcc-3.4</span></tt>.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">if you built <tt class="docutils literal"><span class="pre">bjam</span></tt> yourself, you may
+have selected a toolset name for that purpose, but that does not
+affect this step in any way; you still need to select a Boost.Build
+toolset from the table.</p>
+</div>
+</div>
+<div class="section">
+<h3><a id="select-a-build-directory" name="select-a-build-directory"><span id="id15"></span><span id="build-directory"></span>Select a Build Directory</a></h3>
+<p><a class="reference" href="../tools/build/index.html">Boost.Build</a> will place all intermediate files it generates while
+building into the <strong>build directory</strong>.  If your Boost root
+directory is writable, this step isn't strictly necessary: by
+default Boost.Build will create a <tt class="docutils literal"><span class="pre">bin.v2/</span></tt> subdirectory for that
+purpose in your current working directory.</p>
+</div>
+<div class="section">
+<h3><a id="invoke-bjam" name="invoke-bjam">Invoke <tt class="docutils literal"><span class="pre">bjam</span></tt></a></h3>
+<p>Change your current directory to the Boost root directory and
+invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> as follows:</p>
+<pre class="literal-block">
+bjam <strong>--build-dir=</strong><a class="reference" href="#id15"><em>build-directory</em></a> <strong>\</strong>
+     <strong>--toolset=</strong><a class="reference" href="#toolset-name"><em>toolset-name</em></a> stage
+</pre>
+<p>For example, on Windows, your session might look like:</p>
+<pre class="literal-block">
+C:WINDOWS&gt; cd <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
+<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>&gt; bjam <strong>\</strong>
+  <strong>--build-dir=</strong>%TEMP%\build-boost          <strong>\</strong>
+  <strong>--toolset=msvc stage</strong>
+</pre>
+<p>And on Unix:</p>
+<pre class="literal-block">
+$ cd ~/<tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
+$ bjam <strong>--build-dir=</strong>~/build-boost <strong>--prefix=</strong>~/boost
+</pre>
+<p>In either case, Boost.Build will place the Boost binaries in the
+<tt class="docutils literal"><span class="pre">stage/</span></tt> subdirectory of your <a class="reference" href="#build-directory">build directory</a>.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">bjam</span></tt> is case-sensitive; it is important that all the
+parts shown in <strong>bold</strong> type above be entirely lower-case.</p>
+</div>
+<p>For a description of other options you can pass when invoking
+<tt class="docutils literal"><span class="pre">bjam</span></tt>, type:</p>
+<pre class="literal-block">
+bjam --help
+</pre>
+</div>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id42" id="expected-build-output" name="expected-build-output">6.4&nbsp;&nbsp;&nbsp;Expected Build Output</a></h2>
+<p>During the process of building Boost libraries, you can expect to
+see some messages printed on the console.  These may include</p>
+<ul>
+<li><p class="first">Notices about Boost library configuration—for example, the Regex
+library outputs a message about ICU when built without Unicode
+support, and the Python library may be skipped without error (but
+with a notice) if you don't have Python installed.</p>
+</li>
+<li><p class="first">Messages from the build tool that report the number of targets
+that were built or skipped.  Don't be surprised if those numbers
+don't make any sense to you; there are many targets per library.</p>
+</li>
+<li><p class="first">Build action messages describing what the tool is doing, which
+look something like:</p>
+<pre class="literal-block">
+<em>toolset-name</em>.c++ <em>long</em>/<em>path</em>/<em>to</em>/<em>file</em>/<em>being</em>/<em>built</em>
+</pre>
+</li>
+<li><p class="first">Compiler warnings.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id43" id="in-case-of-build-errors" name="in-case-of-build-errors">6.5&nbsp;&nbsp;&nbsp;In Case of Build Errors</a></h2>
+<p>The only error messages you see when building Boost—if any—should
+be related to the IOStreams library's support of zip and bzip2
+formats as described <a class="reference" href="file:///home/dave/src/boost/libs/iostreams/doc/installation.html">here</a>.  Install the relevant development
+packages for libz and libbz2 if you need those features.  Other
+errors when building Boost libraries are cause for concern.</p>
+<p>If it seems like the build system can't find your compiler and/or
+linker, consider setting up a <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file as described
+in the <a class="reference" href="../tools/build/index.html">Boost.Build documentation</a>.  If that isn't your problem or
+the <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file doesn't work for you, please address
+questions about configuring Boost for your compiler to the
+<a class="reference" href="http://boost.org/more/mailing_lists.htm#jamboost">Boost.Build mailing list</a>.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id44" id="link-your-program-to-a-boost-library" name="link-your-program-to-a-boost-library">7&nbsp;&nbsp;&nbsp;Link Your Program to a Boost Library</a></h1>
+<p>To demonstrate linking with a Boost binary library, we'll use the
+following simple program that extracts the subject lines from
+emails.  It uses the <a class="reference" href="../libs/regex">Boost.Regex</a> library, which has a
+separately-compiled binary component.</p>
+<pre class="literal-block">
+#include &lt;boost/regex.hpp&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main()
+{
+    std::string line;
+    boost::regex pat( &quot;^Subject: (Re: |Aw: )*(.*)&quot; );
+
+    while (std::cin)
+    {
+        std::getline(std::cin, line);
+        boost::smatch matches;
+        if (boost::regex_match(line, matches, pat))
+            std::cout &lt;&lt; matches[2] &lt;&lt; std::endl;
+    }
+}
+</pre>
+<p>There are two main challenges associated with linking:</p>
+<ol class="arabic simple">
+<li>Tool configuration, e.g. choosing command-line options or IDE
+build settings.</li>
+<li>Identifying the library binary, among all the build variants,
+whose compile configuration is compatible with the rest of your
+project.</li>
+</ol>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last"><a class="reference" href="../libs/python/index.html">Boost.Python</a> users should read that library's own <a class="reference" href="../libs/python/doc/building.html">build
+documentation</a> as there are several library-specific issues to
+consider.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id45" id="link-to-a-boost-library-on-windows" name="link-to-a-boost-library-on-windows">7.1&nbsp;&nbsp;&nbsp;Link to a Boost Library on Windows</a></h2>
+<p id="auto-linking">Most Windows compilers and linkers have so called “auto-linking
+support,” which is used by many Boost libraries to eliminate the
+second challenge.  Special code in Boost header files detects your
+compiler options and uses that information to encode the name of
+the correct library into your object files; the linker selects the
+library with that name from the directories you've told it to
+search.</p>
+<div class="section">
+<h3><a id="link-to-a-boost-library-from-the-visual-studio-command-prompt" name="link-to-a-boost-library-from-the-visual-studio-command-prompt">Link to a Boost Library from the Visual Studio Command Prompt</a></h3>
+<p>For example, we can compile and link the above program from the
+Visual C++ command-line by simply adding the <strong>bold</strong> text below to
+the command line we used earlier, assuming your Boost binaries are
+in <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">\lib</span></tt>:</p>
+<pre class="literal-block">
+cl /EHsc /I <em>path</em><tt class="docutils literal"><span class="pre">\</span></tt><em>to</em><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp   <strong>\</strong>
+     <strong>/link /LIBPATH:</strong> <strong>C:\Program Files\boost\</strong><strong>boost_1_34_0</strong><strong>\lib</strong>
+</pre>
+<p><a class="reference" href="#test-your-program"><em>next...</em></a></p>
+</div>
+<div class="section">
+<h3><a id="link-to-a-boost-library-in-the-visual-studio-ide" name="link-to-a-boost-library-in-the-visual-studio-ide">Link to a Boost Library in the Visual Studio IDE</a></h3>
+<p>Starting with the <a class="reference" href="#vs-header-only">header-only example project</a> we created
+earlier:</p>
+<ol class="arabic simple">
+<li>Right-click <strong>example</strong> in the <em>Solution Explorer</em> pane and
+select <em>Properties</em> from the resulting pop-up menu</li>
+<li>In <em>Configuration Properties</em> &gt; <em>Linker</em> &gt; <em>Additional Library
+Directories</em>, enter the path to the Boost binaries,
+e.g. <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">\lib\</span></tt>.</li>
+<li>From the <em>Build</em> menu, select <em>Build Solution</em>.</li>
+</ol>
+<p><a class="reference" href="#test-your-program"><em>next...</em></a></p>
+</div>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id46" id="link-to-a-boost-library-on-nix" name="link-to-a-boost-library-on-nix">7.2&nbsp;&nbsp;&nbsp;Link to a Boost Library On *nix</a></h2>
+<p>There are two main ways to link to libraries:</p>
+<ol class="upperalpha">
+<li><p class="first">You can specify the full path to each library:</p>
+<pre class="literal-block">
+$ c++ -I <tt class="docutils literal"><span class="pre">/</span></tt><em>path</em><tt class="docutils literal"><span class="pre">/</span></tt><em>to</em><tt class="docutils literal"><span class="pre">/</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp -o example <strong>\</strong>
+   <strong>~/boost/lib/libboost_regex-gcc-3.4-mt-d-1_34.a</strong>
+</pre>
+</li>
+<li><p class="first">You can separately specify a directory to search (with <tt class="docutils literal"><span class="pre">-L</span></tt><em>directory</em>) and a library name to search for (with <tt class="docutils literal"><span class="pre">-l</span></tt><em>library</em>,<a class="footnote-reference" href="#lowercase-l" id="id21" name="id21"><sup>6</sup></a> dropping the filename's leading <tt class="docutils literal"><span class="pre">lib</span></tt> and trailing
+suffix (<tt class="docutils literal"><span class="pre">.a</span></tt> in this case):</p>
+<pre class="literal-block">
+$ c++ -I <tt class="docutils literal"><span class="pre">/</span></tt><em>path</em><tt class="docutils literal"><span class="pre">/</span></tt><em>to</em><tt class="docutils literal"><span class="pre">/</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt> example.cpp -o example <strong>\</strong>
+   <strong>-L~/boost/lib/ -lboost_regex-gcc-3.4-mt-d-1_34</strong>
+</pre>
+<p>As you can see, this method is just as terse as method A for one
+library; it <em>really</em> pays off when you're using multiple
+libraries from the same directory.  Note, however, that if you
+use this method with a library that has both static (<tt class="docutils literal"><span class="pre">.a</span></tt>) and
+dynamic (<tt class="docutils literal"><span class="pre">.so</span></tt>) builds, the system may choose one
+automatically for you unless you pass a special option such as
+<tt class="docutils literal"><span class="pre">-static</span></tt> on the command line.</p>
+</li>
+</ol>
+<p>In both cases above, the bold text is what you'd add to <a class="reference" href="#unix-header-only">the
+command lines we explored earlier</a>.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id47" id="library-naming" name="library-naming">7.3&nbsp;&nbsp;&nbsp;Library Naming</a></h2>
+<p>When auto-linking is not available, you need to know how Boost
+binaries are named so you can choose the right one for your build
+configuration.  Each library filename is composed of a common
+sequence of elements that describe how it was built.  For example,
+<tt class="docutils literal"><span class="pre">libboost_regex-vc71-mt-d-1_34.lib</span></tt> can be broken down into the
+following elements:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">lib</span></tt></dt>
+<dd><em>Prefix</em>: except on Microsoft Windows, every Boost library
+name begins with this string.  On Windows, only ordinary static
+libraries use the <tt class="docutils literal"><span class="pre">lib</span></tt> prefix; import libraries and DLLs do
+not.<a class="footnote-reference" href="#distinct" id="id23" name="id23"><sup>7</sup></a></dd>
+<dt><tt class="docutils literal"><span class="pre">boost_regex</span></tt></dt>
+<dd><em>Library name</em>: all boost library filenames begin with <tt class="docutils literal"><span class="pre">boost_</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">-vc71</span></tt></dt>
+<dd><em>Toolset tag</em>: identifies the toolset and version used to build
+the binary.</dd>
+<dt><tt class="docutils literal"><span class="pre">-mt</span></tt></dt>
+<dd><em>Threading tag</em>: indicates that the library was
+built with multithreading support enabled.  Libraries built
+without multithreading support can be identified by the absence
+of <tt class="docutils literal"><span class="pre">-mt</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">-d</span></tt></dt>
+<dd><p class="first"><em>ABI tag</em>: encodes details that affect the library's
+interoperability with other compiled code.  For each such
+feature, a single letter is added to the tag:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="94%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Key</th>
+<th class="head">Use this library when:</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">s</span></tt></td>
+<td>linking statically to the C++ standard library and compiler runtime support
+libraries.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">g</span></tt></td>
+<td>using debug versions of the standard and runtime support libraries.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">y</span></tt></td>
+<td>using a special <a class="reference" href="../libs/python/doc/building.html#variants">debug build of Python</a>.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">d</span></tt></td>
+<td>building a debug version of your code.<a class="footnote-reference" href="#debug-abi" id="id24" name="id24"><sup>8</sup></a></td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">p</span></tt></td>
+<td>using the STLPort standard library rather than the default one supplied with
+your compiler.</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">n</span></tt></td>
+<td>using STLPort's deprecated “native iostreams” feature.<a class="footnote-reference" href="#native" id="id25" name="id25"><sup>9</sup></a></td>
+</tr>
+</tbody>
+</table>
+<p class="last">For example, if you build a debug version of your code for use
+with debug versions of the static runtime library and the
+STLPort standard library in “native iostreams” mode,
+the tag would be: <tt class="docutils literal"><span class="pre">-sgdpn</span></tt>.  If none of the above apply, the
+ABI tag is ommitted.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">-1_34</span></tt></dt>
+<dd><em>Version tag</em>: the full Boost release number, with periods
+replaced by underscores. For example, version 1.31.1 would be
+tagged as &quot;-1_31_1&quot;.</dd>
+<dt><tt class="docutils literal"><span class="pre">.lib</span></tt></dt>
+<dd><em>Extension</em>: determined according to the
+operating system's usual convention.  On Windows, <tt class="docutils literal"><span class="pre">.dll</span></tt>
+indicates a shared library and <tt class="docutils literal"><span class="pre">.lib</span></tt> indicates a static or
+import library.  On most *nix platforms the extensions are
+<tt class="docutils literal"><span class="pre">.a</span></tt> and <tt class="docutils literal"><span class="pre">.so</span></tt> for static libraries (archives) and shared
+libraries, respectively.  Where supported by *nix toolsets, a
+full version extension is added (e.g. &quot;.so.1.34&quot;); a symbolic
+link to the library file, named without the trailing version
+number, will also be created.</dd>
+</dl>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id48" id="test-your-program" name="test-your-program">7.4&nbsp;&nbsp;&nbsp;Test Your Program</a></h2>
+<p>To test our subject extraction, we'll filter the following text
+file.  Copy it out of your browser and save it as <tt class="docutils literal"><span class="pre">jayne.txt</span></tt>:</p>
+<pre class="literal-block">
+To: George Shmidlap
+From: Rita Marlowe
+Subject: Will Success Spoil Rock Hunter?
+---
+See subject.
+</pre>
+<div class="section">
+<h3><a id="test-your-program-on-microsoft-windows" name="test-your-program-on-microsoft-windows">Test Your Program on Microsoft Windows</a></h3>
+<p>In a <a class="reference" href="#command-prompt">command prompt</a> window, type:</p>
+<pre class="literal-block">
+<em>path</em>\<em>to</em>\<em>compiled</em>\example &lt; <em>path</em>\<em>to</em>\jayne.txt
+</pre>
+<p>The program should respond with the email subject, “Will Success
+Spoil Rock Hunter?”</p>
+</div>
+<div class="section">
+<h3><a id="test-your-program-on-nix" name="test-your-program-on-nix">Test Your Program on *nix</a></h3>
+<p>If you linked to a shared library, you may need to prepare some
+platform-specific settings so that the system will be able to find
+and load it when your program is run.  Most platforms have an
+environment variable to which you can add the directory containing
+the library.  On many platforms (Linux, FreeBSD) that variable is
+<tt class="docutils literal"><span class="pre">LD_LIBRARY_PATH</span></tt>, but on MacOS it's <tt class="docutils literal"><span class="pre">DYLD_LIBRARY_PATH</span></tt>, and
+on Cygwin it's simply <tt class="docutils literal"><span class="pre">PATH</span></tt>.  In most shells other than <tt class="docutils literal"><span class="pre">csh</span></tt>
+and <tt class="docutils literal"><span class="pre">tcsh</span></tt>, you can adjust the variable as follows (again, don't
+type the <tt class="docutils literal"><span class="pre">$</span></tt>—that represents the shell prompt):</p>
+<pre class="literal-block">
+<strong>$</strong> <em>VARIABLE_NAME</em>=<em>path/to/lib/directory</em>:${<em>VARIABLE_NAME</em>}
+<strong>$</strong> export <em>VARIABLE_NAME</em>
+</pre>
+<p>On <tt class="docutils literal"><span class="pre">csh</span></tt> and <tt class="docutils literal"><span class="pre">tcsh</span></tt>, it's</p>
+<pre class="literal-block">
+<strong>$</strong> setenv <em>VARIABLE_NAME</em> <em>path/to/lib/directory</em>:${<em>VARIABLE_NAME</em>}
+</pre>
+<p>Once the necessary variable (if any) is set, you can run your
+program as follows:</p>
+<pre class="literal-block">
+<strong>$</strong> <em>path</em>/<em>to</em>/<em>compiled</em>/example &lt; <em>path</em>/<em>to</em>/jayne.txt
+</pre>
+<p>The program should respond with the email subject, “Will Success
+Spoil Rock Hunter?”</p>
+</div>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id49" id="further-resources" name="further-resources">8&nbsp;&nbsp;&nbsp;Further Resources</a></h1>
+<p>This concludes your introduction to Boost and using it with your
+programs.  Remember that this page is only supposed to get you
+started and not describe every detail you might want to know about.
+There are lots of resources you can pursue from this point onward.
+If you can't find what you need, or there's anything we can do to
+make this document clearer, please post it to the <a class="reference" href="http://boost.org/more/mailing_lists.htm#users">Boost Users'
+mailing list</a>.</p>
+<ul class="simple">
+<li><a class="reference" href="http://boost.org/tools/build/v2">Boost.Build reference manual</a></li>
+<li><a class="reference" href="http://boost.org/tools/jam">Boost.Jam reference manual</a></li>
+<li><a class="reference" href="http://boost.org/more/mailing_lists.htm#users">Boost Users' mailing list</a></li>
+<li><a class="reference" href="http://boost.org/more/mailing_lists.htm#jamboost">Boost.Build mailing list</a></li>
+<li><a class="reference" href="http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?Boost.Build_V2">Boost.Build Wiki</a></li>
+</ul>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">We're also very interested in what sort of material might
+be appropriate for a “Book 2” in a Getting Started series.</p>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id50" id="appendix-using-command-line-tools-in-windows" name="appendix-using-command-line-tools-in-windows"><span id="command-line-tool"></span><span id="command-prompt"></span><span id="using-command-line-tools-in-windows"></span>9&nbsp;&nbsp;&nbsp;Appendix: Using command-line tools in Windows</a></h1>
+<p>In Windows, a command-line tool is invoked by typing its name,
+optionally followed by arguments, into a <em>Command Prompt</em> window
+and pressing the Return (or Enter) key.</p>
+<p>To open <em>Command Prompt</em>, click the <em>Start</em> menu button, click
+<em>Run</em>, type “cmd”, and then click OK.</p>
+<p>All commands are executed within the context of a <strong>current
+directory</strong> in the filesystem.  To set the current directory,
+type:</p>
+<pre class="literal-block">
+cd <em>path</em>\<em>to</em>\<em>some</em>\<em>directory</em>
+</pre>
+<p>followed by Return.  For example,</p>
+<pre class="literal-block">
+cd <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
+</pre>
+<p>One way to name a directory you know about is to write</p>
+<pre class="literal-block">
+%HOMEDRIVE%%HOMEPATH%\<em>directory-name</em>
+</pre>
+<p>which indicates a sibling folder of your “My Documents” folder.</p>
+<p>Long commands can be continued across several lines by typing
+backslashes at the ends of all but the last line.  Many of the
+examples on this page use that technique to save horizontal
+space.</p>
+<hr class="docutils" />
+<table class="docutils footnote" frame="void" id="zip" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3" name="zip">[1]</a></td><td>If you prefer not to download executable programs, download
+<tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt><tt class="docutils literal"><span class="pre">.zip</span></tt> and use an external tool to decompress
+it.  We don't recommend using Windows' built-in decompression as
+it can be painfully slow for large archives.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="packagers" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4" name="packagers">[2]</a></td><td>If developers of Boost packages would like to work
+with us to make sure these instructions can be used with their
+packages, we'd be glad to help.  Please make your interest known
+to the <a class="reference" href="mailing_lists.htm#main">Boost developers' list</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="installer-src" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5" name="installer-src">[3]</a></td><td>If you used the <a class="reference" href="http://www.boost-consulting.com/download.html">Windows installer</a> from Boost
+Consulting and deselected “Source and Documentation”  (it's
+selected by default), you won't see the <tt class="docutils literal"><span class="pre">libs/</span></tt> subdirectory.
+That won't affect your ability to use precompiled binaries, but
+you won't be able to rebuild libraries from scratch.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="warnings" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10" name="warnings">[4]</a></td><td>Remember that warnings are specific to each compiler
+implementation.  The developer of a given Boost library might
+not have access to your compiler.  Also, some warnings are
+extremely difficult to eliminate in generic code, to the point
+where it's not worth the trouble.  Finally, some compilers don't
+have any source code mechanism for suppressing warnings.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="pch" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9" name="pch">[5]</a></td><td>There's no problem using Boost with precompiled headers;
+these instructions merely avoid precompiled headers because it
+would require Visual Studio-specific changes to the source code
+used in the examples.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="lowercase-l" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id21" name="lowercase-l">[6]</a></td><td>That option is a dash followed by a lowercase “L”
+character, which looks very much like a numeral 1 in some fonts.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="distinct" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id23" name="distinct">[7]</a></td><td>This convention distinguishes the static version of
+a Boost library from the import library for an
+identically-configured Boost DLL, which would otherwise have the
+same name.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="debug-abi" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id24" name="debug-abi">[8]</a></td><td>These libraries were compiled without optimization
+or inlining, with full debug symbols enabled, and without
+<tt class="docutils literal"><span class="pre">NDEBUG</span></tt> <tt class="docutils literal"><span class="pre">#define</span></tt>d.  All though it's true that sometimes
+these choices don't affect binary compatibility with other
+compiled code, you can't count on that with Boost libraries.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="native" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id25" name="native">[9]</a></td><td>This feature of STLPort is deprecated because it's
+impossible to make it work transparently to the user; we don't
+recommend it.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="footer">
+<hr class="footer" />
+<a class="reference" href="./getting_started.rst">View document source</a>.
+Generated on: 2006-12-11 20:27 UTC.
+Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
+
+</div>
 </body>
 </html>
