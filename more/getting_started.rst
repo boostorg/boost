@@ -1,19 +1,20 @@
-========================================
- Getting Started With Boost  |(logo)|__
-========================================
+============================
+ |(logo)|__ Getting Started
+============================
 
 .. |(logo)| image:: ../boost.png
    :alt: Boost
+   :class: boost-logo
 
 __ ../index.htm
 
-This guide will help you get started using the Boost libraries.
-Have fun!
 
 .. section-numbering::
+   :depth: 2
 
-.. contents:: Index
-
+.. contents:: Contents
+   :depth: 2
+   :class: sidebar small
 
 .. ## Update this substitution for each release
 
@@ -21,34 +22,84 @@ Have fun!
 .. |boost_ver-bold| replace:: **boost_1_34_0**
 
 .. |root| replace:: ``/``\ *path*\ ``/``\ *to*\ ``/``\ |boost_ver|
-.. |winroot| replace:: *C:*\ ``\``\ *path*\ ``\``\ *to*\ ``\``\ |boost_ver|
+.. |winroot| replace:: *path*\ ``\``\ *to*\ ``\``\ |boost_ver|
 .. |winroot-default| replace:: ``C:\Program Files\boost\``\ |boost_ver|
 .. |bold-winroot-default| replace:: **C:\\Program Files\\boost\\**\ |boost_ver-bold|
 
-Getting Boost
-=============
+Introduction
+============
+
+Welcome to the Boost libraries!  By the time you've completed this
+tutorial, you'll be at least somewhat comfortable with the contents
+of a Boost distribution and how to go about using it.  
+
+What's Here
+-----------
+
+This document is designed to be an *extremely* gentle introduction,
+so we included a fair amount of material that may already be very
+familiar to you.  To keep things simple, we also left out some
+information intermediate and advanced users will probably want.  At
+the end of this document, we'll refer you on to resources that can
+help you pursue these topics further.
+
+Preliminaries
+-------------
+
+We use one typographic convention that might not be immediately
+obvious: *italic* text in examples is meant as a descriptive
+placeholder for something else, usually information that you'll
+provide.  For example:
+
+.. parsed-literal::
+
+   **$** echo "My name is *your name*\ "
+
+Here you're expected to imagine replacing the text “your name” with
+your actual name.
+
+We identify Unix and its variants such as Linux, FreeBSD, and MacOS
+collectively as \*nix.  If you're not targeting Microsoft Windows,
+the instructions for \*nix users will probably work for you.
+Cygwin users working from the Cygwin ``bash`` prompt should also
+follow the \*nix instructions.  To use your Cygwin compiler from
+the Windows command prompt, follow the instructions for Windows
+users.
+
+Although Boost supports a wide variety of Windows compilers
+(including older Microsoft compilers), most instructions for
+Windows users cover only the Visual Studio .NET 2003 and Visual
+Studio 2005.  We hope that gives you enough information to adapt
+them for your own compiler or IDE.
+
+Get Boost
+=========
 
 There are basically three ways to get Boost on your system:
 
-1. Download and run the `Windows installer`_ supplied by Boost
-   Consulting (not available for Boost alpha/beta releases).
+1. **Windows Installer**: Boost Consulting provides an installer_
+   for Windows platforms that installs a complete Boost
+   distribution, plus optional precompiled library binaries for
+   Visual Studio, and (optionally) a prebuilt version of the
+   ``bjam`` build tool.
 
-.. ## remove the parenthesized note for full releases
-.. _Windows installer: http://www.boost-consulting.com/download.html
+   .. _Windows installer: http://www.boost-consulting.com/download.html
+   .. |Windows installer| replace:: **Windows installer**
+   .. _Boost Consulting: http://boost-consulting.com
+   .. _installer: `Windows installer`_
 
-2. or, `download a complete Boost distribution`__ from SourceForge.
 
-.. ## Update this link for each release
-__ http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=8041&release_id=376197
+2. **Download**: users of other platforms—and Windows
+   users who prefer to build everything from scratch—can `download
+   a complete Boost distribution`__ from SourceForge.
 
-   :Windows users: |boost_ver|\ ``.exe`` is a program you can
-     run to unpack the distribution; if you prefer not to download
-     executable programs, get |boost_ver|\ ``.zip`` and use an
-     external tool to decompress it.  We don't recommend using
-     Windows' built-in decompression as it can be painfully slow
-     for large archives.
+   .. ## Update this link for each release
+   __ http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=8041&release_id=376197
 
-   :\*nix users: Download |boost_ver|\ ``.tar.bz2``, then, in the
+   - **Windows**: Download and run |boost_ver|\ ``.exe`` 
+     to unpack the distribution. [#zip]_
+
+   - ***nix**: Download |boost_ver|\ ``.tar.bz2``.  Then, in the
      directory where you want to put the Boost installation,
      execute
 
@@ -56,11 +107,11 @@ __ http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=8041&re
    
         tar --bzip2 -xf */path/to/*\ |boost_ver|\ .tar.bz2
 
-3. or use a Boost package from RedHat, Debian, or some other
-   distribution packager.  These instructions may not work for you
-   if you use this method, because other packagers sometimes choose
-   to break Boost up into several packages or to reorganize the
-   directory structure of the Boost distribution. [#packagers]_
+3. **Boost packages** from RedHat, Debian, or some other
+   distribution packager: these instructions may not work for you
+   if you use 3rd party packages, because other packagers sometimes
+   choose to break Boost up into several packages or to reorganize
+   the directory structure of the Boost distribution. [#packagers]_
 
 The Structure of a Boost Distribution
 =====================================
@@ -71,8 +122,8 @@ slashes with backslashes):
 
 .. parsed-literal::
 
- **boost_1_34_0/** .................\ *The “boost root directory”* 
-    **index.html** ....................\ *A copy of www.boost.org*
+ |boost_ver-bold|\ **/** .................\ *The “boost root directory”* 
+    **index.htm** .........\ *A copy of www.boost.org starts here*
     **boost/** .........................\ *All Boost Header files*
     **libs/** ............\ *Tests, .cpp*\ s\ *, docs, etc., by library* [#installer-src]_
       **index.html** ........\ *Library documentation starts here*
@@ -86,6 +137,7 @@ slashes with backslashes):
     **doc/** ...............\ *A subset of all Boost library docs*
 
 .. sidebar:: Header Organization
+  :class: small
 
   The organization of Boost library headers isn't entirely uniform,
   but most libraries follow a few patterns:
@@ -100,7 +152,7 @@ slashes with backslashes):
 
   * Some libraries have an “aggregate header” in ``boost/`` that
     ``#include``\ s all of the library's other headers.  For
-    example, Boost.Python's aggregate header is
+    example, Boost.Python_'s aggregate header is
     ``boost/python.hpp``.
 
   * Most libraries place private headers in a subdirectory called
@@ -148,46 +200,53 @@ A few things are worth noting right off the bat:
    contains a subset of the Boost documentation.  Start with
    ``libs/index.html`` if you're looking for the whole enchilada.
 
-Building a Simple Boost Program
-===============================
+Header-Only Libraries
+=====================
 
 The first thing many people want to know is, “how do I build
 Boost?”  The good news is that often, there's nothing to build.
 
-.. admonition:: Header-Only Libraries
+.. admonition:: Nothing to Build
 
-  Nearly all Boost libraries are **header-only**.  That is, most
-  consist entirely of header files containing templates and inline
-  functions, and require no separately-compiled library binaries
-  or special treatment when linking.  
+  Most Boost libraries are **header-only**: they consist *entirely
+  of header files* containing templates and inline functions, and
+  require no separately-compiled library binaries or special
+  treatment when linking.
 
-  The only Boost libraries that are *not* header-only are:
+.. _separate: 
 
-  * Boost.Filesystem
-  * Boost.IOStreams
-  * Boost.ProgramOptions
-  * Boost.Python
-  * Boost.Regex
-  * Boost.Serialization
-  * Boost.Signals
-  * Boost.Test
-  * Boost.Thread
-  * Boost.Wave
+The only Boost libraries that can't be used without separate
+compilation are:
 
-  The DateTime library has a separately-compiled
-  binary which is only needed if you're using a “legacy
-  compiler”(such as?).  The Graph library has a
-  separately-compiled binary, but you won't need it unless you
-  intend to `parse GraphViz files`__.
+* Boost.Filesystem
+* Boost.IOStreams
+* Boost.ProgramOptions
+* Boost.Python_
+* Boost.Regex
+* Boost.Serialization
+* Boost.Signals
+* Boost.Test
+* Boost.Thread
+* Boost.Wave
+
+The DateTime library has a separately-compiled component that
+is only needed if you're using its to/from_string and/or
+serialization features or if you're targeting Visual C++ 6.x or
+Borland.  The Graph library also has a separately-compiled part,
+but you won't need it unless you intend to `parse GraphViz
+files`__.
 
 __ ../libs/graph/doc/read_graphviz.html
 
 .. ## Keep the list of non-header-only libraries up-to-date
 
+Build a Simple Program Using Boost
+==================================
 
+To keep things simple, let's start by using a header-only library.
 The following program reads a sequence of integers from standard
-input, uses Boost.Lambda (a header-only library) to multiply each
-one by three, and writes them to standard output::
+input, uses Boost.Lambda to multiply each number by three, and
+writes them to standard output::
 
   #include <boost/lambda/lambda.hpp>
   #include <iostream>
@@ -203,60 +262,68 @@ one by three, and writes them to standard output::
           in(std::cin), in(), std::cout << (_1 * 3) << " " );
   }
 
-Start by copying the text of this program into a file called
-``example.cpp``.
+Copy the text of this program into a file called ``example.cpp``.
 
 .. _unix-header-only:
 
-\*nix (e.g. Unix, Linux, MacOS, Cygwin)
----------------------------------------
+Build on \*nix
+--------------
 
-Simply issue the following command (``$`` represents the
-prompt issued by the shell, so don't type that):
+In the directory where you saved ``example.cpp``, issue the
+following command:
 
 .. parsed-literal::
 
-  **$** c++ -I |root| example.cpp -o example
+  c++ -I |root| example.cpp -o example
 
 To test the result, type:
 
 .. parsed-literal::
 
-  **$** echo 1 2 3 | ./example
+  echo 1 2 3 | ./example
 
-Microsoft Windows Command-Line using Visual C++
------------------------------------------------
+.. |next| replace:: *next...*
 
-From your computer's *Start* menu, select if you are a Visual
+|next|__
+
+__ `Errors and Warnings`_
+
+Build from the Visual Studio Command Prompt
+-------------------------------------------
+
+From your computer's *Start* menu, if you are a Visual
 Studio 2005 user, select
 
   *All Programs* > *Microsoft Visual Studio 2005* 
   > *Visual Studio Tools* > *Visual Studio 2005 Command Prompt*
 
-or if you're a Visual Studio .NET 2003 user, select
+or, if you're a Visual Studio .NET 2003 user, select
 
   *All Programs* > *Microsoft Visual Studio .NET 2003* 
   > *Visual Studio .NET Tools* > *Visual Studio .NET 2003 Command Prompt*
 
-to bring up a special command prompt window set up for the Visual
+to bring up a special `command prompt`_ window set up for the Visual
 Studio compiler.  In that window, type the following command and
-hit the return key (``C:\PROMPT>`` represents the prompt issued by
-the shell, so don't type that):
+hit the return key:
 
 .. parsed-literal::
 
-  **C:\PROMPT>** cl /EHsc /I |winroot| example.cpp
+  cl /EHsc /I\ |winroot| *path*\ \\\ *to*\ \\example.cpp
 
 To test the result, type:
 
 .. parsed-literal::
 
-  **C:\PROMPT>** echo 1 2 3 | example
+  echo 1 2 3 | example
+
+|next|__
+
+__ `Errors and Warnings`_
 
 .. _vs-header-only:
 
-Visual Studio .NET 2003 or Visual Studio 2005
----------------------------------------------
+Build in the Visual Studio IDE
+------------------------------
 
 * From Visual Studio's *File* menu, select *New* > *Project…*
 * In the left-hand pane of the resulting *New Project* dialog,
@@ -284,33 +351,40 @@ into the resulting window, followed by the return key::
 Then hold down the control key and press "Z", followed by the
 return key.
 
-Other Compilers/Environments
-----------------------------
+Errors and Warnings
+-------------------
 
-Consult your vendor's documentation; if you have trouble adapting
-these instructions to your build environment, request assistance on
-the `Boost Users' mailing list`_.
+Don't be alarmed if you see compiler warnings from Boost headers.
+We try to eliminate them, but doing so isn't always practical.
+[#warnings]_
 
-.. _Boost Users' mailing list: mailing_lists.htm#users
+Errors are another matter.  If you're seeing compilation errors at
+this point in the tutorial, check to be sure you've copied the
+example program correctly and that you've correctly identified the
+Boost root directory.
 
-Getting Boost Library Binaries
-==============================
+Get Boost Library Binaries
+==========================
 
 If you want to use any of the separately-compiled Boost libraries,
-you'll need to get ahold of library binaries.  
+you'll need library binaries.
 
-Microsoft Visual C++ 8.0 or 7.1 (Visual Studio 2005/.NET 2003) Binaries
-------------------------------------------------------------------------
+Install Visual Studio Binaries
+------------------------------
 
 The `Windows installer`_ supplied by Boost Consulting will download
 and install pre-compiled binaries into the ``lib\`` subdirectory of
 the boost root, typically |winroot-default|\ ``\lib\``.
 
-\*nix (e.g. Unix, Linux, MacOS, Cygwin) Binaries
-------------------------------------------------
+|next|__
 
-Issue the following commands in the shell (again, ``$`` represents
-the shell's prompt):
+__ `Link Your Program to a Boost Library`_
+
+Build and Install \*nix Binaries
+--------------------------------
+
+Issue the following commands in the shell (don't type ``$``; it
+represents the shell's prompt):
 
 .. parsed-literal::
 
@@ -337,8 +411,12 @@ headers in the ``include/`` subdirectory of the installation
 prefix, so you can henceforth use that directory as an ``#include``
 path in place of the Boost root directory.
 
-Other Compilers/Environments
-----------------------------
+|next|__
+
+__ `Expected Build Output`_
+
+Build and Install Other Binaries
+--------------------------------
 
 If you're not using Visual C++ 7.1 or 8.0, or you're a \*nix user
 who wants want to build with a toolset other than your system's
@@ -346,87 +424,32 @@ default, or if you want a nonstandard variant build of Boost
 (e.g. optimized, but with debug symbols), you'll need to use
 Boost.Build_ to create your own binaries.
 
-Building Boost Binaries with Boost.Build_
------------------------------------------
-
-Like an IDE, Boost.Build_ is a system for developing, testing, and
-installing software.  Instead of using a GUI, though, Boost.Build_
-is text-based, like ``make``.  Boost.Build_ is written in the
-interpreted Boost.Jam_ language.
+Boost.Build_ is a text-based system for developing, testing, and
+installing software.  To use it, you'll need an executable called
+``bjam``.
 
 .. |precompiled-bjam| replace:: pre-compiled ``bjam`` executables
 
-To use Boost.Build_, you'll need an executable called ``bjam``, the
-Boost.Jam_ interpreter.  
 
 .. _precompiled-bjam: http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=72941
 .. _Boost.Jam documentation: Boost.Jam_
 .. _Boost.Build: ../tools/build/index.html
 .. _Boost.Jam: ../tools/jam/index.html
-
-
-.. nosidebar .. sidebar:: Using Boost.Build for your own project
-
-   When you use Boost.Build to build your *own* project, you don't
-   need a separate step to create Boost binaries: you simply refer
-   to the boost library targets from your Jamfile and the are built
-   automatically (refer to the `Boost.Build documentation`_ for
-   detailed instructions).  Here, we're assuming you're using a
-   different build system for your own code, so you need to
-   explicitly generate Boost binaries.  We're also assuming that
-   you have a complete Boost distribution somewhere.
-
 .. _Boost.Build documentation: Boost.Build_
 
+Get ``bjam``
+............
 
-Getting ``bjam``
-................
-
-.. sidebar:: Using command-line tools in Windows
-
-  In Windows, a command-line tool is invoked by typing its name,
-  optionally followed by arguments, into a *Command Prompt* window
-  and pressing the Return (or Enter) key.
-
-  To open *Command Prompt*, click the *Start* menu button, click
-  *Run*, type “cmd”, and then click OK.
-
-  All commands are executed within the context of a **current
-  directory** in the filesystem.  To set the current directory,
-  type:
-
-  .. parsed-literal::
-  
-     cd *path*\ \\\ *to*\ \\\ *some*\ \\\ *directory*
-
-  followed by Return.  For example,
-
-  .. parsed-literal::
-
-     cd |winroot-default|
-
-  One way to name a directory you know about is to write
-
-  .. parsed-literal::
-
-     %HOMEDRIVE%%HOMEPATH%\\\ *directory-name*
-     
-  which indicates a sibling folder of your “My Documents” folder.
-
-  Long commands can be continued across several lines by typing
-  backslashes at the ends of all but the last line.  Many of the
-  examples on this page use that technique to save horizontal
-  space.
+``bjam`` is the `command-line tool`_ that drives the Boost Build
+system.  To build Boost binaries, you'll invoke ``bjam`` from the
+Boost root.  
 
 Boost provides |precompiled-bjam|_ for a variety of platforms.
-Alternatively, you can build ``bjam`` yourself using the
-instructions__ given in the `Boost.Jam documentation`_.
+Alternatively, you can build ``bjam`` yourself using `these
+instructions`__.
 
 __ http://www.boost.org/doc/html/jam/building.html
 
-``bjam`` is a command-line tool.  To build Boost binaries, you'll
-invoke ``bjam`` with the current directory set to the Boost root,
-and with options described in the following sections.
 
 .. _toolset:
 .. _toolset-name:
@@ -459,7 +482,13 @@ following table.
 |           |                    |version of dmc is known to   |
 |           |                    |handle Boost well.           |
 +-----------+--------------------+-----------------------------+
-|``gcc``    |The Gnu Project     |                             |
+|``darwin`` |Apple Computer      |Apple's version of the GCC   |
+|           |                    |toolchain with support for   |
+|           |                    |Darwin and MacOS X features  |
+|           |                    |such as frameworks.          |
++-----------+--------------------+-----------------------------+
+|``gcc``    |The Gnu Project     |Includes support for Cygwin  |
+|           |                    |and MinGW compilers.         |
 +-----------+--------------------+-----------------------------+
 |``hp_cxx`` |Hewlett Packard     |Targeted at the Tru64        |
 |           |                    |operating system.            |
@@ -472,7 +501,9 @@ following table.
 +-----------+--------------------+-----------------------------+
 |``qcc``    |QNX Software Systems|                             |
 +-----------+--------------------+-----------------------------+
-|``sun``    |Sun                 |                             |
+|``sun``    |Sun                 |Only very recent versions are|
+|           |                    |known to work well with      |
+|           |                    |Boost.                       |
 +-----------+--------------------+-----------------------------+
 |``vacpp``  |IBM                 |The VisualAge C++ compiler.  |
 +-----------+--------------------+-----------------------------+
@@ -511,87 +542,80 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam --build-dir=\ |build-directory|_ **\\**
-       --toolset=\ |toolset-name|_ stage
+  bjam **--build-dir=**\ |build-directory|_ **\\**
+       **--toolset=**\ |toolset-name|_ stage
 
 For example, on Windows, your session might look like:
 
 .. parsed-literal::
 
    C:\WINDOWS> cd |winroot-default|
-   |winroot-default|> bjam   **\\**
-     **--build-dir=**\ %HOMEDRIVE%%HOMEPATH%\\build-boost    **\\**
+   |winroot-default|> bjam **\\**
+     **--build-dir=**\ %TEMP%\\build-boost          **\\**
      **--toolset=msvc stage**
+
+And on Unix:
+
+.. parsed-literal::
+
+   $ cd ~/|boost_ver|
+   $ bjam **--build-dir=**\ ~/build-boost **--prefix=**\ ~/boost
+
+In either case, Boost.Build will place the Boost binaries in the
+``stage/`` subdirectory of your `build directory`_.
 
 .. Note:: ``bjam`` is case-sensitive; it is important that all the
    parts shown in **bold** type above be entirely lower-case.
 
-And on Unix:
+For a description of other options you can pass when invoking
+``bjam``, type::
 
-.. parsed-literal::
+  bjam --help
 
-   ~$ cd ~/|boost_ver|
-   ~/|boost_ver|\ $ bjam --build-dir=~/build-boost --prefix=~/boost
+Expected Build Output
+---------------------
 
-In either case, Boost.Build will place the Boost binaries in the
-``stage/`` subdirectory of your *build directory*.
+During the process of building Boost libraries, you can expect to
+see some messages printed on the console.  These may include
 
-``stage``
-.........
+* Notices about Boost library configuration—for example, the Regex
+  library outputs a message about ICU when built without Unicode
+  support, and the Python library may be skipped without error (but
+  with a notice) if you don't have Python installed.
 
-You already have the Boost headers on your system (in the
-``boost/`` subdirectory of your Boost distribution), so if you
-prefer not to create an additional copy, instead of installing
-Boost you can simply “stage” the Boost binaries, which leaves them
-in the ``stage/`` subdirectory of your chosen `build directory`_:
+* Messages from the build tool that report the number of targets
+  that were built or skipped.  Don't be surprised if those numbers
+  don't make any sense to you; there are many targets per library.
 
-.. parsed-literal::
+* Build action messages describing what the tool is doing, which
+  look something like:
 
-  bjam --build-dir=\ |build-directory|_   **\\**
-       --toolset=\ |toolset-name|_ stage
+  .. parsed-literal::
 
-.. _prefix directory:
-.. _prefix-directory:
+    *toolset-name*.c++ *long*\ /\ *path*\ /\ *to*\ /\ *file*\ /\ *being*\ /\ *built*
 
-Select a Prefix Directory
-.........................
+* Compiler warnings.
 
-Choose a **prefix directory**.  The installation process will
-leave you with the following subdirectories of the prefix directory:
+In Case of Build Errors
+-----------------------
 
-* ``lib``, containing the Boost binaries
-* ``include/``\ |boost_ver|, containing the Boost headers.
+The only error messages you see when building Boost—if any—should
+be related to the IOStreams library's support of zip and bzip2
+formats as described here__.  Install the relevant development
+packages for libz and libbz2 if you need those features.  Other
+errors when building Boost libraries are cause for concern.
 
-.. |prefix-directory| replace:: *prefix-directory*
+If it seems like the build system can't find your compiler and/or
+linker, consider setting up a ``user-config.jam`` file as described
+in the `Boost.Build documentation`_.  If that isn't your problem or
+the ``user-config.jam`` file doesn't work for you, please address
+questions about configuring Boost for your compiler to the
+`Boost.Build mailing list`_.
 
-Change your current directory to the Boost root directory and
-invoke ``bjam`` as follows:
+__ file:///home/dave/src/boost/libs/iostreams/doc/installation.html
 
-.. parsed-literal::
-
-  bjam --build-dir=\ |build-directory|_   **\\**
-       --toolset=\ |toolset-name|_        **\\**
-        --prefix=\ |prefix-directory|_ install
-
-For example, on Windows your session might look like:
-
-.. parsed-literal::
-
-   C:\WINDOWS> cd |winroot-default|
-   |winroot-default|> bjam   **\\**
-       --build-dir=C:\\TEMP\\build-boost         **\\**
-       --prefix=C:\\boost
-
-And on Unix:
-
-.. parsed-literal::
-
-   ~$ cd ~/|boost_ver|
-   ~/|boost_ver|\ $ bjam --build-dir=/tmp/build-boost **\\**
-        --prefix=~/boost
-
-Linking A Program with a Boost Library
-======================================
+Link Your Program to a Boost Library
+====================================
 
 To demonstrate linking with a Boost binary library, we'll use the
 following simple program that extracts the subject lines from
@@ -612,7 +636,7 @@ separately-compiled binary component. ::
           std::getline(std::cin, line);
           boost::smatch matches;
           if (boost::regex_match(line, matches, pat))
-              std::cout << matches[2];
+              std::cout << matches[2] << std::endl;
       }
   }
 
@@ -627,8 +651,17 @@ There are two main challenges associated with linking:
    whose compile configuration is compatible with the rest of your
    project.
 
-Microsoft Windows
------------------
+.. Note:: Boost.Python_ users should read that library's own `build
+   documentation`__ as there are several library-specific issues to
+   consider.
+
+.. _Boost.Python: ../libs/python/index.html
+__ ../libs/python/doc/building.html
+
+Link to a Boost Library on Windows
+----------------------------------
+
+.. _auto-linking:
 
 Most Windows compilers and linkers have so called “auto-linking
 support,” which is used by many Boost libraries to eliminate the
@@ -638,14 +671,8 @@ the correct library into your object files; the linker selects the
 library with that name from the directories you've told it to
 search.
 
-.. Note:: As of this writing, a few Boost libraries don't support
-   auto-linking:
-
-   * Boost.Python
-   * …others?…
-
-Visual C++ Command Line
-.......................
+Link to a Boost Library from the Visual Studio Command Prompt
+.............................................................
 
 For example, we can compile and link the above program from the
 Visual C++ command-line by simply adding the **bold** text below to
@@ -654,23 +681,15 @@ in |winroot-default|\ ``\lib``:
 
 .. parsed-literal::
 
-   C:\PROMPT> cl /EHsc /I |winroot| example.cpp   **\\**
+   cl /EHsc /I |winroot| example.cpp   **\\**
         **/link /LIBPATH:** |bold-winroot-default|\ **\\lib**
 
-To link with a library that doesn't use auto-linking support, you
-need to specify the library name.  For example,
+|next|__
 
-.. parsed-literal::
+__ `Test Your Program`_
 
-   C:\PROMPT> cl /EHsc /I |winroot| example.cpp   **\\**
-        /link /LIBPATH: |winroot-default|    **\\**
-        **boost_regex-msvc-7.1-mt-d-1_34.lib**
-
-See `Library Naming`_ for details about how to select the right
-library name.
-
-Visual Studio IDE
-.................
+Link to a Boost Library in the Visual Studio IDE
+................................................
 
 Starting with the `header-only example project`__ we created
 earlier:
@@ -684,30 +703,23 @@ __ vs-header-only_
    e.g. |winroot-default|\ ``\lib\``.
 3. From the *Build* menu, select *Build Solution*.
 
-To link with a library that doesn't use auto-linking support,
-before building (step 3 above), you also need to specify the library
-name:
+|next|__
 
-* In *Configuration Properties* > *Linker* > *Input* >
-  *Additional Dependencies*, enter the name of the binary library
-  to link with, e.g. **boost_regex-msvc-7.1-mt-d-1_34.lib**.
+__ `Test Your Program`_
 
-See `Library Naming`_ for details about how to select the right
-library name.
-
-\*nix (e.g. Unix, Linux, MacOS, Cygwin)
----------------------------------------
+Link to a Boost Library On \*nix
+--------------------------------
 
 There are two main ways to link to libraries:
 
-a. You can specify the full path to each library:
+A. You can specify the full path to each library:
 
    .. parsed-literal::
 
      $ c++ -I |root| example.cpp -o example **\\**
-        **~/boost/lib/libboost_regex-msvc-7.1-mt-d-1_34.a**
+        **~/boost/lib/libboost_regex-gcc-3.4-mt-d-1_34.a**
 
-b. You can separately specify a directory to search (with ``-L``\
+B. You can separately specify a directory to search (with ``-L``\
    *directory*) and a library name to search for (with ``-l``\
    *library*, [#lowercase-l]_ dropping the filename's leading ``lib`` and trailing
    suffix (``.a`` in this case): 
@@ -715,11 +727,15 @@ b. You can separately specify a directory to search (with ``-L``\
    .. parsed-literal::
 
      $ c++ -I |root| example.cpp -o example **\\**
-        **-L~/boost/lib/ -lboost_regex-msvc-7.1-mt-d-1_34**
+        **-L~/boost/lib/ -lboost_regex-gcc-3.4-mt-d-1_34**
 
-   As you can see, this method is just as terse as method a. for
-   one library; it *really* pays off when you're using multiple
-   libraries from the same directory.
+   As you can see, this method is just as terse as method A for one
+   library; it *really* pays off when you're using multiple
+   libraries from the same directory.  Note, however, that if you
+   use this method with a library that has both static (``.a``) and
+   dynamic (``.so``) builds, the system may choose one
+   automatically for you unless you pass a special option such as
+   ``-static`` on the command line.
 
 In both cases above, the bold text is what you'd add to `the
 command lines we explored earlier`__.
@@ -729,11 +745,11 @@ __ unix-header-only_
 Library Naming
 --------------
 
-In order to choose the right library binary to link with, you'll
-need to know something about how Boost libraries are named.  Each
-library binary filename is composed of a common sequence of
-elements that describe how it was built.  For example,
-``libboost_regex-msvc-7.1-mt-d-1_34.lib`` can be broken down into the
+When auto-linking is not available, you need to know how Boost
+binaries are named so you can choose the right one for your build
+configuration.  Each library filename is composed of a common
+sequence of elements that describe how it was built.  For example,
+``libboost_regex-vc71-mt-d-1_34.lib`` can be broken down into the
 following elements:
 
 ``lib`` 
@@ -745,9 +761,9 @@ following elements:
 ``boost_regex``
   *Library name*: all boost library filenames begin with ``boost_``.
 
-``-msvc-7.1``
-   *Toolset tag*: one of the `Boost.Build toolset names`_,
-   possibly followed by a dash and a version number.
+``-vc71``
+   *Toolset tag*: identifies the toolset and version used to build
+   the binary.
 
 ``-mt``
    *Threading tag*: indicates that the library was
@@ -785,10 +801,9 @@ following elements:
    ABI tag is ommitted.
 
 ``-1_34``
-  *Version tag*: the full Boost release number,
-  with periods replaced by underscores. The major and minor version
-  numbers are taken together separated by an underscore. For
-  example, version 1.31.1 would be tagged as "-1_31_1". 
+  *Version tag*: the full Boost release number, with periods
+  replaced by underscores. For example, version 1.31.1 would be
+  tagged as "-1_31_1".
 
 ``.lib``
   *Extension*: determined according to the
@@ -805,13 +820,151 @@ following elements:
 
 __ ../libs/python/doc/building.html#variants
 
+Test Your Program
+-----------------
+
+To test our subject extraction, we'll filter the following text
+file.  Copy it out of your browser and save it as ``jayne.txt``::
+
+   To: George Shmidlap
+   From: Rita Marlowe
+   Subject: Will Success Spoil Rock Hunter?
+   ---
+   See subject.
+
+Test Your Program on Microsoft Windows
+......................................
+
+In a `command prompt`_ window, type:
+
+.. parsed-literal::
+
+   *path*\ \\\ *to*\ \\\ *compiled*\ \\example < *path*\ \\\ *to*\ \\\ jayne.txt
+
+The program should respond with the email subject, “Will Success
+Spoil Rock Hunter?”
+
+Test Your Program on \*nix
+..........................
+
+If you linked to a shared library, you may need to prepare some
+platform-specific settings so that the system will be able to find
+and load it when your program is run.  Most platforms have an
+environment variable to which you can add the directory containing
+the library.  On many platforms (Linux, FreeBSD) that variable is
+``LD_LIBRARY_PATH``, but on MacOS it's ``DYLD_LIBRARY_PATH``, and
+on Cygwin it's simply ``PATH``.  In most shells other than ``csh``
+and ``tcsh``, you can adjust the variable as follows (again, don't
+type the ``$``\ —that represents the shell prompt):
+
+.. parsed-literal::
+
+   **$** *VARIABLE_NAME*\ =\ *path/to/lib/directory*\ :${\ *VARIABLE_NAME*\ }
+   **$** export *VARIABLE_NAME*
+
+On ``csh`` and ``tcsh``, it's
+
+.. parsed-literal::
+
+   **$** setenv *VARIABLE_NAME* *path/to/lib/directory*\ :${\ *VARIABLE_NAME*\ }
+
+Once the necessary variable (if any) is set, you can run your
+program as follows:
+
+.. parsed-literal::
+
+   **$** *path*\ /\ *to*\ /\ *compiled*\ /\ example < *path*\ /\ *to*\ /\ jayne.txt
+
+The program should respond with the email subject, “Will Success
+Spoil Rock Hunter?”
+
+Conclusion and Further Resources
+================================
+
+This concludes your introduction to Boost and to integrating it
+with your programs.  As you start using Boost in earnest, there are
+surely a few additional points you'll wish we had covered.  One day
+we may have a “Book 2 in the Getting Started series” that addresses
+them.  Until then, we suggest you pursue the following resources.
+If you can't find what you need, or there's anything we can do to
+make this document clearer, please post it to the `Boost Users'
+mailing list`_.
+
+* `Boost.Build reference manual`_
+* `Boost.Jam reference manual`_
+* `Boost Users' mailing list`_
+* `Boost.Build mailing list`_
+* `Boost.Build Wiki`_
+
+.. Admonition:: Onward
+
+  .. epigraph::
+
+     Good luck, and have fun!
+
+     -- the Boost Developers
+
+.. _Boost.Build reference manual: http://boost.org/tools/build/v2
+.. _Boost.Jam reference manual: http://boost.org/tools/jam
+.. _Boost Users' mailing list: http://boost.org/more/mailing_lists.htm#users
+.. _Boost.Build Wiki: http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?Boost.Build_V2
+.. _Boost.Build mailing list: http://boost.org/more/mailing_lists.htm#jamboost
+
+
+.. _`Using command-line tools in Windows`:
+.. _`command prompt`:
+.. _`command-line tool`:
+
+Appendix: Using command-line tools in Windows
+=============================================
+
+In Windows, a command-line tool is invoked by typing its name,
+optionally followed by arguments, into a *Command Prompt* window
+and pressing the Return (or Enter) key.
+
+To open *Command Prompt*, click the *Start* menu button, click
+*Run*, type “cmd”, and then click OK.
+
+All commands are executed within the context of a **current
+directory** in the filesystem.  To set the current directory,
+type:
+
+.. parsed-literal::
+
+   cd *path*\ \\\ *to*\ \\\ *some*\ \\\ *directory*
+
+followed by Return.  For example,
+
+.. parsed-literal::
+
+   cd |winroot-default|
+
+One way to name a directory you know about is to write
+
+.. parsed-literal::
+
+   %HOMEDRIVE%%HOMEPATH%\\\ *directory-name*
+
+which indicates a sibling folder of your “My Documents” folder.
+
+Long commands can be continued across several lines by typing
+backslashes at the ends of all but the last line.  Many of the
+examples on this page use that technique to save horizontal
+space.
 
 ------------------------------
+
+.. [#zip] If you prefer not to download executable programs, download
+   |boost_ver|\ ``.zip`` and use an external tool to decompress
+   it.  We don't recommend using Windows' built-in decompression as
+   it can be painfully slow for large archives.
 
 .. [#packagers] If developers of Boost packages would like to work
    with us to make sure these instructions can be used with their
    packages, we'd be glad to help.  Please make your interest known
    to the `Boost developers' list`_.
+
+.. _Boost developers' list: mailing_lists.htm#main
 
 .. [#installer-src] If you used the `Windows installer`_ from Boost
    Consulting and deselected “Source and Documentation”  (it's
@@ -819,7 +972,12 @@ __ ../libs/python/doc/building.html#variants
    That won't affect your ability to use precompiled binaries, but
    you won't be able to rebuild libraries from scratch.
 
-.. _Boost developers' list: mailing_lists.htm#main
+.. [#warnings] Remember that warnings are specific to each compiler
+   implementation.  The developer of a given Boost library might
+   not have access to your compiler.  Also, some warnings are
+   extremely difficult to eliminate in generic code, to the point
+   where it's not worth the trouble.  Finally, some compilers don't
+   have any source code mechanism for suppressing warnings.
 
 .. [#pch] There's no problem using Boost with precompiled headers;
    these instructions merely avoid precompiled headers because it
