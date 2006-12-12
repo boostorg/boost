@@ -23,7 +23,7 @@ __ ../index.htm
 
 .. |root| replace:: ``/``\ *path*\ ``/``\ *to*\ ``/``\ |boost_ver|
 .. |winroot| replace:: *path*\ ``\``\ *to*\ ``\``\ |boost_ver|
-.. |winroot-default| replace:: ``C:\Program Files\boost\``\ |boost_ver|
+.. |winroot-default| replace:: ``C:\Program``\ `` ``\ ``Files\boost\``\ |boost_ver|
 .. |bold-winroot-default| replace:: **C:\\Program Files\\boost\\**\ |boost_ver-bold|
 
 Introduction
@@ -663,13 +663,12 @@ Link to a Boost Library on Windows
 
 .. _auto-linking:
 
-Most Windows compilers and linkers have so called “auto-linking
-support,” which is used by many Boost libraries to eliminate the
-second challenge.  Special code in Boost header files detects your
-compiler options and uses that information to encode the name of
-the correct library into your object files; the linker selects the
-library with that name from the directories you've told it to
-search.
+Most Windows compilers and linkers have so-called “auto-linking
+support,” which eliminates the second challenge.  Special code in
+Boost header files detects your compiler options and uses that
+information to encode the name of the correct library into your
+object files; the linker selects the library with that name from
+the directories you've told it to search.
 
 Link to a Boost Library from the Visual Studio Command Prompt
 .............................................................
@@ -806,15 +805,16 @@ following elements:
   tagged as "-1_31_1".
 
 ``.lib``
-  *Extension*: determined according to the
-  operating system's usual convention.  On Windows, ``.dll``
-  indicates a shared library and ``.lib`` indicates a static or
-  import library.  On most \*nix platforms the extensions are
-  ``.a`` and ``.so`` for static libraries (archives) and shared
-  libraries, respectively.  Where supported by \*nix toolsets, a
-  full version extension is added (e.g. ".so.1.34"); a symbolic
-  link to the library file, named without the trailing version
-  number, will also be created.
+  *Extension*: determined according to the operating system's usual
+  convention.  On most \*nix platforms the extensions are ``.a``
+  and ``.so`` for static libraries (archives) and shared libraries,
+  respectively.  On Windows, ``.dll`` indicates a shared library
+  and—except for static libraries built by ``gcc`` toolset, whose
+  names always end in ``.a``— ``.lib`` indicates a static or import
+  library.  Where supported by \*nix toolsets, a full version
+  extension is added (e.g. ".so.1.34") and a symbolic link to the
+  library file, named without the trailing version number, will
+  also be created.
 
 .. _Boost.Build toolset names: toolset-name_
 
@@ -904,11 +904,11 @@ mailing list`_.
 
      -- the Boost Developers
 
-.. _Boost.Build reference manual: http://boost.org/tools/build/v2
-.. _Boost.Jam reference manual: http://boost.org/tools/jam
-.. _Boost Users' mailing list: http://boost.org/more/mailing_lists.htm#users
+.. _Boost.Build reference manual: ../tools/build/v2
+.. _Boost.Jam reference manual: `Boost.Jam`_
+.. _Boost Users' mailing list: mailing_lists.htm#users
 .. _Boost.Build Wiki: http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?Boost.Build_V2
-.. _Boost.Build mailing list: http://boost.org/more/mailing_lists.htm#jamboost
+.. _Boost.Build mailing list: mailing_lists.htm#jamboost
 
 
 .. _`Using command-line tools in Windows`:
