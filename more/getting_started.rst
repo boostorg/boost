@@ -23,7 +23,7 @@ __ ../index.htm
 
 .. |root| replace:: ``/``\ *path*\ ``/``\ *to*\ ``/``\ |boost_ver|
 .. |winroot| replace:: *path*\ ``\``\ *to*\ ``\``\ |boost_ver|
-.. |winroot-default| replace:: ``C:\Program``\ `` ``\ ``Files\boost\``\ |boost_ver|
+.. |winroot-default| replace:: ``C:\``\ ``Program`` ``Files\boost\``\ |boost_ver|
 .. |bold-winroot-default| replace:: **C:\\Program Files\\boost\\**\ |boost_ver-bold|
 
 Introduction
@@ -31,7 +31,7 @@ Introduction
 
 Welcome to the Boost libraries!  By the time you've completed this
 tutorial, you'll be at least somewhat comfortable with the contents
-of a Boost distribution and how to go about using it.  
+of a Boost distribution and how to go about using it.
 
 What's Here
 -----------
@@ -75,7 +75,7 @@ them for your own compiler or IDE.
 Get Boost
 =========
 
-There are basically three ways to get Boost on your system:
+To get Boost, choose one of the following methods:
 
 1. **Windows Installer**: Boost Consulting provides an installer_
    for Windows platforms that installs a complete Boost
@@ -89,7 +89,7 @@ There are basically three ways to get Boost on your system:
    .. _installer: `Windows installer`_
 
 
-2. **Download**: users of other platforms—and Windows
+2. **Source Download**: users of other platforms—and Windows
    users who prefer to build everything from scratch—can `download
    a complete Boost distribution`__ from SourceForge.
 
@@ -107,11 +107,13 @@ There are basically three ways to get Boost on your system:
    
         tar --bzip2 -xf */path/to/*\ |boost_ver|\ .tar.bz2
 
-3. **Boost packages** from RedHat, Debian, or some other
-   distribution packager: these instructions may not work for you
-   if you use 3rd party packages, because other packagers sometimes
-   choose to break Boost up into several packages or to reorganize
-   the directory structure of the Boost distribution. [#packagers]_
+3. **Boost packages** are available from RedHat, Debian, and other
+   distribution packagers.  You may need to adapt these
+   instructions if you use this method, because other packagers
+   usually choose to break Boost up into several packages,
+   reorganize the directory structure of the Boost distribution,
+   and/or rename the library binaries. [#packagers]_ If you have
+   trouble, we suggest going back to method 2.
 
 The Structure of a Boost Distribution
 =====================================
@@ -156,8 +158,8 @@ slashes with backslashes):
     ``boost/python.hpp``.
 
   * Most libraries place private headers in a subdirectory called
-    ``detail/`` or ``aux_/``.  Don't look in these directories and
-    expect to find anything you can use.
+    ``detail/`` or ``aux_/``.  Don't 
+    expect to find anything you can use in these directories.
 
 A few things are worth noting right off the bat:
 
@@ -206,7 +208,7 @@ Header-Only Libraries
 The first thing many people want to know is, “how do I build
 Boost?”  The good news is that often, there's nothing to build.
 
-.. admonition:: Nothing to Build
+.. admonition:: Nothing to Build?
 
   Most Boost libraries are **header-only**: they consist *entirely
   of header files* containing templates and inline functions, and
@@ -215,26 +217,28 @@ Boost?”  The good news is that often, there's nothing to build.
 
 .. _separate: 
 
-The only Boost libraries that can't be used without separate
-compilation are:
+The only Boost libraries that *must* be built separately are:
 
-* Boost.Filesystem
-* Boost.IOStreams
-* Boost.ProgramOptions
+* Boost.Filesystem_
+* Boost.IOStreams_
+* Boost.ProgramOptions_
 * Boost.Python_
-* Boost.Regex
-* Boost.Serialization
-* Boost.Signals
-* Boost.Test
-* Boost.Thread
-* Boost.Wave
+* Boost.Regex_
+* Boost.Serialization_
+* Boost.Signals_
+* Boost.Thread_
+* Boost.Wave_
 
-The DateTime library has a separately-compiled component that
-is only needed if you're using its to/from_string and/or
-serialization features or if you're targeting Visual C++ 6.x or
-Borland.  The Graph library also has a separately-compiled part,
-but you won't need it unless you intend to `parse GraphViz
-files`__.
+A few libraries have optional separately-compiled binaries:
+
+* Boost.DateTime_ has a binary component that is only needed if
+  you're using its ``to_string``\ /\ ``from_string`` or serialization
+  features, or if you're targeting Visual C++ 6.x or Borland.
+
+* Boost.Graph_ also has a binary component that is only needed if
+  you intend to `parse GraphViz files`__.
+
+* Boost.Test_ ... **Waiting for Gennadiy to tell me what to say here.**
 
 __ ../libs/graph/doc/read_graphviz.html
 
@@ -288,8 +292,84 @@ To test the result, type:
 
 __ `Errors and Warnings`_
 
-Build from the Visual Studio Command Prompt
--------------------------------------------
+Build on Windows
+----------------
+
+.. _`command prompt`:
+.. _`command-line tool`:
+
+.. sidebar:: The Windows Command Prompt
+   :class: small
+
+   In Windows, a command-line tool is invoked by typing its name,
+   optionally followed by arguments, into a *Command Prompt* window
+   and pressing the Return (or Enter) key.
+
+   To open *Command Prompt*, click the *Start* menu button, click
+   *Run*, type “cmd”, and then click *OK*.
+
+   All commands are executed within the context of a **current
+   directory** in the filesystem.  To set the current directory,
+   type:
+
+   .. parsed-literal::
+
+      cd *path*\ \\\ *to*\ \\\ *some*\ \\\ *directory*
+
+   followed by Return.  For example,
+
+   .. parsed-literal::
+
+      cd |winroot-default|
+
+   Long commands can be continued across several lines by typing a
+   caret (``^``) at the end of all but the last line.  Some examples
+   on this page use that technique to save horizontal space.
+
+To build the examples in this guide, you can use an Integrated
+Development Environment (IDE) like Visual Studio or you can follow
+a shorter path by issuing commands from the command prompt.
+
+.. _vs-header-only:
+
+From the Visual Studio IDE
+..........................
+
+* From Visual Studio's *File* menu, select *New* > *Project…*
+* In the left-hand pane of the resulting *New Project* dialog,
+  select *Visual C++* > *Win32*.
+* In the right-hand pane, select *Win32 Console Application*
+  (VS8.0) or *Win32 Console Project* (VS7.1).
+* In the *name* field, enter “example”
+* Right-click **example** in the *Solution Explorer* pane and
+  select *Properties* from the resulting pop-up menu
+* In *Configuration Properties* > *C/C++* > *General* > *Additional Include
+  Directories*, enter the path to the Boost root directory, for example
+
+    |winroot-default|
+
+* In *Configuration Properties* > *C/C++* > *Precompiled Headers*, change
+  *Use Precompiled Header (/Yu)* to *Not Using Precompiled
+  Headers*. [#pch]_
+* Replace the contents of the ``example.cpp`` generated by the IDE
+  with the example code above.
+* From the *Build* menu, select *Build Solution*.
+
+To test your application, hit the F5 key and type the following
+into the resulting window, followed by the return key::
+
+  1 2 3
+
+Then hold down the control key and press "Z", followed by the
+return key.
+
+|next|__
+
+__ `Errors and Warnings`_
+
+
+From the Command Prompt
+.......................
 
 From your computer's *Start* menu, if you are a Visual
 Studio 2005 user, select
@@ -308,48 +388,13 @@ hit the return key:
 
 .. parsed-literal::
 
-  cl /EHsc /I\ |winroot| *path*\ \\\ *to*\ \\example.cpp
+  cl /EHsc /I |winroot| *path*\ \\\ *to*\ \\example.cpp
 
 To test the result, type:
 
 .. parsed-literal::
 
   echo 1 2 3 | example
-
-|next|__
-
-__ `Errors and Warnings`_
-
-.. _vs-header-only:
-
-Build in the Visual Studio IDE
-------------------------------
-
-* From Visual Studio's *File* menu, select *New* > *Project…*
-* In the left-hand pane of the resulting *New Project* dialog,
-  select *Visual C++* > *Win32*.
-* In the right-hand pane, select *Win32 Console Application*
-  (VS8.0) or *Win32 Console Project* (VS7.1).
-* In the *name* field, enter “example”
-* Right-click **example** in the *Solution Explorer* pane and
-  select *Properties* from the resulting pop-up menu
-* In *Configuration Properties* > *C/C++* > *General* > *Additional Include
-  Directories*, enter the path to the Boost root directory, e.g. 
-  |winroot-default|.
-* In *Configuration Properties* > *C/C++* > *Precompiled Headers*, change
-  *Use Precompiled Header (/Yu)* to *Not Using Precompiled
-  Headers*. [#pch]_
-* Replace the contents of the ``example.cpp`` generated by the IDE
-  with the example code above.
-* From the *Build* menu, select *Build Solution*.
-
-To test your application, hit the F5 key and type the following
-into the resulting window, followed by the return key::
-
-  1 2 3
-
-Then hold down the control key and press "Z", followed by the
-return key.
 
 Errors and Warnings
 -------------------
@@ -363,8 +408,8 @@ this point in the tutorial, check to be sure you've copied the
 example program correctly and that you've correctly identified the
 Boost root directory.
 
-Get Boost Library Binaries
-==========================
+Prepare to Use a Boost Library Binary
+=====================================
 
 If you want to use any of the separately-compiled Boost libraries,
 you'll need library binaries.
@@ -399,14 +444,16 @@ directory, you'll probably want to at least use
 
   **$** ./configure **--prefix=**\ *path*\ /\ *to*\ /\ *installation*\ /\ *prefix* 
 
-to install somewhere else.  Finally,
+to install somewhere else.  Also, consider using the
+``--show-libraries`` and ``--with-libraries=`` options to limit the
+long wait you'll experience if you build everything.  Finally,
 
 .. parsed-literal::
 
   **$** make install
 
-which will leave Boost binaries in the ``lib/`` subdirectory of
-your installation prefix.  You will also find a copy of the Boost
+will leave Boost binaries in the ``lib/`` subdirectory of your
+installation prefix.  You will also find a copy of the Boost
 headers in the ``include/`` subdirectory of the installation
 prefix, so you can henceforth use that directory as an ``#include``
 path in place of the Boost root directory.
@@ -419,7 +466,7 @@ Build and Install Other Binaries
 --------------------------------
 
 If you're not using Visual C++ 7.1 or 8.0, or you're a \*nix user
-who wants want to build with a toolset other than your system's
+who wants to build with a toolset other than your system's
 default, or if you want a nonstandard variant build of Boost
 (e.g. optimized, but with debug symbols), you'll need to use
 Boost.Build_ to create your own binaries.
@@ -542,24 +589,23 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam **--build-dir=**\ |build-directory|_ **\\**
-       **--toolset=**\ |toolset-name|_ stage
+  bjam **--build-dir=**\ |build-directory|_ **--toolset=**\ |toolset-name|_ stage
 
-For example, on Windows, your session might look like:
+For example, on Windows, your session might look like this: [#continuation]_
 
 .. parsed-literal::
 
    C:\WINDOWS> cd |winroot-default|
-   |winroot-default|> bjam **\\**
-     **--build-dir=**\ %TEMP%\\build-boost          **\\**
-     **--toolset=msvc stage**
+   |winroot-default|> bjam **^**
+   More? **--build-dir=**\ %TEMP%\\build-boost **^**
+   More? **--toolset=**\ msvc stage
 
 And on Unix:
 
 .. parsed-literal::
 
    $ cd ~/|boost_ver|
-   $ bjam **--build-dir=**\ ~/build-boost **--prefix=**\ ~/boost
+   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc
 
 In either case, Boost.Build will place the Boost binaries in the
 ``stage/`` subdirectory of your `build directory`_.
@@ -571,6 +617,17 @@ For a description of other options you can pass when invoking
 ``bjam``, type::
 
   bjam --help
+
+In particular, to limit the amount of time spent building, you may
+be interested in:
+
+* reviewing the list of library names with ``--show-libraries``
+* limiting which libraries get built with the ``--with-``\
+  *library-name* or ``--without-``\ *library-name* options
+* choosing a specific build variant by adding ``release`` or
+  ``debug`` to the command line.
+
+
 
 Expected Build Output
 ---------------------
@@ -640,8 +697,6 @@ separately-compiled binary component. ::
       }
   }
 
-.. _Boost.Regex: ../libs/regex
-
 There are two main challenges associated with linking:
 
 1. Tool configuration, e.g. choosing command-line options or IDE
@@ -650,13 +705,6 @@ There are two main challenges associated with linking:
 2. Identifying the library binary, among all the build variants,
    whose compile configuration is compatible with the rest of your
    project.
-
-.. Note:: Boost.Python_ users should read that library's own `build
-   documentation`__ as there are several library-specific issues to
-   consider.
-
-.. _Boost.Python: ../libs/python/index.html
-__ ../libs/python/doc/building.html
 
 Link to a Boost Library on Windows
 ----------------------------------
@@ -706,7 +754,7 @@ __ vs-header-only_
 
 __ `Test Your Program`_
 
-Link to a Boost Library On \*nix
+Link to a Boost Library on \*nix
 --------------------------------
 
 There are two main ways to link to libraries:
@@ -895,6 +943,19 @@ mailing list`_.
 * `Boost Users' mailing list`_
 * `Boost.Build mailing list`_
 * `Boost.Build Wiki`_
+* Index of `All Library Documentation`_
+* Library-specific Configuration and Build Details
+
+  - Boost.Python__ 
+  
+     __ ../libs/python/doc/building.html
+
+  - **Library authors need to send me the links for their
+    libraries**
+
+
+
+.. _All Library Documentation: ../libs/index.html
 
 .. Admonition:: Onward
 
@@ -909,48 +970,6 @@ mailing list`_.
 .. _Boost Users' mailing list: mailing_lists.htm#users
 .. _Boost.Build Wiki: http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?Boost.Build_V2
 .. _Boost.Build mailing list: mailing_lists.htm#jamboost
-
-
-.. _`Using command-line tools in Windows`:
-.. _`command prompt`:
-.. _`command-line tool`:
-
-Appendix: Using command-line tools in Windows
-=============================================
-
-In Windows, a command-line tool is invoked by typing its name,
-optionally followed by arguments, into a *Command Prompt* window
-and pressing the Return (or Enter) key.
-
-To open *Command Prompt*, click the *Start* menu button, click
-*Run*, type “cmd”, and then click OK.
-
-All commands are executed within the context of a **current
-directory** in the filesystem.  To set the current directory,
-type:
-
-.. parsed-literal::
-
-   cd *path*\ \\\ *to*\ \\\ *some*\ \\\ *directory*
-
-followed by Return.  For example,
-
-.. parsed-literal::
-
-   cd |winroot-default|
-
-One way to name a directory you know about is to write
-
-.. parsed-literal::
-
-   %HOMEDRIVE%%HOMEPATH%\\\ *directory-name*
-
-which indicates a sibling folder of your “My Documents” folder.
-
-Long commands can be continued across several lines by typing
-backslashes at the ends of all but the last line.  Many of the
-examples on this page use that technique to save horizontal
-space.
 
 ------------------------------
 
@@ -979,6 +998,12 @@ space.
    where it's not worth the trouble.  Finally, some compilers don't
    have any source code mechanism for suppressing warnings.
 
+.. [#continuation] In this example, the caret character ``^`` is a
+   way of continuing the command on multiple lines.  The command
+   prompt responds with ``More?`` to prompt for more input.  Feel
+   free to omit the carets and subsequent newlines; we used them so
+   the example would fit on a page of reasonable width.
+
 .. [#pch] There's no problem using Boost with precompiled headers;
    these instructions merely avoid precompiled headers because it
    would require Visual Studio-specific changes to the source code
@@ -1002,3 +1027,15 @@ space.
    impossible to make it work transparently to the user; we don't
    recommend it.
 
+.. _Boost.DateTime: ../libs/date_time/index.html
+.. _Boost.Filesystem: ../libs/filesystem/index.html
+.. _Boost.Graph: ../libs/graph/index.html
+.. _Boost.IOStreams: ../libs/iostreams/index.html
+.. _Boost.ProgramOptions: ../libs/program_options/index.html
+.. _Boost.Python: ../libs/python/index.html
+.. _Boost.Regex: ../libs/regex/index.html
+.. _Boost.Serialization: ../libs/serialization/index.html
+.. _Boost.Signals: ../libs/signals/index.html
+.. _Boost.Test: ../libs/test/index.html
+.. _Boost.Thread: ../libs/thread/index.html
+.. _Boost.Wave: ../libs/wave/index.html
