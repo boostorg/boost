@@ -3710,6 +3710,23 @@ for more information.
             <toolset name="qcc-3.3*"/>
             <note author="Jim Douglas" date="13 Feb 06" refid="16"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_tss_lib"/>
+            <toolset name="*"/>
+            <note author="Roland Schwarz" date="2006-12-14">
+                When a thread ends, tss data needs to be cleaned up. This process
+                is mostly automatic. When threads are launched by the Boost.Thread API
+                cleanup is handled by the library implementation. For threads, launched
+                by the native operating system API it is not possible to get this cleanup
+                on every compiler/platform. A warning (error) will be present in this case,
+                which cleary states this fact. It is recommended to start threads only
+                by means of the Boost.Thread API if you need to avoid the leaks that appear
+                on the end of the thread. If this is not possible the cleanup can be invoked
+                from user code before the process actually ends. For library implementors
+                this means to call these functions during library initialization and 
+                finalization.   
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- tuple -->
