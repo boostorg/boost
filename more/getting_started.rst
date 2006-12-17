@@ -238,7 +238,8 @@ A few libraries have optional separately-compiled binaries:
 * Boost.Graph_ also has a binary component that is only needed if
   you intend to `parse GraphViz files`__.
 
-* Boost.Test_ ... **Waiting for Gennadiy to tell me what to say here.**
+* Boost.Test_ can be used in “header-only” or “separately compiled”
+  mode, although separate compilation is recommended for serious use.
 
 __ ../libs/graph/doc/read_graphviz.html
 
@@ -728,7 +729,7 @@ in |winroot-default|\ ``\lib``:
 
 .. parsed-literal::
 
-   cl /EHsc /I |winroot| example.cpp   **\\**
+   cl /EHsc /I |winroot| example.cpp   **^**
         **/link /LIBPATH:** |bold-winroot-default|\ **\\lib**
 
 |next|__
@@ -943,7 +944,7 @@ mailing list`_.
 * `Boost Users' mailing list`_
 * `Boost.Build mailing list`_
 * `Boost.Build Wiki`_
-* Index of `All Library Documentation`_
+* `Index of all Boost library documentation`_
 * Library-specific Configuration and Build Details
 
   - Boost.Python__ 
@@ -955,7 +956,7 @@ mailing list`_.
 
 
 
-.. _All Library Documentation: ../libs/index.html
+.. _Index of all Boost library documentation: ../libs/index.html
 
 .. Admonition:: Onward
 
