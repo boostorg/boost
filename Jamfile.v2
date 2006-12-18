@@ -127,6 +127,26 @@ else
         ;
 }
 
+
+rule handle-static-runtime ( properties * )
+{    
+    # This property combination is dangerous.
+    # Ideally, we'd add constraint to default build,
+    # so that user can build with property combination
+    # by hand. But we don't have any 'constraint' mechanism
+    # for default-build, so disable such builds in requirements.
+    
+    # For CW, static runtime is needed so that
+    # std::locale works.
+    if <link>shared in $(properties)
+      && <runtime-link>static in $(properties)
+        && ! ( <toolset>cw in $(properties) )    
+    {
+        return <build>no ;
+    }
+}
+
+
 project boost
     : requirements <include>.
       # disable auto-linking for all targets here,
@@ -135,12 +155,7 @@ project boost
       # Used to encode variant in target name. See the
       # 'tag' rule below.
       <tag>@$(__name__).tag
-      # This property combination is dangerous.
-      # Ideally, we'd add constraint to default build,
-      # so that user can build with property combination
-      # by hand. But we don't have any 'constraint' mechanism
-      # for default-build, so disable such builds in requirements.
-      <link>shared,<runtime-link>static:<build>no
+      <conditional>@handle-static-runtime
             
     : usage-requirements <include>.
     : build-dir bin.v2
