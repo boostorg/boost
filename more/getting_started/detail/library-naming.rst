@@ -64,15 +64,15 @@ following elements:
 
 ``.lib``
   *Extension*: determined according to the operating system's usual
-  convention.  On most \*nix platforms the extensions are ``.a``
-  and ``.so`` for static libraries (archives) and shared libraries,
-  respectively.  On Windows, ``.dll`` indicates a shared library
-  and—except for static libraries built by ``gcc`` toolset, whose
-  names always end in ``.a``— ``.lib`` indicates a static or import
-  library.  Where supported by \*nix toolsets, a full version
-  extension is added (e.g. ".so.1.34") and a symbolic link to the
-  library file, named without the trailing version number, will
-  also be created.
+  convention.  On most unix-style platforms the extensions are
+  ``.a`` and ``.so`` for static libraries (archives) and shared
+  libraries, respectively.  On Windows, ``.dll`` indicates a shared
+  library and (except for static libraries built by the ``gcc``
+  toolset, whose names always end in ``.a``) ``.lib`` indicates a
+  static or import library.  Where supported by toolsets on unix
+  variants, a full version extension is added (e.g. ".so.1.34") and
+  a symbolic link to the library file, named without the trailing
+  version number, will also be created.
 
 .. _Boost.Build toolset names: toolset-name_
 
