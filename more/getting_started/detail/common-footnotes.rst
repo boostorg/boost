@@ -16,7 +16,7 @@
 
 .. [#debug-abi] These libraries were compiled without optimization
    or inlining, with full debug symbols enabled, and without
-   ``NDEBUG`` ``#define``\ d.  All though it's true that sometimes
+   ``NDEBUG`` ``#define``\ d.  Although it's true that sometimes
    these choices don't affect binary compatibility with other
    compiled code, you can't count on that with Boost libraries.
 
