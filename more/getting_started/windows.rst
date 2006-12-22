@@ -249,14 +249,6 @@ in |default-root|\ ``\lib``:
    cl /EHsc /I |root| example.cpp   **^**
         **/link /LIBPATH:** |default-root-bold|\ **\\lib**
 
-
-.. Note:: If—like Visual C++—your compiler supports auto-linking,
-  you can probably ignore the next section.
-
-  |next|__
-
-  __ `Test Your Program`_
-
 Library Naming
 --------------
 
