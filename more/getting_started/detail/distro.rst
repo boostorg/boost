@@ -5,7 +5,7 @@
 The Boost Distribution
 ======================
 
-This is is a sketch of the directory structure you'll end up with: 
+This is a sketch of the resulting directory structure:
 
 .. parsed-literal::
 
@@ -79,7 +79,7 @@ It's important to note the following:
 
      #include "boost/\ *whatever*\ .hpp"
 
-   depending on your religion as regards the use of angle bracket
+   depending on your preference regarding the use of angle bracket
    includes.  |forward-slashes|
 
 4. Don't be distracted by the ``doc``\ |/| subdirectory; it only
