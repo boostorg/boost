@@ -250,6 +250,16 @@ PYTHON_ROOT ?= $(python-root) ;
 # Select the libraries to install.
 libraries = [ libraries-to-install $(all-libraries) ] ;
 
+if --show-libraries in [ modules.peek : ARGV ]
+{
+    ECHO "The following libraries require building:" ;
+    for local l in $(libraries)
+    {
+        ECHO "    - $(l)" ;
+    }
+    EXIT ;
+}
+
 # Custom build ID.
 local build-id = [ MATCH "^--buildid=(.*)" : [ modules.peek : ARGV ] ] ;
 if $(build-id)
