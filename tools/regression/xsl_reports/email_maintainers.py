@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2005 The Trustees of Indiana University 
+# Copyright (C) 2005, 2007 The Trustees of Indiana University 
 # Author: Douglas Gregor
 #
 # Distributed under the Boost Software License, Version 1.0. (See
@@ -368,13 +368,11 @@ class Report:
         Compose a message to send to the Boost developer's
         list. Return the message and return it.
         """
-        message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
+        message = """From: Douglas Gregor <dgregor@osl.iu.edu>
 To: boost@lists.boost.org
 Reply-To: boost@lists.boost.org
-Subject: Boost regression notification ("""
-
-        message += str(datetime.date.today()) + " [" + branch + "]"
-        message += ")"
+Subject: [Report] """
+        message += str(self.numFailures()) + " regressions on " + branch
 
         message += """
 
