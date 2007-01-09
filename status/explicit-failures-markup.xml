@@ -358,25 +358,28 @@
 
     <!-- concept_check -->
     <library name="concept_check">
-        <test name="class_concept_fail_expected">
+        <mark-expected-failures>
+            <test name="class_concept_fail_expected">
             <mark-failure>
                 <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="3"/>
             </mark-failure>
         </test>
-	<mark-expected-failures>
           <test name="class_concept_fail_expected">
-	  <toolset name="borland-5*"/>
+              <mark-failure>
+                  <toolset name="borland-5*"/>
 	  <toolset name="msvc-6.5*"/>
 	  <toolset name="msvc-7.0"/>
 	  <note author="Jeremy Siek"/>
-	</mark-expected-failures>
+              </mark-failure>
+          </test>
         <test name="stl_concept_covering">
             <mark-failure>
                 <toolset name="*"/>
                 <note author="Jeremy Siek" refid="1"/>
             </mark-failure>
         </test>
+        </mark-expected-failures>
     </library>
 
     <!-- config -->
