@@ -5,18 +5,17 @@
       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
       <LINK href="../boost.css" type="text/css" rel="stylesheet"></head>
    <body>
-
-         <TABLE summary="Page header" id="Table1" cellSpacing="1" cellPadding="1" width="100%" border="0">
-            <TR>
-               <td vAlign="top" width="300">
-                  <h3><A href="../index.htm"><IMG height="86" alt="C++ Boost" src="../boost.png" width="277" border="0"></A></h3>
-               </td>
-               <TD width="353">
-                  <H1 align="center">Guidelines for Authors of Boost Libraries Containing Separate 
-                     Source</H1>
-               </TD>
-            </TR>
-         </TABLE>
+      <TABLE summary="Page header" id="Table1" cellSpacing="1" cellPadding="1" width="100%" border="0">
+         <TR>
+            <td vAlign="top" width="300">
+               <h3><A href="../index.htm"><IMG height="86" alt="C++ Boost" src="../boost.png" width="277" border="0"></A></h3>
+            </td>
+            <TD width="353">
+               <H1 align="center">Guidelines for Authors of Boost Libraries Containing Separate 
+                  Source</H1>
+            </TD>
+         </TR>
+      </TABLE>
       <BR>
       <HR>
       <P>These guidelines are designed for the authors of Boost libraries which have 
@@ -25,24 +24,23 @@
          occurrences of "whatever" or "WHATEVER" with your own library's name when 
          copying the examples.</P>
       <H2>Contents</H2>
-
-         <dl class="index">
-            <dt><A href="#source_changes">Changes Affecting Source Code</A>
-               <dd>
-                  <dl class="index">
-                     <dt><A href="#abi">Preventing Compiler ABI Clashes</A> <dt><A href="#dlls">Supporting 
-                              Windows Dll's</A> <dt><a href="#auto-link">Automatic Library Selection and Linking 
-                                 with auto_link.hpp</a> </dt>
-                  </dl>
-                  <dt><A href="#build_changes">Changes Affecting the Build System</A>
-                     <dd>
-                        <dl class="index">
-                           <dt><A href="#jamfile">Creating the Library Jamfile</A> <dt><A href="#testing">Testing 
-                                    Auto-linking</A> </dt>
-                        </dl>
-                        <dt><A href="#copyright">Copyright</A></dt>
-         </dl>
-
+      <dl class="index">
+         <dt><A href="#source_changes">Changes Affecting Source Code</A>
+            <dd>
+               <dl class="index">
+                  <dt><A href="#abi">Preventing Compiler ABI Clashes</A> <DT><A href="#static_or_dynamic">Static 
+                           or Dymanic Libraries</A>&nbsp; <dt><A href="#dlls">Supporting Windows Dll's</A> <dt>
+                              <a href="#auto-link">Automatic Library Selection and Linking with auto_link.hpp</a>
+                           </dt>
+               </dl>
+               <dt><A href="#build_changes">Changes Affecting the Build System</A>
+                  <dd>
+                     <dl class="index">
+                        <dt><A href="#jamfile">Creating the Library Jamfile</A> <dt><A href="#testing">Testing 
+                                 Auto-linking</A> </dt>
+                     </dl>
+                     <dt><A href="#copyright">Copyright</A></dt>
+      </dl>
       <h2><A name="source_changes"></A>Changes Affecting Source Code</h2>
       <H3><A name="abi"></A>Preventing Compiler ABI Clashes</H3>
       <P>There are some compilers (mostly Microsoft Windows compilers again!), which 
@@ -103,10 +101,19 @@ whatever get_whatever();
 
 #endif
 </PRE>
-      <P>You can include this code in your source files as well if you want - although 
-         you probably shouldn't need to - these headers fix the ABI to the default used 
-         by the compiler, and if the user attempts to compile the source with any other 
-         setting then they will get compiler errors if there are any conflicts.</P>
+      <P>You can include this code in your library source files as well if you want, 
+         although you probably shouldn't need to:&nbsp;&nbsp;</P>
+      <UL>
+         <LI>
+            If you <EM>don't</EM>
+         use these in the library source files (but do in your library's headers) and 
+         the user attempts to compile the library source with a non-default ABI setting, 
+         then they will get compiler errors if there are any conflicts.
+         <LI>
+            If you <EM>do </EM>include them in both the library's headers and the library 
+            source files, then the code should always compile no matter what the compiler 
+            settings used, although the result might not match what the user was expecting: 
+            since we've forced the ABI back into default mode.</LI></UL>
       <H4>Rationale:</H4>
       <P>Without some means of managing this issue, users often report bugs along the 
          line of "Your silly library always crashes when I try and call it" and so on. 
@@ -124,7 +131,38 @@ whatever get_whatever();
          shared_ptr.hpp also uses them. Authors of header-only boost libraries may not 
          be so keen on this solution - with some justification - since they don't face 
          the same problem.</P>
-      <h3><A name="dlls"></A>Supporting Windows Dll's</h3>
+      <H3><A name="static_or_dynamic"></A>Static or Dynamic Libraries</H3>
+      <P>When the users runtime is dynamically linked the Boost libraries can be built 
+         either as dynamic libraries (.so's on Unix platforms, .dll's on Windows) or as 
+         static libraries (.a's on Unix, .lib's on Windows).&nbsp; So we have a choice 
+         as to which is supported by default:</P>
+      <UL>
+         <LI>
+         On Unix platforms it typically makes no difference to the code: the user just 
+         selects in their makesfile which library they prefer to link to.
+         <LI>
+         On Windows platforms, the code has to be specially annotated to support DLL's, 
+         so we need to pick one option as the default and one as an alternative.
+         <LI>
+            On Windows platforms, we can inject special code to automatically select which 
+            library variant to link against: so again we need to decide which is to be the 
+            default (see the section on auto-linking below).</LI></UL>
+      <P>The recomendation is to pick static linking by default.</P>
+      <H4>Rationale:</H4>
+      <P>There is no one policy that fits all here.
+      </P>
+      <P>The rationale for the current behaviour was inherited from Boost.Regex (and 
+         it's ancestor regex++): this library&nbsp;originally used dynamic linking by 
+         default whenever the runtime was dynamic. It's actually safer that way should 
+         you be using regex from a dll for example. However,&nbsp;this 
+         behavior&nbsp;brought a persistent stream of user complaints: mainly about 
+         deployment, all asking if static linking could be the default. After&nbsp;regex 
+         changed behavior the complaints stopped, and the author hasn't had one 
+         complaint about static linking by default being the wrong choice.</P>
+      <P>Note that other libraries might need to make other choices: for example 
+         libraries that are intended to be used to implement dll pluggin's would like 
+         need to use dynamic linking in almost all cases.</P>
+      <H3>Supporting Windows Dll's</H3>
       <p>On most Unix-like platforms no special annotations of source code are required 
          in order for that source to be compiled as a shared library because all 
          external symbols are exposed. However the majority of Windows compilers require 
@@ -311,7 +349,6 @@ libboost_regex-vc71-sgd-1_31.lib
 #include &lt;boost/config/auto_link.hpp&gt;
 #endif  // auto-linking disabled
 </pre>
-
       <p>The library's user documentation should note that the feature can be disabled 
          by defining either BOOST_ALL_NO_LIB or BOOST_WHATEVER_NO_LIB:</p>
       <P>If for any reason you need to debug this feature, the header 
@@ -320,132 +357,27 @@ libboost_regex-vc71-sgd-1_31.lib
       <H2><A name="build_changes"></A>Changes Affecting the Build System</H2>
       <H3><a name="build"></a><A name="jamfile"></A>Creating the library Jamfile</H3>
       <P>The Jamfile for building library "whatever" typically lives in 
-         boost-root/libs/whatever/build, start by defining the project root for the 
-         Jamfile:</P>
-      <PRE>subproject libs/whatever/build ; </PRE>
-      <P>Then add the static library build target (if supported):</P>
-      <PRE>lib 
-   boost_whatever
-      : # list all the sources for this
-      library:
-   ../src/whatever.cpp
-      : # all build requirements go
-      here. # the "common-variant-tag" rule ensures that the library will
-      # be named according to the rules used by the install
-      # and auto-link features:
-      common-variant-tag 
-      # set include path for Boost headers:
-      &lt;sysinclude&gt;$(BOOST_ROOT)
-   : 
-      # list default build variants here
-      debug release 
-   ; </PRE>
-      <P>Then add the dll build target (if supported).&nbsp;&nbsp;In this case the build 
-         requirements section get an extra define: so that our sources know to export 
-         their own symbols (and import those from any other boost libs on which we may 
-         be dependent).&nbsp; We also restict shared library builds to dynamic-runtime 
-         build variants, if we don't do this then dll's linked against static runtimes 
-         are unlikely to function correctly (the dll will have a separate runtime from 
-         the executable using it, this generally causing problems with new and 
-         delete,&nbsp;as well as exception handling runtimes).</P>
-      <PRE>dll 
-   boost_whatever
-      : # list all the sources for this
-      library:
-   ../src/whatever.cpp
-      : # all build requirements go
-      here. # the "common-variant-tag" rule ensures that the library will
-      # be named according to the rules used by the install
-      # and auto-link features:
-      common-variant-tag 
-      # tell our source that we're building (and maybe using) dll's:
-      &lt;define&gt;BOOST_ALL_DYN_LINK=1
-      # only build this for dynamic runtimes:
-      &lt;runtime-link&gt;dynamic
-      # set include path for Boost headers:
-      &lt;sysinclude&gt;$(BOOST_ROOT)
-   : 
-      # list default build variants here
-      debug release 
-   ; 
-</PRE>
-      <P>Now add an install target so that Boost.Install can find this library to 
-         install:</P>
-      <pre>install whatever lib
-    : &lt;dll&gt;boost_whatever &lt;lib&gt;boost_whatever
-    ;
-</pre>
-      <P>Finally add a stage target that will copy the built libraries to a common 
-         sub-directory (boost-root/stage/lib):</P>
-      <PRE>stage stage/lib : &lt;lib&gt;boost_whatever &lt;dll&gt;boost_whatever
-    :
-        # copy to a path rooted at BOOST_ROOT:
-        &lt;locate&gt;$(BOOST_ROOT)
-        # make sure the names of the libraries are correctly named:
-        common-variant-tag
-        # add this target to the "stage" and "all" psuedo-targets:
-        &lt;target&gt;stage
-        &lt;target&gt;all
-    :
-        debug release
-    ;
-</PRE>
+         boost-root/libs/whatever/build, the only extra step required is to add a 
+         &lt;define&gt; requirement to the library target so that your code knows 
+         whether it's building a dll or static library, a typical Jamfile would like 
+         like this:</P>
+      <PRE>
+lib boost_regex : ../src/whatever.cpp : 
+  &lt;link&gt;shared:&lt;define&gt;BOOST_WHATEVER_DYN_LINK=1 ;
+ </PRE>
       <H3><A name="testing"></A>Testing Auto-linking</H3>
-      <P>Testing the auto-link feature&nbsp;reasonable straightforward using 
-         the&nbsp;Boost.build system: we need to build the "whatever" library's test 
-         files without explicitly specifying the library to link to in the Jamfile, for 
-         example:</P>
-      <PRE>subproject libs/whatever/test/auto-link-test ;
-
-# bring in the rules for testing
-import testing ;
-
-# start with a static linking version:
-
-run 
-   # sources
-      ../whatever_test.cpp
-   :
-   :	# input files
-   : 	# requirements
-      &lt;library-path&gt;../../../../stage/lib
-      &lt;define&gt;BOOST_LIB_DIAGNOSTIC=1
-   : 	# program name
-      whatever_test          
-   ;
-
-   # and then a dll linking version:
-   run 
-   # sources
-      ../whatever_test.cpp
-   :
-   :	# input files
-   : 	# requirements
-      &lt;library-path&gt;../../../../stage/lib
-      &lt;define&gt;BOOST_LIB_DIAGNOSTIC=1
-      &lt;define&gt;BOOST_ALL_DYN_LINK=1
-      &lt;runtime-link&gt;dynamic
-   : 	# program name
-      whatever_test_dll          
-   ;
-
-</PRE>
-      <P>Please note however that this Jamfile will only build with compilers that do 
-         actually support auto-linking, so it should not be added to the regular 
-         regression tests.&nbsp; The Jamfile should also be built for all possible build 
-         variants, for the Microsoft / Borland compilers that means doing a:</P>
-      <PRE>bjam -sBUILD="release debug &lt;threading&gt;multi/single &lt;runtime-link&gt;static/dynamic" test
-      </PRE>
+      <P>Testing the auto-link feature&nbsp;is somewhat convoluted, and requires access 
+         to a compiler that supports the feature: refer to <A href="../libs/config/test/link/test/Jamfile.v2">
+            libs/config/test/link/test/Jamfile.v2</A> for an example.</P>
       <HR>
       <p><A name="copyright"></A>Revised 
-         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan --> 
+         <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
          26 November, 2003<!--webbot bot="Timestamp" endspan i-checksum="39365" --></p>
       <p><i>© Copyright John Maddock&nbsp;1998- 
             <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%Y" startspan -->  2003<!--webbot bot="Timestamp" endspan i-checksum="746" --></i></p>
-      <P><I>Distributed under the Boost Software License, Version 1.0. (See
-            accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy
-            at <a href=
-            "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</I></P>
+      <P><I>Distributed under the Boost Software License, Version 1.0. (See accompanying 
+            file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy at <a href="http://www.boost.org/LICENSE_1_0.txt">
+               http://www.boost.org/LICENSE_1_0.txt</a>)</I></P>
       <P><EM>The use of code snippets from this article does not require the reproduction 
             of this copyright notice and license declaration; if you wish to provide 
             attribution then please provide a link to this article.</EM></P>
