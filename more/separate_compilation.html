@@ -105,10 +105,10 @@ whatever get_whatever();
          although you probably shouldn't need to:&nbsp;&nbsp;</P>
       <UL>
          <LI>
-            If you <EM>don't</EM> use these in the library source files (but do in your 
-            library's headers) and the user attempts to compile the library source with a 
-            non-default ABI setting, then they will get compiler errors if there are any 
-            conflicts.</LI>
+            If you <EM>don't</EM>
+         use these in the library source files (but do in your library's headers) and 
+         the user attempts to compile the library source with a non-default ABI setting, 
+         then they will get compiler errors if there are any conflicts.
          <LI>
             If you <EM>do </EM>include them in both the library's headers and the library 
             source files, then the code should always compile no matter what the compiler 
@@ -138,11 +138,11 @@ whatever get_whatever();
          as to which is supported by default:</P>
       <UL>
          <LI>
-            On Unix platforms it typically makes no difference to the code: the user just 
-            selects in their makesfile which library they prefer to link to.</LI>
+         On Unix platforms it typically makes no difference to the code: the user just 
+         selects in their makesfile which library they prefer to link to.
          <LI>
-            On Windows platforms, the code has to be specially annotated to support DLL's, 
-            so we need to pick one option as the default and one as an alternative.</LI>
+         On Windows platforms, the code has to be specially annotated to support DLL's, 
+         so we need to pick one option as the default and one as an alternative.
          <LI>
             On Windows platforms, we can inject special code to automatically select which 
             library variant to link against: so again we need to decide which is to be the 
@@ -357,122 +357,18 @@ libboost_regex-vc71-sgd-1_31.lib
       <H2><A name="build_changes"></A>Changes Affecting the Build System</H2>
       <H3><a name="build"></a><A name="jamfile"></A>Creating the library Jamfile</H3>
       <P>The Jamfile for building library "whatever" typically lives in 
-         boost-root/libs/whatever/build, start by defining the project root for the 
-         Jamfile:</P>
-      <PRE>subproject libs/whatever/build ; </PRE>
-      <P>Then add the static library build target (if supported):</P>
-      <PRE>lib 
-   boost_whatever
-      : # list all the sources for this
-      library:
-   ../src/whatever.cpp
-      : # all build requirements go
-      here. # the "common-variant-tag" rule ensures that the library will
-      # be named according to the rules used by the install
-      # and auto-link features:
-      common-variant-tag 
-      # set include path for Boost headers:
-      &lt;sysinclude&gt;$(BOOST_ROOT)
-   : 
-      # list default build variants here
-      debug release 
-   ; </PRE>
-      <P>Then add the dll build target (if supported).&nbsp;&nbsp;In this case the build 
-         requirements section get an extra define: so that our sources know to export 
-         their own symbols (and import those from any other boost libs on which we may 
-         be dependent).&nbsp; We also restict shared library builds to dynamic-runtime 
-         build variants, if we don't do this then dll's linked against static runtimes 
-         are unlikely to function correctly (the dll will have a separate runtime from 
-         the executable using it, this generally causing problems with new and 
-         delete,&nbsp;as well as exception handling runtimes).</P>
-      <PRE>dll 
-   boost_whatever
-      : # list all the sources for this
-      library:
-   ../src/whatever.cpp
-      : # all build requirements go
-      here. # the "common-variant-tag" rule ensures that the library will
-      # be named according to the rules used by the install
-      # and auto-link features:
-      common-variant-tag 
-      # tell our source that we're building (and maybe using) dll's:
-      &lt;define&gt;BOOST_ALL_DYN_LINK=1
-      # only build this for dynamic runtimes:
-      &lt;runtime-link&gt;dynamic
-      # set include path for Boost headers:
-      &lt;sysinclude&gt;$(BOOST_ROOT)
-   : 
-      # list default build variants here
-      debug release 
-   ; 
-</PRE>
-      <P>Now add an install target so that Boost.Install can find this library to 
-         install:</P>
-      <pre>install whatever lib
-    : &lt;dll&gt;boost_whatever &lt;lib&gt;boost_whatever
-    ;
-</pre>
-      <P>Finally add a stage target that will copy the built libraries to a common 
-         sub-directory (boost-root/stage/lib):</P>
-      <PRE>stage stage/lib : &lt;lib&gt;boost_whatever &lt;dll&gt;boost_whatever
-    :
-        # copy to a path rooted at BOOST_ROOT:
-        &lt;locate&gt;$(BOOST_ROOT)
-        # make sure the names of the libraries are correctly named:
-        common-variant-tag
-        # add this target to the "stage" and "all" psuedo-targets:
-        &lt;target&gt;stage
-        &lt;target&gt;all
-    :
-        debug release
-    ;
-</PRE>
+         boost-root/libs/whatever/build, the only extra step required is to add a 
+         &lt;define&gt; requirement to the library target so that your code knows 
+         whether it's building a dll or static library, a typical Jamfile would like 
+         like this:</P>
+      <PRE>
+lib boost_regex : ../src/whatever.cpp : 
+  &lt;link&gt;shared:&lt;define&gt;BOOST_WHATEVER_DYN_LINK=1 ;
+ </PRE>
       <H3><A name="testing"></A>Testing Auto-linking</H3>
-      <P>Testing the auto-link feature&nbsp;reasonable straightforward using 
-         the&nbsp;Boost.build system: we need to build the "whatever" library's test 
-         files without explicitly specifying the library to link to in the Jamfile, for 
-         example:</P>
-      <PRE>subproject libs/whatever/test/auto-link-test ;
-
-# bring in the rules for testing
-import testing ;
-
-# start with a static linking version:
-
-run 
-   # sources
-      ../whatever_test.cpp
-   :
-   :	# input files
-   : 	# requirements
-      &lt;library-path&gt;../../../../stage/lib
-      &lt;define&gt;BOOST_LIB_DIAGNOSTIC=1
-   : 	# program name
-      whatever_test          
-   ;
-
-   # and then a dll linking version:
-   run 
-   # sources
-      ../whatever_test.cpp
-   :
-   :	# input files
-   : 	# requirements
-      &lt;library-path&gt;../../../../stage/lib
-      &lt;define&gt;BOOST_LIB_DIAGNOSTIC=1
-      &lt;define&gt;BOOST_ALL_DYN_LINK=1
-      &lt;runtime-link&gt;dynamic
-   : 	# program name
-      whatever_test_dll          
-   ;
-
-</PRE>
-      <P>Please note however that this Jamfile will only build with compilers that do 
-         actually support auto-linking, so it should not be added to the regular 
-         regression tests.&nbsp; The Jamfile should also be built for all possible build 
-         variants, for the Microsoft / Borland compilers that means doing a:</P>
-      <PRE>bjam -sBUILD="release debug &lt;threading&gt;multi/single &lt;runtime-link&gt;static/dynamic" test
-      </PRE>
+      <P>Testing the auto-link feature&nbsp;is somewhat convoluted, and requires access 
+         to a compiler that supports the feature: refer to <A href="../libs/config/test/link/test/Jamfile.v2">
+            libs/config/test/link/test/Jamfile.v2</A> for an example.</P>
       <HR>
       <p><A name="copyright"></A>Revised 
          <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan --> 
@@ -487,4 +383,3 @@ run
             attribution then please provide a link to this article.</EM></P>
    </body>
 </html>
-
