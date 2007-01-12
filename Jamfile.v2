@@ -95,6 +95,7 @@ import regex ;
 import errors ;
 import "class" : new ;
 import common ;
+import sequence ;
 
 constant BOOST_VERSION : 1.35.0 ;
 
@@ -165,8 +166,10 @@ project boost
 # Setup convenient aliases for all libraries.
 
 all-libraries =
-    [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] ]
+    [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] [ glob libs/*/build/Jamfile ] ]
     ;
+    
+all-libraries = [ sequence.unique $(all-libraries) ] ;    
 
 # First, the complicated libraries: where the target name in
 # Jamfile is different from directory name.
