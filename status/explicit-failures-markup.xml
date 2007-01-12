@@ -3732,13 +3732,18 @@ for more information.
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
-
+        <!--
+        It is unclear why this has been marked as expected failure. The
+        pthread_timedwait is giving an error code of EINVAL, which needs to
+        be resolved, since the timed behaviour is affected by this bug.
+        Marked as a failure again by Roland Schwarz, 2007-01-12
         <mark-expected-failures>
             <test name="test_mutex"/>
             <test name="test_mutex_lib"/>
             <toolset name="qcc-3.3*"/>
             <note author="Jim Douglas" date="13 Feb 06" refid="16"/>
         </mark-expected-failures>
+        -->
         <mark-expected-failures>
             <test name="test_tss_lib"/>
             <toolset name="borland-*"/>
