@@ -13,11 +13,11 @@ That's it! You don't even need a CVS client installed.
 Installation
 ------------
 
-* Download regression driver ``regression.py`` from here__ (http://tinyurl.com/4fp4g)
+* Download regression driver ``regression.py`` from here__ (http://tinyurl.com/uufav)
   and put it in the directory where you want all the regression 
   test files to be placed.
 
-__ http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/tools/regression/xsl_reports/runner/regression.py
+__ http://boost.cvs.sourceforge.net/*checkout*/boost/boost/tools/regression/xsl_reports/runner/regression.py
 
 
 * **Optional**: If you already have ``bjam`` and/or ``process_jam_log`` executables
