@@ -59,25 +59,27 @@ def make_test_log( xml_generator
                                   , "target-directory": target_directory
                                   , "show-run-output": show_run_output
                                   } )
-    if test_type ==  "run":
+
+    if test_type != "lib":
         xml_generator.startElement( "compile", { "result": "success" } );
         xml_generator.characters( "Compiling in %s" % target_directory )
         xml_generator.endElement( "compile" )
 
-        
-        xml_generator.startElement( "lib", { "result": test_result } );
-        xml_generator.characters( make_library_target_directory( library_idx, toolset_idx ) )
-        xml_generator.endElement( "lib" )
+        if test_type.find( "link" ) == 0 or test_type.find( "run" ) == 0:
+            xml_generator.startElement( "lib", { "result": test_result } );
+            xml_generator.characters( make_library_target_directory( library_idx, toolset_idx ) )
+            xml_generator.endElement( "lib" )
 
-        xml_generator.startElement( "link", { "result": "success" } );
-        xml_generator.characters( "Linking in %s" % target_directory )
-        xml_generator.endElement( "link" )
+            xml_generator.startElement( "link", { "result": "success" } );
+            xml_generator.characters( "Linking in %s" % target_directory )
+            xml_generator.endElement( "link" )
 
-        xml_generator.startElement( "run", { "result": test_result } );
-        xml_generator.characters( "Running in %s" % target_directory )
-        xml_generator.endElement( "run" )
+        if test_type.find( "run" ) == 0:
+            xml_generator.startElement( "run", { "result": test_result } );
+            xml_generator.characters( "Running in %s" % target_directory )
+            xml_generator.endElement( "run" )
 
-    if test_type ==  "lib":
+    else:
         xml_generator.startElement( "compile", { "result": test_result } );
         xml_generator.characters( "Compiling in %s" % make_library_target_directory( library_idx, toolset_idx ) )
         xml_generator.endElement( "compile" )
