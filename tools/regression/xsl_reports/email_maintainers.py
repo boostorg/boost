@@ -373,7 +373,7 @@ To: boost@lists.boost.org
 Reply-To: boost@lists.boost.org
 Subject: [Report] """
         message += str(self.numFailures()) + " regressions on " + branch
-        message += " (" + self.date + ")"
+        message += " (" + str(datetime.date.today()) + ")"
         message += """
 
 Boost Regression test failures
