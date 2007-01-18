@@ -29,8 +29,8 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="test_log"/>
         <xsl:variable name="type" select="$test_log/@test-type"/>
         <func:result select="( ( $type='compile' or $type='compile_fail' ) and count( $test_log/compile ) > 0 )
-                          or ( ( $type='link' or $type='link_fail' ) and count( $test_log/compile ) > 0 and count( $test_log/link ) > 0 )
-                          or ( count( $test_log/compile ) > 0 and count( $test_log/link ) > 0 and count( $test_log/run ) > 0 )
+                          or ( ( $type='link' or $type='link_fail' ) and count( $test_log/link ) > 0 )
+                          or ( count( $test_log/run ) > 0 )
                           "/>
     </func:function>
 
@@ -54,9 +54,10 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:element name="{local-name()}">
             <xsl:apply-templates select="@*"/>
 
+            <xsl:variable name="has_failures" select="./*/@result = 'fail'"/>
             <xsl:variable name="actual_result">
                 <xsl:choose>
-                    <xsl:when test="./*/@result = 'fail' or not( $is_complete )" >
+                    <xsl:when test="$has_failures or not( $is_complete )" >
                         <xsl:text>fail</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
@@ -216,7 +217,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                         </xsl:choose>
                     </xsl:if>
 
-                    <xsl:if test="not( $is_complete )">
+                    <xsl:if test="not( $is_complete ) and not( $has_failures )">
                         <note>
                             <span class="internal-error-note">
                                 <b>[Reporting Tools Internal Error]</b> This test case's XML is missing one or more log entries

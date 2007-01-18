@@ -75,7 +75,7 @@ def make_test_log( xml_generator
             xml_generator.characters( "Linking in %s" % target_directory )
             xml_generator.endElement( "link" )
 
-        if test_type.find( "run" ) == 0 and toolset_idx % 4:
+        if test_type.find( "run" ) == 0 and ( toolset_idx + 2 ) % 4:
             xml_generator.startElement( "run", { "result": test_result } );
             xml_generator.characters( "Running in %s" % target_directory )
             xml_generator.endElement( "run" )
