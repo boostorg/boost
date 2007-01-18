@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (c) MetaCommunications, Inc. 2003-2006
+# Copyright (c) MetaCommunications, Inc. 2003-2007
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
@@ -657,13 +657,14 @@ def upload_logs(
         , user
         , ftp_proxy
         , debug_level
+        , send_bjam_log
         , **unused
         ):
     import_utils()
     from runner import upload_logs
     retry(
           upload_logs
-        , ( regression_results, runner, tag, user, ftp_proxy, debug_level )
+        , ( regression_results, runner, tag, user, ftp_proxy, debug_level, send_bjam_log )
         )
 
 
@@ -719,6 +720,7 @@ def regression(
         , bjam_toolset
         , pjl_toolset
         , incremental
+        , send_bjam_log
         , force_update
         , monitored
         , timeout
@@ -763,7 +765,7 @@ def regression(
                v2, [] )
         test( toolsets, bjam_options, monitored, timeout, v2, [] )
         collect_logs( tag, runner, platform, user, comment, incremental, [] )
-        upload_logs( tag, runner, user, ftp_proxy, debug_level )
+        upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log )
         update_itself( tag )
 
         if mail:
@@ -820,6 +822,7 @@ def accept_args( args ):
         , 'debug-level='
         , 'incremental'
         , 'force-update'
+        , 'send-bjam-log'
         , 'monitored'
         , 'help'
         , 'v2'
@@ -863,6 +866,7 @@ def accept_args( args ):
         , 'bjam_toolset'    : options[ '--bjam-toolset' ]
         , 'pjl_toolset'     : options[ '--pjl-toolset' ]
         , 'incremental'     : options.has_key( '--incremental' )
+        , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
         , 'force_update'    : options.has_key( '--force-update' )
         , 'monitored'       : options.has_key( '--monitored' )
         , 'timeout'         : options[ '--timeout' ]
@@ -903,6 +907,8 @@ Options:
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
+\t--send-bjam-log in addition to regular XML results, send in full bjam
+\t                log of the regression run
 \t--force-update  do a CVS update (if applicable) instead of a clean
 \t                checkout, even when performing a full run
 \t--monitored     do a monitored run

@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2004
+# Copyright (c) MetaCommunications, Inc. 2003-2007
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -87,6 +87,31 @@ def copy_comments( results_xml, comment_file ):
     results_xml.endElement( 'comment' )
 
 
+def compress_file( file_path, archive_path ):
+    utils.log( 'Compressing "%s"...' % file_path )
+
+    try:
+        z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
+        z.write( file_path, os.path.basename( file_path ) )
+        z.close()
+        utils.log( 'Done writing "%s".'% archive_path )
+    except Exception, msg:
+        utils.log( 'Warning: Compressing falied (%s)' % msg )
+        utils.log( '         Trying to compress using a platform-specific tool...' )
+        try: import zip_cmd
+        except ImportError:
+            script_dir = os.path.dirname( os.path.abspath( sys.argv[0] ) )
+            utils.log( 'Could not find \'zip_cmd\' module in the script directory (%s).' % script_dir )
+            raise Exception( 'Compressing failed!' )
+        else:
+            if os.path.exists( archive_path ):
+                os.unlink( archive_path )
+                utils.log( 'Removing stale "%s".' % archive_path )
+                
+            zip_cmd.main( file_path, archive_path )
+            utils.log( 'Done compressing "%s".' % archive_path )
+
+
 def collect_logs( 
           results_dir
         , runner_id
@@ -133,29 +158,10 @@ def collect_logs(
     results_writer.close()
     utils.log( 'Done writing "%s".' % results_file )
 
-    utils.log( 'Compressing "%s"...' % results_file )
-    archive_path = os.path.join( results_dir,'%s.zip' % runner_id )
-
-    try:
-        z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
-        z.write( results_file, os.path.basename( results_file ) )
-        z.close()
-        utils.log( 'Done writing "%s".'% archive_path )
-    except Exception, msg:
-        utils.log( 'Warning: Compressing falied (%s)' % msg )
-        utils.log( '         Trying to compress using a platform-specific tool...' )
-        try: import zip_cmd
-        except ImportError:
-            script_dir = os.path.dirname( os.path.abspath( sys.argv[0] ) )
-            utils.log( 'Could not find \'zip_cmd\' module in the script directory (%s).' % script_dir )
-            raise Exception( 'Compressing failed!' )
-        else:
-            if os.path.exists( archive_path ):
-                os.unlink( archive_path )
-                utils.log( 'Removing stale "%s".' % archive_path )
-                
-            zip_cmd.main( results_file, archive_path )
-            utils.log( 'Done compressing "%s".' % archive_path )
+    compress_file(
+          results_file
+        , os.path.join( results_dir,'%s.zip' % runner_id )
+        )
 
 
 def upload_logs(
@@ -165,11 +171,16 @@ def upload_logs(
         , user
         , ftp_proxy
         , debug_level
+        , send_bjam_log
         , **unused
         ):
 
     logs_archive = os.path.join( results_dir, '%s.zip' % runner_id )
     upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level )
+    if send_bjam_log:
+        logs_archive = os.path.join( results_dir, '%s.log.zip' % runner_id )
+        compress_file( os.path.join( results_dir, 'bjam.log' ), logs_archive )
+        upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level )
 
 
 def collect_and_upload_logs( 
@@ -215,6 +226,7 @@ def accept_args( args ):
         , 'user='
         , 'ftp-proxy='
         , 'debug-level='
+        , 'send-bjam-log'
         , 'help'
         ]
     
@@ -244,6 +256,7 @@ def accept_args( args ):
         , 'run_type'        : options[ '--run-type' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
+        , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
         }
 
 
@@ -271,6 +284,8 @@ Options:
 \t--source        where Boost sources came from (e.g. "CVS", "tarball",
 \t                "anonymous CVS"; "CVS" by default)
 \t--run-type      "incremental" or "full" ("full" by default)
+\t--send-bjam-log in addition to regular XML results, send in full bjam
+\t                log of the regression run
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
 \t--debug-level   debugging level; controls the amount of debugging 
 \t                output printed; 0 by default (no debug output)
