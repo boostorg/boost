@@ -171,7 +171,7 @@ def upload_logs(
         , user
         , ftp_proxy
         , debug_level
-        , send_bjam_log
+        , send_bjam_log = False
         , **unused
         ):
 
