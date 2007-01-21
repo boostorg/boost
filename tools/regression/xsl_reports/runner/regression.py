@@ -664,7 +664,7 @@ def upload_logs(
     from runner import upload_logs
     retry(
           upload_logs
-        , ( regression_results, runner, tag, user, ftp_proxy, debug_level, send_bjam_log )
+        , ( regression_results, runner, tag, user, ftp_proxy, debug_level, send_bjam_log, timestamp_path )
         )
 
 
