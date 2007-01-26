@@ -46,6 +46,12 @@ toolset=gcc
 # The content of this file will be embedded in the status pages being produced.
 #
 comment_path="$boost_root/../regression_comment.html"
+#
+# "test_dir" is the relative path to the directory to run the tests in,
+# defaults to "status" and runs all the tests, but could be a sub-directory
+# for example "libs/regex/test" to run the regex tests alone.
+#
+test_dir="status"
 
 
 ### DEFAULTS ARE OK FOR THESE.
@@ -63,15 +69,15 @@ exe_suffix=
 # The location of the binary for running bjam. The default should work
 # under most circumstances.
 #
-bjam="$boost_root/tools/build/jam_src/bin/bjam$exe_suffix"
+bjam="$boost_root/tools/jam/src/bin/bjam$exe_suffix"
 
 #
 # "process_jam_log", and "compiler_status" paths to built helper programs:
 # The location of the executables of the regression help programs. These
 # are built locally so the default should work in most situations.
 #
-process_jam_log="$boost_root/tools/regression/build/run/process_jam_log$exe_suffix"
-compiler_status="$boost_root/tools/regression/build/run/compiler_status$exe_suffix"
+process_jam_log="$boost_root/dist/bin/process_jam_log$exe_suffix"
+compiler_status="$boost_root/dist/bin/compiler_status$exe_suffix"
 
 #
 # "boost_build_path" can point to additional locations to find toolset files.
@@ -121,7 +127,7 @@ fi
 # rebuild bjam if required:
 #
 echo building bjam:
-cd "$boost_root/tools/build/jam_src" && \
+cd "$boost_root/tools/jam/src" && \
 LOCATE_TARGET=bin sh ./build.sh
 if test $? != 0 ; then
     echo "bjam build failed."
@@ -134,7 +140,7 @@ fi
 #
 echo building regression test helper programs:
 cd "$boost_root/tools/regression/build" && \
-"$bjam" -sTOOLS=$toolset -sBUILD=release run
+"$bjam" $toolset release
 if test $? != 0 ; then
     echo "helper program build failed."
     exit 256
@@ -151,15 +157,15 @@ for tool in $test_tools ; do
 # run the regression tests:
 #
 echo running the $tool regression tests:
-cd "$boost_root/status"
-"$bjam" -sTOOLS=$tool --dump-tests test 2>&1 | tee regress.log
+cd "$boost_root/$test_dir"
+"$bjam" $tool --dump-tests 2>&1 | tee regress.log
 
 #
 # STEP 4:
 # post process the results:
 #
 echo processing the regression test results for $tool:
-cat regress.log | "$process_jam_log"
+cat regress.log | "$process_jam_log" --v2
 if test $? != 0 ; then
     echo "Failed regression log post processing."
     exit 256
@@ -173,11 +179,13 @@ done
 #
 uname=`uname`
 echo generating html tables:
-"$compiler_status" --comment "$comment_path" "$boost_root" cs-$uname.html cs-$uname-links.html
+"$compiler_status" --v2  --comment "$comment_path" "$boost_root" cs-$uname.html cs-$uname-links.html
 if test $? != 0 ; then
     echo "Failed HTML result table generation."
     exit 256
 fi
 
 echo "done!"
+
+
 
