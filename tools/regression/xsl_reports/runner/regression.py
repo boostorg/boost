@@ -866,7 +866,7 @@ def accept_args( args ):
         , 'bjam_toolset'    : options[ '--bjam-toolset' ]
         , 'pjl_toolset'     : options[ '--pjl-toolset' ]
         , 'incremental'     : options.has_key( '--incremental' )
-        , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
+        , 'send_bjam_log'   : not options.has_key( '--dont-send-bjam-log' )
         , 'force_update'    : options.has_key( '--force-update' )
         , 'monitored'       : options.has_key( '--monitored' )
         , 'timeout'         : options[ '--timeout' ]
