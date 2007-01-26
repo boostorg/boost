@@ -907,8 +907,8 @@ Options:
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
-\t--send-bjam-log in addition to regular XML results, send in full bjam
-\t                log of the regression run
+\t--dont-send-bjam-log 
+\t                do not send full bjam log of the regression run
 \t--force-update  do a CVS update (if applicable) instead of a clean
 \t                checkout, even when performing a full run
 \t--monitored     do a monitored run
