@@ -346,6 +346,13 @@
             <toolset name="msvc-7.0"/>
             <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="mem_fn_eq_test"/>
+          <toolset name="msvc-7.1"/>
+          <note author="Peter Dimov">
+            This failure is only present in release mode and is caused by /OPT:ICF.
+          </note>
+        </mark-expected-failures>
     </library>
 
 
@@ -355,6 +362,14 @@
             <mark-failure>
                 <toolset name="cw-8.3*"/>
                 <note author="B. Dawes" refid="3"/>
+            </mark-failure>
+        </test>
+        <test name="class_concept_fail_expected">
+            <mark-failure>
+                <toolset name="borland-5*"/>
+                <toolset name="msvc-6.5*"/>
+                <toolset name="msvc-7.0"/>
+                <note author="Jeremy Siek"/>
             </mark-failure>
         </test>
         <test name="stl_concept_covering">
@@ -1095,6 +1110,13 @@
             </note>
         </mark-unusable>
         <mark-expected-failures>
+          <test name="fstream_test"/>
+          <toolset name="msvc-6.5*"/>
+          <note author="Beman Dawes">
+              fstream for this compiler has serious problems and is not supported
+          </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
           <test name="operations_test_dll"/>
           <test name="path_test_dll"/>
           <toolset name="borland-5.6.4"/>
@@ -1522,6 +1544,16 @@
             <toolset name="msvc-7.0"/>
             <toolset name="gcc-2.95.3*"/>
             <note author="Jonathan Turkanis" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="finite_state_filter_test"/>
+          <toolset name="cw-9.4"/>
+          <note author="Jonathan Turkanis" date="20 Dec 06">
+            I'm not sure whether CodeWarrior is correct to report that the member 
+            in question is inaccessible; however, when the member is made public
+            an internal error occur that I have not been able to fix, so for
+            now the question is moot.
+          </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="mapped_file_test"/>
@@ -2342,6 +2374,8 @@ for more information.
         <mark-expected-failures>
             <test name="*_native"/>
             <toolset name="acc"/>
+            <toolset name="vc-8_0*"/>
+            <toolset name="msvc-8.0*"/>
             <toolset name="intel-vc71-win*"/>
             <toolset name="intel-vc8-win*"/>
             <toolset name="como-4_3_3-vc7_1"/>
@@ -3411,20 +3445,20 @@ for more information.
             use and building of dll's mainly.
             </note>
         </mark-expected-failures>
-       <mark-expected-failures>
-          <test name="regex_regress_threaded"/>
-          <toolset name="gcc-*_tru64"/>
-          <note author="J. Maddock">
-             GCC on tru64 appears not to cope with C++ exceptions
-             thrown from within threads.
-          </note>
-       </mark-expected-failures>
-       <test name="concept_check">
+        <mark-expected-failures>
+            <test name="regex_regress_threaded"/>
+            <toolset name="gcc-*_tru64"/>
+            <note author="J. Maddock">
+              GCC on tru64 appears not to cope with C++ exceptions
+              thrown from within threads.
+            </note>
+        </mark-expected-failures>
+        <test name="concept_check">
             <mark-failure>
                 <toolset name="msvc-8.0"/>
                 <toolset name="sunpro-5_3-sunos"/>
                 <toolset name="sun-5.8"/>
-                <toolset name="borland-5_8_2"/>
+                <toolset name="borland-5.8.2"/>
                 <toolset name="qcc-3.3.5_cpp"/>
                 <note author="John Maddock" refid="2"/>
             </mark-failure>
@@ -3452,13 +3486,6 @@ for more information.
             <note author="John Maddock" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="unicode_iterator_test"/>
-            <toolset name="borland-5.6.4"/>
-            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
-            <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
-            <note author="John Maddock" refid="6"/>
-        </mark-expected-failures>
-       <mark-expected-failures>
           <test name="regex_regress"/>
           <test name="regex_regress_threaded"/>
           <test name="regex_regress_dll"/>
@@ -3467,8 +3494,25 @@ for more information.
              There appears to be a linker bug that prevents these
              projects from building, see http://qc.borland.com/wc/qcmain.aspx?d=32020.
           </note>
-       </mark-expected-failures>
-       <mark-expected-failures>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="unicode_iterator_test"/>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="gcc-2.95.3-stlport-4.5.3-linux"/>
+            <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
+            <note author="John Maddock" refid="6"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="regex_regress"/>
+          <test name="regex_regress_threaded"/>
+          <test name="regex_regress_dll"/>
+          <toolset name="borland*"/>
+          <note author="John Maddock">
+             There appears to be a linker bug that prevents these
+             projects from building, see http://qc.borland.com/wc/qcmain.aspx?d=32020.
+          </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="regex_timer"/>
             <toolset name="msvc-6.5_stlport4"/>
             <note author="John Maddock">
@@ -3698,17 +3742,23 @@ for more information.
             <toolset name="gcc-2.95.3-stlport-4.6.2-linux"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
         </mark-expected-failures>
-
+        <!--
+        It is unclear why this has been marked as expected failure. The
+        pthread_timedwait is giving an error code of EINVAL, which needs to
+        be resolved, since the timed behaviour is affected by this bug.
+        Marked as a failure again by Roland Schwarz, 2007-01-12
         <mark-expected-failures>
             <test name="test_mutex"/>
             <test name="test_mutex_lib"/>
             <toolset name="qcc-3.3*"/>
             <note author="Jim Douglas" date="13 Feb 06" refid="16"/>
         </mark-expected-failures>
-    
+        -->
         <mark-expected-failures>
             <test name="test_tss_lib"/>
-            <toolset name="*"/>
+            <toolset name="borland-*"/>
+            <toolset name="cw-9.4"/>
+            <toolset name="gcc-mingw*"/>
             <note author="Roland Schwarz" date="2006-12-14">
                 When a thread ends, tss data needs to be cleaned up. This process
                 is mostly automatic. When threads are launched by the Boost.Thread API
@@ -4116,9 +4166,10 @@ for more information.
             <test name="tr1_is_abstract_test"/>
             <toolset name="gcc-3.3.*"/>
             <toolset name="gcc-3.2*"/>
+            <toolset name="qcc-3.3*"/>
             <note author="John Maddock">
                These tests fail due to a known compiler bug 
-               that is fixed in more recent releases.  Users are
+               that is fixed in more recent GNU compiler releases.  Users are
                very unlikely to encounter this as a real problem 
                in practice.
             </note>
@@ -4258,6 +4309,7 @@ for more information.
                 <toolset name="gcc-3.2*"/>
                 <toolset name="gcc-3.3*"/>
                 <toolset name="gcc-3_3*"/>
+                <toolset name="qcc-3_3*"/>
                 <toolset name="sunpro-5_3-sunos"/>
                 <toolset name="tru64cxx65*"/>
                 <toolset name="hp_cxx-65*"/>
