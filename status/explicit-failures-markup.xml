@@ -4540,6 +4540,18 @@ for more information.
                 versions of the compiler (VC 7.1 and greater).
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="operators_test"/>
+            <toolset name="gcc-3.4.5_linux_x86_64"/>
+            <note author="Vladimir Prus">
+                The test takes more that 30 minutes to compile and the
+                compilation is automatically killed. It is likely caused
+                by the compiler bug, but it unknown how much this
+                bug affects regular use of the operators library. Is it
+                also unknown if the test can be refactored so that
+                not to trigger this bug.
+            </note>
+        </mark-expected-failures>
     </library>
 
 
