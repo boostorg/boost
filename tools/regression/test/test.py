@@ -51,7 +51,7 @@ def list_recursively( dir ):
 def find_process_jam_log():
     root = "../../../"
     
-    for root, dirs, files in os.walk( os.path.join( root, "bin" ), topdown=False ):
+    for root, dirs, files in os.walk( os.path.join( root, "bin.v2" ), topdown=False ):
         if "process_jam_log.exe" in files:
             return os.path.abspath( os.path.normpath( os.path.join( root, "process_jam_log.exe" ) ) )
         if "process_jam_log" in files:
@@ -61,9 +61,11 @@ def find_process_jam_log():
 def process_jam_log( executable, file, locate_root, results_dir ):
     args = []
     args.append( executable )
-    args.append( "--results-dir" )
-    args.append( results_dir )
+    # args.append( '--echo' )
+    args.append( '--create-directories' )
+    args.append( '--v2' )
     args.append( locate_root )
+    args.append( '<' )
     args.append( file )
 
     cmd = " ".join( args )
@@ -80,50 +82,98 @@ def read_file( file_path ):
 
 def remove_timestamps( log_lines ):
     return [ re.sub( "timestamp=\"[^\"]+\"", "timestamp=\"\"", x ) for x in log_lines ]    
-    
+
+def determine_locate_root( bjam_log ):
+    locate_root = None
+    f = open( 'bjam.log' )
+    try:
+        locate_root_re = re.compile( r'locate-root\s+"(.*)"' )
+        for l in f.readlines():
+            m = locate_root_re.match( l )
+            if m:
+                locate_root = m.group(1)
+                break
+    finally:
+        f.close()
+    return locate_root
+
+def read_file( path ):    
+    f = open( path )
+    try:
+        return f.read()
+    finally:
+        f.close()
+
+def read_file_lines( path ):    
+    f = open( path )
+    try:
+        return f.readlines()
+    finally:
+        f.close()
+
+def write_file( path, content ):    
+    f = open( path, 'w' )
+    try:
+        return f.write( content )
+    finally:
+        f.close()
+
+def write_file_lines( path, content ):    
+    f = open( path, 'w' )
+    try:
+        return f.writelines( content )
+    finally:
+        f.close()
+
+        
 def run_test_cases( test_cases ):
     process_jam_log_executable = find_process_jam_log()
+    print 'Found process_jam_log: %s' % process_jam_log_executable
+    initial_dir = os.getcwd()
     for test_case in test_cases:
+        os.chdir( initial_dir )
         print 'Running test case "%s"' % test_case
         os.chdir( test_case )
         if os.path.exists( "expected" ):
+            locate_root = determine_locate_root( 'bjam.log' )
+            print 'locate_root: %s' % locate_root
+            
             actual_results_dir = os.path.join( test_case, "actual" )
-            f = open( "locate_root.txt" ) 
-            try:
-                locate_root = f.read().splitlines()[0]
-            finally:
-                f.close()
-
             clean_dir( "actual" )
             os.chdir( "actual" )
-            process_jam_log( executable = process_jam_log_executable
-                             , results_dir = "."
-                             , locate_root = locate_root
-                             , file="..\\bjam.log" )
-            os.chdir( ".." )
-
-            actual_content = list_recursively( "actual" )
+            root = os.getcwd()
+            i = 0
+            while 1:
+                if i == 0:
+                    bjam_log_file = 'bjam.log'
+                else:
+                    bjam_log_file = 'bjam.log.%0d' % i
+                i += 1
+                print 'Looking for %s' % bjam_log_file
+                if not os.path.exists( os.path.join( '..', bjam_log_file ) ):
+                    print '    does not exists'
+                    break
+                print '    found'
+                write_file_lines(bjam_log_file.replace( 'bjam', 'bjam_' ), 
+                                 [ x.replace( locate_root, root  ) for x in read_file_lines( os.path.join( '..', bjam_log_file ) ) ]  )
+                
+                process_jam_log( executable = process_jam_log_executable
+                                 , results_dir = "."
+                                 , locate_root = root 
+                                 , file=bjam_log_file.replace( 'bjam', 'bjam_' ) )
+            
+            actual_content = list_recursively( "." )
             actual_content.sort()
-
-            expected_content = list_recursively( "expected" )
-            expected_content.sort()
-
-            structure_diffs = list( difflib.unified_diff( actual_content, expected_content ) )
-            if ( len( structure_diffs ) > 0 ):
-                raise "Actual results are different from expected \n %s" % "\n".join( structure_diffs )
-            else:
-                for i in range( 0, len( actual_content ) ):
-                    expected_file = os.path.join( "expected", expected_content[ i ] )
-                    actual_file = os.path.join( "actual", actual_content[ i ] )
-                    
-                    print "Comparing %s to %s" % ( expected_file, actual_file )
-                    if ( not os.path.isdir( expected_file ) and not os.path.isdir( actual_file ) ):
-                        expected = remove_timestamps( read_file( expected_file ).splitlines() )
-                        actual = remove_timestamps( read_file( actual_file ).splitlines() )
-                        content_diff = list( difflib.unified_diff( expected, actual ) )
-                        if ( len( content_diff ) > 0 ):
-                            raise "difference \n%s" % "\n".join( content_diff )
-                                         
+            result_xml = []
+            for test_log in [ x for x in actual_content if os.path.splitext( x )[1] == '.xml' ]:
+                print 'reading %s' % test_log
+                result = [ re.sub( r'timestamp="(.*)"', 'timestamp="xxx"', x ) for x in read_file_lines( test_log ) ]
+                result_xml.extend( result )
+                
+            write_file_lines( 'results.xml', result_xml )
+            os.chdir( '..' )
+            assert read_file( 'expected/results.xml' ) == read_file( 'actual/results.xml' )
+            os.chdir( '..' )
         else:
             raise '   Test case "%s" doesn\'t contain the expected results directory ("expected" )' % ( test_case )
         
