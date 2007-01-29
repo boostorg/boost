@@ -1,19 +1,5 @@
 drop table [test-log]
 go
-CREATE TABLE [test-log] 
-    (
-    [runner] [varchar] (32) NOT NULL ,
-	[timestamp] [varchar] (32) NOT NULL ,
-	[test-name] [varchar] (64) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[test-run] [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[test-type] [varchar] (16) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[test-program] [varchar] (1024) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[target-directory] [varchar] (1024) NOT NULL ,
-    [library] varchar(64)
-    PRIMARY KEY ( runner, timestamp, [target-directory] )
-    ) 
-GO
-
 drop table [test-run] 
 go
 CREATE TABLE [test-run] (
@@ -27,6 +13,24 @@ CREATE TABLE [test-run] (
     ) 
 GO
 
+go
+CREATE TABLE [test-log] 
+    (
+    [runner] [varchar] (32) NOT NULL ,
+	[timestamp] [varchar] (32) NOT NULL ,
+	[test-name] [varchar] (64) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[test-run] [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[test-type] [varchar] (16) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[test-program] [varchar] (512) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[target-directory] [varchar] (512) NOT NULL ,
+    [library] varchar(64)
+    PRIMARY KEY ( runner, timestamp, [target-directory] )
+    ) 
+GO
+
+alter table [test-log]  add CONSTRAINT parent FOREIGN KEY ( runner, timestamp ) REFERENCES [test-run] ( runner, timestamp )
+
+go
 drop table [compile] 
 go
 create table [compile]
@@ -36,7 +40,6 @@ create table [compile]
     [output] [text],
 	[timestamp] [varchar] (32) NULL ,
     result [varchar] (16)
-    
     )    
 
 
