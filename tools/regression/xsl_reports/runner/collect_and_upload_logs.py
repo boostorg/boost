@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2004
+# Copyright (c) MetaCommunications, Inc. 2003-2007
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -87,58 +87,12 @@ def copy_comments( results_xml, comment_file ):
     results_xml.endElement( 'comment' )
 
 
-def collect_logs( 
-          results_dir
-        , runner_id
-        , tag
-        , platform
-        , comment_file
-        , timestamp
-        , user
-        , source
-        , run_type
-        , **unused
-        ):
-    
-    results_file = os.path.join( results_dir, '%s.xml' % runner_id )
-    results_writer = open( results_file, 'w' )
-    utils.log( 'Collecting test logs into "%s"...' % results_file )
-    
-    if not os.path.exists( timestamp ):
-        t = time.gmtime()
-        utils.log( 'Warning: timestamp file "%s" does not exist'% timestamp )
-        utils.log( 'Using current UTC time (%s)' % t )
-    else:
-        t = time.gmtime( os.stat( timestamp ).st_mtime )
-    
-    results_xml = xml.sax.saxutils.XMLGenerator( results_writer )
-    results_xml.startDocument()
-    results_xml.startElement( 
-          'test-run'
-        , { 
-              'tag':        tag
-            , 'platform':   platform
-            , 'runner':     runner_id
-            , 'timestamp':  time.strftime( '%Y-%m-%dT%H:%M:%SZ', t )
-            , 'source':     source
-            , 'run-type':   run_type
-            }
-        )
-    
-    copy_comments( results_xml, comment_file )
-    collect_test_logs( [ results_dir ], results_writer )
-
-    results_xml.endElement( "test-run" )
-    results_xml.endDocument()
-    results_writer.close()
-    utils.log( 'Done writing "%s".' % results_file )
-
-    utils.log( 'Compressing "%s"...' % results_file )
-    archive_path = os.path.join( results_dir,'%s.zip' % runner_id )
+def compress_file( file_path, archive_path ):
+    utils.log( 'Compressing "%s"...' % file_path )
 
     try:
         z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
-        z.write( results_file, os.path.basename( results_file ) )
+        z.write( file_path, os.path.basename( file_path ) )
         z.close()
         utils.log( 'Done writing "%s".'% archive_path )
     except Exception, msg:
@@ -154,8 +108,63 @@ def collect_logs(
                 os.unlink( archive_path )
                 utils.log( 'Removing stale "%s".' % archive_path )
                 
-            zip_cmd.main( results_file, archive_path )
+            zip_cmd.main( file_path, archive_path )
             utils.log( 'Done compressing "%s".' % archive_path )
+
+
+def read_timestamp( file ):
+    if not os.path.exists( file ):
+        result = time.gmtime()
+        utils.log( 'Warning: timestamp file "%s" does not exist'% file )
+        utils.log( 'Using current UTC time (%s)' % result )
+        return result
+
+    return time.gmtime( os.stat( file ).st_mtime )
+
+
+def collect_logs( 
+          results_dir
+        , runner_id
+        , tag
+        , platform
+        , comment_file
+        , timestamp_file
+        , user
+        , source
+        , run_type
+        , **unused
+        ):
+    
+    results_file = os.path.join( results_dir, '%s.xml' % runner_id )
+    results_writer = open( results_file, 'w' )
+    utils.log( 'Collecting test logs into "%s"...' % results_file )
+        
+    results_xml = xml.sax.saxutils.XMLGenerator( results_writer )
+    results_xml.startDocument()
+    results_xml.startElement( 
+          'test-run'
+        , { 
+              'tag':        tag
+            , 'platform':   platform
+            , 'runner':     runner_id
+            , 'timestamp':  time.strftime( '%Y-%m-%dT%H:%M:%SZ', read_timestamp( timestamp_file ) )
+            , 'source':     source
+            , 'run-type':   run_type
+            }
+        )
+    
+    copy_comments( results_xml, comment_file )
+    collect_test_logs( [ results_dir ], results_writer )
+
+    results_xml.endElement( "test-run" )
+    results_xml.endDocument()
+    results_writer.close()
+    utils.log( 'Done writing "%s".' % results_file )
+
+    compress_file(
+          results_file
+        , os.path.join( results_dir,'%s.zip' % runner_id )
+        )
 
 
 def upload_logs(
@@ -165,11 +174,22 @@ def upload_logs(
         , user
         , ftp_proxy
         , debug_level
+        , send_bjam_log = False
+        , timestamp_file = None
         , **unused
         ):
 
     logs_archive = os.path.join( results_dir, '%s.zip' % runner_id )
     upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level )
+    if send_bjam_log:
+        bjam_log_path = os.path.join( results_dir, 'bjam.log' )
+        if not timestamp_file:
+            timestamp_file = bjam_log_path
+
+        timestamp = time.strftime( '%Y-%m-%d-%H-%M-%S', read_timestamp( timestamp_file ) )
+        logs_archive = os.path.join( results_dir, '%s.%s.log.zip' % ( runner_id, timestamp ) )
+        compress_file( bjam_log_path, logs_archive )
+        upload_to_ftp( '%s/logs' % tag, logs_archive, ftp_proxy, debug_level )
 
 
 def collect_and_upload_logs( 
@@ -178,12 +198,13 @@ def collect_and_upload_logs(
         , tag
         , platform
         , comment_file
-        , timestamp
+        , timestamp_file
         , user
         , source
         , run_type
         , ftp_proxy = None
         , debug_level = 0
+        , send_bjam_log = False
         , **unused
         ):
     
@@ -193,13 +214,22 @@ def collect_and_upload_logs(
         , tag
         , platform
         , comment_file
-        , timestamp
+        , timestamp_file
         , user
         , source
         , run_type
         )
     
-    upload_logs( results_dir, runner_id, tag, user, ftp_proxy, debug_level )
+    upload_logs(
+          results_dir
+        , runner_id
+        , tag
+        , user
+        , ftp_proxy
+        , debug_level
+        , send_bjam_log
+        , timestamp_file
+        )
 
 
 def accept_args( args ):
@@ -215,6 +245,7 @@ def accept_args( args ):
         , 'user='
         , 'ftp-proxy='
         , 'debug-level='
+        , 'send-bjam-log'
         , 'help'
         ]
     
@@ -226,8 +257,8 @@ def accept_args( args ):
         , '--user'          : None
         , '--source'        : 'CVS'
         , '--run-type'      : 'full'
-        , '--debug-level'   : 0
         , '--ftp-proxy'     : None
+        , '--debug-level'   : 0
         }
     
     utils.accept_args( args_spec, args, options, usage )
@@ -238,12 +269,13 @@ def accept_args( args ):
         , 'tag'             : options[ '--tag' ]
         , 'platform'        : options[ '--platform']
         , 'comment_file'    : options[ '--comment' ]
-        , 'timestamp'       : options[ '--timestamp' ]
+        , 'timestamp_file'  : options[ '--timestamp' ]
         , 'user'            : options[ '--user' ]
         , 'source'          : options[ '--source' ]
         , 'run_type'        : options[ '--run-type' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
+        , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
         }
 
 
@@ -271,6 +303,8 @@ Options:
 \t--source        where Boost sources came from (e.g. "CVS", "tarball",
 \t                "anonymous CVS"; "CVS" by default)
 \t--run-type      "incremental" or "full" ("full" by default)
+\t--send-bjam-log in addition to regular XML results, send in full bjam
+\t                log of the regression run
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
 \t--debug-level   debugging level; controls the amount of debugging 
 \t                output printed; 0 by default (no debug output)
