@@ -59,6 +59,7 @@ def write_file_lines( path, content ):
 def make_test_case( test_case ):
     def test_case_method( self ):
         for test_case_xml in test_case.xml_data_files():
+            print test_case_xml
             result_file_name = os.path.splitext( os.path.basename( test_case_xml ) )[0] + '.xml'
             ( result_file, expected_file ) = [ os.path.join( test_case.path(), x, result_file_name ) for x in ( 'actual', 'expected' ) ]
             print ( result_file, expected_file )
