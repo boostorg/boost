@@ -89,6 +89,33 @@ namespace
       if ( *itr == '\\' || *itr == '!' ) *itr = '/';
   }
 
+//  trim_left ----------------------------------------------------------------//
+
+  std::string trim_left( std::string const& s )
+  {
+    std::string::size_type const pos( s.find_first_not_of(' ') );
+    return pos != std::string::npos
+        ? s.substr( pos, s.size() - pos + 1 )
+        : ""
+        ;
+  }
+  
+
+//  split --------------------------------------------------------------------//
+
+  std::vector<std::string> split( std::string const& s )
+  {
+    std::string::size_type const pos( s.find_first_of(' ') );
+    std::vector<std::string> result( 1, s.substr( 0, pos ) );
+    if ( pos == std::string::npos )
+        return result;
+
+    std::vector<std::string> const rest( split( trim_left( s.substr( pos, s.size() - pos + 1 ) ) ) );
+    result.insert( result.end(), rest.begin(), rest.end() );    
+    return result;
+  }
+
+
 //  extract a target directory path from a jam target string  ----------------//
 //  s may be relative to the initial_path:
 //    ..\..\..\libs\foo\build\bin\libfoo.lib\vc7\debug\runtime-link-dynamic\boo.obj
@@ -102,11 +129,11 @@ namespace
     string temp( s );
     convert_path_separators( temp );
     temp.erase( temp.find_last_of( "/" ) ); // remove leaf
-    string::size_type pos = temp.find_last_of( " " ); // remove leading spaces
-    if ( pos != string::npos ) temp.erase( 0, pos+1 );
+    temp = split( trim_left( temp ) ).back();
     if ( temp[0] == '.' ) temp.erase( 0, temp.find_first_not_of( "./" ) ); 
     else temp.erase( 0, locate_root.string().size()+1 );
-//std::cout << "\"" << s << "\", \"" << temp << "\"" << std::endl;
+    if ( echo )
+        std::cout << "\ttarget_directory( \"" << s << "\") -> \"" << temp << "\"" << std::endl;
     return temp;
   }
 
@@ -124,6 +151,7 @@ namespace
   string toolset( const string & s )
   {
     string::size_type pos = target_name_end( s );
+    if ( pos == string::npos ) pos = s.find( "build/" );
     if ( pos == string::npos ) return "";
     pos = s.find( "/", pos ) + 1;
     return s.substr( pos, s.find( "/", pos ) - pos );
@@ -215,6 +243,8 @@ namespace
         // We need path from root, not from 'status' dir.
         if (dir.find("../") == 0)
           dir.erase(0,3);
+        else // dir is always relative to the boost directory tree
+          dir.erase( 0, locate_root.string().size()+1 );
     }
     else
     {
@@ -308,6 +338,7 @@ namespace
           || target_directory.find( ".dll/" ) != string::npos 
           || target_directory.find( ".so/" ) != string::npos 
           || target_directory.find( ".dylib/" ) != string::npos 
+          || target_directory.find( "/build/" ) != string::npos 
           )
         {
           info.type = "lib";
@@ -406,12 +437,15 @@ namespace
                       const string & toolset,
                       const string & prior_content )
     {
+      assert( !target_directory.empty() );
+
       if ( !m_action_name.empty() ) stop_message( prior_content );
       m_action_name = action_name;
       m_target_directory = target_directory;
       m_test_name = test_name;
       m_toolset = toolset;
       m_note = false;
+
       if ( m_previous_target_directory != target_directory )
       {
         m_previous_target_directory = target_directory;
@@ -465,7 +499,10 @@ namespace
           tl.remove_action( "run" );
           if ( result == "fail" ) m_compile_failed = true;
         }
-        else if ( action_name == "link" ) { tl.remove_action( "run" ); }
+        else if ( action_name == "link" )
+        {
+          tl.remove_action( "run" );
+        }
 
         // dependency removal won't work right with random names, so assert
         else { assert( action_name == "run" ); }
@@ -514,7 +551,8 @@ int cpp_main( int argc, char ** argv )
     return 1;
   }
 
-
+  boost_root.normalize();
+  
   if ( argc > 1 && std::strcmp( argv[1], "--echo" ) == 0 )
   {
     echo = true;
@@ -538,6 +576,9 @@ int cpp_main( int argc, char ** argv )
   if (argc > 1)
   {
       locate_root = fs::path( argv[1], fs::native );
+      if ( !locate_root.is_complete() )
+        locate_root = ( fs::initial_path() / locate_root ).normalize();
+      
       --argc; ++argv;
   } 
   else
@@ -570,12 +611,26 @@ int cpp_main( int argc, char ** argv )
   //   * Calls stop_message() to stop capturing lines.
   //   * Capture lines if line capture on.
 
+  int line_num = 0;
   while ( std::getline( *input, line ) )
   {
-    if ( echo ) std::cout << line << "\n";
+    ++line_num;
+    
+    std::vector<std::string> const line_parts( split( line ) );
+    std::string const line_start( line_parts[0] != "...failed" 
+        ? line_parts[0]
+        : line_parts[0] + " " + line_parts[1]
+        );
+    
+    if ( echo )
+    {
+      std::cout
+        << "line " << line_num << ": " << line << "\n"
+        << "\tline_start: " << line_start << "\n";        
+    }
 
     // create map of test-name to test-info
-    if ( line.find( "boost-test(" ) == 0 )
+    if ( line_start.find( "boost-test(" ) == 0 )
     {
       string::size_type pos = line.find( '"' );
       string test_name( line.substr( pos+1, line.find( '"', pos+1)-pos-1 ) );
@@ -608,32 +663,38 @@ int cpp_main( int argc, char ** argv )
 
     // these actions represent both the start of a new action
     // and the end of a failed action
-    else if ( line.find( "C++-action " ) != string::npos
-      || line.find( "vc-C++ " ) != string::npos
-      || line.find( "C-action " ) != string::npos
-      || line.find( "Cc-action " ) != string::npos
-      || line.find( "vc-Cc " ) != string::npos
-      || line.find( "Link-action " ) != string::npos
-      // archive can fail too
-      || line.find( "Archive-action " ) != string::npos
-      || line.find( "vc-Link " ) != string::npos 
-      || line.find( ".compile.") != string::npos
-      || line.find( "compile-") != string::npos
-      || line.find( "-compile") != string::npos
-      || ( line.find( ".link") != string::npos &&
+    else if ( line_start.find( "C++-action" ) != string::npos
+      || line_start.find( "vc-C++" ) != string::npos
+      || line_start.find( "C-action" ) != string::npos
+      || line_start.find( "Cc-action" ) != string::npos
+      || line_start.find( "vc-Cc" ) != string::npos
+      || line_start.find( ".compile.") != string::npos
+      || line_start.find( "compile-") != string::npos
+      || line_start.find( "-compile") != string::npos
+      || line_start.find( "Link-action" ) != string::npos
+      || line_start.find( "vc-Link" ) != string::npos 
+      || line_start.find( "Archive-action" ) != string::npos
+      || line_start.find( ".archive") != string::npos
+      || ( line_start.find( ".link") != string::npos &&
            // .linkonce is present in gcc linker messages about
            // unresolved symbols. We don't have to parse those
-           line.find( ".linkonce" ) == string::npos )
+           line_start.find( ".linkonce" ) == string::npos )
     )
     {
-      string action( ( line.find( "Link-action " ) != string::npos
-        || line.find( "vc-Link " ) != string::npos 
-        || line.find( ".link") != string::npos
-        || line.find( "Archive-action ") != string::npos )
-        ? "link" : "compile" );
-      if ( line.find( "...failed " ) != string::npos )
+      string action( ( line_start.find( "Link-action" ) != string::npos
+            || line_start.find( "vc-Link" ) != string::npos 
+            || line_start.find( "Archive-action" ) != string::npos
+            || line_start.find( ".archive") != string::npos
+            || line_start.find( ".link") != string::npos
+            )
+          ? "link" : "compile"
+        );
+      
+      if ( line_start.find( "...failed " ) != string::npos )
+      {
         mgr.stop_message( action, target_directory( line ),
           "fail", timestamp(), content );
+      }
       else
       {
         string target_dir( target_directory( line ) );
@@ -645,18 +706,18 @@ int cpp_main( int argc, char ** argv )
     }
 
     // these actions are only used to stop the previous action
-    else if ( line.find( "-Archive" ) != string::npos
-      || line.find( "MkDir" ) == 0 )
+    else if ( line_start.find( "-Archive" ) != string::npos
+      || line_start.find( "MkDir" ) == 0 )
     {
       mgr.stop_message( content );
       content.clear();
       capture_lines = false;
     }
 
-    else if ( line.find( "execute-test" ) != string::npos 
-             || line.find( "capture-output" ) != string::npos )
+    else if ( line_start.find( "execute-test" ) != string::npos 
+             || line_start.find( "capture-output" ) != string::npos )
     {
-      if ( line.find( "...failed " ) != string::npos )
+      if ( line_start.find( "...failed " ) != string::npos )
       {
         mgr.stop_message( "run", target_directory( line ),
           "fail", timestamp(), content );
@@ -688,7 +749,9 @@ int cpp_main( int argc, char ** argv )
     }
 
     // bjam indicates some prior dependency failed by a "...skipped" message
-    else if ( line.find( "...skipped <" ) != string::npos && line.find( "<directory-grist>" ) == string::npos)
+    else if ( line_start.find( "...skipped" ) != string::npos 
+        && line.find( "<directory-grist>" ) == string::npos
+        )
     {
       mgr.stop_message( content );
       content.clear();
@@ -715,9 +778,9 @@ int cpp_main( int argc, char ** argv )
 
     }
 
-    else if ( line.find( "**passed**" ) != string::npos
-      || line.find( "failed-test-file " ) != string::npos
-      || line.find( "command-file-dump" ) != string::npos )
+    else if ( line_start.find( "**passed**" ) != string::npos
+      || line_start.find( "failed-test-file" ) != string::npos
+      || line_start.find( "command-file-dump" ) != string::npos )
     {
       mgr.stop_message( content );
       content = "\n";
