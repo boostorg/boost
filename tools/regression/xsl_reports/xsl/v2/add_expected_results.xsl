@@ -28,10 +28,26 @@ http://www.boost.org/LICENSE_1_0.txt)
     <func:function name="meta:is_test_log_complete">
         <xsl:param name="test_log"/>
         <xsl:variable name="type" select="$test_log/@test-type"/>
-        <func:result select="( ( $type='compile' or $type='compile_fail' ) and count( $test_log/compile ) > 0 )
-                          or ( ( $type='link' or $type='link_fail' ) and count( $test_log/link ) > 0 )
-                          or ( count( $test_log/run ) > 0 )
-                          "/>
+        <func:result>
+            <xsl:choose>
+                <xsl:when test="$type='compile' or $type='compile_fail'  or $test_log/compile/@result='fail' ">
+                    <xsl:value-of select="count( $test_log/compile ) = 1 and count( $test_log/link) = 0 and count( $test_log/run) = 0"/>
+                </xsl:when>
+                <xsl:when test="$type='link' or $type='link_fail'  or $test_log/link/@result='fail' ">
+                    <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link) = 1 and count( $test_log/run) = 0"/></xsl:when>
+                <xsl:when test="$type='run' or $type='run_fail' ">
+                    <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link)  = 1 and count($test_log/run) = 1 "/>
+                </xsl:when>
+                <xsl:when test="$type=''"> <!-- library -->
+                    <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link) = 1"/>
+                </xsl:when>
+                <xsl:when test="$type=''"> <!-- library -->
+                    <xsl:message terminate="yes">
+                        Unknown test type "<xsl:value-of select="$type"/>
+                    </xsl:message>
+                </xsl:when>
+            </xsl:choose>
+        </func:result>            
     </func:function>
 
 
