@@ -33,14 +33,14 @@ http://www.boost.org/LICENSE_1_0.txt)
                 <xsl:when test="$type='compile' or $type='compile_fail'  or $test_log/compile/@result='fail' ">
                     <xsl:value-of select="count( $test_log/compile ) = 1 and count( $test_log/link) = 0 and count( $test_log/run) = 0"/>
                 </xsl:when>
-                <xsl:when test="$type='link' or $type='link_fail' or $type='' or $test_log/link/@result='fail' ">
+                <xsl:when test="$type='link' or $type='link_fail' or $type='' or $type='lib' or $test_log/link/@result='fail'">
                     <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link) = 1 and count( $test_log/run) = 0"/></xsl:when>
-                <xsl:when test="$type='run' or $type='run_fail' ">
+                <xsl:when test="$type='run' or $type='run_fail' or $type='run_pyd'">
                     <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link)  = 1 and count($test_log/run) = 1 "/>
                 </xsl:when>
                 <xsl:otherwise> 
                     <xsl:message terminate="yes">
-                        Unknown test type "<xsl:value-of select="$type"/>
+                        Unknown test type "<xsl:value-of select="$type"/>"
                     </xsl:message>
                 </xsl:otherwise>
             </xsl:choose>
