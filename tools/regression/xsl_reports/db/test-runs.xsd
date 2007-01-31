@@ -15,6 +15,25 @@
         parent-key="runner [target-directory]"
         child="[compile]"
         child-key="runner [target-directory]" />
+      
+      <sql:relationship name="test-log-link"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[link]"
+        child-key="runner [target-directory]" />
+
+      <sql:relationship name="test-log-run"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[run]"
+        child-key="runner [target-directory]" />
+
+      <sql:relationship name="test-log-note"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[notes]"
+        child-key="runner [target-directory]" />
+      
     </xs:appinfo>
   </xs:annotation>
   
@@ -25,36 +44,31 @@
          </xs:sequence>
        </xs:complexType>
     </xs:element>
-  <xs:element name="run" sql:mapped="false">
-    <xs:complexType>
-      <xs:simpleContent>
-        <xs:extension base="xs:string">
-        <xs:attribute name="result"/>
-          <xs:attribute name="timestamp"/>
-        </xs:extension>
-      </xs:simpleContent>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="link" sql:mapped="false">
-        <xs:complexType >
-          <xs:simpleContent>
-            <xs:extension base="xs:string">
-              <xs:attribute name="result"/>
-          <xs:attribute name="timestamp"/>
-            </xs:extension>
-          </xs:simpleContent>
-        </xs:complexType>
-  </xs:element>
   <xs:element name="comment" type="xs:string"/>
   <xs:element name="test-run" sql:relation="[test-run]">
     <xs:complexType >
       <xs:sequence>
-          <xs:element name="comment" sql:mapped="false" minOccurs="0" maxOccurs="1"/>
-          <xs:element name="test-log"  sql:relation="[test-log]" sql:relationship="test-run-test-log"  minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType >
+          <xs:element name="comment" sql:field="[comment]" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="test-log"  minOccurs="0" maxOccurs="unbounded" sql:relation="[test-log]" sql:relationship="test-run-test-log"  >
+                <xs:complexType>
                 <xs:sequence>
-                  <xs:element name="notes"  minOccurs="0" sql:mapped="false"/>
-                  <xs:element name="compile" sql:relation="[compile]" sql:relationship ="test-log-compile"  sql:overflow-field="output" minOccurs="0"  maxOccurs="unbounded" sql:field="output">
+                  <xs:element name="notes"  minOccurs="0"  maxOccurs="1" sql:is-constant ="1">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="note" minOccurs="0" maxOccurs="unbounded" sql:relation="[notes]" sql:relationship="test-log-note" sql:overflow-field="note" >
+                              <xs:complexType>
+                                <xs:simpleContent>
+                                  <xs:extension base="xs:string">
+                                    <xs:attribute name="author"/>
+                                    <xs:attribute name="refid"/>
+                                  </xs:extension>
+                                </xs:simpleContent>
+                              </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  <xs:element name="compile" minOccurs="0"  maxOccurs="unbounded"  sql:relation="[compile]" sql:relationship ="test-log-compile"  sql:overflow-field="output" sql:field="output">
                         <xs:complexType >
                           <xs:simpleContent>
                             <xs:extension base="xs:string">
@@ -64,22 +78,40 @@
                           </xs:simpleContent>
                         </xs:complexType>
                     </xs:element>
-                    <xs:element ref="link" sql:mapped="false" />
-                    <xs:element ref="run" sql:mapped="false" />
+                  <xs:element name="link" sql:relation="[link]" sql:relationship ="test-log-link"  sql:overflow-field="output" sql:field="output">
+                    <xs:complexType >
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="result"/>
+                          <xs:attribute name="timestamp"/>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="run"  sql:relation="[run]" sql:relationship ="test-log-run"  sql:overflow-field="output" sql:field="output">
+                     <xs:complexType>
+                       <xs:simpleContent>
+                         <xs:extension base="xs:string">
+                           <xs:attribute name="result"/>
+                           <xs:attribute name="timestamp"/>
+                         </xs:extension>
+                       </xs:simpleContent>
+                     </xs:complexType>
+                   </xs:element>
                 </xs:sequence>
-                <xs:attribute name="library" sql:field="library"/>
+                <xs:attribute name="library" sql:field="[library]"/>
                  <xs:attribute name="test-name" sql:field="[test-name]"/>
                   <xs:attribute name="test-type" sql:field="[test-type]"/>
                   <xs:attribute name="test-program" sql:field="[test-program]"/>
                  <xs:attribute name="target-directory" sql:field="[target-directory]"/>
-                <xs:attribute name="toolset" sql:mapped="false"/>
-                <xs:attribute name="show-run-output" sql:mapped="false"/>
-                <xs:attribute name="result" sql:mapped="false"/>
-                <xs:attribute name="expected-result" sql:mapped="false"/>
-                <xs:attribute name="expected-reason" sql:mapped="false"/>
-                <xs:attribute name="status" sql:mapped="false"/>
-                <xs:attribute name="is-new" sql:mapped="false"/>
-                <xs:attribute name="category" sql:mapped="false"/>
+                <xs:attribute name="toolset" sql:field="[toolset]"/>
+                  <xs:attribute name="show-run-output" sql:field="[show-run-output]"/>
+                  <xs:attribute name="result" sql:field="[result]"/>
+                  <xs:attribute name="expected-result" sql:field="[expected-result]"/>
+                  <xs:attribute name="expected-reason" sql:field="[expected-reason]"/>
+                  <xs:attribute name="status" sql:field="[status]"/>
+                  <xs:attribute name="is-new" sql:field="[is-new]"/>
+                  <xs:attribute name="category" sql:field="[category]"/>
               </xs:complexType>
           </xs:element>
         </xs:sequence>

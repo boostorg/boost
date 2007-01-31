@@ -8,7 +8,9 @@ CREATE TABLE [test-run] (
 	[source] [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
 	[tag] [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
 	[platform] [varchar] (32),
-	[run-type] [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
+	[run-type]         [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[comment]          [text] NULL,
+	[toolset]          varchar (32) not null
     PRIMARY KEY ( runner, timestamp )
     ) 
 GO
@@ -35,14 +37,46 @@ drop table [compile]
 go
 create table [compile]
     (
-    [runner] [varchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-	[target-directory] [varchar] (1024) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-    [output] [text],
-	[timestamp] [varchar] (32) NULL ,
-    result [varchar] (16)
+    [runner]           [varchar](32) NOT NULL ,
+	[target-directory] [varchar](512) NOT NULL ,
+    [output]           [text],
+	[timestamp]        [varchar](32) NULL ,
+    result             [varchar](16)
     )    
+
+drop table [link] 
+go
+create table [link]
+    (
+    [runner]           [varchar](32) NOT NULL ,
+	[target-directory] [varchar](512) NOT NULL ,
+    [output]           [text],
+	[timestamp]        [varchar](32) NULL ,
+    result             [varchar](16)
+    )    
+
+drop table [run] 
+go
+create table [run]
+    (
+    [runner]           [varchar](32) NOT NULL ,
+	[target-directory] [varchar](512) NOT NULL ,
+    [output]           [text],
+	[timestamp]        [varchar](32) NULL ,
+    result             [varchar](16)
+    )    
+
+drop table [note]
+go
+create table [note]
+    (
+    [runner]           [varchar](32) NOT NULL ,
+	[target-directory] [varchar](512) NOT NULL ,
+    [note]             [text]
+    )
 
 
 select * from [test-run]
 select * from [test-log]
-select * from compile
+select * from run
+select * from note
