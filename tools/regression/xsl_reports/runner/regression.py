@@ -822,7 +822,7 @@ def accept_args( args ):
         , 'debug-level='
         , 'incremental'
         , 'force-update'
-        , 'send-bjam-log'
+        , 'dont-send-bjam-log'
         , 'monitored'
         , 'help'
         , 'v2'
