@@ -107,14 +107,19 @@ def boostbook_report( options ):
             os.utime( local_copy, ( m, m ) )
 
 
-        unpacked_docs_dir = os.path.join( options.destination, os.path.splitext( os.path.basename( local_copy ) )[0] )
-        utils.log( 'Dri %s ' % unpacked_docs_dir )
-        if os.path.exists( unpacked_docs_dir ):
-            utils.log( 'Cleaning up...' )
-            shutil.rmtree( unpacked_docs_dir )
-        os.makedirs( unpacked_docs_dir )
-        
-        unzip( local_copy, unpacked_docs_dir )
+        docs_name = os.path.splitext( os.path.basename( local_copy ) )[0]
+        if 1:
+            unpacked_docs_dir = os.path.join( options.destination, docs_name )
+            utils.log( 'Dri %s ' % unpacked_docs_dir )
+            if os.path.exists( unpacked_docs_dir ):
+                utils.log( 'Cleaning up...' )
+                shutil.rmtree( unpacked_docs_dir )
+            os.makedirs( unpacked_docs_dir )
+            
+            unzip( local_copy, unpacked_docs_dir )
+
+        utils.system( [ 'cd %s' % unpacked_docs_dir
+                       , 'tar -c -f ../%s.tar.gz -z --exclude=tarball *' % docs_name ] )
     
 def main():
     options = accept_args( sys.argv[1:])
