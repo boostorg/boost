@@ -4,6 +4,7 @@ import os
 import time
 import urlparse
 import utils
+import shutil
 import sys
 import zipfile
 
@@ -76,9 +77,9 @@ def boostbook_report( options ):
     if len( boostbook_info ) > 0:
         boostbook_info = boostbook_info[0]
         utils.log( 'BoostBook found! (%s)' % ( boostbook_info, ) )
-        local_copy = os.path.join( options.destination,'BoostBook.zip' )
+        local_copy = os.path.join( options.destination,'BoostBook-%s.zip' % options.tag )
         
-        if 0: 
+        if 1: 
             if os.path.exists( local_copy ):
                 utils.log( 'Local copy exists. Checking if it is older than uploaded one...' )
                 uploaded_mtime = time.mktime( boostbook_info[1] )
@@ -93,7 +94,7 @@ def boostbook_report( options ):
                     utils.log( 'Local copy is newer: exiting' )
                     sys.exit()
                 
-        if 0:
+        if 1:
             temp = os.path.join( options.destination,'BoostBook.zip' )
             result = open( temp, 'wb' )
             f.retrbinary( 'RETR %s' % boostbook_info[0], result.write )
@@ -103,7 +104,15 @@ def boostbook_report( options ):
             m = time.mktime( boostbook_info[1] )
             os.utime( local_copy, ( m, m ) )
 
-        unzip( local_copy, options.destination )
+
+        unpacked_docs_dir = os.path.join( options.destination, os.path.splitext( os.path.basename( local_copy ) )[0] )
+        utils.log( 'Dri %s ' % unpacked_docs_dir )
+        if os.path.exists( unpacked_docs_dir ):
+            utils.log( 'Cleaning up...' )
+            shutil.rmtree( unpacked_docs_dir )
+        os.makedirs( unpacked_docs_dir )
+        
+        unzip( local_copy, unpacked_docs_dir )
     
 def main():
     options = accept_args( sys.argv[1:])
