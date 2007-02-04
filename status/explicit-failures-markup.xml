@@ -2611,7 +2611,17 @@ for more information.
               double)</code> on this platform.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="special_functions_test"/>
+          <test name="octonion_test"/>
+          <test name="quaternion_test"/>
+          <test name="quaternion_mult_incl_test"/>
+          <toolset name="msvc-6*"/>
+          <note author="John Maddock">
+             This compiler is not sufficiently conforming to compile these tests.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="complex_test"/>
             <test name="log1p_expm1_test"/>
             <toolset name="sunpro*"/>
@@ -3468,6 +3478,7 @@ for more information.
             <mark-failure>
                 <toolset name="gcc-2.95.3-linux"/>
                 <toolset name="sunpro-5_3-sunos"/>
+                <toolset name="sun-5.8"/>
                 <toolset name="msvc-6.5*"/>
                 <toolset name="msvc-7.0"/>
                 <note author="John Maddock">
