@@ -100,6 +100,8 @@ def boostbook_report( options ):
             f.retrbinary( 'RETR %s' % boostbook_info[0], result.write )
             result.close()
             
+            if os.path.exists( local_copy ):
+                os.unlink( local_copy )
             os.rename( temp, local_copy )
             m = time.mktime( boostbook_info[1] )
             os.utime( local_copy, ( m, m ) )
