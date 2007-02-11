@@ -673,7 +673,7 @@ def collect_book( **unused ):
     log( 'Collecting files for BoostBook into "%s"...' % boostbook_archive_name )
     import zipfile
     boostbook_archive = zipfile.ZipFile( boostbook_archive_name, 'w', zipfile.ZIP_DEFLATED )
-    html_root = 'boost/doc/html'
+    html_root = os.path.join( boost_root, '/doc/html' )
 
     boostbook_archive.writestr( 'timestamp', timestamp())
     boostbook_archive.write( boostbook_log, os.path.basename( boostbook_log ) )
