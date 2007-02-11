@@ -618,7 +618,7 @@ def build_book( **kargs ):
         if os.path.exists( boostbook_log ):
             os.unlink( boostbook_log )
         utils.system( [ '%s --v2 html >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
-        utils.system( [ '%s --v2 html >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
+        # utils.system( [ '%s --v2 pdf >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
     finally:
         os.chdir( cwd )
 
