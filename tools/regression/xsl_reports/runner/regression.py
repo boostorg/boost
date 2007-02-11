@@ -25,6 +25,7 @@ regression_root    = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 regression_results = os.path.join( regression_root, 'results' )
 regression_log     = os.path.join( regression_results, 'bjam.log' )
 install_log        = os.path.join( regression_results, 'bjam_install.log' )
+boostbook_log      = os.path.join( regression_results, 'boostbook.log' )
 
 boost_root      = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
@@ -442,6 +443,7 @@ def download_if_needed( tool_name, tool_url, proxy ):
 def setup(
           comment
         , toolsets
+        , book
         , bjam_toolset
         , pjl_toolset
         , monitored
@@ -466,9 +468,8 @@ def setup(
             download_if_needed( 'build_monitor.exe', build_monitor_url, proxy )
             download_if_needed( 'pskill.exe', pskill_url, proxy )
         else:
-            log( 'Warning: Test monitoring is not supported on this platform (yet).' )
+            log( 'Warning: Test monitoring is not supported on this platform (yet).'     )
             log( '         Please consider contributing this piece!' )
-
 
 def bjam_build_script_cmd( cmd ):
     env_setup_key = 'BJAM_ENVIRONMENT_SETUP'
@@ -602,6 +603,23 @@ def test(
         if monitored:
             stop_build_monitor()
 
+def build_book( **kargs ):
+    # To do
+    # 1. PDF generation
+    # 2. Do we need to cleanup before the build?
+    # 3. Incremental builds
+    if not os.path.exists( regression_results ):
+        os.makedirs( regression_results )
+    import_utils()
+    cwd = os.getcwd()
+    try:
+        os.chdir( 'boost/doc' )
+        if os.path.exists( boostbook_log ):
+            os.unlink( boostbook_log )
+        utils.system( [ '%s --v2 html >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
+        utils.system( [ '%s --v2 html >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
+    finally:
+        os.chdir( cwd )
 
 def collect_logs(
           tag
@@ -650,7 +668,23 @@ def collect_logs(
         , run_type
         )
 
+def collect_book( **unused ):
+    boostbook_archive_name = 'results/BoostBook.zip' 
+    log( 'Collecting files for BoostBook into "%s"...' % boostbook_archive_name )
+    import zipfile
+    boostbook_archive = zipfile.ZipFile( boostbook_archive_name, 'w', zipfile.ZIP_DEFLATED )
+    html_root = 'boost/doc/html'
 
+    boostbook_archive.writestr( 'timestamp', timestamp())
+    boostbook_archive.write( boostbook_log, os.path.basename( boostbook_log ) )
+    
+    def add_files( arg, dirname, names ):
+        for name in names:
+            path = os.path.join( dirname, name )
+            if not os.path.isdir( path ):
+                boostbook_archive.write( path, path[ len(html_root) + 1: ] )
+    os.path.walk( html_root, add_files, None ) 
+    
 def upload_logs(
           tag
         , runner
@@ -667,7 +701,11 @@ def upload_logs(
         , ( regression_results, runner, tag, user, ftp_proxy, debug_level, send_bjam_log, timestamp_path )
         )
 
-
+def upload_book( tag, runner, ftp_proxy, debug_level, **unused ):
+    import_utils()
+    from runner import upload_to_ftp
+    upload_to_ftp( tag, 'results/BoostBook.zip', ftp_proxy, debug_level )
+    
 def update_itself( tag, **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
     self = os.path.join( regression_root, os.path.basename( sys.argv[0] ) )
@@ -716,6 +754,7 @@ def regression(
         , user
         , comment
         , toolsets
+        , book
         , bjam_options
         , bjam_toolset
         , pjl_toolset
@@ -761,11 +800,21 @@ def regression(
                 cleanup( [] )
                 get_source( user, tag, proxy, [] )
 
-        setup( comment, toolsets, bjam_toolset, pjl_toolset, monitored, proxy,
+        setup( comment, toolsets, book, bjam_toolset, pjl_toolset, monitored, proxy,
                v2, [] )
-        test( toolsets, bjam_options, monitored, timeout, v2, [] )
-        collect_logs( tag, runner, platform, user, comment, incremental, [] )
-        upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log )
+        # Not specifying --toolset in command line is not enough
+        # that would mean to use Boost.Build default ones
+        # We can skip test only we were explictly 
+        # told to have no toolsets in command line "--toolset="
+        if  toolsets != '': # --toolset=,
+            test( toolsets, book, bjam_options, monitored, timeout, v2, [] )
+            collect_logs( tag, runner, platform, user, comment, incremental, [] )
+            upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log )
+        if book:
+            build_book()    
+            collect_book()
+            upload_book( tag, runner, ftp_proxy, debug_level )
+
         update_itself( tag )
 
         if mail:
@@ -811,6 +860,7 @@ def accept_args( args ):
         , 'user='
         , 'comment='
         , 'toolsets='
+        , 'book'
         , 'bjam-options='
         , 'bjam-toolset='
         , 'pjl-toolset='
@@ -836,6 +886,7 @@ def accept_args( args ):
         , '--user'          : None
         , '--comment'       : None
         , '--toolsets'      : None
+        , '--book'          : False
         , '--bjam-options'  : ''
         , '--bjam-toolset'  : None
         , '--pjl-toolset'   : None
@@ -862,6 +913,7 @@ def accept_args( args ):
         , 'user'            : options[ '--user' ]
         , 'comment'         : options[ '--comment' ]
         , 'toolsets'        : options[ '--toolsets' ]
+        , 'book'            : options.has_key( '--book' )
         , 'bjam_options'    : options[ '--bjam-options' ]
         , 'bjam_toolset'    : options[ '--bjam-toolset' ]
         , 'pjl_toolset'     : options[ '--pjl-toolset' ]
@@ -879,7 +931,6 @@ def accept_args( args ):
         , 'args'            : other_args
         }
 
-
 commands = {
       'cleanup'         : cleanup
     , 'get-source'      : get_source
@@ -887,8 +938,11 @@ commands = {
     , 'setup'           : setup
     , 'install'         : install
     , 'test'            : test
+    , 'build-book'      : build_book
     , 'collect-logs'    : collect_logs
+    , 'collect-book'    : collect_book
     , 'upload-logs'     : upload_logs
+    , 'upload-book'     : upload_book
     , 'update-itself'   : update_itself
     , 'regression'      : regression
     , 'show-revision'   : show_revision
@@ -917,6 +971,7 @@ Options:
 \t                default)
 \t--user          SourceForge user name for a shell/CVS account (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
+\t--book          build BoostBook (optional)
 \t--bjam-options  options to pass to the regression test (optional)
 \t--bjam-toolset  bootstrap toolset for 'bjam' executable (optional)
 \t--pjl-toolset   bootstrap toolset for 'process_jam_log' executable
