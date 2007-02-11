@@ -613,7 +613,7 @@ def build_book( **kargs ):
     import_utils()
     cwd = os.getcwd()
     try:
-        os.chdir( 'boost/doc' )
+        os.chdir( os.path.join( boost_root', 'doc' ) )
         if os.path.exists( boostbook_log ):
             os.unlink( boostbook_log )
         utils.system( [ '%s --v2 html >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
