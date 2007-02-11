@@ -147,11 +147,11 @@ http://www.boost.org/LICENSE_1_0.txt)
             </xsl:call-template>
 
             <div class="statistics">
-            Unusable: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'unusable' ] )"/>
+            Unusable: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( $explicit_markup, . ) = 'unusable' ] )"/>
             &#160;|&#160;
-            Regressions: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected' ] )"/>
+            Regressions: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( $explicit_markup, . ) = 'fail-unexpected' ] )"/>
             &#160;|&#160;
-            New failures: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( . ) = 'fail-unexpected-new' ] )"/>
+            New failures: <xsl:value-of select="count( $test_case_logs[ meta:test_case_status( $explicit_markup, . ) = 'fail-unexpected-new' ] )"/>
             </div>
             
             <!-- summary table -->
