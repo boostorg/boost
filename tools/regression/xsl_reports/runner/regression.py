@@ -26,6 +26,7 @@ regression_results = os.path.join( regression_root, 'results' )
 regression_log     = os.path.join( regression_results, 'bjam.log' )
 install_log        = os.path.join( regression_results, 'bjam_install.log' )
 boostbook_log      = os.path.join( regression_results, 'boostbook.log' )
+boostbook_archive_name = os.path.join( regression_results, 'boostbook.zip' )
 
 boost_root      = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
@@ -669,7 +670,6 @@ def collect_logs(
         )
 
 def collect_book( **unused ):
-    boostbook_archive_name = 'results/BoostBook.zip' 
     log( 'Collecting files for BoostBook into "%s"...' % boostbook_archive_name )
     import zipfile
     boostbook_archive = zipfile.ZipFile( boostbook_archive_name, 'w', zipfile.ZIP_DEFLATED )
@@ -704,7 +704,7 @@ def upload_logs(
 def upload_book( tag, runner, ftp_proxy, debug_level, **unused ):
     import_utils()
     from runner import upload_to_ftp
-    upload_to_ftp( tag, 'results/BoostBook.zip', ftp_proxy, debug_level )
+    upload_to_ftp( tag, boostbook_archive_name, ftp_proxy, debug_level )
     
 def update_itself( tag, **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
