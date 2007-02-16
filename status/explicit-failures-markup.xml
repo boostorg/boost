@@ -2701,6 +2701,23 @@ for more information.
           </note>
        </mark-expected-failures>
        <mark-expected-failures>
+          <test name="special_functions_test"/>
+          <toolset name="msvc-7.1_stlport4"/>
+          <note author="John Maddock">
+             This appears to be a problem with STLPort's abs function: the issue only effects the
+             test code.  A workaround should be possible but users should be encouraged to use
+             STLport 5 instead.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="quaternion_test"/>
+          <test name="octonian_test"/>
+          <toolset name="gcc-cygwin*"/>
+          <note author="John Maddock">
+            No true long double standard lib support causes these tests to fail.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="complex_test"/>
             <toolset name="qcc-3.3.5*cpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
