@@ -128,7 +128,7 @@ def boostbook_report( options ):
         process_boostbook_build_log( os.path.join( unpacked_docs_dir, 'boostbook.log' ), read_timestamp( unpacked_docs_dir ) )
         utils.libxslt( log
                          , os.path.abspath( os.path.join( unpacked_docs_dir, 'boostbook.log.xml' ) )
-                         , os.path.join( os.path.dirname( __file__ ), 'xsl', 'v2', 'boostbook_log.xsl' )  
+                         , os.path.abspath( os.path.join( os.path.dirname( __file__ ), 'xsl', 'v2', 'boostbook_log.xsl' ) ) 
                          , os.path.abspath( os.path.join( unpacked_docs_dir, 'boostbook.log.html' ) ) )
 
         
