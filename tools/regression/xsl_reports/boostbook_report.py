@@ -7,6 +7,10 @@ import utils
 import shutil
 import sys
 import zipfile
+import xml.sax.saxutils
+
+
+import utils.libxslt
 
 def get_date( words ):
     date = words[ 5: -1 ]
@@ -110,7 +114,7 @@ def boostbook_report( options ):
         docs_name = os.path.splitext( os.path.basename( local_copy ) )[0]
         if 1:
             unpacked_docs_dir = os.path.join( options.destination, docs_name )
-            utils.log( 'Dri %s ' % unpacked_docs_dir )
+            utils.log( 'Dir %s ' % unpacked_docs_dir )
             if os.path.exists( unpacked_docs_dir ):
                 utils.log( 'Cleaning up...' )
                 shutil.rmtree( unpacked_docs_dir )
@@ -120,6 +124,52 @@ def boostbook_report( options ):
 
         utils.system( [ 'cd %s' % unpacked_docs_dir
                        , 'tar -c -f ../%s.tar.gz -z --exclude=tarball *' % docs_name ] )
+        
+        process_boostbook_build_log( os.path.join( unpacked_docs_dir, 'boostbook.log' ), read_timestamp( unpacked_docs_dir ) )
+        utils.libxslt( log
+                         , os.path.abspath( os.path.join( unpacked_docs_dir, 'boostbook.log.xml' ) )
+                         , os.path.join( os.path.dirname( __file__ ), 'xsl', 'v2', 'boostbook_log.xsl' )  
+                         , os.path.abspath( os.path.join( unpacked_docs_dir, 'boostbook.log.html' ) ) )
+
+        
+def log( msg ):
+    print msg
+    
+def process_boostbook_build_log( path, timestamp ):
+    f = open( path + '.xml', 'w' )
+    g = xml.sax.saxutils.XMLGenerator( f )
+    lines = open( path ).read().splitlines()
+    output_lines = []
+    result = 'success'
+    for line in lines:
+        type = 'output'
+        if line.startswith( '...failed' ):
+            type = 'failure'
+            result='failure'
+
+        if line.startswith( 'runtime error:' ):
+            type = 'failure'
+    
+        if line.startswith( '...skipped' ):
+            type = 'skipped'
+        output_lines.append( ( type, line ) )
+        
+    g.startDocument()
+    g.startElement( 'build', { 'result':  result, 'timestamp': timestamp } )
+    for line in output_lines:
+        g.startElement( 'line', { 'type': line[0]} )
+        g.characters( line[1] )
+        g.endElement( 'line' )
+    g.endElement( 'build' )
+    g.endDocument()
+    
+        
+def read_timestamp( docs_directory ):
+    f = open( os.path.join( docs_directory, 'timestamp' ) )
+    try:
+        return f.readline()
+    finally:
+        f.close()
     
 def main():
     options = accept_args( sys.argv[1:])
