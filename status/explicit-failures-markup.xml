@@ -1362,6 +1362,17 @@
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="hash_float_test"/>
+            <toolset name="gcc-cygwin*"/>
+            <note author="Daniel James">
+                On this platform both std::frexp and std::ldexp treat long
+                doubles as longs, so the hashing algorithm does the same.
+                This means that you'll get very bad results for long doubles
+                that can't be represented by doubles.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="point" />
             <test name="books" />
             <toolset name="msvc-6.5*"/>
