@@ -353,8 +353,8 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 
     <xsl:template name="write_test_results_reference_file">
-        <xsl:param name="$path"/>
-        <xsl:param name="$log_file_path"/>
+        <xsl:param name="path"/>
+        <xsl:param name="log_file_path"/>
         <xsl:message>    Writing log frame document <xsl:value-of select="$path"/></xsl:message>
         <exsl:document href="{$path}"
             method="html" 
