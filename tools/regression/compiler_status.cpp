@@ -84,7 +84,7 @@ namespace
   const string empty_string;
 
   // prefix for library and test hyperlink prefix
-  const string cvs_root ( "http://boost.cvs.sourceforge.net/" );
+  string cvs_root ( "http://boost.cvs.sourceforge.net/" );
   string url_prefix_dir_view( cvs_root + "boost/boost" );
   string url_prefix_checkout_view( cvs_root + "*checkout*/boost/boost" );
   string url_suffix_text_view( "?view=markup&rev=HEAD" );

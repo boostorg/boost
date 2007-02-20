@@ -9,6 +9,7 @@ import shutil
 import codecs
 import xml.sax.handler
 import glob
+import re
 import os.path
 import os
 import string
@@ -346,6 +347,7 @@ def ftp_task( site, site_path , destination ):
     f.cwd( site_path )
 
     source_content = list_ftp( f )
+    source_content = [ x for x in source_content if re.match( r'.+[.](?<!log[.])zip', x.name ) and x.name.lower() != 'boostbook.zip' ]
     destination_content = list_dir( destination )
     d = diff( source_content, destination_content )
 
