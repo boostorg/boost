@@ -312,21 +312,21 @@ http://www.boost.org/LICENSE_1_0.txt)
                     
                     <xsl:if test="compile">
                         <p>
-                            <div class="log-compiler-output-title">Compiler output [<xsl:value-of select="compile/@timestamp"/>]:</div>
+                            <div class="log-compiler-output-title">Compile [<xsl:value-of select="compile/@timestamp"/>]: <span class="output-{compile/@result}"><xsl:value-of select="compile/@result"/></span></div>
                             <pre><xsl:copy-of select="compile/node()"/></pre>
                         </p>
                     </xsl:if>
                 
                     <xsl:if test="link">
                         <p>
-                            <div class="log-linker-output-title">Linker output [<xsl:value-of select="link/@timestamp"/>]:</div>
+                            <div class="log-linker-output-title">Link [<xsl:value-of select="link/@timestamp"/>]: <span class="output-{link/@result}"><xsl:value-of select="link/@result"/></span></div>
                             <pre><xsl:copy-of select="link/node()"/></pre>
                         </p>
                     </xsl:if>
                             
                     <xsl:if test="lib">
                         <p>
-                            <div class="log-linker-output-title">Lib output [<xsl:value-of select="lib/@timestamp"/>]:</div>
+                            <div class="log-linker-output-title">Lib [<xsl:value-of select="lib/@timestamp"/>]: <span class="output-{lib/@result}"><xsl:value-of select="lib/@result"/></span></div>
                             <p>
                                 See <a href="{meta:encode_path( concat( $runner_id, '-',  lib/node() )  ) }.html">
                                 <xsl:copy-of select="lib/node()"/>
@@ -337,7 +337,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                         
                     <xsl:if test="run">
                         <p>
-                            <div class="log-run-output-title">Run output [<xsl:value-of select="run/@timestamp"/>]:</div>
+                            <div class="log-run-output-title">Run [<xsl:value-of select="run/@timestamp"/>]: <span class="output-{run/@result}"><xsl:value-of select="run/@result"/></span></div>
                             <pre>
                                 <xsl:copy-of select="run/node()"/>
                             </pre>

@@ -108,8 +108,8 @@ http://www.boost.org/LICENSE_1_0.txt)
 
 
     <func:function name="meta:test_case_status">
+        <xsl:param name="explicit_markup"/>
         <xsl:param name="test_log"/>
-        <xsl:param name="$explicit_markup"/>
 
         <xsl:variable name="status">
             <xsl:choose> 

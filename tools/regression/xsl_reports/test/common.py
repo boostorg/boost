@@ -45,10 +45,9 @@ def make_test_log( xml_generator
     toolset_name = make_toolset_name( toolset_idx )
     
     target_directory = ""
-
-    if test_type == "run":
+    if test_type != "lib":
         target_directory = make_test_target_directory( library_idx, toolset_idx, test_name, variant )
-    if test_type == "lib":
+    else:
         target_directory = make_library_target_directory( library_idx, toolset_idx, variant )
         
     xml_generator.startElement( "test-log", { "library": library
@@ -59,25 +58,29 @@ def make_test_log( xml_generator
                                   , "target-directory": target_directory
                                   , "show-run-output": show_run_output
                                   } )
-    if test_type ==  "run":
-        xml_generator.startElement( "compile", { "result": "success" } );
-        xml_generator.characters( "Compiling in %s" % target_directory )
-        xml_generator.endElement( "compile" )
 
-        
-        xml_generator.startElement( "lib", { "result": test_result } );
-        xml_generator.characters( make_library_target_directory( library_idx, toolset_idx ) )
-        xml_generator.endElement( "lib" )
+    if test_type != "lib":
 
-        xml_generator.startElement( "link", { "result": "success" } );
-        xml_generator.characters( "Linking in %s" % target_directory )
-        xml_generator.endElement( "link" )
+        if test_result == "success" and ( toolset_idx + 1 ) % 4:
+            xml_generator.startElement( "compile", { "result": "success" } );
+            xml_generator.characters( "Compiling in %s" % target_directory )
+            xml_generator.endElement( "compile" )
 
-        xml_generator.startElement( "run", { "result": test_result } );
-        xml_generator.characters( "Running in %s" % target_directory )
-        xml_generator.endElement( "run" )
+        if test_type.find( "link" ) == 0 or test_type.find( "run" ) == 0 and toolset_idx % 4:
+            xml_generator.startElement( "lib", { "result": test_result } );
+            xml_generator.characters( make_library_target_directory( library_idx, toolset_idx ) )
+            xml_generator.endElement( "lib" )
 
-    if test_type ==  "lib":
+            xml_generator.startElement( "link", { "result": "success" } );
+            xml_generator.characters( "Linking in %s" % target_directory )
+            xml_generator.endElement( "link" )
+
+        if test_type.find( "run" ) == 0 and ( toolset_idx + 2 ) % 4:
+            xml_generator.startElement( "run", { "result": test_result } );
+            xml_generator.characters( "Running in %s" % target_directory )
+            xml_generator.endElement( "run" )
+
+    else:
         xml_generator.startElement( "compile", { "result": test_result } );
         xml_generator.characters( "Compiling in %s" % make_library_target_directory( library_idx, toolset_idx ) )
         xml_generator.endElement( "compile" )
