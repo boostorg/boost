@@ -3382,6 +3382,17 @@ for more information.
             <toolset name="hp_cxx*"/>
             <note author="Markus Schoepflin" refid="29"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*"/>
+            <toolset name="gcc-cygwin-3.4.4"/>
+            <note author="Roland Schwarz">
+                The tests are failing because the libraries being built are targeted
+                to use the cygwin.dll, while the tests are run against a python
+                executable that depends on msvcrt.dll. This combination cannot be expected
+                to work. (The tests will pass if the additional compiler switch -mno-cygwin
+                is used during compile and link.) 
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- random -->
