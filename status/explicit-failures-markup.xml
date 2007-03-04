@@ -2787,6 +2787,17 @@ for more information.
             <toolset name="qcc-3.3.5*cpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
        </mark-expected-failures>
+
+       <mark-expected-failures>
+            <test name="common_factor_test"/>
+            <toolset name="msvc-6.5_stlport*"/>
+            <toolset name="msvc-7.1_stlport*"/>
+            <note author="John Maddock">
+            This failure appears to be caused by a compiler bug: please note
+            that the issue only effects the test suite, not the library itself.
+            A workaround is available but breaks other compilers.
+            </note>
+       </mark-expected-failures>
     </library>
 
     <!-- numeric/conversion -->
@@ -3654,6 +3665,18 @@ for more information.
             <note author="John Maddock">
                Test fails due to unresilved externals from STLport: appears to be
                an STLport bug. </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="regex_regress_threaded"/>
+            <test name="static_mutex_test"/>
+            <toolset name="msvc-6.5_stlport*"/>
+            <toolset name="msvc-7.1_stlport*"/>
+            <toolset name="gcc-cygwin*"/>
+            <note author="John Maddock">
+               These tests pass when run directly from the command line, 
+               but fail when run under the regression test script. 
+               The issue has never been fully pinned down, but appears
+               to be related to how long the tests take to run.</note>
         </mark-expected-failures>
     </library>
 
