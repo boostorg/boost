@@ -1485,6 +1485,26 @@
               of class template partial specializations.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="dijkstra_heap_performance"/>
+            <test name="layout_test"/>
+            <test name="relaxed_heap_test"/>
+            <toolset name="msvc-7.0"/>
+            <note author="Vladimir Prus">
+              The test fails due to compile error in relaxed_heap.hpp. 
+              The compile error is likely caused by a compiler bug.      
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="graphviz_test"/>
+          <toolset name="msvc-7.1_stlport4"/>
+          <note author="Vladimir Prus">
+            The test fails from completely unknown reason -- it might
+            be compiler bug, or compiler misconfiguration or testing
+            system bug.
+          </note>
+        </mark-expected-failures>
+  
     </library>
 
 
@@ -1640,6 +1660,14 @@
                 disable this test with BBv2 at present.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="file_descriptor_test"/>
+            <toolset name="gcc-cygwin-3.4.4"/>
+            <note author="Vladimir Prus">
+              The test fails at runtime for unknown reasons.
+            </note>
+        </mark-expected-failures>
+
     </library>
 
     <!-- lambda -->
@@ -2887,6 +2915,16 @@ for more information.
             <toolset name="cw-8.3*"/>
             <note author="Aleksey Gurtovoy" refid="2"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_float"/>
+            <toolset name="msvc-7.1_stlport4"/>
+            <note author="Vladimir Prus">
+              This failure is unresearched. Presumably, the problem
+              is that the abs function is not available in the "right"
+              namespace with this compiler/stdlib combination.
+            </note>
+        </mark-expected-failures>
+
     </library>
 
 
@@ -3859,9 +3897,24 @@ for more information.
             <test name="prg_exec_fail2"/>
             <toolset name="darwin-4.0.1"/>
             <note author="Vladimir Prus">
-              The test appears to test that division by zero is
-              detected by Boost.Test. This is not happening on
-              Darwin, for unknown reasons.
+              The test verifies that Boost.Test detects division by
+              zero. Division by zero has an undefined result 
+              on PowerPC processors. The compiler has to emit extra 
+              code to assert that the divisor isn't zero. 
+
+              Compiler options -fno-trapping-math and -fnon-call-exceptions 
+              might affect this. However, in default configuration
+              no check is done, and division by zero is not detected.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="prg_exec_fail3"/>
+            <toolset name="cw-9.4"/>
+            <note author="Vladimir Prus">
+              The test appears to test that failed assertion result
+              in non-zero exit status.  That seems to be not the
+              case, for unknown reasons.
             </note>
         </mark-expected-failures>
 
