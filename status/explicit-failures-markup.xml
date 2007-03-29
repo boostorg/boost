@@ -922,7 +922,21 @@
             <toolset name="intel-7.1-linux"/>
                 <note author="B. Garst" refid="22"/>
             </mark-failure>
-          </test>
+        </test>
+        <test name="testmicrosec_time_clock">
+            <mark-failure>
+            <toolset name="borland-5.6.4"/>
+            <toolset name="borland-5.8.2"/>
+            <note author="J. Garland">
+               There is apparently a bug in Borland library
+               such that  std::local_time and std::gmtime are 
+               returning a time that's 1 hour ahead GetSystemTimeAsFileTime 
+               during DST.  This is a rather serious problem in that 
+               some of the date-time clock interfaces will give the wrong
+               current time.
+            </note>
+            </mark-failure>
+        </test>
         <test name="teststreams">
             <mark-failure>
                 <toolset name="gcc-2.95.3-linux"/>
