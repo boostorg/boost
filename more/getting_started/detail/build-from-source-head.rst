@@ -10,7 +10,7 @@ installing software.  To use it, you'll need an executable called
 
 
 .. _precompiled-bjam: http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=72941
-.. _Boost.Jam documentation: Boost.Jam_
+.. .. _Boost.Jam documentation: Boost.Jam_
 .. _Boost.Build: ../../tools/build/index.html
 .. _Boost.Jam: ../../tools/jam/index.html
 .. _Boost.Build documentation: Boost.Build_

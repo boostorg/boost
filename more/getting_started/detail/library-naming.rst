@@ -19,7 +19,7 @@ following elements:
   *Library name*: all boost library filenames begin with ``boost_``.
 
 ``-vc71``
-   *Toolset tag*: identifies the toolset and version used to build
+   *Toolset tag*: identifies the toolset_ and version used to build
    the binary.
 
 ``-mt``
@@ -68,13 +68,13 @@ following elements:
   ``.a`` and ``.so`` for static libraries (archives) and shared
   libraries, respectively.  On Windows, ``.dll`` indicates a shared
   library and (except for static libraries built by the ``gcc``
-  toolset, whose names always end in ``.a``) ``.lib`` indicates a
+  toolset_, whose names always end in ``.a``) ``.lib`` indicates a
   static or import library.  Where supported by toolsets on unix
   variants, a full version extension is added (e.g. ".so.1.34") and
   a symbolic link to the library file, named without the trailing
   version number, will also be created.
 
-.. _Boost.Build toolset names: toolset-name_
+.. .. _Boost.Build toolset names: toolset-name_
 
 __ ../../libs/python/doc/building.html#variants
 
