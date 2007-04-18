@@ -1374,6 +1374,7 @@
             <test name="format_test3"/>
             <toolset name="tru64cxx65*"/>
             <toolset name="hp_cxx-65*"/>
+            <toolset name="acc"/>
             <note author="Markus Schoepflin" refid="33"/>
         </mark-expected-failures>
     </library>
@@ -1915,6 +1916,14 @@
              This is reported to be fixed in the next Sun
              compiler release.
           </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+            <test name="copy"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko">
+                When compiling this test, aCC6 runs out of memory. The HP
+                compiler group is aware of this issue and is working on the fix.
+            </note>
        </mark-expected-failures>
 
     </library>
@@ -3511,6 +3520,16 @@ for more information.
             <toolset name="tru64cxx7*"/>
             <toolset name="hp_cxx*"/>
             <note author="Markus Schoepflin" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="data_members"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko">
+                This test assumes standard-compliant dependent template name lookup which
+                is performed by aCC6 only in strict ansi mode. Since on HP-UX/aCC6 boost
+                testing is done in the default compilation mode, this test fails to
+                compile on this platform (in strict ansi mode, it compiles and succeeds).
+            </note>
         </mark-expected-failures>
     </library>
 
