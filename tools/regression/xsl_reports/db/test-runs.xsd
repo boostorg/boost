@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+            xmlns:sql="urn:schemas-microsoft-com:mapping-schema">
+  
+  <xs:annotation>
+    <xs:appinfo>
+      <sql:relationship name="test-run-test-log"
+        parent="[test-run]"
+        parent-key="runner timestamp"
+        child="[test-log]"
+        child-key="runner timestamp" />
+      
+      <sql:relationship name="test-log-compile"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[compile]"
+        child-key="runner [target-directory]" />
+      
+      <sql:relationship name="test-log-link"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[link]"
+        child-key="runner [target-directory]" />
+
+      <sql:relationship name="test-log-run"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[run]"
+        child-key="runner [target-directory]" />
+
+      <sql:relationship name="test-log-note"
+        parent="[test-log]"
+        parent-key="runner [target-directory]"
+        child="[notes]"
+        child-key="runner [target-directory]" />
+      
+    </xs:appinfo>
+  </xs:annotation>
+  
+  <xs:element name="all-test-runs" sql:mapped="false" >
+           <xs:complexType >
+         <xs:sequence >
+           <xs:element name="test-run" minOccurs="0" maxOccurs="unbounded"/>
+         </xs:sequence>
+       </xs:complexType>
+    </xs:element>
+  <xs:element name="comment" type="xs:string"/>
+  <xs:element name="test-run" sql:relation="[test-run]">
+    <xs:complexType >
+      <xs:sequence>
+          <xs:element name="comment" sql:field="[comment]" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="test-log"  minOccurs="0" maxOccurs="unbounded" sql:relation="[test-log]" sql:relationship="test-run-test-log"  >
+                <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="notes"  minOccurs="0"  maxOccurs="1" sql:is-constant ="1">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="note" minOccurs="0" maxOccurs="unbounded" sql:relation="[notes]" sql:relationship="test-log-note" sql:overflow-field="note" >
+                              <xs:complexType>
+                                <xs:simpleContent>
+                                  <xs:extension base="xs:string">
+                                    <xs:attribute name="author"/>
+                                    <xs:attribute name="refid"/>
+                                  </xs:extension>
+                                </xs:simpleContent>
+                              </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  <xs:element name="compile" minOccurs="0"  maxOccurs="unbounded"  sql:relation="[compile]" sql:relationship ="test-log-compile"  sql:overflow-field="output" sql:field="output">
+                        <xs:complexType >
+                          <xs:simpleContent>
+                            <xs:extension base="xs:string">
+                              <xs:attribute name="result"/>
+                              <xs:attribute name="timestamp"/>
+                            </xs:extension>
+                          </xs:simpleContent>
+                        </xs:complexType>
+                    </xs:element>
+                  <xs:element name="link" sql:relation="[link]" sql:relationship ="test-log-link"  sql:overflow-field="output" sql:field="output">
+                    <xs:complexType >
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attribute name="result"/>
+                          <xs:attribute name="timestamp"/>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="run"  sql:relation="[run]" sql:relationship ="test-log-run"  sql:overflow-field="output" sql:field="output">
+                     <xs:complexType>
+                       <xs:simpleContent>
+                         <xs:extension base="xs:string">
+                           <xs:attribute name="result"/>
+                           <xs:attribute name="timestamp"/>
+                         </xs:extension>
+                       </xs:simpleContent>
+                     </xs:complexType>
+                   </xs:element>
+                </xs:sequence>
+                <xs:attribute name="library" sql:field="[library]"/>
+                 <xs:attribute name="test-name" sql:field="[test-name]"/>
+                  <xs:attribute name="test-type" sql:field="[test-type]"/>
+                  <xs:attribute name="test-program" sql:field="[test-program]"/>
+                 <xs:attribute name="target-directory" sql:field="[target-directory]"/>
+                <xs:attribute name="toolset" sql:field="[toolset]"/>
+                  <xs:attribute name="show-run-output" sql:field="[show-run-output]"/>
+                  <xs:attribute name="result" sql:field="[result]"/>
+                  <xs:attribute name="expected-result" sql:field="[expected-result]"/>
+                  <xs:attribute name="expected-reason" sql:field="[expected-reason]"/>
+                  <xs:attribute name="status" sql:field="[status]"/>
+                  <xs:attribute name="is-new" sql:field="[is-new]"/>
+                  <xs:attribute name="category" sql:field="[category]"/>
+              </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      <xs:attribute name="source" sql:field="source"/>
+      <xs:attribute name="runner" sql:field="runner"/>
+      <xs:attribute name="timestamp" sql:field="timestamp"/>
+      <xs:attribute name="platform" sql:field="platform"/>
+      <xs:attribute name="tag" sql:field="tag"/>
+      <xs:attribute name="run-type" sql:field="[run-type]"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

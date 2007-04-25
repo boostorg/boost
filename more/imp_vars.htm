@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Boost Implementation Variations</title>
+</head>
+
+<body link="#0000ff" vlink="#800080" bgcolor="#FFFFFF" text="#000000">
+
+<table summary="Navigational header"
+  border="1" bgcolor="#007F7F" cellpadding="2">
+  <tr>
+    <td bgcolor="#FFFFFF"><img src="../boost.png" alt="boost.png (6897 bytes)" width="277" height="86"></td>
+    <td><a href="../index.htm"><font face="Arial" color="#FFFFFF"><big>Home</big></font></a></td>
+    <td><a href="../libs/libraries.htm"><font face="Arial" color="#FFFFFF"><big>Libraries</big></font></a></td>
+    <td><a href="../people/people.htm"><font face="Arial" color="#FFFFFF"><big>People</big></font></a></td>
+    <td><a href="faq.htm"><font face="Arial" color="#FFFFFF"><big>FAQ</big></font></a></td>
+    <td><a href="index.htm"><font face="Arial" color="#FFFFFF"><big>More</big></font></a></td>
+  </tr>
+</table>
+<h1>Boost Implementation Variations</h1>
+<h2>Separation of interface and implementation</h2>
+<p>The interface specifications for boost.org library components (as well as for
+quality software in general) are conceptually separate from implementations of
+those interfaces. This may not be obvious, particularly when a component is
+implemented entirely within a header, but this separation of interface and
+implementation is always assumed. From the perspective of those concerned with
+software design, portability, and standardization, the interface is what is
+important, while the implementation is just a detail.</p>
+<p>Dietmar Kühl, one of the original boost.org contributors, comments &quot;The
+main contribution is the interface, which is augmented with an implementation,
+proving that it is possible to implement the corresponding class and providing a
+free implementation.&quot;</p>
+
+<h2>Implementation variations</h2>
+
+<p>There may be a need for multiple implementations of an interface, to
+accommodate either platform dependencies or performance tradeoffs. Examples of
+platform dependencies include compiler shortcomings, file systems, thread
+mechanisms, and graphical user interfaces. The classic example of a performance
+tradeoff is a fast implementation which uses a lot of memory versus a slower
+implementation which uses less memory.</p>
+<p>Boost libraries generally use a <a href="../libs/config/config.htm">configuration
+header</a>, boost/config.hpp, to capture compiler and platform
+dependencies.&nbsp; Although the use of boost/config.hpp is not required, it is
+the preferred approach for simple configuration problems.&nbsp;&nbsp;</p>
+<h2>Boost policy</h2>
+<p>The Boost policy is to avoid platform dependent variations in interface
+specifications, but supply implementations which are usable over a wide range of
+platforms and applications.&nbsp; That means boost libraries will use the
+techniques below described as appropriate for dealing with platform
+dependencies.</p>
+<p>The Boost policy toward implementation variations designed to enhance
+performance is to avoid them unless the benefits greatly exceed the full
+costs.&nbsp; The term &quot;full costs&quot; is intended to include both
+tangible costs like extra maintenance, and intangible cost like increased
+difficulty in user understanding.</p>
+
+<h2>Techniques for providing implementation variations</h2>
+
+<p>Several techniques may be used to provide implementation variations. Each is
+appropriate in some situations, and not appropriate in other situations.</p>
+<h3>Single general purpose implementation</h3>
+<p>The first technique is to simply not provide implementation variation at
+all.&nbsp; Instead, provide a single general purpose implementation, and forgo
+the increased complexity implied by all other techniques.</p>
+<p><b>Appropriate:</b>&nbsp; When it is possible to write a single portable
+implementation which has reasonable performance across a wide range of
+platforms. Particularly appropriate when alternative implementations differ only
+in esoteric ways.</p>
+<p><b>Not appropriate:</b> When implementation requires platform specific
+features, or when there are multiple implementation possible with widely
+differing performance characteristics.</p>
+<p>Beman Dawes comments &quot;In design discussions some implementation is often
+alleged to be much faster than another, yet&nbsp; a timing test discovers no
+significant difference. The lesson is that while algorithmic differences may
+affect speed dramatically, coding differences such as changing a class from
+virtual to non-virtual members or removing a level of indirection are unlikely
+to make any measurable difference unless deep in an inner loop. And even in an
+inner loop, modern CPUs often execute such competing code sequences in the
+same number of clock cycles!&nbsp; A single general purpose implementation is
+often just fine.&quot;</p>
+<p>Or as Donald Knuth said, &quot;Premature optimization is the root of all
+evil.&quot; (Computing Surveys, vol 6, #4, p 268).</p>
+<h3>Macros</h3>
+<p>While the evils of macros are well known, there remain a few cases where
+macros are the preferred solution:</p>
+<blockquote>
+  <ul>
+    <li>&nbsp;Preventing multiple inclusion of headers via #include guards.</li>
+    <li>&nbsp;Passing minor configuration information from a configuration
+      header to other files.</li>
+  </ul>
+</blockquote>
+<p><b>Appropriate:</b>&nbsp; For small compile-time variations which would
+otherwise be costly or confusing to install, use, or maintain. More appropriate
+to communicate within and between library components than to communicate with
+library users.</p>
+<p><b>Not appropriate:&nbsp;</b> If other techniques will do.</p>
+<p>To minimize the negative aspects of macros:</p>
+<blockquote>
+  <ul>
+    <li>Only use macros when they are clearly superior to other
+      techniques.&nbsp; They should be viewed as a last resort.</li>
+    <li>Names should be all uppercase, and begin with the namespace name. This
+      will minimize the chance of name collisions. For example, the #include
+      guard for a boost header called foobar.h might be named BOOST_FOOBAR_H.</li>
+  </ul>
+</blockquote>
+<h3>Separate files</h3>
+<p>A library component can have multiple variations, each contained in its own
+separate file or files.&nbsp; The files for the most appropriate variation are
+copied to the appropriate include or implementation directories at installation
+time.</p>
+<p>The way to provide this approach in boost libraries is to include specialized
+implementations as separate files in separate sub-directories in the .ZIP
+distribution file. For example, the structure within the .ZIP distribution file
+for a library named foobar which has both default and specialized variations
+might look something like:</p>
+<blockquote>
+  <pre>foobar.h		// The default header file
+foobar.cpp		// The default implementation file
+readme.txt		// Readme explains when to use which files
+self_contained/foobar.h	// A variation with everything in the header
+linux/foobar.cpp      	// Implementation file to replace the default
+win32/foobar.h          // Header file to replace the default
+win32/foobar.cpp	// Implementation file to replace the default</pre>
+</blockquote>
+<p><b>Appropriate:</b>&nbsp; When different platforms require different
+implementations, or when there are major performance differences between
+possible implementations.&nbsp;</p>
+<p><b>Not appropriate:</b>&nbsp; When it makes sense to use more that one of the
+variations in the same installation.</p>
+<h3>Separate components</h3>
+<p>Rather than have several implementation variations of a single component,
+supply several separate components. For example, the Boost library currently
+supplies <code>scoped_ptr</code> and <code>shared_ptr</code> classes rather than
+a single <code>smart_ptr</code> class parameterized to distinguish between the
+two cases.&nbsp; There are several ways to make the component choice:</p>
+<blockquote>
+  <ul>
+    <li>Hardwired by the programmer during coding.</li>
+    <li>Chosen by programmer written runtime logic (trading off some extra
+      space, time, and program complexity for the ability to select the
+      implementation at run-time.)</li>
+  </ul>
+</blockquote>
+<p><b>Appropriate: </b>When the interfaces for the variations diverge, and when
+it is reasonably to use more than one of the variations. When run-time selection
+of implementation is called for.</p>
+<p><b>Not appropriate:</b> When the variations are data type, traits, or
+specialization variations which can be better handled by making the component a
+template. Also not appropriate when choice of variation is best done by some
+setup or installation mechanism outside of the program itself.&nbsp; Thus
+usually not appropriate to cope with platform differences.</p>
+<p><b>Note:</b> There is a related technique where the interface is specified as
+an abstract (pure virtual) base class (or an interface definition language), and
+the implementation choice is passed off to some third-party, such as a
+dynamic-link library or object-request broker. While that is a powerful
+technique, it is way beyond the scope of this discussion.</p>
+<h3>Template-based approaches</h3>
+<p>Turning a class or function into a template is often an elegant way to cope
+with variations.&nbsp; Template-based approaches provide optimal space and time
+efficiency in return for constraining the implementation selection to compile
+time.&nbsp;</p>
+<p>Important template techniques include:</p>
+<blockquote>
+  <ul>
+    <li>Data type parameterization.&nbsp; This allows a single component to
+      operate on a variety of data types, and is why templates were originally
+      invented.</li>
+    <li>Traits parameterization.&nbsp; If parameterization is complex, bundling
+      up aspects into a single traits helper class can allow great variation
+      while hiding messy details.&nbsp; The C++ Standard Library provides
+      several examples of this idiom, such as <code>iterator_traits&lt;&gt;</code>
+      (24.3.1 lib.iterator.traits) and <tt>char_traits&lt;&gt;</tt> (21.2
+      lib.char.traits).</li>
+    <li>Specialization.&nbsp; A template parameter can be used purely for the
+      purpose of selecting a specialization. For example:</li>
+  </ul>
+  <blockquote>
+    <blockquote>
+      <pre>SomeClass&lt;fast&gt;  my_fast_object;  // fast and small are empty classes
+SomeClass&lt;small&gt; my_small_object; // used just to select specialization</pre>
+    </blockquote>
+  </blockquote>
+</blockquote>
+<p><b>Appropriate: </b>When the need for variation is due to data type or
+traits, or is performance related like selecting among several algorithms, and
+when a program might reasonably use more than one of the variations.</p>
+<p><b>Not appropriate:</b>&nbsp; When the interfaces for variations are
+different, or when choice of variation is best done by some mechanism outside of
+the program itself.&nbsp; Thus usually not appropriate to cope with platform
+differences.</p>
+<hr>
+<p>Revised <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->02 October, 2003<!--webbot bot="Timestamp" endspan i-checksum="38549" --></p>
+
+<p>© Copyright Beman Dawes 2001</p>
+
+<p>Distributed under the Boost Software License, Version 1.0. (See
+   accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy
+   at <a href=
+   "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)
+</p>
+
+</body>
+
+</html>

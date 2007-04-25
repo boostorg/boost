@@ -1,0 +1,50 @@
+# Copyright (c) 2002 Douglas Gregor <doug.gregor -at- gmail.com>
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+project boost/doc ;
+import boostbook : boostbook ;
+
+boostbook doc : src/boost.xml 
+    : 
+     
+     ## Build the various generated docs (Doxygen and QuickBook)...
+     
+     <dependency>../libs/program_options/doc//autodoc.xml 
+     <dependency>../libs/algorithm/string/doc//autodoc.xml
+     <dependency>../libs/logic/doc//reference.xml
+     <dependency>../libs/functional/hash/doc//hash
+     <dependency>../libs/type_traits/doc//type_traits
+     <dependency>../libs/static_assert/doc//static_assert
+     <dependency>../libs/tr1/doc//tr1
+     <dependency>../libs/math/doc//math
+     <dependency>../libs/foreach/doc//foreach
+     <dependency>../libs/typeof/doc//typeof
+     <dependency>../libs/xpressive/doc//autodoc.xml
+     <dependency>../libs/xpressive/doc//xpressive
+     <dependency>../libs/date_time/xmldoc//date_time_autodoc.xml
+     <dependency>../libs/date_time/xmldoc//gregorian_autodoc.xml
+     <dependency>../libs/date_time/xmldoc//posix_time_autodoc.xml
+     <dependency>../libs/date_time/xmldoc//local_time_autodoc.xml
+     <dependency>../more/whos_using//using
+     <dependency>../tools/jam/doc//bjam
+     <dependency>../tools/quickbook/doc//quickbook
+     
+     ## Add path references to the QuickBook generated docs...
+     
+     <implicit-dependency>../libs/functional/hash/doc//hash
+     <implicit-dependency>../libs/type_traits/doc//type_traits
+     <implicit-dependency>../libs/static_assert/doc//static_assert
+     <implicit-dependency>../libs/tr1/doc//tr1
+     <implicit-dependency>../libs/math/doc//math
+     <implicit-dependency>../libs/foreach/doc//foreach
+     <implicit-dependency>../libs/typeof/doc//typeof
+     <implicit-dependency>../libs/xpressive/doc//xpressive
+     <implicit-dependency>../more/whos_using//using
+     <implicit-dependency>../tools/jam/doc//bjam
+     <implicit-dependency>../tools/quickbook/doc//quickbook
+     
+     <xsl:param>boost.libraries=../../libs/libraries.htm
+    ;
