@@ -12,5 +12,5 @@
 .. _Boost.Serialization: ../../libs/serialization/index.html
 .. _Boost.Signals: ../../libs/signals/index.html
 .. _Boost.Test: ../../libs/test/index.html
-.. _Boost.Thread: ../../libs/thread/index.html
+.. _Boost.Thread: ../../doc/html/thread/build.html#thread.build
 .. _Boost.Wave: ../../libs/wave/index.html
