@@ -15,19 +15,22 @@ Boost?”  The good news is that often, there's nothing to build.
   require no separately-compiled library binaries or special
   treatment when linking.
 
-.. _separate: 
+.. .. _separate: 
 
 The only Boost libraries that *must* be built separately are:
 
 * Boost.Filesystem_
 * Boost.IOStreams_
 * Boost.ProgramOptions_
-* Boost.Python_
+* Boost.Python_ (see the `Boost.Python build documentation`__
+  before building and installing it)
 * Boost.Regex_
 * Boost.Serialization_
 * Boost.Signals_
 * Boost.Thread_
 * Boost.Wave_
+
+__ ../../libs/python/doc/building.html
 
 A few libraries have optional separately-compiled binaries:
 

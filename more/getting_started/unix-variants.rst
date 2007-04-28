@@ -40,7 +40,7 @@ distribution from SourceForge_:
 
 .. _SourceForge: `sf-download`_
 
-1. Download |boost.tar.bz2|.  
+1. Download |boost.tar.bz2|_.  
 
 2. In the directory where you want to put the Boost installation,
    execute
