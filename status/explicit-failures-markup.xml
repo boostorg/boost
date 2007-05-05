@@ -2561,23 +2561,24 @@ for more information.
                 This compiler is not supported.
             </note>
         </mark-unusable>
-		<mark-expected-failures>
-            <test name="*_native" category="Native compiler support"/>
-            <toolset name="acc"/>
-            <toolset name="vc-8_0*"/>
-            <toolset name="msvc-8.0*"/>
-            <toolset name="intel-vc71-win*"/>
-            <toolset name="intel-vc8-win*"/>
-            <toolset name="como-4_3_3-vc7_1"/>
-            <toolset name="tru64*"/>
-            <toolset name="hp_cxx*"/>
-            <toolset name="sun-5.8"/>
-            <toolset name="dmc*"/>
-            <toolset name="borland-5.9*"/>
-            <note author="Arkadiy Vertleyb">
-                Native mode is not supported for this compiler.
-            </note>
-        </mark-expected-failures>
+        <test name="*_native" category="Native compiler support">
+            <mark-failure>
+                <toolset name="acc"/>
+                <toolset name="vc-8_0*"/>
+                <toolset name="msvc-8.0*"/>
+                <toolset name="intel-vc71-win*"/>
+                <toolset name="intel-vc8-win*"/>
+                <toolset name="como-4_3_3-vc7_1"/>
+                <toolset name="tru64*"/>
+                <toolset name="hp_cxx*"/>
+                <toolset name="sun-5.8"/>
+                <toolset name="dmc*"/>
+                <toolset name="borland-5.9*"/>
+                <note author="Arkadiy Vertleyb">
+                    Native mode is not supported for this compiler.
+                </note>
+            </mark-failure>
+        </test>
         <mark-expected-failures>
             <test name="*_emulation"/>
             <toolset name="msvc-6.5*"/>
@@ -4132,69 +4133,69 @@ for more information.
         </mark-unusable>
     </library>
 
-	<!-- type_traits -->
+    <!-- type_traits -->
     <library name="type_traits">
         <mark-expected-failures>
             <test name="function_traits_test"/>
             <test name="remove_bounds_test"/>
             <test name="remove_const_test"/>
             <test name="remove_cv_test"/>
-			<test name="remove_pointer_test"/>
+            <test name="remove_pointer_test"/>
             <test name="remove_reference_test"/>
             <test name="remove_volatile_test"/>
             <test name="decay_test"/>
             <test name="extent_test"/>
             <test name="remove_extent_test"/>
             <test name="remove_all_extents_test"/>
-			<test name="rank_test"/>
-			<test name="is_unsigned_test"/>
-			<toolset name="msvc-6.5*"/>
-			<toolset name="msvc-7.0"/>
-			<note author="Aleksey Gurtovoy">
-				This failure is caused by the lack of compiler support for class template
-				partial specialization. A limited subset of the tested functionality is
-				available on the compiler through a user-side workaround (see
-				<a href="http://www.boost.org/libs/type_traits/index.html#transformations">
-				http://www.boost.org/libs/type_traits/index.html#transformations</a> for
-				details).
-			</note>
-		</mark-expected-failures>
-		<mark-expected-failures>
-			<test name="decay_test"/>
-			<test name="extent_test"/>
-			<test name="is_base_and_derived_test"/>
-			<test name="is_base_of_test"/>
-			<test name="is_convertible_test"/>
-			<test name="rank_test"/>
-			<test name="remove_all_extents_test"/>
-			<test name="remove_bounds_test"/>
-			<test name="remove_const_test"/>
-			<test name="remove_extent_test"/>
-			<test name="remove_pointer_test"/>
-			<test name="remove_volatile_test"/>
-			<test name="tricky_add_pointer_test"/>
-			<test name="tricky_function_type_test"/>
-			<test name="tricky_incomplete_type_test"/>
-			<toolset name="borland-5.6*"/>
-			<toolset name="borland-5.8*"/>
-			<toolset name="borland-5.9*"/>
-			<note author="John Maddock" refid="2"/>
-		</mark-expected-failures>
-		<mark-expected-failures>
-			<test name="promote_basic_test"/>
-			<test name="promote_enum_test"/>
-			<test name="promote_mpl_test"/>
-			<test name="tricky_partial_spec_test"/>
-			<toolset name="borland-5.6*"/>
-			<toolset name="borland-5.8*"/>
-			<toolset name="borland-5.9*"/>
-			<note author="AlisdairM" refid="2"/>
-		</mark-expected-failures>
-		<test name="tricky_is_enum_test">
-			<mark-failure>
-				<toolset name="borland-5.6*"/>
-				<toolset name="borland-5.8*"/>
-				<toolset name="borland-5.9*"/>
+            <test name="rank_test"/>
+            <test name="is_unsigned_test"/>
+            <toolset name="msvc-6.5*"/>
+            <toolset name="msvc-7.0"/>
+            <note author="Aleksey Gurtovoy">
+                This failure is caused by the lack of compiler support for class template
+                partial specialization. A limited subset of the tested functionality is
+                available on the compiler through a user-side workaround (see
+                <a href="http://www.boost.org/libs/type_traits/index.html#transformations">
+                http://www.boost.org/libs/type_traits/index.html#transformations</a> for
+                details).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="decay_test"/>
+            <test name="extent_test"/>
+            <test name="is_base_and_derived_test"/>
+            <test name="is_base_of_test"/>
+            <test name="is_convertible_test"/>
+            <test name="rank_test"/>
+            <test name="remove_all_extents_test"/>
+            <test name="remove_bounds_test"/>
+            <test name="remove_const_test"/>
+            <test name="remove_extent_test"/>
+            <test name="remove_pointer_test"/>
+            <test name="remove_volatile_test"/>
+            <test name="tricky_add_pointer_test"/>
+            <test name="tricky_function_type_test"/>
+            <test name="tricky_incomplete_type_test"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="borland-5.8*"/>
+            <toolset name="borland-5.9*"/>
+            <note author="John Maddock" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="promote_basic_test"/>
+            <test name="promote_enum_test"/>
+            <test name="promote_mpl_test"/>
+            <test name="tricky_partial_spec_test"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="borland-5.8*"/>
+            <toolset name="borland-5.9*"/>
+            <note author="AlisdairM" refid="2"/>
+        </mark-expected-failures>
+        <test name="tricky_is_enum_test">
+            <mark-failure>
+                <toolset name="borland-5.6*"/>
+                <toolset name="borland-5.8*"/>
+                <toolset name="borland-5.9*"/>
                 <toolset name="msvc-6.5*"/>
                 <toolset name="gcc-2.95.3-*"/>
             </mark-failure>
@@ -4497,11 +4498,11 @@ for more information.
             <test name="std_test_complex"/>
             <test name="test_function"/>
             <test name="std_test_function"/>
-			<test name="test_random"/>
-			<test name="std_test_random"/>
-			<test name="test_result_of"/>
-			<test name="std_test_result_of"/>
-			<test name="test_tuple_tricky"/>
+            <test name="test_random"/>
+            <test name="std_test_random"/>
+            <test name="test_result_of"/>
+            <test name="std_test_result_of"/>
+            <test name="test_tuple_tricky"/>
             <test name="std_test_tuple_tricky"/>
             <test name="test_type_traits"/>
             <test name="std_test_type_traits"/>
@@ -4514,8 +4515,8 @@ for more information.
             <test name="tr1_remove_const_test"/>
             <test name="tr1_remove_pointer_test"/>
             <test name="tr1_remove_volatile_test"/>
-			<test name="tr1_tricky_add_pointer_test"/>
-			<test name="tr1_tky_partial_spec_test"/>
+            <test name="tr1_tricky_add_pointer_test"/>
+            <test name="tr1_tky_partial_spec_test"/>
             <toolset name="borland-5.8*"/>
             <toolset name="borland-5.9*"/>
             <note author="John Maddock">
