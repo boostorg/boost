@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2005
+# Copyright (c) MetaCommunications, Inc. 2003-2007
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -666,18 +666,19 @@ def make_result_pages(
 def fix_file_names( dir ):
     """
     The current version of xslproc doesn't correctly handle
-    spaces on posix systems. We have to manually go through the
-    result set and correct decode encoded spaces (%20).
+    spaces. We have to manually go through the
+    result set and decode encoded spaces (%20).
     """
-    if os.name == 'posix':
-        for root, dirs, files in os.walk( dir ):
-            for file in files:
-                if file.find( "%20" ) > -1:
-                    new_name = file.replace( "%20", " " )
-                    old_file_path = os.path.join( root, file )
-                    new_file_path = os.path.join( root, new_name )
-                    print "renaming %s %s" % ( old_file_path, new_file_path )
-                    os.rename ( old_file_path, new_file_path )
+    utils.log( 'Fixing encoded file names...' )
+    for root, dirs, files in os.walk( dir ):
+        for file in files:
+            if file.find( "%20" ) > -1:
+                new_name = file.replace( "%20", " " )
+                old_file_path = os.path.join( root, file )
+                new_file_path = os.path.join( root, new_name )
+                utils.log( 'Renaming %s to %s' % ( old_file_path, new_file_path ) )
+                os.rename ( old_file_path, new_file_path )
+
 
 def build_xsl_reports( 
           locate_root_dir

@@ -51,7 +51,7 @@ def make_test_results():
         os.makedirs( results_directory )
 
     for i_runner in range( 0, num_of_runners ):
-        runner_id = "runner_%02d" % i_runner
+        runner_id = "runner %02d" % i_runner
         g = xml.sax.saxutils.XMLGenerator( open( os.path.join( results_directory, runner_id + ".xml" ), "w" ) )
         if i_runner % 2:
             platform = "Win32"
@@ -92,7 +92,7 @@ def make_test_results():
                 continue 
                 
             for i_toolset in range( num_of_toolsets ):
-                toolset_name = "toolset_%02d" % ( i_toolset )
+                toolset_name = "toolset %02d" % ( i_toolset )
 
                 if num_of_runners - 1 == i_runner and i_toolset % 2:
                     continue
