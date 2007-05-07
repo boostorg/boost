@@ -14,6 +14,9 @@ from boost.patchwork import def_modules
 #~ The directory this file is in.
 root = os.path.abspath( os.path.dirname(__file__ ) )
 
+#~ Bootstrap Boost package.
+#~ sys.path.insert(0,os.path.join(root,'_packages','boost-0.0.1.zip'))
+
 #~ The zip files we import from...
 
 #~ BuildBot has a simple single package tree.
