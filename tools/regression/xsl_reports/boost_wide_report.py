@@ -677,7 +677,8 @@ def fix_file_names( dir ):
                 old_file_path = os.path.join( root, file )
                 new_file_path = os.path.join( root, new_name )
                 utils.log( 'Renaming %s to %s' % ( old_file_path, new_file_path ) )
-                os.rename ( old_file_path, new_file_path )
+                os.unlink( new_file_path )
+                os.rename( old_file_path, new_file_path )
 
 
 def build_xsl_reports( 
