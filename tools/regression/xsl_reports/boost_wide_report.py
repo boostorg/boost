@@ -674,11 +674,11 @@ def fix_file_names( dir ):
         for file in files:
             if file.find( "%20" ) > -1:
                 new_name = file.replace( "%20", " " )
-                old_file_path = os.path.join( root, file )
-                new_file_path = os.path.join( root, new_name )
-                utils.log( 'Renaming %s to %s' % ( old_file_path, new_file_path ) )
-                os.unlink( new_file_path )
-                os.rename( old_file_path, new_file_path )
+                utils.rename(
+                      utils.log
+                    , os.path.join( root, file )
+                    , os.path.join( root, new_name )
+                    )
 
 
 def build_xsl_reports( 

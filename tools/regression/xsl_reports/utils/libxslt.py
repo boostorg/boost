@@ -6,6 +6,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import utils.makedirs
+import utils.rename
 import os.path
 import os
 import sys
@@ -43,8 +44,6 @@ def libxslt( log, xml_file, xsl_file, output_file, parameters = None ):
 
     output_file = xslt_param( output_file, 0 )
     xlst_output_file = xslt_param( output_file )
-    if output_file != xlst_output_file:        
-        log( 'Renaming %s to %s' % ( xlst_output_file, output_file ) )
-        os.unlink( output_file )
-        os.rename( xlst_output_file, output_file )
+    if output_file != xlst_output_file:
+        utils.rename( log, xlst_output_file, output_file )
 
