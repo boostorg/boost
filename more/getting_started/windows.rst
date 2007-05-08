@@ -206,6 +206,8 @@ For example, your session might look like this: [#continuation]_
 
 .. include:: detail/build-from-source-tail.rst
 
+.. _auto-linking:
+
 .. include:: detail/link-head.rst
 
 .. Admonition:: Auto-Linking

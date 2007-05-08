@@ -16,6 +16,9 @@
 
 .. |include-paths| replace:: `` ``
 
+.. |windows-version-name-caveat| replace:: `` ``
+
 .. |command-line tool| replace:: command-line tool
+
 
 .. include:: common.rst
