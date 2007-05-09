@@ -336,7 +336,7 @@ distclean: clean
 	rm -rf Makefile config.log
 
 check: .dummy
-	@cd status && ../\$(BJAM) \$(BJAM_CONFIG) --user-config=user-config.jam test || echo "Some Boost regression tests failed. This is normal."
+	@cd status && ../\$(BJAM) \$(BJAM_CONFIG) --user-config=../user-config.jam || echo "Some Boost regression tests failed. This is normal for many compilers."
 
 install: .dummy
 	@echo "\$(BJAM) \$(BJAM_CONFIG) --user-config=user-config.jam --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) \$(LIBS) install"
