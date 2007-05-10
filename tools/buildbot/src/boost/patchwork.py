@@ -139,11 +139,13 @@ class patchwork_loader:
         else:
             #~ print "\tZIP FILE: %s" % (self.path);
             source += self.importer.get_data(self.path).replace("\r\n","\n").replace("\r","\n")
-        source += "\n\n"
-        #~ source += "print '[%s].[open] == %s ... %s' % (__name__,open, isinstance(open,type) )\n"
-        #~ source += "print '[%s].[file] == %s ... %s' % (__name__,file, isinstance(file,type) )\n"
-        source += "if isinstance(open,type):\n\tfrom boost.patchwork import _open_ as open\n"
-        source += "if isinstance(file,type):\n\tfrom boost.patchwork import _file_ as file\n"
+        source += '''
+import __builtin__
+if __builtin__.open == open:
+    from boost.patchwork import _open_ as open
+if isinstance(file,type):
+    from boost.patchwork import _file_ as file
+'''
         code = compiler.compile(source,self.path,'exec')
         mod = sys.modules.setdefault(fullname, imp.new_module(fullname))
         mod.__file__ = os.path.join(self.importer.archive,self.path)
@@ -171,7 +173,7 @@ class patchwork_importer:
             raise ImportError
     
     def find_module(self,fullname,path=None):
-        print "--- patchwork_importer.find_module(self,\n\t%s,\n\t%s)" % (fullname,path)
+        #~ print "--- patchwork_importer.find_module(self,\n\t%s,\n\t%s)" % (fullname,path)
         
         loader = None
         for package in _g_.packages_to_search:

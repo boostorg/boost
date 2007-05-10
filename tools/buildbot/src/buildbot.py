@@ -6,13 +6,22 @@
 #~ http://www.boost.org/LICENSE_1_0.txt)
 
 import sys
+import os
 import os.path
-import pprint
+import urllib
 
 from boost.patchwork import def_modules
 
 #~ The directory this file is in.
 root = os.path.abspath( os.path.dirname(__file__ ) )
+
+#~ Download current packages.
+#~ if not os.path.isdir(os.path.join(root,'_packages')):
+    #~ os.mkdir(os.path.join(root,'_packages'))
+#~ if not os.path.isdir(os.path.join(root,'_packages')):
+    #~ sys.exit('No _packages directory found.')
+#~ urllib.urlretrieve('',os.path.join(root,'_packages',''))
+#~ urllib.urlretrieve('',os.path.join(root,'_packages',''))
 
 #~ Bootstrap Boost package.
 #~ sys.path.insert(0,os.path.join(root,'_packages','boost-0.0.1.zip'))
