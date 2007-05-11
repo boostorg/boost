@@ -31,7 +31,7 @@ mailing list`_.
 
      -- the Boost Developers
 
-.. _Boost.Build reference manual: ../../tools/build/v2
+.. _Boost.Build reference manual: ../../tools/build/v2/index.html
 .. _Boost.Jam reference manual: `Boost.Jam`_
 .. _Boost Users' mailing list: ../../more/mailing_lists.htm#users
 .. _Boost.Build Wiki: http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?Boost.Build_V2

@@ -125,8 +125,8 @@ path in place of the Boost root directory.
 
 __ `Link Your Program to a Boost Library`_
 
-Or, Custom Build and Install
-----------------------------
+Or, Build Custom Binaries
+-------------------------
 
 If you're using a compiler other than your system's default, you'll
 need to use Boost.Build_ to create binaries.  You'll also
@@ -140,7 +140,7 @@ For example, your session might look like this:
 .. parsed-literal::
 
    $ cd ~/|boost_ver|
-   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc
+   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc stage
 
 .. include:: detail/build-from-source-tail.rst
 

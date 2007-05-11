@@ -39,7 +39,7 @@
 </li>
 <li><a class="reference internal" href="#prepare-to-use-a-boost-library-binary" id="id23">5&nbsp;&nbsp;&nbsp;Prepare to Use a Boost Library Binary</a><ul class="auto-toc">
 <li><a class="reference internal" href="#easy-build-and-install" id="id24">5.1&nbsp;&nbsp;&nbsp;Easy Build and Install</a></li>
-<li><a class="reference internal" href="#or-custom-build-and-install" id="id25">5.2&nbsp;&nbsp;&nbsp;Or, Custom Build and Install</a><ul class="auto-toc">
+<li><a class="reference internal" href="#or-build-custom-binaries" id="id25">5.2&nbsp;&nbsp;&nbsp;Or, Build Custom Binaries</a><ul class="auto-toc">
 <li><a class="reference internal" href="#get-bjam" id="id26">5.2.1&nbsp;&nbsp;&nbsp;Get <tt class="docutils literal"><span class="pre">bjam</span></tt></a></li>
 <li><a class="reference internal" href="#identify-your-toolset" id="id27">5.2.2&nbsp;&nbsp;&nbsp;Identify Your Toolset</a></li>
 <li><a class="reference internal" href="#select-a-build-directory" id="id28">5.2.3&nbsp;&nbsp;&nbsp;Select a Build Directory</a></li>
@@ -284,8 +284,8 @@ prefix, so you can henceforth use that directory as an <tt class="docutils liter
 path in place of the Boost root directory.</p>
 <p><a class="reference internal" href="#link-your-program-to-a-boost-library"><em>skip to the next step</em></a></p>
 </div>
-<div class="section" id="or-custom-build-and-install">
-<h2><a class="toc-backref" href="#id25">5.2&nbsp;&nbsp;&nbsp;Or, Custom Build and Install</a></h2>
+<div class="section" id="or-build-custom-binaries">
+<h2><a class="toc-backref" href="#id25">5.2&nbsp;&nbsp;&nbsp;Or, Build Custom Binaries</a></h2>
 <p>If you're using a compiler other than your system's default, you'll
 need to use <a class="reference external" href="../../tools/build/index.html">Boost.Build</a> to create binaries.  You'll also
 use this method if you need a nonstandard build variant (see the
@@ -316,7 +316,7 @@ following table.</p>
 <a class="reference external" href="../../doc/html/jam/building.html">building bjam</a>, you should assume it won't work and instead
 choose newly from the table below.</p>
 </div>
-<table border="1" class="docutils">
+<table border="1" class="docutils table">
 <colgroup>
 <col width="18%" />
 <col width="33%" />
@@ -426,13 +426,14 @@ bjam <strong>--build-dir=</strong><a class="reference internal" href="#id10"><em
 <p>For example, your session might look like this:</p>
 <pre class="literal-block">
 $ cd ~/<tt class="docutils literal"><span class="pre">boost_1_34_0</span></tt>
-$ bjam <strong>--build-dir=</strong>/tmp/build-boost <strong>--toolset=</strong>gcc
+$ bjam <strong>--build-dir=</strong>/tmp/build-boost <strong>--toolset=</strong>gcc stage
 </pre>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
 <!-- Software License, Version 1.0. (See accompanying -->
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
-<p>Boost.Build will place the Boost binaries in the <tt class="docutils literal"><span class="pre">stage</span></tt><tt class="docutils literal"><span class="pre">/</span></tt>
-subdirectory of your <a class="reference internal" href="#build-directory">build directory</a>.</p>
+<p>Building the special <tt class="docutils literal"><span class="pre">stage</span></tt> target places Boost
+library binaries in the <tt class="docutils literal"><span class="pre">stage</span></tt><tt class="docutils literal"><span class="pre">/</span></tt> subdirectory of your <a class="reference internal" href="#build-directory">build
+directory</a>.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p class="last"><tt class="docutils literal"><span class="pre">bjam</span></tt> is case-sensitive; it is important that all the
@@ -585,7 +586,7 @@ of <tt class="docutils literal"><span class="pre">-mt</span></tt>.</dd>
 interoperability with other compiled code.  For each such
 feature, a single letter is added to the tag:</p>
 <blockquote>
-<table border="1" class="docutils">
+<table border="1" class="docutils table">
 <colgroup>
 <col width="6%" />
 <col width="94%" />
@@ -697,7 +698,7 @@ If you can't find what you need, or there's anything we can do to
 make this document clearer, please post it to the <a class="reference external" href="../../more/mailing_lists.htm#users">Boost Users'
 mailing list</a>.</p>
 <ul class="simple">
-<li><a class="reference external" href="../../tools/build/v2">Boost.Build reference manual</a></li>
+<li><a class="reference external" href="../../tools/build/v2/index.html">Boost.Build reference manual</a></li>
 <li><a class="reference external" href="../../tools/jam/index.html">Boost.Jam reference manual</a></li>
 <li><a class="reference external" href="../../more/mailing_lists.htm#users">Boost Users' mailing list</a></li>
 <li><a class="reference external" href="../../more/mailing_lists.htm#jamboost">Boost.Build mailing list</a></li>

@@ -186,8 +186,8 @@ now.
 
 __ `Link Your Program to a Boost Library`_
 
-Or, Build and Install Binaries From Source
-------------------------------------------
+Or, Build Binaries From Source
+------------------------------
 
 If you're using an earlier version of Visual C++, or a compiler
 from another vendor, you'll need to use Boost.Build_ to create your
