@@ -304,19 +304,22 @@ class make_links_action( action ):
         utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "developer", "output" ) )
         utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "user", "output" ) )
         utils.log( '    Making test output files...' )
-        utils.libxslt( 
-            utils.log
-            , self.source_
-            , xsl_path( 'links_page.xsl' )
-            , self.links_file_path_
-            , {
-              'source':                 self.tag_
-              , 'run_date':               self.run_date_
-              , 'comment_file':           self.comment_file_
-              , 'explicit_markup_file':   self.failures_markup_file_
-              }
-            )
-        
+        try:
+            utils.libxslt( 
+                  utils.log
+                , self.source_
+                , xsl_path( 'links_page.xsl' )
+                , self.links_file_path_
+                , {
+                    'source':                 self.tag_
+                  , 'run_date':               self.run_date_
+                  , 'comment_file':           self.comment_file_
+                  , 'explicit_markup_file':   self.failures_markup_file_
+                  }
+                )
+        except Exception, msg:
+            utils.log( '  Skipping "%s" due to errors (%s)' % ( self.source_, msg ) )
+
         open( self.file_path_, "w" ).close()
 
 
