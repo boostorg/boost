@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+
+  <title>Portability Hints: Borland C++ 5.5.1</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+  <table border="1" bgcolor="#007F7F" cellpadding="2" summary="">
+    <tr>
+      <td bgcolor="#FFFFFF"><img src="../boost.png" alt=
+      "boost.png (6897 bytes)" width="277" height="86"></td>
+
+      <td><a href="../index.htm"><font face="Arial,Helvetica" color=
+      "#FFFFFF"><big>Home</big></font></a></td>
+
+      <td><a href="../libs/libraries.htm"><font face="Arial,Helvetica" color=
+      "#FFFFFF"><big>Libraries</big></font></a></td>
+
+      <td><a href="../people/people.htm"><font face="Arial,Helvetica" color=
+      "#FFFFFF"><big>People</big></font></a></td>
+
+      <td><a href="faq.htm"><font face="Arial,Helvetica" color=
+      "#FFFFFF"><big>FAQ</big></font></a></td>
+
+      <td><a href="index.htm"><font face="Arial,Helvetica" color=
+      "#FFFFFF"><big>More</big></font></a></td>
+    </tr>
+  </table>
+
+  <h1>Portability Hints: Borland C++ 5.5.1</h1>
+
+  <p>It is a general aim for boost libraries to be <a href=
+  "lib_guide.htm#Portability">portable</a>. The primary means for achieving
+  this goal is to adhere to ISO Standard C++. However, ISO C++ is a broad and
+  complex standard and most compilers are not fully conformant to ISO C++
+  yet. In order to achieve portability in the light of this restriction, it
+  seems advisable to get acquainted with those language features that some
+  compilers do not fully implement yet.</p>
+
+  <p>This page gives portability hints on some language features of the
+  Borland C++ version 5.5.1 compiler. Furthermore, the appendix presents
+  additional problems with Borland C++ version 5.5. Borland C++ 5.5.1 is a
+  freely available command-line compiler for Win32 available at <a href=
+  "http://www.borland.com/">http://www.borland.com/</a>.</p>
+
+  <p>Each entry in the following list describes a particular issue, complete
+  with sample source code to demonstrate the effect. Most sample code herein
+  has been verified to compile with gcc 2.95.2 and Comeau C++ 4.2.44.</p>
+
+  <h2>Preprocessor symbol</h2>
+
+  <p>The preprocessor symbol <code>__BORLANDC__</code> is defined for all
+  Borland C++ compilers. Its value is the version number of the compiler
+  interpreted as a hexadecimal number. The following table lists some known
+  values.</p>
+
+  <table border="1" summary="">
+    <tr>
+      <th>Compiler</th>
+
+      <th><code>__BORLANDC__</code> value</th>
+    </tr>
+
+    <tr>
+      <td>Borland C++ Builder 4</td>
+
+      <td>0x0540</td>
+    </tr>
+
+    <tr>
+      <td>Borland C++ Builder 5</td>
+
+      <td>0x0550</td>
+    </tr>
+
+    <tr>
+      <td>Borland C++ 5.5</td>
+
+      <td>0x0550</td>
+    </tr>
+
+    <tr>
+      <td>Borland C++ 5.5.1</td>
+
+      <td>0x0551</td>
+    </tr>
+
+    <tr>
+      <td>Borland C++ Builder 6</td>
+
+      <td>0x0560</td>
+    </tr>
+  </table>
+
+  <h2>Core Language</h2>
+
+  <h3>[using-directive] Mixing <code>using</code>-declarations and
+  <code>using</code>-directives</h3>
+
+  <p>Mixing <code>using</code>-directives (which refer to whole namespaces)
+  and namespace-level <code>using</code>-declarations (which refer to
+  individual identifiers within foreign namespaces) causes ambiguities where
+  there are none. The following code fragment illustrates this:</p>
+  <pre>
+namespace N {
+  int x();
+}
+
+using N::x;
+using namespace N;
+
+int main()
+{
+  &amp;x;     // Ambiguous overload
+}
+</pre>
+
+  <h3>[using template] <code>using</code>-declarations for class
+  templates</h3>
+
+  <p>Identifiers for class templates can be used as arguments to
+  <code>using</code>-declarations as any other identifier. However, the
+  following code fails to compile with Borland C++:</p>
+  <pre>
+template&lt;class T&gt;
+class X { };
+
+namespace N
+{
+  // "cannot use template 'X&lt;T&gt;' without specifying specialization parameters"
+  using ::X;
+};
+</pre>
+
+  <h3>[template const arg] Deduction of constant arguments to function
+  templates</h3>
+
+  <p>Template function type deduction should omit top-level constness.
+  However, this code fragment instantiates "f&lt;const int&gt;(int)":</p>
+  <pre>
+template&lt;class T&gt;
+void f(T x)
+{
+        x = 1;  // works
+        (void) &amp;x;
+        T y = 17;
+        y = 20;  // "Cannot modify a const object in function f&lt;const int&gt;(int)"
+        (void) &amp;y;
+}
+
+int main()
+{
+        const int i = 17;
+        f(i);
+}
+</pre>
+
+  <h3>[function address] Resolving addresses of overloaded functions</h3>
+
+  <p>Addresses of overloaded functions are not in all contexts properly
+  resolved (std:13.4 [over.over]); here is a small example:</p>
+  <pre>
+template&lt;class Arg&gt;
+void f( void(*g)(Arg) );
+
+void h(int);
+void h(double);
+
+template&lt;class T&gt;
+void h2(T);
+
+int main()
+{
+  void (*p)(int) = h;            // this works (std:13.4-1.1)
+  void (*p2)(unsigned char) = h2;    // this works as well (std:13.4-1.1)
+  f&lt;int&gt;(h2);  // this also works (std:13.4-1.3)
+
+  // "Cannot generate template specialization from h(int)",
+  // "Could not find a match for f&lt;Arg&gt;(void (*)(int))"
+  f&lt;double&gt;(h);   // should work (std:13.4-1.3)
+
+  f( (void(*)(double))h);  // C-style cast works (std:13.4-1.6 with 5.4)
+
+  // "Overloaded 'h' ambiguous in this context"
+  f(static_cast&lt;void(*)(double)&gt;(h)); // should work (std:13.4-1.6 with 5.2.9)
+}
+</pre>
+
+  <p><strong>Workaround:</strong> Always use C-style casts when determining
+  addresses of (potentially) overloaded functions.</p>
+
+  <h3>[string conversion] Converting <code>const char *</code> to
+  <code>std::string</code></h3>
+
+  <p>Implicitly converting <code>const char *</code> parameters to
+  <code>std::string</code> arguments fails if template functions are
+  explicitly instantiated (it works in the usual cases, though):</p>
+  <pre>
+#include &lt;string&gt;
+
+template&lt;class T&gt;
+void f(const std::string &amp; s)
+{}
+
+int main()
+{
+  f&lt;double&gt;("hello");  // "Could not find a match for f&lt;T&gt;(char *)"
+}
+
+</pre>
+
+  <p><strong>Workaround:</strong> Avoid explicit template function
+  instantiations (they have significant problems with Microsoft Visual C++)
+  and pass default-constructed unused dummy arguments with the appropriate
+  type. Alternatively, if you wish to keep to the explicit instantiation, you
+  could use an explicit conversion to <code>std::string</code> or declare the
+  template function as taking a <code>const char *</code> parameter.</p>
+
+  <h3>[template value defaults] Dependent default arguments for template
+  value parameters</h3>
+
+  <p>Template value parameters which default to an expression dependent on
+  previous template parameters don't work:</p>
+  <pre>
+template&lt;class T&gt;
+struct A
+{
+  static const bool value = true;
+};
+
+// "Templates must be classes or functions", "Declaration syntax error"
+template&lt;class T, bool v = A&lt;T&gt;::value&gt;
+struct B {};
+
+int main()
+{
+  B&lt;int&gt; x;
+}
+
+</pre>
+
+  <p><strong>Workaround:</strong> If the relevant non-type template parameter
+  is an implementation detail, use inheritance and a fully qualified
+  identifier (for example, ::N::A&lt;T&gt;::value).</p>
+
+  <h3>[function partial ordering] Partial ordering of function templates</h3>
+
+  <p>Partial ordering of function templates, as described in std:14.5.5.2
+  [temp.func.order], does not work:</p>
+  <pre>
+#include &lt;iostream&gt;
+
+template&lt;class T&gt; struct A {};
+
+template&lt;class T1&gt;
+void f(const A&lt;T1&gt; &amp;)
+{
+  std::cout &lt;&lt; "f(const A&lt;T1&gt;&amp;)\n";
+}
+
+template&lt;class T&gt;
+void f(T)
+{
+  std::cout &lt;&lt; "f(T)\n";
+}
+
+int main()
+{
+  A&lt;double&gt; a;
+  f(a);   // output: f(T)  (wrong)
+  f(1);   // output: f(T)  (correct)
+}
+</pre>
+
+  <p><strong>Workaround:</strong> Declare all such functions uniformly as
+  either taking a value or a reference parameter.</p>
+
+  <h3>[instantiate memfun ptr] Instantiation with member function
+  pointer</h3>
+
+  <p>When directly instantiating a template with some member function
+  pointer, which is itself dependent on some template parameter, the compiler
+  cannot cope:</p>
+  <pre>
+template&lt;class U&gt; class C { };
+template&lt;class T&gt;
+class A
+{
+  static const int v = C&lt;void (T::*)()&gt;::value;
+};
+</pre>
+
+  <p><strong>Workaround:</strong> Use an intermediate
+  <code>typedef</code>:</p>
+  <pre>
+template&lt;class U&gt; class C { };
+template&lt;class T&gt;
+class A
+{
+  typedef void (T::*my_type)();
+  static const int v = C&lt;my_type&gt;::value;
+};
+</pre>
+
+  <p>(Extracted from e-mail exchange of David Abrahams, Fernando Cacciola,
+  and Peter Dimov; not actually tested.)</p>
+
+  <h2>Library</h2>
+
+  <h3>[cmath.abs] Function <code>double std::abs(double)</code> missing</h3>
+
+  <p>The function <code>double std::abs(double)</code> should be defined
+  (std:26.5-5 [lib.c.math]), but it is not:</p>
+  <pre>
+#include &lt;cmath&gt;
+
+int main()
+{
+  double (*p)(double) = std::abs;  // error
+}
+</pre>
+
+  <p>Note that <code>int std::abs(int)</code> will be used without warning if
+  you write <code>std::abs(5.1)</code>.</p>
+
+  <p>Similar remarks apply to seemingly all of the other standard math
+  functions, where Borland C++ fails to provide <code>float</code> and
+  <code>long double</code> overloads.</p>
+
+  <p><strong>Workaround:</strong> Use <code>std::fabs</code> instead if type
+  genericity is not required.</p>
+
+  <h2>Appendix: Additional issues with Borland C++ version 5.5</h2>
+
+  <p>These issues are documented mainly for historic reasons. If you are
+  still using Borland C++ version 5.5, you are strongly encouraged to obtain
+  an upgrade to version 5.5.1, which fixes the issues described in this
+  section.</p>
+
+  <h3>[inline friend] Inline friend functions in template classes</h3>
+
+  <p>If a friend function of some class has not been declared before the
+  friend function declaration, the function is declared at the namespace
+  scope surrounding the class definition. Together with class templates and
+  inline definitions of friend functions, the code in the following fragment
+  should declare (and define) a non-template function "bool N::f(int,int)",
+  which is a friend of class N::A&lt;int&gt;. However, Borland C++ v5.5
+  expects the function f to be declared beforehand:</p>
+  <pre>
+namespace N {
+template&lt;class T&gt;
+class A
+{
+  // "f is not a member of 'N' in function main()"
+  friend bool f(T x, T y) { return x &lt; y; }
+};
+}
+
+int main()
+{
+  N::A&lt;int&gt; a;
+}
+</pre>
+
+  <p>This technique is extensively used in boost/operators.hpp. Giving in to
+  the wish of the compiler doesn't work in this case, because then the
+  "instantiate one template, get lots of helper functions at namespace scope"
+  approach doesn't work anymore. Defining BOOST_NO_OPERATORS_IN_NAMESPACE (a
+  define BOOST_NO_INLINE_FRIENDS_IN_CLASS_TEMPLATES would match this case
+  better) works around this problem and leads to another one, see
+  [using-template].</p>
+  <hr>
+
+  <p><a href="http://validator.w3.org/check?uri=referer"><img border="0" src=
+  "http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01 Transitional"
+  height="31" width="88"></a></p>
+
+  <p>Revised 
+  <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %B, %Y" startspan -->03
+  December, 2006<!--webbot bot="Timestamp" endspan i-checksum="38512" --></p>
+
+  <p><i>Copyright &copy; 2000-2002 <a href="../people/jens_maurer.htm">Jens
+  Maurer</a></i></p>
+
+  <p><i>Distributed under the Boost Software License, Version 1.0. (See
+  accompanying file <a href="../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy
+  at <a href=
+  "http://www.boost.org/LICENSE_1_0.txt">http://www.boost.org/LICENSE_1_0.txt</a>)</i></p>
+</body>
+</html>
