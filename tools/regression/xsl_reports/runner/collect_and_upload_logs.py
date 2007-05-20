@@ -50,6 +50,12 @@ dart_status_from_result = {
     '': 'notrun'
     }
 
+dart_project = {
+    'CVS-HEAD': 'Boost_HEAD',
+    'HEAD': 'Boost_HEAD',
+    '': 'Boost_HEAD'
+    }
+
 def publish_test_logs(
     input_dirs,
     runner_id, tag, platform, comment_file, timestamp, user, source, run_type,
@@ -84,7 +90,7 @@ def publish_test_logs(
 '''                         % {
                                 'site': runner_id,
                                 'buildname': "%s -- %s (%s)" % (platform,test['toolset'],run_type),
-                                'track': 'Nightly',
+                                'track': 'Continuous',
                                 'datetimestamp' : timestamp
                             } )
                     submission_dom = dart_dom[test['toolset']]
@@ -116,7 +122,8 @@ def publish_test_logs(
         os.path.walk( input_dir, _publish_test_log_files_, None )
     if dart_server:
         try:
-            dart_rpc = xmlrpclib.ServerProxy('http://%s/Boost_%s/Command/' % (dart_server,tag))
+            dart_rpc = xmlrpclib.ServerProxy(
+                'http://%s/%s/Command/' % (dart_server,dart_project[tag]) )
             for dom in dart_dom.values():
                 #~ utils.log('Dart XML: %s' % dom.toxml('utf-8'))
                 dart_rpc.Submit.put(xmlrpclib.Binary(dom.toxml('utf-8')))
@@ -352,7 +359,7 @@ def accept_args( args ):
         , '--run-type'      : 'full'
         , '--ftp-proxy'     : None
         , '--debug-level'   : 0
-        , '--dart-server'   : None
+        , '--dart-server'   : 'beta.boost.org:8081'
         
         }
     
