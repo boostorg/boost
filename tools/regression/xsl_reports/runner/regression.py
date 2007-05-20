@@ -901,7 +901,7 @@ def accept_args( args ):
         , '--proxy'         : None
         , '--debug-level'   : 0
         , '--ftp-proxy'     : None
-        , '--dart-server'   : None
+        , '--dart-server'   : 'beta.boost.org:8081'
         }
 
     ( option_pairs, other_args ) = getopt.getopt( args, '', args_spec )
