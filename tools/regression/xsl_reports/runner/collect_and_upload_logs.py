@@ -272,6 +272,7 @@ def upload_logs(
         , debug_level
         , send_bjam_log = False
         , timestamp_file = None
+        , dart_server = None
         , **unused
         ):
 
