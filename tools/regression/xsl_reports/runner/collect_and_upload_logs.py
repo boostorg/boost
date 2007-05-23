@@ -47,6 +47,7 @@ def collect_test_logs( input_dirs, test_results_writer ):
 dart_status_from_result = {
     'succeed': 'passed',
     'fail': 'failed',
+    'note': 'passed',
     '': 'notrun'
     }
 
@@ -112,7 +113,7 @@ def publish_test_logs(
                                     'type': node.nodeName,
                                     'result': dart_status_from_result[node.getAttribute('result')],
                                     'timestamp': node.getAttribute('timestamp'),
-                                    'log': xml.sax.saxutils.escape(node.firstChild.data)
+                                    'log': xml.sax.saxutils.escape(node.firstChild.data.encode('unicode_escape'))
                                 })
                             submission_dom.documentElement.appendChild(
                                 test_dom.documentElement.cloneNode(1) )
