@@ -57,6 +57,16 @@ dart_project = {
     '': 'Boost_HEAD'
     }
 
+ascii_only_table = ""
+for i in range(0,256):
+    if chr(i) == '\n' or chr(i) == '\r':
+        ascii_only_table += chr(i)
+    elif i < 32 or i >= 0x80:
+        ascii_only_table += '?'
+    else:
+        ascii_only_table += chr(i)
+    
+
 def publish_test_logs(
     input_dirs,
     runner_id, tag, platform, comment_file, timestamp, user, source, run_type,
@@ -73,7 +83,9 @@ def publish_test_logs(
             if os.path.basename( file ) == 'test_log.xml':
                 utils.log( 'Publishing test log "%s"' % os.path.join(dir,file) )
                 if dart_server:
-                    log_dom = xml.dom.minidom.parse(os.path.join(dir,file))
+                    log_xml = open(os.path.join(dir,file)).read().translate(ascii_only_table)
+                    #~ utils.log( '--- XML:\n%s' % log_xml)
+                    log_dom = xml.dom.minidom.parseString(log_xml)
                     test = {
                         'library': log_dom.documentElement.getAttribute('library'),
                         'test-name': log_dom.documentElement.getAttribute('test-name'),
@@ -113,7 +125,7 @@ def publish_test_logs(
                                     'type': node.nodeName,
                                     'result': dart_status_from_result[node.getAttribute('result')],
                                     'timestamp': node.getAttribute('timestamp'),
-                                    'log': xml.sax.saxutils.escape(node.firstChild.data.encode('unicode_escape'))
+                                    'log': xml.sax.saxutils.escape(node.firstChild.data)
                                 })
                             submission_dom.documentElement.appendChild(
                                 test_dom.documentElement.cloneNode(1) )
