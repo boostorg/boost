@@ -57,6 +57,12 @@ dart_project = {
     '': 'Boost_HEAD'
     }
 
+dart_track = {
+    'full': 'Nightly',
+    'incremental': 'Continuous',
+    '': 'Experimental'
+    }
+
 ascii_only_table = ""
 for i in range(0,256):
     if chr(i) == '\n' or chr(i) == '\r':
@@ -91,6 +97,10 @@ def publish_test_logs(
                         'test-name': log_dom.documentElement.getAttribute('test-name'),
                         'toolset': log_dom.documentElement.getAttribute('toolset')
                         }
+                    if not test['test-name'] or test['test-name'] == '':
+                        test['test-name'] = 'unknown'
+                    if not test['toolset'] or test['toolset'] == '':
+                        test['toolset'] = 'unknown'
                     if not dart_dom.has_key(test['toolset']):
                         dart_dom[test['toolset']] = xml.dom.minidom.parseString(
 '''<?xml version="1.0" encoding="UTF-8"?>
@@ -103,7 +113,7 @@ def publish_test_logs(
 '''                         % {
                                 'site': runner_id,
                                 'buildname': "%s -- %s (%s)" % (platform,test['toolset'],run_type),
-                                'track': 'Continuous',
+                                'track': dart_track[run_type],
                                 'datetimestamp' : timestamp
                             } )
                     submission_dom = dart_dom[test['toolset']]
