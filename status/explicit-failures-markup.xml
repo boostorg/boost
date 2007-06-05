@@ -290,6 +290,18 @@
         </mark-expected-failures>
     </library>
 
+    <!-- bimap-->
+    <library name="bimap">
+        <mark-expected-failures>
+            <test name="test_bimap_assign"/>
+            <test name="test_bimap_ordered"/>
+            <test name="test_bimap_unconstrained"/>
+            <test name="test_bimap_unordered"/>
+            <toolset name="acc"/>
+            <note refid="38" author="Boris Gubenko"/>
+       </mark-expected-failures>
+    </library>
+
     <!-- bind-->
     <library name="bind">
         <mark-expected-failures>
@@ -1953,10 +1965,7 @@
        <mark-expected-failures>
             <test name="copy"/>
             <toolset name="acc"/>
-            <note author="Boris Gubenko">
-                When compiling this test, aCC6 runs out of memory. The HP
-                compiler group is aware of this issue and is working on the fix.
-            </note>
+            <note refid="38" author="Boris Gubenko"/>
        </mark-expected-failures>
 
     </library>
@@ -5274,6 +5283,11 @@ for more information.
             BOOST_CHECK(v2[2] == x); // ok
             v2[2] = 1 - v2[2];
             BOOST_CHECK(ref != x);   // oops
+    </note>
+
+    <note id="38">
+        When compiling this test, aCC6 runs out of memory. The HP
+        compiler group is aware of this issue and is working on the fix.
     </note>
 
 </explicit-failures-markup>
