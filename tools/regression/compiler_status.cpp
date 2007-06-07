@@ -576,6 +576,14 @@ const fs::path find_bin_path(const string& relative)
         test_type_base.erase( trailer );
       }
     }
+    if ( test_type_base.size() > 4 )
+    {
+      const string::size_type trailer = test_type_base.size() - 4;
+      if ( test_type_base.substr( trailer ) == "_pyd" )
+      {
+        test_type_base.erase( trailer );
+      }
+    }
     const xml::element & test_type_element( find_element( db, test_type_base ) );
 
     pass = !test_type_element.name.empty()
