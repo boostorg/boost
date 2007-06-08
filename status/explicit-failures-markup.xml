@@ -299,7 +299,17 @@
             <test name="test_bimap_unordered"/>
             <toolset name="acc"/>
             <note refid="38" author="Boris Gubenko"/>
-       </mark-expected-failures>
+        </mark-expected-failures>
+        <mark-expected-failures>
+        <test name="typeof"/>
+                <toolset name="acc"/>
+                <toolset name="intel-vc71-win*"/>
+                <toolset name="intel-vc8-win*"/>
+                <toolset name="intel-win-9.1"/>
+                <toolset name="tru64*"/>
+                <toolset name="hp_cxx*"/>
+            <note refid="39" author="Boris Gubenko"/>
+        </mark-expected-failures>
     </library>
 
     <!-- bind-->
@@ -5288,6 +5298,10 @@ for more information.
     <note id="38">
         When compiling this test, aCC6 runs out of memory. The HP
         compiler group is aware of this issue and is working on the fix.
+    </note>
+
+    <note id="39">
+        This test assumes native typeof support.
     </note>
 
 </explicit-failures-markup>
