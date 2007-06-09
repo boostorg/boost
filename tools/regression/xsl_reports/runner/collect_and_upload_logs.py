@@ -122,7 +122,7 @@ def publish_test_logs(
                             if node.firstChild:
                                 log_data = xml.sax.saxutils.escape(node.firstChild.data)
                             else
-                                log_data = '';
+                                log_data = ''
                             test_dom = xml.dom.minidom.parseString('''<?xml version="1.0" encoding="UTF-8"?>
 <Test>
     <Name>.Test.Boost.%(tag)s.%(library)s.%(test-name)s.%(type)s</Name>
