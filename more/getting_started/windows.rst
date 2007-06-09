@@ -199,7 +199,7 @@ For example, your session might look like this: [#continuation]_
 
 .. parsed-literal::
 
-   C:\WINDOWS> cd |default-root|
+   C:\\WINDOWS> cd |default-root|
    |default-root|> bjam **^**
    More? **--build-dir=**\ %TEMP%\\build-boost **^**
    More? **--toolset=**\ msvc stage
@@ -218,6 +218,13 @@ For example, your session might look like this: [#continuation]_
    information to encode the name of the correct library into your
    object files; the linker selects the library with that name from
    the directories you've told it to search.
+
+   The GCC toolchains (Cygwin and MinGW) are notable exceptions;
+   GCC users should refer to the `linking instructions for Unix
+   variant OSes`__ for the appropriate command-line options to use.
+
+__ unix-variants.html#link-your-program-to-a-boost-library
+
 
 Link From Within the Visual Studio IDE
 --------------------------------------
