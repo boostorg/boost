@@ -119,6 +119,10 @@ def publish_test_logs(
                     submission_dom = dart_dom[test['toolset']]
                     for node in log_dom.documentElement.childNodes:
                         if node.nodeType == xml.dom.Node.ELEMENT_NODE:
+                            if node.firstChild:
+                                log_data = xml.sax.saxutils.escape(node.firstChild.data)
+                            else
+                                log_data = '';
                             test_dom = xml.dom.minidom.parseString('''<?xml version="1.0" encoding="UTF-8"?>
 <Test>
     <Name>.Test.Boost.%(tag)s.%(library)s.%(test-name)s.%(type)s</Name>
@@ -135,7 +139,7 @@ def publish_test_logs(
                                     'type': node.nodeName,
                                     'result': dart_status_from_result[node.getAttribute('result')],
                                     'timestamp': node.getAttribute('timestamp'),
-                                    'log': xml.sax.saxutils.escape(node.firstChild.data)
+                                    'log': log_data
                                 })
                             submission_dom.documentElement.appendChild(
                                 test_dom.documentElement.cloneNode(1) )
