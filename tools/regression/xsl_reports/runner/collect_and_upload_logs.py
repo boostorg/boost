@@ -121,7 +121,7 @@ def publish_test_logs(
                         if node.nodeType == xml.dom.Node.ELEMENT_NODE:
                             if node.firstChild:
                                 log_data = xml.sax.saxutils.escape(node.firstChild.data)
-                            else
+                            else:
                                 log_data = ''
                             test_dom = xml.dom.minidom.parseString('''<?xml version="1.0" encoding="UTF-8"?>
 <Test>
