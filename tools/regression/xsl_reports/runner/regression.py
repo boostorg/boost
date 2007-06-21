@@ -43,10 +43,10 @@ process_jam_log = {}
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
     bjam[ 'build_cmd' ] = lambda toolset, v2: bjam_build_script_cmd( 'build.bat %s' % toolset )
-    bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'borland', 'como', 'gcc', 'gcc-nocygwin' \
-                                                    , 'intel-win32', 'metrowerks', 'mingw' \
-                                                    , 'msvc', 'vc7' \
-                                                    ]
+    bjam[ 'is_supported_toolset' ] = lambda x: x in [ \
+        'borland', 'como', 'gcc', 'gcc-nocygwin', 'intel-win32', 'metrowerks', 'mingw', \
+        'msvc', 'vc7', 'vc8' \
+        ]
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
 
     def default_toolset(v2):
@@ -60,11 +60,10 @@ if sys.platform == 'win32':
 else:
     bjam[ 'name' ] = 'bjam'
     bjam[ 'build_cmd' ] = lambda toolset, v2: bjam_build_script_cmd( './build.sh %s' % toolset )
-    bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'acc', 'como', 'darwin', 'gcc' \
-                                                    , 'intel-linux', 'kcc', 'kylix' \
-                                                    , 'mipspro', 'sunpro', 'tru64cxx' \
-                                                    , 'vacpp'\
-                                                    ]
+    bjam[ 'is_supported_toolset' ] = lambda x: x in [ \
+        'acc', 'como', 'darwin', 'gcc', 'intel-linux', 'kcc', 'kylix', 'mipspro', \
+        'pathscale', 'pgi', 'qcc', 'sun', 'sunpro', 'tru64cxx', 'vacpp' \
+        ]
     process_jam_log[ 'name' ] = 'process_jam_log'
     process_jam_log[ 'default_toolset' ] = lambda x: 'gcc'
     patch_boost_name = 'patch_boost'
