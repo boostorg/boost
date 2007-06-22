@@ -1,0 +1,18 @@
+Copyright 2000-2003 Beman Dawes
+Distributed under the Boost Software License, Version 1.0. (See accompany-
+ing file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Unless otherwise specified, all Boost software and documentation is subject
+to the Boost Software License Version 1.0. See the accompanying file LICENSE_1_0.txt.
+A copy of the license is also available at http://www.boost.org/LICENSE_1_0.txt.
+
+For the most current version of Boost libraries and documentation, see:
+
+   http://www.boost.org
+
+Boost documentation is in HTML format.
+
+The top-level directory (which contains this README file) should contain
+a file named index.htm with links to all documentation, including
+documentation on building boost libraries for your particular compiler
+and operating system.
