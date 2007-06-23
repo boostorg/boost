@@ -91,7 +91,8 @@ def make_test_log( xml_generator
 
 
 def make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests ):
-    g = xml.sax.saxutils.XMLGenerator( open( "explicit-failures-markup.xml", "w" ) )
+    g = xml.sax.saxutils.XMLGenerator( open( "explicit-failures-markup.xml", "w" ), "utf-8" )
+    g.startDocument()
     g.startElement( "explicit-failures-markup", {} );
 
     # required toolsets
@@ -108,7 +109,7 @@ def make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests ):
                 if i_toolset % 2 == 1:
                     g.startElement( "toolset", { "name": make_toolset_name( i_toolset ) } )
                     g.endElement( "toolset" )
-            g.startElement( "note", { "author": "T. Test" } )
+            g.startElement( "note", { "author": u"T. T\xe8st" } )
             g.characters( "Test note" )
             g.endElement( "note" )
             g.endElement( "mark-unusable" )
@@ -145,7 +146,7 @@ def make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests ):
                     g.startElement( "toolset", { "name": make_toolset_name( 2 ) } )
                     g.endElement( "toolset" )
 
-                    g.startElement( "note", {  "author": "V. Annotated" } )
+                    g.startElement( "note", {  "author": u"V. Ann\xf3tated" } )
                     g.characters( "Some thoughtful note" )
                     g.endElement( "note" )
                     
@@ -156,6 +157,7 @@ def make_expicit_failure_markup( num_of_libs, num_of_toolsets, num_of_tests ):
             
         
     g.endElement( "explicit-failures-markup" )
+    g.endDocument()
 
 
 def make_expected_results( num_of_libs, num_of_toolsets, num_of_tests ):

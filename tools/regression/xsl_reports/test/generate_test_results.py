@@ -52,7 +52,8 @@ def make_test_results():
 
     for i_runner in range( 0, num_of_runners ):
         runner_id = "runner %02d" % i_runner
-        g = xml.sax.saxutils.XMLGenerator( open( os.path.join( results_directory, runner_id + ".xml" ), "w" ) )
+        g = xml.sax.saxutils.XMLGenerator( open( os.path.join( results_directory, runner_id + ".xml" ), "w" ), "utf-8" )
+        g.startDocument()
         if i_runner % 2:
             platform = "Win32"
         else:
@@ -129,7 +130,7 @@ def make_test_results():
                                               , show_run_output = show_run_output
                                               , variant = variant )
         g.endElement( "test-run" )
-
+        g.endDocument()
 
 
 
