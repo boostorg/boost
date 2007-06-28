@@ -2211,6 +2211,11 @@ for more information.
             <toolset name="msvc-6.5*"/>
             <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="shared_ptr_move_test"/>
+            <toolset name="*"/>
+            <note refid="38" author="Boris Gubenko"/>
+        </mark-expected-failures>
     </library>
 
     <!-- spirit -->
@@ -4740,6 +4745,10 @@ for more information.
             BOOST_CHECK(v2[2] == x); // ok
             v2[2] = 1 - v2[2];
             BOOST_CHECK(ref != x);   // oops
+    </note>
+
+    <note id="38">
+        This test assumes compiler support for rvalue references.
     </note>
 
 </explicit-failures-markup>
