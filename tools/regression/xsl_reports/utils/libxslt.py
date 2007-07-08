@@ -44,6 +44,6 @@ def libxslt( log, xml_file, xsl_file, output_file, parameters = None ):
 
     output_file = xslt_param( output_file, 0 )
     xlst_output_file = xslt_param( output_file )
-    if output_file != xlst_output_file:
+    if output_file != xlst_output_file and os.path.exists( xlst_output_file ):
         utils.rename( log, xlst_output_file, output_file )
 
