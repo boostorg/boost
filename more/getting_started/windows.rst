@@ -201,7 +201,7 @@ For example, your session might look like this: [#continuation]_
 
    C:\\WINDOWS> cd |default-root|
    |default-root|> bjam **^**
-   More? **--build-dir=**\ %TEMP%\\build-boost **^**
+   More? **--build-dir=**\ C:\\temp\\build-boost **^**
    More? **--toolset=**\ msvc stage
 
 .. include:: detail/build-from-source-tail.rst
