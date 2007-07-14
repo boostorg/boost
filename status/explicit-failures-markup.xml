@@ -20,6 +20,7 @@
     -->
 
     <!-- /////////////// Toolsets /////////////// -->
+    <mark-toolset name="acc" status="required"/>
     <mark-toolset name="borland-5.6.4" status="required"/>
     <mark-toolset name="borland-5.8.2" status="required"/>
     <mark-toolset name="cw-9.4" status="required"/>
@@ -287,6 +288,28 @@
                 The test depends on Boost.Tuple which probably does not work for
                 this compiler.
             </note>
+        </mark-expected-failures>
+    </library>
+
+    <!-- bimap-->
+    <library name="bimap">
+        <mark-expected-failures>
+            <test name="test_bimap_assign"/>
+            <test name="test_bimap_ordered"/>
+            <test name="test_bimap_unconstrained"/>
+            <test name="test_bimap_unordered"/>
+            <toolset name="acc"/>
+            <note refid="39" author="Boris Gubenko"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+        <test name="typeof"/>
+                <toolset name="acc"/>
+                <toolset name="intel-vc71-win*"/>
+                <toolset name="intel-vc8-win*"/>
+                <toolset name="intel-win-9.1"/>
+                <toolset name="tru64*"/>
+                <toolset name="hp_cxx*"/>
+            <note refid="40" author="Boris Gubenko"/>
         </mark-expected-failures>
     </library>
 
@@ -1010,6 +1033,19 @@
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="testdate_input_facet_dll"/>
+            <test name="testdate_input_facet"/>
+            <test name="testtime_input_facet"/>
+            <test name="testlocal_time_input_facet"/>
+            <toolset name="acc"/>
+            <note author="Jeff Garland">
+            These tests rely on the ability of an std::map to be
+            instantiated on an incomplete type. The Rogue Wave
+            version 2.2 and higher does not allow this.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="testtime_wstream"/>
             <toolset name="hp_cxx-65*"/>
             <note author="Jeff Garland">
@@ -1249,6 +1285,7 @@
             <test name="format_test3"/>
             <toolset name="tru64cxx65*"/>
             <toolset name="hp_cxx-65*"/>
+            <toolset name="acc"/>
             <note author="Markus Schoepflin" refid="33"/>
         </mark-expected-failures>
     </library>
@@ -1742,6 +1779,11 @@
              This is reported to be fixed in the next Sun
              compiler release.
           </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+            <test name="copy"/>
+            <toolset name="acc"/>
+            <note refid="39" author="Boris Gubenko"/>
        </mark-expected-failures>
 
     </library>
@@ -2309,6 +2351,7 @@ for more information.
         </mark-unusable>
         <mark-expected-failures>
             <test name="*_native"/>
+            <toolset name="acc"/>
             <toolset name="vc-8_0*"/>
             <toolset name="msvc-8.0*"/>
             <toolset name="intel-vc71-win*"/>
@@ -2527,6 +2570,16 @@ for more information.
             <toolset name="borland-5.8*"/>
             <note author="Aleksey Gurtovoy" date="19 Sep 2004" refid="26"/>
         </mark-expected-failures>
+
+       <mark-expected-failures>
+            <test name="is_lvalue_iterator"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko">
+                For some currently unknown reason, with aCC6, this test can be compiled
+                only in strict ansi mode. Since on HP-UX/aCC6 boost testing is done in the
+                default compilation mode, this test fails to compile on this platform.
+            </note>
+       </mark-expected-failures>
 
     </library>
 
@@ -3191,6 +3244,16 @@ for more information.
             <toolset name="tru64cxx7*"/>
             <toolset name="hp_cxx*"/>
             <note author="Markus Schoepflin" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="data_members"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko">
+                This test assumes standard-compliant dependent template name lookup which
+                is performed by aCC6 only in strict ansi mode. Since on HP-UX/aCC6 boost
+                testing is done in the default compilation mode, this test fails to
+                compile on this platform (in strict ansi mode, it compiles and succeeds).
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -4749,6 +4812,15 @@ for more information.
 
     <note id="38">
         This test assumes compiler support for rvalue references.
+    </note>
+
+    <note id="39">
+        When compiling this test, aCC6 runs out of memory. The HP
+        compiler group is aware of this issue and is working on the fix.
+    </note>
+
+    <note id="40">
+        This test assumes native typeof support.
     </note>
 
 </explicit-failures-markup>
