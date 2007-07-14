@@ -2489,7 +2489,12 @@ for more information.
             <toolset name="msvc-6.5*"/>
             <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
-    </library>
+        <mark-expected-failures>
+            <test name="shared_ptr_move_test"/>
+            <toolset name="*"/>
+            <note refid="40" author="Boris Gubenko"/>
+        </mark-expected-failures>
+   </library>
 
     <!-- spirit -->
     <library name="spirit">
@@ -5303,6 +5308,10 @@ for more information.
 
     <note id="39">
         This test assumes native typeof support.
+    </note>
+
+    <note id="40">
+        This test assumes compiler support for rvalue references.
     </note>
 
 </explicit-failures-markup>
