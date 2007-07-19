@@ -376,6 +376,17 @@
     </library>
 
 
+    <!-- circular_buffer -->
+    <library name="circular_buffer">
+        <mark-expected-failures>
+            <test name="base_test"/>
+            <test name="space_optimized_test"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko" refid="41"/>
+        </mark-expected-failures>
+    </library>
+
+
     <!-- concept_check -->
     <library name="concept_check">
         <test name="class_concept_fail_expected">
@@ -5313,6 +5324,13 @@ for more information.
 
     <note id="40">
         This test assumes compiler support for rvalue references.
+    </note>
+
+    <note id="41">
+        These tests rely on the ability of an std::deque container to be
+        constructed off two input iterators. Unfortunately, the Rogue Wave
+        library version 2.2 and higher assumes iterator which has + and -
+        operators which only random access iterator is required to provide.
     </note>
 
 </explicit-failures-markup>
