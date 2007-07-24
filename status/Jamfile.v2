@@ -1,0 +1,203 @@
+# Boost regression-testing Jamfile
+#  (C) Copyright David Abrahams 2002. Permission to copy, use, modify, sell and
+#  distribute this software is granted provided this copyright notice appears in
+#  all copies. This software is provided "as is" without express or implied
+#  warranty, and with no claim as to its suitability for any purpose.
+
+#  Status:
+#  - std::locale-support usage is commented out.
+#  Two test suite have different names.
+#  <no-warn> in config test is commented out.
+#  One of the smart_ptr test is run only from invocation dir in V1, and not
+#  run in V2 at all.
+
+
+project status
+    : source-location $(BOOST_ROOT) 
+    : requirements <hardcode-dll-paths>true  
+    ;
+        
+import testing ;    
+
+alias test_exec_monitor : ../libs/test/build//boost_test_exec_monitor/<link>static ;
+alias unit_test_framework : ../libs/test/build//boost_unit_test_framework/<link>static ;
+
+# Tests from Jamfiles in individual library test subdirectories
+# Please keep these in alphabetic order by test-suite name
+build-project ../libs/algorithm/minmax/test ;  # test-suite algorith/minmax
+build-project ../libs/algorithm/string/test ;  # test-suite algorithm/string
+build-project ../libs/assign/test ;            # test-suite assign
+build-project ../libs/any/test ;               # test-suite any
+build-project ../libs/bind/test ;              # test-suite bind
+build-project ../libs/concept_check ;          # test-suite concept_check
+build-project ../libs/conversion/test ;        # test-suite conversion
+build-project ../libs/date_time/test  ;        # test-suite date_time
+build-project ../libs/dynamic_bitset ;         # test-suite dynamic_bitset
+build-project ../libs/filesystem/test ;        # test-suite filesystem
+build-project ../libs/foreach/test ;           # test-suite foreach
+build-project ../libs/format/test ;            # test-suite format
+build-project ../libs/function/test ;          # test-suite function
+build-project ../libs/functional/hash/test ;   # test-suite functional/hash
+build-project ../libs/graph/test ;             # test-suite graph
+build-project ../libs/io/test ;                # test-suite io
+build-project ../libs/iostreams/test ;         # test-suite iostreams
+build-project ../libs/iterator/test ;          # test-suite iterator
+build-project ../libs/logic/test ;             # test-suite logic
+build-project ../libs/math/test ;              # test-suite math
+build-project ../libs/mpl/test ;               # test-suite mpl
+build-project ../libs/numeric/conversion/test ;  # test-suite numeric/conversion
+build-project ../libs/numeric/interval/test ;  # test-suite numeric/interval
+build-project ../libs/numeric/ublas/test ;     # test-suite numeirc/uBLAS
+build-project ../libs/multi_array/test ;       # test-suite multi_array
+build-project ../libs/multi_index/test ;       # test-suite multi_index
+build-project ../libs/optional/test ;          # test-suite optional
+build-project ../libs/parameter/test ;         # test-suite parameter
+build-project ../libs/program_options/test ;   # test-suite program_options
+build-project ../libs/property_map/test ;      # test-suite property_map
+build-project ../libs/ptr_container/test ;     # test-suite ptr_container
+build-project ../libs/python/test ;            # test-suite python
+build-project ../libs/random/test ;            # test-suite random
+build-project ../libs/range/test ;             # test-suite range
+build-project ../libs/regex/test ;             # test-suite regex
+build-project ../libs/regex/example ;          # test-suite regex-examples
+build-project ../libs/serialization/test ;     # test-suite serialization
+build-project ../libs/signals/test ;           # test-suite signals
+build-project ../libs/smart_ptr/test ;         # test-suite smart_ptr
+build-project ../libs/spirit/test ;            # test-suite spirit
+build-project ../libs/statechart/test ;        # test-suite statechart
+build-project ../libs/static_assert ;          # test-suite static_assert
+build-project ../libs/test/test ;              # test-suite test
+build-project ../libs/thread/test ;            # test-suite thread
+build-project ../libs/tr1/test ;               # test-suite tr1
+build-project ../libs/type_traits/test ;       # test-suite type_traits
+build-project ../libs/typeof/test ;            # test-suite typeof
+build-project ../libs/utility/enable_if/test ; # test-suite utility/enable_if
+build-project ../libs/utility/test ;           # test-suite utility
+build-project ../libs/variant/test ;           # test-suite variant
+build-project ../libs/wave/test/build ;        # test-suite wave
+build-project ../libs/xpressive/test ;         # test-suite xpressive
+
+# Tests specified in this Jamfile
+        
+    test-suite config
+        : 
+          # FIXME: Ideally, this should be just an alias to 'main' test suite
+          # defined in libs/config/test/Jamfile.v2
+          # That way, we'll avoid code duplication and won't run additional
+          # tests in 'auxilliary' test suites, that need to be run and
+          # interpreted by humans.
+          # But such change will require tweaking libs/config/tools/generate.cpp
+          # so postponing to later.       
+          [ run libs/config/test/config_test.cpp test_exec_monitor
+                : #args
+                : #input-files
+                : #requirements
+                <threading>multi #!!!<no-warn>config_test.cpp
+          ]
+           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
+           [ run libs/config/test/math_info.cpp : : : <test-info>always_show_run_output <toolset>borland:<runtime-link>static ]
+           [ run libs/config/test/abi/abi_test.cpp libs/config/test/abi/main.cpp ]
+           [ run libs/config/test/limits_test.cpp test_exec_monitor ]
+           [ run libs/config/test/link/main.cpp ../libs/config/test/link//link_test
+                : #args
+                : #input-files
+                : #requirements
+                <runtime-link>shared
+                <define>BOOST_DYN_LINK=1
+                <define>BOOST_CONFIG_NO_LIB=1
+                :
+                config_link_test
+          ]
+          [ compile-fail libs/config/test/threads/test_thread_fail1.cpp ]
+          [ compile-fail libs/config/test/threads/test_thread_fail2.cpp ]
+        ;
+    
+    test-suite array_suite # !!!
+        : [ run libs/array/array0.cpp ]
+          [ run libs/array/array1.cpp ]
+          [ run libs/array/array2.cpp ]
+          [ run libs/array/array3.cpp ]
+          [ run libs/array/array4.cpp ]
+          [ run libs/array/array5.cpp ]
+        ;
+    
+    run libs/crc/crc_test.cpp test_exec_monitor ;
+
+
+    test-suite disjoint_sets
+        : [ run libs/disjoint_sets/disjoint_set_test.cpp test_exec_monitor ]
+        ;
+    
+    run libs/functional/function_test.cpp ;
+
+
+    test-suite integer
+        : [ run libs/integer/cstdint_test.cpp ]
+          [ run libs/integer/integer_test.cpp ]
+          [ run libs/integer/integer_traits_test.cpp test_exec_monitor ]
+        ;
+
+    test-suite lambda
+        : [ run libs/lambda/test/algorithm_test.cpp test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_simple.cpp test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_advanced.cpp test_exec_monitor ]
+          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp test_exec_monitor ]
+          [ run libs/lambda/test/bll_and_function.cpp test_exec_monitor ]
+          [ run libs/lambda/test/cast_test.cpp test_exec_monitor : : : : lambda_cast_test ]
+          [ run libs/lambda/test/constructor_tests.cpp test_exec_monitor ]
+          [ run libs/lambda/test/control_structures.cpp test_exec_monitor ]
+          [ run libs/lambda/test/exception_test.cpp test_exec_monitor ]
+          [ run libs/lambda/test/extending_rt_traits.cpp test_exec_monitor ]
+          [ run libs/lambda/test/is_instance_of_test.cpp test_exec_monitor ]
+          [ run libs/lambda/test/member_pointer_test.cpp test_exec_monitor ]
+          [ run libs/lambda/test/operator_tests_simple.cpp test_exec_monitor ]
+          [ run libs/lambda/test/phoenix_control_structures.cpp test_exec_monitor ]
+          [ run libs/lambda/test/switch_construct.cpp test_exec_monitor ]
+        ;
+
+
+    run libs/pool/test/test_pool_alloc.cpp  test_exec_monitor ;    
+
+    test-suite preprocessor
+        : [ compile libs/preprocessor/test/arithmetic.cpp ]
+          [ compile libs/preprocessor/test/array.cpp ]
+          [ compile libs/preprocessor/test/comparison.cpp ]
+          [ compile libs/preprocessor/test/control.cpp ]
+          [ compile libs/preprocessor/test/debug.cpp ]
+          [ compile libs/preprocessor/test/facilities.cpp ]
+          [ compile libs/preprocessor/test/iteration.cpp ]
+          [ compile libs/preprocessor/test/list.cpp ]
+          [ compile libs/preprocessor/test/logical.cpp ]
+          [ compile libs/preprocessor/test/repetition.cpp ]
+          [ compile libs/preprocessor/test/selection.cpp ]
+          [ compile libs/preprocessor/test/seq.cpp ]
+          [ compile libs/preprocessor/test/slot.cpp ]
+          [ compile libs/preprocessor/test/tuple.cpp ]
+        ;
+
+    test-suite rational
+        : [ run libs/rational/rational_example.cpp ]
+          [ run libs/rational/rational_test.cpp unit_test_framework ]
+        ;
+
+    
+    
+    compile libs/timer/timer_test.cpp ;
+
+    test-suite tokenizer
+        : [ run libs/tokenizer/examples.cpp test_exec_monitor ]
+          [ run libs/tokenizer/simple_example_1.cpp ]
+          [ run libs/tokenizer/simple_example_2.cpp ]
+          [ run libs/tokenizer/simple_example_3.cpp ]
+          [ run libs/tokenizer/simple_example_4.cpp ]
+          [ run libs/tokenizer/simple_example_5.cpp ]
+        ;
+
+    test-suite tuple_suite # !!!
+        : [ run libs/tuple/test/tuple_test_bench.cpp test_exec_monitor ]
+          [ run libs/tuple/test/io_test.cpp test_exec_monitor ]
+    ;
+
+
+
+
