@@ -798,7 +798,7 @@ def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
 \t--locate-root         the same as --locate-root in compiler_status
-\t--tag                 the tag for the results (i.e. 'CVS-HEAD')
+\t--tag                 the tag for the results (i.e. 'trunk')
 \t--expected-results    the file with the results to be compared with
 \t                      the current run
 \t--failures-markup     the file with the failures markup

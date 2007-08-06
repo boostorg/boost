@@ -32,9 +32,9 @@ boost_root      = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
 timestamp_path  = os.path.join( regression_root, 'timestamp' )
 
-cvs_command_line         = 'cvs -z9 %(command)s'
-cvs_ext_command_line     = 'cvs -d:ext:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
-cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+svn_anonymous_command_line = 'svn %(command)s'
+svn_command_line           = 'svn --non-interactive --username=%(user)s %(command)s'
+
 
 bjam = {}
 process_jam_log = {}
@@ -174,6 +174,7 @@ def http_get( source_url, destination, proxy ):
 
 
 def tarball_name_for_tag( tag, timestamp = False ):
+    tag = tag.split( '/' )[-1]
     if not timestamp: return 'boost-%s.tar.bz2' % tag
     else:             return 'boost-%s.timestamp' % tag
 
@@ -255,38 +256,32 @@ def unpack_tarball( tarball_path, destination  ):
     os.rename( boost_dir, boost_root )
 
 
-def cvs_command( user, command ):
-    if user is None:
-        cmd = cvs_command_line % { 'command': command }
-    elif user == 'anonymous':
-        cmd = cvs_pserver_command_line % { 'user': user, 'command': command }
+def svn_command( user, command ):
+    if user is None or user == 'anonymous':
+        cmd = svn_anonymous_command_line % { 'command': command }
     else:
-        cmd = cvs_ext_command_line % { 'user': user, 'command': command }
+        cmd = svn_command_line % { 'user': user, 'command': command }
 
-    log( 'Executing CVS command "%s"' % cmd )
+    log( 'Executing SVN command "%s"' % cmd )
     rc = os.system( cmd )
     if rc != 0:
-        raise Exception( 'CVS command "%s" failed with code %d' % ( cmd, rc ) )
+        raise Exception( 'SVN command "%s" failed with code %d' % ( cmd, rc ) )
 
 
-def cvs_checkout( user, tag, args ):
-    if tag != 'CVS-HEAD':
-        command = 'checkout -r %s boost' % tag
-    else:
-        command = 'checkout boost'
+def svn_repository_url( user, tag ):
+    if user != 'anonymous': return 'https://svn.boost.org/svn/boost/%s' % tag
+    else:                   return 'http://svn.boost.org/svn/boost/%s' % tag
 
+
+def svn_checkout( user, tag, args ):
+    command = 'co %s boost' % svn_repository_url( user, tag )
     os.chdir( regression_root )
-    cvs_command( user, command )
+    svn_command( user, command )
 
 
-def cvs_update( user, tag, args ):
-    if tag != 'CVS-HEAD':
-        command = 'update -dPA -r %s' % tag
-    else:
-        command = 'update -dPA'
-
-    os.chdir( os.path.join( regression_root, 'boost' ) )
-    cvs_command( user, command )
+def svn_update( user, tag, args ):
+    os.chdir( boost_root )
+    svn_command( user, 'update' )
 
 
 def format_time( t ):
@@ -330,7 +325,7 @@ def get_source( user, tag, proxy, args, **unused ):
 
     if user is not None:
         retry(
-              cvs_checkout
+              svn_checkout
             , ( user, tag, args )
             )
     else:
@@ -341,11 +336,11 @@ def get_source( user, tag, proxy, args, **unused ):
 
 
 def update_source( user, tag, proxy, args, **unused ):
-    if user is not None or os.path.exists( os.path.join( boost_root, 'CVS' ) ):
+    if user is not None or os.path.exists( os.path.join( boost_root, '.svn' ) ):
         open( timestamp_path, 'w' ).close()
-        log( 'Updating sources from CVS (%s)...' % timestamp() )
+        log( 'Updating sources from SVN (%s)...' % timestamp() )
         retry(
-              cvs_update
+              svn_update
             , ( user, tag, args )
             )
     else:
@@ -471,6 +466,7 @@ def setup(
             log( 'Warning: Test monitoring is not supported on this platform (yet).'     )
             log( '         Please consider contributing this piece!' )
 
+
 def bjam_build_script_cmd( cmd ):
     env_setup_key = 'BJAM_ENVIRONMENT_SETUP'
     if os.environ.has_key( env_setup_key ):
@@ -482,9 +478,11 @@ def bjam_build_script_cmd( cmd ):
 def bjam_command( toolsets, v2 ):
     build_path = regression_root
     if build_path[-1] == '\\': build_path += '\\'
+
     v2_option = ""
     if v2:
         v2_option = "--v2"
+
     result = '"%s" %s "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
         % (
             tool_path( bjam, v2 )
@@ -493,7 +491,7 @@ def bjam_command( toolsets, v2 ):
           , boost_root
           )
 
-    if not toolsets is None:
+    if toolsets:
         if v2:
             result += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
         else:
@@ -603,6 +601,7 @@ def test(
         if monitored:
             stop_build_monitor()
 
+
 def build_book( **kargs ):
     # To do
     # 1. PDF generation
@@ -620,6 +619,7 @@ def build_book( **kargs ):
         # utils.system( [ '%s --v2 pdf >>%s 2>&1' % ( tool_path( bjam, v2=True ), boostbook_log ) ] )
     finally:
         os.chdir( cwd )
+
 
 def collect_logs(
           tag
@@ -649,12 +649,9 @@ def collect_logs(
     else:           run_type = 'full'
 
     source = 'tarball'
-    cvs_root_file = os.path.join( boost_root, 'CVS', 'root' )
-    if os.path.exists( cvs_root_file ):
-        if string.split( open( cvs_root_file ).readline(), '@' )[0] == ':pserver:anonymous':
-            source = 'anonymous CVS'
-        else:
-            source = 'CVS'
+    svn_root_file = os.path.join( boost_root, '.svn' )
+    if os.path.exists( svn_root_file ):
+        source = 'SVN'
 
     from runner import collect_logs
     collect_logs(
@@ -670,6 +667,7 @@ def collect_logs(
         , dart_server
         )
 
+
 def collect_book( **unused ):
     log( 'Collecting files for BoostBook into "%s"...' % boostbook_archive_name )
     import zipfile
@@ -683,9 +681,11 @@ def collect_book( **unused ):
         for name in names:
             path = os.path.join( dirname, name )
             if not os.path.isdir( path ):
-                boostbook_archive.write( path, path[ len(html_root) + 1: ] )
+                boostbook_archive.write( path, path[ len( html_root ) + 1: ] )
+
     os.path.walk( html_root, add_files, None ) 
     
+
 def upload_logs(
           tag
         , runner
@@ -700,14 +700,17 @@ def upload_logs(
     from runner import upload_logs
     retry(
           upload_logs
-        , ( regression_results, runner, tag, user, ftp_proxy, debug_level, send_bjam_log, timestamp_path, dart_server )
+        , ( regression_results, runner, tag, user, ftp_proxy, debug_level,
+            send_bjam_log, timestamp_path, dart_server )
         )
+
 
 def upload_book( tag, runner, ftp_proxy, debug_level, **unused ):
     import_utils()
     from runner import upload_to_ftp
     upload_to_ftp( tag, boostbook_archive_name, ftp_proxy, debug_level )
-    
+
+
 def update_itself( tag, **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
     self = os.path.join( regression_root, os.path.basename( sys.argv[0] ) )
@@ -805,6 +808,7 @@ def regression(
 
         setup( comment, toolsets, book, bjam_toolset, pjl_toolset, monitored, proxy,
                v2, [] )
+
         # Not specifying --toolset in command line is not enough
         # that would mean to use Boost.Build default ones
         # We can skip test only we were explictly 
@@ -813,8 +817,9 @@ def regression(
             test( toolsets, bjam_options, monitored, timeout, v2, [] )
             collect_logs( tag, runner, platform, user, comment, incremental, dart_server, [] )
             upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log, dart_server )
+
         if book:
-            build_book()    
+            build_book()
             collect_book()
             upload_book( tag, runner, ftp_proxy, debug_level )
 
@@ -884,7 +889,7 @@ def accept_args( args ):
         ]
 
     options = {
-          '--tag'           : 'CVS-HEAD'
+          '--tag'           : 'trunk'
         , '--local'         : None
         , '--platform'      : platform_name()
         , '--user'          : None
@@ -962,20 +967,20 @@ Commands:
 
 Options:
 \t--runner        runner ID (e.g. 'Metacomm')
-\t--tag           the tag for the results ('CVS-HEAD' by default)
+\t--tag           the tag for the results ('trunk' by default)
 \t--local         the name of the boost tarball
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
 \t--dont-send-bjam-log 
 \t                do not send full bjam log of the regression run
-\t--force-update  do a CVS update (if applicable) instead of a clean
+\t--force-update  do an SVN update (if applicable) instead of a clean
 \t                checkout, even when performing a full run
 \t--monitored     do a monitored run
 \t--timeout       specifies the timeout, in minutes, for a single test
 \t                run/compilation (enforced only in monitored runs, 5 by
 \t                default)
-\t--user          SourceForge user name for a shell/CVS account (optional)
+\t--user          Boost SVN user ID (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
 \t--book          build BoostBook (optional)
 \t--bjam-options  options to pass to the regression test (optional)
