@@ -8,16 +8,16 @@ Requirements
 * Python 2.3 or higher
 * Some spare disk space (~5 Gb per each tested compiler)
 
-That's it! You don't even need a CVS client installed.
+That's it! You don't even need an SVN client installed.
 
 Installation
 ------------
 
-* Download regression driver ``regression.py`` from here__ (http://tinyurl.com/uufav)
+* Download regression driver ``regression.py`` from here__ (http://tinyurl.com/236tty)
   and put it in the directory where you want all the regression 
   test files to be placed.
 
-__ http://boost.cvs.sourceforge.net/*checkout*/boost/boost/tools/regression/xsl_reports/runner/regression.py
+__ http://svn.boost.org/svn/boost/trunk/tools/regression/xsl_reports/runner/regression.py
 
 
 * **Optional**: If you already have ``bjam`` and/or ``process_jam_log`` executables
@@ -43,7 +43,7 @@ two arguments:
 
 For example::
 
-    python regression.py --runner=Metacomm --toolsets=gcc,vc7
+    python regression.py --runner=Metacomm --toolsets=gcc-4.2.1,msvc-8.0
     
 
 If you are interested in seeing all available options, run ``python regression.py``
@@ -77,7 +77,7 @@ The regression run procedure will:
 
 The report merger process running continuously on MetaCommunications site will 
 merge all submitted test runs and publish them at 
-http://boost.sourceforge.net/regression-logs/developer.
+http://engineering.meta-comm.com/boost-regression/.
 
 
 Advanced use
@@ -130,22 +130,28 @@ That's it. Knowing your intentions, the script will be able to automatically dea
 with the listed issues [#monitored]_.
 
 
-Getting sources from CVS
+Getting sources from SVN
 ........................
 
-If you already have a CVS client installed and configured, you might prefer to get
-the sources directly from the Boost CVS repository. To communicate this to the 
-script, you just need to pass it your SourceForge user ID using the ``--user`` 
-option; for instance:
+If you already have an SVN client installed and configured, you might
+prefer to get the sources directly from the `Boost Subversion
+Repository`__. To communicate this to the script, you just need to
+pass it your Boost SVN user ID using the ``--user`` option; for
+instance:
+
+__ http://svn.boost.org/trac/boost/wiki/BoostSubversion
 
 .. parsed-literal::
 
       python regression.py ... **--user=agurtovoy**
 
-You can also specify the user as ``anonymous``, requesting anonymous CVS access. 
-Note, though, that the files obtained this way tend to lag behind the actual CVS 
-state by several hours, sometimes up to twelve. By contrast, the tarball the script 
-downloads by default is at most one hour behind.
+You can also specify the user as ``anonymous``, requesting anonymous
+SVN access.  
+
+The main advantage of obtaining the sources through SVN is an
+immediate availability of the most recent check-ins: the sources
+extracted from a tarball the script downloads by default can be up to
+one hour behind the actual repository state at the time of test run.
 
 
 Integration with a custom driver script
@@ -158,7 +164,7 @@ getting your regression results into `Boost-wide reports`__ is still easy!
 In fact, it's just a matter of modifying your script to perform two straightforward 
 operations:
 
-1. *Timestamp file creation* needs to be done before the CVS update/checkout.
+1. *Timestamp file creation* needs to be done before the SVN update/checkout.
    The file's location doesn't matter (nor does the content), as long as you know how 
    to access it later. Making your script to do something as simple as
    ``echo >timestamp`` would work just fine.
@@ -166,7 +172,7 @@ operations:
 2. *Collecting and uploading logs* can be done any time after ``process_jam_log``' s
    run, and is as simple as an invocation of the local copy of
    ``$BOOST_ROOT/tools/regression/xsl_reports/runner/collect_and_upload_logs.py``
-   script that was just obtained from the CVS with the rest of the sources.
+   script that was just obtained from the SVN with the rest of the sources.
    You'd need to provide ``collect_and_upload_logs.py`` with the following three
    arguments::
 

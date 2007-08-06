@@ -52,8 +52,7 @@ dart_status_from_result = {
     }
 
 dart_project = {
-    'CVS-HEAD': 'Boost_HEAD',
-    'HEAD': 'Boost_HEAD',
+    'trunk': 'Boost_HEAD',
     '': 'Boost_HEAD'
     }
 
@@ -178,8 +177,9 @@ def upload_to_ftp( tag, results_file, ftp_proxy, debug_level ):
     try:
         ftp.cwd( tag )
     except ftplib.error_perm:
-        ftp.mkd( tag )
-        ftp.cwd( tag )
+        for dir in tag.split( '/' ):
+            ftp.mkd( dir )
+            ftp.cwd( dir )
 
     f = open( results_file, 'rb' )
     ftp.storbinary( 'STOR %s' % os.path.basename( results_file ), f )
@@ -378,12 +378,12 @@ def accept_args( args ):
         ]
     
     options = {
-          '--tag'           : 'CVS-HEAD'
+          '--tag'           : 'trunk'
         , '--platform'      : sys.platform
         , '--comment'       : 'comment.html'
         , '--timestamp'     : 'timestamp'
         , '--user'          : None
-        , '--source'        : 'CVS'
+        , '--source'        : 'SVN'
         , '--run-type'      : 'full'
         , '--ftp-proxy'     : None
         , '--debug-level'   : 0
@@ -429,10 +429,10 @@ Options:
 \t                as a timestamp of the run ("timestamp" by default)
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ("comment.html" by default)
-\t--tag           the tag for the results ("CVS-HEAD" by default)
+\t--tag           the tag for the results ("trunk" by default)
 \t--user          SourceForge user name for a shell account (optional)
-\t--source        where Boost sources came from (e.g. "CVS", "tarball",
-\t                "anonymous CVS"; "CVS" by default)
+\t--source        where Boost sources came from ("SVN" or "tarball";
+\t                "SVN" by default)
 \t--run-type      "incremental" or "full" ("full" by default)
 \t--send-bjam-log in addition to regular XML results, send in full bjam
 \t                log of the regression run
