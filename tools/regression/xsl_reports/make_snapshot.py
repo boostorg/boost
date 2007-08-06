@@ -49,7 +49,7 @@ def svn_export( sources_dir, user, tag ):
         command = 'svn export --force http://svn.boost.org/svn/boost/%s %s' % ( tag, sources_dir )
     else:
         command = 'svn export --force --non-interactive --username=%s https://svn.boost.org/svn/boost/%s %s' \
-                  % ( tag, sources_dir )
+                  % ( user, tag, sources_dir )
 
     os.chdir( os.path.basename( sources_dir ) )
     retry(
