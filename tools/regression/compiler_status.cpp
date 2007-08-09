@@ -908,7 +908,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
           "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
           "<table border=\"0\">\n"
           "<tr>\n"
-          "<td><img border=\"0\" src=\"../boost.png\" width=\"277\" "
+          "<td><img border=\"0\" src=\"http://www.boost.org/boost.png\" width=\"277\" "
           "height=\"86\"></td>\n"
           "<td>\n"
           "<h1>Compiler Status: " + platform_desc() + "</h1>\n"
