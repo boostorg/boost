@@ -60,6 +60,10 @@ def_modules(
             '^Twisted[^/]+/zope.interface-[^/]+/src/zope/$' }
     )
 
+#~ Since we have our own extra slave commands they have to loaded before
+#~ starting the slave deamon.
+if len(sys.argv) > 1 and sys.argv[1] == 'start':
+    import boost.bot.remote
 
 #~ And run the buildbot frontend script.
 from buildbot.scripts import runner

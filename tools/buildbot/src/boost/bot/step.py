@@ -6,6 +6,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 from buildbot.steps.shell import ShellCommand
+from buildbot.process.buildstep import LoggedRemoteCommand
 import re
 import string
 import twisted.python
@@ -13,17 +14,21 @@ import twisted.python
 class command_base(ShellCommand):
     def __init__(self, _name, _description, **kwargs):
         if kwargs.get('name'): _name = kwargs.get('name')
-        if kwargs.get('description'): _description = kwargs.get('description')
-        
+        if not kwargs.get('description'): kwargs['description'] = _description
         ShellCommand.__init__(self,**kwargs)
-        
         self.name = _name
-        self.description = _description
-        
-        #~ if kwargs.has_key('name'): del kwargs['name']
-        #~ if kwargs.has_key('description'): del kwargs['description']
-        #~ if kwargs.has_key('build'): del kwargs['build']
-        #~ self.cmd = buildbot.process.step.LoggedRemoteCommand(_name,kwargs)
+    
+    def start(self):
+        #~ command = self._interpolateProperties(self.command)
+        #~ assert isinstance(command, (list, tuple, str))
+        kwargs = self.remote_kwargs
+        #~ kwargs['command'] = command
+        if kwargs.get('env'): kwargs['env'] = kwargs['env'].copy()
+        kwargs['logfiles'] = self.logfiles
+        cmd = LoggedRemoteCommand(self.name,kwargs)
+        self.setupEnvironment(cmd)
+        self.checkForOldSlaveAndLogfiles()
+        self.startCommand(cmd)
 
 class SelfUpdate(command_base):
     def __init__(self, **kwargs):
