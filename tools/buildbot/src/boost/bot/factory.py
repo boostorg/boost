@@ -153,27 +153,27 @@ class Boost_BuildFactory(buildbot.process.factory.BuildFactory):
             ,**defaults(**kwargs)
             )
 
-    def action_btest(self,b,*args,**kwargs):
-        return (
-            [ s( boost.bot.step.Boost_Test
-                ,description = kwargs.get('description')
-                ,workdir = b.workdir
-                ,tests = kwargs.get('tests',['.*'])
-                ,bjam = kwargs.get('bjam','tools/jam/src/bin/bjam')
-                ,project = kwargs.get('project','status')
-                ,options = kwargs.get('options',[
-                    '--dump-tests',
-                    '--dump-test-targets',
-                    '-sBUILD=%s' % kwargs.get('build','debug'),
-                    '-sTOOLS=%s' % kwargs['toolset']
-                    ] + kwargs.get('options',[]))
-                ,target = 'nothing'
-                ,locate = kwargs.get('locate','results')
-                ,env = kwargs.get('env',{})
-                ,logfile = kwargs.get('logfile','bjam.log')
-                ,**defaults(**kwargs)
-                ) ],
-            kwargs.get('files',[]) )
+    #~ def action_btest(self,b,*args,**kwargs):
+        #~ return (
+            #~ [ s( boost.bot.step.Boost_Test
+                #~ ,description = kwargs.get('description')
+                #~ ,workdir = b.workdir
+                #~ ,tests = kwargs.get('tests',['.*'])
+                #~ ,bjam = kwargs.get('bjam','tools/jam/src/bin/bjam')
+                #~ ,project = kwargs.get('project','status')
+                #~ ,options = kwargs.get('options',[
+                    #~ '--dump-tests',
+                    #~ '--dump-test-targets',
+                    #~ '-sBUILD=%s' % kwargs.get('build','debug'),
+                    #~ '-sTOOLS=%s' % kwargs['toolset']
+                    #~ ] + kwargs.get('options',[]))
+                #~ ,target = 'nothing'
+                #~ ,locate = kwargs.get('locate','results')
+                #~ ,env = kwargs.get('env',{})
+                #~ ,logfile = kwargs.get('logfile','bjam.log')
+                #~ ,**defaults(**kwargs)
+                #~ ) ],
+            #~ kwargs.get('files',[]) )
 
     def action_btest_all(self,b,*args,**kwargs):
         return self.action_bjam( b
@@ -181,10 +181,12 @@ class Boost_BuildFactory(buildbot.process.factory.BuildFactory):
             ,project = kwargs.get('project','status')
             ,options = [
                 '--dump-tests',
-                '--dump-test-targets',
-                '-sBUILD=%s' % kwargs.get('build','debug'),
-                '-sTOOLS=%s' % kwargs['toolset']
-                ] + kwargs.get('options',[])
+                #~ '-d2',
+                '-n',
+                kwargs.get('build','debug')
+                ]
+                + kwargs['toolset']
+                + kwargs.get('options',[])
             ,target = 'test'
             ,locate = kwargs.get('locate','results')
             ,env = kwargs.get('env',{})
