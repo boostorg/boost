@@ -36,7 +36,8 @@ class LoggedShellCommand(ShellCommand):
             ,sendStderr = kwargs.get('sendStderr',True)
             ,sendRC = kwargs.get('sendRC',True)
             ,timeout = kwargs.get('timeout',None)
-            ,stdin = kwargs.get('stdin',None)
+            ,initialStdin = kwargs.get('stdin',kwargs.get('initialStdin',None))
+            ,keepStdinOpen = kwargs.get('keepStdinOpen',False)
             ,keepStdout = kwargs.get('keepStdout',False)
             )
         self.logfile = None
