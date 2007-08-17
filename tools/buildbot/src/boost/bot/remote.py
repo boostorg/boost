@@ -291,11 +291,12 @@ class Command_Boost_Jam(NoOpCommand):
         for item in env.items():
             self.stdout("    %s = '%s'" % item)
         
-        command = \
-            [ kwargs['bjam'] ] \
-            + [ '--build-dir=%s' % (kwargs['builddir']) ] \
-            + kwargs['options'] \
-            + [ kwargs['target'] ]
+        command = []
+        command += [ kwargs['bjam'] ]
+        command += [ '--build-dir=%s' % (kwargs['builddir']) ]
+        command += kwargs['options']
+        if kwargs.get('target'):
+            command += [ kwargs['target'] ]
         self.command = LoggedShellCommand(self.builder
             ,command
             ,kwargs['project']
@@ -316,7 +317,7 @@ class Command_Boost_ProcessJamLog(NoOpCommand):
             ,c( self.doProcessJamLog
                 ,process_jam_log = os.path.normpath(os.path.join(
                     self.builder.basedir,self.args.get('locate','build'),
-                    self.args.get('process_jam_log','tools/regression/build/run/process_jam_log')))
+                    self.args.get('process_jam_log','dist/bin/process_jam_log')))
                 ,boostroot = os.path.normpath(os.path.join(
                     self.builder.basedir,self.args.get('boostroot',self.args.get('workdir','.'))))
                 ,logfile = os.path.normpath(os.path.join(
