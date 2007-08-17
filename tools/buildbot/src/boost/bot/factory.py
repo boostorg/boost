@@ -132,7 +132,7 @@ class Boost_BuildFactory(buildbot.process.factory.BuildFactory):
                 ,bjam = kwargs.get('bjam','tools/jam/src/bin/bjam')
                 ,project = kwargs.get('project','.')
                 ,options = kwargs.get('options',[])
-                ,target = kwargs.get('target','all')
+                ,target = kwargs.get('target')
                 ,locate = kwargs.get('locate','results')
                 ,env = kwargs.get('env',{})
                 ,logfile = kwargs.get('logfile',False)
@@ -187,7 +187,6 @@ class Boost_BuildFactory(buildbot.process.factory.BuildFactory):
                 ]
                 + kwargs['toolset']
                 + kwargs.get('options',[])
-            ,target = 'test'
             ,locate = kwargs.get('locate','results')
             ,env = kwargs.get('env',{})
             ,logfile = kwargs.get('logfile','bjam.log')
@@ -200,7 +199,7 @@ class Boost_BuildFactory(buildbot.process.factory.BuildFactory):
             [ s( boost.bot.step.Boost_Process_Jam_Log
                 ,description = kwargs.get('description',['process log'])
                 ,workdir = b.workdir
-                ,projcess_jam_log = kwargs.get('projcess_jam_log','tools/regression/build/run/process_jam_log')
+                ,projcess_jam_log = kwargs.get('projcess_jam_log','dist/bin/process_jam_log')
                 ,locate = kwargs.get('locate','results')
                 ,logfile = kwargs.get('logfile','bjam.log')
                 ,**defaults(**kwargs)

@@ -16,7 +16,7 @@ class command_base(ShellCommand):
         if kwargs.get('name'): _name = kwargs.get('name')
         if not kwargs.get('description'): kwargs['description'] = _description
         ShellCommand.__init__(self,**kwargs)
-        self.name = _name
+        self._name = _name
     
     def start(self):
         #~ command = self._interpolateProperties(self.command)
@@ -25,7 +25,7 @@ class command_base(ShellCommand):
         #~ kwargs['command'] = command
         if kwargs.get('env'): kwargs['env'] = kwargs['env'].copy()
         kwargs['logfiles'] = self.logfiles
-        cmd = LoggedRemoteCommand(self.name,kwargs)
+        cmd = LoggedRemoteCommand(self._name,kwargs)
         self.setupEnvironment(cmd)
         self.checkForOldSlaveAndLogfiles()
         self.startCommand(cmd)
