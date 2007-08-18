@@ -90,6 +90,8 @@ def publish_test_logs(
                 if dart_server:
                     log_xml = open(os.path.join(dir,file)).read().translate(ascii_only_table)
                     #~ utils.log( '--- XML:\n%s' % log_xml)
+                    #~ It seems possible to get an empty XML result file :-(
+                    if log_xml == "": continue
                     log_dom = xml.dom.minidom.parseString(log_xml)
                     test = {
                         'library': log_dom.documentElement.getAttribute('library'),
