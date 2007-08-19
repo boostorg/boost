@@ -12,6 +12,7 @@ import time
 import stat
 import xml.dom.minidom
 import xmlrpclib
+import httplib
 
 import os.path
 import string
@@ -70,12 +71,24 @@ for i in range(0,256):
         ascii_only_table += '?'
     else:
         ascii_only_table += chr(i)
+
+class xmlrpcProxyTransport(xmlrpclib.Transport):
+    def __init__(self, proxy):
+        self.proxy = proxy
+    def make_connection(self, host):
+        self.realhost = host
+        return httplib.HTTP(self.proxy)
+    def send_request(self, connection, handler, request_body):
+        connection.putrequest('POST','http://%s%s' % (self.realhost,handler))
+    def send_host(self, connection, host):
+        connection.putheader('Host',self.realhost)
     
 
 def publish_test_logs(
     input_dirs,
     runner_id, tag, platform, comment_file, timestamp, user, source, run_type,
     dart_server = None,
+    http_proxy = None,
     **unused
     ):
     __log__ = 1
@@ -150,8 +163,12 @@ def publish_test_logs(
         os.path.walk( input_dir, _publish_test_log_files_, None )
     if dart_server:
         try:
+            rpc_transport = None
+            if http_proxy:
+                rpc_transport = xmlrpcProxyTransport(http_proxy)
             dart_rpc = xmlrpclib.ServerProxy(
-                'http://%s/%s/Command/' % (dart_server,dart_project[tag]) )
+                'http://%s/%s/Command/' % (dart_server,dart_project[tag]),
+                rpc_transport )
             for dom in dart_dom.values():
                 #~ utils.log('Dart XML: %s' % dom.toxml('utf-8'))
                 dart_rpc.Submit.put(xmlrpclib.Binary(dom.toxml('utf-8')))
@@ -250,6 +267,7 @@ def collect_logs(
         , source
         , run_type
         , dart_server = None
+        , http_proxy = None
         , **unused
         ):
     
@@ -258,7 +276,8 @@ def collect_logs(
     if dart_server:
         publish_test_logs( [ results_dir ],
             runner_id, tag, platform, comment_file, timestamp, user, source, run_type,
-            dart_server = dart_server )
+            dart_server = dart_server,
+            http_proxy = http_proxy )
     
     results_file = os.path.join( results_dir, '%s.xml' % runner_id )
     results_writer = open( results_file, 'w' )
@@ -332,6 +351,7 @@ def collect_and_upload_logs(
         , debug_level = 0
         , send_bjam_log = False
         , dart_server = None
+        , http_proxy = None
         , **unused
         ):
     
@@ -346,6 +366,7 @@ def collect_and_upload_logs(
         , source
         , run_type
         , dart_server = dart_server
+        , http_proxy = http_proxy
         )
     
     upload_logs(
@@ -373,6 +394,7 @@ def accept_args( args ):
         , 'run-type='
         , 'user='
         , 'ftp-proxy='
+        , 'proxy='
         , 'debug-level='
         , 'send-bjam-log'
         , 'help'
@@ -388,6 +410,7 @@ def accept_args( args ):
         , '--source'        : 'SVN'
         , '--run-type'      : 'full'
         , '--ftp-proxy'     : None
+        , '--proxy'         : None
         , '--debug-level'   : 0
         , '--dart-server'   : 'beta.boost.org:8081'
         
@@ -406,6 +429,7 @@ def accept_args( args ):
         , 'source'          : options[ '--source' ]
         , 'run_type'        : options[ '--run-type' ]
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
+        , 'http_proxy'      : options[ '--proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
         , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
         , 'dart_server'     : options[ '--dart-server' ]
@@ -438,6 +462,8 @@ Options:
 \t--run-type      "incremental" or "full" ("full" by default)
 \t--send-bjam-log in addition to regular XML results, send in full bjam
 \t                log of the regression run
+\t--proxy         HTTP proxy server address and port (e.g.
+\t                'http://www.someproxy.com:3128', optional)
 \t--ftp-proxy     FTP proxy server (e.g. 'ftpproxy', optional)
 \t--debug-level   debugging level; controls the amount of debugging 
 \t                output printed; 0 by default (no debug output)
