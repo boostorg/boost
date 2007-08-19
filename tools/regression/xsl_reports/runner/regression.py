@@ -629,6 +629,7 @@ def collect_logs(
         , comment
         , incremental
         , dart_server
+        , http_proxy
         , args
         , **unused
         ):
@@ -665,6 +666,7 @@ def collect_logs(
         , source
         , run_type
         , dart_server
+        , http_proxy
         )
 
 
@@ -815,7 +817,7 @@ def regression(
         # told to have no toolsets in command line "--toolset="
         if  toolsets != '': # --toolset=,
             test( toolsets, bjam_options, monitored, timeout, v2, [] )
-            collect_logs( tag, runner, platform, user, comment, incremental, dart_server, [] )
+            collect_logs( tag, runner, platform, user, comment, incremental, dart_server, proxy, [] )
             upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log, dart_server )
 
         if book:
