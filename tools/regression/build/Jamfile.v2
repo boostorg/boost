@@ -18,10 +18,20 @@ exe compiler_status
     release
     ;
 
+exe library_status
+    :
+    ../library_status.cpp ../detail/tiny_xml.cpp
+    /boost/filesystem//boost_filesystem
+    :
+    :
+    release
+    ;
+
 install dist-bin
     :
     process_jam_log
     compiler_status
+    library_status
     :
     <install-type>EXE
     <location>../../../dist/bin
@@ -33,6 +43,7 @@ install dist-lib
     :
     process_jam_log
     compiler_status
+    library_status
     :
     <install-type>LIB
     <location>../../../dist/lib

@@ -128,10 +128,15 @@ namespace
   {
     string temp( s );
     convert_path_separators( temp );
-    temp.erase( temp.find_last_of( "/" ) ); // remove leaf
+    string::size_type pos = temp.find_last_of( "/");
+    if(pos == string::npos)
+        temp = "./";
+    else{
+        temp.erase( pos ); // remove leaf
     temp = split( trim_left( temp ) ).back();
     if ( temp[0] == '.' ) temp.erase( 0, temp.find_first_not_of( "./" ) ); 
     else temp.erase( 0, locate_root.string().size()+1 );
+    }
     if ( echo )
         std::cout << "\ttarget_directory( \"" << s << "\") -> \"" << temp << "\"" << std::endl;
     return temp;
@@ -171,52 +176,43 @@ namespace
   // returns library name corresponding to that path.
   string test_path_to_library_name( string const& path )
   {
-    std::string result;
-    string::size_type start_pos( path.find( "libs/" ) );
-    if ( start_pos != string::npos )
-    {
-      // The path format is ...libs/functional/hash/test/something.test/....      
-      // So, the part between "libs" and "test/something.test" can be considered
+    // The path format is ...libs/.../something.test/....      
+    // So, the part between "libs" and "something.test" can be considered
       // as library name. But, for some libraries tests are located too deep,
       // say numeric/ublas/test/test1 directory, and some libraries have tests
-      // in several subdirectories (regex/example and regex/test). So, nested
-      // directory may belong to several libraries.
+    // in several subdirectories (regex/example and regex/test). So, its
+    // not a "library name" as it may include subdirectories
 
-      // To disambituate, it's possible to place a 'sublibs' file in
-      // a directory. It means that child directories are separate libraries.
-      // It's still possible to have tests in the directory that has 'sublibs'
-      // file.
+    string::size_type end_pos = path.find(".test/");
+    end_pos = path.rfind("/", end_pos);
 
-      std::string interesting;
-      start_pos += 5;
-      string::size_type end_pos( path.find( ".test/", start_pos ) );
-      end_pos = path.rfind('/', end_pos);
-      if (path.substr(end_pos - 5, 5) == "/test")
-        interesting = path.substr( start_pos, end_pos - 5 - start_pos );
-      else
-        interesting = path.substr( start_pos, end_pos - start_pos );
+    string::size_type start_pos;
+    string::size_type pos = end_pos;
+    unsigned int i;
+    for(i = 0;; ++i){
+        start_pos = path.rfind("/", pos - 1);
 
-      // Take slash separate elements until we have corresponding 'sublibs'.
-      end_pos = 0;
-      for(;;)
-      {
-        end_pos = interesting.find('/', end_pos);
-        if (end_pos == string::npos) {
-          result = interesting;
-          break;
+        if ( start_pos == string::npos )
+            return string(); // empty string
+
+        ++start_pos;
+
+        const std::string dir = path.substr(start_pos, pos - start_pos);
+        if(0 == i){
+           // if this directory is either "test" or "example"
+           // skip it in order to be compatible with testing.jam
+           if("test" == dir
+           || "example" == dir){
+                end_pos = start_pos - 1;
         }
-        result = interesting.substr(0, end_pos);
-
-        if ( fs::exists( ( boost_root / "libs" ) / result / "sublibs" ) )
-        {
-          end_pos = end_pos + 1;
         }
-        else
+        if("libs" == dir){
+            start_pos = pos + 1;
           break;
       }
+        pos = start_pos - 1;
     }
-
-    return result;
+    return path.substr(start_pos, end_pos - start_pos);
   }
 
   // Tries to find target name in the string 'msg', starting from 
