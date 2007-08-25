@@ -89,32 +89,24 @@ namespace
     struct col_node {
         int rows, cols;
         bool is_leaf_directory;
-        std::string m_name;
-        std::set<col_node> m_subcolumns;
+        typedef std::map<const std::string, col_node> subcolumns_t;
+        subcolumns_t m_subcolumns;
         bool operator<(const col_node &cn) const;
-        col_node(const std::string &s) :
-        m_name(s),
+        col_node() :
             is_leaf_directory(false)
         {}
-        col_node(){};
         std::pair<int, int> get_spans();
-        typedef std::set<col_node>::iterator iterator;
-        typedef std::set<col_node>::const_iterator const_iterator;
     };
-
-    bool col_node::operator<(const col_node &cn) const {
-        return m_name < cn.m_name;
-    }
 
     std::pair<int, int> col_node::get_spans(){
         rows = 1;
         cols = 0;
         if(is_leaf_directory)
             cols = 1;
-        std::set<col_node>::iterator itr;
+        subcolumns_t::iterator itr;
         for(itr = m_subcolumns.begin(); itr != m_subcolumns.end(); ++itr){
             std::pair<int, int> spans;
-            spans = itr->get_spans();
+            spans = itr->second.get_spans();
             rows = std::max(rows, spans.first);
             cols += spans.second;
         }
@@ -126,9 +118,11 @@ namespace
         fs::directory_iterator itr(dir_root);
         while(itr != end_itr){
             if(fs::is_directory(*itr)){
-                std::pair<col_node::iterator, bool> result 
-                    = node.m_subcolumns.insert(col_node(itr->leaf()));
-                build_node_tree(*itr, *(result.first));
+                std::pair<col_node::subcolumns_t::iterator, bool> result 
+                    = node.m_subcolumns.insert(
+                        std::make_pair(itr->leaf(), col_node())
+                    );
+                build_node_tree(*itr, result.first->second);
                 is_leaf_directory = false;
             }
             ++itr;
@@ -552,19 +546,19 @@ namespace
             );
         }
 
-        col_node::const_iterator col_itr;
+        col_node::subcolumns_t::const_iterator col_itr;
         for(
             col_itr = node.m_subcolumns.begin(); 
             col_itr != node.m_subcolumns.end();
             ++col_itr
         ){
-            fs::path subdir = dir_root / col_itr->m_name;
+            fs::path subdir = dir_root / col_itr->first;
             retval |= visit_node_tree(
-                *col_itr, 
+                col_itr->second, 
                 subdir,
                 lib_name,
                 target,
-                col_itr->m_name == "profile"
+                col_itr->first == "profile"
             );
         }
         return retval;
@@ -656,10 +650,10 @@ namespace
 
     //  column header-----------------------------------------------------------//
     int header_depth(const col_node & root){
-        std::set<col_node>::const_iterator itr;
+        col_node::subcolumns_t::const_iterator itr;
         int max_depth = 1;
         for(itr = root.m_subcolumns.begin(); itr != root.m_subcolumns.end(); ++itr){
-            max_depth = std::max(max_depth, itr->rows);
+            max_depth = std::max(max_depth, itr->second.rows);
         }
         return max_depth;
     }
@@ -685,9 +679,9 @@ namespace
     ){
         if(current_row < display_row){
             if(! node.m_subcolumns.empty()){
-                std::set<col_node>::const_iterator itr;
+                col_node::subcolumns_t::const_iterator itr;
                 for(itr = node.m_subcolumns.begin(); itr != node.m_subcolumns.end(); ++itr){
-                    emit_column_headers(*itr, display_row, current_row + 1, row_count);
+                    emit_column_headers(itr->second, display_row, current_row + 1, row_count);
                 }
             }
             return;
@@ -695,12 +689,12 @@ namespace
         if(node.is_leaf_directory && ! node.m_subcolumns.empty()){
             header_cell(row_count - current_row, 1, std::string(""));
         }
-        std::set<col_node>::const_iterator itr;
+        col_node::subcolumns_t::const_iterator itr;
         for(itr = node.m_subcolumns.begin(); itr != node.m_subcolumns.end(); ++itr){
-            if(1 == itr->rows)
-                header_cell(row_count - current_row, itr->cols, itr->m_name);
+            if(1 == itr->second.rows)
+                header_cell(row_count - current_row, itr->second.cols, itr->first);
             else
-                header_cell(1, itr->cols, itr->m_name);
+                header_cell(1, itr->second.cols, itr->first);
         }
     }
 
