@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#~ Copyright Redshift Software, Inc. 2007
+#~ Distributed under the Boost Software License, Version 1.0.
+#~ (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+
 export PATH=/bin:/usr/bin:${PATH}
 
 timestamp=`date +%F-%H-%M-%S-%Z`
