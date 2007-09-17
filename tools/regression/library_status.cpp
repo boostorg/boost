@@ -90,7 +90,7 @@ namespace
     struct col_node {
         int rows, cols;
         bool is_leaf_directory;
-        typedef std::map<const std::string, col_node> subcolumns_t;
+        typedef std::map<std::string, col_node> subcolumns_t;
         subcolumns_t m_subcolumns;
         bool operator<(const col_node &cn) const;
         col_node() :
@@ -223,7 +223,7 @@ namespace
     const xml::element & find_element(
         const xml::element & root, const string & name )
     {
-        const xml::element empty_element;
+        static const xml::element empty_element;
         xml::element_list::const_iterator itr;
         for ( itr = root.elements.begin();
             itr != root.elements.end() && (*itr)->name != name;
@@ -246,7 +246,7 @@ namespace
             if(atr->name == attribute_name)
                 return atr->value;
         }
-        const static string empty_string;
+        static const string empty_string;
         return empty_string;
     }
 
