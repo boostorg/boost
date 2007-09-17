@@ -44,6 +44,7 @@ namespace xml = boost::tiny_xml;
 #include <ctime>
 #include <stdexcept>
 #include <cassert>
+#include <utility>
 
 using std::string;
 
@@ -295,12 +296,12 @@ namespace
         }
 
         links_file << "<h2><a name=\"";
-        links_file << make_pair(
+        links_file << std::make_pair(
             html_from_path(target_dir.string().begin()), 
             html_from_path(target_dir.string().end())
             )
             << "\">"
-            << make_pair(
+            << std::make_pair(
             html_from_path(target_dir.string().begin()), 
             html_from_path(target_dir.string().end())
             )
@@ -337,13 +338,13 @@ namespace
                 "See <a href=\"#"
                 << source_library_name << "-"
                 << object_library_name << "-" 
-                << make_pair(
+                << std::make_pair(
                 html_from_path(target_dir.string().begin()), 
                 html_from_path(target_dir.string().end())
                 )
                 << source_library_name << " - "
                 << object_library_name << " - " 
-                << make_pair(
+                << std::make_pair(
                 html_from_path(target_dir.string().begin()), 
                 html_from_path(target_dir.string().end())
                 )
@@ -369,13 +370,13 @@ namespace
                 {
                     links_file << "<h2><a name=\""
                         << object_library_name << "-" 
-                        << make_pair(
+                        << std::make_pair(
                         html_from_path(target_dir.string().begin()), 
                         html_from_path(target_dir.string().end())
                         )
                         << "\">"
                         << object_library_name << " - " 
-                        << make_pair(
+                        << std::make_pair(
                         html_from_path(target_dir.string().begin()), 
                         html_from_path(target_dir.string().end())
                         )
