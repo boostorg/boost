@@ -620,7 +620,6 @@ def build_book( **kargs ):
     finally:
         os.chdir( cwd )
 
-
 def collect_logs(
           tag
         , runner
@@ -716,18 +715,15 @@ def upload_book( tag, runner, ftp_proxy, debug_level, **unused ):
 def update_itself( tag, **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
     self = os.path.join( regression_root, os.path.basename( sys.argv[0] ) )
-
+    
+    # Through revision 38985, the update copy was not done if
+    # os.stat(self).st_mtime > os.stat(source).st_mtime. This was not
+    # reliable on all systems, so the copy is now done unconditionally.
+    log( '    Saving a backup copy of the current script...' )
+    os.chmod( self, stat.S_IWRITE ) # Win32 workaround
+    shutil.move( self, '%s~' % self )
     log( 'Updating %s from %s...' % ( self, source )  )
-    log( '    Checking modification dates...' )
-    if os.stat( self ).st_mtime > os.stat( source ).st_mtime:
-        log( 'Warning: The current version of script appears to be newer than the source.' )
-        log( '         Update skipped.' )
-    else:
-        log( '    Saving a backup copy of the current script...' )
-        os.chmod( self, stat.S_IWRITE ) # Win32 workaround
-        shutil.move( self, '%s~' % self )
-        log( '    Replacing %s with a newer version...' % self )
-        shutil.copy2( source, self )
+    shutil.copy2( source, self )
 
 
 def send_mail( smtp_login, mail, subject, msg = '', debug_level = 0 ):
@@ -815,7 +811,7 @@ def regression(
         # that would mean to use Boost.Build default ones
         # We can skip test only we were explictly 
         # told to have no toolsets in command line "--toolset="
-        if  toolsets != '': # --toolset=,
+        if toolsets != '': # --toolset=,
             test( toolsets, bjam_options, monitored, timeout, v2, [] )
             collect_logs( tag, runner, platform, user, comment, incremental, dart_server, proxy, [] )
             upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log, dart_server )
@@ -857,7 +853,7 @@ def show_revision( **unused ):
 
     import re
     re_keyword_value = re.compile( r'^\$\w+:\s+(.*)\s+\$$' )
-    print '\n\tResivion: %s' % re_keyword_value.match( revision ).group( 1 )
+    print '\n\tRevision: %s' % re_keyword_value.match( revision ).group( 1 )
     print '\tLast modified on: %s\n' % re_keyword_value.match( modified ).group( 1 )
 
 
