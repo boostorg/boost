@@ -20,6 +20,7 @@ import platform
 import traceback
 import string
 import sys
+import re
 
 regression_root    = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 regression_results = os.path.join( regression_root, 'results' )
@@ -649,10 +650,19 @@ def collect_logs(
     else:           run_type = 'full'
 
     source = 'tarball'
+    revision = ''
     svn_root_file = os.path.join( boost_root, '.svn' )
+    svn_info_file = os.path.join( regression_root, 'svn_info.txt' )
     if os.path.exists( svn_root_file ):
         source = 'SVN'
+        svn_command( 'user', 'info ' + boost_root + ' >' + svn_info_file )
 
+    if os.path.exists( svn_info_file ):
+      f = open( svn_info_file, 'r' )
+      svn_info = f.read()
+      f.close()
+      revision = re.search( 'Revision: ([0-9]*)', svn_info ).group(1)
+      
     from runner import collect_logs
     collect_logs(
           regression_results
@@ -666,6 +676,7 @@ def collect_logs(
         , run_type
         , dart_server
         , http_proxy
+        , revision
         )
 
 
@@ -764,6 +775,8 @@ def regression(
         , incremental
         , send_bjam_log
         , force_update
+        , have_source
+        , skip_tests
         , monitored
         , timeout
         , mail = None
@@ -796,6 +809,8 @@ def regression(
             log( 'Tag: "%s"' % tag  )
 
             unpack_tarball( local, regression_root )
+        elif have_source:
+            if not incremental: cleanup( [ 'bin' ] )
         else:
             if incremental or force_update:
                 if not incremental: cleanup( [ 'bin' ] )
@@ -812,7 +827,7 @@ def regression(
         # We can skip test only we were explictly 
         # told to have no toolsets in command line "--toolset="
         if toolsets != '': # --toolset=,
-            test( toolsets, bjam_options, monitored, timeout, v2, [] )
+            if not skip_tests: test( toolsets, bjam_options, monitored, timeout, v2, [] )
             collect_logs( tag, runner, platform, user, comment, incremental, dart_server, proxy, [] )
             upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log, dart_server )
 
@@ -878,6 +893,8 @@ def accept_args( args ):
         , 'debug-level='
         , 'incremental'
         , 'force-update'
+        , 'have-source'
+        , 'skip-tests'
         , 'dont-send-bjam-log'
         , 'monitored'
         , 'help'
@@ -928,6 +945,8 @@ def accept_args( args ):
         , 'incremental'     : options.has_key( '--incremental' )
         , 'send_bjam_log'   : not options.has_key( '--dont-send-bjam-log' )
         , 'force_update'    : options.has_key( '--force-update' )
+        , 'have_source'     : options.has_key( '--have-source' )
+        , 'skip_tests'      : options.has_key( '--skip-tests' )
         , 'monitored'       : options.has_key( '--monitored' )
         , 'timeout'         : options[ '--timeout' ]
         , 'mail'            : options[ '--mail' ]
@@ -974,6 +993,9 @@ Options:
 \t                do not send full bjam log of the regression run
 \t--force-update  do an SVN update (if applicable) instead of a clean
 \t                checkout, even when performing a full run
+\t--have-source   do neither a tarball download nor an SVN update;
+\t                used primarily for testing script changes
+\t--skip-tests    do no run bjam; used for testing script changes
 \t--monitored     do a monitored run
 \t--timeout       specifies the timeout, in minutes, for a single test
 \t                run/compilation (enforced only in monitored runs, 5 by
