@@ -268,7 +268,7 @@ def collect_logs(
         , run_type
         , dart_server = None
         , http_proxy = None
-        , revision = None
+        , revision = ''
         , **unused
         ):
     
