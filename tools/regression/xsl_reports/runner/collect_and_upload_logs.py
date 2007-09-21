@@ -268,6 +268,7 @@ def collect_logs(
         , run_type
         , dart_server = None
         , http_proxy = None
+        , revision = None
         , **unused
         ):
     
@@ -294,6 +295,7 @@ def collect_logs(
             , 'timestamp':  timestamp
             , 'source':     source
             , 'run-type':   run_type
+            , 'revision':   revision
             }
         )
     
@@ -347,6 +349,7 @@ def collect_and_upload_logs(
         , user
         , source
         , run_type
+        , revision = None
         , ftp_proxy = None
         , debug_level = 0
         , send_bjam_log = False
@@ -365,6 +368,7 @@ def collect_and_upload_logs(
         , user
         , source
         , run_type
+        , revision = revision
         , dart_server = dart_server
         , http_proxy = http_proxy
         )
@@ -399,6 +403,7 @@ def accept_args( args ):
         , 'send-bjam-log'
         , 'help'
         , 'dart-server='
+        , 'revision='
         ]
     
     options = {
@@ -413,6 +418,7 @@ def accept_args( args ):
         , '--proxy'         : None
         , '--debug-level'   : 0
         , '--dart-server'   : 'beta.boost.org:8081'
+        , '--revision'      : None
         
         }
     
@@ -433,6 +439,7 @@ def accept_args( args ):
         , 'debug_level'     : int(options[ '--debug-level' ])
         , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
         , 'dart_server'     : options[ '--dart-server' ]
+        , 'revision   '     : options[ '--revision' ]
         }
 
 
