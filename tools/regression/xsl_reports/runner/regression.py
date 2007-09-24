@@ -20,7 +20,6 @@ import platform
 import traceback
 import string
 import sys
-import re
 
 regression_root    = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 regression_results = os.path.join( regression_root, 'results' )
@@ -658,10 +657,16 @@ def collect_logs(
         svn_command( 'user', 'info ' + boost_root + ' >' + svn_info_file )
 
     if os.path.exists( svn_info_file ):
-      f = open( svn_info_file, 'r' )
-      svn_info = f.read()
-      f.close()
-      revision = re.search( 'Revision: ([0-9]*)', svn_info ).group(1)
+        f = open( svn_info_file, 'r' )
+        svn_info = f.read()
+        f.close()
+        i = svn_info.find( 'Revision:' )
+        if i >= 0:
+            i += 10
+            while svn_info[i] >= '0' and svn_info[i] <= '9':
+              revision += svn_info[i]
+              i += 1
+      
       
     from runner import collect_logs
     collect_logs(
