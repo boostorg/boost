@@ -651,7 +651,7 @@ def collect_logs(
     source = 'tarball'
     revision = ''
     svn_root_file = os.path.join( boost_root, '.svn' )
-    svn_info_file = os.path.join( regression_root, 'svn_info.txt' )
+    svn_info_file = os.path.join( boost_root, 'svn_info.txt' )
     if os.path.exists( svn_root_file ):
         source = 'SVN'
         svn_command( 'user', 'info ' + boost_root + ' >' + svn_info_file )
