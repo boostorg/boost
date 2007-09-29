@@ -41,10 +41,12 @@ upload_results()
 {
     cwd=`pwd`
     cd ${1}/all
-    rm -f ../../${1}.zip
-    zip -r9 ../../${1} *
+    rm -f ../../${1}.zip*
+    zip -r -9 ../../${1} * -x '*.xml'
     cd "${cwd}"
-    scp ${1}.zip beta.boost.org:/home/grafik/www.boost.org/testing/incoming/
+    bzip2 -9 ${1}.zip
+    scp ${1}.zip.bz2 beta.boost.org:/home/grafik/www.boost.org/testing/incoming/
+    ssh beta.boost.org bunzip2 /home/grafik/www.boost.org/testing/incoming/${1}.zip.bz2
 }
 
 build_all trunk
