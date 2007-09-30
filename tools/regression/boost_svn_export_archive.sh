@@ -34,7 +34,7 @@ make_archive()
 {
   svn_export \
     | cut --bytes=6- \
-    | star -c -D -to-stdout -d artype=tar list=- 2>/dev/null \
+    | star -c -D -to-stdout -d artype=pax list=- 2>/dev/null \
     | bzip2 -6 -c \
     | tee $1 \
     | tar -jtf - \
