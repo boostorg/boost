@@ -52,6 +52,8 @@ namespace
   fs::path boost_root;  // boost-root complete path
   fs::path locate_root; // locate-root (AKA ALL_LOCATE_TARGET) complete path
 
+  bool compile_time;
+  bool run_time;
   bool ignore_pass;
   bool no_warn;
   bool no_links;
@@ -538,7 +540,7 @@ const fs::path find_bin_path(const string& relative)
     const string & toolset,
     string & target,
     bool always_show_run_output )
-  // return true if any results except pass_msg
+  // return true if any results except simple pass_msg
   {
     fs::path target_dir( target_directory( test_dir / toolset ) );
     bool pass = false;
@@ -591,8 +593,9 @@ const fs::path find_bin_path(const string& relative)
           always_show_run_output || note );
     }
 
-    // generate the status table cell pass/warn/fail HTML
     target += "<td>";
+
+    // generate the status table cell pass/warn/fail HTML
     if ( anything_generated != 0 )
     {
       target += "<a href=\"";
@@ -616,6 +619,38 @@ const fs::path find_bin_path(const string& relative)
     if ( !notes.empty() ) 
       target += get_notes( toolset, lib_name, test_name, !pass );
 
+    // generate compile-time if requested
+    if ( compile_time )
+    {
+      const xml::element & compile_element( find_element( db, "compile" ) );
+
+      if ( !compile_element.name.empty() )
+      {
+        string times = attribute_value( compile_element, "timings" );
+        if ( !times.empty() )
+        {
+          target += "<br>";
+          target += times.substr( 0, times.find( " " ) );
+        }
+      }
+    }
+      
+    // generate run-time if requested
+    if ( run_time )
+    {
+      const xml::element & run_element( find_element( db, "run" ) );
+
+      if ( !run_element.name.empty() )
+      {
+        string times = attribute_value( run_element, "timings" );
+        if ( !times.empty() )
+        {
+          target += "<br>";
+          target += times.substr( 0, times.find( " " ) );
+        }
+      }
+    }
+      
     target += "</td>";
     return (anything_generated != 0) || !pass;
   }
@@ -653,7 +688,12 @@ const fs::path find_bin_path(const string& relative)
     target += "<tr><td><a href=\"" + url_prefix_dir_view + "/libs/" + lib_name
       + "\">"  + lib_name  + "</a></td>";
     target += "<td><a href=\"" + url_prefix_checkout_view + "/" + test_path
-      + url_suffix_text_view + "\">" + test_name + "</a></td>";
+      + url_suffix_text_view + "\">" + test_name + "</a>";
+
+    if ( compile_time ) target += "<br> Compile time:";
+    if ( run_time ) target += "<br> Run time:";
+
+    target += "</td>";
     target += "<td>" + test_type + "</td>";
 
     bool no_warn_save = no_warn;
@@ -822,6 +862,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
     else if ( std::strcmp( argv[1], "--v2" ) == 0 ) boost_build_v2 = true;
     else if ( argc > 2 && std::strcmp( argv[1], "--jamfile" ) == 0)
       { jamfile_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
+    else if ( std::strcmp( argv[1], "--compile-time" ) == 0 ) compile_time = true;
+    else if ( std::strcmp( argv[1], "--run-time" ) == 0 ) run_time = true;
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
     --argc;
     ++argv;
@@ -849,6 +891,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "           --v2                Assume Boost.Build version 2.\n"
       "           --ignore-pass       Ignore passing tests.\n"
       "           --no-warn           Do not report warnings.\n"
+      "           --compile-time      Show compile time.\n"
+      "           --run-time          Show run time.\n"
       "Example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n"
       "Note: Only the leaf of the links-file path and --notes file string are\n"
       "used in status-file HTML links. Thus for browsing, status-file,\n"
@@ -916,6 +960,11 @@ int cpp_main( int argc, char * argv[] ) // note name!
        << run_date
        << "\n"
        ;
+
+  
+  if ( compile_time )
+    report << "<p>Times reported are elapsed wall clock time in seconds.</p>\n";
+
 
   if ( !comment_path.empty() )
   {
