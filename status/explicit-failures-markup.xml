@@ -1818,6 +1818,11 @@
             <toolset name="gcc-2.95.3-*"/>
             <note author="Doug Gregor" refid="3"/>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="control_structures"/>
+            <toolset name="gcc-4.2.1*"/>
+            <note author="Boris Gubenko" refid="42"/>
+        </mark-expected-failures>
     </library>
 
     <!-- logic -->
@@ -5338,6 +5343,11 @@ for more information.
         constructed off two input iterators. Unfortunately, the Rogue Wave
         library version 2.2 and higher assumes iterator which has + and -
         operators which only random access iterator is required to provide.
+    </note>
+
+    <note id="42">
+        Internal compiler error: GCC Bugzilla Bug 33580.
+        This is a regression in the gcc 4.2 series.
     </note>
 
 </explicit-failures-markup>
