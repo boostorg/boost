@@ -19,6 +19,7 @@
 
 *******************************************************************************/
 
+#include "boost/config.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/fstream.hpp"
 #include "detail/tiny_xml.hpp"
@@ -26,6 +27,7 @@ namespace fs = boost::filesystem;
 namespace xml = boost::tiny_xml;
 
 #include <cstdlib>  // for abort, exit
+#include <cctype>   // for toupper
 #include <string>
 #include <vector>
 #include <set>
@@ -57,7 +59,7 @@ namespace
   bool ignore_pass;
   bool no_warn;
   bool no_links;
-  bool boost_build_v2;
+  bool boost_build_v2 = true;
 
   fs::path jamfile_path;
 
@@ -90,6 +92,24 @@ namespace
   string url_prefix_dir_view( cvs_root + "boost/boost" );
   string url_prefix_checkout_view( cvs_root + "*checkout*/boost/boost" );
   string url_suffix_text_view( "?view=markup&rev=HEAD" );
+
+//  get revision number (as a string) if boost_root is svn working copy  -----//
+
+  string revision( const fs::path & boost_root )
+  {
+    string rev;
+    fs::path entries( boost_root / ".svn" / "entries" );
+    fs::ifstream entries_file( entries );
+    if ( entries_file )
+    {
+      std::getline( entries_file, rev );
+      std::getline( entries_file, rev );
+      std::getline( entries_file, rev );
+      std::getline( entries_file, rev );  // revision number as a string
+    }
+    return rev;
+  }
+
 
 //  build notes_bookmarks from notes HTML  -----------------------------------//
 
@@ -182,38 +202,11 @@ namespace
   }
 
 //  platform_desc  -----------------------------------------------------------//
-//  from locate_root/status/bin/config_info.test/xxx/.../config_info.output
 
   string platform_desc()
   {
-    string result;
-    fs::path dot_output_path;
-
-    // the gcc config_info "Detected Platform" sometimes reports "cygwin", so
-    // prefer any of the other compilers.
-    if ( find_file( locate_root / "bin/boost/status/config_info.test",
-      "config_info.output", dot_output_path, "gcc" )
-      || find_file( locate_root / "bin/boost/status/config_info.test",
-      "config_info.output", dot_output_path )
-      || find_file( locate_root / "status/bin/config_info.test",
-      "config_info.output", dot_output_path, "gcc" )
-      || find_file( locate_root / "status/bin/config_info.test",
-      "config_info.output", dot_output_path ) )
-    {
-      fs::ifstream file( dot_output_path );
-      if ( file )
-      {
-        while( std::getline( file, result ) )
-        {
-          if ( result.find( "Detected Platform: " ) == 0 )
-          {
-            result.erase( 0, 19 );
-            return result;
-          }
-        }
-        result.clear();
-      }
-    }
+    string result = BOOST_PLATFORM;
+    result[0] = std::toupper( result[0] );
     return result;
   }
 
@@ -570,7 +563,8 @@ const fs::path find_bin_path(const string& relative)
     const xml::element & db( *dbp );
 
     std::string test_type_base( test_type );
-    if ( test_type_base.size() > 5 )
+    if ( test_type_base == "run_pyd" ) test_type_base = "run";
+    else if ( test_type_base.size() > 5 )
     {
       const string::size_type trailer = test_type_base.size() - 5;
       if ( test_type_base.substr( trailer ) == "_fail" )
@@ -859,6 +853,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
       { notes_map_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
+    else if ( std::strcmp( argv[1], "--v1" ) == 0 ) boost_build_v2 = false;
     else if ( std::strcmp( argv[1], "--v2" ) == 0 ) boost_build_v2 = true;
     else if ( argc > 2 && std::strcmp( argv[1], "--jamfile" ) == 0)
       { jamfile_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
@@ -888,7 +883,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "           --notes-map path    Path to file of toolset/test,n lines, where\n"
       "                               n is number of note bookmark in --notes file.\n"
       "           --jamfile path      Path to Jamfile. By default \"Jamfile\".\n"
-      "           --v2                Assume Boost.Build version 2.\n"
+      "           --v1                Assume Boost.Build version 1.\n"
+      "           --v2                Assume Boost.Build version 2. (default)\n"
       "           --ignore-pass       Ignore passing tests.\n"
       "           --no-warn           Do not report warnings.\n"
       "           --compile-time      Show compile time.\n"
@@ -945,9 +941,11 @@ int cpp_main( int argc, char * argv[] ) // note name!
   std::strftime( run_date, sizeof(run_date),
     "%X UTC, %A %d %B %Y", std::gmtime( &tod ) );
 
+  std::string rev = revision( boost_root );
+
   report << "<html>\n"
           "<head>\n"
-          "<title>Boost Compiler Status Automatic Test</title>\n"
+          "<title>Boost Test Results</title>\n"
           "</head>\n"
           "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
           "<table border=\"0\">\n"
@@ -955,11 +953,11 @@ int cpp_main( int argc, char * argv[] ) // note name!
           "<td><img border=\"0\" src=\"http://www.boost.org/boost.png\" width=\"277\" "
           "height=\"86\"></td>\n"
           "<td>\n"
-          "<h1>Compiler Status: " + platform_desc() + "</h1>\n"
-          "<b>Run Date:</b> "
-       << run_date
-       << "\n"
-       ;
+          "<h1>Boost Test Results - " + platform_desc() + "</h1>\n"
+          "<b>Run</b> "
+       << run_date;
+  if ( !rev.empty() ) report << ", <b>Revision</b> " << rev;
+  report << "\n";
 
   
   if ( compile_time )
@@ -985,19 +983,19 @@ int cpp_main( int argc, char * argv[] ) // note name!
     links_file
       << "<html>\n"
          "<head>\n"
-         "<title>Boost Compiler Status Error Log</title>\n"
+         "<title>Boost Test Details</title>\n"
          "</head>\n"
          "<body bgcolor=\"#ffffff\" text=\"#000000\">\n"
          "<table border=\"0\">\n"
          "<tr>\n"
-         "<td><img border=\"0\" src=\"../boost.png\" width=\"277\" "
+         "<td><img border=\"0\" src=\"http://www.boost.org/boost.png\" width=\"277\" "
          "height=\"86\"></td>\n"
          "<td>\n"
-         "<h1>Compiler Status: " + platform_desc() + "</h1>\n"
+         "<h1>Boost Test Details - " + platform_desc() + "</h1>\n"
          "<b>Run Date:</b> "
-      << run_date
-      << "\n</td>\n</table>\n<br>\n"
-      ;
+      << run_date;
+    if ( !rev.empty() ) links_file << ", <b>Revision</b> " << rev;
+    links_file << "\n</td>\n</table>\n<br>\n";
   }
 
   do_table();
