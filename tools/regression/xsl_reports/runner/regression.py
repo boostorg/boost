@@ -628,7 +628,7 @@ def collect_logs(
         , comment
         , incremental
         , dart_server
-        , http_proxy
+        , ftp_proxy
         , args
         , **unused
         ):
@@ -680,7 +680,7 @@ def collect_logs(
         , source
         , run_type
         , dart_server
-        , http_proxy
+        , ftp_proxy
         , revision
         )
 
