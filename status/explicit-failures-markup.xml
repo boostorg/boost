@@ -1606,6 +1606,7 @@
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
             <toolset name="acc"/>
+            <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -1626,10 +1627,18 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
+            <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="doc_offset_ptr" />
+            <toolset name="acc"/>
+            <note author="Ion Gazta&#241;aga">
+                The compiler is not supported by Interprocess.
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- io-->
@@ -2909,7 +2918,7 @@ for more information.
                as the following trivial code in
                common_factor.hpp goes into an infinite loop:
 
-               while ( !(r[ which ] & 1u) ){ r[ which ] >>= 1; }
+               while ( !(r[ which ] &amp; 1u) ){ r[ which ] &gt;&gt;= 1; }
 
             </note>
         </mark-expected-failures>
