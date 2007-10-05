@@ -2901,6 +2901,19 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="common_factor_test"/>
+            <test name="hypot_test"/>
+            <toolset name="borland-5.8*"/>
+            <note author="J.Maddock">
+               This appears to be caused by bad-code generation: 
+               as the following trivial code in
+               common_factor.hpp goes into an infinite loop:
+
+               while ( !(r[ which ] & 1u) ){ r[ which ] >>= 1; }
+
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="log1p_expm1_test"/>
             <toolset name="borland-5.8*"/>
             <toolset name="borland-5.9*"/>
