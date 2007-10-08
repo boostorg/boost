@@ -326,7 +326,7 @@
         <mark-expected-failures>
             <test name="bind_dm2_test"/>
             <test name="mem_fn_dm_test"/>
-            <toolset name="msvc-6.*"/>
+            <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
             <toolset name="cw-8.3"/>
             <note refid="31" author="Peter Dimov"/>
@@ -362,7 +362,7 @@
         <mark-expected-failures>
             <test name="bind_dm3_test"/>
             <toolset name="borland-5*"/>
-            <toolset name="msvc-6.*"/>
+            <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
             <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
@@ -372,13 +372,6 @@
           <note author="Peter Dimov">
             This failure is only present in release mode and is caused by /OPT:ICF.
           </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="bind_placeholder_test"/>
-            <toolset name="borland-*"/>
-            <toolset name="msvc-6.*"/>
-            <toolset name="msvc-7.0"/>
-            <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
     </library>
 
@@ -1612,8 +1605,6 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
-            <toolset name="acc"/>
-            <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -1634,18 +1625,10 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
-            <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
         </mark-unusable>
-        <mark-expected-failures>
-            <test name="doc_offset_ptr" />
-            <toolset name="acc"/>
-            <note author="Ion Gazta&#241;aga">
-                The compiler is not supported by Interprocess.
-            </note>
-        </mark-expected-failures>
     </library>
 
     <!-- io-->
@@ -1996,10 +1979,11 @@
 
         <mark-expected-failures>
             <test name="apply"/>
-            <toolset name="gcc-4.1.*"/>
+            <toolset name="gcc-4.1.0*"/>
+            <toolset name="gcc-4.1.1*"/>
             <note author="Caleb Epstein">
-              This is a regression in the gcc 4.1 series that has been
-              fixed in gcc 4.2.0.  See <a
+              This is a regression in the gcc 4.1 series that will be
+              fixed in gcc 4.1.2.  See <a
               href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28088">bug
               #28088</a> for details.
             </note>
@@ -2626,15 +2610,16 @@ for more information.
         </mark-unusable>
         <test name="*_native" category="Native compiler support">
             <mark-failure>
-                <toolset name="acc"/>
+                <toolset name="acc*"/>
                 <toolset name="intel-vc71-win*"/>
                 <toolset name="intel-vc8-win*"/>
                 <toolset name="como-4_3_3-vc7_1"/>
                 <toolset name="tru64*"/>
                 <toolset name="hp_cxx*"/>
-                <toolset name="sun-5.8"/>
+                <toolset name="sun-5.*"/>
                 <toolset name="dmc*"/>
                 <toolset name="borland-5*"/>
+                <toolset name="mipspro*"/>
                 <note author="Arkadiy Vertleyb">
                     Native mode is not supported for this compiler.
                 </note>
@@ -2664,6 +2649,17 @@ for more information.
             <test name="function_native"/>
             <toolset name="cw-8_*"/>
             <note author="Arkadiy Vertleyb">
+                The feature is not supported by this compiler.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="function_binding_emulation"/>
+            <test name="function_emulation"/>
+            <test name="function_ptr_from_tpl_emulation"/>
+            <test name="modifiers_emulation"/>
+            <test name="nested_typedef_emulation"/>
+            <toolset name="borland-5.8*"/>
+            <note author="Peder Holt">
                 The feature is not supported by this compiler.
             </note>
         </mark-expected-failures>
@@ -2913,19 +2909,6 @@ for more information.
             <toolset name="borland-5.9*"/>
             <note author="A.Meredith">
               Not yet diagnosed the precise reason these tests give bad results.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="common_factor_test"/>
-            <test name="hypot_test"/>
-            <toolset name="borland-5.8*"/>
-            <note author="J.Maddock">
-               This appears to be caused by bad-code generation: 
-               as the following trivial code in
-               common_factor.hpp goes into an infinite loop:
-
-               while ( !(r[ which ] &amp; 1u) ){ r[ which ] &gt;&gt;= 1; }
-
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -4586,7 +4569,6 @@ for more information.
             <test name="std_run_complex_overloads"/>
             <test name="test_shared_ptr"/>
             <test name="std_test_shared_ptr"/>
-            <test name="run_random"/>
             <test name="std_run_random"/>
             <test name="test_tuple_tricky"/>
             <test name="tr1_is_convertible_test"/>
