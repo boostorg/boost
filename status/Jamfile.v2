@@ -13,11 +13,11 @@
 
 
 project status
-    : source-location $(BOOST_ROOT) 
-    : requirements <hardcode-dll-paths>true  
+    : source-location $(BOOST_ROOT)
+    : requirements <hardcode-dll-paths>true
     ;
-        
-import testing ;    
+
+import testing ;
 
 alias test_exec_monitor : ../libs/test/build//boost_test_exec_monitor/<link>static ;
 alias unit_test_framework : ../libs/test/build//boost_unit_test_framework/<link>static ;
@@ -42,6 +42,7 @@ build-project ../libs/foreach/test ;           # test-suite foreach
 build-project ../libs/format/test ;            # test-suite format
 build-project ../libs/function/test ;          # test-suite function
 build-project ../libs/functional/hash/test ;   # test-suite functional/hash
+build-project ../libs/fusion/test ;            # test-suite fusion
 build-project ../libs/gil/test ;               # test-suite gil
 build-project ../libs/graph/test ;             # test-suite graph
 build-project ../libs/io/test ;                # test-suite io
@@ -91,16 +92,16 @@ build-project ../libs/wave/test/build ;        # test-suite wave
 build-project ../libs/xpressive/test ;         # test-suite xpressive
 
 # Tests specified in this Jamfile
-        
+
     test-suite config
-        : 
+        :
           # FIXME: Ideally, this should be just an alias to 'main' test suite
           # defined in libs/config/test/Jamfile.v2
           # That way, we'll avoid code duplication and won't run additional
           # tests in 'auxilliary' test suites, that need to be run and
           # interpreted by humans.
           # But such change will require tweaking libs/config/tools/generate.cpp
-          # so postponing to later.       
+          # so postponing to later.
           [ run libs/config/test/config_test.cpp test_exec_monitor
                 : #args
                 : #input-files
@@ -124,7 +125,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ compile-fail libs/config/test/threads/test_thread_fail1.cpp ]
           [ compile-fail libs/config/test/threads/test_thread_fail2.cpp ]
         ;
-    
+
     test-suite array_suite # !!!
         : [ run libs/array/array0.cpp ]
           [ run libs/array/array1.cpp ]
@@ -133,9 +134,9 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/array/array4.cpp ]
           [ run libs/array/array5.cpp ]
         ;
-    
+
     run libs/crc/crc_test.cpp test_exec_monitor ;
-    
+
     run libs/functional/function_test.cpp ;
 
 
@@ -145,7 +146,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/integer/integer_traits_test.cpp test_exec_monitor ]
         ;
 
-    run libs/pool/test/test_pool_alloc.cpp  test_exec_monitor ;    
+    run libs/pool/test/test_pool_alloc.cpp  test_exec_monitor ;
 
     test-suite preprocessor
         : [ compile libs/preprocessor/test/arithmetic.cpp ]
@@ -168,7 +169,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
         : [ run libs/rational/rational_example.cpp ]
           [ run libs/rational/rational_test.cpp unit_test_framework ]
         ;
-        
+
     compile libs/timer/timer_test.cpp ;
 
     test-suite tokenizer
