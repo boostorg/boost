@@ -654,13 +654,14 @@ def collect_logs(
     svn_info_file = os.path.join( boost_root, 'svn_info.txt' )
     if os.path.exists( svn_root_file ):
         source = 'SVN'
-        svn_command( 'user', 'info ' + boost_root + ' >' + svn_info_file )
+        svn_command( 'user', 'info --xml ' + boost_root + ' >' + svn_info_file )
 
     if os.path.exists( svn_info_file ):
         f = open( svn_info_file, 'r' )
         svn_info = f.read()
         f.close()
         i = svn_info.find( 'Revision:' )
+        if i < 0: i = svn_info.find( 'revision=' )  # --xml format
         if i >= 0:
             i += 10
             while svn_info[i] >= '0' and svn_info[i] <= '9':
