@@ -18,7 +18,7 @@ print '# Running regressions in %s...' % root
 
 script_sources = [ 'collect_and_upload_logs.py', 'regression.py' ]
 script_local = os.path.join(root,'tools','regression','src')
-script_remote = 'http://svn.boost.org/svn/boost/branches/release-tools/regression/src'
+script_remote = 'http://svn.boost.org/svn/boost/trunk/tools/regression/src'
 script_dir = os.path.join(root,'tools_regression_src')
 
 #~ Bootstrap.
