@@ -125,6 +125,8 @@ class runner:
         self.smtp_login=None
         self.skip_tests=False
         ( _opt_, self.actions ) = opt.parse_args(None,self)
+        if not self.actions or self.actions == []:
+            self.actions = [ 'regression' ]
         
         #~ Initialize option dependent values.
         self.regression_root = root
