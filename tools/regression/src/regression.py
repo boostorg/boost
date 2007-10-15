@@ -25,22 +25,22 @@ repo_root = {
 repo_path = {
     'trunk'         : 'trunk',
     'release'       : 'branches/release',
-    'build'         : 'branches/release-tools/build/v2',
-    'jam'           : 'branches/release-tools/jam/src',
-    'regression'    : 'branches/release-tools/regression'
+    'build'         : 'trunk/tools/build/v2',
+    'jam'           : 'tags/tools/jam/Boost_Jam_3_1_15/src',
+    'regression'    : 'trunk/tools/regression'
     }
 
 class runner:
     
     def __init__(self,root):
-        commands = "commands: %s" % ', '.join(
-            map(
-                lambda m: m[8:].replace('_','-'),
-                filter(
-                    lambda m: m.startswith('command_'),
-                    runner.__dict__.keys())
-                )
+        commands = map(
+            lambda m: m[8:].replace('_','-'),
+            filter(
+                lambda m: m.startswith('command_'),
+                runner.__dict__.keys())
             )
+        commands.sort()
+        commands = "commands: %s" % ', '.join(commands)
         
         opt = optparse.OptionParser(
             usage="%prog [options] [commands]",
@@ -101,17 +101,32 @@ class runner:
         opt.add_option( '--skip-tests',
             help="do not run bjam; used for testing script changes" )
         
+        #~ Defaults
+        self.runner = None
         self.comment='comment.html'
         self.tag='trunk'
+        self.toolsets=None
         self.incremental=False
         self.timeout=5
-        self.platform=self.platform_name()
-        self.debug_level=0
-        self.send_bjam_log=False
+        self.bjam_options=''
         self.bjam_toolset=''
         self.pjl_toolset=''
+        self.platform=self.platform_name()
+        self.user='anonymous'
+        self.local=None
+        self.force_update=False
+        self.have_source=False
+        self.proxy=None
+        self.ftp_proxy=None
+        self.dart_server=None
+        self.debug_level=0
+        self.send_bjam_log=False
+        self.mail=None
+        self.smtp_login=None
+        self.skip_tests=False
         ( _opt_, self.actions ) = opt.parse_args(None,self)
         
+        #~ Initialize option dependent values.
         self.regression_root = root
         self.boost_root = os.path.join( self.regression_root, 'boost' )
         self.regression_results = os.path.join( self.regression_root, 'results' )
@@ -123,28 +138,28 @@ class runner:
         self.timestamp_path = os.path.join( self.regression_root, 'timestamp' )
         if sys.platform == 'win32':
             self.patch_boost = 'patch_boost.bat'
-            self.bjam = {
-                'name' : 'bjam.exe',
-                #~ 'build_cmd' : 'build.bat %s' % self.bjam_toolset,
-                'path' : os.path.join(self.regression_root,'bjam.exe'),
-                'source_dir' : self.tools_bjam_root
-                }
-            self.process_jam_log = {
-                'name' : 'process_jam_log.exe',
-                'source_dir' : os.path.join(self.tools_regression_root,'build')
-                }
+            self.bjam = { 'name' : 'bjam.exe' }
+            self.process_jam_log = { 'name' : 'process_jam_log.exe' }
         else:
             self.patch_boost = 'patch_boost'
-            self.bjam = {
-                'name' : 'bjam',
-                #~ 'build_cmd' : './build.sh %s' % self.bjam_toolset,
-                'path' : os.path.join(self.regression_root,'bjam'),
-                'source_dir' : self.tools_bjam_root
-                }
-            self.process_jam_log = {
-                'name' : 'process_jam_log',
-                'source_dir' : os.path.join(self.tools_regression_root,'build')
-                }
+            self.bjam = { 'name' : 'bjam' }
+            self.process_jam_log = { 'name' : 'process_jam_log' }
+        self.bjam = {
+            'name' : self.bjam['name'],
+            'build_cmd' : self.bjam_build_cmd,
+            'path' : os.path.join(self.regression_root,self.bjam['name']),
+            'source_dir' : self.tools_bjam_root,
+            'build_dir' : self.tools_bjam_root,
+            'build_args' : ''
+            }
+        self.process_jam_log = {
+            'name' : self.process_jam_log['name'],
+            'build_cmd' : self.bjam_cmd,
+            'path' : os.path.join(self.regression_root,self.process_jam_log['name']),
+            'source_dir' : os.path.join(self.tools_regression_root,'build'),
+            'build_dir' : os.path.join(self.tools_regression_root,'build'),
+            'build_args' : 'process_jam_log -d2'
+            }
         
         if self.debug_level > 0:
             self.log('Regression root =     %s'%self.regression_root)
@@ -163,7 +178,7 @@ class runner:
     #~ The various commands that make up the testing sequence...
     
     def command_cleanup(self,*args):
-        if args == []: args = [ 'source', 'bin' ]
+        if not args or args == None or args == []: args = [ 'source', 'bin' ]
 
         if 'source' in args:
             self.log( 'Cleaning up "%s" directory ...' % self.boost_root )
@@ -171,8 +186,8 @@ class runner:
 
         if 'bin' in args:
             boost_bin_dir = os.path.join( self.boost_root, 'bin' )
-            self.log( 'Cleaning up "%s" directory ...' % self.boost_bin_dir )
-            self.rmtree( self.boost_bin_dir )
+            self.log( 'Cleaning up "%s" directory ...' % boost_bin_dir )
+            self.rmtree( boost_bin_dir )
 
             boost_binv2_dir = os.path.join( self.boost_root, 'bin.v2' )
             self.log( 'Cleaning up "%s" directory ...' % boost_binv2_dir )
@@ -183,16 +198,19 @@ class runner:
     
     def command_get_tools(self):
         #~ Get Boost.Build v2...
+        self.log( 'Getting Boost.Build v2...' )
         os.chdir( os.path.dirname(self.tools_bb_root) )
         self.svn_command( 'co %s %s' % (
             self.svn_repository_url(repo_path['build']),
             os.path.basename(self.tools_bb_root) ) )
         #~ Get Boost.Jam...
+        self.log( 'Getting Boost.Jam...' )
         os.chdir( os.path.dirname(self.tools_bjam_root) )
         self.svn_command( 'co %s %s' % (
             self.svn_repository_url(repo_path['jam']),
             os.path.basename(self.tools_bjam_root) ) )
         #~ Get the regression tools and utilities...
+        self.log( 'Getting regression tools an utilities...' )
         os.chdir( os.path.dirname(self.tools_regression_root) )
         self.svn_command( 'co %s %s' % (
             self.svn_repository_url(repo_path['regression']),
@@ -222,29 +240,186 @@ class runner:
     def command_patch(self):
         self.import_utils()
         patch_boost_path = os.path.join( self.regression_root, self.patch_boost )
-        if os.path.exists( self.patch_boost ):
-            self.log( 'Found patch file "%s". Executing it.' % self.patch_boost )
+        if os.path.exists( patch_boost_path ):
+            self.log( 'Found patch file "%s". Executing it.' % patch_boost_path )
             os.chdir( self.regression_root )
-            utils.system( [ self.patch_boost ] )
+            utils.system( [ patch_boost_path ] )
         pass
     
     def command_setup(self):
-        pass
+        self.command_patch()
+        self.build_if_needed(self.bjam,self.bjam_toolset)
+        self.build_if_needed(self.process_jam_log,self.pjl_toolset)
     
-    def command_install(self):
-        pass
+    def command_test(self, *args):
+        if not args or args == None or args == []: args = [ "test", "process" ]
+        self.import_utils()
+
+        self.log( 'Making "%s" directory...' % self.regression_results )
+        utils.makedirs( self.regression_results )
+
+        results_libs = os.path.join( self.regression_results, 'libs' )
+        results_status = os.path.join( self.regression_results, 'status' )
+
+        if "clean" in args:
+            self.command_test_clean()
+
+        if "test" in args:
+            self.command_test_run()
+
+        if "process" in args:
+            self.command_test_process()
     
-    def command_test(self):
-        pass
+    def command_test_clean(self):
+        results_libs = os.path.join( self.regression_results, 'libs' )
+        results_status = os.path.join( self.regression_results, 'status' )
+        self.rmtree( results_libs )
+        self.rmtree( results_status )
+    
+    def command_test_run(self):
+        self.import_utils()
+        test_cmd = '%s -d2 --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
+            self.bjam_cmd( self.toolsets ),
+            self.bjam_options,
+            self.regression_results,
+            self.regression_log )
+        self.log( 'Starting tests (%s)...' % test_cmd )
+        cd = os.getcwd()
+        os.chdir( os.path.join( self.boost_root, 'status' ) )
+        utils.system( [ test_cmd ] )
+        os.chdir( cd )
+
+    def command_test_process(self):
+        self.import_utils()
+        self.log( 'Getting test case results out of "%s"...' % self.regression_log )
+        cd = os.getcwd()
+        os.chdir( os.path.join( self.boost_root, 'status' ) )
+        utils.checked_system( [
+            '"%s" "%s" <"%s"' % (
+                self.tool_path(self.process_jam_log),
+                self.regression_results,
+                self.regression_log )
+            ] )
+        os.chdir( cd )
     
     def command_collect_logs(self):
-        pass
-    
-    def command_upoad_logs(self):
-        pass
+        self.import_utils()
+        comment_path = os.path.join( self.regression_root, self.comment )
+        if not os.path.exists( comment_path ):
+            self.log( 'Comment file "%s" not found; creating default comment.' % comment_path )
+            f = open( comment_path, 'w' )
+            f.write( '<p>Tests are run on %s platform.</p>' % self.platform_name() )
+            f.close()
+
+        if self.incremental:
+            run_type = 'incremental'
+        else:
+            run_type = 'full'
+
+        source = 'tarball'
+        revision = ''
+        svn_root_file = os.path.join( self.boost_root, '.svn' )
+        svn_info_file = os.path.join( self.boost_root, 'svn_info.txt' )
+        if os.path.exists( svn_root_file ):
+            source = 'SVN'
+            self.svn_command( 'info --xml "%s" >%s' % (self.boost_root,svn_info_file) )
+
+        if os.path.exists( svn_info_file ):
+            f = open( svn_info_file, 'r' )
+            svn_info = f.read()
+            f.close()
+            i = svn_info.find( 'Revision:' )
+            if i < 0: i = svn_info.find( 'revision=' )  # --xml format
+            if i >= 0:
+                i += 10
+                while svn_info[i] >= '0' and svn_info[i] <= '9':
+                  revision += svn_info[i]
+                  i += 1
+
+        from collect_and_upload_logs import collect_logs
+        collect_logs(
+            self.regression_results,
+            self.runner, self.tag, self.platform, comment_path,
+            self.timestamp_path,
+            self.user,
+            source, run_type,
+            self.dart_server, self.proxy,
+            revision )
+        
+    def command_upload_logs(self):
+        self.import_utils()
+        from collect_and_upload_logs import upload_logs
+        self.retry(
+            lambda:
+                upload_logs(
+                    self.regression_results,
+                    self.runner, self.tag,
+                    self.user,
+                    self.ftp_proxy,
+                    self.debug_level, self.send_bjam_log,
+                    self.timestamp_path,
+                    self.dart_server )
+            )
     
     def command_regression(self):
-        pass
+        import socket
+        import string
+        try:
+            mail_subject = 'Boost regression for %s on %s' % ( self.tag,
+                string.split(socket.gethostname(), '.')[0] )
+            start_time = time.localtime()
+            if self.mail:
+                self.log( 'Sending start notification to "%s"' % self.mail )
+                self.send_mail(
+                    '%s started at %s.' % ( mail_subject, format_time( start_time ) )
+                    )
+            
+            self.command_get_tools()
+
+            if self.local is not None:
+                self.log( 'Using local file "%s"' % self.local )
+                b = os.path.basename( self.local )
+                tag = b[ 0: b.find( '.' ) ]
+                self.log( 'Tag: "%s"' % tag  )
+                self.unpack_tarball( local )
+                
+            elif self.have_source:
+                if not self.incremental: self.command_cleanup( [ 'bin' ] )
+                
+            else:
+                if self.incremental or self.force_update:
+                    if not self.incremental: self.command_cleanup( [ 'bin' ] )
+                else:
+                    self.command_cleanup()
+                self.command_get_source()
+
+            self.command_setup()
+
+            # Not specifying --toolset in command line is not enough
+            # that would mean to use Boost.Build default ones
+            # We can skip test only we were explictly 
+            # told to have no toolsets in command line "--toolset="
+            if self.toolsets != '': # --toolset=,
+                if not self.skip_tests:
+                    self.command_test()
+                self.command_collect_logs()
+                self.command_upload_logs()
+
+            if self.mail:
+                self.log( 'Sending report to "%s"' % self.mail )
+                end_time = time.localtime()
+                self.send_mail(
+                    '%s completed successfully at %s.' % ( mail_subject, format_time( end_time ) )
+                    )
+        except:
+            if self.mail:
+                self.log( 'Sending report to "%s"' % self.mail )
+                traceback_ = '\n'.join( apply( traceback.format_exception, sys.exc_info() ) )
+                end_time = time.localtime()
+                self.send_mail(
+                    '%s failed at %s.' % ( mail_subject, format_time( end_time ) ),
+                    traceback_ )
+            raise
 
     def command_show_revision(self):
         modified = '$Date$'
@@ -279,11 +454,13 @@ class runner:
 
     def rmtree(self,path):
         if os.path.exists( path ):
-            if sys.platform == 'win32':
-                os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
-                shutil.rmtree( unicode( path ) )
-            else:
-                os.system( 'rm -f -r "%s"' % path )
+            import shutil
+            shutil.rmtree( unicode( path ) )
+            #~ if sys.platform == 'win32':
+                #~ os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
+                #~ shutil.rmtree( unicode( path ) )
+            #~ else:
+                #~ os.system( 'rm -f -r "%s"' % path )
 
     def refresh_timestamp( self ):
         if os.path.exists( self.timestamp_path ):
@@ -333,46 +510,107 @@ class runner:
             import utils as utils_module
             utils = utils_module
 
-    def build_if_needed( tool, toolset, toolsets ):
+    def build_if_needed( self, tool, toolset ):
+        self.import_utils()
         if os.path.exists( tool[ 'path' ] ):
-            log( 'Found preinstalled "%s"; will use it.' % tool[ 'path' ] )
+            self.log( 'Found preinstalled "%s"; will use it.' % tool[ 'path' ] )
             return
 
-        log( 'Preinstalled "%s" is not found; building one...' % tool[ 'path' ] )
+        self.log( 'Preinstalled "%s" is not found; building one...' % tool[ 'path' ] )
 
         if toolset is None:
-            if toolsets is not None:
-                toolset = string.split( toolsets, ',' )[0]
-                if not tool[ 'is_supported_toolset' ]( toolset ):
-                    log( 'Warning: Specified toolset (%s) cannot be used to bootstrap "%s".'\
-                         % ( toolset, tool[ 'name' ] ) )
-
-                    toolset = tool[ 'default_toolset' ](v2)
-                    log( '         Using default toolset for the platform (%s).' % toolset )
+            if self.toolsets is not None:
+                toolset = string.split( self.toolsets, ',' )[0]
             else:
-                toolset = tool[ 'default_toolset' ](v2)
-                log( 'Warning: No bootstrap toolset for "%s" was specified.' % tool[ 'name' ] )
-                log( '         Using default toolset for the platform (%s).' % toolset )
+                toolset = tool[ 'default_toolset' ]
+                self.log( 'Warning: No bootstrap toolset for "%s" was specified.' % tool[ 'name' ] )
+                self.log( '         Using default toolset for the platform (%s).' % toolset )
 
         if os.path.exists( tool[ 'source_dir' ] ):
-            log( 'Found "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
-            build_cmd = tool[ 'build_cmd' ]( toolset, v2 )
-            log( 'Building "%s" (%s)...' % ( tool[ 'name'], build_cmd ) )
-            utils.system( [
-                  'cd "%s"' % tool[ 'source_dir' ]
-                , build_cmd
-                ] )
+            self.log( 'Found "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] ) )
+            build_cmd = tool[ 'build_cmd' ]( toolset, tool['build_args'] )
+            self.log( 'Building "%s" (%s)...' % ( tool[ 'name'], build_cmd ) )
+            utils.system( [ 'cd "%s"' % tool[ 'source_dir' ], build_cmd ] )
         else:
             raise 'Could not find "%s" source directory "%s"' % ( tool[ 'name' ], tool[ 'source_dir' ] )
 
         if not tool.has_key( 'build_path' ):
-            tool[ 'build_path' ] = tool_path( tool, v2 )
+            tool[ 'build_path' ] = self.tool_path( tool )
 
         if not os.path.exists( tool[ 'build_path' ] ):
             raise 'Failed to find "%s" after build.' % tool[ 'build_path' ]
 
-        log( '%s succesfully built in "%s" location' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
+        self.log( '%s succesfully built in "%s" location' % ( tool[ 'name' ], tool[ 'build_path' ] ) )
+
+    def tool_path( self, name_or_spec ):
+        if isinstance( name_or_spec, basestring ):
+            return os.path.join( self.regression_root, name_or_spec )
+
+        if os.path.exists( name_or_spec[ 'path' ] ):
+            return name_or_spec[ 'path' ]
+
+        if name_or_spec.has_key( 'build_path' ):
+            return name_or_spec[ 'build_path' ]
+
+        build_dir = name_or_spec[ 'build_dir' ]
+        self.log( 'Searching for "%s" in "%s"...' % ( name_or_spec[ 'name' ], build_dir ) )
+        for root, dirs, files in os.walk( build_dir ):
+            if name_or_spec[ 'name' ] in files:
+                return os.path.join( root, name_or_spec[ 'name' ] )
+
+        raise Exception( 'Cannot find "%s" in any of the following locations:\n%s' % (
+              name_or_spec[ 'name' ]
+            , '\n'.join( [ name_or_spec[ 'path' ], build_dir ] )
+            ) )
     
+    def bjam_build_cmd( self, *rest ):
+        if sys.platform == 'win32':
+            cmd = 'build.bat %s' % self.bjam_toolset
+        else:
+            cmd = './build.sh %s' % self.bjam_toolset
+        env_setup_key = 'BJAM_ENVIRONMENT_SETUP'
+        if os.environ.has_key( env_setup_key ):
+            return '%s & %s' % ( os.environ[env_setup_key], cmd )
+        return cmd
+    
+    def bjam_cmd( self, toolsets, args = '', *rest ):
+        build_path = self.regression_root
+        if build_path[-1] == '\\': build_path += '\\'
+        
+        if self.timeout > 0:
+            args += ' -l%s' % (self.timeout*60)
+
+        cmd = '"%(bjam)s" "-sBOOST_BUILD_PATH=%(bb)s" "-sBOOST_ROOT=%(boost)s" "--boost=%(boost)s" %(arg)s' % {
+            'bjam' : self.tool_path( self.bjam ),
+            'bb' : os.pathsep.join([build_path,self.tools_bb_root]),
+            'boost' : self.boost_root,
+            'arg' : args }
+
+        if toolsets:
+            import string
+            cmd += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
+
+        return cmd
+
+    def send_mail( self, subject, msg = '' ):
+        import smtplib
+        if not self.smtp_login:
+            server_name = 'mail.%s' % mail.split( '@' )[-1]
+            user_name = None
+            password = None
+        else:
+            server_name = self.smtp_login.split( '@' )[-1]
+            ( user_name, password ) = string.split( self.smtp_login.split( '@' )[0], ':' )
+
+        log( '    Sending mail through "%s"...' % server_name )
+        smtp_server = smtplib.SMTP( server_name )
+        smtp_server.set_debuglevel( self.debug_level )
+        if user_name:
+            smtp_server.login( user_name, password )
+
+        smtp_server.sendmail( self.mail, [ self.mail ],
+            'Subject: %s\nTo: %s\n\n%s' % ( subject, self.mail, msg ) )
+
     #~ Dowloading source, from SVN...
 
     def svn_checkout( self ):
@@ -384,7 +622,7 @@ class runner:
         self.svn_command( 'update' )
 
     def svn_command( self, command ):
-        svn_anonymous_command_line  = 'svn %(command)s'
+        svn_anonymous_command_line  = 'svn --non-interactive %(command)s'
         svn_command_line            = 'svn --non-interactive --username=%(user)s %(command)s'
         
         if not hasattr(self,'user') or self.user is None or self.user == 'anonymous':
