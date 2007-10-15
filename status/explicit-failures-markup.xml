@@ -1436,6 +1436,20 @@
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="hash_function_pointer_test"/>
+            <toolset name="sun-5.7"/>
+            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.9"/>
+            <note author="Daniel James">
+                On these compilers the wrong overload of hash_value is called
+                when the argument is a hash function pointer. So calling
+                hash_value doesn't work but boost::hash does work (and it's
+                recommended that user never call hash_value directly so this
+                shouldn't be a problem).
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="hash_float_test"/>
             <toolset name="gcc-3.4.3_sunos"/>
             <note author="Daniel James">
