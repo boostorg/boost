@@ -87,6 +87,8 @@ namespace
 
   const string empty_string;
 
+  std::vector<int> error_count;
+
   // prefix for library and test hyperlink prefix
   string cvs_root ( "http://boost.cvs.sourceforge.net/" );
   string url_prefix_dir_view( cvs_root + "boost/boost" );
@@ -526,7 +528,9 @@ const fs::path find_bin_path(const string& relative)
 
   //  do_cell  ---------------------------------------------------------------//
 
-  bool do_cell( const string & lib_name,
+  bool do_cell(
+    int compiler,
+    const string & lib_name,
     const fs::path & test_dir,
     const string & test_type,
     const string & test_name,
@@ -644,6 +648,8 @@ const fs::path find_bin_path(const string& relative)
         }
       }
     }
+
+    if ( !pass ) ++error_count[compiler];
       
     target += "</td>";
     return (anything_generated != 0) || !pass;
@@ -695,10 +701,11 @@ const fs::path find_bin_path(const string& relative)
 
     // for each compiler, generate <td>...</td> html
     bool anything_to_report = false;
+    int compiler = 0;
     for ( std::vector<string>::const_iterator itr=toolsets.begin();
-      itr != toolsets.end(); ++itr )
+      itr != toolsets.end(); ++itr, ++compiler )
     {
-      anything_to_report |= do_cell( lib_name, test_dir, test_type, test_name, *itr, target,
+      anything_to_report |= do_cell( compiler, lib_name, test_dir, test_type, test_name, *itr, target,
         always_show_run_output );
     }
 
@@ -816,6 +823,7 @@ const fs::path find_bin_path(const string& relative)
                << (desc.size() ? desc : compiler_itr->leaf())
                << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
                << "</td>\n";
+          error_count.push_back( 0 );
         }
       }
     }
@@ -826,7 +834,19 @@ const fs::path find_bin_path(const string& relative)
 
     do_table_body( bin_path );
 
-    report << "</table>\n";
+    // error total row
+
+    report << "<tr> <td> &nbsp;</td><td>Number of Failures</td><td> &nbsp;</td>\n";
+
+    // for each compiler, generate <td>...</td> html
+    int compiler = 0;
+    for ( std::vector<string>::const_iterator itr=toolsets.begin();
+      itr != toolsets.end(); ++itr, ++compiler )
+    {
+      report << "<td align=\"center\">" << error_count[compiler] << "</td>\n";
+    }
+
+    report << "</tr>\n</table>\n";
   }
 
 } // unnamed namespace
