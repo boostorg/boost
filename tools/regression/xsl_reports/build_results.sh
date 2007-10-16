@@ -49,8 +49,8 @@ upload_results()
     zip -r -9 ../../${1} * -x '*.xml'
     cd "${cwd}"
     bzip2 -9 ${1}.zip
-    scp ${1}.zip.bz2 beta.boost.org:/home/grafik/www.boost.org/testing/incoming/
-    ssh beta.boost.org bunzip2 /home/grafik/www.boost.org/testing/incoming/${1}.zip.bz2
+    scp ${1}.zip.bz2 grafik@beta.boost.org:/home/grafik/www.boost.org/testing/incoming/
+    ssh grafik@beta.boost.org bunzip2 /home/grafik/www.boost.org/testing/incoming/${1}.zip.bz2
 }
 
 build_all ${1}
