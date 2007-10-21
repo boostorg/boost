@@ -1450,18 +1450,14 @@
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="hash_float_test"/>
+            <test name="hash_long_double_test"/>
             <toolset name="gcc-3.4.3_sunos"/>
+            <toolset name="acc-pa_risc"/>
             <note author="Daniel James">
-                On this compiler the hash function is returning the same value
-                for <code>std::numeric_limits&lt;long double&gt;::max()</code>,
-                <code>std::numeric_limits&lt;long double&gt;::max() / 2</code> and
-                <code>std::numeric_limits&lt;long double&gt;::max() * 3 / 4</code>.
-                This suggests the hash function isn't taking into account the
-                full range of <code>long double</code> - it might be
-                converting it to a <code>double</code>. This won't cause
-                anything to break, but means that the hash function isn't
-                as good as it should be for <code>long double</code>s.
+                This platform has poor support for <code>long double</code> so
+                the hash function perform poorly for values out of the range
+                of <code>double</code> or if they differ at a greater precision
+                that <code>double</code> is capable of representing.
             </note>
         </mark-expected-failures>
 
