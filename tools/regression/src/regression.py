@@ -75,9 +75,11 @@ class runner:
         opt.add_option( '--local',
             help="the name of the boost tarball" )
         opt.add_option( '--force-update',
-            help="do an SVN update (if applicable) instead of a clean checkout, even when performing a full run" )
+            help="do an SVN update (if applicable) instead of a clean checkout, even when performing a full run",
+            action='store_true' )
         opt.add_option( '--have-source',
-            help="do neither a tarball download nor an SVN update; used primarily for testing script changes" )
+            help="do neither a tarball download nor an SVN update; used primarily for testing script changes",
+            action='store_true' )
 
         #~ Connection Options:
         opt.add_option( '--proxy',
@@ -457,12 +459,12 @@ class runner:
     def rmtree(self,path):
         if os.path.exists( path ):
             import shutil
-            shutil.rmtree( unicode( path ) )
-            #~ if sys.platform == 'win32':
-                #~ os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
-                #~ shutil.rmtree( unicode( path ) )
-            #~ else:
-                #~ os.system( 'rm -f -r "%s"' % path )
+            #~ shutil.rmtree( unicode( path ) )
+            if sys.platform == 'win32':
+                os.system( 'del /f /s /q "%s" >nul 2>&1' % path )
+                shutil.rmtree( unicode( path ) )
+            else:
+                os.system( 'rm -f -r "%s"' % path )
 
     def refresh_timestamp( self ):
         if os.path.exists( self.timestamp_path ):
