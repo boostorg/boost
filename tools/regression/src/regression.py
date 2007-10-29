@@ -203,36 +203,59 @@ class runner:
     def command_get_tools(self):
         #~ Get Boost.Build v2...
         self.log( 'Getting Boost.Build v2...' )
-        os.chdir( os.path.dirname(self.tools_bb_root) )
-        self.svn_command( 'co %s %s' % (
-            self.svn_repository_url(repo_path['build']),
-            os.path.basename(self.tools_bb_root) ) )
+        if self.user and self.user != '':
+            os.chdir( os.path.dirname(self.tools_bb_root) )
+            self.svn_command( 'co %s %s' % (
+                self.svn_repository_url(repo_path['build']),
+                os.path.basename(self.tools_bb_root) ) )
+        else:
+            self.retry( lambda: self.download_tarball(
+                os.path.basename(self.tools_bb_root)+".tar.bz2",
+                self.tarball_url(repo_path['build']) ) )
+            self.unpack_tarball(
+                self.tools_bb_root+".tar.bz2",
+                os.path.basename(self.tools_bb_root) )
         #~ Get Boost.Jam...
         self.log( 'Getting Boost.Jam...' )
-        os.chdir( os.path.dirname(self.tools_bjam_root) )
-        self.svn_command( 'co %s %s' % (
-            self.svn_repository_url(repo_path['jam']),
-            os.path.basename(self.tools_bjam_root) ) )
+        if self.user and self.user != '':
+            os.chdir( os.path.dirname(self.tools_bjam_root) )
+            self.svn_command( 'co %s %s' % (
+                self.svn_repository_url(repo_path['jam']),
+                os.path.basename(self.tools_bjam_root) ) )
+        else:
+            self.retry( lambda: self.download_tarball(
+                os.path.basename(self.tools_bjam_root)+".tar.bz2",
+                self.tarball_url(repo_path['jam']) ) )
+            self.unpack_tarball(
+                self.tools_bjam_root+".tar.bz2",
+                os.path.basename(self.tools_bjam_root) )
         #~ Get the regression tools and utilities...
         self.log( 'Getting regression tools an utilities...' )
-        os.chdir( os.path.dirname(self.tools_regression_root) )
-        self.svn_command( 'co %s %s' % (
-            self.svn_repository_url(repo_path['regression']),
-            os.path.basename(self.tools_regression_root) ) )
+        if self.user and self.user != '':
+            os.chdir( os.path.dirname(self.tools_regression_root) )
+            self.svn_command( 'co %s %s' % (
+                self.svn_repository_url(repo_path['regression']),
+                os.path.basename(self.tools_regression_root) ) )
+        else:
+            self.retry( lambda: self.download_tarball(
+                os.path.basename(self.tools_regression_root)+".tar.bz2",
+                self.tarball_url(repo_path['regression']) ) )
+            self.unpack_tarball(
+                self.tools_regression_root+".tar.bz2",
+                os.path.basename(self.tools_regression_root) )
     
     def command_get_source(self):
         self.refresh_timestamp()
         self.log( 'Getting sources (%s)...' % self.timestamp() )
 
-        if hasattr(self,'user') and self.user is not None:
+        if self.user and self.user != '':
             self.retry( self.svn_checkout )
         else:
             self.retry( self.get_tarball )
         pass
     
     def command_update_source(self):
-        if hasattr(self,'user') \
-            and self.user is not None \
+        if self.user and self.user != '' \
             or os.path.exists( os.path.join( self.boost_root, '.svn' ) ):
             open( self.timestamp_path, 'w' ).close()
             self.log( 'Updating sources from SVN (%s)...' % self.timestamp() )
@@ -385,7 +408,7 @@ class runner:
                 b = os.path.basename( self.local )
                 tag = b[ 0: b.find( '.' ) ]
                 self.log( 'Tag: "%s"' % tag  )
-                self.unpack_tarball( local )
+                self.unpack_tarball( local, self.boost_root )
                 
             elif self.have_source:
                 if not self.incremental: self.command_cleanup( [ 'bin' ] )
@@ -656,18 +679,16 @@ class runner:
         if hasattr(self,'local') and self.local is not None:
             tarball_path = self.local
         elif 'download' in args:
-            tarball_path = self.download_boost_tarball()
+            tarball_path = self.download_tarball(self.boost_tarball_name(),self.boost_tarball_url())
         if not tarball_path:
             tarball_path = os.path.join( self.regression_root, self.boost_tarball_url() )
 
         if 'unpack' in args:
-            self.unpack_tarball( tarball_path )
+            self.unpack_tarball( tarball_path, self.boost_root )
         pass
 
-    def download_boost_tarball( self ):
-        tarball_name = self.boost_tarball_name()
+    def download_tarball( self, tarball_name, tarball_url ):
         tarball_path = os.path.join( self.regression_root, tarball_name )
-        tarball_url = self.boost_tarball_url()
 
         self.log( 'Downloading "%s" to "%s"...'  % ( tarball_url, os.path.dirname( tarball_path ) ) )
 
@@ -676,14 +697,17 @@ class runner:
         self.http_get( tarball_url, tarball_path )
 
         return tarball_path
+    
+    def tarball_url( self, path ):
+        return 'http://beta.boost.org/development/snapshot.php/%s' % path
 
     def boost_tarball_name( self ):
         return 'boost-%s.tar.bz2' % self.tag.split( '/' )[-1]
 
     def boost_tarball_url( self ):
-        return 'http://beta.boost.org/development/snapshot.php/%s' % self.tag
+        return self.tarball_url( self.tag )
 
-    def unpack_tarball( self, tarball_path ):
+    def unpack_tarball( self, tarball_path, target_path ):
         self.log( 'Looking for old unpacked archives...' )
         old_boost_dirs = self.find_boost_dirs( )
 
@@ -699,6 +723,7 @@ class runner:
 
         if extension in ( ".tar.gz", ".tar.bz2" ):
             import tarfile
+            import stat
             
             mode = os.path.splitext( extension )[1][1:]
             tar = tarfile.open( tarball_path, 'r:%s' % mode )
@@ -731,12 +756,12 @@ class runner:
         boost_dir = self.find_boost_dirs()[0]
         self.log( '    Unpacked into directory "%s"' % boost_dir )
 
-        if os.path.exists( boost_root ):
-            self.log( 'Deleting "%s" directory...' % boost_root )
-            self.rmtree( boost_root )
+        if os.path.exists( target_path ):
+            self.log( 'Deleting "%s" directory...' % target_path )
+            self.rmtree( target_path )
 
-        self.log( 'Renaming "%s" into "%s"' % ( boost_dir, boost_root ) )
-        os.rename( boost_dir, boost_root )
+        self.log( 'Renaming "%s" into "%s"' % ( boost_dir, target_path ) )
+        os.rename( boost_dir, target_path )
 
     def find_boost_dirs( self ):
         return [
