@@ -4070,6 +4070,13 @@ for more information.
             <toolset name="hp_cxx-65*"/>
             <note author="Andreas Huber" refid="17"/>
         </mark-unusable>
+        <mark-unusable>
+            <toolset name="acc-pa_risc"/>
+            <note author="Andreas Huber">
+                Marked unusable because TransitionTest.cpp compiled but did
+                the wrong thing at runtime!
+            </note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="DllTestNormal"/>
             <toolset name="*cygwin*"/>
@@ -4083,6 +4090,15 @@ for more information.
                 header-defined static class member can exist at runtime. See
                 <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">here</a>
                 for more information.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="DllTestNative"/>
+            <toolset name="gcc-mingw-4.2*"/>
+            <note author="Andreas Huber">
+                A runtime failure of this test indicates that the RTTI
+                implementation of this platform is broken in conjunction
+                with dynamic linking.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -4113,7 +4129,13 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
-            <toolset name="acc"/>
+            <toolset name="acc*"/>
+            <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="TransitionTest*"/>
+            <test name="PerformanceExample"/>
+            <toolset name="vacpp"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
     </library>
