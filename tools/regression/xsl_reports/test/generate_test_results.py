@@ -64,6 +64,7 @@ def make_test_results():
                                       , "timestamp": common.format_timestamp( 
                                                           time.gmtime( time.time() - i_runner * 24*60*60 )
                                                         )
+                                      , "revision": '%d' % ( 7000 + i_runner )
                                       , "source": test_run_source( i_runner )
                                       , "run-type": test_run_type( i_runner )
                                       } )

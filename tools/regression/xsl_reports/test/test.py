@@ -25,7 +25,7 @@ boost_wide_report.execute_tasks(
     , comment_file = os.path.abspath( "comment.html" )
     , results_dir = os.path.abspath( "results" )
     , output_dir = os.path.abspath( "output" )
-    , reports = [ "x", "ds", "dd", "dsr", "ddr", "us", "ud", "usr", "udr" ]
+    , reports = [ "i", "x", "ds", "dd", "dsr", "ddr", "us", "ud", "usr", "udr" ]
     , warnings = [ 'Warning text 1', 'Warning text 2' ]
     , extended_test_results = os.path.abspath( "output/extended_test_results.xml" )
     , dont_collect_logs = 1
