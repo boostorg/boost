@@ -34,8 +34,15 @@ if os.path.exists(script_local):
         shutil.copyfile( os.path.join(script_local,src), os.path.join(script_dir,src) )
 else:
     print '# Dowloading regression scripts from %s...' % script_remote
+    proxy = None
+    for a in sys.argv[1:]:
+        if a.startswith('--proxy='):
+            proxy = {'http' : a.split('=')[1] }
+            print '--- %s' %(proxy['http'])
+            break
     for src in script_sources:
-        urllib.urlretrieve( '%s/%s' % (script_remote,src), os.path.join(script_dir,src) )
+        urllib.FancyURLopener(proxy).retrieve(
+            '%s/%s' % (script_remote,src), os.path.join(script_dir,src) )
 #~ * Make the scripts available to Python
 sys.path.insert(0,os.path.join(root,'tools_regression_src'))
 
