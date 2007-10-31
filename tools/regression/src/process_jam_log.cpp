@@ -24,9 +24,6 @@ using std::string;
 namespace xml = boost::tiny_xml;
 namespace fs = boost::filesystem;
 
-#define BOOST_NO_CPP_MAIN_SUCCESS_MESSAGE
-#include <boost/test/included/prg_exec_monitor.hpp>
-
 // options 
 
 static bool echo = false;
@@ -523,7 +520,7 @@ namespace
 //  main  --------------------------------------------------------------------//
 
 
-int cpp_main( int argc, char ** argv )
+int main( int argc, char ** argv )
 {
   // Turn off synchronization with corresponding C standard library files. This
   // gives a significant speed improvement on platforms where the standard C++
