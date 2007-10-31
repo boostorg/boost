@@ -289,6 +289,7 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="test_log"/>
         <xsl:param name="runner_id"/>
         <xsl:param name="revision"/>
+        <xsl:param name="timestamp"/>
         <xsl:message>    Writing log file document <xsl:value-of select="$path"/></xsl:message>
 
         <exsl:document href="{$path}" 
