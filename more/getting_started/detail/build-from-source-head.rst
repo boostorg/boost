@@ -26,7 +26,7 @@ Boost provides |precompiled-bjam|_ for a variety of platforms.
 Alternatively, you can build ``bjam`` yourself using `these
 instructions`__.
 
-__ ../../doc/html/jam/building.html
+__ `building bjam`_
 
 
 .. _toolset:
@@ -37,6 +37,12 @@ Identify Your Toolset
 
 First, find the toolset corresponding to your compiler in the
 following table.  
+
+.. Note:: If you previously chose a toolset for the purposes of
+  `building bjam`_, you should assume it won't work and instead
+  choose newly from the table below.
+
+.. _building bjam: ../../doc/html/jam/building.html
 
 +-----------+--------------------+-----------------------------+
 |Toolset    |Vendor              |Notes                        |
@@ -89,13 +95,10 @@ following table.
 __ Boost.Build_
 
 If you have multiple versions of a particular compiler installed,
-you can append the version number to the toolset name, preceded by a
-hyphen, e.g. ``msvc-7.1`` or ``gcc-3.4``.
+you can append the version number to the toolset name, preceded by
+a hyphen, e.g. ``intel-9.0`` or
+``borland-5.4.3``. |windows-version-name-caveat|
 
-.. Note:: if you built ``bjam`` yourself, you may
-  have selected a toolset name for that purpose, but that does not
-  affect this step in any way; you still need to select a Boost.Build
-  toolset from the table.
 
 .. _build directory:
 .. _build-directory:

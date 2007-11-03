@@ -186,8 +186,8 @@ now.
 
 __ `Link Your Program to a Boost Library`_
 
-Or, Build and Install Binaries From Source
-------------------------------------------
+Or, Build Binaries From Source
+------------------------------
 
 If you're using an earlier version of Visual C++, or a compiler
 from another vendor, you'll need to use Boost.Build_ to create your
@@ -199,12 +199,14 @@ For example, your session might look like this: [#continuation]_
 
 .. parsed-literal::
 
-   C:\WINDOWS> cd |default-root|
+   C:\\WINDOWS> cd |default-root|
    |default-root|> bjam **^**
-   More? **--build-dir=**\ %TEMP%\\build-boost **^**
+   More? **--build-dir=**\ C:\\temp\\build-boost **^**
    More? **--toolset=**\ msvc stage
 
 .. include:: detail/build-from-source-tail.rst
+
+.. _auto-linking:
 
 .. include:: detail/link-head.rst
 
@@ -216,6 +218,13 @@ For example, your session might look like this: [#continuation]_
    information to encode the name of the correct library into your
    object files; the linker selects the library with that name from
    the directories you've told it to search.
+
+   The GCC toolchains (Cygwin and MinGW) are notable exceptions;
+   GCC users should refer to the `linking instructions for Unix
+   variant OSes`__ for the appropriate command-line options to use.
+
+__ unix-variants.html#link-your-program-to-a-boost-library
+
 
 Link From Within the Visual Studio IDE
 --------------------------------------

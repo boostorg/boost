@@ -2,8 +2,9 @@
 .. Software License, Version 1.0. (See accompanying
 .. file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-Boost.Build will place the Boost binaries in the ``stage``\ |/|
-subdirectory of your `build directory`_.
+Building the special ``stage`` target places Boost
+library binaries in the ``stage``\ |/| subdirectory of your `build
+directory`_.
 
 .. Note:: ``bjam`` is case-sensitive; it is important that all the
    parts shown in **bold** type above be entirely lower-case.
