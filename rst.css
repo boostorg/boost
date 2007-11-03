@@ -62,27 +62,34 @@ dl,table
     Tables
 =============================================================================*/
 
-    table.table
+/* The only clue docutils gives us that tables are logically tables,
+   and not, e.g., footnotes, is that they have border="1".  Therefore
+   we're keying off of that.  We used to manually patch docutils to
+   add a "table" class to all logical tables, but that proved much too
+   fragile.
+*/
+
+    table[border="1"]
     {
         width: 92%;
         margin-left: 4%;
         margin-right: 4%;
     }
     
-    table.table
+    table[border="1"]
     {
         padding: 4px;
     }
     
     /* Table Cells */
-    table.table tr td
+    table[border="1"] tr td
     {
         padding: 0.5em;
         text-align: left;
         font-size: 9pt;
     }
 
-    table.table tr th
+    table[border="1"] tr th
     {
         padding: 0.5em 0.5em 0.5em 0.5em;
         border: 1pt solid white;
@@ -93,12 +100,12 @@ dl,table
     {
     
     /* Tables */
-        table.table tr td
+        table[border="1"] tr td
         {
             border: 1px solid #DCDCDC;
         }
     
-        table.table tr th
+        table[border="1"] tr th
         {
             background-color: #F0F0F0;
             border: 1px solid #DCDCDC;

@@ -24,6 +24,11 @@
     **lib**\ |//| .....................\ *precompiled library binaries*
 
 
+.. |windows-version-name-caveat| replace:: **On Windows, append a version
+   number even if you only have one version installed** (unless you
+   are using the msvc or gcc toolsets, which have special version
+   detection code) or `auto-linking`_ will fail.
+
 .. |command-line tool| replace:: `command-line tool`_
 
 .. include:: common.rst
