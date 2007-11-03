@@ -2917,6 +2917,76 @@ for more information.
            </note>
         </mark-unusable>
        <mark-expected-failures>
+          <test name="test_traits"/>
+          <toolset name="gcc-3.3.6"/>
+          <note author="John Maddock">
+             This compiler is not sufficiently conforming to correctly handle these tests.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_policy_2"/>
+          <toolset name="gcc-mingw-3.4.5"/>
+          <note author="John Maddock">
+             This test takes too long to build for this compiler and times out.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_traits"/>
+          <toolset name="sun-5.8"/>
+          <toolset name="sun-5.9"/>
+          <note author="John Maddock">
+             This is a compiler bug: it is unable to use
+             SFINAE to detect the presence of specific 
+             member functions.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="std_real_concept_check"/>
+          <test name="test_instantiate1"/>
+          <test name="test_policy_sf"/>
+          <toolset name="sun-5.8"/>
+          <toolset name="sun-5.9"/>
+          <note author="John Maddock">
+             This is a compiler bug: it is unable to resolve the 
+             overloaded functions.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_binomial_real_concept"/>
+          <test name="test_ibeta_inv_ab_real_concept"/>
+          <test name="test_igamma_inva_real_concept"/>
+          <toolset name="sun-5.9"/>
+          <toolset name="sun-5.8"/>
+          <note author="John Maddock">
+             This test takes too long to execute and times out.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="dist_binomial_incl_test"/>
+          <test name="dist_neg_binom_incl_test"/>
+          <test name="dist_poisson_incl_test"/>
+          <test name="test_binomial_double"/>
+          <test name="test_binomial_float"/>
+          <test name="test_binomial_long_double"/>
+          <test name="test_binomial_real_concept"/>
+          <test name="test_negative_binomial_double"/>
+          <test name="test_negative_binomial_float"/>
+          <test name="test_negative_binomial_long_double"/>
+          <test name="test_negative_binomial_real_concept"/>
+          <test name="test_poisson_double"/>
+          <test name="test_poisson_float"/>
+          <test name="test_poisson_long_double"/>
+          <test name="test_poisson_real_concept"/>
+          <test name="tools_roots_inc_test"/>
+          <toolset name="sun-5.8"/>
+          <toolset name="sun-5.7"/>
+          <note author="John Maddock">
+             These tests fail with an internal compiler error: there is no
+             known workaround at present, except to use Sun-5.9 which does
+             build this code correctly.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
          <test name="log1p_expm1_test"/>
          <test name="test_bernoulli"/>
          <test name="test_beta_dist"/>
@@ -5016,6 +5086,16 @@ for more information.
           <note author="John Maddock">
              These failures appear to represent a genuine issue with the
              Boost.Random library that has yet to be addressed.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_tuple_tricky"/>
+          <test name="std_test_tuple_tricky"/>
+          <toolset name="sun-5.8"/>
+
+          <note author="John Maddock">
+             These fail with an internal compiler error: there's no
+             workaround as yet.
           </note>
        </mark-expected-failures>
        <mark-expected-failures>
