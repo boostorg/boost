@@ -362,7 +362,7 @@
         <mark-expected-failures>
             <test name="bind_dm2_test"/>
             <test name="mem_fn_dm_test"/>
-            <toolset name="msvc-6.5*"/>
+            <toolset name="msvc-6.*"/>
             <toolset name="msvc-7.0"/>
             <toolset name="cw-8.3"/>
             <note refid="31" author="Peter Dimov"/>
@@ -397,7 +397,7 @@
         <mark-expected-failures>
             <test name="bind_dm3_test"/>
             <toolset name="borland-5*"/>
-            <toolset name="msvc-6.5*"/>
+            <toolset name="msvc-6.*"/>
             <toolset name="msvc-7.0"/>
             <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
@@ -407,6 +407,13 @@
           <note author="Peter Dimov">
             This failure is only present in release mode and is caused by /OPT:ICF.
           </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bind_placeholder_test"/>
+            <toolset name="borland-*"/>
+            <toolset name="msvc-6.*"/>
+            <toolset name="msvc-7.0"/>
+            <note refid="31" author="Peter Dimov"/>
         </mark-expected-failures>
     </library>
 
@@ -1643,6 +1650,7 @@
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
             <toolset name="acc*"/> 
+            <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -1663,6 +1671,7 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
+            <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -2022,11 +2031,10 @@
 
         <mark-expected-failures>
             <test name="apply"/>
-            <toolset name="gcc-4.1.0*"/>
-            <toolset name="gcc-4.1.1*"/>
+            <toolset name="gcc-4.1.*"/>
             <note author="Caleb Epstein">
-              This is a regression in the gcc 4.1 series that will be
-              fixed in gcc 4.1.2.  See <a
+              This is a regression in the gcc 4.1 series that has been 
+              fixed in gcc 4.2.0.  See <a
               href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28088">bug
               #28088</a> for details.
             </note>
