@@ -101,7 +101,8 @@ class runner:
         opt.add_option( '--smtp-login',
             help="STMP server address/login information, in the following form: <user>:<password>@<host>[:<port>]" )
         opt.add_option( '--skip-tests',
-            help="do not run bjam; used for testing script changes" )
+            help="do not run bjam; used for testing script changes"
+            action='store_true' )
         
         #~ Defaults
         self.runner = None
