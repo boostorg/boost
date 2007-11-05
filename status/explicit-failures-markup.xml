@@ -4,9 +4,9 @@
 
     <!--
     PLEASE VALIDATE THE XML BEFORE COMMITTING YOUR CHANGES!
-    
+
     Locally, the xmlint tool can be used:
-    
+
         xmllint <two-dashes>valid explicit-failures-markup.xml <two-dashes>schema explicit-failures.xsd
 
     The following online services can be used to validate your changes to this
@@ -864,7 +864,7 @@
                 <toolset name="msvc-7.0"/>
                 <note author="J. Garland">
                 These compilers are unfortunately able to correctly compile the
-                new format-based input-output code for date time.  Suitable, but 
+                new format-based input-output code for date time.  Suitable, but
                 less flexible, alternatives are available on these compilers.
                </note>
             </mark-failure>
@@ -881,7 +881,7 @@
                 <toolset name="msvc-7.0"/>
                 <note author="J. Garland">
                 These compilers are unfortunately able to correctly compile the
-                new format-based input-output code for date time.  Suitable, but 
+                new format-based input-output code for date time.  Suitable, but
                 less flexible, alternatives are available on these compilers.
                </note>
             </mark-failure>
@@ -898,7 +898,7 @@
                 <toolset name="msvc-7.0"/>
                 <note author="J. Garland">
                 These compilers are unfortunately able to correctly compile the
-                new format-based input-output code for date time.  Suitable, but 
+                new format-based input-output code for date time.  Suitable, but
                 less flexible, alternatives are available on these compilers.
                </note>
             </mark-failure>
@@ -913,7 +913,7 @@
                 <toolset name="*cygwin*"/>
                 <note author="J. Garland">
                 These compilers are unfortunately able to correctly compile the
-                new format-based input-output code for date time.  Suitable, but 
+                new format-based input-output code for date time.  Suitable, but
                 less flexible, alternatives are available on these compilers.
                </note>
             </mark-failure>
@@ -928,7 +928,7 @@
                 <toolset name="*cygwin*"/>
                 <note author="J. Garland">
                 These compilers are unfortunately able to correctly compile the
-                new format-based input-output code for date time.  Suitable, but 
+                new format-based input-output code for date time.  Suitable, but
                 less flexible, alternatives are available on these compilers.
                </note>
             </mark-failure>
@@ -997,9 +997,9 @@
             <toolset name="borland-5.8.2"/>
             <note author="J. Garland">
                There is apparently a bug in Borland library
-               such that  std::local_time and std::gmtime are 
-               returning a time that's 1 hour ahead GetSystemTimeAsFileTime 
-               during DST.  This is a rather serious problem in that 
+               such that  std::local_time and std::gmtime are
+               returning a time that's 1 hour ahead GetSystemTimeAsFileTime
+               during DST.  This is a rather serious problem in that
                some of the date-time clock interfaces will give the wrong
                current time.
             </note>
@@ -1068,7 +1068,7 @@
             <test name="testtime_input_facet"/>
             <toolset name="sun-5.8"/>
             <note author="J. Garland">
-               The sun 5.8 compiler and standard library have a problem with 
+               The sun 5.8 compiler and standard library have a problem with
                the classic facet which causes some of the io tests for date-time
                to fail.  Overall this should not affect most uses of the library.
             </note>
@@ -1094,7 +1094,7 @@
             <note author="J. Garland">
                The STLPort standard library has issues with the handling
                of the classic facet which causes some fo the i/o tests
-               for date-time to fail.  Overall this should not affect 
+               for date-time to fail.  Overall this should not affect
                most uses of the library.
             </note>
         </mark-expected-failures>
@@ -1109,7 +1109,7 @@
             <note author="J. Garland">
                MSVC 7.1 with its standard library passes all date-time tests.
                For some reason when paired with stlport a few widestream
-               io tests do not format output correctly.   Overall this should 
+               io tests do not format output correctly.   Overall this should
                not affect most uses of the library.
             </note>
         </mark-expected-failures>
@@ -1147,7 +1147,7 @@
             <toolset name="vacpp"/>
             <note author="J. Garland">
               These tests are for serialization which has been marked as unusable.
-              The issue was specifically noted on 
+              The issue was specifically noted on
               AIX version : 5.2.0.41 using IBM XL Version 8.0.0.0.
             </note>
         </mark-expected-failures>
@@ -1330,7 +1330,7 @@
           <test name="wide_test"/>
           <toolset name="sun-5.8"/>
            <note author="John Maddock">
-              These failures are reported to be fixed in Sun's 
+              These failures are reported to be fixed in Sun's
               next compiler release.
            </note>
         </mark-expected-failures>
@@ -1525,6 +1525,29 @@
         </mark-expected-failures>
     </library>
 
+
+
+    <!-- fusion -->
+    <library name="fusion">
+        <mark-unusable>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="msvc-6.5*"/>
+            <toolset name="msvc-7.0"/>
+            <toolset name="borland-5*"/>
+            <toolset name="cw-8.3"/>
+            <toolset name="dmc*"/>
+            <toolset name="sunpro-5_3-sunos"/>
+            <toolset name="sun-5.7"/>
+            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.9"/>
+            <note author="Joel de Guzman">
+                The compiler does not support features that are
+                essential for the library.
+            </note>
+        </mark-unusable>
+    </library>
+
+
     <!-- graph -->
     <library name="graph">
         <mark-unusable>
@@ -1612,8 +1635,8 @@
             <test name="relaxed_heap_test"/>
             <toolset name="msvc-7.0"/>
             <note author="Vladimir Prus">
-              The test fails due to compile error in relaxed_heap.hpp. 
-              The compile error is likely caused by a compiler bug.      
+              The test fails due to compile error in relaxed_heap.hpp.
+              The compile error is likely caused by a compiler bug.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -1625,7 +1648,7 @@
             system bug.
           </note>
         </mark-expected-failures>
-  
+
     </library>
 
     <!-- interprocess-->
@@ -1642,7 +1665,7 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
-            <toolset name="acc*"/> 
+            <toolset name="acc*"/>
             <toolset name="hp_cxx*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
@@ -1669,12 +1692,12 @@
                 The compiler does not support features that are essential for the library.
             </note>
         </mark-unusable>
-        <mark-expected-failures> 
-            <test name="doc_offset_ptr" /> 
-            <toolset name="acc"/> 
-            <note author="Ion Gazta&#241;aga"> 
-                The compiler is not supported by Interprocess. 
-            </note> 
+        <mark-expected-failures>
+            <test name="doc_offset_ptr" />
+            <toolset name="acc"/>
+            <note author="Ion Gazta&#241;aga">
+                The compiler is not supported by Interprocess.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -1760,7 +1783,7 @@
             <test name="zlib_test"/>
             <toolset name="como-4_3_3-vc7_1"/>
             <note author="Jonathan Turkanis">
-                The failure reflects a problem with the build system: the zlib 
+                The failure reflects a problem with the build system: the zlib
                 object files are generated in the wrong directory.
             </note>
         </mark-expected-failures>
@@ -1794,7 +1817,7 @@
           <test name="finite_state_filter_test"/>
           <toolset name="cw-9.4"/>
           <note author="Jonathan Turkanis" date="20 Dec 06">
-            I'm not sure whether CodeWarrior is correct to report that the member 
+            I'm not sure whether CodeWarrior is correct to report that the member
             in question is inaccessible; however, when the member is made public
             an internal error occur that I have not been able to fix, so for
             now the question is moot.
@@ -2026,7 +2049,7 @@
             <test name="apply"/>
             <toolset name="gcc-4.1.*"/>
             <note author="Caleb Epstein">
-              This is a regression in the gcc 4.1 series that has been 
+              This is a regression in the gcc 4.1 series that has been
               fixed in gcc 4.2.0.  See <a
               href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28088">bug
               #28088</a> for details.
@@ -2938,7 +2961,7 @@ for more information.
           <toolset name="sun-5.9"/>
           <note author="John Maddock">
              This is a compiler bug: it is unable to use
-             SFINAE to detect the presence of specific 
+             SFINAE to detect the presence of specific
              member functions.
           </note>
        </mark-expected-failures>
@@ -2949,7 +2972,7 @@ for more information.
           <toolset name="sun-5.8"/>
           <toolset name="sun-5.9"/>
           <note author="John Maddock">
-             This is a compiler bug: it is unable to resolve the 
+             This is a compiler bug: it is unable to resolve the
              overloaded functions.
           </note>
        </mark-expected-failures>
@@ -3364,7 +3387,7 @@ for more information.
         <mark-unusable>
             <toolset name="msvc-7.1_stlport4"/>
             <note author="Roland Schwarz">
-                This old version of the stlport library causes the BOOST_NO_STDC_NAMESPACE 
+                This old version of the stlport library causes the BOOST_NO_STDC_NAMESPACE
                 macro to be set. But this conflicts with the requirements of the library.
             </note>
         </mark-unusable>
@@ -3477,7 +3500,7 @@ for more information.
             <toolset name="gcc-cygwin-3.4.4"/>
             <note refid="19"/>
         </mark-expected-failures>
-        
+
         <mark-expected-failures>
           <test name="unicode_test_dll"/>
           <toolset name="*-darwin"/>
@@ -3573,7 +3596,7 @@ for more information.
               Borland does not support this feature. A compatibility syntax
               might be developed later on.
             </note>
-        </mark-expected-failures>       
+        </mark-expected-failures>
 
         <mark-expected-failures>
             <test name="normalized_argument_types"/>
@@ -3683,7 +3706,7 @@ for more information.
             <test name="incomplete_type_test"/>
             <toolset name="cw-9.4"/>
             <note author="Thorsten Ottosen">
-                This error seems to be a bug the compiler. Please submit a 
+                This error seems to be a bug the compiler. Please submit a
                 patch.
             </note>
         </mark-expected-failures>
@@ -3692,9 +3715,9 @@ for more information.
             <toolset name="gcc-3.2.3*"/>
             <toolset name="gcc-3.3.6*"/>
             <toolset name="gcc"/>
-            <toolset name="qcc-3.3.5*"/>  
+            <toolset name="qcc-3.3.5*"/>
             <note author="Thorsten Ottosen">
-                This error seems to be a bug the standard library. Please submit a 
+                This error seems to be a bug the standard library. Please submit a
                 patch.
             </note>
         </mark-expected-failures>
@@ -3771,21 +3794,21 @@ for more information.
                <test name="tree_test"/>
                <toolset name="sun-5.8"/>
                <note author="Thorsten Ottosen">
-                   For sun the problem is due to Boost.Test.                  
+                   For sun the problem is due to Boost.Test.
                </note>
            </mark-expected-failures>
            <mark-expected-failures>
                <test name="tut1"/>
                <toolset name="cw-9.4"/>
                <note author="Thorsten Ottosen">
-                   Seem like a bug in the compiler. Please submit a patch.                  
+                   Seem like a bug in the compiler. Please submit a patch.
                </note>
            </mark-expected-failures>
            <mark-expected-failures>
                <test name="view_example"/>
                <toolset name="cw-9.4"/>
                <note author="Thorsten Ottosen">
-                   Seem like a bug in the compiler. Please submit a patch.                  
+                   Seem like a bug in the compiler. Please submit a patch.
                </note>
            </mark-expected-failures>
     </library>
@@ -4141,8 +4164,8 @@ for more information.
             <toolset name="msvc-8.0"/>
             <toolset name="gcc-cygwin*"/>
             <note author="John Maddock">
-               These tests pass when run directly from the command line, 
-               but fail when run under the regression test script. 
+               These tests pass when run directly from the command line,
+               but fail when run under the regression test script.
                The issue has never been fully pinned down, but appears
                to be related to how long the tests take to run.</note>
         </mark-expected-failures>
@@ -4350,11 +4373,11 @@ for more information.
             <toolset name="darwin-4.0.1"/>
             <note author="Vladimir Prus">
               The test verifies that Boost.Test detects division by
-              zero. Division by zero has an undefined result 
-              on PowerPC processors. The compiler has to emit extra 
-              code to assert that the divisor isn't zero. 
+              zero. Division by zero has an undefined result
+              on PowerPC processors. The compiler has to emit extra
+              code to assert that the divisor isn't zero.
 
-              Compiler options -fno-trapping-math and -fnon-call-exceptions 
+              Compiler options -fno-trapping-math and -fnon-call-exceptions
               might affect this. However, in default configuration
               no check is done, and division by zero is not detected.
             </note>
@@ -4434,8 +4457,8 @@ for more information.
                 by means of the Boost.Thread API if you need to avoid the leaks that appear
                 on the end of the thread. If this is not possible the cleanup can be invoked
                 from user code before the process actually ends. For library implementors
-                this means to call these functions during library initialization and 
-                finalization.   
+                this means to call these functions during library initialization and
+                finalization.
             </note>
         </mark-expected-failures>
     </library>
@@ -4646,7 +4669,7 @@ for more information.
             <toolset name="msvc-6*"/>
             <note author="John Maddock">
                 VC6/7 has a buggy using declaration syntax which
-                basically makes it impossible to implement the 
+                basically makes it impossible to implement the
                 namespace forwarding that this library relies upon.
                 See KB article 263630 here: http://support.microsoft.com/default.aspx?scid=kb;en-us;263630
             </note>
@@ -4656,7 +4679,7 @@ for more information.
             <note author="John Maddock">
                 Metrowerks Codeworrier has partial TR1 support built in
                 which conflicts with this implementation.  Porting to this
-                compiler is almost certainly possible, but will require some 
+                compiler is almost certainly possible, but will require some
                 work by someone who has this compiler.
             </note>
         </mark-unusable>
@@ -4675,7 +4698,7 @@ for more information.
             <note author="John Maddock">
                 These tests test features that are not supported in the
                 current Boost implementations of TR1 components, they will
-                currently fail on all compilers, unless that compiler has 
+                currently fail on all compilers, unless that compiler has
                 native TR1 support.
             </note>
         </mark-expected-failures>
@@ -4863,9 +4886,9 @@ for more information.
             <toolset name="gcc-3.2*"/>
             <toolset name="qcc-3.3*"/>
             <note author="John Maddock">
-               These tests fail due to a known compiler bug 
+               These tests fail due to a known compiler bug
                that is fixed in more recent GNU compiler releases.  Users are
-               very unlikely to encounter this as a real problem 
+               very unlikely to encounter this as a real problem
                in practice.
             </note>
         </mark-expected-failures>
@@ -4879,9 +4902,9 @@ for more information.
             <test name="std_run_complex_overloads"/>
             <toolset name="gcc-2*"/>
             <note author="John Maddock">
-               These tests fail due to a known compiler bug 
+               These tests fail due to a known compiler bug
                that is fixed in more recent releases.  Users are
-               very unlikely to encounter this as a real problem 
+               very unlikely to encounter this as a real problem
                in practice.
             </note>
         </mark-expected-failures>
@@ -4906,7 +4929,7 @@ for more information.
             <test name="test_streambuf_std_header"/>
             <toolset name="gcc-2*"/>
             <note author="John Maddock">
-               These tests fail due to a known compiler bug 
+               These tests fail due to a known compiler bug
                that is fixed in more recent releases.  This
                functionality may not be usable with this compiler.
             </note>
@@ -4919,11 +4942,11 @@ for more information.
            <test name="test_complex"/>
            <toolset name="qcc-3.3.5*gpp"/>
             <note author="John Maddock">
-               These tests fail due to a known stdlib bug 
+               These tests fail due to a known stdlib bug
                that has been reported to the vendor.
             </note>
         </mark-expected-failures>
-       
+
         <mark-expected-failures>
             <test name="tr1_function_traits_test"/>
             <test name="tr1_remove_bounds_test"/>
@@ -5420,13 +5443,13 @@ for more information.
             <toolset name="acc"/>
             <note author="Eric Niebler" refid="43"/>
         </mark-expected-failures>
-        
+
         <mark-expected-failures>
             <test name="test_symbols"/>
             <toolset name="acc"/>
             <note author="Eric Niebler" refid="43"/>
         </mark-expected-failures>
-        
+
     </library>
 
     <!-- /////////////// Standard note definitions /////////////// -->
@@ -5592,7 +5615,7 @@ for more information.
 
     <note id="36">
         Wide character support is disabled in the GNU Standard C++ library as
-        supplied on the QNX Neutrino version 6.3.0 distribution. 
+        supplied on the QNX Neutrino version 6.3.0 distribution.
     </note>
 
     <note id="37">
