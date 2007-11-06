@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="generator" content=
-    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
+    "Microsoft FrontPage 5.0">
     <meta http-equiv="Content-Type" content=
     "text/html; charset=windows-1252">
     <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
@@ -57,8 +57,7 @@
     </p>
 
     <blockquote>
-<pre>
-void* memcpy(void* region1, const void* region2, size_t n)
+<pre>void* memcpy(void* region1, const void* region2, size_t n)
 {
   const char* first = (const char*)region2;
   const char* last = ((const char*)region2) + n;
@@ -96,8 +95,7 @@ void* memcpy(void* region1, const void* region2, size_t n)
     </p>
 
     <blockquote>
-<pre>
-template &lt;typename InputIterator, typename OutputIterator&gt;
+<pre>template &lt;typename InputIterator, typename OutputIterator&gt;
 OutputIterator
 copy(InputIterator first, InputIterator last, OutputIterator result)
 {
@@ -116,8 +114,7 @@ copy(InputIterator first, InputIterator last, OutputIterator result)
     </p>
 
     <blockquote>
-<pre>
-#include &lt;list&gt;
+<pre>#include &lt;list&gt;
 #include &lt;vector&gt;
 #include &lt;iostream&gt;
 
@@ -183,8 +180,7 @@ int main()
     looks something like this:</p>
 
     <blockquote>
-<pre>
-template &lt;class Iterator&gt;
+<pre>template &lt;class Iterator&gt;
 struct iterator_traits {
   typedef ... iterator_category;
   typedef ... value_type;
@@ -251,8 +247,7 @@ struct iterator_traits {
     for a more detailed description of iterator tags.</p>
 
     <blockquote>
-<pre>
-namespace std {
+<pre>namespace std {
   struct input_iterator_tag { };
   struct bidirectional_iterator_tag { };
   struct random_access_iterator_tag { };
@@ -323,8 +318,7 @@ namespace std {
     itself and generators were a convenient way to produce those types.</p>
 
     <blockquote>
-<pre>
-template &lt;class Predicate, class Iterator, 
+<pre>template &lt;class Predicate, class Iterator, 
     class Value = <i>complicated default</i>,
     class Reference = <i>complicated default</i>,
     class Pointer = <i>complicated default</i>,
@@ -344,8 +338,7 @@ struct filter_iterator_generator {
     using the generator is much easier. You can usually just write:</p>
 
     <blockquote>
-<pre>
-boost::filter_iterator_generator&lt;my_predicate,my_base_iterator&gt;::type
+<pre>boost::filter_iterator_generator&lt;my_predicate,my_base_iterator&gt;::type
 </pre>
     </blockquote>
 
@@ -364,8 +357,7 @@ boost::filter_iterator_generator&lt;my_predicate,my_base_iterator&gt;::type
     <p>For example, given:</p>
 
     <blockquote>
-<pre>
-struct widget {
+<pre>struct widget {
   void tweak(int);
 };
 std::vector&lt;widget *&gt; widget_ptrs;
@@ -378,8 +370,7 @@ std::vector&lt;widget *&gt; widget_ptrs;
     we can easily tweak all widgets: 
 
     <blockquote>
-<pre>
-void tweak_all_widgets1(int arg)
+<pre>void tweak_all_widgets1(int arg)
 {
    for_each(widget_ptrs.begin(), widget_ptrs.end(),
       <b>bind2nd</b>(std::<b>mem_fun</b>(&amp;widget::tweak), arg));
@@ -391,8 +382,7 @@ void tweak_all_widgets1(int arg)
     this:</p>
 
     <blockquote>
-<pre>
-void tweak_all_widgets2(int arg)
+<pre>void tweak_all_widgets2(int arg)
 {
    for_each(struct_ptrs.begin(), struct_ptrs.end(),
       <b>std::binder2nd&lt;std::mem_fun1_t&lt;void, widget, int&gt; &gt;</b>(
@@ -449,26 +439,13 @@ void tweak_all_widgets2(int arg)
     <hr>
 
     <p>Revised 
-    <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %b %Y" startspan -->18
-    August 2004<!--webbot bot="Timestamp" endspan i-checksum="14885" -->
+    <!--webbot bot="Timestamp" s-type="EDITED" s-format="%d %b %Y" startspan -->06 Nov 2007<!--webbot bot="Timestamp" endspan i-checksum="15272" -->
     </p>
 
-    <p>&copy; Copyright David Abrahams 2001. Permission to copy, use, modify,
-    sell and distribute this document is granted provided this copyright
-    notice appears in all copies. This document is provided "as is" without
-    express or implied warranty, and with no claim as to its suitability for
-    any purpose. 
-    <!--  LocalWords:  HTML html charset gif alt htm struct SGI namespace std libs
-                     -->
-     
-    <!--  LocalWords:  InputIterator BidirectionalIterator RandomAccessIterator pdf
-                     -->
-     
-    <!--  LocalWords:  typename Alexandrescu templated Andrei's Abrahams memcpy int
-                     -->
-     <!--  LocalWords:  const OutputIterator iostream pre cpl
-                     -->
-    </p>
+    <p>© Copyright David Abrahams 2001.</p>
+
+<p>Distributed under the Boost Software License, Version 1.0. See
+<a href="http://www.boost.org/LICENSE_1_0.txt">www.boost.org/LICENSE_1_0.txt</a></p>
+
   </body>
 </html>
-
