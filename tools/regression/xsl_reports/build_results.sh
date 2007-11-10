@@ -21,6 +21,62 @@ update_tools()
     cd "${cwd}"
 }
 
+report_info()
+{
+cat - > comment.html <<HTML
+<table style="border-spacing: 0.5em;">
+    <tr>
+        <td style="vertical-align: top;"><tt>uname</tt></td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`uname -a`
+            </pre>
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;"><tt>uptime</tt></td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`uptime`
+            </pre>
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;"><tt>vmstat</tt></td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`vmstat`
+            </pre>
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;"><tt>xsltproc</tt></td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`xsltproc --version`
+            </pre>
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;"><tt>python</tt></td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`python --version 2>&1`
+            </pre>
+        </td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;">previous run</td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`cat previous.txt`
+            </pre>
+        </td>
+    </tr>
+</table>
+HTML
+}
+
 build_results()
 {
     cwd=`pwd`
@@ -31,13 +87,15 @@ build_results()
         trunk) tag=trunk ;;
         release) tag=branches/release ;;
     esac
+    report_info
     python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
         --locate-root="${root}" \
         --tag=${tag} \
         --expected-results="${boost}/status/expected_results.xml" \
         --failures-markup="${boost}/status/explicit-failures-markup.xml" \
-        --comment="" \
+        --comment="comment.html" \
         --user=""
+    date -u > previous.txt
     cd "${cwd}"
 }
 
