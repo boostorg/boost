@@ -73,8 +73,17 @@ cat - > comment.html <<HTML
             </pre>
         </td>
     </tr>
+    <tr>
+        <td style="vertical-align: top;">current run</td>
+        <td>
+            <pre style="border: 1px solid #666; overflow: auto;">
+`date -u`
+            </pre>
+        </td>
+    </tr>
 </table>
 HTML
+    date -u > previous.txt
 }
 
 build_results()
@@ -95,7 +104,6 @@ build_results()
         --failures-markup="${boost}/status/explicit-failures-markup.xml" \
         --comment="comment.html" \
         --user=""
-    date -u > previous.txt
     cd "${cwd}"
 }
 
