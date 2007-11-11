@@ -188,10 +188,11 @@ class action:
                 os.unlink( result )
     
 class merge_xml_action( action ):
-    def __init__( self, source, destination, expected_results_file, failures_markup_file ):
+    def __init__( self, source, destination, expected_results_file, failures_markup_file, tag ):
         action.__init__( self, destination )
         self.source_ = source
         self.destination_ = destination
+        self.tag_ = tag
         
         self.expected_results_file_ = expected_results_file
         self.failures_markup_file_  = failures_markup_file
@@ -261,6 +262,7 @@ class merge_xml_action( action ):
                 , {
                     "expected_results_file" : self.expected_results_file_
                   , "failures_markup_file": self.failures_markup_file_
+                  , "source" : self.tag_ 
                   }
                 )
 
@@ -384,7 +386,7 @@ def unzip_archives_task( source_dir, processed_dir, unzip_func ):
     for a in actions:
         a.run()
    
-def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file ):    
+def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file, tag ):    
     utils.log( '' )
     utils.log( 'merge_xmls_task: merging updated XMLs in "%s"...' % source_dir )
     __log__ = 1
@@ -394,7 +396,8 @@ def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_fil
     actions = [ merge_xml_action( os.path.join( processed_dir, os.path.basename( x ) )
                                   , x
                                   , expected_results_file
-                                  , failures_markup_file ) for x in target_files ]
+                                  , failures_markup_file 
+                                  , tag ) for x in target_files ]
 
     for a in actions:
         a.run()
@@ -487,7 +490,7 @@ def execute_tasks(
         ftp_task( ftp_site, site_path, incoming_dir )
 
     unzip_archives_task( incoming_dir, processed_dir, utils.unzip )
-    merge_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file )
+    merge_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file, tag )
     make_links_task( merged_dir
                      , output_dir
                      , tag
