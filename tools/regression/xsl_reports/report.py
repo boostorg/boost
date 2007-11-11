@@ -71,7 +71,9 @@ def make_result_pages(
             , test_results_file
             , xsl_path( 'add_expected_results.xsl', v2 )
             , extended_test_results
-            , { 'expected_results_file': expected_results_file, 'failures_markup_file' : failures_markup_file }
+            , { 'expected_results_file': expected_results_file
+              , 'failures_markup_file' : failures_markup_file
+              , 'source' : tag }
             )
 
     links = os.path.join( output_dir, 'links.html' )
