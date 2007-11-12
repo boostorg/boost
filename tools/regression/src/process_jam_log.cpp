@@ -28,7 +28,7 @@ namespace fs = boost::filesystem;
 
 static bool echo = false;
 static bool create_dirs = false;
-static bool boost_build_v2 = false;
+static bool boost_build_v2 = true;
 
 namespace
 {
@@ -528,11 +528,14 @@ int main( int argc, char ** argv )
   std::ios::sync_with_stdio(false);
 
   if ( argc <= 1 )
-    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [--v2] [locate-root]\n"
+    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [--v1|v2] [locate-root]\n"
                  "locate-root         - the same as the bjam ALL_LOCATE_TARGET\n"
                  "                      parameter, if any. Default is boost-root.\n"
                  "create-directories  - if the directory for xml file doesn't exists - creates it.\n"
-                 "                      usually used for processing logfile on different machine\n";
+                 "                      usually used for processing logfile on different machine\n"
+                 "v2                  - bjam version 2 used (default).\n"
+                 "v1                  - bjam version 1 used.\n"
+                 ;
 
   boost_root = fs::initial_path();
 
@@ -569,6 +572,11 @@ int main( int argc, char ** argv )
     --argc; ++argv;
   }
 
+  if ( argc > 1 && std::strcmp( argv[1], "--v1" ) == 0 )
+  {
+    boost_build_v2 = false;
+    --argc; ++argv;
+  }
 
   if (argc > 1)
   {
