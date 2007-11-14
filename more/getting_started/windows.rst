@@ -10,6 +10,9 @@
    :alt: Boost
    :class: boost-logo
 
+.. role:: raw-html(raw)
+   :format: html
+
 __ ../../index.htm
 
 .. section-numbering::
@@ -201,8 +204,13 @@ For example, your session might look like this: [#continuation]_
 
    C:\\WINDOWS> cd |default-root|
    |default-root|> bjam **^**
-   More? **--build-dir=**\ C:\\temp\\build-boost **^**
+   More? **--build-dir=**\ "C:\\Documents and Settings\\dave\\build-boost" **^**
    More? **--toolset=**\ msvc stage
+
+Be sure to read `this note`__ about the appearance of ``^``,
+``More?`` and quotation marks (``"``) in that line.
+
+__ continuation_
 
 .. include:: detail/build-from-source-tail.rst
 
@@ -300,10 +308,27 @@ Spoil Rock Hunter?”
    used in the examples.
 
 .. [#continuation] In this example, the caret character ``^`` is a
-   way of continuing the command on multiple lines.  The command
-   prompt responds with ``More?`` to prompt for more input.  Feel
-   free to omit the carets and subsequent newlines; we used them so
-   the example would fit on a page of reasonable width.
+   way of continuing the command on multiple lines, and must be the
+   **final character** used on the line to be continued (i.e. do
+   not follow it with spaces).  The command prompt responds with
+   ``More?`` to prompt for more input.  Feel free to omit the
+   carets and subsequent newlines; we used them so the example
+   would fit on a page of reasonable width.  
+
+   The command prompt treats each bit of whitespace in the command
+   as an argument separator.  That means quotation marks (``"``)
+   are required to keep text together whenever a single
+   command-line argument contains spaces, as in
+
+   .. parsed-literal::
+
+     --build-dir=\ :raw-html:`<strong style="background-color:#B4FFB4">"</strong>`\ C:\\Documents\ :raw-html:`<strong style="color:#B4B4B4; background-color:#B4FFB4">_</strong>`\ and\ :raw-html:`<strong style="color:#B4B4B4; background-color:#B4FFB4">_</strong>`\ Settings\\dave\\build-boost\ \ :raw-html:`<strong style="background-color:#B4FFB4">"</strong>`
+
+   Also, for example, you can't add spaces around the ``=`` sign as in
+
+   .. parsed-literal::
+
+     --build-dir\ :raw-html:`<strong style="color:#B4B4B4; background-color:#FFB4B4">_</strong>`\ =\ :raw-html:`<strong style="color:#B4B4B4; background-color:#FFB4B4">_</strong>`\ "C:\\Documents and Settings\\dave\\build-boost"
 
 .. |boost.zip| replace:: |boost_ver|\ ``.zip``
 
