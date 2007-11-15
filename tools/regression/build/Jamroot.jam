@@ -25,9 +25,21 @@ else
         ;
 }
 
+obj tiny_xml
+    :
+    detail/tiny_xml.cpp
+    :
+    <define>BOOST_ALL_NO_LIB=1
+    <define>_CRT_SECURE_NO_WARNINGS
+    :
+    release
+    ;
+explicit tiny_xml ;
+
 exe process_jam_log
     :
-    process_jam_log.cpp detail/tiny_xml.cpp
+    process_jam_log.cpp
+    tiny_xml
     /boost/filesystem//boost_filesystem/<link>static
     :
     <define>BOOST_ALL_NO_LIB=1
@@ -39,7 +51,8 @@ exe process_jam_log
 
 exe compiler_status
     :
-    compiler_status.cpp detail/tiny_xml.cpp
+    compiler_status.cpp
+    tiny_xml
     /boost/filesystem//boost_filesystem/<link>static
     :
     <define>BOOST_ALL_NO_LIB=1
@@ -50,7 +63,8 @@ explicit compiler_status ;
 
 exe library_status
     :
-    library_status.cpp detail/tiny_xml.cpp
+    library_status.cpp
+    tiny_xml
     /boost/filesystem//boost_filesystem/<link>static
     :
     <define>BOOST_ALL_NO_LIB=1
