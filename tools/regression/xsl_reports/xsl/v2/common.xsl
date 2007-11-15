@@ -65,7 +65,8 @@ http://www.boost.org/LICENSE_1_0.txt)
                                     timestamp="{@timestamp}" 
                                     platform="{@platform}"
                                     run-type="{@run-type}"
-                                    source="{@source}">
+                                    source="{@source}"
+                                    revision="{@revision}">
                             
                                     <comment><xsl:value-of select="comment"/></comment>
                                     <xsl:variable name="not_ordered_toolsets" select="set:distinct( .//test-log[ meta:is_test_log_a_test_case(.) and meta:show_toolset( @toolset, $release ) ]/@toolset ) "/>
@@ -457,6 +458,16 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <a href="../{@runner}.html">
                         <xsl:value-of select="@runner"/>
                     </a>
+                </td>
+            </xsl:for-each>
+            <td colspan="{$colspan}">&#160;</td>
+        </tr>
+
+        <tr>
+            <td colspan="{$colspan}">&#160;</td>
+            <xsl:for-each select="$run_toolsets//runs/run[ count(toolset) > 0 ]">
+                <td colspan="{count(toolset)}" class="revision">
+                    rev <xsl:value-of select="@revision"/>
                 </td>
             </xsl:for-each>
             <td colspan="{$colspan}">&#160;</td>

@@ -32,9 +32,9 @@ boost_root      = os.path.join( regression_root, 'boost' )
 xsl_reports_dir = os.path.join( boost_root, 'tools', 'regression', 'xsl_reports' )
 timestamp_path  = os.path.join( regression_root, 'timestamp' )
 
-cvs_command_line         = 'cvs -z9 %(command)s'
-cvs_ext_command_line     = 'cvs -d:ext:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
-cvs_pserver_command_line = 'cvs -d:pserver:%(user)s@boost.cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s'
+svn_anonymous_command_line = 'svn %(command)s'
+svn_command_line           = 'svn --non-interactive --username=%(user)s %(command)s'
+
 
 bjam = {}
 process_jam_log = {}
@@ -43,10 +43,10 @@ process_jam_log = {}
 if sys.platform == 'win32':
     bjam[ 'name' ] = 'bjam.exe'
     bjam[ 'build_cmd' ] = lambda toolset, v2: bjam_build_script_cmd( 'build.bat %s' % toolset )
-    bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'borland', 'como', 'gcc', 'gcc-nocygwin' \
-                                                    , 'intel-win32', 'metrowerks', 'mingw' \
-                                                    , 'msvc', 'vc7' \
-                                                    ]
+    bjam[ 'is_supported_toolset' ] = lambda x: x in [ \
+        'borland', 'como', 'gcc', 'gcc-nocygwin', 'intel-win32', 'metrowerks', 'mingw', \
+        'msvc', 'vc7', 'vc8' \
+        ]
     process_jam_log[ 'name' ] = 'process_jam_log.exe'
 
     def default_toolset(v2):
@@ -60,11 +60,10 @@ if sys.platform == 'win32':
 else:
     bjam[ 'name' ] = 'bjam'
     bjam[ 'build_cmd' ] = lambda toolset, v2: bjam_build_script_cmd( './build.sh %s' % toolset )
-    bjam[ 'is_supported_toolset' ] = lambda x: x in [ 'acc', 'como', 'darwin', 'gcc' \
-                                                    , 'intel-linux', 'kcc', 'kylix' \
-                                                    , 'mipspro', 'sunpro', 'tru64cxx' \
-                                                    , 'vacpp'\
-                                                    ]
+    bjam[ 'is_supported_toolset' ] = lambda x: x in [ \
+        'acc', 'como', 'darwin', 'gcc', 'intel-linux', 'kcc', 'kylix', 'mipspro', \
+        'pathscale', 'pgi', 'qcc', 'sun', 'sunpro', 'tru64cxx', 'vacpp' \
+        ]
     process_jam_log[ 'name' ] = 'process_jam_log'
     process_jam_log[ 'default_toolset' ] = lambda x: 'gcc'
     patch_boost_name = 'patch_boost'
@@ -175,6 +174,7 @@ def http_get( source_url, destination, proxy ):
 
 
 def tarball_name_for_tag( tag, timestamp = False ):
+    tag = tag.split( '/' )[-1]
     if not timestamp: return 'boost-%s.tar.bz2' % tag
     else:             return 'boost-%s.timestamp' % tag
 
@@ -182,7 +182,7 @@ def tarball_name_for_tag( tag, timestamp = False ):
 def download_boost_tarball( destination, tag, proxy, timestamp_only = False ):
     tarball_name = tarball_name_for_tag( tag, timestamp_only )
     tarball_path = os.path.join( destination, tarball_name )
-    tarball_url = 'http://engineering.meta-comm.com/boost/snapshot/%s' % tarball_name
+    tarball_url = 'http://beta.boost.org/development/snapshot.php/%s' % tag
 
     log( 'Downloading "%s" to "%s"...'  % ( tarball_url, os.path.dirname( tarball_path ) ) )
     if os.path.exists( tarball_path ):
@@ -256,38 +256,32 @@ def unpack_tarball( tarball_path, destination  ):
     os.rename( boost_dir, boost_root )
 
 
-def cvs_command( user, command ):
-    if user is None:
-        cmd = cvs_command_line % { 'command': command }
-    elif user == 'anonymous':
-        cmd = cvs_pserver_command_line % { 'user': user, 'command': command }
+def svn_command( user, command ):
+    if user is None or user == 'anonymous':
+        cmd = svn_anonymous_command_line % { 'command': command }
     else:
-        cmd = cvs_ext_command_line % { 'user': user, 'command': command }
+        cmd = svn_command_line % { 'user': user, 'command': command }
 
-    log( 'Executing CVS command "%s"' % cmd )
+    log( 'Executing SVN command "%s"' % cmd )
     rc = os.system( cmd )
     if rc != 0:
-        raise Exception( 'CVS command "%s" failed with code %d' % ( cmd, rc ) )
+        raise Exception( 'SVN command "%s" failed with code %d' % ( cmd, rc ) )
 
 
-def cvs_checkout( user, tag, args ):
-    if tag != 'CVS-HEAD':
-        command = 'checkout -r %s boost' % tag
-    else:
-        command = 'checkout boost'
+def svn_repository_url( user, tag ):
+    if user != 'anonymous': return 'https://svn.boost.org/svn/boost/%s' % tag
+    else:                   return 'http://svn.boost.org/svn/boost/%s' % tag
 
+
+def svn_checkout( user, tag, args ):
+    command = 'co %s boost' % svn_repository_url( user, tag )
     os.chdir( regression_root )
-    cvs_command( user, command )
+    svn_command( user, command )
 
 
-def cvs_update( user, tag, args ):
-    if tag != 'CVS-HEAD':
-        command = 'update -dPA -r %s' % tag
-    else:
-        command = 'update -dPA'
-
-    os.chdir( os.path.join( regression_root, 'boost' ) )
-    cvs_command( user, command )
+def svn_update( user, tag, args ):
+    os.chdir( boost_root )
+    svn_command( user, 'update' )
 
 
 def format_time( t ):
@@ -331,7 +325,7 @@ def get_source( user, tag, proxy, args, **unused ):
 
     if user is not None:
         retry(
-              cvs_checkout
+              svn_checkout
             , ( user, tag, args )
             )
     else:
@@ -342,11 +336,11 @@ def get_source( user, tag, proxy, args, **unused ):
 
 
 def update_source( user, tag, proxy, args, **unused ):
-    if user is not None or os.path.exists( os.path.join( boost_root, 'CVS' ) ):
+    if user is not None or os.path.exists( os.path.join( boost_root, '.svn' ) ):
         open( timestamp_path, 'w' ).close()
-        log( 'Updating sources from CVS (%s)...' % timestamp() )
+        log( 'Updating sources from SVN (%s)...' % timestamp() )
         retry(
-              cvs_update
+              svn_update
             , ( user, tag, args )
             )
     else:
@@ -472,6 +466,7 @@ def setup(
             log( 'Warning: Test monitoring is not supported on this platform (yet).'     )
             log( '         Please consider contributing this piece!' )
 
+
 def bjam_build_script_cmd( cmd ):
     env_setup_key = 'BJAM_ENVIRONMENT_SETUP'
     if os.environ.has_key( env_setup_key ):
@@ -483,9 +478,11 @@ def bjam_build_script_cmd( cmd ):
 def bjam_command( toolsets, v2 ):
     build_path = regression_root
     if build_path[-1] == '\\': build_path += '\\'
+
     v2_option = ""
     if v2:
         v2_option = "--v2"
+
     result = '"%s" %s "-sBOOST_BUILD_PATH=%s" "-sBOOST_ROOT=%s"'\
         % (
             tool_path( bjam, v2 )
@@ -494,7 +491,7 @@ def bjam_command( toolsets, v2 ):
           , boost_root
           )
 
-    if not toolsets is None:
+    if toolsets:
         if v2:
             result += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
         else:
@@ -604,6 +601,7 @@ def test(
         if monitored:
             stop_build_monitor()
 
+
 def build_book( **kargs ):
     # To do
     # 1. PDF generation
@@ -629,6 +627,8 @@ def collect_logs(
         , user
         , comment
         , incremental
+        , dart_server
+        , ftp_proxy
         , args
         , **unused
         ):
@@ -649,13 +649,26 @@ def collect_logs(
     else:           run_type = 'full'
 
     source = 'tarball'
-    cvs_root_file = os.path.join( boost_root, 'CVS', 'root' )
-    if os.path.exists( cvs_root_file ):
-        if string.split( open( cvs_root_file ).readline(), '@' )[0] == ':pserver:anonymous':
-            source = 'anonymous CVS'
-        else:
-            source = 'CVS'
+    revision = ''
+    svn_root_file = os.path.join( boost_root, '.svn' )
+    svn_info_file = os.path.join( boost_root, 'svn_info.txt' )
+    if os.path.exists( svn_root_file ):
+        source = 'SVN'
+        svn_command( 'user', 'info --xml ' + boost_root + ' >' + svn_info_file )
 
+    if os.path.exists( svn_info_file ):
+        f = open( svn_info_file, 'r' )
+        svn_info = f.read()
+        f.close()
+        i = svn_info.find( 'Revision:' )
+        if i < 0: i = svn_info.find( 'revision=' )  # --xml format
+        if i >= 0:
+            i += 10
+            while svn_info[i] >= '0' and svn_info[i] <= '9':
+              revision += svn_info[i]
+              i += 1
+      
+      
     from runner import collect_logs
     collect_logs(
           regression_results
@@ -667,7 +680,11 @@ def collect_logs(
         , user
         , source
         , run_type
+        , dart_server
+        , ftp_proxy
+        , revision
         )
+
 
 def collect_book( **unused ):
     log( 'Collecting files for BoostBook into "%s"...' % boostbook_archive_name )
@@ -682,9 +699,11 @@ def collect_book( **unused ):
         for name in names:
             path = os.path.join( dirname, name )
             if not os.path.isdir( path ):
-                boostbook_archive.write( path, path[ len(html_root) + 1: ] )
+                boostbook_archive.write( path, path[ len( html_root ) + 1: ] )
+
     os.path.walk( html_root, add_files, None ) 
     
+
 def upload_logs(
           tag
         , runner
@@ -692,35 +711,36 @@ def upload_logs(
         , ftp_proxy
         , debug_level
         , send_bjam_log
+        , dart_server
         , **unused
         ):
     import_utils()
     from runner import upload_logs
     retry(
           upload_logs
-        , ( regression_results, runner, tag, user, ftp_proxy, debug_level, send_bjam_log, timestamp_path )
+        , ( regression_results, runner, tag, user, ftp_proxy, debug_level,
+            send_bjam_log, timestamp_path, dart_server )
         )
+
 
 def upload_book( tag, runner, ftp_proxy, debug_level, **unused ):
     import_utils()
     from runner import upload_to_ftp
     upload_to_ftp( tag, boostbook_archive_name, ftp_proxy, debug_level )
-    
+
+
 def update_itself( tag, **unused ):
     source = os.path.join( xsl_reports_dir, 'runner', os.path.basename( sys.argv[0] ) )
     self = os.path.join( regression_root, os.path.basename( sys.argv[0] ) )
-
+    
+    # Through revision 38985, the update copy was not done if
+    # os.stat(self).st_mtime > os.stat(source).st_mtime. This was not
+    # reliable on all systems, so the copy is now done unconditionally.
+    log( '    Saving a backup copy of the current script...' )
+    os.chmod( self, stat.S_IWRITE ) # Win32 workaround
+    shutil.move( self, '%s~' % self )
     log( 'Updating %s from %s...' % ( self, source )  )
-    log( '    Checking modification dates...' )
-    if os.stat( self ).st_mtime > os.stat( source ).st_mtime:
-        log( 'Warning: The current version of script appears to be newer than the source.' )
-        log( '         Update skipped.' )
-    else:
-        log( '    Saving a backup copy of the current script...' )
-        os.chmod( self, stat.S_IWRITE ) # Win32 workaround
-        shutil.move( self, '%s~' % self )
-        log( '    Replacing %s with a newer version...' % self )
-        shutil.copy2( source, self )
+    shutil.copy2( source, self )
 
 
 def send_mail( smtp_login, mail, subject, msg = '', debug_level = 0 ):
@@ -761,6 +781,8 @@ def regression(
         , incremental
         , send_bjam_log
         , force_update
+        , have_source
+        , skip_tests
         , monitored
         , timeout
         , mail = None
@@ -769,6 +791,7 @@ def regression(
         , ftp_proxy = None
         , debug_level = 0
         , v2 = 1
+        , dart_server = None
         , args = []
         ):
 
@@ -792,6 +815,8 @@ def regression(
             log( 'Tag: "%s"' % tag  )
 
             unpack_tarball( local, regression_root )
+        elif have_source:
+            if not incremental: cleanup( [ 'bin' ] )
         else:
             if incremental or force_update:
                 if not incremental: cleanup( [ 'bin' ] )
@@ -802,16 +827,18 @@ def regression(
 
         setup( comment, toolsets, book, bjam_toolset, pjl_toolset, monitored, proxy,
                v2, [] )
+
         # Not specifying --toolset in command line is not enough
         # that would mean to use Boost.Build default ones
         # We can skip test only we were explictly 
         # told to have no toolsets in command line "--toolset="
-        if  toolsets != '': # --toolset=,
-            test( toolsets, bjam_options, monitored, timeout, v2, [] )
-            collect_logs( tag, runner, platform, user, comment, incremental, [] )
-            upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log )
+        if toolsets != '': # --toolset=,
+            if not skip_tests: test( toolsets, bjam_options, monitored, timeout, v2, [] )
+            collect_logs( tag, runner, platform, user, comment, incremental, dart_server, proxy, [] )
+            upload_logs( tag, runner, user, ftp_proxy, debug_level, send_bjam_log, dart_server )
+
         if book:
-            build_book()    
+            build_book()
             collect_book()
             upload_book( tag, runner, ftp_proxy, debug_level )
 
@@ -847,7 +874,7 @@ def show_revision( **unused ):
 
     import re
     re_keyword_value = re.compile( r'^\$\w+:\s+(.*)\s+\$$' )
-    print '\n\tResivion: %s' % re_keyword_value.match( revision ).group( 1 )
+    print '\n\tRevision: %s' % re_keyword_value.match( revision ).group( 1 )
     print '\tLast modified on: %s\n' % re_keyword_value.match( modified ).group( 1 )
 
 
@@ -872,15 +899,18 @@ def accept_args( args ):
         , 'debug-level='
         , 'incremental'
         , 'force-update'
+        , 'have-source'
+        , 'skip-tests'
         , 'dont-send-bjam-log'
         , 'monitored'
         , 'help'
         , 'v2'
         , 'v1'
+        , 'dart-server='
         ]
 
     options = {
-          '--tag'           : 'CVS-HEAD'
+          '--tag'           : 'trunk'
         , '--local'         : None
         , '--platform'      : platform_name()
         , '--user'          : None
@@ -896,6 +926,7 @@ def accept_args( args ):
         , '--proxy'         : None
         , '--debug-level'   : 0
         , '--ftp-proxy'     : None
+        , '--dart-server'   : 'beta.boost.org:8081'
         }
 
     ( option_pairs, other_args ) = getopt.getopt( args, '', args_spec )
@@ -920,6 +951,8 @@ def accept_args( args ):
         , 'incremental'     : options.has_key( '--incremental' )
         , 'send_bjam_log'   : not options.has_key( '--dont-send-bjam-log' )
         , 'force_update'    : options.has_key( '--force-update' )
+        , 'have_source'     : options.has_key( '--have-source' )
+        , 'skip_tests'      : options.has_key( '--skip-tests' )
         , 'monitored'       : options.has_key( '--monitored' )
         , 'timeout'         : options[ '--timeout' ]
         , 'mail'            : options[ '--mail' ]
@@ -928,6 +961,7 @@ def accept_args( args ):
         , 'ftp_proxy'       : options[ '--ftp-proxy' ]
         , 'debug_level'     : int(options[ '--debug-level' ])
         , 'v2'              : not options.has_key( '--v1' )
+        , 'dart_server'     : options[ '--dart-server' ]
         , 'args'            : other_args
         }
 
@@ -956,20 +990,23 @@ Commands:
 
 Options:
 \t--runner        runner ID (e.g. 'Metacomm')
-\t--tag           the tag for the results ('CVS-HEAD' by default)
+\t--tag           the tag for the results ('trunk' by default)
 \t--local         the name of the boost tarball
 \t--comment       an HTML comment file to be inserted in the reports
 \t                ('comment.html' by default)
 \t--incremental   do incremental run (do not remove previous binaries)
 \t--dont-send-bjam-log 
 \t                do not send full bjam log of the regression run
-\t--force-update  do a CVS update (if applicable) instead of a clean
+\t--force-update  do an SVN update (if applicable) instead of a clean
 \t                checkout, even when performing a full run
+\t--have-source   do neither a tarball download nor an SVN update;
+\t                used primarily for testing script changes
+\t--skip-tests    do no run bjam; used for testing script changes
 \t--monitored     do a monitored run
 \t--timeout       specifies the timeout, in minutes, for a single test
 \t                run/compilation (enforced only in monitored runs, 5 by
 \t                default)
-\t--user          SourceForge user name for a shell/CVS account (optional)
+\t--user          Boost SVN user ID (optional)
 \t--toolsets      comma-separated list of toolsets to test with (optional)
 \t--book          build BoostBook (optional)
 \t--bjam-options  options to pass to the regression test (optional)
@@ -986,6 +1023,7 @@ Options:
 \t                output printed; 0 by default (no debug output)
 \t--v1            Use Boost.Build V1
 \t--v2            Use Boost.Build V2 (default)
+\t--dart-server   The dart server to send results to.
 ''' % '\n\t'.join( commands.keys() )
 
     print 'Example:\n\t%s --runner=Metacomm\n' % os.path.basename( sys.argv[0] )

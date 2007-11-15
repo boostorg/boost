@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2005 The Trustees of Indiana University 
+# Copyright (C) 2005, 2007 The Trustees of Indiana University 
 # Author: Douglas Gregor
 #
 # Distributed under the Boost Software License, Version 1.0. (See
@@ -14,7 +14,7 @@ import string
 import datetime
 import sys
 
-report_author = "Douglas Gregor <dgregor@cs.indiana.edu>"
+report_author = "Douglas Gregor <dgregor@osl.iu.edu>"
 boost_dev_list = "Boost Developer List <boost@lists.boost.org>"
 
 def sorted_keys( dict ):
@@ -150,12 +150,12 @@ class Maintainer:
             return None
 
         # Build the message header
-        message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
+        message = """From: Douglas Gregor <dgregor@osl.iu.edu>
 To: """
         message += self.name + ' <' + self.email + '>'
         message += """
 Reply-To: boost@lists.boost.org
-Subject: Regressions in your Boost libraries as of """
+Subject: Failures in your Boost libraries as of """
         message += str(datetime.date.today()) + " [" + report.branch + "]"
         message += """
 
@@ -204,7 +204,7 @@ class Report:
     """
     The complete report of all failing test cases.
     """
-    def __init__(self, branch = 'HEAD'):
+    def __init__(self, branch = 'trunk'):
         self.branch = branch
         self.date = None
         self.url = None
@@ -287,11 +287,12 @@ class Report:
 
     def getIssuesEmail(self):
         """
-        Retrieve the issues email from MetaComm, trying a few times in
-        case something wonky is happening. If we can retrieve the file,
-        calls parseIssuesEmail and return True; otherwise, return False.
+        Retrieve the issues email from beta.boost.org, trying a few
+        times in case something wonky is happening. If we can retrieve
+        the file, calls parseIssuesEmail and return True; otherwise,
+        return False.
         """
-        base_url = "http://engineering.meta-comm.com/boost-regression/CVS-"
+        base_url = "http://beta.boost.org/development/tests/"
         base_url += self.branch
         base_url += "/developer/";
         got_issues = False
@@ -368,17 +369,15 @@ class Report:
         Compose a message to send to the Boost developer's
         list. Return the message and return it.
         """
-        message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
+        message = """From: Douglas Gregor <dgregor@osl.iu.edu>
 To: boost@lists.boost.org
 Reply-To: boost@lists.boost.org
-Subject: Boost regression notification ("""
-
-        message += str(datetime.date.today()) + " [" + branch + "]"
-        message += ")"
-
+Subject: [Report] """
+        message += str(self.numFailures()) + " failures on " + branch
+        message += " (" + str(datetime.date.today()) + ")"
         message += """
 
-Boost Regression test failures
+Boost regression test failures
 """
         message += "Report time: " + self.date + """
 
@@ -408,8 +407,7 @@ Detailed report:
         message += (str(self.numFailures()) + ' failures in ' + 
                     str(len(self.libraries)) + ' libraries')
         if any_broken_platforms:
-            diff = self.numFailures() - self.numReportableFailures()
-            message += ' (' + str(diff) + ' are from non-broken platforms)'
+            message += ' (' + str(self.numReportableFailures()) + ' are from non-broken platforms)'
         message += '\n'
 
         # Display the number of failures per library
@@ -507,7 +505,7 @@ def send_individualized_message (branch, person, maintainers):
   if '--send' in sys.argv:
       print "Sending..."
       smtp = smtplib.SMTP('milliways.osl.iu.edu')
-      smtp.sendmail(from_addr = 'Douglas Gregor <dgregor@cs.indiana.edu>',
+      smtp.sendmail(from_addr = 'Douglas Gregor <dgregor@osl.iu.edu>',
                     to_addrs = person[1],
                     msg = message)
       print "Done."
@@ -516,12 +514,12 @@ def send_individualized_message (branch, person, maintainers):
 # Send a message to the developer's list
 def send_boost_developers_message(branch, maintainers, failing_libraries):
   to_line = 'boost@lists.boost.org'
-  from_line = 'Douglas Gregor <dgregor@cs.indiana.edu>'
+  from_line = 'Douglas Gregor <dgregor@osl.iu.edu>'
 
-  message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
+  message = """From: Douglas Gregor <dgregor@osl.iu.edu>
 To: boost@lists.boost.org
 Reply-To: boost@lists.boost.org
-Subject: Boost regression notification ("""
+Subject: Boost regression testing notification ("""
 
   message += str(datetime.date.today()) + " [" + branch + "]"
   message += ")"
@@ -567,7 +565,7 @@ entry to libs/maintainers.txt to eliminate this message.
 ###############################################################################
 
 # Parse command-line options
-branch = "HEAD"
+branch = "trunk"
 for arg in sys.argv:
     if arg.startswith("--branch="):
         branch = arg[len("--branch="):]
@@ -583,14 +581,14 @@ else:
 if not okay:
     print 'Aborting.'
     if '--send' in sys.argv:
-        message = """From: Douglas Gregor <dgregor@cs.indiana.edu>
-        To: Douglas Gregor <dgregor@cs.indiana.edu>
+        message = """From: Douglas Gregor <dgregor@osl.iu.edu>
+        To: Douglas Gregor <dgregor@osl.iu.edu>
         Reply-To: boost@lists.boost.org
         Subject: Regression status script failed on """
         message += str(datetime.date.today()) + " [" + branch + "]"
         smtp = smtplib.SMTP('milliways.osl.iu.edu')
-        smtp.sendmail(from_addr = 'Douglas Gregor <dgregor@cs.indiana.edu>',
-                      to_addrs = 'dgregor@cs.indiana.edu',
+        smtp.sendmail(from_addr = 'Douglas Gregor <dgregor@osl.iu.edu>',
+                      to_addrs = 'dgregor@osl.iu.edu',
                       msg = message)
     sys.exit(1)
 

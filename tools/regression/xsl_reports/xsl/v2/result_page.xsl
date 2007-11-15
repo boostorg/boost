@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 
-Copyright MetaCommunications, Inc. 2003-2004.
+Copyright MetaCommunications, Inc. 2003-2007.
 
 Distributed under the Boost Software License, Version 1.0. (See
 accompanying file LICENSE_1_0.txt or copy at
@@ -173,11 +173,11 @@ http://www.boost.org/LICENSE_1_0.txt)
                     <xsl:choose>
                         <xsl:when test="$mode='user'">
                             The purpose of this report is to help a user to find out whether a particular library 
-                            works on the particular compiler(s). For CVS "health report", see 
+                            works on the particular compiler(s). For SVN "health report", see 
                             <a href="../{$alternate_mode}/index.html" target="_top">developer summary</a>.
                         </xsl:when>
                         <xsl:when test="$mode='developer'">
-                            Provides Boost developers with visual indication of the CVS "health". For user-level 
+                            Provides Boost developers with visual indication of the SVN "health". For user-level 
                             report, see <a href="../{$alternate_mode}/index.html" target="_top">user summary</a>.
                         </xsl:when>
                     </xsl:choose>
@@ -595,7 +595,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
         <xsl:variable name="test_header">
         <td class="test-name">
-            <a href="http://cvs.sourceforge.net/viewcvs.py/*checkout*/boost/boost/{$test_program}" class="test-link" target="_top">
+            <a href="http://svn.boost.org/svn/boost/{$source}/{$test_program}" class="test-link" target="_top">
                 <xsl:value-of select="$test_name"/>
             </a>
         </td>

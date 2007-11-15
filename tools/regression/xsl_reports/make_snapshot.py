@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2005
+# Copyright (c) MetaCommunications, Inc. 2003-2007
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -37,27 +37,24 @@ def rmtree( path ):
             os.system( 'rm -f -r "%s"' % path )
 
 
-def cvs_command( user, command ):
-    cmd = 'cvs -d:ext:%(user)s@cvs.sourceforge.net:/cvsroot/boost -z9 %(command)s' \
-            % { 'user': user, 'command': command }
-    
-    utils.log( 'Executing CVS command "%s"' % cmd )
-    rc = os.system( cmd )
+def svn_command( command ):
+    utils.log( 'Executing SVN command "%s"' % command )
+    rc = os.system( command )
     if rc != 0:
-        raise Exception( 'CVS command "%s" failed with code %d' % ( cmd, rc ) )
+        raise Exception( 'SVN command "%s" failed with code %d' % ( command, rc ) )
 
 
-
-def cvs_export( working_dir, user, tag ):
-    if tag != 'CVS-HEAD':
-        command = 'export -r %s boost' % tag
+def svn_export( sources_dir, user, tag ):
+    if user is None or user == 'anonymous':
+        command = 'svn export --force http://svn.boost.org/svn/boost/%s %s' % ( tag, sources_dir )
     else:
-        command = 'export -r HEAD boost'
+        command = 'svn export --force --non-interactive --username=%s https://svn.boost.org/svn/boost/%s %s' \
+                  % ( user, tag, sources_dir )
 
-    os.chdir( working_dir )
-    retry( 
-         cvs_command
-       , ( user, command )
+    os.chdir( os.path.basename( sources_dir ) )
+    retry(
+         svn_command
+       , ( command, )
        )
 
 
@@ -67,46 +64,47 @@ def make_tarball(
         , user
         , site_dir
         ):
+    timestamp = time.time()
+    timestamp_suffix = time.strftime( '%y-%m-%d-%H%M', time.gmtime( timestamp ) )
 
-    sources_dir = os.path.join( working_dir, 'boost' )
+    tag_suffix = tag.split( '/' )[-1]
+    sources_dir = os.path.join(
+          working_dir
+        , 'boost-%s-%s' % ( tag_suffix, timestamp_suffix )
+        )
+
     if os.path.exists( sources_dir ):
         utils.log( 'Directory "%s" already exists, cleaning it up...' % sources_dir )
         rmtree( sources_dir )
 
     try:
         os.mkdir( sources_dir )
-        utils.log( 'Exporting files from CVS...' )
-        cvs_export( working_dir, user, tag )
+        utils.log( 'Exporting files from SVN...' )
+        svn_export( sources_dir, user, tag )
     except:
         utils.log( 'Cleaning up...' )
         rmtree( sources_dir )
         raise
 
-    timestamp = time.time()
-    timestamped_dir_name = 'boost-%s-%s' % ( tag, time.strftime( '%y-%m-%d-%H%M', time.gmtime( timestamp ) ) )
-    timestamped_dir = os.path.join( working_dir, timestamped_dir_name )
 
-    utils.log( 'Renaming "%s" to "%s"...' % ( sources_dir, timestamped_dir ) )
-    os.rename( sources_dir, timestamped_dir )
-
-    tarball_name = 'boost-%s.tar.bz2' % tag
+    tarball_name = 'boost-%s.tar.bz2' % tag_suffix
     tarball_path = os.path.join( working_dir, tarball_name )
 
-    utils.log( 'Archiving "%s" to "%s"...' % ( timestamped_dir, tarball_path ) )
+    utils.log( 'Archiving "%s" to "%s"...' % ( sources_dir, tarball_path ) )
     tar = tarfile.open( tarball_path, 'w|bz2' )
     tar.posix = False # see http://tinyurl.com/4ebd8
 
-    tar.add( timestamped_dir, timestamped_dir_name )
+    tar.add( sources_dir, os.path.basename( sources_dir ) )
     tar.close()
 
-    tarball_timestamp_path = os.path.join( working_dir, 'boost-%s.timestamp' % tag )
+    tarball_timestamp_path = os.path.join( working_dir, 'boost-%s.timestamp' % tag_suffix )
 
     utils.log( 'Writing timestamp into "%s"...' % tarball_timestamp_path )
     timestamp_file = open( tarball_timestamp_path, 'w' )
     timestamp_file.write( '%f' % timestamp )
     timestamp_file.close()
 
-    md5sum_path = os.path.join( working_dir, 'boost-%s.md5' % tag )
+    md5sum_path = os.path.join( working_dir, 'boost-%s.md5' % tag_suffix )
     utils.log( 'Writing md5 checksum into "%s"...' % md5sum_path )
     old_dir = os.getcwd()
     os.chdir( os.path.dirname( tarball_path ) )
@@ -123,8 +121,8 @@ def make_tarball(
         shutil.move( os.path.join( temp_site_dir, tarball_name ), site_dir )
         shutil.move( tarball_timestamp_path, site_dir )
         shutil.move( md5sum_path, site_dir )
-        utils.log( 'Removing "%s"...' % timestamped_dir )
-        rmtree( timestamped_dir )
+        utils.log( 'Removing "%s"...' % sources_dir )
+        rmtree( sources_dir )
 
 
 def accept_args( args ):
@@ -138,7 +136,8 @@ def accept_args( args ):
         ]
         
     options = { 
-          '--tag': 'CVS-HEAD'
+          '--tag': 'trunk'
+        , '--user': None
         , '--site-dir': None
         }
     
@@ -156,8 +155,8 @@ def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
 \t--working-dir   working directory
-\t--tag           snapshot tag (i.e. 'CVS-HEAD')
-\t--user          SourceForge user name for a CVS account
+\t--tag           snapshot tag (i.e. 'trunk')
+\t--user          Boost SVN user ID (optional)
 \t--site-dir      site directory to copy the snapshot to (optional)
 '''
 

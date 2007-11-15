@@ -1,5 +1,5 @@
 
-# Copyright (c) MetaCommunications, Inc. 2003-2005
+# Copyright (c) MetaCommunications, Inc. 2003-2007
 #
 # Distributed under the Boost Software License, Version 1.0. 
 # (See accompanying file LICENSE_1_0.txt or copy at 
@@ -188,10 +188,11 @@ class action:
                 os.unlink( result )
     
 class merge_xml_action( action ):
-    def __init__( self, source, destination, expected_results_file, failures_markup_file ):
+    def __init__( self, source, destination, expected_results_file, failures_markup_file, tag ):
         action.__init__( self, destination )
         self.source_ = source
         self.destination_ = destination
+        self.tag_ = tag
         
         self.expected_results_file_ = expected_results_file
         self.failures_markup_file_  = failures_markup_file
@@ -261,6 +262,7 @@ class merge_xml_action( action ):
                 , {
                     "expected_results_file" : self.expected_results_file_
                   , "failures_markup_file": self.failures_markup_file_
+                  , "source" : self.tag_ 
                   }
                 )
 
@@ -304,19 +306,22 @@ class make_links_action( action ):
         utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "developer", "output" ) )
         utils.makedirs( os.path.join( os.path.dirname( self.links_file_path_ ), "user", "output" ) )
         utils.log( '    Making test output files...' )
-        utils.libxslt( 
-            utils.log
-            , self.source_
-            , xsl_path( 'links_page.xsl' )
-            , self.links_file_path_
-            , {
-              'source':                 self.tag_
-              , 'run_date':               self.run_date_
-              , 'comment_file':           self.comment_file_
-              , 'explicit_markup_file':   self.failures_markup_file_
-              }
-            )
-        
+        try:
+            utils.libxslt( 
+                  utils.log
+                , self.source_
+                , xsl_path( 'links_page.xsl' )
+                , self.links_file_path_
+                , {
+                    'source':                 self.tag_
+                  , 'run_date':               self.run_date_
+                  , 'comment_file':           self.comment_file_
+                  , 'explicit_markup_file':   self.failures_markup_file_
+                  }
+                )
+        except Exception, msg:
+            utils.log( '  Skipping "%s" due to errors (%s)' % ( self.source_, msg ) )
+
         open( self.file_path_, "w" ).close()
 
 
@@ -381,7 +386,7 @@ def unzip_archives_task( source_dir, processed_dir, unzip_func ):
     for a in actions:
         a.run()
    
-def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file ):    
+def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file, tag ):    
     utils.log( '' )
     utils.log( 'merge_xmls_task: merging updated XMLs in "%s"...' % source_dir )
     __log__ = 1
@@ -391,7 +396,8 @@ def merge_xmls_task( source_dir, processed_dir, merged_dir, expected_results_fil
     actions = [ merge_xml_action( os.path.join( processed_dir, os.path.basename( x ) )
                                   , x
                                   , expected_results_file
-                                  , failures_markup_file ) for x in target_files ]
+                                  , failures_markup_file 
+                                  , tag ) for x in target_files ]
 
     for a in actions:
         a.run()
@@ -484,7 +490,7 @@ def execute_tasks(
         ftp_task( ftp_site, site_path, incoming_dir )
 
     unzip_archives_task( incoming_dir, processed_dir, utils.unzip )
-    merge_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file )
+    merge_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file, tag )
     make_links_task( merged_dir
                      , output_dir
                      , tag
@@ -666,18 +672,20 @@ def make_result_pages(
 def fix_file_names( dir ):
     """
     The current version of xslproc doesn't correctly handle
-    spaces on posix systems. We have to manually go through the
-    result set and correct decode encoded spaces (%20).
+    spaces. We have to manually go through the
+    result set and decode encoded spaces (%20).
     """
-    if os.name == 'posix':
-        for root, dirs, files in os.walk( dir ):
-            for file in files:
-                if file.find( "%20" ) > -1:
-                    new_name = file.replace( "%20", " " )
-                    old_file_path = os.path.join( root, file )
-                    new_file_path = os.path.join( root, new_name )
-                    print "renaming %s %s" % ( old_file_path, new_file_path )
-                    os.rename ( old_file_path, new_file_path )
+    utils.log( 'Fixing encoded file names...' )
+    for root, dirs, files in os.walk( dir ):
+        for file in files:
+            if file.find( "%20" ) > -1:
+                new_name = file.replace( "%20", " " )
+                utils.rename(
+                      utils.log
+                    , os.path.join( root, file )
+                    , os.path.join( root, new_name )
+                    )
+
 
 def build_xsl_reports( 
           locate_root_dir
@@ -793,7 +801,7 @@ def usage():
     print 'Usage: %s [options]' % os.path.basename( sys.argv[0] )
     print    '''
 \t--locate-root         the same as --locate-root in compiler_status
-\t--tag                 the tag for the results (i.e. 'CVS-HEAD')
+\t--tag                 the tag for the results (i.e. 'trunk')
 \t--expected-results    the file with the results to be compared with
 \t                      the current run
 \t--failures-markup     the file with the failures markup

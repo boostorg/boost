@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="process_jam_log"
 	ProjectGUID="{9A751791-929F-496A-8DE7-B61020619BFA}"
+	RootNamespace="process_jam_log"
 	Keyword="MakeFileProj">
 	<Platforms>
 		<Platform
@@ -18,13 +19,15 @@
 			<Tool
 				Name="VCNMakeTool"
 				BuildCommandLine="cd ..\..\..\..\tools\regression\build
-..\..\jam\src\bin.ntx86\bjam.exe variant=debug
+..\..\jam\src\bin.ntx86\bjam.exe process_jam_log variant=debug
 "
 				ReBuildCommandLine="cd ..\..\..\..\tools\regression\build
-..\..\jam\src\bin.ntx86\bjam.exe -a variant=debug
-
+call bjam --v2 msvc-7.1 debug clean
+call bjam --v2 msvc-7.1 debug"
+				CleanCommandLine="cd ..\..\..\..\tools\regression\build
+call bjam --v2 msvc-7.1 debug clean
 "
-				Output="process_jam_log.exe"/>
+				Output="../../../../bin.v2/tools/regression/build/msvc-7.1/debug/link-static/process_jam_log.exe"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -33,9 +36,13 @@
 			ConfigurationType="0">
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd C:\users\misha\Stuff\boost\boost\tools\regression\build"
-				ReBuildCommandLine="cd C:\users\misha\Stuff\boost\boost\tools\regression\build"
-				Output="process_jam_log.exe"/>
+				BuildCommandLine="cd ..
+..\..\jam\src\bin.ntx86\bjam process_jam_log variant=release link=static"
+				ReBuildCommandLine="cd ..
+..\..\jam\src\bin.ntx86\bjam -a process_jam_log variant=release link=static"
+				CleanCommandLine="cd ..
+..\..\jam\src\bin.ntx86\bjam clean"
+				Output="..\..\..\..\bin.v2\tools\regression\build\msvc-7.1\release\link-static\process_jam_log.exe"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -45,9 +52,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
-			<File
-				RelativePath="..\..\process_jam_log.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
