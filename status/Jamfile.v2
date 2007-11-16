@@ -13,11 +13,11 @@
 
 
 project status
-    : source-location $(BOOST_ROOT) 
-    : requirements <hardcode-dll-paths>true  
+    : source-location $(BOOST_ROOT)
+    : requirements <hardcode-dll-paths>true
     ;
-        
-import testing ;    
+
+import testing ;
 
 alias test_exec_monitor : ../libs/test/build//boost_test_exec_monitor/<link>static ;
 alias unit_test_framework : ../libs/test/build//boost_unit_test_framework/<link>static ;
@@ -26,24 +26,37 @@ alias unit_test_framework : ../libs/test/build//boost_unit_test_framework/<link>
 # Please keep these in alphabetic order by test-suite name
 build-project ../libs/algorithm/minmax/test ;  # test-suite algorith/minmax
 build-project ../libs/algorithm/string/test ;  # test-suite algorithm/string
+#build-project ../libs/asio/test ;              # test-suite asio
 build-project ../libs/assign/test ;            # test-suite assign
 build-project ../libs/any/test ;               # test-suite any
+#build-project ../libs/bimap/test ;             # test-suite bimap
 build-project ../libs/bind/test ;              # test-suite bind
+#build-project ../libs/circular_buffer/test ;   # test-suite circular_buffer
 build-project ../libs/concept_check ;          # test-suite concept_check
 build-project ../libs/conversion/test ;        # test-suite conversion
 build-project ../libs/date_time/test  ;        # test-suite date_time
+#build-project ../libs/disjoint_sets ;          # test-suite disjoint_sets
 build-project ../libs/dynamic_bitset ;         # test-suite dynamic_bitset
 build-project ../libs/filesystem/test ;        # test-suite filesystem
 build-project ../libs/foreach/test ;           # test-suite foreach
 build-project ../libs/format/test ;            # test-suite format
 build-project ../libs/function/test ;          # test-suite function
 build-project ../libs/functional/hash/test ;   # test-suite functional/hash
+#build-project ../libs/function_types/test ;    # test-suite function_types
+#build-project ../libs/fusion/test ;            # test-suite fusion
+#build-project ../libs/gil/test ;               # test-suite gil
 build-project ../libs/graph/test ;             # test-suite graph
 build-project ../libs/io/test ;                # test-suite io
+#build-project ../libs/interprocess/example ;   # test-suite interprocess_example
+#build-project ../libs/interprocess/test ;      # test-suite interprocess_test
+#build-project ../libs/intrusive/example ;      # test-suite intrusive_example
+#build-project ../libs/intrusive/test ;         # test-suite intrusive_test
 build-project ../libs/iostreams/test ;         # test-suite iostreams
 build-project ../libs/iterator/test ;          # test-suite iterator
+#build-project ../libs/lambda/test ;            # test-suite lambda
 build-project ../libs/logic/test ;             # test-suite logic
 build-project ../libs/math/test ;              # test-suite math
+#build-project ../libs/mpi/test ;               # test-suite mpi
 build-project ../libs/mpl/test ;               # test-suite mpl
 build-project ../libs/numeric/conversion/test ;  # test-suite numeric/conversion
 build-project ../libs/numeric/interval/test ;  # test-suite numeric/interval
@@ -66,9 +79,11 @@ build-project ../libs/smart_ptr/test ;         # test-suite smart_ptr
 build-project ../libs/spirit/test ;            # test-suite spirit
 build-project ../libs/statechart/test ;        # test-suite statechart
 build-project ../libs/static_assert ;          # test-suite static_assert
+build-project ../libs/system/test ;            # test-suite system
 build-project ../libs/test/test ;              # test-suite test
 build-project ../libs/thread/test ;            # test-suite thread
 build-project ../libs/tr1/test ;               # test-suite tr1
+#build-project ../libs/tuple/test ;             # test-suite tuple
 build-project ../libs/type_traits/test ;       # test-suite type_traits
 build-project ../libs/typeof/test ;            # test-suite typeof
 build-project ../libs/utility/enable_if/test ; # test-suite utility/enable_if
@@ -78,16 +93,16 @@ build-project ../libs/wave/test/build ;        # test-suite wave
 build-project ../libs/xpressive/test ;         # test-suite xpressive
 
 # Tests specified in this Jamfile
-        
+
     test-suite config
-        : 
+        :
           # FIXME: Ideally, this should be just an alias to 'main' test suite
           # defined in libs/config/test/Jamfile.v2
           # That way, we'll avoid code duplication and won't run additional
           # tests in 'auxilliary' test suites, that need to be run and
           # interpreted by humans.
           # But such change will require tweaking libs/config/tools/generate.cpp
-          # so postponing to later.       
+          # so postponing to later.
           [ run libs/config/test/config_test.cpp test_exec_monitor
                 : #args
                 : #input-files
@@ -95,7 +110,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
                 <threading>multi #!!!<no-warn>config_test.cpp
           ]
            [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
-           [ run libs/config/test/math_info.cpp : : : <test-info>always_show_run_output <toolset>borland:<runtime-link>static ]
+           [ run libs/config/test/math_info.cpp : : : <test-info>always_show_run_output <toolset>borland:<runtime-link>static <toolset>borland:<link>static ]
            [ run libs/config/test/abi/abi_test.cpp libs/config/test/abi/main.cpp ]
            [ run libs/config/test/limits_test.cpp test_exec_monitor ]
            [ run libs/config/test/link/main.cpp ../libs/config/test/link//link_test
@@ -111,7 +126,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ compile-fail libs/config/test/threads/test_thread_fail1.cpp ]
           [ compile-fail libs/config/test/threads/test_thread_fail2.cpp ]
         ;
-    
+
     test-suite array_suite # !!!
         : [ run libs/array/array0.cpp ]
           [ run libs/array/array1.cpp ]
@@ -120,14 +135,9 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/array/array4.cpp ]
           [ run libs/array/array5.cpp ]
         ;
-    
+
     run libs/crc/crc_test.cpp test_exec_monitor ;
 
-
-    test-suite disjoint_sets
-        : [ run libs/disjoint_sets/disjoint_set_test.cpp test_exec_monitor ]
-        ;
-    
     run libs/functional/function_test.cpp ;
 
 
@@ -137,26 +147,7 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/integer/integer_traits_test.cpp test_exec_monitor ]
         ;
 
-    test-suite lambda
-        : [ run libs/lambda/test/algorithm_test.cpp test_exec_monitor ]
-          [ run libs/lambda/test/bind_tests_simple.cpp test_exec_monitor ]
-          [ run libs/lambda/test/bind_tests_advanced.cpp test_exec_monitor ]
-          [ run libs/lambda/test/bind_tests_simple_f_refs.cpp test_exec_monitor ]
-          [ run libs/lambda/test/bll_and_function.cpp test_exec_monitor ]
-          [ run libs/lambda/test/cast_test.cpp test_exec_monitor : : : : lambda_cast_test ]
-          [ run libs/lambda/test/constructor_tests.cpp test_exec_monitor ]
-          [ run libs/lambda/test/control_structures.cpp test_exec_monitor ]
-          [ run libs/lambda/test/exception_test.cpp test_exec_monitor ]
-          [ run libs/lambda/test/extending_rt_traits.cpp test_exec_monitor ]
-          [ run libs/lambda/test/is_instance_of_test.cpp test_exec_monitor ]
-          [ run libs/lambda/test/member_pointer_test.cpp test_exec_monitor ]
-          [ run libs/lambda/test/operator_tests_simple.cpp test_exec_monitor ]
-          [ run libs/lambda/test/phoenix_control_structures.cpp test_exec_monitor ]
-          [ run libs/lambda/test/switch_construct.cpp test_exec_monitor ]
-        ;
-
-
-    run libs/pool/test/test_pool_alloc.cpp  test_exec_monitor ;    
+    run libs/pool/test/test_pool_alloc.cpp  test_exec_monitor ;
 
     test-suite preprocessor
         : [ compile libs/preprocessor/test/arithmetic.cpp ]
@@ -180,8 +171,6 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/rational/rational_test.cpp unit_test_framework ]
         ;
 
-    
-    
     compile libs/timer/timer_test.cpp ;
 
     test-suite tokenizer
@@ -193,10 +182,6 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/tokenizer/simple_example_5.cpp ]
         ;
 
-    test-suite tuple_suite # !!!
-        : [ run libs/tuple/test/tuple_test_bench.cpp test_exec_monitor ]
-          [ run libs/tuple/test/io_test.cpp test_exec_monitor ]
-    ;
 
 
 
