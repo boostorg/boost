@@ -4269,6 +4269,15 @@ for more information.
             </note>
         </mark-unusable>
         <mark-expected-failures>
+            <test name="DllTestNative"/>
+            <toolset name="gcc-mingw-4.2*"/>
+            <note author="Andreas Huber">
+                A runtime failure of this test indicates that the RTTI
+                implementation of this platform is broken in conjunction
+                with dynamic linking.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="DllTestNormal"/>
             <toolset name="*cygwin*"/>
             <toolset name="*mingw*"/>
@@ -4281,15 +4290,6 @@ for more information.
                 header-defined static class member can exist at runtime. See
                 <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">here</a>
                 for more information.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="DllTestNative"/>
-            <toolset name="gcc-mingw-4.2*"/>
-            <note author="Andreas Huber">
-                A runtime failure of this test indicates that the RTTI
-                implementation of this platform is broken in conjunction
-                with dynamic linking.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -4328,6 +4328,23 @@ for more information.
             <test name="PerformanceExample"/>
             <toolset name="vacpp"/>
             <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="StopWatch*"/>
+            <toolset name="msvc-8.0~wm5~stlport5.1"/>
+            <note author="Andreas Huber">
+                This looks like a std library or configuration bug. Since
+                difftime is only used in the example, this failure can be
+                ignored.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="DllTest*"/>
+            <toolset name="msvc-8.0~wm5~stlport5.1"/>
+            <note author="Andreas Huber">
+                This test fails due to unresolved externals that are
+                not library-related.
+            </note>
         </mark-expected-failures>
     </library>
 
