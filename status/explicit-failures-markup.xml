@@ -1485,6 +1485,18 @@
         </mark-expected-failures>
     </library>
 
+    <!-- function_types -->
+    <library name="function_types">
+        <mark-expected-failures>
+            <test name="nonmember_ccs.cpp"/>
+            <test name="nonmember_ccs_exact.cpp"/>
+            <test name="member_ccs.cpp"/>
+            <test name="member_ccs_exact.cpp"/>
+            <toolset name="acc*"/>
+            <note author="Boris Gubenko" refid="44"/>
+        </mark-expected-failures>
+    </library>
+
     <!-- functional/hash -->
     <library name="functional/hash">
         <mark-expected-failures>
@@ -2597,6 +2609,16 @@ for more information.
               conditions under which the bug manifests itself seem to be
               uncommon, however, and the static version of this same test
               builds and runs correctly.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_demo_portable_archive"/>
+            <test name="test_demo_portable_archive_dll"/>
+            <toolset name="acc*"/>
+            <note author="Boris Gubenko">
+              This failure is caused by serialization library bug in the
+              code visible only on big endian platforms.
             </note>
         </mark-expected-failures>
 
@@ -5769,6 +5791,10 @@ for more information.
     <note id="43">
         These test failures are reported to be
         under investigation at HP's compiler lab.
+    </note>
+
+    <note id="44">
+        This compiler does not support gcc stdcall function attribute.
     </note>
 
 </explicit-failures-markup>
