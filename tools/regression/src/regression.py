@@ -27,7 +27,9 @@ repo_path = {
     'release'       : 'branches/release',
     'build'         : 'trunk/tools/build/v2',
     'jam'           : 'tags/tools/jam/Boost_Jam_3_1_15/src',
-    'regression'    : 'trunk/tools/regression'
+    'regression'    : 'trunk/tools/regression',
+    'boost-build.jam'
+                    : 'trunk/boost-build.jam'
     }
 
 class runner:
@@ -244,6 +246,13 @@ class runner:
             self.unpack_tarball(
                 self.tools_regression_root+".tar.bz2",
                 os.path.basename(self.tools_regression_root) )
+        
+        #~ We get a boost-build.jam to make the tool build work even if there's
+        #~ and existing boost-build.jam above the testing root.
+        self.log( 'Getting boost-build.jam...' )
+        self.http_get(
+            self.svn_repository_url(repo_path['boost-build.jam']),
+            os.path.join( self.regression_root, 'boost-build.jam' ) )
     
     def command_get_source(self):
         self.refresh_timestamp()
@@ -608,9 +617,17 @@ class runner:
         if self.timeout > 0:
             args += ' -l%s' % (self.timeout*60)
 
-        cmd = '"%(bjam)s" "-sBOOST_BUILD_PATH=%(bb)s" "-sBOOST_ROOT=%(boost)s" "--boost=%(boost)s" %(arg)s' % {
+        cmd = '"%(bjam)s"' +\
+            ' "-sBOOST_BUILD_PATH=%(bbpath)s"' +\
+            ' "-sBOOST_ROOT=%(boost)s"' +\
+            ' "--boost=%(boost)s"' +\
+            ' "--boost-build=%(bb)s"' +\
+            ' "--debug-configuration"' +\
+            ' %(arg)s'
+        cmd %= {
             'bjam' : self.tool_path( self.bjam ),
-            'bb' : os.pathsep.join([build_path,self.tools_bb_root]),
+            'bbpath' : os.pathsep.join([build_path,self.tools_bb_root]),
+            'bb' : self.tools_bb_root,
             'boost' : self.boost_root,
             'arg' : args }
 
