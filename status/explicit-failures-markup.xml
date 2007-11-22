@@ -1726,7 +1726,13 @@
             system bug.
           </note>
         </mark-expected-failures>
-
+        <mark-expected-failures>
+          <test name="kolmogorov_max_flow_test"/>
+          <test name="max_flow_test"/>
+          <toolset name="hp_cxx-*"/>
+          <toolset name="acc*"/>
+          <note author="Markus Schoepflin" refid="45"/>
+        </mark-expected-failures>
     </library>
 
     <!-- interprocess-->
@@ -5801,6 +5807,13 @@ for more information.
 
     <note id="44">
         This compiler does not support gcc stdcall function attribute.
+    </note>
+
+    <note id="45">
+        The Rogue Wave standard library version used by this compiler provides
+        a faulty vector<bool> iterator, which is not symmetric. There is an
+        associated bug report in the Rogue Wave bug tracking system for this
+        problem.
     </note>
 
 </explicit-failures-markup>
