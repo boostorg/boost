@@ -104,7 +104,7 @@ build_results()
         --failures-markup="${boost}/status/explicit-failures-markup.xml" \
         --comment="comment.html" \
         --user="" \
-        --reports=
+        --reports="i,dd,ds,n"
     cd "${cwd}"
 }
 
