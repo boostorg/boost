@@ -103,7 +103,8 @@ build_results()
         --expected-results="${boost}/status/expected_results.xml" \
         --failures-markup="${boost}/status/explicit-failures-markup.xml" \
         --comment="comment.html" \
-        --user=""
+        --user="" \
+        --reports=
     cd "${cwd}"
 }
 
