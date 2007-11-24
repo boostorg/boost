@@ -36,10 +36,10 @@
     <mark-toolset name="gcc-mingw-3.4.5" status="required"/>
     <mark-toolset name="hp_cxx-71_006_tru64" status="required"/>
     <mark-toolset name="intel-linux-9.0" status="required"/>
-    <mark-toolset name="intel-vc71-win-9.1" status="required"/>
+    <mark-toolset name="intel-vc8-win-10.0" status="required"/>
     <mark-toolset name="msvc-7.1" status="required"/>
     <mark-toolset name="msvc-8.0" status="required"/>
-    <mark-toolset name="sun-5.9" status="required"/>
+    <mark-toolset name="msvc-8.0_64" status="required"/>
 
     <!-- /////////////// Libraries /////////////// -->
 
@@ -340,6 +340,11 @@
             <toolset name="intel-win-9.1"/>
             <toolset name="hp_cxx*"/>
             <note refid="39" author="Boris Gubenko"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+                <test name="test_bimap_serialization"/>
+                <toolset name="gcc-mingw-3.4.5"/>
+                <note author="Matias Capeletto">Compiler bug.</note>
         </mark-expected-failures>
     </library>
 
@@ -1303,6 +1308,7 @@
             </note>
         </mark-unusable>
         <mark-expected-failures>
+          <test name="*"/>
           <toolset name="sun-5.7"/>
           <toolset name="sun-5.8"/>
           <note author="Beman Dawes">
@@ -1484,6 +1490,19 @@
         </mark-expected-failures>
     </library>
 
+    <!-- function_types -->
+    <library name="function_types">
+        <mark-expected-failures>
+            <test name="nonmember_ccs"/>
+            <test name="nonmember_ccs_exact"/>
+            <test name="member_ccs"/>
+            <test name="member_ccs_exact"/>
+            <toolset name="acc*"/>
+            <toolset name="hp_cxx*"/>
+            <note author="Boris Gubenko" refid="44"/>
+        </mark-expected-failures>
+    </library>
+
     <!-- functional/hash -->
     <library name="functional/hash">
         <mark-expected-failures>
@@ -1588,6 +1607,22 @@
                 essential for the library.
             </note>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="fused"/>
+            <test name="fused_function_object"/>
+            <test name="fused_procedure"/>
+            <test name="make_fused"/>
+            <test name="make_fused_function_object"/>
+            <test name="make_fused_procedure"/>
+            <toolset name="acc"/>
+            <note author="Tobias Schwinger">
+                Those failures are due to not quite const-correct overload
+                resolution. The complaints from the test suite should rarely 
+                matter in practice - the corresponding components are basically
+                usable. With aCC6, when compiled in strict ansi mode, the test
+                succeeds.
+            </note>
+        </mark-expected-failures>
     </library>
 
 
@@ -1691,7 +1726,13 @@
             system bug.
           </note>
         </mark-expected-failures>
-
+        <mark-expected-failures>
+          <test name="kolmogorov_max_flow_test"/>
+          <test name="max_flow_test"/>
+          <toolset name="hp_cxx-*"/>
+          <toolset name="acc*"/>
+          <note author="Markus Schoepflin" refid="45"/>
+        </mark-expected-failures>
     </library>
 
     <!-- interprocess-->
@@ -1708,6 +1749,7 @@
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
             <toolset name="acc*"/>
+            <toolset name="msvc-8.0~wm5*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -1727,6 +1769,7 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
+            <toolset name="msvc-8.0~wm5*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -2580,6 +2623,16 @@ for more information.
               conditions under which the bug manifests itself seem to be
               uncommon, however, and the static version of this same test
               builds and runs correctly.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_demo_portable_archive"/>
+            <test name="test_demo_portable_archive_dll"/>
+            <toolset name="acc*"/>
+            <note author="Boris Gubenko">
+              This failure is caused by serialization library bug in the
+              code visible only on big endian platforms.
             </note>
         </mark-expected-failures>
 
@@ -4254,6 +4307,15 @@ for more information.
             </note>
         </mark-unusable>
         <mark-expected-failures>
+            <test name="DllTestNative"/>
+            <toolset name="gcc-mingw-4.2*"/>
+            <note author="Andreas Huber">
+                A runtime failure of this test indicates that the RTTI
+                implementation of this platform is broken in conjunction
+                with dynamic linking.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="DllTestNormal"/>
             <toolset name="*cygwin*"/>
             <toolset name="*mingw*"/>
@@ -4266,15 +4328,6 @@ for more information.
                 header-defined static class member can exist at runtime. See
                 <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">here</a>
                 for more information.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="DllTestNative"/>
-            <toolset name="gcc-mingw-4.2*"/>
-            <note author="Andreas Huber">
-                A runtime failure of this test indicates that the RTTI
-                implementation of this platform is broken in conjunction
-                with dynamic linking.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -4313,6 +4366,23 @@ for more information.
             <test name="PerformanceExample"/>
             <toolset name="vacpp"/>
             <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="StopWatch*"/>
+            <toolset name="msvc-8.0~wm5~stlport5.1"/>
+            <note author="Andreas Huber">
+                This looks like a std library or configuration bug. Since
+                difftime is only used in the example, this failure can be
+                ignored.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="DllTest*"/>
+            <toolset name="msvc-8.0~wm5~stlport5.1"/>
+            <note author="Andreas Huber">
+                This test fails due to unresolved externals that are
+                not library-related.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -5737,5 +5807,15 @@ for more information.
         under investigation at HP's compiler lab.
     </note>
 
-</explicit-failures-markup>
+    <note id="44">
+        This compiler does not support gcc stdcall function attribute.
+    </note>
 
+    <note id="45">
+        The Rogue Wave standard library version used by this compiler provides
+        a faulty vector&lt;bool&gt; iterator, which is not symmetric. There is an
+        associated bug report in the Rogue Wave bug tracking system for this
+        problem.
+    </note>
+
+</explicit-failures-markup>
