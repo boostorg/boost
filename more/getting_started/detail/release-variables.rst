@@ -5,8 +5,8 @@
 .. This file contains all the definitions that need to be updated
 .. for each new release of Boost.
 
-.. |boost-version-number| replace:: 1.34.1
-.. |boost_ver| replace:: ``boost_1_34_1``
-.. |boost_ver-bold| replace:: **boost_1_34_1**
+.. |boost-version-number| replace:: 1.35.0
+.. |boost_ver| replace:: ``boost_1_35_0``
+.. |boost_ver-bold| replace:: **boost_1_35_0**
 
 .. _sf-download: http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=8041
