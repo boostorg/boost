@@ -5409,6 +5409,22 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="value_init_test"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="borland-5.8*"/>
+            <toolset name="borland-5.9*"/>
+            <note author="Niels Dekker">
+                This test typically fails on Borland C++, because of an issue described by
+                <a href="http://svn.boost.org/trac/boost/ticket/1459">
+                ticket #1459, "value_initialized leaves data uninitialized,
+                when using Borland"</a>. The issue is caused by a 
+                compiler bug, reported at the website of Codegear/Borland:
+                <a href="http://qc.codegear.com/wc/qcmain.aspx?d=51854">
+                Report #51854, "Value-initialization: POD struct
+                should be zero-initialized"</a>.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="operators_test"/>
             <toolset name="gcc-3.4.5_linux_x86_64"/>
             <note author="Vladimir Prus">
