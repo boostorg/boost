@@ -681,7 +681,7 @@ class runner:
             raise Exception( 'SVN command "%s" failed with code %d' % ( cmd, rc ) )
 
     def svn_repository_url( self, path ):
-        if hasattr(self,'user') and self.user is not None and self.user != 'anonymous':
+        if self.user != 'anonymous' and self.user != '':
             return '%s%s' % (repo_root['user'],path)
         else:
             return '%s%s' % (repo_root['anon'],path)
