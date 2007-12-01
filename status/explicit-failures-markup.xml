@@ -5434,6 +5434,26 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="value_init_test"/>
+            <toolset name="gcc-3.3*"/>
+            <toolset name="gcc-3.4*"/>
+            <toolset name="gcc-4.1*"/>
+            <toolset name="gcc-4.2*"/>
+            <toolset name="gcc-mingw-3.4*"/>
+            <note author="Niels Dekker">
+                This test typically fails on GCC, because of an issue described by
+                <a href="http://svn.boost.org/trac/boost/ticket/1491">
+                ticket #1491, "value_initialized leaves data uninitialized,
+                when using GCC"</a>. The issue is caused by some GCC compiler bugs:  
+                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=30111">
+                Value-initialization of POD base class doesn't initialize members</a>,
+                reported by Jonathan Wakely, and
+                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33916">
+                Default constructor fails to initialize array members</a>,
+                reported by Michael Elizabeth Chastain. 
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="operators_test"/>
             <toolset name="gcc-3.4.5_linux_x86_64"/>
             <note author="Vladimir Prus">
