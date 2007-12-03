@@ -1487,13 +1487,33 @@
     <!-- function_types -->
     <library name="function_types">
         <mark-expected-failures>
-            <test name="nonmember_ccs"/>
-            <test name="nonmember_ccs_exact"/>
             <test name="member_ccs"/>
             <test name="member_ccs_exact"/>
             <toolset name="acc*"/>
             <toolset name="hp_cxx*"/>
-            <note author="Boris Gubenko" refid="44"/>
+            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-4.2.1*"/>
+            <toolset name="msvc_8.0_64"/>
+            <toolset name="intel*"/>
+            <note author="Tobias Schwinger">
+              Not all compilers implement nonstandard calling conventions.
+              <hr/>
+              With GCC/x86 this failure reflects
+              gcc.gnu.org/bugzilla/show_bug.cgi?id=29328 .
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="nonmember_ccs"/>
+            <test name="nonmember_ccs_exact"/>
+            <toolset name="acc*"/>
+            <toolset name="hp_cxx*"/>
+            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-4.2.1*"/>
+            <toolset name="msvc_8.0_64"/>
+            <toolset name="intel*"/>
+            <note author="Tobias Schwinger">
+              Not all compilers implement nonstandard calling conventions.
+            </note>
         </mark-expected-failures>
     </library>
 
