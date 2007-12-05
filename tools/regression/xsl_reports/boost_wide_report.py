@@ -484,8 +484,8 @@ def execute_tasks(
         os.makedirs( merged_dir )
     
     if not dont_collect_logs:
-        ftp_site = 'fx.meta-comm.com'
-        site_path = '/boost-regression/%s' % tag
+        ftp_site = 'boost.cowic.de'
+        site_path = '/boost/test/results/%s' % tag
 
         ftp_task( ftp_site, site_path, incoming_dir )
 
