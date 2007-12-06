@@ -1496,6 +1496,7 @@
             <toolset name="intel*"/>
             <toolset name="msvc-*_64"/>
             <toolset name="msvc-*wm*"/>
+            <toolset name="pathscale-*"/>
             <note author="Tobias Schwinger">
               Not all compilers/platforms implement nonstandard calling conventions.
               <hr/>
@@ -1513,8 +1514,16 @@
             <toolset name="intel*"/>
             <toolset name="msvc-*_64"/>
             <toolset name="msvc-*wm*"/>
+            <toolset name="pathscale-*"/>
             <note author="Tobias Schwinger">
               Not all compilers/platforms implement nonstandard calling conventions.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="interfaces_example"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Tobias Schwinger">
+              Overload selection does not work in some assignment contexts with this compiler.
             </note>
         </mark-expected-failures>
     </library>
