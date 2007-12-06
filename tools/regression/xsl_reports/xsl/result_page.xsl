@@ -141,7 +141,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
     <xsl:template name="test_type_col">
         <td class="test-type">
-        <a href="../../../status/compiler_status.html#Understanding" class="legend-link">
+        <a href=http://beta.boost.org/development/testing.html#Understanding" class="legend-link">
             <xsl:variable name="test_type" select="./@test-type"/>
             <xsl:choose>
             <xsl:when test="$test_type='run_pyd'">      <xsl:text>r</xsl:text>  </xsl:when>
