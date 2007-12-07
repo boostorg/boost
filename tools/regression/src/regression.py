@@ -26,7 +26,7 @@ repo_path = {
     'trunk'         : 'trunk',
     'release'       : 'branches/release',
     'build'         : 'trunk/tools/build/v2',
-    'jam'           : 'tags/tools/jam/Boost_Jam_3_1_15/src',
+    'jam'           : 'tags/tools/jam/Boost_Jam_3_1_16/src',
     'regression'    : 'trunk/tools/regression',
     'boost-build.jam'
                     : 'trunk/boost-build.jam'
@@ -84,6 +84,8 @@ class runner:
             action='store_true' )
 
         #~ Connection Options:
+        opt.add_option( '--ftp',
+            help="FTP URL to upload results to." )
         opt.add_option( '--proxy',
             help="HTTP proxy server address and port (e.g.'http://www.someproxy.com:3128')" )
         opt.add_option( '--ftp-proxy',
@@ -121,6 +123,7 @@ class runner:
         self.local=None
         self.force_update=False
         self.have_source=False
+        self.ftp=None
         self.proxy=None
         self.ftp_proxy=None
         self.dart_server=None
@@ -386,17 +389,31 @@ class runner:
     def command_upload_logs(self):
         self.import_utils()
         from collect_and_upload_logs import upload_logs
-        self.retry(
-            lambda:
-                upload_logs(
-                    self.regression_results,
-                    self.runner, self.tag,
-                    self.user,
-                    self.ftp_proxy,
-                    self.debug_level, self.send_bjam_log,
-                    self.timestamp_path,
-                    self.dart_server )
-            )
+        if self.ftp:
+            self.retry(
+                lambda:
+                    upload_logs(
+                        self.regression_results,
+                        self.runner, self.tag,
+                        self.user,
+                        self.ftp_proxy,
+                        self.debug_level, self.send_bjam_log,
+                        self.timestamp_path,
+                        self.dart_server,
+                        ftp_url = self.ftp )
+                )
+        else:
+            self.retry(
+                lambda:
+                    upload_logs(
+                        self.regression_results,
+                        self.runner, self.tag,
+                        self.user,
+                        self.ftp_proxy,
+                        self.debug_level, self.send_bjam_log,
+                        self.timestamp_path,
+                        self.dart_server )
+                )
     
     def command_regression(self):
         import socket

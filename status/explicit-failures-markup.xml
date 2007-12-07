@@ -1487,13 +1487,44 @@
     <!-- function_types -->
     <library name="function_types">
         <mark-expected-failures>
-            <test name="nonmember_ccs"/>
-            <test name="nonmember_ccs_exact"/>
             <test name="member_ccs"/>
             <test name="member_ccs_exact"/>
             <toolset name="acc*"/>
+            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-*"/>
             <toolset name="hp_cxx*"/>
-            <note author="Boris Gubenko" refid="44"/>
+            <toolset name="intel*"/>
+            <toolset name="msvc-*_64"/>
+            <toolset name="msvc-*wm*"/>
+            <toolset name="pathscale-*"/>
+            <note author="Tobias Schwinger">
+              Not all compilers/platforms implement nonstandard calling conventions.
+              <hr/>
+              With GCC/x86 this failure reflects
+              http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29328 .
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="nonmember_ccs"/>
+            <test name="nonmember_ccs_exact"/>
+            <toolset name="acc*"/>
+            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-*"/>
+            <toolset name="hp_cxx*"/>
+            <toolset name="intel*"/>
+            <toolset name="msvc-*_64"/>
+            <toolset name="msvc-*wm*"/>
+            <toolset name="pathscale-*"/>
+            <note author="Tobias Schwinger">
+              Not all compilers/platforms implement nonstandard calling conventions.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="interfaces_example"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Tobias Schwinger">
+              Overload selection does not work in some assignment contexts with this compiler.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -5437,6 +5468,7 @@ for more information.
             <test name="value_init_test"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="gcc-3.4*"/>
+            <toolset name="gcc-4.0*"/>
             <toolset name="gcc-4.1*"/>
             <toolset name="gcc-4.2*"/>
             <toolset name="gcc-mingw-3.4*"/>

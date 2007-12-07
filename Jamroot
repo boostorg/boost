@@ -320,8 +320,10 @@ rule tag ( name : type ? : property-set )
             # On OSX, version suffix is not needed -- the linker expets
             # libFoo.1.2.3.dylib format.
             # AIX linkers don't accept version suffixes either.
+            # Pgi compilers can't accept library with version suffix
             if $(type) = SHARED_LIB &&
-              ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix )
+              ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
+                ! ( [ $(property-set).get <toolset> ] in pgi ) )
             {
                 result = $(result).$(BOOST_VERSION)  ;
             }
