@@ -381,7 +381,7 @@ Boost regression test failures
 """
         message += "Report time: " + self.date + """
 
-This report lists all regression test failures on release platforms.
+This report lists all regression test failures on high-priority platforms.
 
 Detailed report:
 """
@@ -399,54 +399,59 @@ Detailed report:
 """
             for platform in sorted_keys( self.platforms ):
                 if self.platforms[platform].isBroken():
-                    message += '  ' + platform + '\n'
+                    message += ('  ' + platform + ' ('
+                                + str(len(self.platforms[platform].failures))
+                                + ' failures)\n')
 
-            message += '\n'
+            message += """
+Failures on these "broken" platforms will be omitted from the results below.
+Please see the full report for information about these failures.
+
+"""
    
         # Display the number of failures
-        message += (str(self.numFailures()) + ' failures in ' + 
+        message += (str(self.numReportableFailures()) + ' failures in ' + 
                     str(len(self.libraries)) + ' libraries')
         if any_broken_platforms:
-            message += ' (' + str(self.numReportableFailures()) + ' are from non-broken platforms)'
+            message += (' (plus ' + str(self.numFailures() - self.numReportableFailures())
+                        + ' from broken platforms)')
+                        
         message += '\n'
 
         # Display the number of failures per library
         for k in sorted_keys( self.libraries ):
             library = self.libraries[k]
             num_failures = library.numFailures()
-            message += ('  ' + library.name + ' (' 
-                        + str(library.numReportableFailures()))
+            message += '  ' + library.name + ' ('
+                
+            if library.numReportableFailures() > 0:
+                message += (str(library.numReportableFailures())
+                            + " failures")
+                
             if library.numReportableFailures() < num_failures:
-                message += (' of ' + str(num_failures) 
-                            + ' failures are from non-broken platforms')
+                if library.numReportableFailures() > 0:
+                    message += ', plus '
+                                
+                message += (str(num_failures-library.numReportableFailures()) 
+                            + ' failures on broken platforms')
             message += ')\n'
             pass
 
-        # If we have any broken platforms, tell the user how we're
-        # displaying them.
-        if any_broken_platforms:
-            message += """
-Test failures marked with a (*) represent tests that failed on
-platforms that are considered broken. They are likely caused by
-misconfiguration by the regression tester or a failure in a core
-library such as Test or Config."""
         message += '\n'
 
         # Provide the details for the failures in each library.
         for k in sorted_keys( self.libraries ):
             library = self.libraries[k]
-            message += '\n|' + library.name + '|\n'
-            for test in library.tests:
-                message += '  ' + test.name + ':'
-                for failure in test.failures:
-                    platform = failure.platform
-                    message += '  ' + platform.name
-                    if platform.isBroken():
-                        message += '*'
-                    pass
-                message += '\n'
-                pass
-            pass
+            if library.numReportableFailures() > 0:
+                message += '\n|' + library.name + '|\n'
+                for test in library.tests:
+                    if test.numReportableFailures() > 0:
+                        message += '  ' + test.name + ':'
+                        for failure in test.failures:
+                            platform = failure.platform
+                            if not platform.isBroken():
+                                message += '  ' + platform.name
+                        message += '\n'
 
         return message
 
