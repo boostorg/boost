@@ -823,16 +823,17 @@ if '--debug' in sys.argv:
     print email
 
 email = report.composeTestingSummaryEmail()
-if '--send' in sys.argv:
-    print 'Sending summary email to Boost testing list...'
-    smtp = smtplib.SMTP('milliways.osl.iu.edu')
-    smtp.sendmail(from_addr = report_author, 
-                  to_addrs = boost_testing_list,
-                  msg = email)
-    print 'done.\n'
-if '--debug' in sys.argv:
-    print 'Message text for testing summary:\n'
-    print email
+if email:
+    if '--send' in sys.argv:
+        print 'Sending summary email to Boost testing list...'
+        smtp = smtplib.SMTP('milliways.osl.iu.edu')
+        smtp.sendmail(from_addr = report_author, 
+                      to_addrs = boost_testing_list,
+                      msg = email)
+        print 'done.\n'
+    if '--debug' in sys.argv:
+        print 'Message text for testing summary:\n'
+        print email
 
 if not ('--send' in sys.argv):
     print 'Chickening out and not sending any e-mail.'
