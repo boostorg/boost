@@ -443,6 +443,16 @@
                 <note author="Jeremy Siek" refid="1"/>
             </mark-failure>
         </test>
+        <test name="stl_concept_check">
+          <mark-failure>
+            <toolset name="hp_cxx*"/>
+            <note author="Markus Schoepflin" date="09 Dec 2007">
+              This version of the Rogue Wave library fails to provide all
+              needed addition operators for the iterator type and the
+              difference type of std::deque.
+            </note>
+          </mark-failure>
+        </test>
     </library>
 
     <!-- config -->
@@ -1487,13 +1497,44 @@
     <!-- function_types -->
     <library name="function_types">
         <mark-expected-failures>
-            <test name="nonmember_ccs"/>
-            <test name="nonmember_ccs_exact"/>
             <test name="member_ccs"/>
             <test name="member_ccs_exact"/>
             <toolset name="acc*"/>
+            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-*"/>
             <toolset name="hp_cxx*"/>
-            <note author="Boris Gubenko" refid="44"/>
+            <toolset name="intel*"/>
+            <toolset name="msvc-*_64"/>
+            <toolset name="msvc-*wm*"/>
+            <toolset name="pathscale-*"/>
+            <note author="Tobias Schwinger">
+              Not all compilers/platforms implement nonstandard calling conventions.
+              <hr/>
+              With GCC/x86 this failure reflects
+              http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29328 .
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="nonmember_ccs"/>
+            <test name="nonmember_ccs_exact"/>
+            <toolset name="acc*"/>
+            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-*"/>
+            <toolset name="hp_cxx*"/>
+            <toolset name="intel*"/>
+            <toolset name="msvc-*_64"/>
+            <toolset name="msvc-*wm*"/>
+            <toolset name="pathscale-*"/>
+            <note author="Tobias Schwinger">
+              Not all compilers/platforms implement nonstandard calling conventions.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="interface_example"/>
+            <toolset name="msvc-7.1*"/>
+            <note author="Tobias Schwinger">
+              Overload selection does not work in some assignment contexts with this compiler.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -1766,7 +1807,6 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
-            <toolset name="msvc-8.0~wm5*"/>
             <toolset name="vacpp*"/>
             <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
@@ -1777,6 +1817,8 @@
         <mark-expected-failures>
             <test name="doc_offset_ptr" />
             <toolset name="acc"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler is not supported by Interprocess.
             </note>
@@ -2290,6 +2332,8 @@ for more information.
             <test name="optional_test_ref"/>
             <toolset name="darwin-4.0.1"/>
             <toolset name="gcc-mingw-3.4.5"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <toolset name="gcc-4.2.1*"/>
             <toolset name="gcc-4.1.2_sunos_i86pc"/>
         		<note author="Fernando Cacciola" refid="2"/>
@@ -2630,6 +2674,8 @@ for more information.
             <test name="test_demo_portable_archive"/>
             <test name="test_demo_portable_archive_dll"/>
             <toolset name="acc*"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-4.2.1_hpux_ia64"/>
             <note author="Boris Gubenko">
               This failure is caused by serialization library bug in the
               code visible only on big endian platforms.
@@ -3926,11 +3972,18 @@ for more information.
             </note>
         </mark-unusable>
         <mark-unusable>
-            <toolset name="sun-5.8*"/>
+            <toolset name="sun-5.6*"/>
             <note author="David Abrahams">
-            This compiler seems to be having trouble digesting
+              The old reasoning given for this markup, which applied
+              to sun-5.8*, was as follows.  However, tuple's tests
+              seem to use the test library, which is apparently
+              completely broken on Sun.  Therefore, I've backed off
+              the version number to sun-5.6 so I can see the actual
+              state of the failures.
+
+            <blockquote>This compiler seems to be having trouble digesting
             Boost.Tuple.  Until it can handle Boost.Tuple there's
-            little chance it will handle Boost.Python
+            little chance it will handle Boost.Python</blockquote>
             </note>
         </mark-unusable>
         <mark-expected-failures>
@@ -4357,15 +4410,27 @@ for more information.
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
+            <test name="TransitionTest*"/>
+            <toolset name="intel-linux*"/>
+            <toolset name="pathscale*"/>
+            <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+          <test name="TransitionTest*"/>
+          <test name="InvalidTransitionTest1Relaxed"/>
+          <test name="StopWatchExample"/>
+          <toolset name="vacpp-8.0"/>
+          <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
             <toolset name="acc*"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
-            <test name="TransitionTest*"/>
-            <test name="PerformanceExample"/>
-            <toolset name="vacpp"/>
-            <note author="Andreas Huber" refid="29"/>
+          <test name="HistoryTestRelaxed"/>
+          <toolset name="intel-linux-9.1"/>
+          <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="StopWatch*"/>
@@ -4376,13 +4441,10 @@ for more information.
                 ignored.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
+        <mark-expected-failures reason="?">
             <test name="DllTest*"/>
             <toolset name="msvc-8.0~wm5~stlport5.1"/>
-            <note author="Andreas Huber">
-                This test fails due to unresolved externals that are
-                not library-related.
-            </note>
+            <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
     </library>
 
@@ -5407,6 +5469,43 @@ for more information.
                 This failure is caused by a compiler bug (default-constructed scalar
                 types are not zero-initialized) that has been fixed in the latest
                 versions of the compiler (VC 7.1 and greater).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="value_init_test"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="borland-5.8*"/>
+            <toolset name="borland-5.9*"/>
+            <note author="Niels Dekker">
+                This test typically fails on Borland C++, because of an issue described by
+                <a href="http://svn.boost.org/trac/boost/ticket/1459">
+                ticket #1459, "value_initialized leaves data uninitialized,
+                when using Borland"</a>. The issue is caused by a 
+                compiler bug, reported at the website of Codegear/Borland:
+                <a href="http://qc.codegear.com/wc/qcmain.aspx?d=51854">
+                Report #51854, "Value-initialization: POD struct
+                should be zero-initialized"</a>.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="value_init_test"/>
+            <toolset name="gcc-3.3*"/>
+            <toolset name="gcc-3.4*"/>
+            <toolset name="gcc-4.0*"/>
+            <toolset name="gcc-4.1*"/>
+            <toolset name="gcc-4.2*"/>
+            <toolset name="gcc-mingw-3.4*"/>
+            <note author="Niels Dekker">
+                This test typically fails on GCC, because of an issue described by
+                <a href="http://svn.boost.org/trac/boost/ticket/1491">
+                ticket #1491, "value_initialized leaves data uninitialized,
+                when using GCC"</a>. The issue is caused by some GCC compiler bugs:  
+                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=30111">
+                Value-initialization of POD base class doesn't initialize members</a>,
+                reported by Jonathan Wakely, and
+                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33916">
+                Default constructor fails to initialize array members</a>,
+                reported by Michael Elizabeth Chastain. 
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
