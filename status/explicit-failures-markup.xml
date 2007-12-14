@@ -4630,7 +4630,6 @@ for more information.
             <test name="test_tss_lib"/>
             <toolset name="borland-*"/>
             <toolset name="cw-9.4"/>
-            <toolset name="gcc-mingw*"/>
             <note author="Roland Schwarz" date="2006-12-14">
                 When a thread ends, tss data needs to be cleaned up. This process
                 is mostly automatic. When threads are launched by the Boost.Thread API
@@ -4643,6 +4642,15 @@ for more information.
                 from user code before the process actually ends. For library implementors
                 this means to call these functions during library initialization and
                 finalization.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_thread_move"/>
+            <test name="test_thread_move_lib"/>
+            <toolset name="borland-*"/>
+            <note author="Anthony Williams" date="2007-12-14">
+The Borland compiler fails to bind rvalues to the thread move constructor,
+choosing instead to bind them to the private (and unimplemented) copy constructor.
             </note>
         </mark-expected-failures>
     </library>
