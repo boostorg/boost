@@ -1788,6 +1788,8 @@
             <toolset name="vacpp*"/>
             <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -4555,11 +4557,12 @@ for more information.
         <mark-expected-failures>
             <test name="prg_exec_fail2"/>
             <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test verifies that Boost.Test detects division by
-              zero. Division by zero has an undefined result
-              on PowerPC processors. The compiler has to emit extra
-              code to assert that the divisor isn't zero.
+              zero. It fails on PowerPC and Linux ia64. On PowerPC
+              processors, division has an undefined result. The compiler
+              has to emit extra code to assert that the divisor isn't zero.
 
               Compiler options -fno-trapping-math and -fnon-call-exceptions
               might affect this. However, in default configuration
@@ -4570,6 +4573,7 @@ for more information.
         <mark-expected-failures>
             <test name="prg_exec_fail3"/>
             <toolset name="cw-9.4"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test appears to test that failed assertion result
               in non-zero exit status.  That seems to be not the
