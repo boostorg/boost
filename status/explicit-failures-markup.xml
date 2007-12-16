@@ -15,11 +15,10 @@
         - http://syseng.nist.gov/b2bTestbed/projects/xmlvalidation/instance_validation.html
         - http://xmlvalidation.com/
 
-     With both tools you need to provide both the explicit-failures-markup.xml
-     file as the XML document and the explicit-failures.xsd as the schema
-     document. Use the browse buttons to select them from your local hard
-     drive.
-
+    With both tools you need to provide both the explicit-failures-markup.xml
+    file as the XML document and the explicit-failures.xsd as the schema
+    document. Use the browse buttons to select them from your local hard
+    drive.
     -->
 
     <!-- /////////////// Toolsets /////////////// -->
@@ -31,6 +30,7 @@
     <mark-toolset name="gcc-4.2.1_linux_x86_64" status="required"/>
     <mark-toolset name="intel-linux-9.0" status="required"/>
     <mark-toolset name="intel-vc8-win-10.0" status="required"/>
+    <mark-toolset name="intel-win-10.0" status="required"/>
     <mark-toolset name="msvc-7.1" status="required"/>
     <mark-toolset name="msvc-8.0" status="required"/>
     <mark-toolset name="msvc-8.0_64" status="required"/>
@@ -1788,6 +1788,8 @@
             <toolset name="vacpp*"/>
             <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -4411,26 +4413,26 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="TransitionTest*"/>
-            <toolset name="intel-linux*"/>
-            <toolset name="pathscale*"/>
+            <toolset name="intel-linux-9.1"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
-          <test name="TransitionTest*"/>
-          <test name="InvalidTransitionTest1Relaxed"/>
-          <test name="StopWatchExample"/>
-          <toolset name="vacpp-8.0"/>
-          <note author="Andreas Huber" refid="29"/>
+            <test name="TransitionTestBoth"/>
+            <test name="TransitionTestNative"/>
+            <toolset name="pathscale-3.1"/>
+            <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="TransitionTest*"/>
+            <test name="InvalidTransitionTest1Relaxed"/>
+            <test name="StopWatchExample"/>
+            <toolset name="vacpp-8.0"/>
+            <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
             <toolset name="acc*"/>
             <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-          <test name="HistoryTestRelaxed"/>
-          <toolset name="intel-linux-9.1"/>
-          <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="StopWatch*"/>
@@ -4555,11 +4557,12 @@ for more information.
         <mark-expected-failures>
             <test name="prg_exec_fail2"/>
             <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test verifies that Boost.Test detects division by
-              zero. Division by zero has an undefined result
-              on PowerPC processors. The compiler has to emit extra
-              code to assert that the divisor isn't zero.
+              zero. It fails on PowerPC and Linux ia64. On PowerPC
+              processors, division has an undefined result. The compiler
+              has to emit extra code to assert that the divisor isn't zero.
 
               Compiler options -fno-trapping-math and -fnon-call-exceptions
               might affect this. However, in default configuration
@@ -4570,6 +4573,7 @@ for more information.
         <mark-expected-failures>
             <test name="prg_exec_fail3"/>
             <toolset name="cw-9.4"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test appears to test that failed assertion result
               in non-zero exit status.  That seems to be not the
@@ -4630,7 +4634,6 @@ for more information.
             <test name="test_tss_lib"/>
             <toolset name="borland-*"/>
             <toolset name="cw-9.4"/>
-            <toolset name="gcc-mingw*"/>
             <note author="Roland Schwarz" date="2006-12-14">
                 When a thread ends, tss data needs to be cleaned up. This process
                 is mostly automatic. When threads are launched by the Boost.Thread API
@@ -4643,6 +4646,15 @@ for more information.
                 from user code before the process actually ends. For library implementors
                 this means to call these functions during library initialization and
                 finalization.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_thread_move"/>
+            <test name="test_thread_move_lib"/>
+            <toolset name="borland-*"/>
+            <note author="Anthony Williams" date="2007-12-14">
+The Borland compiler fails to bind rvalues to the thread move constructor,
+choosing instead to bind them to the private (and unimplemented) copy constructor.
             </note>
         </mark-expected-failures>
     </library>
