@@ -226,7 +226,7 @@ Report time: </xsl:text>
 This report lists all regression test failures on release platforms.
 
 Detailed report: 
-  http://boost.org/regression/</xsl:text>
+        http://beta.boost.org/development/tests/</xsl:text>
         <xsl:value-of select="$source"/>
         <xsl:text>/developer/issues.html
 

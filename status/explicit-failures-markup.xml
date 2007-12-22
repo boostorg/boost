@@ -15,11 +15,10 @@
         - http://syseng.nist.gov/b2bTestbed/projects/xmlvalidation/instance_validation.html
         - http://xmlvalidation.com/
 
-     With both tools you need to provide both the explicit-failures-markup.xml
-     file as the XML document and the explicit-failures.xsd as the schema
-     document. Use the browse buttons to select them from your local hard
-     drive.
-
+    With both tools you need to provide both the explicit-failures-markup.xml
+    file as the XML document and the explicit-failures.xsd as the schema
+    document. Use the browse buttons to select them from your local hard
+    drive.
     -->
 
     <!-- /////////////// Toolsets /////////////// -->
@@ -31,6 +30,7 @@
     <mark-toolset name="gcc-4.2.1_linux_x86_64" status="required"/>
     <mark-toolset name="intel-linux-9.0" status="required"/>
     <mark-toolset name="intel-vc8-win-10.0" status="required"/>
+    <mark-toolset name="intel-win-10.0" status="required"/>
     <mark-toolset name="msvc-7.1" status="required"/>
     <mark-toolset name="msvc-8.0" status="required"/>
     <mark-toolset name="msvc-8.0_64" status="required"/>
@@ -336,9 +336,14 @@
             <note refid="39" author="Boris Gubenko"/>
         </mark-expected-failures>
         <mark-expected-failures>
-                <test name="test_bimap_serialization"/>
-                <toolset name="gcc-mingw-3.4.5"/>
-                <note author="Matias Capeletto">Compiler bug.</note>
+            <test name="test_bimap_serialization"/>
+            <toolset name="gcc-mingw-3.4.5"/>
+            <note author="Matias Capeletto">Compiler bug.</note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_bimap_property_map"/>
+            <toolset name="gcc-3.4.6_linux_x86_64"/>
+            <note author="Matias Capeletto">Time out.</note>
         </mark-expected-failures>
     </library>
 
@@ -442,6 +447,16 @@
                 <toolset name="*"/>
                 <note author="Jeremy Siek" refid="1"/>
             </mark-failure>
+        </test>
+        <test name="stl_concept_check">
+          <mark-failure>
+            <toolset name="hp_cxx*"/>
+            <note author="Markus Schoepflin" date="09 Dec 2007">
+              This version of the Rogue Wave library fails to provide all
+              needed addition operators for the iterator type and the
+              difference type of std::deque.
+            </note>
+          </mark-failure>
         </test>
     </library>
 
@@ -1520,8 +1535,8 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="interfaces_example"/>
-            <toolset name="msvc-7.1"/>
+            <test name="interface_example"/>
+            <toolset name="msvc-7.1*"/>
             <note author="Tobias Schwinger">
               Overload selection does not work in some assignment contexts with this compiler.
             </note>
@@ -1778,6 +1793,8 @@
             <toolset name="vacpp*"/>
             <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -1807,6 +1824,8 @@
         <mark-expected-failures>
             <test name="doc_offset_ptr" />
             <toolset name="acc"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler is not supported by Interprocess.
             </note>
@@ -2320,6 +2339,8 @@ for more information.
             <test name="optional_test_ref"/>
             <toolset name="darwin-4.0.1"/>
             <toolset name="gcc-mingw-3.4.5"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <toolset name="gcc-4.2.1*"/>
             <toolset name="gcc-4.1.2_sunos_i86pc"/>
         		<note author="Fernando Cacciola" refid="2"/>
@@ -4397,26 +4418,26 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="TransitionTest*"/>
-            <toolset name="intel-linux*"/>
-            <toolset name="pathscale*"/>
+            <toolset name="intel-linux-9.1"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
-          <test name="TransitionTest*"/>
-          <test name="InvalidTransitionTest1Relaxed"/>
-          <test name="StopWatchExample"/>
-          <toolset name="vacpp-8.0"/>
-          <note author="Andreas Huber" refid="29"/>
+            <test name="TransitionTestBoth"/>
+            <test name="TransitionTestNative"/>
+            <toolset name="pathscale-3.1"/>
+            <note author="Andreas Huber" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures reason="?">
+            <test name="TransitionTest*"/>
+            <test name="InvalidTransitionTest1Relaxed"/>
+            <test name="StopWatchExample"/>
+            <toolset name="vacpp-8.0"/>
+            <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
             <toolset name="acc*"/>
             <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-          <test name="HistoryTestRelaxed"/>
-          <toolset name="intel-linux-9.1"/>
-          <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="StopWatch*"/>
@@ -4541,11 +4562,13 @@ for more information.
         <mark-expected-failures>
             <test name="prg_exec_fail2"/>
             <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test verifies that Boost.Test detects division by
-              zero. Division by zero has an undefined result
-              on PowerPC processors. The compiler has to emit extra
-              code to assert that the divisor isn't zero.
+              zero. It fails on PowerPC, PA-RISC and Linux ia64. On PowerPC
+              processors, division has an undefined result. The compiler
+              has to emit extra code to assert that the divisor isn't zero.
 
               Compiler options -fno-trapping-math and -fnon-call-exceptions
               might affect this. However, in default configuration
@@ -4556,6 +4579,7 @@ for more information.
         <mark-expected-failures>
             <test name="prg_exec_fail3"/>
             <toolset name="cw-9.4"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test appears to test that failed assertion result
               in non-zero exit status.  That seems to be not the
@@ -4616,7 +4640,6 @@ for more information.
             <test name="test_tss_lib"/>
             <toolset name="borland-*"/>
             <toolset name="cw-9.4"/>
-            <toolset name="gcc-mingw*"/>
             <note author="Roland Schwarz" date="2006-12-14">
                 When a thread ends, tss data needs to be cleaned up. This process
                 is mostly automatic. When threads are launched by the Boost.Thread API
@@ -4629,6 +4652,23 @@ for more information.
                 from user code before the process actually ends. For library implementors
                 this means to call these functions during library initialization and
                 finalization.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_thread_move"/>
+            <test name="test_thread_move_lib"/>
+            <toolset name="borland-*"/>
+            <note author="Anthony Williams" date="2007-12-14">
+The Borland compiler fails to bind rvalues to the thread move constructor,
+choosing instead to bind them to the private (and unimplemented) copy constructor.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_hardware_concurrency"/>
+            <test name="test_hardware_concurrency_lib"/>
+            <toolset name="*tru64"/>
+            <note author="Anthony Williams" date="2007-12-21">
+boost::thread::hardware_concurrency is not implemented and always returns 0 on this platform.
             </note>
         </mark-expected-failures>
     </library>
@@ -5455,43 +5495,6 @@ for more information.
                 This failure is caused by a compiler bug (default-constructed scalar
                 types are not zero-initialized) that has been fixed in the latest
                 versions of the compiler (VC 7.1 and greater).
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="value_init_test"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="borland-5.8*"/>
-            <toolset name="borland-5.9*"/>
-            <note author="Niels Dekker">
-                This test typically fails on Borland C++, because of an issue described by
-                <a href="http://svn.boost.org/trac/boost/ticket/1459">
-                ticket #1459, "value_initialized leaves data uninitialized,
-                when using Borland"</a>. The issue is caused by a 
-                compiler bug, reported at the website of Codegear/Borland:
-                <a href="http://qc.codegear.com/wc/qcmain.aspx?d=51854">
-                Report #51854, "Value-initialization: POD struct
-                should be zero-initialized"</a>.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="value_init_test"/>
-            <toolset name="gcc-3.3*"/>
-            <toolset name="gcc-3.4*"/>
-            <toolset name="gcc-4.0*"/>
-            <toolset name="gcc-4.1*"/>
-            <toolset name="gcc-4.2*"/>
-            <toolset name="gcc-mingw-3.4*"/>
-            <note author="Niels Dekker">
-                This test typically fails on GCC, because of an issue described by
-                <a href="http://svn.boost.org/trac/boost/ticket/1491">
-                ticket #1491, "value_initialized leaves data uninitialized,
-                when using GCC"</a>. The issue is caused by some GCC compiler bugs:  
-                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=30111">
-                Value-initialization of POD base class doesn't initialize members</a>,
-                reported by Jonathan Wakely, and
-                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33916">
-                Default constructor fails to initialize array members</a>,
-                reported by Michael Elizabeth Chastain. 
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
