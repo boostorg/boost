@@ -1907,6 +1907,7 @@
             <toolset name="gcc-3.4.5_mingw"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-3.3.6-osf1"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
             <note author="Jonathan Turkanis" refid="19"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -2006,6 +2007,14 @@
             <toolset name="gcc-cygwin-3.4.4"/>
             <note author="Vladimir Prus">
               The test fails at runtime for unknown reasons.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test.cpp"/>
+            <toolset name="borland-*"/>
+            <note author="Jonathan Turkanis" date="04 Jan 2008">
+                The Borland runtime library defines fpos_t as a 32-bit long,
+                incapable of storing large offsets (see stdio.h)
             </note>
         </mark-expected-failures>
 
