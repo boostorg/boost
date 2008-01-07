@@ -2022,6 +2022,21 @@
                 incapable of storing large offsets (see stdio.h)
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test.cpp"/>
+            <toolset name="sun-5.*"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                In STLPort, streampos consists of a long together with a
+                conversion state; on this platform, long is a 32-bit type
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="restrict_test.cpp"/>
+            <toolset name="vacpp"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                "restrict" is treated as a keyword (as in C99)
+            </note>
+        </mark-expected-failures>
 
     </library>
 
