@@ -1892,13 +1892,21 @@
             <note author="Jonathan Turkanis" refid="17"/>
         </mark-unusable>
         <mark-expected-failures>
-            <!-- STLPort bug -->
-            <test name="seekable_file_test"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <test name="bzip2_test"/>
+            <toolset name="gcc-3.4.3_sunos"/>
+            <note author="Caleb Epstein">
+                No bzip2 support on the testing machine and no way to
+                disable this test with BBv2 at present.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bzip2_test"/>
+            <test name="file_descriptor_test"/>
+            <test name="mapped_file_test"/>
             <toolset name="*como-4_3_3*"/>
-            <toolset name="*stlport"/>
-            <note author="Jonathan Turkanis" refid="4"/>
+            <note author="Jonathan Turkanis">
+                compiler can't compile "windows.h" in strict mode
+            </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <!-- Insufficient wide character support -->
@@ -1923,33 +1931,33 @@
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="bzip2_test"/>
-            <test name="file_descriptor_test"/>
-            <test name="mapped_file_test"/>
-            <toolset name="*como-4_3_3*"/>
+            <test name="compose_test"/>
+            <toolset name="borland-5.6*"/>
             <note author="Jonathan Turkanis">
-                compiler can't compile "windows.h" in strict mode
+                Fails to compile on some installations but not others; may
+                depend on which compiler updates have been installed
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="gzip_test"/>
-            <test name="zlib_test"/>
-            <toolset name="como-4_3_3-vc7_1"/>
+            <test name="compose_test"/>
+            <toolset name="msvc-6.5_stlport4"/>
             <note author="Jonathan Turkanis">
-                The failure reflects a problem with the build system: the zlib
-                object files are generated in the wrong directory.
+                These six tests pass individually but cause a compiler stack overflow
+                when compiled as a group
             </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="stdio_filter_test"/>
-            <toolset name="*como-4_3_3*"/>
-            <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="direct_adapter_test"/>
             <test name="gzip_test"/>
             <toolset name="gcc-2.95.3-linux"/>
             <note author="Jonathan Turkanis" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="file_descriptor_test"/>
+            <toolset name="gcc-cygwin-3.4.4"/>
+            <note author="Vladimir Prus">
+                The test fails at runtime for unknown reasons.
+            </note>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="file_descriptor_test"/>
@@ -1967,14 +1975,23 @@
             <note author="Jonathan Turkanis" refid="2"/>
         </mark-expected-failures>
         <mark-expected-failures>
-          <test name="finite_state_filter_test"/>
-          <toolset name="cw-9.4"/>
-          <note author="Jonathan Turkanis" date="20 Dec 06">
-            I'm not sure whether CodeWarrior is correct to report that the member
-            in question is inaccessible; however, when the member is made public
-            an internal error occur that I have not been able to fix, so for
-            now the question is moot.
-          </note>
+            <test name="finite_state_filter_test"/>
+            <toolset name="cw-9.4"/>
+            <note author="Jonathan Turkanis" date="20 Dec 06">
+                I'm not sure whether CodeWarrior is correct to report that the member
+                in question is inaccessible; however, when the member is made public
+                an internal error occur that I have not been able to fix, so for
+                now the question is moot.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="gzip_test"/>
+            <test name="zlib_test"/>
+            <toolset name="como-4_3_3-vc7_1"/>
+            <note author="Jonathan Turkanis">
+                The failure reflects a problem with the build system: the zlib
+                object files are generated in the wrong directory.
+            </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="mapped_file_test"/>
@@ -1984,35 +2001,25 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="compose_test"/>
+            <test name="restrict_test.cpp"/>
+            <toolset name="vacpp"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                "restrict" is treated as a keyword (as in C99)
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <!-- STLPort bug -->
+            <test name="seekable_file_test"/>
             <toolset name="borland-5.6*"/>
-            <note author="Jonathan Turkanis">
-                Fails to compile on some installations but not others; may
-                depend on which compiler updates have been installed
-            </note>
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <toolset name="*como-4_3_3*"/>
+            <toolset name="*stlport"/>
+            <note author="Jonathan Turkanis" refid="4"/>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="compose_test"/>
-            <toolset name="msvc-6.5_stlport4"/>
-            <note author="Jonathan Turkanis">
-                These six tests pass individually but cause a compiler stack overflow
-                when compiled as a group
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="bzip2_test"/>
-            <toolset name="gcc-3.4.3_sunos"/>
-            <note author="Caleb Epstein">
-                No bzip2 support on the testing machine and no way to
-                disable this test with BBv2 at present.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="file_descriptor_test"/>
-            <toolset name="gcc-cygwin-3.4.4"/>
-            <note author="Vladimir Prus">
-              The test fails at runtime for unknown reasons.
-            </note>
+            <test name="stdio_filter_test"/>
+            <toolset name="*como-4_3_3*"/>
+            <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="stream_offset_64bit_test.cpp"/>
@@ -2030,14 +2037,6 @@
                 conversion state; on this platform, long is a 32-bit type
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="restrict_test.cpp"/>
-            <toolset name="vacpp"/>
-            <note author="Jonathan Turkanis" date="06 Jan 2008">
-                "restrict" is treated as a keyword (as in C99)
-            </note>
-        </mark-expected-failures>
-
     </library>
 
     <!-- lambda -->
