@@ -1886,11 +1886,28 @@
 
     <!-- iostreams -->
     <library name="iostreams">
-        <mark-unusable>
-            <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="dmc-8_43-stlport-4_5_3"/>
-            <note author="Jonathan Turkanis" refid="17"/>
-        </mark-unusable>
+        <mark-expected-failures>
+            <test name="auto_close_test"/>
+            <test name="component_access_test"/>
+            <test name="compose_test"/>
+            <test name="counter_test"/>
+            <test name="filtering_stream_test"/>
+            <test name="flush_test"/>
+            <test name="line_filter_test"/>
+            <test name="newline_test"/>
+            <test name="pipeline_test"/>
+            <test name="regex_filter_test"/>
+            <test name="restrict_test"/>
+            <test name="seekable_file_test"/>
+            <test name="sequence_test"/>
+            <test name="restrict_test"/>
+            <test name="stdio_filter_test"/>
+            <test name="tee_test"/>
+            <test name="wide_stream_test"/>
+            <toolset name="sun-5.7"/>
+            <toolset name="sun-5.8"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008" refid="2"/>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="bzip2_test"/>
             <toolset name="gcc-3.4.3_sunos"/>
@@ -1932,14 +1949,6 @@
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="compose_test"/>
-            <toolset name="borland-5.6*"/>
-            <note author="Jonathan Turkanis">
-                Fails to compile on some installations but not others; may
-                depend on which compiler updates have been installed
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="compose_test"/>
             <toolset name="msvc-6.5_stlport4"/>
             <note author="Jonathan Turkanis">
                 These six tests pass individually but cause a compiler stack overflow
@@ -1972,6 +1981,8 @@
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
             <toolset name="gcc-2.95.3*"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="vacpp"/>
             <note author="Jonathan Turkanis" refid="2"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -2013,6 +2024,7 @@
             <toolset name="borland-5.6*"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <toolset name="*como-4_3_3*"/>
+            <toolset name="sun-5.*"/>
             <toolset name="*stlport"/>
             <note author="Jonathan Turkanis" refid="4"/>
         </mark-expected-failures>
