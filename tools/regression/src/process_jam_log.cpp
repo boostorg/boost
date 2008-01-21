@@ -633,9 +633,12 @@ int main( int argc, char ** argv )
   //   * Calls stop_message() to stop capturing lines.
   //   * Capture lines if line capture on.
 
+  static const int max_line_length = 8192;
   int line_num = 0;
   while ( std::getline( *input, line ) )
   {
+    if (max_line_length < line.size()) line = line.substr(0, max_line_length);
+
     ++line_num;
     
     std::vector<std::string> const line_parts( split( line ) );
