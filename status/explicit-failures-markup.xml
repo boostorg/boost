@@ -37,6 +37,27 @@
 
     <!-- /////////////// Libraries /////////////// -->
 
+    <!-- accumulators -->
+    <library name="accumulators">
+      <mark-unusable>
+        <toolset name="sun-5.7"/>
+        <toolset name="sun-5.8"/>
+        <toolset name="sun-5.9"/>
+        <toolset name="borland-*"/>
+      </mark-unusable>
+      <mark-expected-failures>
+          <test name="tail_variate_means"/>
+          <test name="weighted_tail_variate_means"/>
+          <toolset name="gcc-4.2.1*"/>
+          <note author="Boris Gubenko" refid="42"/>
+      </mark-expected-failures>
+      <mark-expected-failures>
+          <test name="weighted_kurtosis"/>
+          <toolset name="acc"/>
+          <note author="Boris Gubenko" refid="38"/>
+      </mark-expected-failures>
+    </library>
+
     <!-- minmax -->
     <library name="algorithm/minmax">
       <mark-unusable>
@@ -1504,14 +1525,7 @@
         <mark-expected-failures>
             <test name="member_ccs"/>
             <test name="member_ccs_exact"/>
-            <toolset name="acc*"/>
-            <toolset name="darwin-4.0.1"/>
-            <toolset name="gcc-*"/>
-            <toolset name="hp_cxx*"/>
-            <toolset name="intel*"/>
-            <toolset name="msvc-*_64"/>
-            <toolset name="msvc-*wm*"/>
-            <toolset name="pathscale-*"/>
+            <toolset name="*"/>
             <note author="Tobias Schwinger">
               Not all compilers/platforms implement nonstandard calling conventions.
               <hr/>
@@ -1522,14 +1536,7 @@
         <mark-expected-failures>
             <test name="nonmember_ccs"/>
             <test name="nonmember_ccs_exact"/>
-            <toolset name="acc*"/>
-            <toolset name="darwin-4.0.1"/>
-            <toolset name="gcc-*"/>
-            <toolset name="hp_cxx*"/>
-            <toolset name="intel*"/>
-            <toolset name="msvc-*_64"/>
-            <toolset name="msvc-*wm*"/>
-            <toolset name="pathscale-*"/>
+            <toolset name="*"/>
             <note author="Tobias Schwinger">
               Not all compilers/platforms implement nonstandard calling conventions.
             </note>
@@ -1865,19 +1872,45 @@
 
     <!-- iostreams -->
     <library name="iostreams">
-        <mark-unusable>
-            <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="dmc-8_43-stlport-4_5_3"/>
-            <note author="Jonathan Turkanis" refid="17"/>
-        </mark-unusable>
         <mark-expected-failures>
-            <!-- STLPort bug -->
+            <test name="auto_close_test"/>
+            <test name="component_access_test"/>
+            <test name="compose_test"/>
+            <test name="counter_test"/>
+            <test name="filtering_stream_test"/>
+            <test name="flush_test"/>
+            <test name="line_filter_test"/>
+            <test name="newline_test"/>
+            <test name="pipeline_test"/>
+            <test name="regex_filter_test"/>
+            <test name="restrict_test"/>
             <test name="seekable_file_test"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <test name="seekable_filter_test"/>
+            <test name="sequence_test"/>
+            <test name="slice_test"/>
+            <test name="stdio_filter_test"/>
+            <test name="tee_test"/>
+            <test name="wide_stream_test"/>
+            <toolset name="sun-5.7"/>
+            <toolset name="sun-5.8"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bzip2_test"/>
+            <toolset name="gcc-3.4.3_sunos"/>
+            <note author="Caleb Epstein">
+                No bzip2 support on the testing machine and no way to
+                disable this test with BBv2 at present.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bzip2_test"/>
+            <test name="file_descriptor_test"/>
+            <test name="mapped_file_test"/>
             <toolset name="*como-4_3_3*"/>
-            <toolset name="*stlport"/>
-            <note author="Jonathan Turkanis" refid="4"/>
+            <note author="Jonathan Turkanis">
+                compiler can't compile "windows.h" in strict mode
+            </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <!-- Insufficient wide character support -->
@@ -1891,6 +1924,7 @@
             <toolset name="gcc-3.4.5_mingw"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-3.3.6-osf1"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
             <note author="Jonathan Turkanis" refid="19"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -1901,33 +1935,34 @@
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="bzip2_test"/>
-            <test name="file_descriptor_test"/>
-            <test name="mapped_file_test"/>
-            <toolset name="*como-4_3_3*"/>
+            <test name="compose_test"/>
+            <toolset name="msvc-6.5_stlport4"/>
             <note author="Jonathan Turkanis">
-                compiler can't compile "windows.h" in strict mode
+                These six tests pass individually but cause a compiler stack overflow
+                when compiled as a group
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="gzip_test"/>
-            <test name="zlib_test"/>
-            <toolset name="como-4_3_3-vc7_1"/>
-            <note author="Jonathan Turkanis">
-                The failure reflects a problem with the build system: the zlib
-                object files are generated in the wrong directory.
+            <test name="compose_test"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
+            <note author="Boris Gubenko">
+                On this platform, linking this test takes longer than 10 minutes
+                which is a time limit specified for bjam. When linked manually,
+                the test succeeds.
             </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="stdio_filter_test"/>
-            <toolset name="*como-4_3_3*"/>
-            <note author="Jonathan Turkanis" refid="0"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="direct_adapter_test"/>
             <test name="gzip_test"/>
             <toolset name="gcc-2.95.3-linux"/>
             <note author="Jonathan Turkanis" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="file_descriptor_test"/>
+            <toolset name="gcc-cygwin-3.4.4"/>
+            <note author="Vladimir Prus">
+                The test fails at runtime for unknown reasons.
+            </note>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="file_descriptor_test"/>
@@ -1942,17 +1977,28 @@
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
             <toolset name="gcc-2.95.3*"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="vacpp"/>
             <note author="Jonathan Turkanis" refid="2"/>
         </mark-expected-failures>
         <mark-expected-failures>
-          <test name="finite_state_filter_test"/>
-          <toolset name="cw-9.4"/>
-          <note author="Jonathan Turkanis" date="20 Dec 06">
-            I'm not sure whether CodeWarrior is correct to report that the member
-            in question is inaccessible; however, when the member is made public
-            an internal error occur that I have not been able to fix, so for
-            now the question is moot.
-          </note>
+            <test name="finite_state_filter_test"/>
+            <toolset name="cw-9.4"/>
+            <note author="Jonathan Turkanis" date="20 Dec 06">
+                I'm not sure whether CodeWarrior is correct to report that the member
+                in question is inaccessible; however, when the member is made public
+                an internal error occur that I have not been able to fix, so for
+                now the question is moot.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="gzip_test"/>
+            <test name="zlib_test"/>
+            <toolset name="como-4_3_3-vc7_1"/>
+            <note author="Jonathan Turkanis">
+                The failure reflects a problem with the build system: the zlib
+                object files are generated in the wrong directory.
+            </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="mapped_file_test"/>
@@ -1962,37 +2008,54 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="compose_test"/>
+            <test name="restrict_test"/>
+            <toolset name="vacpp"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                "restrict" is treated as a keyword on this platform (as in C99);
+                use the alias "slice" instead, defined in 
+                "boost/iostreams/slice.hpp."
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <!-- STLPort bug -->
+            <test name="seekable_file_test"/>
             <toolset name="borland-5.6*"/>
-            <note author="Jonathan Turkanis">
-                Fails to compile on some installations but not others; may
-                depend on which compiler updates have been installed
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <toolset name="*como-4_3_3*"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="*stlport"/>
+            <toolset name="pgi-7.0"/>
+            <note author="Jonathan Turkanis" refid="4"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stdio_filter_test"/>
+            <toolset name="*como-4_3_3*"/>
+            <note author="Jonathan Turkanis" refid="0"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="borland-*"/>
+            <note author="Jonathan Turkanis" date="04 Jan 2008">
+                The Borland runtime library defines fpos_t as a 32-bit long,
+                incapable of storing large offsets (see stdio.h)
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="compose_test"/>
-            <toolset name="msvc-6.5_stlport4"/>
-            <note author="Jonathan Turkanis">
-                These six tests pass individually but cause a compiler stack overflow
-                when compiled as a group
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="sun-5.*"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                In STLPort, streampos consists of a long together with a
+                conversion state; on this platform, long is a 32-bit type
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="bzip2_test"/>
-            <toolset name="gcc-3.4.3_sunos"/>
-            <note author="Caleb Epstein">
-                No bzip2 support on the testing machine and no way to
-                disable this test with BBv2 at present.
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="vacpp*"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008">
+                This platform uses the Dinkumware fpos, but std::streamsize and
+                std::fpos_t are both 32-bit types.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="file_descriptor_test"/>
-            <toolset name="gcc-cygwin-3.4.4"/>
-            <note author="Vladimir Prus">
-              The test fails at runtime for unknown reasons.
-            </note>
-        </mark-expected-failures>
-
     </library>
 
     <!-- lambda -->
@@ -4091,6 +4154,13 @@ for more information.
                 were split into multiple source files.
                 </note>
             </mark-failure>
+            <mark-failure>
+                <toolset name="gcc-3.4.6_linux_ia64"/>
+                <note author="Boris Gubenko">
+                It looks like a compiler issue: the test fails with gcc 3.4.6
+                and succeeds with gcc 4.2.1.
+                </note>
+            </mark-failure>
         </test>
     </library>
 
@@ -4355,8 +4425,8 @@ for more information.
             <toolset name="hp_cxx-65*"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0*"/>
+            <toolset name="pgi-7*"/>
             <toolset name="sun-5*"/>
-            <toolset name="hp_cxx-65*"/>
             <note author="Andreas Huber" refid="17"/>
         </mark-unusable>
         <mark-unusable>
@@ -4406,19 +4476,23 @@ for more information.
             <test name="CameraExample"/>
             <test name="CustomReactionTest*"/>
             <test name="PerformanceExample"/>
-            <test name="TransitionTest*"/>
             <toolset name="cw-9*"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
-            <test name="TransitionTest*"/>
             <toolset name="hp_cxx-71*"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="TransitionTest*"/>
+            <toolset name="cw-9*"/>
+            <toolset name="hp_cxx-71*"/>
             <toolset name="intel-linux-9.1"/>
+            <toolset name="intel-linux-10.0"/>
+            <toolset name="intel-darwin-9.1"/>
+            <toolset name="intel-darwin-10.0"/>
+            <toolset name="vacpp-8.0"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
@@ -4428,7 +4502,6 @@ for more information.
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
-            <test name="TransitionTest*"/>
             <test name="InvalidTransitionTest1Relaxed"/>
             <test name="StopWatchExample"/>
             <toolset name="vacpp-8.0"/>
@@ -4450,6 +4523,8 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="DllTest*"/>
+            <toolset name="intel-darwin-9.1"/>
+            <toolset name="intel-darwin-10.0"/>
             <toolset name="msvc-8.0~wm5~stlport5.1"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
