@@ -158,6 +158,16 @@
             Boost.System library on which Boost.Asio depends.
         </note>
       </mark-unusable>
+      <mark-expected-failures>
+        <test name="read_until"/>
+        <test name="read_until_select"/>
+        <toolset name="gcc-4.2.1_hpux_ia64"/>
+        <note author="Boris Gubenko">
+            On HP-UX 11.23 platform, these tests must be compiled with
+            _XOPEN_SOURCE_EXTENDED macro defined. It is likely related
+            to CR JAGag28813.
+        </note>
+        </mark-expected-failures>
     </library>
 
     <!-- assign -->
