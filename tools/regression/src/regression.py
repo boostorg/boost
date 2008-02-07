@@ -435,7 +435,7 @@ class runner:
                 b = os.path.basename( self.local )
                 tag = b[ 0: b.find( '.' ) ]
                 self.log( 'Tag: "%s"' % tag  )
-                self.unpack_tarball( local, self.boost_root )
+                self.unpack_tarball( self.local, self.boost_root )
                 
             elif self.have_source:
                 if not self.incremental: self.command_cleanup( [ 'bin' ] )
