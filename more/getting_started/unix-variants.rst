@@ -225,7 +225,7 @@ Spoil Rock Hunter?”
    packages, we'd be glad to help.  Please make your interest known
    to the `Boost developers' list`_.
 
-   .. _Boost developers' list: ../../more/mailing_lists.htm#main
+   .. _Boost developers' list: http://www.boost.org/more/mailing_lists.htm#main
 
 .. [#lowercase-l] That option is a dash followed by a lowercase “L”
    character, which looks very much like a numeral 1 in some fonts.
