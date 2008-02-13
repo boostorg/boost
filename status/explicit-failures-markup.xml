@@ -2047,8 +2047,11 @@
             <test name="stream_offset_64bit_test"/>
             <toolset name="borland-*"/>
             <note author="Jonathan Turkanis" date="04 Jan 2008">
-                The Borland runtime library defines fpos_t as a 32-bit long,
-                incapable of storing large offsets (see stdio.h)
+                In the Dinkumware standard library, streampos relies on fpos_t 
+                to store stream offsets, but fpos_t is defined as a 32-bit 
+                long by the Borland runtime library. In Borland's modified
+                version of STLPort, streampos relies on streamoff to store
+                stream offsets, but streamoff is defined to be a 32-bit long.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -2063,8 +2066,31 @@
             <test name="stream_offset_64bit_test"/>
             <toolset name="vacpp*"/>
             <note author="Jonathan Turkanis" date="09 Jan 2008">
-                This platform uses the Dinkumware fpos, but std::streamsize and
-                std::fpos_t are both 32-bit types.
+                On this platform, streampos is an alias for fpos, whose 
+                implementation stores stream offsets using streamsize and 
+                fpos_t; both of the latter types are 32-bit
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="intel-win-10.0_stdcxx_421"/>
+            <toolset name="msvc-7.1_stdcxx_421"/>
+            <toolset name="msvc-9.0_stdcxx_421"/>
+            <toolset name="intel-win-10.1_stdcxx_421"/>
+            <toolset name="intel-linux-10.1_stdcxx_421"/>
+            <toolset name="gcc-4.2.1_stdcxx_421"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008">
+                On this platform, streampos is an alias for ptrdiff_t, which
+                is an alias for a 32-bit type
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="gcc-4.2"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008">
+              The following applies only to gcc-4.2 using the stdcxx 
+              standard library: On this platform, streampos is an alias for 
+              ptrdiff_t, which is an alias for a 32-bit type
             </note>
         </mark-expected-failures>
     </library>
