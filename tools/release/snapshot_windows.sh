@@ -14,20 +14,27 @@ rm -r windows/bin.v2
 SNAPSHOT_DATE=`eval date +%Y-%m-%d`
 echo SNAPSHOT_DATE is $SNAPSHOT_DATE
 mv windows boost-windows-$SNAPSHOT_DATE
+
 rm -f windows.zip
 zip -r windows.zip boost-windows-$SNAPSHOT_DATE
+
+rm -f windows.7z
 7z a -r windows.7z boost-windows-$SNAPSHOT_DATE
+
 mv boost-windows-$SNAPSHOT_DATE windows
 
 # create the ftp script
 echo "dir" >windows.ftp
 echo "binary" >>windows.ftp
+
 echo "put windows.zip" >>windows.ftp
 echo "mdelete boost-windows*.zip" >>windows.ftp
 echo "rename windows.zip boost-windows-$SNAPSHOT_DATE.zip" >>windows.ftp
-echo "put windows.z7" >>windows.ftp
-echo "mdelete boost-windows*.z7" >>windows.ftp
-echo "rename windows.z7 boost-windows-$SNAPSHOT_DATE.z7" >>windows.ftp
+
+echo "put windows.7z" >>windows.ftp
+echo "mdelete boost-windows*.7z" >>windows.ftp
+echo "rename windows.z7 boost-windows-$SNAPSHOT_DATE.7z" >>windows.ftp
+
 echo "dir" >>windows.ftp
 echo "bye" >>windows.ftp
 # use cygwin ftp rather than windows ftp
