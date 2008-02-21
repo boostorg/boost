@@ -33,7 +33,7 @@ echo "rename windows.zip boost-windows-$SNAPSHOT_DATE.zip" >>windows.ftp
 
 echo "put windows.7z" >>windows.ftp
 echo "mdelete boost-windows*.7z" >>windows.ftp
-echo "rename windows.z7 boost-windows-$SNAPSHOT_DATE.7z" >>windows.ftp
+echo "rename windows.7z boost-windows-$SNAPSHOT_DATE.7z" >>windows.ftp
 
 echo "dir" >>windows.ftp
 echo "bye" >>windows.ftp
