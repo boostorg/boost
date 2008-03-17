@@ -605,7 +605,7 @@ Potentially broken platforms for Boost regression testing
         message += "Report time: " + self.date + """
 
 This report lists the high-priority platforms that are exhibiting a
-large number of regresson test failures, which might indicate a problem
+large number of regression test failures, which might indicate a problem
 with the test machines or testing harness.
 
 Detailed report:
