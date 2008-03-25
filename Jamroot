@@ -1,6 +1,6 @@
 # Copyright Vladimir Prus 2002-2006.
 # Copyright Dave Abrahams 2005-2006.
-# Copyright Rene Rivera 2005-2006.
+# Copyright Rene Rivera 2005-2007.
 # Copyright Douglas Gregor 2005.
 #
 # Distributed under the Boost Software License, Version 1.0.
@@ -39,7 +39,21 @@
 #
 # Other Options:
 #
-#   --builddir=DIR          Build in this location instead of building
+#   --build-type=<type>     Build the specified pre-defined set of variations
+#                           of the libraries. Note, that which variants get
+#                           built depends on what each library supports.
+#
+#                               minimal (default) - Builds the single
+#                               "release" version of the libraries. This
+#                               release corresponds to specifying:
+#                               "release <threading>multi <link>shared
+#                               <runtime-link>shared" as the Boost.Build
+#                               variant to build.
+#
+#                               complete - Attempts to build all possible
+#                               variations.
+#
+#   --build-dir=DIR         Build in this location instead of building
 #                           within the distribution tree. Recommended!
 #
 #   --toolset=toolset       Indicates the toolset to build with.
@@ -109,25 +123,38 @@ if $(version-tag[3]) = 0
 
 constant BOOST_VERSION_TAG : $(version-tag:J="_") ;
 
-local default-build ;
-if $(__file__:D) = ""
+# Option to choose how many variants to build. The default is "minimal",
+# which builds only the "release <threading>multi <link>shared" variant.
+local build-type = [ MATCH "^--build-type=(.*)" : [ modules.peek : ARGV ] ] ;
+build-type ?= minimal ;
+if ! ( $(build-type) in minimal complete )
 {
-    default-build =
-        debug release
-        <threading>single <threading>multi
-        <link>shared <link>static
-        ;
-    
-    if [ os.name ] = NT
-    {
-        default-build += <runtime-link>shared <runtime-link>static ;
-    }
+    build-type = minimal ;
 }
-else
+
+# Specify the build variants keyed on the build-type.
+local default-build,minimal =
+    release
+    <threading>multi
+    <link>shared
+    <runtime-link>shared
+    ;
+local default-build,complete =
+    debug release
+    <threading>single <threading>multi
+    <link>shared <link>static
+    <runtime-link>shared <runtime-link>static
+    ;
+
+# Set the default build.
+local default-build = $(default-build,$(build-type)) ;
+
+# We only use the default build when building at the root to
+# avoid having it impact the default regression testing of "debug".
+# TODO: Consider having a "testing" build type instead of this check.
+if $(__file__:D) != ""
 {
-    default-build =
-        debug
-        ;
+    default-build = debug ;
 }
 
 
@@ -293,8 +320,10 @@ rule tag ( name : type ? : property-set )
             # On OSX, version suffix is not needed -- the linker expets
             # libFoo.1.2.3.dylib format.
             # AIX linkers don't accept version suffixes either.
+            # Pgi compilers can't accept library with version suffix
             if $(type) = SHARED_LIB &&
-              ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix )
+              ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
+                ! ( [ $(property-set).get <toolset> ] in pgi ) )
             {
                 result = $(result).$(BOOST_VERSION)  ;
             }
