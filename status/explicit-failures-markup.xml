@@ -4148,6 +4148,21 @@ for more information.
             </note>
         </mark-unusable>
         <mark-expected-failures>
+          <test name="object"/>
+          <toolset name="intel-10.*"/>
+            <note author="David Abrahams">
+
+              This compiler has a bug that causes silent misbehavior at runtime
+              when each of an assignment expression follows one of the following patterns:
+              <em>expr</em><code>.attr(</code><em>name</em><code>)</code>
+              or <em>expr</em><code>[</code><em>item</em><code>]</code>,
+              where <em>expr</em>
+              is-a <code>boost::python::object</code>.  We've been
+              unable to find a workaround.
+
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="args"/>
             <test name="auto_ptr"/>
             <test name="builtin_convertors"/>
