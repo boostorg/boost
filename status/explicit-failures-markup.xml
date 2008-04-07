@@ -2556,11 +2556,10 @@ for more information.
     <!-- serialization -->
     <library name="serialization">
         <mark-unusable>
-            <toolset name="vacpp*" />
             <toolset name="mipspro*" />
             <toolset name="dmc*" />
             <toolset name="sunpro*" />
-            <note author="Robert Ramey" date="13 Jul 2004" refid="9,17,18"/>
+            <note author="Robert Ramey" date="13 Jul 2007" refid="9,17,18"/>
         </mark-unusable>
         <mark-unusable>
             <toolset name="gcc-2.95.3-linux"/>
@@ -2569,13 +2568,13 @@ for more information.
 
         <mark-expected-failures>
             <test name="*_warchive"/>
-            <test name="*_warchive_dll"/>
             <test name="test_codecvt_null"/>
             <test name="test_utf8_codecvt"/>
             <toolset name="mingw*"/>
             <toolset name="*mingw*"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="*como-4_3_3*"/>
             <note author="Robert Ramey,Roland Schwarz" date="16 Feb 07" refid="19"/>
         </mark-expected-failures>
 
@@ -2583,14 +2582,6 @@ for more information.
             <test name="test_void_cast*"/>
             <toolset name="msvc-6.5*"/>
             <note author="Robert Ramey" date="20 Sep 2004" refid="16,29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="*_warchive"/>
-            <test name="test_codecvt_null"/>
-            <test name="test_utf8_codecvt"/>
-            <toolset name="*como-4_3_3*"/>
-            <note author="Robert Ramey" date="12 Feb 05" refid="5"/>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -2611,29 +2602,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_demo"/>
-            <test name="test_demo_dll"/>
-            <test name="test_demo_exception"/>
-            <test name="test_demo_exception_dll"/>
-            <test name="test_demo_shared_ptr"/>
-            <test name="test_demo_shared_ptr_dll"/>
-            <test name="test_demo_xml_save"/>
-            <test name="test_demo_xml_load"/>
-            <test name="test_demo_xml_save_dll"/>
-            <test name="test_demo_xml_load_dll"/>
-            <toolset name="msvc-6.5*"/>
-            <toolset name="msvc-7.0"/>
-            <note author="Robert Ramey" refid="6"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_fast_archive"/>
-            <test name="test_demo_fast_archive_dll"/>
-            <toolset name="msvc-6.5*"/>
-            <note author="Robert Ramey" refid="6"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
             <test name="test_const"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
@@ -2642,10 +2610,8 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_demo_pimpl"/>
-            <test name="test_demo_pimpl_dll"/>
             <test name="test_diamond*"/>
             <test name="test_mult_archive_types"/>
-            <test name="test_mult_archive_types_dll"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
             <note author="Robert Ramey" refid="6">
@@ -2685,11 +2651,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_demo"/>
-            <test name="test_demo_dll"/>
-            <test name="test_demo_exception*"/>
-            <test name="test_demo_shared_ptr*"/>
-            <test name="test_demo_xml*"/>
             <test name="test_exported*"/>
             <test name="test_mi*"/>
             <test name="test_mult_archive_types*"/>
@@ -2716,24 +2677,6 @@ for more information.
             <test name="test_smart_cast"/>
             <toolset name="intel-7.1-linux"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="*_dll"/>
-            <toolset name="cw*"/>
-            <note author="Doug Gregor" refid="35"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_fast_archive"/>
-            <toolset name="cw-8*"/>
-            <note author="Rene Rivera">
-                This is caused by a compiler bug in this particular version, but not present
-                in version thereafter. The compiler has some difficulties resolving operators
-                to methods in the archive classes. This can be worked around by calling the
-                operator directly, and such a work around is already present in library code.
-                This test demonstrates that this can happen in user code.
-            </note>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -2764,36 +2707,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_const_load_fail1"/>
-            <test name="test_const_load_fail1_nvp"/>
-            <test name="test_const_load_fail2"/>
-            <test name="test_const_load_fail2_nvp"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="borland-5.8*"/>
-            <toolset name="borland-5.9*"/>
-            <note author="Doug Gregor" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_const_save_fail1"/>
-            <test name="test_const_save_fail2"/>
-            <test name="test_const_save_fail3"/>
-            <toolset name="msvc-6.5"/>
-            <toolset name="msvc-6.5_stlport4"/>
-            <toolset name="msvc-7.0"/>
-            <note author="Doug Gregor" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_map_binary_archive_dll"/>
-            <test name="test_map_text_archive_dll"/>
-            <test name="test_map_text_warchive_dll"/>
-            <toolset name="msvc-6.5"/>
-            <toolset name="msvc-7.0"/>
-            <note author="Doug Gregor" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
             <test name="test_variant_*"/>
             <toolset name="hp_cxx-65*"/>
             <note author="Markus Schoepflin">
@@ -2804,7 +2717,6 @@ for more information.
 
         <mark-expected-failures>
             <test name="*_warchive"/>
-            <test name="*_warchive_dll"/>
             <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
@@ -2817,29 +2729,6 @@ for more information.
                 The compiler fails with an error supposedly related to std::fpos&lt;&gt;::_Stz from the
         &lt;iosfwd&gt; header. It is not known what causes the compiler to instantiate this
         field and what causes the instantiation to fail.
-            </note>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_shared_ptr_dll"/>
-            <toolset name="qcc-3.3.5_gpp"/>
-            <note author="J. L&#195;&#179;pez" date="21 Dec 2006">
-              This failure is caused by an unresearched compiler bug; the
-              conditions under which the bug manifests itself seem to be
-              uncommon, however, and the static version of this same test
-              builds and runs correctly.
-            </note>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_portable_archive"/>
-            <test name="test_demo_portable_archive_dll"/>
-            <toolset name="acc*"/>
-            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
-            <toolset name="gcc-4.2.1_hpux_ia64"/>
-            <note author="Boris Gubenko">
-              This failure is caused by serialization library bug in the
-              code visible only on big endian platforms.
             </note>
         </mark-expected-failures>
 
