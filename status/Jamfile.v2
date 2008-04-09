@@ -111,9 +111,17 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
                 : #args
                 : #input-files
                 : #requirements
-                <threading>multi #!!!<no-warn>config_test.cpp
+                <threading>multi
+                : config_test_threaded
           ]
-           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output ]
+          [ run libs/config/test/config_test.cpp test_exec_monitor
+                : #args
+                : #input-files
+                : #requirements
+                <threading>single <toolset>msvc:<runtime-link>static <toolset>msvc:<link>static 
+          ]
+           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output <threading>single <toolset>msvc:<runtime-link>static <toolset>msvc:<link>static ]
+           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output <threading>multi : config_info_threaded ]
            [ run libs/config/test/math_info.cpp : : : <test-info>always_show_run_output <toolset>borland:<runtime-link>static <toolset>borland:<link>static ]
            [ run libs/config/test/abi/abi_test.cpp libs/config/test/abi/main.cpp ]
            [ run libs/config/test/limits_test.cpp test_exec_monitor ]
@@ -185,6 +193,10 @@ build-project ../libs/xpressive/test ;         # test-suite xpressive
           [ run libs/tokenizer/simple_example_4.cpp ]
           [ run libs/tokenizer/simple_example_5.cpp ]
         ;
+
+
+
+
 
 
 
