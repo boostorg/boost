@@ -32,6 +32,7 @@ build-project ../libs/bimap/test ;             # test-suite bimap
 build-project ../libs/bind/test ;              # test-suite bind
 build-project ../libs/circular_buffer/test ;   # test-suite circular_buffer
 build-project ../libs/concept_check ;          # test-suite concept_check
+build-project ../libs/config/test ;            # test-suite config
 build-project ../libs/conversion/test ;        # test-suite conversion
 build-project ../libs/crc/test ;               # test-suite crc
 build-project ../libs/date_time/test  ;        # test-suite date_time
@@ -103,50 +104,3 @@ build-project ../libs/variant/test ;           # test-suite variant
 build-project ../libs/wave/test/build ;        # test-suite wave
 build-project ../libs/xpressive/test ;         # test-suite xpressive
 
-# Tests specified in this Jamfile
-
-alias test_exec_monitor : ../libs/test/build//boost_test_exec_monitor/<link>static ;
-explicit test_exec_monitor ;
-alias unit_test_framework : ../libs/test/build//boost_unit_test_framework/<link>static ;
-explicit unit_test_framework ;
-
-    test-suite config
-        :
-          # FIXME: Ideally, this should be just an alias to 'main' test suite
-          # defined in libs/config/test/Jamfile.v2
-          # That way, we'll avoid code duplication and won't run additional
-          # tests in 'auxilliary' test suites, that need to be run and
-          # interpreted by humans.
-          # But such change will require tweaking libs/config/tools/generate.cpp
-          # so postponing to later.
-          [ run libs/config/test/config_test.cpp 
-                : #args
-                : #input-files
-                : #requirements
-                <threading>multi
-                : config_test_threaded
-          ]
-          [ run libs/config/test/config_test.cpp 
-                : #args
-                : #input-files
-                : #requirements
-                <threading>single <toolset>msvc:<runtime-link>static <toolset>msvc:<link>static 
-          ]
-           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output <threading>single <toolset>msvc:<runtime-link>static <toolset>msvc:<link>static ]
-           [ run libs/config/test/config_info.cpp : : : <test-info>always_show_run_output <threading>multi : config_info_threaded ]
-           [ run libs/config/test/math_info.cpp : : : <test-info>always_show_run_output <toolset>borland:<runtime-link>static <toolset>borland:<link>static ]
-           [ run libs/config/test/abi/abi_test.cpp libs/config/test/abi/main.cpp ]
-           [ run libs/config/test/limits_test.cpp test_exec_monitor ]
-           [ run libs/config/test/link/main.cpp ../libs/config/test/link//link_test
-                : #args
-                : #input-files
-                : #requirements
-                <runtime-link>shared
-                <define>BOOST_DYN_LINK=1
-                <define>BOOST_CONFIG_NO_LIB=1
-                :
-                config_link_test
-          ]
-          [ compile-fail libs/config/test/threads/test_thread_fail1.cpp ]
-          [ compile-fail libs/config/test/threads/test_thread_fail2.cpp ]
-        ;
