@@ -244,15 +244,15 @@ fi
 
 # Setup paths
 if test "x$EPREFIX" = x; then
-  EPREFIX=$PREFIX
+  EPREFIX="\$(prefix)"
 fi
 
 if test "x$LIBDIR" = x; then
-  LIBDIR="$EPREFIX/lib"
+  LIBDIR="\$(exec_prefix)/lib"
 fi
 
 if test "x$INCLUDEDIR" = x; then
-  INCLUDEDIR="$PREFIX/include"
+  INCLUDEDIR="\$(prefix)/include"
 fi
 
 # Find Python
@@ -339,10 +339,10 @@ echo "Generating Makefile..."
 cat > Makefile <<EOF
 BJAM=$BJAM
 BJAM_CONFIG=$BJAM_CONFIG
-PREFIX=$PREFIX
-EPREFIX=$EPREFIX
-LIBDIR=$LIBDIR
-INCLUDEDIR=$INCLUDEDIR
+prefix=$PREFIX
+exec_prefix=$EPREFIX
+libdir=$LIBDIR
+includedir=$INCLUDEDIR
 LIBS=$LIBS
 
 all: .dummy
@@ -360,8 +360,8 @@ check: .dummy
 	@cd status && ../\$(BJAM) \$(BJAM_CONFIG) --user-config=../user-config.jam || echo "Some Boost regression tests failed. This is normal for many compilers."
 
 install: .dummy
-	@echo "\$(BJAM) \$(BJAM_CONFIG) --user-config=user-config.jam --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) \$(LIBS) install"
-	@\$(BJAM) \$(BJAM_CONFIG) --user-config=user-config.jam --prefix=\$(PREFIX) --exec-prefix=\$(EPREFIX) --libdir=\$(LIBDIR) --includedir=\$(INCLUDEDIR) \$(LIBS) install || echo "Not all Boost libraries built properly."
+	@echo "\$(BJAM) \$(BJAM_CONFIG) --user-config=user-config.jam --prefix=\$(prefix) --exec-prefix=\$(exec_prefix) --libdir=\$(libdir) --includedir=\$(includedir) \$(LIBS) install"
+	@\$(BJAM) \$(BJAM_CONFIG) --user-config=user-config.jam --prefix=\$(prefix) --exec-prefix=\$(exec_prefix) --libdir=\$(libdir) --includedir=\$(includedir) \$(LIBS) install || echo "Not all Boost libraries built properly."
 
 .dummy:
 
