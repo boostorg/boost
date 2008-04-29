@@ -185,7 +185,28 @@ my_dir="."
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" = x; then
-  TOOLSET=`$my_dir/tools/jam/src/build.sh --guess-toolset`
+  guessed_toolset=`$my_dir/tools/jam/src/build.sh --guess-toolset`
+  case $guessed_toolset in
+    acc | darwin | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
+    TOOLSET=$guessed_toolset
+    ;;
+    
+    intel-* )
+    TOOLSET=intel
+    ;;
+    
+    mingw )
+    TOOLSET=gcc
+    ;;
+    
+    sun* )
+    TOOLSET=sun
+    ;;
+    
+    * )
+    # Not supported by Boost.Build
+    ;;
+  esac
 fi
 
 rm -f config.log
