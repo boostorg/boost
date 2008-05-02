@@ -13,7 +13,7 @@ import os.path
 #~ Process a bjam XML log into the XML log format for Boost result processing.
 class BJamLog2Results:
 
-    def __init__(self):
+    def __init__(self,args=None):
         opt = optparse.OptionParser(
             usage="%prog [options] input")
         opt.add_option( '--output',
@@ -39,7 +39,7 @@ class BJamLog2Results:
         self.source='SVN'
         self.revision=None
         self.input = []
-        ( _opt_, self.input ) = opt.parse_args(None,self)
+        ( _opt_, self.input ) = opt.parse_args(args,self)
         self.results = xml.dom.minidom.parseString('''<?xml version="1.0" encoding="UTF-8"?>
 <test-run
   source="%(source)s"
@@ -61,7 +61,6 @@ class BJamLog2Results:
         
         self.test = {}
         self.target = {}
-        self.child = {}
         self.parent = {}
         self.log = {}
         
@@ -166,18 +165,20 @@ class BJamLog2Results:
         target_node = self.get_child(self.get_child(node,tag='targets'),tag='target')
         while target_node:
             name = self.get_child_data(target_node,tag='name').strip()
+            path = self.get_child_data(target_node,tag='path').strip()
+            jam_target = self.get_child_data(target_node,tag='jam-target').strip()
             #~ Map for jam targets to virtual targets.
-            self.target[self.get_child_data(target_node,tag='jam-target').strip()] = {
+            self.target[jam_target] = {
                 'name' : name,
-                'path' : self.get_child_data(target_node,tag='path').strip()
+                'path' : path
                 }
-            #~ Create the bidirectional ancestry.
-            self.child[name] = []
+            #~ Create the ancestry.
             dep_node = self.get_child(self.get_child(target_node,tag='dependencies'),tag='dependency')
             while dep_node:
                 child = self.get_data(dep_node).strip()
-                self.child[name].append(child)
-                self.parent[child] = name
+                child_jam_target = '<p%s>%s' % (path,child.split('//',1)[1])
+                self.parent[child_jam_target] = jam_target
+                #~ print "--- %s\n  ^ %s" %(jam_target,child_jam_target)
                 dep_node = self.get_sibling(dep_node.nextSibling,tag='dependency')
             target_node = self.get_sibling(target_node.nextSibling,tag='target')
         return None
@@ -200,33 +201,53 @@ class BJamLog2Results:
                     action_type = 'link'
                 elif re.match('[^%]+%testing[.](capture-output)',name):
                     action_type = 'run'
+                elif re.match('[^%]+%testing[.](expect-failure|expect-success)',name):
+                    action_type = 'result'
+                #~ print "+   [%s] %s %s :: %s" %(action_type,name,'','')
                 if action_type:
                     #~ Get the corresponding test.
                     (target,test) = self.get_test(action_node,type=action_type)
                     #~ And the log node, which we will add the results to.
                     log = self.get_log(action_node,test)
-                    #~ print "--- [%s] %s %s :: %s" %(action_type,name,target,log)
+                    #~ print "--- [%s] %s %s :: %s" %(action_type,name,target,test)
                     #~ Collect some basic info about the action.
                     result_data = "%(info)s\n\n%(command)s\n%(output)s\n" % {
                         'command' : self.get_action_command(action_node,action_type),
                         'output' : self.get_action_output(action_node,action_type),
                         'info' : self.get_action_info(action_node,action_type)
                         }
+                    #~ For the test result status we find the appropriate node
+                    #~ based on the type of test. Then adjust the result status
+                    #~ acorrdingly. This makes the result status reflect the
+                    #~ expectation as the result pages post processing does not
+                    #~ account for this inversion.
+                    action_tag = action_type
+                    if action_type == 'result':
+                        if re.match(r'^compile',test['test-type']):
+                            action_tag = 'compile'
+                        elif re.match(r'^link',test['test-type']):
+                            action_tag = 'link'
+                        elif re.match(r'^run',test['test-type']):
+                            action_tag = 'run'
                     #~ The result sub-part we will add this result to.
-                    result_node = self.get_child(log,tag=action_type)
+                    result_node = self.get_child(log,tag=action_tag)
                     if not result_node:
                         #~ If we don't have one already, create it and add the result.
-                        result_node = self.new_text(action_type,result_data,
+                        result_node = self.new_text(action_tag,result_data,
                             result='succeed' if action_node.getAttribute('status') == '0' else 'fail',
                             timestamp=action_node.getAttribute('start'))
                         log.appendChild(self.results.createTextNode("\n"))
                         log.appendChild(result_node)
                     else:
                         #~ For an existing result node we set the status to fail
-                        #~ when any of the individual actions fail.
-                        result = result_node.getAttribute('result')
-                        if action_node.getAttribute('status') != '0':
-                            result = 'fail'
+                        #~ when any of the individual actions fail, except for result
+                        #~ status.
+                        if action_type != 'result':
+                            result = result_node.getAttribute('result')
+                            if action_node.getAttribute('status') != '0':
+                                result = 'fail'
+                        else:
+                            result = 'succeed' if action_node.getAttribute('status') == '0' else 'fail'
                         result_node.setAttribute('result',result)
                         result_node.appendChild(self.results.createTextNode("\n"))
                         result_node.appendChild(self.results.createTextNode(result_data))
@@ -267,35 +288,34 @@ class BJamLog2Results:
     #~ are the ones pre-declared in the --dump-test option. For libraries
     #~ we create a dummy test as needed.
     def get_test( self, node, type = None ):
-        base = self.target[self.get_child_data(node,tag='jam-target')]['name']
+        target = self.get_child_data(node,tag='jam-target')
+        base = self.target[target]['name']
+        while target in self.parent:
+            target = self.parent[target]
         #~ main-target-type is a precise indicator of what the build target is
         #~ proginally meant to be.
         main_type = self.get_child_data(self.get_child(node,tag='properties'),
             name='main-target-type',strip=True)
-        target = base
         if main_type == 'LIB' and type:
-            if type == 'compile':
-                target = self.parent[target]
-            if not target in self.test:
-                self.test[target] = {
-                    'library' : re.search(r'libs/([^/]+)',target).group(1),
-                    'test-name' : os.path.basename(target),
+            lib = self.target[target]['name']
+            if not lib in self.test:
+                self.test[lib] = {
+                    'library' : re.search(r'libs/([^/]+)',lib).group(1),
+                    'test-name' : os.path.basename(lib),
                     'test-type' : 'lib',
-                    'test-program' : os.path.basename(target),
-                    'target' : target
+                    'test-program' : os.path.basename(lib),
+                    'target' : lib
                     }
-            test = self.test[target]
+            test = self.test[lib]
         else:
-            while target in self.parent:
-                target = self.parent[target]
-            test = self.test[self.target[target]]
+            test = self.test[self.target[self.target[target]['name']]]
         return (base,test)
     
     #~ Find, or create, the test-log node to add results to.
     def get_log( self, node, test ):
         target_directory = os.path.dirname(self.get_child_data(
             node,tag='path',strip=True))
-        target_directory = re.sub(r'[.][.][/\\]','',target_directory)
+        target_directory = re.sub(r'.*[/\\]bin[.]v2[/\\]','',target_directory)
         target_directory = re.sub(r'[\\]','/',target_directory)
         if not target_directory in self.log:
             self.log[target_directory] = self.new_node('test-log',
@@ -380,4 +400,4 @@ class BJamLog2Results:
         return result
 
 
-BJamLog2Results()
+if __name__ == '__main__': BJamLog2Results()
