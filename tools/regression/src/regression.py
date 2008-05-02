@@ -140,7 +140,10 @@ class runner:
         self.regression_root = root
         self.boost_root = os.path.join( self.regression_root, 'boost' )
         self.regression_results = os.path.join( self.regression_root, 'results' )
-        self.regression_log = os.path.join( self.regression_results, 'bjam.log' )
+        if self.pjl_toolset != 'python':
+            self.regression_log = os.path.join( self.regression_results, 'bjam.log' )
+        else:
+            self.regression_log = os.path.join( self.regression_results, 'bjam.xml' )
         self.tools_bb_root = os.path.join( self.regression_root,'tools_bb' )
         self.tools_bjam_root = os.path.join( self.regression_root,'tools_bjam' )
         self.tools_regression_root = os.path.join( self.regression_root,'tools_regression' )
@@ -289,7 +292,8 @@ class runner:
     def command_setup(self):
         self.command_patch()
         self.build_if_needed(self.bjam,self.bjam_toolset)
-        self.build_if_needed(self.process_jam_log,self.pjl_toolset)
+        if self.pjl_toolset != 'python':
+            self.build_if_needed(self.process_jam_log,self.pjl_toolset)
     
     def command_test(self, *args):
         if not args or args == None or args == []: args = [ "test", "process" ]
@@ -308,7 +312,8 @@ class runner:
             self.command_test_run()
 
         if "process" in args:
-            self.command_test_process()
+            if self.pjl_toolset != 'python':
+                self.command_test_process()
     
     def command_test_clean(self):
         results_libs = os.path.join( self.regression_results, 'libs' )
@@ -318,11 +323,18 @@ class runner:
     
     def command_test_run(self):
         self.import_utils()
-        test_cmd = '%s -d2 --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
-            self.bjam_cmd( self.toolsets ),
-            self.bjam_options,
-            self.regression_results,
-            self.regression_log )
+        if self.pjl_toolset != 'python':
+            test_cmd = '%s -d2 --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
+                self.bjam_cmd( self.toolsets ),
+                self.bjam_options,
+                self.regression_results,
+                self.regression_log )
+        else:
+            test_cmd = '%s -d1 --dump-tests --verbose-test %s "--build-dir=%s" "--out-xml=%s"' % (
+                self.bjam_cmd( self.toolsets ),
+                self.bjam_options,
+                self.regression_results,
+                self.regression_log )
         self.log( 'Starting tests (%s)...' % test_cmd )
         cd = os.getcwd()
         os.chdir( os.path.join( self.boost_root, 'status' ) )
@@ -362,7 +374,7 @@ class runner:
         svn_info_file = os.path.join( self.boost_root, 'svn_info.txt' )
         if os.path.exists( svn_root_file ):
             source = 'SVN'
-            self.svn_command( 'info --xml "%s" >%s' % (self.boost_root,svn_info_file) )
+            self.svn_command( 'info --xml "%s" >"%s"' % (self.boost_root,svn_info_file) )
 
         if os.path.exists( svn_info_file ):
             f = open( svn_info_file, 'r' )
@@ -376,15 +388,33 @@ class runner:
                   revision += svn_info[i]
                   i += 1
 
-        from collect_and_upload_logs import collect_logs
-        collect_logs(
-            self.regression_results,
-            self.runner, self.tag, self.platform, comment_path,
-            self.timestamp_path,
-            self.user,
-            source, run_type,
-            self.dart_server, self.proxy,
-            revision )
+        if self.pjl_toolset != 'python':
+            from collect_and_upload_logs import collect_logs
+            collect_logs(
+                self.regression_results,
+                self.runner, self.tag, self.platform, comment_path,
+                self.timestamp_path,
+                self.user,
+                source, run_type,
+                self.dart_server, self.proxy,
+                revision )
+        else:
+            from process_jam_log import BJamLog2Results
+            BJamLog2Results([
+                '--output='+os.path.join(self.regression_results,self.runner+'.xml'),
+                '--runner='+self.runner,
+                '--comment='+comment_path,
+                '--tag='+self.tag,
+                '--platform='+self.platform,
+                '--source='+source,
+                '--revision='+revision,
+                '--incremental' if run_type == 'incremental' else '',
+                self.regression_log
+                ])
+            self.compress_file(
+                os.path.join(self.regression_results,self.runner+'.xml'),
+                os.path.join(self.regression_results,self.runner+'.zip')
+                )
         
     def command_upload_logs(self):
         self.import_utils()
@@ -672,6 +702,33 @@ class runner:
 
         smtp_server.sendmail( self.mail, [ self.mail ],
             'Subject: %s\nTo: %s\n\n%s' % ( subject, self.mail, msg ) )
+
+    def compress_file( self, file_path, archive_path ):
+        self.import_utils()
+        utils.log( 'Compressing "%s"...' % file_path )
+
+        try:
+            import zipfile
+            z = zipfile.ZipFile( archive_path, 'w', zipfile.ZIP_DEFLATED )
+            z.write( file_path, os.path.basename( file_path ) )
+            z.close()
+            utils.log( 'Done writing "%s".'% archive_path )
+        except Exception, msg:
+            utils.log( 'Warning: Compressing falied (%s)' % msg )
+            utils.log( '         Trying to compress using a platform-specific tool...' )
+            try:
+                import zip_cmd
+            except ImportError:
+                script_dir = os.path.dirname( os.path.abspath( sys.argv[0] ) )
+                utils.log( 'Could not find \'zip_cmd\' module in the script directory (%s).' % script_dir )
+                raise Exception( 'Compressing failed!' )
+            else:
+                if os.path.exists( archive_path ):
+                    os.unlink( archive_path )
+                    utils.log( 'Removing stale "%s".' % archive_path )
+                    
+                zip_cmd.main( file_path, archive_path )
+                utils.log( 'Done compressing "%s".' % archive_path )
 
     #~ Dowloading source, from SVN...
 
