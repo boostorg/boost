@@ -60,6 +60,7 @@ class BJamLog2Results:
             } )
         
         self.test = {}
+        self.target_to_test = {}
         self.target = {}
         self.parent = {}
         self.log = {}
@@ -146,15 +147,16 @@ class BJamLog2Results:
         while test_node:
             test_name = test_node.getAttribute('name')
             self.test[test_name] = {
-                'library' : test_name.split('/',1)[0],
-                'test-name' : test_name.split('/',1)[1],
+                'library' : '/'.join(test_name.split('/')[0:-1]),
+                'test-name' : test_name.split('/')[-1],
                 'test-type' : test_node.getAttribute('type').lower(),
                 'test-program' : self.get_child_data(test_node,tag='source').strip(),
                 'target' : self.get_child_data(test_node,tag='target').strip(),
                 'info' : self.get_child_data(test_node,tag='info',strip=True)
                 }
             #~ Add a lookup for the test given the test target.
-            self.target[self.test[test_name]['target']] = test_name
+            self.target_to_test[self.test[test_name]['target']] = test_name
+            #~ print "--- %s\n => %s" %(self.test[test_name]['target'],test_name)
             test_node = self.get_sibling(test_node.nextSibling,tag='test')
         return None
     
@@ -288,10 +290,12 @@ class BJamLog2Results:
     #~ are the ones pre-declared in the --dump-test option. For libraries
     #~ we create a dummy test as needed.
     def get_test( self, node, type = None ):
-        target = self.get_child_data(node,tag='jam-target')
-        base = self.target[target]['name']
+        jam_target = self.get_child_data(node,tag='jam-target')
+        base = self.target[jam_target]['name']
+        target = jam_target
         while target in self.parent:
             target = self.parent[target]
+        #~ print "--- TEST: %s ==> %s" %(jam_target,target)
         #~ main-target-type is a precise indicator of what the build target is
         #~ proginally meant to be.
         main_type = self.get_child_data(self.get_child(node,tag='properties'),
@@ -308,7 +312,7 @@ class BJamLog2Results:
                     }
             test = self.test[lib]
         else:
-            test = self.test[self.target[self.target[target]['name']]]
+            test = self.test[self.target_to_test[self.target[target]['name']]]
         return (base,test)
     
     #~ Find, or create, the test-log node to add results to.
