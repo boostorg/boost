@@ -363,11 +363,6 @@ class runner:
             f.write( '<p>Tests are run on %s platform.</p>' % self.platform_name() )
             f.close()
 
-        if self.incremental:
-            run_type = 'incremental'
-        else:
-            run_type = 'full'
-
         source = 'tarball'
         revision = ''
         svn_root_file = os.path.join( self.boost_root, '.svn' )
@@ -390,6 +385,10 @@ class runner:
 
         if self.pjl_toolset != 'python':
             from collect_and_upload_logs import collect_logs
+            if self.incremental:
+                run_type = 'incremental'
+            else:
+                run_type = 'full'
             collect_logs(
                 self.regression_results,
                 self.runner, self.tag, self.platform, comment_path,
@@ -400,6 +399,10 @@ class runner:
                 revision )
         else:
             from process_jam_log import BJamLog2Results
+            if self.incremental:
+                run_type = '--incremental'
+            else:
+                run_type = ''
             BJamLog2Results([
                 '--output='+os.path.join(self.regression_results,self.runner+'.xml'),
                 '--runner='+self.runner,
@@ -408,7 +411,7 @@ class runner:
                 '--platform='+self.platform,
                 '--source='+source,
                 '--revision='+revision,
-                '--incremental' if run_type == 'incremental' else '',
+                run_type,
                 self.regression_log
                 ])
             self.compress_file(
