@@ -76,7 +76,10 @@ class BJamLog2Results:
         #~ print self.target
     
     def add_log(self):
-        bjam_log = xml.dom.minidom.parse(self.input[0])
+        if self.input[0]:
+            bjam_log = xml.dom.minidom.parse(self.input[0])
+        else:
+            bjam_log = xml.dom.minidom.parse(self.input[1])
         self.x(bjam_log.documentElement)
     
     def gen_output(self):
