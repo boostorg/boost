@@ -414,14 +414,14 @@ if $(layout-versioned)
             }
         }
         
-        # Create hardlinks without version.
+        # Create links without version.
         for local s in $(filtered)
         {
             local name = [ $(s).name ] ;
             local ea = [ $(s).action ] ;
             local ep = [ $(ea).properties ] ;
             local a  = [
-              new non-scanning-action $(s) : common.hard-link : $(ep) ] ;
+              new non-scanning-action $(s) : symlink.ln : $(ep) ] ;
             
             local noversion-file ;
             if $(nt)
