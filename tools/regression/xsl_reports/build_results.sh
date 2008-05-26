@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#~ Copyright Redshift Software, Inc. 2007
+#~ Copyright Redshift Software, Inc. 2007-2008
 #~ Distributed under the Boost Software License, Version 1.0.
 #~ (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
@@ -8,9 +8,9 @@ set -e
 
 build_all()
 {
-    update_tools ${1}
-    build_results ${1}
-    upload_results ${1}
+    update_tools ${1} ${2}
+    build_results ${1} ${2}
+    upload_results ${1} ${2}
 }
 
 update_tools()
@@ -93,8 +93,25 @@ build_results()
     root=`pwd`
     boost=${cwd}/boost
     case ${1} in
-        trunk) tag=trunk ;;
-        release) tag=branches/release ;;
+        trunk)
+        tag=trunk
+        reports="dd,ds,i,n"
+        ;;
+        
+        release)
+        tag=branches/release
+        reports="dd,ds,i,n"
+        ;;
+        
+        release)
+        tag=branches/release
+        reports="dd,ds,i,n"
+        ;;
+        
+        release-1_35_0)
+        tag=tags/release/Boost_1_35_0
+        reports="dd,ud,ds,us,ddr,udr,dsr,usr,i,n,e"
+        ;;
     esac
     report_info
     python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
@@ -104,20 +121,25 @@ build_results()
         --failures-markup="${boost}/status/explicit-failures-markup.xml" \
         --comment="comment.html" \
         --user="" \
-        --reports="i,dd,ds,n"
+        --reports=${reports}
     cd "${cwd}"
 }
 
 upload_results()
 {
     cwd=`pwd`
+    upload_dir=/home/grafik/www.boost.org/testing
+    
     cd ${1}/all
     rm -f ../../${1}.zip*
-    zip -r -9 ../../${1} * -x '*.xml'
+    zip -q -r -9 ../../${1} * -x '*.xml'
     cd "${cwd}"
-    bzip2 -9 ${1}.zip
-    scp ${1}.zip.bz2 grafik@beta.boost.org:/home/grafik/www.boost.org/testing/incoming/
-    ssh grafik@beta.boost.org bunzip2 /home/grafik/www.boost.org/testing/incoming/${1}.zip.bz2
+    mv ${1}.zip ${1}.zip.uploading
+    rsync -vuzhh --rsh=ssh --stats \
+      ${1}.zip.uploading grafik@beta.boost.org:/${upload_dir}/incoming/
+    ssh grafik@beta.boost.org \
+      cp ${upload_dir}/incoming/${1}.zip.uploading ${upload_dir}/live/${1}.zip
+    mv ${1}.zip.uploading ${1}.zip
 }
 
-build_all ${1}
+build_all ${1} ${2}
