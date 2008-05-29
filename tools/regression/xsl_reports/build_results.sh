@@ -132,7 +132,8 @@ upload_results()
     
     cd ${1}/all
     rm -f ../../${1}.zip*
-    zip -q -r -9 ../../${1} * -x '*.xml'
+    #~ zip -q -r -9 ../../${1} * -x '*.xml'
+    7za a -tzip -mx=9 ../../${1}.zip * '-x!*.xml'
     cd "${cwd}"
     mv ${1}.zip ${1}.zip.uploading
     rsync -vuzhh --rsh=ssh --stats \
