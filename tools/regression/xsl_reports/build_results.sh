@@ -103,11 +103,6 @@ build_results()
         reports="dd,ds,i,n"
         ;;
         
-        release)
-        tag=branches/release
-        reports="dd,ds,i,n"
-        ;;
-        
         release-1_35_0)
         tag=tags/release/Boost_1_35_0
         reports="dd,ud,ds,us,ddr,udr,dsr,usr,i,n,e"
