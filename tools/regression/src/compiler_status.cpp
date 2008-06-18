@@ -19,8 +19,11 @@
 
 *******************************************************************************/
 
+#include <boost/config/warning_disable.hpp>
+
 #include "boost/config.hpp"
 #include "boost/filesystem/operations.hpp"
+#include "boost/filesystem/convenience.hpp"
 #include "boost/filesystem/fstream.hpp"
 #include "detail/tiny_xml.hpp"
 namespace fs = boost::filesystem;
@@ -90,10 +93,10 @@ namespace
   std::vector<int> error_count;
 
   // prefix for library and test hyperlink prefix
-  string cvs_root ( "http://boost.cvs.sourceforge.net/" );
-  string url_prefix_dir_view( cvs_root + "boost/boost" );
-  string url_prefix_checkout_view( cvs_root + "*checkout*/boost/boost" );
-  string url_suffix_text_view( "?view=markup&rev=HEAD" );
+  string svn_root ( "http://svn.boost.org/trac/boost/browser/trunk/" );
+  string url_prefix_dir_view( svn_root );
+  string url_prefix_checkout_view( svn_root );
+  string url_suffix_text_view( "" );
 
 //  get revision number (as a string) if boost_root is svn working copy  -----//
 
@@ -349,7 +352,14 @@ const fs::path find_bin_path(const string& relative)
   fs::path bin_path;
   if (boost_build_v2)
   {
-    bin_path = locate_root / "bin.v2" / relative;
+    if ( relative == "status" )
+      bin_path = locate_root / "bin.v2" / "libs";
+    else
+    {
+      bin_path = locate_root / "bin.v2" / relative;
+      if (!fs::exists(bin_path))
+        bin_path = locate_root / "bin" / relative;
+    }
     if (!fs::exists(bin_path))
     {
       std::cerr << "warning: could not find build results for '" 
@@ -732,6 +742,32 @@ const fs::path find_bin_path(const string& relative)
     }
   }
 
+//  find_compilers  ------------------------------------------------------------//
+
+  void find_compilers(const fs::path & bin_dir)
+  {
+    fs::directory_iterator compiler_itr( bin_dir );
+    if ( specific_compiler.empty() )
+      std::clog << "Using " << bin_dir.string() << " to determine compilers\n";
+    for (; compiler_itr != end_itr; ++compiler_itr )
+    {
+      if ( fs::is_directory( *compiler_itr )  // check just to be sure
+        && compiler_itr->leaf() != "test" ) // avoid strange directory (Jamfile bug?)
+      {
+        if ( specific_compiler.size() != 0
+          && specific_compiler != compiler_itr->leaf() ) continue;
+        toolsets.push_back( compiler_itr->leaf() );
+        string desc( compiler_desc( compiler_itr->leaf() ) );
+        string vers( version_desc( compiler_itr->leaf() ) );
+        report << "<td>"
+             << (desc.size() ? desc : compiler_itr->leaf())
+             << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
+             << "</td>\n";
+        error_count.push_back( 0 );
+      }
+    }
+  }
+
 //  do_table_body  -----------------------------------------------------------//
 
   void do_table_body( const fs::path & bin_dir )
@@ -746,29 +782,55 @@ const fs::path find_bin_path(const string& relative)
     jamfile.clear();
     jamfile.seekg(0);
     string line;
+    bool run_tests = false;
+
     while( std::getline( jamfile, line ) )
     {
       bool v2(false);
-      string::size_type pos( line.find( "subinclude" ) );
-      if ( pos == string::npos ) {
-        pos = line.find( "build-project" );
+      string::size_type sub_pos( line.find( "subinclude" ) );
+      if ( sub_pos == string::npos ) {
+        sub_pos = line.find( "build-project" );
         v2 = true;
       }
-      if ( pos != string::npos
-        && line.find( '#' ) > pos )
+      if ( sub_pos != string::npos
+        && line.find( '#' ) > sub_pos )
       {
         if (v2)
-          pos = line.find_first_not_of( " \t./", pos+13 );
+          sub_pos = line.find_first_not_of( " \t./", sub_pos+13 );
         else
-          pos = line.find_first_not_of( " \t./", pos+10 );
+          sub_pos = line.find_first_not_of( " \t./", sub_pos+10 );
       
-        if ( pos == string::npos ) continue;
+        if ( sub_pos == string::npos ) continue;
         string subinclude_bin_dir(
-          line.substr( pos, line.find_first_of( " \t", pos )-pos ) );
+          line.substr( sub_pos, line.find_first_of( " \t", sub_pos )-sub_pos ) );
 
         fs::path bin_path = find_bin_path(subinclude_bin_dir);
         if (!bin_path.empty())
           do_rows_for_sub_tree( bin_path, results );
+      }
+      if ( ! run_tests )
+      {
+        string::size_type run_pos = line.find("run-tests");
+        if ( run_pos != string::npos && line.find_first_not_of(" \t") == run_pos )
+          run_tests = true;
+      }
+      else
+      {
+        if ( line.find(";") != string::npos )
+          run_tests = false;
+        else
+        {
+          string::size_type pos = line.find_first_not_of( " \t" );
+          if ( pos != string::npos && line[pos] != '#' )
+          {
+            string::size_type end_pos = line.find_first_of(" \t#", pos);
+            string::iterator end = end_pos != string::npos ? line.begin() + end_pos : line.end();
+            string run_tests_bin_dir(line.begin() + pos, end);
+            fs::path bin_path = find_bin_path("libs/" + run_tests_bin_dir);
+            if (!bin_path.empty())
+              do_rows_for_sub_tree( bin_path, results );
+          }
+        }
       }
     }
 
@@ -789,7 +851,15 @@ const fs::path find_bin_path(const string& relative)
     // - Boost.Build V2 location with top-lelve "build-dir" 
     // - Boost.Build V1 location without ALL_LOCATE_TARGET
     string relative( fs::initial_path().string() );
-    relative.erase( 0, boost_root.string().size()+1 );    
+
+#ifdef BOOST_WINDOWS_API
+    if (relative.size() > 1 && relative[1] == ':') relative[0] = std::tolower(relative[0]);
+#endif
+
+    if ( relative.find(boost_root.string()) != string::npos )
+      relative.erase( 0, boost_root.string().size()+1 );
+    else if ( relative.find(locate_root.string()) != string::npos )
+      relative.erase( 0, locate_root.string().size()+1 );
     fs::path bin_path = find_bin_path(relative);
 
     report << "<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
@@ -799,32 +869,29 @@ const fs::path find_bin_path(const string& relative)
     report << "<tr><td>Library</td><td>Test Name</td>\n"
       "<td><a href=\"compiler_status.html#test-type\">Test Type</a></td>\n";
 
-    fs::directory_iterator itr( bin_path );
-    while ( itr != end_itr 
-      && ((itr->string().find( ".test" ) != (itr->string().size()-5))
-      || !fs::is_directory( *itr )))
-      ++itr; // bypass chaff
-    if ( itr != end_itr )
+    if ( relative == "status" )
     {
-      fs::directory_iterator compiler_itr( *itr );
-      if ( specific_compiler.empty() )
-        std::clog << "Using " << itr->string() << " to determine compilers\n";
-      for (; compiler_itr != end_itr; ++compiler_itr )
+      fs::recursive_directory_iterator ritr( bin_path );
+      fs::recursive_directory_iterator end_ritr;
+      while ( ritr != end_ritr 
+        && ((ritr->string().find( ".test" ) != (ritr->string().size()-5))
+        || !fs::is_directory( *ritr )))
+        ++ritr; // bypass chaff
+      if ( ritr != end_ritr )
       {
-        if ( fs::is_directory( *compiler_itr )  // check just to be sure
-          && compiler_itr->leaf() != "test" ) // avoid strange directory (Jamfile bug?)
-        {
-          if ( specific_compiler.size() != 0
-            && specific_compiler != compiler_itr->leaf() ) continue;
-          toolsets.push_back( compiler_itr->leaf() );
-          string desc( compiler_desc( compiler_itr->leaf() ) );
-          string vers( version_desc( compiler_itr->leaf() ) );
-          report << "<td>"
-               << (desc.size() ? desc : compiler_itr->leaf())
-               << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
-               << "</td>\n";
-          error_count.push_back( 0 );
-        }
+        find_compilers( *ritr );
+      }
+    }
+    else
+    {
+      fs::directory_iterator itr( bin_path );
+      while ( itr != end_itr 
+        && ((itr->string().find( ".test" ) != (itr->string().size()-5))
+        || !fs::is_directory( *itr )))
+        ++itr; // bypass chaff
+      if ( itr != end_itr )
+      {
+        find_compilers( *itr );
       }
     }
 
