@@ -560,9 +560,11 @@ int main( int argc, char ** argv )
   std::istream* input = 0;
 
   if ( argc <= 1 )
+  {
     std::cout <<  "process_jam_log [--echo] [--create-directories] [--v1|--v2]\n"
                   "                [--boost-root boost_root] [--locate-root locate_root]\n"
                   "                [--input-file input_file]\n"
+                  "                [locate-root]\n"
                   "--echo               - verbose diagnostic output.\n"
                   "--create-directories - if the directory for xml file doesn't exists - creates it.\n"
                   "                       usually used for processing logfile on different machine\n"
@@ -574,6 +576,8 @@ int main( int argc, char ** argv )
                   "                       parameter, if any. Default is boost-root.\n"
                   "--input-file         - the output of a bjam --dump-tests run. Default is std input.\n"
                   ;
+    return 1;
+  }
 
   while ( argc > 1 )
   {
@@ -620,9 +624,6 @@ int main( int argc, char ** argv )
         std::exit(1);
       }
       locate_root = fs::path( argv[1], fs::native );
-      if ( !locate_root.is_complete() )
-        locate_root = ( fs::initial_path() / locate_root ).normalize();
-      
       --argc; ++argv;
     } 
     else if ( std::strcmp( argv[1], "--input-file" ) == 0 )
@@ -636,6 +637,16 @@ int main( int argc, char ** argv )
       input = new std::ifstream(argv[1]);
       --argc; ++argv;
     }
+    else if ( *argv[1] == '-' )
+    {
+      std::cout << "Abort: unknown option; invoke with no arguments to see list of valid options\n";
+      return 1;
+    }
+    else
+    {
+      locate_root = fs::path( argv[1], fs::native );
+      --argc; ++argv;
+    }
   }
 
   if ( boost_root.empty() )
@@ -643,10 +654,17 @@ int main( int argc, char ** argv )
     set_boost_root();
     boost_root.normalize();
   }
+
+  
   if ( locate_root.empty() )
   {
     locate_root = boost_root;
   }
+  else if ( !locate_root.is_complete() )
+  {
+    locate_root = ( fs::initial_path() / locate_root ).normalize();
+  }   
+
   if ( input == 0 )
   {
     input = &std::cin;
