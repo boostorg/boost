@@ -37,6 +37,35 @@
 
     <!-- /////////////// Libraries /////////////// -->
 
+    <!-- accumulators -->
+    <library name="accumulators">
+      <mark-unusable>
+        <toolset name="sun-5.7"/>
+        <toolset name="sun-5.8"/>
+        <toolset name="sun-5.9"/>
+        <toolset name="borland-*"/>
+      </mark-unusable>
+      <mark-expected-failures>
+          <test name="tail_variate_means"/>
+          <test name="weighted_tail_variate_means"/>
+          <toolset name="gcc-4.2.1*"/>
+          <note author="Boris Gubenko" refid="42"/>
+      </mark-expected-failures>
+      <mark-expected-failures>
+          <test name="weighted_kurtosis"/>
+          <toolset name="acc"/>
+          <note author="Boris Gubenko" refid="38"/>
+      </mark-expected-failures>
+      <mark-expected-failures>
+        <test name="weighted_tail_variate_means"/>
+        <toolset name="hp_cxx-71*"/>
+        <note author="Markus Schoepflin">
+          This failure is caused by a timeout when compiling the test. It
+          passes when the timeout value is increased.
+        </note>
+      </mark-expected-failures>
+    </library>
+
     <!-- minmax -->
     <library name="algorithm/minmax">
       <mark-unusable>
