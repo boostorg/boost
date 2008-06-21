@@ -5501,6 +5501,31 @@ boost::thread::hardware_concurrency is not implemented and always returns 0 on t
         </mark-expected-failures>
     </library>
 
+    <!-- unordered -->
+    <library name="unordered">
+      <mark-expected-failures>
+        <test name="move_tests"/>
+        <toolset name="msvc-*"/>
+        <toolset name="intel-win-10.1"/>
+        <toolset name="borland-*"/>
+        <toolset name="sun-*"/>
+        <toolset name="hp_css-*"/>
+        <toolset name="intel-linux-8*"/>
+        <toolset name="intel-linux-9.0*"/>
+        <toolset name="acc-pa_risc"/>
+        <note author="Daniel James">
+            This tests whether the container is successfully moved under
+            different circumstances, and fails if it is copied. Typically if
+            this one fails, it just means that return value optimization was
+            not applied. It might be possible to change the test to make it for
+            the compiler to apply ADL (by not having non-const reference
+            parameters for the function which returns the container). So this
+            is an acceptable failure.
+        </note>
+      </mark-expected-failures>
+    </library>
+
+
     <!-- utility/enable_if -->
     <library name="utility/enable_if">
         <mark-unusable>
