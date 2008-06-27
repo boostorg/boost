@@ -157,7 +157,7 @@ namespace
     temp.erase( temp.find_last_of( "/" ) ); // remove leaf
     temp = split( trim_left( temp ) ).back();
     if ( temp[0] == '.' ) temp.erase( 0, temp.find_first_not_of( "./" ) ); 
-    else if ( temp[0] == '/' ) temp.erase( 0, locate_root.string().size()+1 );
+    else temp.erase( 0, locate_root.string().size()+1 );
     if ( echo )
         std::cout << "\ttarget_directory( \"" << s << "\") -> \"" << temp << "\"" << std::endl;
     return temp;
