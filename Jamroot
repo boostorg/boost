@@ -47,8 +47,8 @@
 #                               "release" version of the libraries. This
 #                               release corresponds to specifying:
 #                               "release <threading>multi <link>shared
-#                               <runtime-link>shared" as the Boost.Build
-#                               variant to build.
+#                               <link>static <runtime-link>shared" as the
+#                               Boost.Build variant to build.
 #
 #                               complete - Attempts to build all possible
 #                               variations.
@@ -137,7 +137,7 @@ if ! ( $(build-type) in minimal complete )
 local default-build,minimal =
     release
     <threading>multi
-    <link>shared
+    <link>shared <link>static
     <runtime-link>shared
     ;
 local default-build,complete =
