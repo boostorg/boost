@@ -166,6 +166,16 @@
             Boost.System library on which Boost.Asio depends.
         </note>
       </mark-unusable>
+      <mark-expected-failures>
+        <test name="read_until"/>
+        <test name="read_until_select"/>
+        <toolset name="gcc-4.2.1_hpux_ia64"/>
+        <note author="Boris Gubenko">
+            On HP-UX 11.23 platform, these tests must be compiled with
+            _XOPEN_SOURCE_EXTENDED macro defined. It is likely related
+            to CR JAGag28813.
+        </note>
+        </mark-expected-failures>
     </library>
 
     <!-- assign -->
@@ -365,9 +375,14 @@
             <note refid="39" author="Boris Gubenko"/>
         </mark-expected-failures>
         <mark-expected-failures>
-                <test name="test_bimap_serialization"/>
-                <toolset name="gcc-mingw-3.4.5"/>
-                <note author="Matias Capeletto">Compiler bug.</note>
+            <test name="test_bimap_serialization"/>
+            <toolset name="gcc-mingw-3.4.5"/>
+            <note author="Matias Capeletto">Compiler bug.</note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_bimap_property_map"/>
+            <toolset name="gcc-3.4.6_linux_x86_64"/>
+            <note author="Matias Capeletto">Time out.</note>
         </mark-expected-failures>
     </library>
 
