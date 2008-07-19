@@ -194,11 +194,11 @@ namespace
     if ( !fs::exists( dir_path ) ) return false;
     for ( fs::directory_iterator itr( dir_path ); itr != end_itr; ++itr )
       if ( fs::is_directory( *itr )
-        && itr->leaf() != ignore_dir_named )
+        && itr->filename() != ignore_dir_named )
       {
         if ( find_file( *itr, name, path_found ) ) return true;
       }
-      else if ( itr->leaf() == name )
+      else if ( itr->filename() == name )
       {
         path_found = *itr;
         return true;
@@ -284,16 +284,16 @@ namespace
         // SunCC creates an internal subdirectory everywhere it writes
         // object files.  This confuses the target_directory() algorithm.
         // This patch ignores the SunCC internal directory. Jens Maurer
-        if ( (*itr).leaf() == "SunWS_cache" ) continue;
+        if ( (*itr).filename() == "SunWS_cache" ) continue;
         // SGI does something similar for template instantiations. Jens Maurer
-        if(  (*itr).leaf() == "ii_files" ) continue; 
+        if(  (*itr).filename() == "ii_files" ) continue; 
 
         if ( child.empty() ) child = *itr;
         else
         {
           std::cout << "Warning: only first of two target possibilities will be reported for: \n "
-            << root.string() << ": " << child.leaf()
-            << " and " << (*itr).leaf() << "\n";
+            << root.string() << ": " << child.filename()
+            << " and " << (*itr).filename() << "\n";
         }
       }
     }
@@ -736,7 +736,7 @@ const fs::path find_bin_path(const string& relative)
       {
         results.push_back( std::string() ); 
         do_row( *itr,
-                itr->leaf().substr( 0, itr->leaf().size()-5 ),
+                itr->filename().substr( 0, itr->filename().size()-5 ),
                 results[results.size()-1] );
       }
     }
@@ -752,15 +752,15 @@ const fs::path find_bin_path(const string& relative)
     for (; compiler_itr != end_itr; ++compiler_itr )
     {
       if ( fs::is_directory( *compiler_itr )  // check just to be sure
-        && compiler_itr->leaf() != "test" ) // avoid strange directory (Jamfile bug?)
+        && compiler_itr->filename() != "test" ) // avoid strange directory (Jamfile bug?)
       {
         if ( specific_compiler.size() != 0
-          && specific_compiler != compiler_itr->leaf() ) continue;
-        toolsets.push_back( compiler_itr->leaf() );
-        string desc( compiler_desc( compiler_itr->leaf() ) );
-        string vers( version_desc( compiler_itr->leaf() ) );
+          && specific_compiler != compiler_itr->filename() ) continue;
+        toolsets.push_back( compiler_itr->filename() );
+        string desc( compiler_desc( compiler_itr->filename() ) );
+        string vers( version_desc( compiler_itr->filename() ) );
         report << "<td>"
-             << (desc.size() ? desc : compiler_itr->leaf())
+             << (desc.size() ? desc : compiler_itr->filename())
              << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
              << "</td>\n";
         error_count.push_back( 0 );
@@ -1010,7 +1010,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( argc == 4 )
   {
     fs::path links_path( argv[3], fs::native );
-    links_name = links_path.leaf();
+    links_name = links_path.filename();
     links_file.open( links_path );
     if ( !links_file )
     {
