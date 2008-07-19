@@ -130,7 +130,7 @@ namespace
             if(fs::is_directory(*itr)){
                 std::pair<col_node::subcolumns_t::iterator, bool> result 
                     = node.m_subcolumns.insert(
-                        std::make_pair(itr->leaf(), col_node())
+                        std::make_pair(itr->filename(), col_node())
                     );
                 build_node_tree(*itr, result.first->second);
             }
@@ -629,7 +629,7 @@ namespace
             if(! fs::is_directory(*itr))
                 continue;
             
-            string test_name = itr->leaf();
+            string test_name = itr->filename();
             // strip off the ".test" is there is one
             string::size_type s = test_name.find( ".test" );
             if(string::npos != s)
@@ -728,7 +728,7 @@ namespace
                 throw std::string("binary path not found");
             if(*leaf_itr != "libs")
                 --leaf_itr;
-            test_lib_dir.remove_leaf();
+            test_lib_dir.remove_filename();
         }
 
         if(leaf_itr == fs::initial_path().end())
@@ -768,7 +768,7 @@ namespace
             }
             if(boost_root.empty())
                 throw std::string("boost root not found");
-            boost_root.remove_leaf();
+            boost_root.remove_filename();
         }
 
         return boost_root;
@@ -888,7 +888,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
     if ( argc == 3 )
     {
         fs::path links_path( argv[2], fs::native );
-        links_name = links_path.leaf();
+        links_name = links_path.filename();
         links_file.open( links_path );
         if ( !links_file )
         {
