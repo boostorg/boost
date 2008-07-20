@@ -5007,7 +5007,32 @@ boost::thread::hardware_concurrency is not implemented and always returns 0 on t
             </note>
         </mark-expected-failures>
 
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="run_random"/>
+          <test name="std_run_random"/>
+          <test name="std_test_bind"/>
+          <test name="test_bind"/>
+          <test name="std_test_regex"/>
+          <test name="test_regex"/>
+          <test name="std_test_result_of"/>
+          <test name="test_result_of"/>
+          <test name="tr1_has_tr1_result_of_pass"/>
+          <test name="tr1_has_trivial_constr_test"/>
+          <test name="tr1_is_base_of_test"/>
+          <test name="tr1_is_convertible_test"/>
+          <test name="tr1_is_pod_test"/>
+          <test name="tr1_is_polymorphic_test"/>
+          <test name="tr1_tky_function_type_test"/>
+          <toolset name="msvc-9.0"/>
+          <note author="John Maddock">
+             MSVC 9.0 with the optional feature pack installed includes
+             a version of the TR1 libraries that is not as interface-conforming
+             as the Boost version.  Most of these failures are of the "annoying"
+             rather than "unusable" kind.
+          </note>
+       </mark-expected-failures>
+
+       <mark-expected-failures>
             <test name="test_regex"/>
             <test name="std_test_regex"/>
             <test name="test_hash"/>
