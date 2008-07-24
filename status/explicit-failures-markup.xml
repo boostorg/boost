@@ -3171,6 +3171,14 @@ for more information.
           </note>
        </mark-expected-failures>
        <mark-expected-failures>
+          <test name="test_tr1_long_double"/>
+          <toolset name="darwin"/>
+          <note author="John Maddock">
+             Some versions of the Darwin platform have insufficient long double support
+             for us to be able to run this test.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
           <test name="test_policy_2"/>
           <toolset name="gcc-mingw-3.4.5"/>
           <note author="John Maddock">
@@ -4328,7 +4336,16 @@ for more information.
             use and building of dll's mainly.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="regex_regress_threaded"/>
+          <toolset name="darwin*"/>
+          <note author="J. Maddock">
+             This tests fails because a dependency (Boost.Test)
+             fails to initialise correctly.  The issue has been
+             reported to the library's author.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
             <test name="regex_regress_threaded"/>
             <toolset name="gcc-*_tru64"/>
             <note author="J. Maddock">
