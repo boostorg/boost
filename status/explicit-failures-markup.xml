@@ -1729,6 +1729,14 @@
         </mark-expected-failures>
     </library>
 
+    <!-- gil -->
+    <library name="gil">
+      <mark-expected-failures>
+          <test name="pixel"/>
+          <toolset name="acc"/>
+          <note author="Boris Gubenko" refid="46"/>
+      </mark-expected-failures>
+    </library>
 
     <!-- graph -->
     <library name="graph">
@@ -4078,6 +4086,11 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="object"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko" refid="46"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="args"/>
             <test name="auto_ptr"/>
             <test name="builtin_convertors"/>
@@ -6054,6 +6067,12 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
         a faulty vector&lt;bool&gt; iterator, which is not symmetric. There is an
         associated bug report in the Rogue Wave bug tracking system for this
         problem.
+    </note>
+
+    <note id="46">
+        The test does not compile, most likely because of new version of EDG Front End
+        implementing Core Issue 574. In the HP bug tracking system, it is tracked as
+        QuIX ID: QXCR1000804484.
     </note>
 
 </explicit-failures-markup>
