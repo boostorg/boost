@@ -153,7 +153,7 @@ A. You can specify the full path to each library:
    .. parsed-literal::
 
      $ c++ -I |root| example.cpp -o example **\\**
-        **~/boost/lib/libboost_regex-gcc34-mt-d-1_35.a**
+        **~/boost/lib/libboost_regex-gcc34-mt-d-1_36.a**
 
 B. You can separately specify a directory to search (with ``-L``\
    *directory*) and a library name to search for (with ``-l``\
@@ -163,7 +163,7 @@ B. You can separately specify a directory to search (with ``-L``\
    .. parsed-literal::
 
      $ c++ -I |root| example.cpp -o example **\\**
-        **-L~/boost/lib/ -lboost_regex-gcc34-mt-d-1_35**
+        **-L~/boost/lib/ -lboost_regex-gcc34-mt-d-1_36**
 
    As you can see, this method is just as terse as method A for one
    library; it *really* pays off when you're using multiple
