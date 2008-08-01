@@ -61,8 +61,8 @@
 #   --show-libraries        Displays the list of Boost libraries that require
 #                           build and installation steps, then exit.
 #
-#   --layout=<layout>       Determines whether to choose library names 
-#                           and header locations such that multiple 
+#   --layout=<layout>       Determines whether to choose library names
+#                           and header locations such that multiple
 #                           versions of Boost or multiple compilers can
 #                           be used on the same system.
 #
@@ -161,18 +161,18 @@ if $(__file__:D) != ""
 
 
 rule handle-static-runtime ( properties * )
-{    
+{
     # This property combination is dangerous.
     # Ideally, we'd add constraint to default build,
     # so that user can build with property combination
     # by hand. But we don't have any 'constraint' mechanism
     # for default-build, so disable such builds in requirements.
-    
+
     # For CW, static runtime is needed so that
     # std::locale works.
     if <link>shared in $(properties)
       && <runtime-link>static in $(properties)
-        && ! ( <toolset>cw in $(properties) )    
+        && ! ( <toolset>cw in $(properties) )
     {
         return <build>no ;
     }
@@ -188,7 +188,7 @@ project boost
       # 'tag' rule below.
       <tag>@$(__name__).tag
       <conditional>@handle-static-runtime
-            
+
     : usage-requirements <include>.
     : build-dir bin.v2
     : default-build $(default-build)
@@ -199,27 +199,29 @@ project boost
 all-libraries =
     [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] [ glob libs/*/build/Jamfile ] ]
     ;
-    
-all-libraries = [ sequence.unique $(all-libraries) ] ;    
 
-# First, the complicated libraries: where the target name in
-# Jamfile is different from directory name.
-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
-alias bgl-vis : libs/graps/build//bgl-vis ;
-alias serialization : libs/serialization/build//boost_serialization ;
-alias wserialization : libs/serialization/build//boost_wserialization ;
+all-libraries = [ sequence.unique $(all-libraries) ] ;
 
-explicit prg_exec_monitor test_exec_monitor unit_test_framework
-    bgl-vis serialization wserialization ;
 
+local rule explicit-alias ( id : targets + )
+{
+    alias $(id) : $(targets) ;
+    explicit $(id) ;
+}
+
+# First, the complicated libraries: where the target name in Jamfile is
+# different from its directory name.
+explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
+explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
+explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
+explicit-alias bgl-vis : libs/graps/build//bgl-vis ;
+explicit-alias serialization : libs/serialization/build//boost_serialization ;
+explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
 for local l in $(all-libraries)
 {
     if ! $(l) in test graph serialization
     {
-        alias $(l) : libs/$(l)/build//boost_$(l) ;
-        explicit $(l) ;
+        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
     }
 }
 
@@ -228,7 +230,7 @@ alias headers : : : : <include>. ;
 
 # Decides which libraries are to be installed by looking at --with-<library>
 # --without-<library> arguments. Returns the list of directories under "libs"
-# which must be built at installed.
+# which must be built and installed.
 rule libraries-to-install ( existing-libraries * )
 {
    local argv = [ modules.peek : ARGV ] ;
@@ -314,7 +316,7 @@ rule tag ( name : type ? : property-set )
                 <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
                 -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
-            
+
             # Optionally add version suffix.
             # On NT, library with version suffix won't be recognized
             # by linkers. On CYGWIN, we get strage duplicate symbol
@@ -329,7 +331,7 @@ rule tag ( name : type ? : property-set )
             {
                 result = $(result).$(BOOST_VERSION)  ;
             }
-            
+
             return $(result) ;
         }
         else
@@ -382,22 +384,22 @@ explicit install-proper ;
 install stage-proper
     :   libs/$(libraries)/build
     :   <location>$(stage-locate)/lib
-        <install-dependencies>on <install-type>LIB 
+        <install-dependencies>on <install-type>LIB
         <install-no-version-symlinks>on
     ;
 explicit stage-proper ;
 
 
-if $(layout-versioned) 
+if $(layout-versioned)
   && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
 {
     rule make-unversioned-links ( project name ? : property-set : sources * )
     {
         local result ;
         local filtered ;
-        local pattern ;        
+        local pattern ;
         local nt = [ modules.peek : NT ] ;
-        
+
         # Collect the libraries that have the version number in 'filtered'.
         for local s in $(sources)
         {
@@ -409,13 +411,13 @@ if $(layout-versioned)
             else
             {
                 m = [ MATCH "(.*[.]so[.0-9]+)" "(.*[.]dylib)" "(.*[.]a)" : [ $(s).name ] ] ;
-            }            
+            }
             if $(m)
             {
                 filtered += $(s) ;
             }
         }
-        
+
         # Create links without version.
         for local s in $(filtered)
         {
@@ -424,7 +426,7 @@ if $(layout-versioned)
             local ep = [ $(ea).properties ] ;
             local a  = [
               new non-scanning-action $(s) : symlink.ln : $(ep) ] ;
-            
+
             local noversion-file ;
             if $(nt)
             {
@@ -432,27 +434,27 @@ if $(layout-versioned)
             }
             else
             {
-                noversion-file = 
-                  [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(name) ] 
-                  [ MATCH "(.*)-[0-9_]+([.]dylib)" : $(name) ] 
-                  [ MATCH "(.*)-[0-9_]+([.]a)" : $(name) ] 
+                noversion-file =
+                  [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+([.]dylib)" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+([.]a)" : $(name) ]
                   [ MATCH "(.*)-[0-9_]+([.]dll[.]a)" : $(name) ] ;
             }
-                        
-            local new-name = 
+
+            local new-name =
                $(noversion-file[1])$(noversion-file[2]) ;
             result += [ new file-target $(new-name) exact : [ $(s).type ] : $(project)
                     : $(a) ] ;
 
         }
         return $(result) ;
-    }    
-            
-    generate stage-unversioned : stage-proper : 
+    }
+
+    generate stage-unversioned : stage-proper :
       <generating-rule>@make-unversioned-links ;
     explicit stage-unversioned ;
-    
-    generate install-unversioned : install-proper : 
+
+    generate install-unversioned : install-proper :
       <generating-rule>@make-unversioned-links ;
     explicit install-unversioned ;
 }
