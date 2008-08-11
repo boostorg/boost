@@ -147,7 +147,7 @@ That will build static and shared non-debug multi-threaded variations of the lib
 .. parsed-literal::
 
    $ cd ~/|boost_ver|
-   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc **--build-type=**\ complete stage
+   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc **--build-type=complete** stage
 
 .. include:: detail/build-from-source-tail.rst
 

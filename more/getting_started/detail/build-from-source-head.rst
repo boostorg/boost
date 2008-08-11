@@ -123,4 +123,4 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam **--build-dir=**\ |build-directory|_ **--toolset=**\ |toolset-name|_ stage
+  bjam **--build-dir=**\ |build-directory|_ **--toolset=**\ |toolset-name|_ *[*\ **--build-type=complete**\ *]* stage
