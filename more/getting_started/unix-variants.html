@@ -63,12 +63,12 @@
 <p>The most reliable way to get a copy of Boost is to download a
 distribution from <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041">SourceForge</a>:</p>
 <ol class="arabic">
-<li><p class="first">Download <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt><tt class="docutils literal"><span class="pre">.tar.bz2</span></tt></a>.</p>
+<li><p class="first">Download <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt><tt class="docutils literal"><span class="pre">.tar.bz2</span></tt></a>.</p>
 </li>
 <li><p class="first">In the directory where you want to put the Boost installation,
 execute</p>
 <pre class="literal-block">
-tar --bzip2 -xf <em>/path/to/</em><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt>.tar.bz2
+tar --bzip2 -xf <em>/path/to/</em><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt>.tar.bz2
 </pre>
 </li>
 </ol>
@@ -91,7 +91,7 @@ from <a class="reference external" href="http://sourceforge.net/project/showfile
 <h1><a class="toc-backref" href="#id19">2&nbsp;&nbsp;&nbsp;The Boost Distribution</a></h1>
 <p>This is a sketch of the resulting directory structure:</p>
 <pre class="literal-block">
-<strong>boost_1_35_0</strong><strong>/</strong> .................<em>The “boost root directory”</em>
+<strong>boost_1_36_0</strong><strong>/</strong> .................<em>The “boost root directory”</em>
    <strong>index.htm</strong> .........<em>A copy of www.boost.org starts here</em>
    <strong>boost</strong><strong>/</strong> .........................<em>All Boost Header files</em>
    <tt class="docutils literal"> </tt>
@@ -136,7 +136,7 @@ anything you can use in these directories.</p>
 </div>
 <p>It's important to note the following:</p>
 <ol class="arabic" id="boost-root-directory">
-<li><p class="first">The path to the <strong>boost root directory</strong> (often <tt class="docutils literal"><span class="pre">/usr/local/</span></tt><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt>) is
+<li><p class="first">The path to the <strong>boost root directory</strong> (often <tt class="docutils literal"><span class="pre">/usr/local/</span></tt><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt>) is
 sometimes referred to as <tt class="docutils literal"><span class="pre">$BOOST_ROOT</span></tt> in documentation and
 mailing lists .</p>
 </li>
@@ -230,7 +230,7 @@ int main()
 <p>Now, in the directory where you saved <tt class="docutils literal"><span class="pre">example.cpp</span></tt>, issue the
 following command:</p>
 <pre class="literal-block">
-c++ -I <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt> example.cpp -o example
+c++ -I <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt> example.cpp -o example
 </pre>
 <p>To test the result, type:</p>
 <pre class="literal-block">
@@ -261,7 +261,7 @@ you'll need to acquire library binaries.</p>
 <p>Issue the following commands in the shell (don't type <tt class="docutils literal"><span class="pre">$</span></tt>; that
 represents the shell's prompt):</p>
 <pre class="literal-block">
-<strong>$</strong> cd <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt>
+<strong>$</strong> cd <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt>
 <strong>$</strong> ./configure --help
 </pre>
 <p>Select your configuration options and invoke <tt class="docutils literal"><span class="pre">./configure</span></tt> again
@@ -425,8 +425,13 @@ bjam <strong>--build-dir=</strong><a class="reference internal" href="#id10"><em
 </pre>
 <p>For example, your session might look like this:</p>
 <pre class="literal-block">
-$ cd ~/<tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt>
+$ cd ~/<tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt>
 $ bjam <strong>--build-dir=</strong>/tmp/build-boost <strong>--toolset=</strong>gcc stage
+</pre>
+<p>That will build static and shared non-debug multi-threaded variations of the libraries. To build all variations:</p>
+<pre class="literal-block">
+$ cd ~/<tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt>
+$ bjam <strong>--build-dir=</strong>/tmp/build-boost <strong>--toolset=</strong>gcc <strong>--build-type=</strong>complete stage
 </pre>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
 <!-- Software License, Version 1.0. (See accompanying -->
@@ -533,15 +538,15 @@ project.</li>
 <ol class="upperalpha">
 <li><p class="first">You can specify the full path to each library:</p>
 <pre class="literal-block">
-$ c++ -I <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt> example.cpp -o example <strong>\</strong>
-   <strong>~/boost/lib/libboost_regex-gcc34-mt-d-1_35.a</strong>
+$ c++ -I <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt> example.cpp -o example <strong>\</strong>
+   <strong>~/boost/lib/libboost_regex-gcc34-mt-d-1_36.a</strong>
 </pre>
 </li>
 <li><p class="first">You can separately specify a directory to search (with <tt class="docutils literal"><span class="pre">-L</span></tt><em>directory</em>) and a library name to search for (with <tt class="docutils literal"><span class="pre">-l</span></tt><em>library</em>,<a class="footnote-reference" href="#lowercase-l" id="id12"><sup>2</sup></a> dropping the filename's leading <tt class="docutils literal"><span class="pre">lib</span></tt> and trailing
 suffix (<tt class="docutils literal"><span class="pre">.a</span></tt> in this case):</p>
 <pre class="literal-block">
-$ c++ -I <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_35_0</span></tt> example.cpp -o example <strong>\</strong>
-   <strong>-L~/boost/lib/ -lboost_regex-gcc34-mt-d-1_35</strong>
+$ c++ -I <em>path/to/</em><tt class="docutils literal"><span class="pre">boost_1_36_0</span></tt> example.cpp -o example <strong>\</strong>
+   <strong>-L~/boost/lib/ -lboost_regex-gcc34-mt-d-1_36</strong>
 </pre>
 <p>As you can see, this method is just as terse as method A for one
 library; it <em>really</em> pays off when you're using multiple
