@@ -35,25 +35,33 @@ __ ../../index.htm
 Get Boost
 =========
 
-The easiest way to get a copy of Boost is to use the `installer`_
-provided by `Boost Consulting`_.  We especially recommend this
-method if you use Microsoft Visual Studio .NET 2003 or Microsoft
-Visual Studio 2005, because the installer can download and install
+The easiest way to get a copy of Boost is to use an installer.
+The `Boost website version of this Getting Started guide`_ will
+have undated information on installers as they become available,
+or see `Boost downloads`_ or the installer_ provided by `BoostPro Computing`_.  We especially recommend using
+an installer if you use Microsoft Visual Studio, because the installer can download and install
 precompiled library binaries, saving you the trouble of building
 them yourself.  To complete this tutorial, you'll need to at least
 install the Boost.Regex_ binaries when given the option.
 
-.. _installer: http://www.boost-consulting.com/download/windows
-.. _Boost Consulting: http://www.boost-consulting.com
+.. _`Boost website version of this Getting Started guide`:
+       http://www.boost.org/doc/libs/1_36_0/more/getting_started/index.html
+.. _`Boost downloads`: `sf-download`_      
+.. _installer: http://www.boostpro.com/products/free
+.. _BoostPro Computing: http://www.boostpro.com
 
 If you're using an earlier version of Visual Studio or some other
 compiler, or if you prefer to build everything yourself, you can
-download |boost.exe|_ and run it to install a complete Boost
+download |boost.7z|_ or |boost_zip|_ and unpack it to install a complete Boost
 distribution. [#zip]_
 
-.. |boost.exe| replace:: |boost_ver|\ ``.exe``
+.. |boost.7z| replace:: |boost_ver|\ ``.7z``
 
-.. _`boost.exe`: `sf-download`_
+.. _`boost.7z`: `sf-download`_
+
+.. |boost_zip| replace:: |boost_ver|\ ``.zip``
+
+.. _`boost_zip`: `sf-download`_
 
 .. include:: detail/distro.rst
 
@@ -175,10 +183,10 @@ To test the result, type:
 
 .. include:: detail/binary-head.rst
 
-Install Visual Studio (2005 or .NET 2003) Binaries
---------------------------------------------------
+Install Visual Studio Binaries
+------------------------------
 
-The installer_ supplied by Boost Consulting will download and
+The installers will download and
 install pre-compiled binaries into the ``lib\`` subdirectory of the
 boost root, typically |default-root|\ ``\lib\``.  If you installed
 all variants of the Boost.Regex_ binary, you're done with this
@@ -209,6 +217,16 @@ For example, your session might look like this: [#continuation]_
 
 Be sure to read `this note`__ about the appearance of ``^``,
 ``More?`` and quotation marks (``"``) in that line.
+
+The above example session will build static and shared non-debug multi-threaded
+variations of the libraries. To build all variations:
+
+.. parsed-literal::
+
+   C:\\WINDOWS> cd |default-root|
+   |default-root|> bjam **^**
+   More? **--build-dir=**\ "C:\\Documents and Settings\\dave\\build-boost" **^**
+   More? **--toolset=**\ msvc **--build-type=complete** stage
 
 __ continuation_
 
@@ -291,10 +309,13 @@ Spoil Rock Hunter?”
 
 ------------------------------
 
-.. [#zip] If you prefer not to download executable programs,
-   download |boost.zip|_ and use an external tool to decompress
-   it.  We don't recommend using Windows' built-in decompression as
-   it can be painfully slow for large archives.
+.. [#zip] We recommend
+   downloading |boost.7z|_ and using 7-Zip_ to decompress
+   it.  We no longer recommend .zip files for Boost because they are twice
+   as large as the equivalent .7z files.  We don't recommend using Windows'
+   built-in decompression as it can be painfully slow for large archives.
+   
+.. _7-Zip: http://www.7-zip.org  
 
 .. [#installer-src] If you used the installer_ from Boost
    Consulting and deselected “Source and Documentation”  (it's
