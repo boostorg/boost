@@ -1,13 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-# Build branches/release packages
+# Build release packages
 
-# © Copyright 2008 Beman Dawes
+# Copyright 2008 Beman Dawes
 # Distributed under the Boost Software License, Version 1.0. See http://www.boost.org/LICENSE_1_0.txt
 
 if [ $# -lt 1 ]
 then
- echo "invoke:" $0 "package-name"
+ echo "invoke:" $0 "release-name"
  echo "example:" $0 "boost_1_35_0_RC3"
  exit 1
 fi
@@ -38,8 +38,5 @@ echo "creating 7z..."
 echo "cleaning up..."
 mv $1 windows
 
-echo "done automatic processing; you must now upload packages manually"
 exit 0
-
-
 
