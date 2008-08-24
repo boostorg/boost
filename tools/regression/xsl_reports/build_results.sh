@@ -107,6 +107,11 @@ build_results()
         tag=tags/release/Boost_1_35_0
         reports="dd,ud,ds,us,ddr,udr,dsr,usr,i,n,e"
         ;;
+        
+        release-1_36_0)
+        tag=tags/release/Boost_1_36_0
+        reports="dd,ud,ds,us,ddr,udr,dsr,usr,i,n,e"
+        ;;
     esac
     report_info
     python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
