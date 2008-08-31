@@ -345,8 +345,8 @@ rule tag ( name : type ? : property-set )
 
 # Install to system location.
 
-local install-requirements =
-    <install-source-root>boost
+install-requirements =
+    <install-source-root>$(BOOST_ROOT)/boost
     ;
 if $(layout-versioned)
 {
@@ -366,9 +366,9 @@ else if [ modules.peek : UNIX ]
 }
 
 local headers =
-    [ path.glob-tree boost : *.hpp *.ipp *.h *.inc : CVS ]
-    [ path.glob-tree boost/compatibility/cpp_c_headers : c* : CVS ]
-    ;
+    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc : CVS ]
+    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS
+        ] ;
 
 
 # Complete install
@@ -486,7 +486,7 @@ alias build_all : libs/$(libraries)/build ;
 rule boost-install ( libraries * )
 {
     package.install install
-        : <dependency>/boost//install-headers $(install-requirements)
+        : <dependency>/boost//install-proper-headers $(install-requirements)
         : # No binaries
         : $(libraries)
         : # No headers, it's handled by the dependency
