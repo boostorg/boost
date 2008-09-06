@@ -8,6 +8,7 @@
 import shutil
 import codecs
 import xml.sax.handler
+import xml.sax.saxutils
 import glob
 import re
 import os.path
@@ -18,8 +19,6 @@ import sys
 import ftplib
 
 import utils
-import runner
-
 
 report_types = [ 'us', 'ds', 'ud', 'dd', 'l', 'p', 'i', 'n', 'ddr', 'dsr', 'udr', 'usr' ]
 
