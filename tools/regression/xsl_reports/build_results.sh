@@ -136,7 +136,7 @@ upload_results()
     7za a -tzip -mx=9 ../../${1}.zip * '-x!*.xml'
     cd "${cwd}"
     mv ${1}.zip ${1}.zip.uploading
-    rsync -vuzhh --rsh=ssh --stats \
+    rsync -vuz --rsh=ssh --stats \
       ${1}.zip.uploading grafik@beta.boost.org:/${upload_dir}/incoming/
     ssh grafik@beta.boost.org \
       cp ${upload_dir}/incoming/${1}.zip.uploading ${upload_dir}/live/${1}.zip
