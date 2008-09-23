@@ -5067,6 +5067,8 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
             <test name="std_test_function_tricky"/>
             <test name="std_test_reference_wrapper_tricky"/>
             <test name="test_reference_wrapper_tricky"/>
+            <test name="std_test_cmath_tricky"/>
+            <test name="test_cmath_tricky"/>
             <toolset name="*"/>
             <note author="John Maddock">
                 These tests test features that are not supported in the
@@ -5115,7 +5117,18 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
             </note>
         </mark-expected-failures>
 
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_cmath"/>
+          <test name="std_test_cmath"/>
+          <toolset name="intel-linux-9.0"/>
+          <toolset name="darwin-4.0.1"/>
+          <note author="John Maddock">
+             These tests fail due to a lack of adequate
+             long double std math lib support.
+          </note>
+       </mark-expected-failures>
+
+       <mark-expected-failures>
             <test name="test_regex"/>
             <test name="std_test_regex"/>
             <toolset name="gcc-mingw*"/>
