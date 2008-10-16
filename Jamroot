@@ -364,10 +364,12 @@ else if [ modules.peek : UNIX ]
 }
 
 local headers =
-    [ path.glob-tree boost : *.hpp *.ipp *.h *.inc : CVS ]
-    [ path.glob-tree boost/compatibility/cpp_c_headers : c* : CVS ]
-    ;
-
+    # The .SUNWCCh files are present in tr1 include directory and have to be installed,
+    # see http://lists.boost.org/Archives/boost/2007/05/121430.php
+    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
+    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ] 
+    [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
+          ;
 
 # Complete install
 package.install install-proper
