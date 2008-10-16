@@ -4819,11 +4819,13 @@ for more information.
             <test name="test_thread_move_lib"/>
             <test name="test_move_function"/>
             <test name="test_move_function_lib"/>
+            <toolset name="acc"/>
             <toolset name="borland-*"/>
             <toolset name="sun-*"/>
             <note author="Anthony Williams" date="2007-12-14">
-The Borland compiler fails to bind rvalues to the thread move constructor,
+The Borland compiler and HP-UX aC++ compiler in default mode fail to bind rvalues to the thread move constructor,
 choosing instead to bind them to the private (and unimplemented) copy constructor.
+With aC++, the tests compile cleanly in strict ansi mode and succeed.
             </note>
         </mark-expected-failures>
     </library>
