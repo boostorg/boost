@@ -61,8 +61,8 @@
 #   --show-libraries        Displays the list of Boost libraries that require
 #                           build and installation steps, then exit.
 #
-#   --layout=<layout>       Determines whether to choose library names
-#                           and header locations such that multiple
+#   --layout=<layout>       Determines whether to choose library names 
+#                           and header locations such that multiple 
 #                           versions of Boost or multiple compilers can
 #                           be used on the same system.
 #
@@ -117,8 +117,7 @@ path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.37.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
-local version-tag = [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ]
-    ;
+local version-tag = [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ] ;
 if $(version-tag[3]) = 0
 {
     version-tag = $(version-tag[1-2]) ;
@@ -126,7 +125,8 @@ if $(version-tag[3]) = 0
 
 constant BOOST_VERSION_TAG : $(version-tag:J="_") ;
 
-# Option to choose how many variants to build. The default is "minimal".
+# Option to choose how many variants to build. The default is "minimal",
+# which builds only the "release <threading>multi <link>shared" variant.
 local build-type = [ MATCH "^--build-type=(.*)" : [ modules.peek : ARGV ] ] ;
 build-type ?= minimal ;
 if ! ( $(build-type) in minimal complete )
@@ -151,8 +151,8 @@ local default-build,complete =
 # Set the default build.
 local default-build = $(default-build,$(build-type)) ;
 
-# We only use the default build when building at the root to avoid having it
-# impact the default regression testing of "debug".
+# We only use the default build when building at the root to
+# avoid having it impact the default regression testing of "debug".
 # TODO: Consider having a "testing" build type instead of this check.
 if $(__file__:D) != ""
 {
@@ -161,15 +161,18 @@ if $(__file__:D) != ""
 
 
 rule handle-static-runtime ( properties * )
-{
-    # This property combination is dangerous. Ideally, we would add a constraint
-    # to default build, so that user can build this property combination only if
-    # requested directly. But we do not have any 'constraint' system for
-    # default-build, so we disable such builds in requirements.
-
-    # For CW, static runtime is needed so that std::locale works.
-    if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
-        ! ( <toolset>cw in $(properties) )
+{    
+    # This property combination is dangerous.
+    # Ideally, we'd add constraint to default build,
+    # so that user can build with property combination
+    # by hand. But we don't have any 'constraint' mechanism
+    # for default-build, so disable such builds in requirements.
+    
+    # For CW, static runtime is needed so that
+    # std::locale works.
+    if <link>shared in $(properties)
+      && <runtime-link>static in $(properties)
+        && ! ( <toolset>cw in $(properties) )    
     {
         return <build>no ;
     }
@@ -178,47 +181,45 @@ rule handle-static-runtime ( properties * )
 
 project boost
     : requirements <include>.
-      # Disable auto-linking for all targets here, primarily because it caused
-      # troubles with V2.
+      # disable auto-linking for all targets here,
+      # primarily because it caused troubles with V2
       <define>BOOST_ALL_NO_LIB=1
-      # Used to encode variant in target name. See the 'tag' rule below.
+      # Used to encode variant in target name. See the
+      # 'tag' rule below.
       <tag>@$(__name__).tag
       <conditional>@handle-static-runtime
+            
     : usage-requirements <include>.
     : build-dir bin.v2
     : default-build $(default-build)
     ;
 
-
 # Setup convenient aliases for all libraries.
 
-all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
-    [ glob libs/*/build/Jamfile ] ]
+all-libraries =
+    [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ] [ glob libs/*/build/Jamfile ] ]
     ;
+    
+all-libraries = [ sequence.unique $(all-libraries) ] ;    
 
-all-libraries = [ sequence.unique $(all-libraries) ] ;
+# First, the complicated libraries: where the target name in
+# Jamfile is different from directory name.
+alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
+alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
+alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
+alias bgl-vis : libs/graps/build//bgl-vis ;
+alias serialization : libs/serialization/build//boost_serialization ;
+alias wserialization : libs/serialization/build//boost_wserialization ;
 
+explicit prg_exec_monitor test_exec_monitor unit_test_framework
+    bgl-vis serialization wserialization ;
 
-local rule explicit-alias ( id : targets + )
-{
-    alias $(id) : $(targets) ;
-    explicit $(id) ;
-}
-
-
-# First, the complicated libraries: where the target name in Jamfile is
-# different from its directory name.
-explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
-explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
-explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
-explicit-alias bgl-vis : libs/graps/build//bgl-vis ;
-explicit-alias serialization : libs/serialization/build//boost_serialization ;
-explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
 for local l in $(all-libraries)
 {
     if ! $(l) in test graph serialization
     {
-        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
+        alias $(l) : libs/$(l)/build//boost_$(l) ;
+        explicit $(l) ;
     }
 }
 
@@ -227,15 +228,14 @@ alias headers : : : : <include>. ;
 
 # Decides which libraries are to be installed by looking at --with-<library>
 # --without-<library> arguments. Returns the list of directories under "libs"
-# which must be built and installed.
-#
+# which must be built at installed.
 rule libraries-to-install ( existing-libraries * )
 {
    local argv = [ modules.peek : ARGV ] ;
    local with-parameter = [ MATCH --with-(.*) : $(argv) ] ;
    local without-parameter = [ MATCH --without-(.*) : $(argv) ] ;
 
-   # Do some checks.
+   # Do some checks
    if $(with-parameter) && $(without-parameter)
    {
        ECHO "error: both --with-<library> and --without-<library> specified" ;
@@ -265,24 +265,21 @@ rule libraries-to-install ( existing-libraries * )
    }
 }
 
-
-# What kind of layout are we doing?
+# what kind of layout are we doing?
 layout = [ MATCH "^--layout=(.*)" : [ modules.peek : ARGV ] ] ;
 layout ?= versioned ;
 layout-$(layout) = true ;
 
-
-# Possible stage only location.
+# possible stage only location
 local stage-locate = [ MATCH "^--stagedir=(.*)" : [ modules.peek : ARGV ] ] ;
 stage-locate ?= stage ;
+
 path-constant BOOST_STAGE_LOCATE : $(stage-locate) ;
 
 
-# Python location.
-local python-root = [ MATCH "^--with-python-root=(.*)" : [ modules.peek : ARGV ]
-    ] ;
+# location of python
+local python-root = [ MATCH "^--with-python-root=(.*)" : [ modules.peek : ARGV ] ] ;
 PYTHON_ROOT ?= $(python-root) ;
-
 
 # Select the libraries to install.
 libraries = [ libraries-to-install $(all-libraries) ] ;
@@ -304,11 +301,9 @@ if $(build-id)
     constant BUILD_ID : [ regex.replace $(build-id) "[*\\/:.\"\' ]" "_" ] ;
 }
 
-
-# This rule is called by Boost.Build to determine the name of target. We use it
-# to encode the build variant, compiler name and boost version in the target
-# name.
-#
+# This rule is called by Boost.Build to determine the name of
+# target. We use it to encode build variant, compiler name and
+# boost version in the target name
 rule tag ( name : type ? : property-set )
 {
     if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
@@ -319,36 +314,38 @@ rule tag ( name : type ? : property-set )
                 <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
                 -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
-
-            # Optionally add version suffix. On NT, library with version suffix
-            # will not be recognized by linkers. On CYGWIN, we get strage
-            # duplicate symbol errors when library is generated with version
-            # suffix. On OSX, version suffix is not needed -- the linker expects
-            # the libFoo.1.2.3.dylib format. AIX linkers do not accept version
-            # suffixes either. Pgi compilers can not accept library with version
-            # suffix.
+            
+            # Optionally add version suffix.
+            # On NT, library with version suffix won't be recognized
+            # by linkers. On CYGWIN, we get strage duplicate symbol
+            # errors when library is generated with version suffix.
+            # On OSX, version suffix is not needed -- the linker expets
+            # libFoo.1.2.3.dylib format.
+            # AIX linkers don't accept version suffixes either.
+            # Pgi compilers can't accept library with version suffix
             if $(type) = SHARED_LIB &&
               ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
                 ! ( [ $(property-set).get <toolset> ] in pgi ) )
             {
                 result = $(result).$(BOOST_VERSION)  ;
             }
-
+            
             return $(result) ;
         }
         else
         {
-            return [ common.format-name <base> <threading> <runtime>
-                -$(BUILD_ID) : $(name) : $(type) : $(property-set) ] ;
+            return [ common.format-name
+                <base> <threading> <runtime> -$(BUILD_ID)
+                : $(name) : $(type) : $(property-set) ] ;
         }
     }
 }
 
-
 # Install to system location.
 
-install-requirements = <install-source-root>$(BOOST_ROOT)/boost ;
-
+local install-requirements =
+    <install-source-root>boost
+    ;
 if $(layout-versioned)
 {
     install-requirements += <install-header-subdir>boost-$(BOOST_VERSION_TAG)/boost ;
@@ -374,34 +371,35 @@ local headers =
     [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
           ;
 
-# Complete install.
+# Complete install
 package.install install-proper
-    : $(install-requirements) <install-no-version-symlinks>on
+    :   $(install-requirements) <install-no-version-symlinks>on
     :
-    : libs/$(libraries)/build
-    : $(headers)
+    :   libs/$(libraries)/build
+    :   $(headers)
     ;
 explicit install-proper ;
 
 # Install just library.
 install stage-proper
-    : libs/$(libraries)/build
-    : <location>$(stage-locate)/lib
-      <install-dependencies>on <install-type>LIB
-      <install-no-version-symlinks>on
+    :   libs/$(libraries)/build
+    :   <location>$(stage-locate)/lib
+        <install-dependencies>on <install-type>LIB 
+        <install-no-version-symlinks>on
     ;
 explicit stage-proper ;
 
 
-if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
+if $(layout-versioned) 
+  && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
 {
     rule make-unversioned-links ( project name ? : property-set : sources * )
     {
         local result ;
         local filtered ;
-        local pattern ;
+        local pattern ;        
         local nt = [ modules.peek : NT ] ;
-
+        
         # Collect the libraries that have the version number in 'filtered'.
         for local s in $(sources)
         {
@@ -412,23 +410,23 @@ if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
             }
             else
             {
-                m = [ MATCH "(.*[.]so[.0-9]+)" "(.*[.]dylib)" "(.*[.]a)" :
-                    [ $(s).name ] ] ;
-            }
+                m = [ MATCH "(.*[.]so[.0-9]+)" "(.*[.]dylib)" "(.*[.]a)" : [ $(s).name ] ] ;
+            }            
             if $(m)
             {
                 filtered += $(s) ;
             }
         }
-
+        
         # Create links without version.
         for local s in $(filtered)
         {
             local name = [ $(s).name ] ;
             local ea = [ $(s).action ] ;
             local ep = [ $(ea).properties ] ;
-            local a  = [ new non-scanning-action $(s) : symlink.ln : $(ep) ] ;
-
+            local a  = [
+              new non-scanning-action $(s) : symlink.ln : $(ep) ] ;
+            
             local noversion-file ;
             if $(nt)
             {
@@ -436,33 +434,33 @@ if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
             }
             else
             {
-                noversion-file =
-                  [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(name) ]
-                  [ MATCH "(.*)-[0-9_]+([.]dylib)" : $(name) ]
-                  [ MATCH "(.*)-[0-9_]+([.]a)" : $(name) ]
+                noversion-file = 
+                  [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(name) ] 
+                  [ MATCH "(.*)-[0-9_]+([.]dylib)" : $(name) ] 
+                  [ MATCH "(.*)-[0-9_]+([.]a)" : $(name) ] 
                   [ MATCH "(.*)-[0-9_]+([.]dll[.]a)" : $(name) ] ;
             }
-
-            local new-name =
+                        
+            local new-name = 
                $(noversion-file[1])$(noversion-file[2]) ;
             result += [ new file-target $(new-name) exact : [ $(s).type ] : $(project)
                     : $(a) ] ;
 
         }
         return $(result) ;
-    }
-
-    generate stage-unversioned : stage-proper :
-        <generating-rule>@make-unversioned-links ;
+    }    
+            
+    generate stage-unversioned : stage-proper : 
+      <generating-rule>@make-unversioned-links ;
     explicit stage-unversioned ;
-
-    generate install-unversioned : install-proper :
-        <generating-rule>@make-unversioned-links ;
+    
+    generate install-unversioned : install-proper : 
+      <generating-rule>@make-unversioned-links ;
     explicit install-unversioned ;
 }
 else
 {
-    # Create do-nothing aliases.
+    # Create do-nothing aliases
     alias stage-unversioned ;
     explicit stage-unversioned ;
     alias install-unversioned ;
@@ -475,25 +473,23 @@ explicit install ;
 explicit stage ;
 
 
-# Just build the libraries, don't install them anywhere. This is what happens
-# with just "bjam --v2".
+# Just build the libraries, don't install them anywhere.
+# This is what happens with just "bjam --v2".
 alias build_all : libs/$(libraries)/build ;
 
-
-# This rule should be called from libraries' Jamfiles and will create two
-# targets, "install" and "stage", that will install or stage that library. The
-# --prefix option is respected, but --with and --without options, naturally, are
-# ignored.
+# This rule should be called from libraries' Jamfiles and will
+# create two targets, "install" and "stage", that will install
+# or stage that library. The --prefix option is respected, but
+# --with and --without options, naturally, are ignored.
 #
 # - libraries -- list of library targets to install.
-#
 rule boost-install ( libraries * )
 {
     package.install install
-        : <dependency>/boost//install-proper-headers $(install-requirements)
+        : <dependency>/boost//install-headers $(install-requirements)
         : # No binaries
         : $(libraries)
-        : # No headers, it is handled by the dependency.
+        : # No headers, it's handled by the dependency
     ;
 
     install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;
@@ -506,7 +502,6 @@ rule boost-install ( libraries * )
         explicit install ;
     }
 }
-
 
 # Make project ids of all libraries known.
 for local l in $(all-libraries)
