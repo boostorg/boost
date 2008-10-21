@@ -3,7 +3,8 @@
 # Build release packages
 
 # Copyright 2008 Beman Dawes
-# Distributed under the Boost Software License, Version 1.0. See http://www.boost.org/LICENSE_1_0.txt
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
 
 if [ $# -lt 1 ]
 then
