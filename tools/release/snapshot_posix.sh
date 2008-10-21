@@ -10,8 +10,11 @@ echo "Build a branches/release snapshot for POSIX, using LF line termination..."
 
 echo "Removing old files..."
 rm -r -f posix
+rm -r -f svn_info
 
 echo "Exporting files from subversion..."
+# leave an audit trail, which is used by inspect to determine revision number
+svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
 echo "Building docs..."
