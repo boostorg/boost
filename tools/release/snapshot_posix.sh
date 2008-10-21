@@ -16,7 +16,7 @@ svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/bran
 
 echo "Building docs..."
 pushd posix/doc
-bjam-cygwin --v2 --toolset=gcc &>../../posix-bjam.log
+bjam --v2 --toolset=gcc &>../../posix-bjam.log
 popd
 
 echo "Cleaning up and renaming..."
