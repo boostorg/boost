@@ -20,7 +20,7 @@ __ ../../index.htm
   if you've got an Internet connection available.
 
   .. _`Boost website version of this Getting Started guide`:
-       http://www.boost.org/doc/libs/1_36_0/more/getting_started/index.html
+       http://www.boost.org/doc/libs/release/more/getting_started/index.html
 
 Welcome
 -------
