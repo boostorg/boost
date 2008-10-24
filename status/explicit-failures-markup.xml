@@ -1856,9 +1856,12 @@
     <library name="integer">
         <mark-expected-failures>
             <test name="integer_test"/>
+            <toolset name="acc"/>
             <toolset name="gcc-4.2.1_hpux_ia64"/>
             <note author="Boris Gubenko">
-                When compiling and linking this test, ld takes segmentation fault.
+                When compiling with aC++, depending on system load, the compile time may exceed
+                specified timeout value. The test passes when the timeout value is increased.
+                When compiling with GCC, linker takes segmentation fault.
                 In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.  
             </note>
         </mark-expected-failures>
