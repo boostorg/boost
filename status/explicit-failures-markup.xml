@@ -59,12 +59,17 @@
       </mark-expected-failures>
       <mark-expected-failures>
         <test name="weighted_tail_variate_means"/>
-        <toolset name="acc"/>
         <toolset name="hp_cxx-71*"/>
         <note author="Markus Schoepflin">
           This failure is caused by a timeout when compiling the test. It
           passes when the timeout value is increased.
         </note>
+      </mark-expected-failures>
+      <mark-expected-failures>
+        <test name="weighted_pot_quantile"/>
+        <test name="weighted_tail_variate_means"/>
+        <toolset name="acc"/>
+        <note author="Boris Gubenko" refid="47"/>
       </mark-expected-failures>
     </library>
 
@@ -2901,10 +2906,7 @@ for more information.
             <test name="karma_pattern*"/>
             <test name="rule"/>
             <toolset name="acc"/>
-            <note author="Boris Gubenko">
-                This failure is caused by a timeout when compiling the test.
-                It passes when the timeout value is increased.
-            </note>
+            <note author="Boris Gubenko" refid="47"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="lexertl3"/>
@@ -3219,6 +3221,7 @@ for more information.
        </mark-expected-failures>
        <mark-expected-failures>
           <test name="test_policy_2"/>
+          <toolset name="acc"/>
           <toolset name="gcc-mingw-3.4.5"/>
           <note author="John Maddock">
              This test takes too long to build for this compiler and times out.
@@ -6150,6 +6153,11 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
         The test does not compile, most likely because of new version of EDG Front End
         implementing Core Issue 574. In the HP bug tracking system, it is tracked as
         QuIX ID: QXCR1000804484.
+    </note>
+
+    <note id="47">
+        Depending on system load, the compile time may exceed specified timeout value.
+        The test passes when the timeout value is increased.
     </note>
 
 </explicit-failures-markup>
