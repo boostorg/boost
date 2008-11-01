@@ -38,7 +38,7 @@ message(STATUS " BJAM BASED SYSTEM INSTEAD. IF YOU STILL WANT TO TRY IT OUT PLEA
 message(STATUS " OUT THE LINE 'message(FATAL_ERROR \"\")' THAT APPEARS IN THE FILE    ")
 message(STATUS " ${Boost_SOURCE_DIR}/CMakeLists.txt FILE.")
 message(STATUS "##########################################################################")
-#message(FATAL_ERROR "")
+message(FATAL_ERROR "")
 
 ##########################################################################
 # Version information                                                    #
