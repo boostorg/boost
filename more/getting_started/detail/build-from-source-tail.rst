@@ -23,6 +23,11 @@ be interested in:
 * choosing a specific build variant by adding ``release`` or
   ``debug`` to the command line.
 
+.. Note:: Boost.Build can produce a great deal of output, which can
+     make it easy to miss problems.  If you want to make sure
+     everything is went well, you might redirect the output into a
+     file by appending “``>build.log 2>&1``” to your command line.
+
 Expected Build Output
 ---------------------
 
