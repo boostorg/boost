@@ -31,4 +31,8 @@
 
 .. |command-line tool| replace:: `command-line tool`_
 
+.. |pathsep| replace:: semicolon
+
+.. |path| replace:: ``PATH``
+
 .. include:: common.rst
