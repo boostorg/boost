@@ -20,5 +20,8 @@
 
 .. |command-line tool| replace:: command-line tool
 
+.. |pathsep| replace:: colon
+
+.. |path| replace:: ``echo $PATH``
 
 .. include:: common.rst
