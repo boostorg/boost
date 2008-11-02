@@ -142,12 +142,7 @@ For example, your session might look like this:
    $ cd ~/|boost_ver|
    $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc stage
 
-That will build static and shared non-debug multi-threaded variations of the libraries. To build all variations:
-
-.. parsed-literal::
-
-   $ cd ~/|boost_ver|
-   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc **--build-type=complete** stage
+That will build static and shared non-debug multi-threaded variants of the libraries. To build all variants, pass the additional option, “``--build-type=complete``”.
 
 .. include:: detail/build-from-source-tail.rst
 
@@ -236,6 +231,8 @@ Spoil Rock Hunter?”
 
 .. [#lowercase-l] That option is a dash followed by a lowercase “L”
    character, which looks very much like a numeral 1 in some fonts.
+
+.. |build-type-complete| replace:: `` `` 
 
 .. include:: detail/common-footnotes.rst
 .. include:: detail/release-variables.rst

@@ -35,14 +35,16 @@ __ ../../index.htm
 Get Boost
 =========
 
-The easiest way to get a copy of Boost is to use an installer.
-The `Boost website version of this Getting Started guide`_ will
-have undated information on installers as they become available,
-or see `Boost downloads`_ or the installer_ provided by `BoostPro Computing`_.  We especially recommend using
-an installer if you use Microsoft Visual Studio, because the installer can download and install
-precompiled library binaries, saving you the trouble of building
-them yourself.  To complete this tutorial, you'll need to at least
-install the Boost.Regex_ binaries when given the option.
+The easiest way to get a copy of Boost is to use an installer.  The
+`Boost website version of this Getting Started guide`_ will have
+undated information on installers as they become available, or see
+`Boost downloads`_ or the installer_ provided by `BoostPro
+Computing`_.  We especially recommend using an installer if you use
+Microsoft Visual Studio, because the installer can download and
+install precompiled library binaries, saving you the trouble of
+building them yourself.  To complete this tutorial, you'll need to at
+least install the Static Multithreaded variants of the Boost.Regex_
+binaries when given the option.
 
 .. _`Boost website version of this Getting Started guide`:
        http://www.boost.org/doc/libs/1_36_0/more/getting_started/index.html
@@ -186,7 +188,7 @@ To test the result, type:
 Install Visual Studio Binaries
 ------------------------------
 
-The installers will download and
+The installers supplied by BoostPro Computing will download and
 install pre-compiled binaries into the ``lib\`` subdirectory of the
 boost root, typically |default-root|\ ``\lib\``.  If you installed
 all variants of the Boost.Regex_ binary, you're done with this
@@ -213,20 +215,15 @@ For example, your session might look like this: [#continuation]_
    C:\\WINDOWS> cd |default-root|
    |default-root|> bjam **^**
    More? **--build-dir=**\ "C:\\Documents and Settings\\dave\\build-boost" **^**
-   More? **--toolset=**\ msvc stage
+   More? **--toolset=**\  **--build-type=complete** msvc stage
 
 Be sure to read `this note`__ about the appearance of ``^``,
 ``More?`` and quotation marks (``"``) in that line.
 
-The above example session will build static and shared non-debug multi-threaded
-variations of the libraries. To build all variations:
-
-.. parsed-literal::
-
-   C:\\WINDOWS> cd |default-root|
-   |default-root|> bjam **^**
-   More? **--build-dir=**\ "C:\\Documents and Settings\\dave\\build-boost" **^**
-   More? **--toolset=**\ msvc **--build-type=complete** stage
+The option “\ **--build-type=complete**\ ” causes ``bjam`` to build
+all supported variants of the libraries.  For instructions on how to
+build only specific variants, please ask on the `Boost.Build mailing
+list`_.
 
 __ continuation_
 
@@ -355,6 +352,7 @@ Spoil Rock Hunter?”
 
 .. _`boost.zip`: `sf-download`_
 
+.. |build-type-complete| replace:: **--build-type=complete**
 
 .. include:: detail/common-footnotes.rst
 .. include:: detail/release-variables.rst

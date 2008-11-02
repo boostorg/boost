@@ -6,7 +6,7 @@ Boost.Build_ is a text-based system for developing, testing, and
 installing software.  To use it, you'll need an executable called
 ``bjam``.
 
-.. |precompiled-bjam| replace:: pre-compiled ``bjam`` executables
+.. |precompiled-bjam| replace:: download a pre-built ``bjam`` executable
 
 
 .. _precompiled-bjam: http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=72941
@@ -22,12 +22,15 @@ Get ``bjam``
 system.  To build Boost binaries, you'll invoke ``bjam`` from the
 Boost root.  
 
-Boost provides |precompiled-bjam|_ for a variety of platforms.
+We suggest you |precompiled-bjam|_ for your platform.
 Alternatively, you can build ``bjam`` yourself using `these
 instructions`__.
 
 __ `building bjam`_
 
+Move the ``bjam`` executable into a directory in your PATH.  You can
+see the list of directories in your PATH, separated by |pathsep|\ s,
+by typing “\ |path|\ ” at the command prompt.
 
 .. _toolset:
 .. _toolset-name:
@@ -123,4 +126,4 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam **--build-dir=**\ |build-directory|_ **--toolset=**\ |toolset-name|_ *[*\ **--build-type=complete**\ *]* stage
+  bjam **--build-dir=**\ |build-directory|_ **--toolset=**\ |toolset-name|_ |build-type-complete| stage
