@@ -444,15 +444,15 @@ if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
             local noversion-file ;
             if $(nt)
             {
-                noversion-file = [ MATCH "(.*)-[0-9_]+([.]lib)" : $(name) ] ;
+                noversion-file = [ MATCH "(.*)-[0-9_]+(.*[.]lib)" : $(name) ] ;
             }
             else
             {
                 noversion-file =
-                  [ MATCH "(.*)-[0-9_]+([.]so)[.0-9]*" : $(name) ]
-                  [ MATCH "(.*)-[0-9_]+([.]dylib)" : $(name) ]
-                  [ MATCH "(.*)-[0-9_]+([.]a)" : $(name) ]
-                  [ MATCH "(.*)-[0-9_]+([.]dll[.]a)" : $(name) ] ;
+                  [ MATCH "(.*)-[0-9_]+(.*[.]so)[.0-9]*" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+(.*[.]dylib)" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+(.*[.]a)" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+(.*[.]dll[.]a)" : $(name) ] ;
             }
 
             local new-name =
