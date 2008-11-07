@@ -38,7 +38,7 @@ message(STATUS " BJAM BASED SYSTEM INSTEAD. IF YOU STILL WANT TO TRY IT OUT PLEA
 message(STATUS " OUT THE LINE 'message(FATAL_ERROR \"\")' THAT APPEARS IN THE FILE    ")
 message(STATUS " ${Boost_SOURCE_DIR}/CMakeLists.txt FILE.")
 message(STATUS "##########################################################################")
-message(FATAL_ERROR "")
+#message(FATAL_ERROR "")
 
 ##########################################################################
 # Version information                                                    #
@@ -56,6 +56,7 @@ set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+if (FALSE)
 # ---------- Setup output Directories -------------------------
 SET (LIBRARY_OUTPUT_PATH
   ${PROJECT_BINARY_DIR}/lib
@@ -69,7 +70,7 @@ SET (EXECUTABLE_OUTPUT_PATH
   CACHE PATH
   "Directory for all Executables."
   )
-  
+endif(FALSE) 
 
   
 ##########################################################################
@@ -241,6 +242,6 @@ add_subdirectory(${BOOST_LIBS_DIR})
 
 # Add build rules for all of the Boost tools
 # TODO: On hold while I work on the modularity code
-# add_subdirectory(tools)
+add_subdirectory(tools)
 ##########################################################################
 
