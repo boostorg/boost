@@ -5695,6 +5695,21 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
         </mark-expected-failures>
     </library>
 
+    <!-- utility/swap -->
+    <library name="utility/swap">
+        <mark-expected-failures>
+          <test name="specialized_in_std"/>
+            <toolset name="borland-6.10.0"/>
+          <note author="Niels Dekker" date="2008-11-11">
+            The definition of a custom template specialization of std::swap
+            appears to trigger an Internal compiler error ("Fatal F1004") on
+            Codegear/Borland 6.10.0.  Nicola Musatti helped me with this issue.
+            See also: "[boost] [utility/swap] Internal compiler error
+            Siliconman borland-6.10.0 (CodeGear?)",
+            http://lists.boost.org/Archives/boost/2008/11/144465.php
+          </note>
+        </mark-expected-failures>
+    </library>
 
     <!-- utility -->
     <library name="utility">
