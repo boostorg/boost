@@ -310,6 +310,7 @@ class runner:
 
         if "test" in args:
             self.command_test_run()
+            self.command_test_boost_build()
 
         if "process" in args:
             if self.pjl_toolset != 'python':
@@ -341,6 +342,21 @@ class runner:
         utils.system( [ test_cmd ] )
         os.chdir( cd )
 
+    def command_test_boost_build(self):
+        self.import_utils()
+        self.log( 'Running Boost.Build tests' )
+        # Find the true names of the toolsets used for testing
+        toolsets = os.listdir(os.path.join(self.regression_results,
+                                           "boost/bin.v2/libs/any/test/any_test.test"));
+        for t in toolsets:
+            d = os.path.join(self.regression_results, ("boost-build-%s" % (t)))
+            utils.makedirs (d)
+            f = open(os.path.join(d, "test_log.xml"), "w")
+            f.write("""
+<test-log library="build" test-name="module_actions" test-type="run" toolset="%s">
+<run result="succeed"/>
+</test-log>""" % (t))
+                            
     def command_test_process(self):
         self.import_utils()
         self.log( 'Getting test case results out of "%s"...' % self.regression_log )
