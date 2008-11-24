@@ -32,13 +32,16 @@ project(Boost)
 # Post a warning to those attempting to use the CMake Build system. When #
 # the build system stabilizes this can be removed.                       #
 ##########################################################################
+if (NOT CMAKE_IS_EXPERIMENTAL)
 message(STATUS "##########################################################################")
 message(STATUS " THE CMAKE BUILD SYSTEM IS CURRENTLY UNDER DEVELOPMENT. PLEASE USE THE    ")
-message(STATUS " BJAM BASED SYSTEM INSTEAD. IF YOU STILL WANT TO TRY IT OUT PLEASE COMMENT")
-message(STATUS " OUT THE LINE 'message(FATAL_ERROR \"\")' THAT APPEARS IN THE FILE    ")
-message(STATUS " ${Boost_SOURCE_DIR}/CMakeLists.txt FILE.")
+message(STATUS " BJAM BASED SYSTEM INSTEAD TO BUILD A PRODUCTION VERSION OF BOOST. IF YOU ")
+message(STATUS " STILL WANT TO TRY IT OUT INVOKE CMake WITH '-DCMAKE_IS_EXPERIMENTAL:boolean=TRUE'")
+message(STATUS " ARGUMENT. After this first run of cmake you will no longer have to supply")
+message(STATUS " the argument unless you need to run a cmake on a clean build directory.")
 message(STATUS "##########################################################################")
-#message(FATAL_ERROR "")
+message(FATAL_ERROR "")
+endif (NOT CMAKE_IS_EXPERIMENTAL)
 
 ##########################################################################
 # Version information                                                    #
@@ -55,24 +58,8 @@ set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION
 # tree rather than installed Boost libraries.
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-if (FALSE)
-# ---------- Setup output Directories -------------------------
-SET (LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/lib
-  CACHE PATH
-  "Directory for all Libraries"
-  )
-
-# --------- Setup the Executable output Directory -------------
-SET (EXECUTABLE_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/bin
-  CACHE PATH
-  "Directory for all Executables."
-  )
-endif(FALSE) 
-
-  
 ##########################################################################
 # Boost CMake modules                                                    #
 ##########################################################################
@@ -212,7 +199,7 @@ include(CPack)
 
 if(COMMAND cpack_configure_downloads)
   cpack_configure_downloads(
-  "http://www.osl.iu.edu/~dgregor/Boost-CMake/1.36.0/"
+  "http://www.osl.iu.edu/~dgregor/Boost-CMake/${BOOST_VERSION}/"
     ALL ADD_REMOVE)
 endif()
 ##########################################################################
