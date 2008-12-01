@@ -48,7 +48,7 @@ do
             cd >nul test
             echo $lib_name
             echo >>../../../status/library_status_contents.html "<a target=\"detail\" href=\"../libs/$lib_name/test/library_status.html\">$lib_name</a><br>"
-            ../../../tools/regression/library_test $@
+            ../../../tools/regression/src/library_test.sh $@
             cd >nul ..
         fi
 
@@ -62,7 +62,7 @@ do
                     cd >nul test
                     echo $lib_name/$sublib_name
                     echo >>../../../../status/library_status_contents.html "<a target=\"detail\" href=\"../libs/$lib_name/$sublib_name/test/library_status.html\">$lib_name/$sublib_name</a><br>"
-                    ../../../../tools/regression/library_test $@
+                    ../../../../tools/regression/src/library_test.sh $@
                     cd >nul ..
                 fi
                 cd >nul ..
