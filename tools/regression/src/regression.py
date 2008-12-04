@@ -153,6 +153,10 @@ class runner:
             self.patch_boost = 'patch_boost.bat'
             self.bjam = { 'name' : 'bjam.exe' }
             self.process_jam_log = { 'name' : 'process_jam_log.exe' }
+        elif sys.platform == 'cygwin':
+            self.patch_boost = 'patch_boost'
+            self.bjam = { 'name' : 'bjam.exe' }
+            self.process_jam_log = { 'name' : 'process_jam_log.exe' }
         else:
             self.patch_boost = 'patch_boost'
             self.bjam = { 'name' : 'bjam' }
