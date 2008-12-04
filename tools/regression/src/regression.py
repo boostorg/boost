@@ -351,11 +351,16 @@ class runner:
         for t in toolsets:
             d = os.path.join(self.regression_results, ("boost-build-%s" % (t)))
             utils.makedirs (d)
-            f = open(os.path.join(d, "test_log.xml"), "w")
-            f.write("""
-<test-log library="build" test-name="module_actions" test-type="run" toolset="%s">
-<run result="succeed"/>
-</test-log>""" % (t))
+            fn = os.path.join(d, "test_log.xml")
+            cd = os.getcwd()
+            try:                
+                os.chdir (os.path.join (self.boost_root, 'tools/build/v2/test'));
+                bjam_path = os.path.dirname (self.tool_path( self.bjam ))
+                self.log( "Using bjam binary in '%s'" % (bjam_path))
+                os.putenv('PATH', bjam_path + os.pathsep + os.environ['PATH'])
+                utils.system ( [ "%s test_all.py --default-bjam --xml %s > %s" % (sys.executable, t, fn) ] )
+            finally:
+                os.chdir( cd )
                             
     def command_test_process(self):
         self.import_utils()
