@@ -20,12 +20,12 @@ svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/br
 #pushd windows/doc
 #bjam-cygwin --v2 --toolset=gcc &>../../windows-bjam.log
 #popd
-
-echo "Copying docs from posix tree..."
-cp --recursive posix/doc/html windows/doc
+#
+#echo "Copying docs from posix tree..."
+#cp --recursive posix/doc/html windows/doc
 
 echo "Cleaning up and renaming..."
-rm -r windows/bin.v2
+#rm -r windows/bin.v2
 SNAPSHOT_DATE=`eval date +%Y-%m-%d`
 echo SNAPSHOT_DATE is $SNAPSHOT_DATE
 mv windows boost-windows-$SNAPSHOT_DATE

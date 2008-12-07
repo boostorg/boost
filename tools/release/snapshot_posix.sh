@@ -18,13 +18,19 @@ echo "Exporting files from subversion..."
 svn co --non-recursive http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
-echo "Building docs..."
-pushd posix/doc
-bjam --v2 --toolset=gcc &>../../posix-bjam.log
-popd
+#echo "Building bjam..."
+# failure to use an up-to-date copy of bjam has caused much wasted effort.
+#pushd posix/tools/jam/src
+#./build.sh gcc
+#popd
+#
+#echo "Building docs..."
+#pushd posix/doc
+#../tools/jam/src/bin.cygwinx86/bjam --toolset=gcc &>../../posix-bjam.log
+#popd
 
 echo "Cleaning up and renaming..."
-rm -r posix/bin.v2
+#rm -r posix/bin.v2
 SNAPSHOT_DATE=`eval date +%Y-%m-%d`
 echo SNAPSHOT_DATE is $SNAPSHOT_DATE
 mv posix boost-posix-$SNAPSHOT_DATE
