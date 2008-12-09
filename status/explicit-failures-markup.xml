@@ -5768,6 +5768,18 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
             http://qc.codegear.com/wc/qcmain.aspx?d=69196
           </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="array_of_array_of_class"/>
+          <test name="array_of_array_of_int"/>
+            <toolset name="borland-5.9.3"/>
+          <note refid="3" author="Niels Dekker" date="2008-12-09">
+            Borland 5.9.3 has an error (E2285) when trying to pass a
+            multi-dimensional array by reference to a function template.
+            A bug report by Christopher Yeleighton appears related:
+            "The compiler obligatorily converts member arrays to pointers" 
+            http://qc.codegear.com/wc/qcmain.aspx?d=10267
+          </note>
+        </mark-expected-failures>
     </library>
 
     <!-- utility -->
