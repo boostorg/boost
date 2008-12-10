@@ -182,7 +182,7 @@ def upload_to_ftp( tag, results_file, ftp_proxy, debug_level, ftp_url ):
     
     if not ftp_url:
         ftp_host = 'boost.cowic.de'
-        ftp_url = ''.join(['ftp','://anonymous','@',ftp_host,'/boost/test/results/'])
+        ftp_url = ''.join(['ftp','://anonymous','@',ftp_host,'/boost/do-not-publish-this-url/results/'])
     utils.log( 'Uploading log archive "%s" to %s/%s' % ( results_file, ftp_url, tag ) )
     
     ftp_parts = urlparse.urlparse(ftp_url)
