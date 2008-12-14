@@ -62,4 +62,4 @@ echo "Running ftp script..."
 # use cygwin ftp rather than Windows ftp
 /usr/bin/ftp -v -i boost.cowic.de <posix.ftp
 
-echo "POSIX snapshot complete!
+echo POSIX snapshot complete!
