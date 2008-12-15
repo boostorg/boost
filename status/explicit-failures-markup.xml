@@ -27,6 +27,7 @@
     <mark-toolset name="gcc-4.1.2_sunos_i86pc" status="required"/>
     <mark-toolset name="gcc-4.1.3_linux" status="required"/>
     <mark-toolset name="gcc-4.2.1" status="required"/>
+    <mark-toolset name="gcc-4.2.1_hpux_ia64" status="required"/>
     <mark-toolset name="gcc-4.2.1_linux_x86_64" status="required"/>
     <mark-toolset name="intel-linux-9.0" status="required"/>
     <mark-toolset name="intel-vc8-win-10.0" status="required"/>
@@ -63,6 +64,16 @@
           This failure is caused by a timeout when compiling the test. It
           passes when the timeout value is increased.
         </note>
+      </mark-expected-failures>
+      <mark-expected-failures>
+        <test name="covariance"/>
+        <test name="pot_quantile"/>
+        <test name="tail_variate_means"/>
+        <test name="weighted_covariance"/>
+        <test name="weighted_pot_quantile"/>
+        <test name="weighted_tail_variate_means"/>
+        <toolset name="acc"/>
+        <note author="Boris Gubenko" refid="47"/>
       </mark-expected-failures>
     </library>
 
@@ -1432,6 +1443,35 @@
         </mark-expected-failures>
       </library>
 
+    <!-- flyweight -->
+    <library name="flyweight">
+        <mark-expected-failures>
+            <test name="test_intermod_holder"/>
+            <toolset name="borland-5.*"/>
+            <toolset name="borland-6.10.0"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="msvc-6.5*"/>
+            <toolset name="cw-9.*"/>
+            <toolset name="gcc-2.95*"/>
+            <toolset name="gcc-3.0*"/>
+            <toolset name="gcc-3.1*"/>
+            <toolset name="gcc-3.2*"/>
+            <toolset name="gcc-3.3*"/>
+            <toolset name="gcc-4.2.1_hpux_ia64"/>
+            <toolset name="mipspro"/>
+            <toolset name="acc*"/>
+            <toolset name="msvc-8.0~wm5*"/>
+            <toolset name="vacpp*"/>
+            <toolset name="pathscale*"/>
+            <toolset name="intel-linux-8.*"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
+            <note author="J. L&#195;&#179;pez" date="03 Dec 2008">
+                This compiler does not support Boost.Interprocess,
+                on which intermodule_holder depends.
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- foreach -->
     <library name="foreach">
         <mark-unusable>
@@ -1736,8 +1776,12 @@
           <toolset name="acc"/>
           <note author="Boris Gubenko" refid="46"/>
       </mark-expected-failures>
+      <mark-expected-failures>
+          <test name="image"/>
+          <toolset name="acc"/>
+          <note author="Boris Gubenko" refid="47"/>
+      </mark-expected-failures>
     </library>
-
 
     <!-- graph -->
     <library name="graph">
@@ -1851,6 +1895,21 @@
         </mark-expected-failures>
     </library>
 
+    <!-- integer -->
+    <library name="integer">
+        <mark-expected-failures>
+            <test name="integer_test"/>
+            <toolset name="acc"/>
+            <toolset name="gcc-4.2.1_hpux_ia64"/>
+            <note author="Boris Gubenko">
+                When compiling with aC++, depending on system load, the compile time may exceed
+                specified timeout value. The test passes when the timeout value is increased.
+                When compiling with GCC, linker takes segmentation fault.
+                In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.  
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- interprocess-->
     <library name="interprocess">
         <mark-unusable>
@@ -1863,13 +1922,13 @@
             <toolset name="gcc-3.1*"/>
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
+            <toolset name="gcc-4.2.1_hpux_ia64"/>
             <toolset name="mipspro"/>
             <toolset name="acc*"/>
             <toolset name="msvc-8.0~wm5*"/>
             <toolset name="vacpp*"/>
             <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
-            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
             <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
@@ -1906,6 +1965,12 @@
                 The compiler is not supported by Interprocess.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="unordered_multiset_test"/>
+          <test name="unordered_set_test"/>
+          <toolset name="acc"/>
+          <note author="Boris Gubenko" refid="47"/>
+        </mark-expected-failures>
     </library>
 
     <!-- io-->
@@ -1941,19 +2006,53 @@
 
     <!-- iostreams -->
     <library name="iostreams">
-        <mark-unusable>
-            <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="dmc-8_43-stlport-4_5_3"/>
-            <note author="Jonathan Turkanis" refid="17"/>
-        </mark-unusable>
         <mark-expected-failures>
-            <!-- STLPort bug -->
+            <test name="auto_close_test"/>
+            <test name="component_access_test"/>
+            <test name="compose_test"/>
+            <test name="counter_test"/>
+            <test name="filtering_stream_test"/>
+            <test name="flush_test"/>
+            <test name="line_filter_test"/>
+            <test name="newline_test"/>
+            <test name="pipeline_test"/>
+            <test name="regex_filter_test"/>
+            <test name="restrict_test"/>
             <test name="seekable_file_test"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <test name="seekable_filter_test"/>
+            <test name="sequence_test"/>
+            <test name="slice_test"/>
+            <test name="stdio_filter_test"/>
+            <test name="tee_test"/>
+            <test name="wide_stream_test"/>
+            <toolset name="sun-5.7"/>
+            <toolset name="sun-5.8"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bzip2_test"/>
+            <toolset name="gcc-3.4.3_sunos"/>
+            <note author="Caleb Epstein">
+                No bzip2 support on the testing machine and no way to
+                disable this test with BBv2 at present.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="bzip2_test"/>
+            <test name="file_descriptor_test"/>
+            <test name="mapped_file_test"/>
             <toolset name="*como-4_3_3*"/>
-            <toolset name="*stlport"/>
-            <note author="Jonathan Turkanis" refid="4"/>
+            <note author="Jonathan Turkanis">
+                compiler can't compile "windows.h" in strict mode
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="code_converter_test"/>
+            <toolset name="pgi-7.0"/>
+            <note author="Jonathan Turkanis">
+                This platform lacks the placement delete operator
+                required by the C++ standard
+            </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <!-- Insufficient wide character support -->
@@ -1967,6 +2066,7 @@
             <toolset name="gcc-3.4.5_mingw"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-3.3.6-osf1"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
             <note author="Jonathan Turkanis" refid="19"/>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -1975,75 +2075,6 @@
             <test name="wide_stream_test"/>
             <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="bzip2_test"/>
-            <test name="file_descriptor_test"/>
-            <test name="mapped_file_test"/>
-            <toolset name="*como-4_3_3*"/>
-            <note author="Jonathan Turkanis">
-                compiler can't compile "windows.h" in strict mode
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="gzip_test"/>
-            <test name="zlib_test"/>
-            <toolset name="como-4_3_3-vc7_1"/>
-            <note author="Jonathan Turkanis">
-                The failure reflects a problem with the build system: the zlib
-                object files are generated in the wrong directory.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="stdio_filter_test"/>
-            <toolset name="*como-4_3_3*"/>
-            <note author="Jonathan Turkanis" refid="0"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="direct_adapter_test"/>
-            <test name="gzip_test"/>
-            <toolset name="gcc-2.95.3-linux"/>
-            <note author="Jonathan Turkanis" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="file_descriptor_test"/>
-            <toolset name="gcc-3_4_4-cygwin"/>
-            <note author="Jonathan Turkanis" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="finite_state_filter_test"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="borland-5.8*"/>
-            <toolset name="borland-5.9*"/>
-            <toolset name="msvc-6.5*"/>
-            <toolset name="msvc-7.0"/>
-            <toolset name="gcc-2.95.3*"/>
-            <note author="Jonathan Turkanis" refid="2"/>
-        </mark-expected-failures>
-        <mark-expected-failures>
-          <test name="finite_state_filter_test"/>
-          <toolset name="cw-9.4"/>
-          <note author="Jonathan Turkanis" date="20 Dec 06">
-            I'm not sure whether CodeWarrior is correct to report that the member
-            in question is inaccessible; however, when the member is made public
-            an internal error occur that I have not been able to fix, so for
-            now the question is moot.
-          </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="mapped_file_test"/>
-            <toolset name="qcc-3.3*"/>
-            <note author="Jim Douglas" date="19 Feb 06">
-                Memory mapped files are not supported in QNX Neutrino version 6.3.0.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="compose_test"/>
-            <toolset name="borland-5.6*"/>
-            <note author="Jonathan Turkanis">
-                Fails to compile on some installations but not others; may
-                depend on which compiler updates have been installed
-            </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="compose_test"/>
@@ -2062,22 +2093,137 @@
                 the test succeeds.
             </note>
         </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="bzip2_test"/>
-            <toolset name="gcc-3.4.3_sunos"/>
-            <note author="Caleb Epstein">
-                No bzip2 support on the testing machine and no way to
-                disable this test with BBv2 at present.
-            </note>
+        <mark-expected-failures reason="?">
+            <test name="direct_adapter_test"/>
+            <test name="gzip_test"/>
+            <toolset name="gcc-2.95.3-linux"/>
+            <note author="Jonathan Turkanis" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="file_descriptor_test"/>
             <toolset name="gcc-cygwin-3.4.4"/>
             <note author="Vladimir Prus">
-              The test fails at runtime for unknown reasons.
+                The test fails at runtime for unknown reasons.
             </note>
         </mark-expected-failures>
-
+        <mark-expected-failures reason="?">
+            <test name="file_descriptor_test"/>
+            <toolset name="gcc-3_4_4-cygwin"/>
+            <note author="Jonathan Turkanis" refid="29"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="finite_state_filter_test"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="borland-5.8*"/>
+            <toolset name="borland-5.9*"/>
+            <toolset name="msvc-6.5*"/>
+            <toolset name="msvc-7.0"/>
+            <toolset name="gcc-2.95.3*"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="vacpp"/>
+            <note author="Jonathan Turkanis" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="finite_state_filter_test"/>
+            <toolset name="cw-9.4"/>
+            <note author="Jonathan Turkanis" date="20 Dec 06">
+                I'm not sure whether CodeWarrior is correct to report that the member
+                in question is inaccessible; however, when the member is made public
+                an internal error occur that I have not been able to fix, so for
+                now the question is moot.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="gzip_test"/>
+            <test name="zlib_test"/>
+            <toolset name="como-4_3_3-vc7_1"/>
+            <note author="Jonathan Turkanis">
+                The failure reflects a problem with the build system: the zlib
+                object files are generated in the wrong directory.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="mapped_file_test"/>
+            <toolset name="qcc-3.3*"/>
+            <note author="Jim Douglas" date="19 Feb 06">
+                Memory mapped files are not supported in QNX Neutrino version 6.3.0.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="restrict_test"/>
+            <toolset name="vacpp"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                "restrict" is treated as a keyword on this platform (as in C99);
+                use the alias "slice" instead, defined in 
+                "boost/iostreams/slice.hpp."
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <!-- STLPort bug -->
+            <test name="seekable_file_test"/>
+            <toolset name="borland-5.6*"/>
+            <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
+            <toolset name="*como-4_3_3*"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="*stlport"/>
+            <toolset name="pgi-7.0"/>
+            <note author="Jonathan Turkanis" refid="4"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stdio_filter_test"/>
+            <toolset name="*como-4_3_3*"/>
+            <note author="Jonathan Turkanis" refid="0"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="borland-*"/>
+            <note author="Jonathan Turkanis" date="04 Jan 2008">
+                In the Dinkumware standard library, streampos relies on fpos_t 
+                to store stream offsets, but fpos_t is defined as a 32-bit 
+                long by the Borland runtime library. In Borland's modified
+                version of STLPort, streampos relies on streamoff to store
+                stream offsets, but streamoff is defined to be a 32-bit long.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="sun-5.*"/>
+            <note author="Jonathan Turkanis" date="06 Jan 2008">
+                In STLPort, streampos consists of a long together with a
+                conversion state; on this platform, long is a 32-bit type
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="vacpp*"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008">
+                On this platform, streampos is an alias for fpos, whose 
+                implementation stores stream offsets using streamsize and 
+                fpos_t; both of the latter types are 32-bit
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="intel-win-10.0_stdcxx_421"/>
+            <toolset name="msvc-7.1_stdcxx_421"/>
+            <toolset name="msvc-9.0_stdcxx_421"/>
+            <toolset name="intel-win-10.1_stdcxx_421"/>
+            <toolset name="intel-linux-10.1_stdcxx_421"/>
+            <toolset name="gcc-4.2.1_stdcxx_421"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008">
+                On this platform, streampos is an alias for ptrdiff_t, which
+                is an alias for a 32-bit type
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="stream_offset_64bit_test"/>
+            <toolset name="gcc-4.2"/>
+            <note author="Jonathan Turkanis" date="09 Jan 2008">
+              The following applies only to gcc-4.2 using the stdcxx 
+              standard library: On this platform, streampos is an alias for 
+              ptrdiff_t, which is an alias for a 32-bit type
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- lambda -->
@@ -2428,7 +2574,7 @@ for more information.
             <toolset name="gcc-3.4.6_linux_ia64"/>
             <toolset name="gcc-4.2.*"/>
             <toolset name="gcc-4.1.2_sunos_i86pc"/>
-        		<note author="Fernando Cacciola" refid="2"/>
+                <note author="Fernando Cacciola" refid="2"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="optional_test_ref_fail1"/>
@@ -2446,6 +2592,15 @@ for more information.
             <test name="optional_test_inplace_fail2"/>
             <toolset name="gcc-3_3-darwin"/>
             <note author="Fernando Cacciola" refid="2"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="optional_test"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Niels Dekker" date="2008-05-12">
+            MSVC 2003 (7.1) does not always do argument-dependent lookup (ADL), when it should.
+            This causes test failures when swapping boost::optional&lt;T&gt;, for
+            T = optional_swap_test::template_whose_default_ctor_should_be_used&lt;char&gt;.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -2497,11 +2652,10 @@ for more information.
     <!-- serialization -->
     <library name="serialization">
         <mark-unusable>
-            <toolset name="vacpp*" />
             <toolset name="mipspro*" />
             <toolset name="dmc*" />
             <toolset name="sunpro*" />
-            <note author="Robert Ramey" date="13 Jul 2004" refid="9,17,18"/>
+            <note author="Robert Ramey" date="13 Jul 2007" refid="9,17,18"/>
         </mark-unusable>
         <mark-unusable>
             <toolset name="gcc-2.95.3-linux"/>
@@ -2510,13 +2664,13 @@ for more information.
 
         <mark-expected-failures>
             <test name="*_warchive"/>
-            <test name="*_warchive_dll"/>
             <test name="test_codecvt_null"/>
             <test name="test_utf8_codecvt"/>
             <toolset name="mingw*"/>
             <toolset name="*mingw*"/>
             <toolset name="*cygwin*"/>
             <toolset name="gcc-2.95.3-linux"/>
+            <toolset name="*como-4_3_3*"/>
             <note author="Robert Ramey,Roland Schwarz" date="16 Feb 07" refid="19"/>
         </mark-expected-failures>
 
@@ -2524,14 +2678,6 @@ for more information.
             <test name="test_void_cast*"/>
             <toolset name="msvc-6.5*"/>
             <note author="Robert Ramey" date="20 Sep 2004" refid="16,29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="*_warchive"/>
-            <test name="test_codecvt_null"/>
-            <test name="test_utf8_codecvt"/>
-            <toolset name="*como-4_3_3*"/>
-            <note author="Robert Ramey" date="12 Feb 05" refid="5"/>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -2552,29 +2698,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_demo"/>
-            <test name="test_demo_dll"/>
-            <test name="test_demo_exception"/>
-            <test name="test_demo_exception_dll"/>
-            <test name="test_demo_shared_ptr"/>
-            <test name="test_demo_shared_ptr_dll"/>
-            <test name="test_demo_xml_save"/>
-            <test name="test_demo_xml_load"/>
-            <test name="test_demo_xml_save_dll"/>
-            <test name="test_demo_xml_load_dll"/>
-            <toolset name="msvc-6.5*"/>
-            <toolset name="msvc-7.0"/>
-            <note author="Robert Ramey" refid="6"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_fast_archive"/>
-            <test name="test_demo_fast_archive_dll"/>
-            <toolset name="msvc-6.5*"/>
-            <note author="Robert Ramey" refid="6"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
             <test name="test_const"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
@@ -2583,10 +2706,8 @@ for more information.
 
         <mark-expected-failures>
             <test name="test_demo_pimpl"/>
-            <test name="test_demo_pimpl_dll"/>
             <test name="test_diamond*"/>
             <test name="test_mult_archive_types"/>
-            <test name="test_mult_archive_types_dll"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
             <note author="Robert Ramey" refid="6">
@@ -2626,11 +2747,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_demo"/>
-            <test name="test_demo_dll"/>
-            <test name="test_demo_exception*"/>
-            <test name="test_demo_shared_ptr*"/>
-            <test name="test_demo_xml*"/>
             <test name="test_exported*"/>
             <test name="test_mi*"/>
             <test name="test_mult_archive_types*"/>
@@ -2657,24 +2773,6 @@ for more information.
             <test name="test_smart_cast"/>
             <toolset name="intel-7.1-linux"/>
             <note author="Aleksey Gurtovoy" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="*_dll"/>
-            <toolset name="cw*"/>
-            <note author="Doug Gregor" refid="35"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_fast_archive"/>
-            <toolset name="cw-8*"/>
-            <note author="Rene Rivera">
-                This is caused by a compiler bug in this particular version, but not present
-                in version thereafter. The compiler has some difficulties resolving operators
-                to methods in the archive classes. This can be worked around by calling the
-                operator directly, and such a work around is already present in library code.
-                This test demonstrates that this can happen in user code.
-            </note>
         </mark-expected-failures>
 
         <mark-expected-failures>
@@ -2705,36 +2803,6 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-            <test name="test_const_load_fail1"/>
-            <test name="test_const_load_fail1_nvp"/>
-            <test name="test_const_load_fail2"/>
-            <test name="test_const_load_fail2_nvp"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="borland-5.8*"/>
-            <toolset name="borland-5.9*"/>
-            <note author="Doug Gregor" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_const_save_fail1"/>
-            <test name="test_const_save_fail2"/>
-            <test name="test_const_save_fail3"/>
-            <toolset name="msvc-6.5"/>
-            <toolset name="msvc-6.5_stlport4"/>
-            <toolset name="msvc-7.0"/>
-            <note author="Doug Gregor" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_map_binary_archive_dll"/>
-            <test name="test_map_text_archive_dll"/>
-            <test name="test_map_text_warchive_dll"/>
-            <toolset name="msvc-6.5"/>
-            <toolset name="msvc-7.0"/>
-            <note author="Doug Gregor" refid="29"/>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
             <test name="test_variant_*"/>
             <toolset name="hp_cxx-65*"/>
             <note author="Markus Schoepflin">
@@ -2745,7 +2813,6 @@ for more information.
 
         <mark-expected-failures>
             <test name="*_warchive"/>
-            <test name="*_warchive_dll"/>
             <toolset name="qcc-3.3.5*gpp"/>
             <note author="Jim Douglas" date="12 Feb 06" refid="36"/>
         </mark-expected-failures>
@@ -2758,29 +2825,6 @@ for more information.
                 The compiler fails with an error supposedly related to std::fpos&lt;&gt;::_Stz from the
         &lt;iosfwd&gt; header. It is not known what causes the compiler to instantiate this
         field and what causes the instantiation to fail.
-            </note>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_shared_ptr_dll"/>
-            <toolset name="qcc-3.3.5_gpp"/>
-            <note author="J. L&#195;&#179;pez" date="21 Dec 2006">
-              This failure is caused by an unresearched compiler bug; the
-              conditions under which the bug manifests itself seem to be
-              uncommon, however, and the static version of this same test
-              builds and runs correctly.
-            </note>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="test_demo_portable_archive"/>
-            <test name="test_demo_portable_archive_dll"/>
-            <toolset name="acc*"/>
-            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
-            <toolset name="gcc-4.2.1_hpux_ia64"/>
-            <note author="Boris Gubenko">
-              This failure is caused by serialization library bug in the
-              code visible only on big endian platforms.
             </note>
         </mark-expected-failures>
 
@@ -2901,6 +2945,28 @@ for more information.
             <test name="chset_tests*"/>
             <toolset name="iw-7_1-vc6-stlp-4_5_3"/>
             <note author="Aleksey Gurtovoy" refid="28"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="int_numerics"/>
+            <test name="karma_pattern*"/>
+            <test name="karma_sequence"/>
+            <test name="rule"/>
+            <test name="sequence"/>
+            <toolset name="acc"/>
+            <note author="Boris Gubenko" refid="47"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="lexertl3"/>
+            <test name="lexertl4"/>
+            <test name="lexertl5"/>
+            <toolset name="gcc-3.4.6_linux_ia64"/>
+            <note author="Boris Gubenko">
+                With GCC 3.4.6 the test fails with ICE: internal compiler error.
+                The footprint is similar to that in GCC Bugzilla Bug 34950
+                except 34950 is a regression introduced in GCC 4.2.3. In any
+                case, whatever the problem is, the GCC 4.x series does not seem
+                to have it: the test compiles just fine with GCC 4.x compiler.
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -3192,6 +3258,9 @@ for more information.
        <mark-expected-failures>
           <test name="test_tr1_long_double"/>
           <toolset name="darwin*"/>
+          <toolset name="intel-linux-10.0"/>
+          <toolset name="intel-linux-9*"/>
+          <toolset name="intel-linux-8*"/>
           <note author="John Maddock">
              Some versions of the Darwin platform have insufficient long double support
              for us to be able to run this test.
@@ -3199,6 +3268,7 @@ for more information.
        </mark-expected-failures>
        <mark-expected-failures>
           <test name="test_policy_2"/>
+          <toolset name="acc"/>
           <toolset name="gcc-mingw-3.4.5"/>
           <note author="John Maddock">
              This test takes too long to build for this compiler and times out.
@@ -3397,14 +3467,6 @@ for more information.
               double)</code> on this platform.
             </note>
         </mark-expected-failures>
-       <mark-expected-failures>
-          <test name="test_binomial_real_concept"/>
-          <toolset name="gcc-3.4.6_linux_x86_64"/>
-          <toolset name="gcc-4.2.1_linux_x86_64"/>
-          <note author="John Maddock">
-             This test takes too long to execute and times out on this platform.
-          </note>
-       </mark-expected-failures>
        <mark-expected-failures>
           <test name="test_remez"/>
           <toolset name="hp_cxx-71_006_tru64"/>
@@ -3973,7 +4035,7 @@ for more information.
         <mark-expected-failures>
             <test name="no_exceptions"/>
             <toolset name="cw-9.4"/>
-            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
                 This test fails because the test ptr_vector fails. Please see the note
                 for that test.
@@ -3982,7 +4044,7 @@ for more information.
         <mark-expected-failures>
             <test name="ptr_deque"/>
             <toolset name="cw-9.4"/>
-            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
                 For sun the problem is that <code>insert(iterator,range)</code>
                 is not available due to partial ordering errors (the core library remains usable).
@@ -3992,7 +4054,7 @@ for more information.
         <mark-expected-failures>
             <test name="ptr_list"/>
             <toolset name="cw-9.4"/>
-            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
                 For sun the problem is that <code>insert(iterator,range)</code>
                 is not available due to partial ordering errors (the core library remains usable).
@@ -4013,7 +4075,7 @@ for more information.
             <test name="ptr_map"/>
             <toolset name="hp_cxx-71_006_tru64"/>
             <toolset name="cw-9.4"/>
-            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
                 For hp, this compiler bug is insignificant.
                 For sun the problem is that <code>transfer(range,ptr_map)</code>
@@ -4024,7 +4086,7 @@ for more information.
         <mark-expected-failures>
             <test name="ptr_set"/>
             <toolset name="cw-9.4"/>
-            <toolset name="sun-5.8"/>
+            <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
                 For sun the problem is that <code>transfer(range,ptr_map)</code> and
                 <code>insert(range)</code>code>
@@ -4035,8 +4097,15 @@ for more information.
            <mark-expected-failures>
             <test name="serialization"/>
             <toolset name="cw*"/>
+            <toolset name="intel-darwin-*"/>
+            <toolset name="intel-linux-*"/>
+            <toolset name="pathscale-3.1"/>
+            <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
-                This cause of this problem is unknown. Please submit a patch.
+                For codewarrior, the cause of this problem is unknown. Please 
+                submit a patch. Other failures are due to problems with 
+                the serialization library, or to a minor problem with the use of
+                the library.
             </note>
         </mark-expected-failures>
            <mark-expected-failures>
@@ -4365,7 +4434,7 @@ for more information.
           <toolset name="darwin*"/>
           <note author="J. Maddock">
              This tests fails because a dependency (Boost.Test)
-             fails to initialise correctly.  The issue has been
+             fails to initialise correctly.  The issue has been 
              reported to the library's author.
           </note>
        </mark-expected-failures>
@@ -4494,8 +4563,8 @@ for more information.
             <toolset name="hp_cxx-65*"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0*"/>
+            <toolset name="pgi-7*"/>
             <toolset name="sun-5*"/>
-            <toolset name="hp_cxx-65*"/>
             <note author="Andreas Huber" refid="17"/>
         </mark-unusable>
         <mark-unusable>
@@ -4545,19 +4614,23 @@ for more information.
             <test name="CameraExample"/>
             <test name="CustomReactionTest*"/>
             <test name="PerformanceExample"/>
-            <test name="TransitionTest*"/>
             <toolset name="cw-9*"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="CustomReactionTest*"/>
-            <test name="TransitionTest*"/>
             <toolset name="hp_cxx-71*"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="TransitionTest*"/>
+            <toolset name="cw-9*"/>
+            <toolset name="hp_cxx-71*"/>
             <toolset name="intel-linux-9.1"/>
+            <toolset name="intel-linux-10*"/>
+            <toolset name="intel-darwin-9.1"/>
+            <toolset name="intel-darwin-10*"/>
+            <toolset name="vacpp-8.0"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
@@ -4567,7 +4640,6 @@ for more information.
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
-            <test name="TransitionTest*"/>
             <test name="InvalidTransitionTest1Relaxed"/>
             <test name="StopWatchExample"/>
             <toolset name="vacpp-8.0"/>
@@ -4589,6 +4661,7 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="DllTest*"/>
+            <toolset name="cygwin-gcc-stdcxx-4.2.1"/>
             <toolset name="msvc-8.0~wm5~stlport5.1"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
@@ -4686,8 +4759,14 @@ for more information.
         </mark-expected-failures>
 
         <mark-expected-failures>
-          <test name="errors_handling_test"/>
           <test name="test_tools_test"/>
+          <toolset name="cw-9_5-darwin"/>
+          <note refid="29" author="Doug Gregor"/>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+          <test name="errors_handling_test"/>
+          <toolset name="acc*"/>
           <toolset name="cw-9_5-darwin"/>
           <note refid="29" author="Doug Gregor"/>
         </mark-expected-failures>
@@ -4700,11 +4779,11 @@ for more information.
 
         <mark-expected-failures>
             <test name="prg_exec_fail2"/>
-            <toolset name="darwin-4.0.1"/>
+            <toolset name="gcc-3.4.2_hpux_pa_risc"/>
             <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="Vladimir Prus">
               The test verifies that Boost.Test detects division by
-              zero. It fails on PowerPC and Linux ia64. On PowerPC
+              zero. It fails on PowerPC, PA-RISC and Linux ia64. On PowerPC
               processors, division has an undefined result. The compiler
               has to emit extra code to assert that the divisor isn't zero.
 
@@ -4723,6 +4802,17 @@ for more information.
               in non-zero exit status.  That seems to be not the
               case, for unknown reasons.
             </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+          <test name="sync_access_test"/>
+          <toolset name="acc*"/>
+          <toolset name="gcc-4.2.1_hpux_ia64"/>
+          <note author="Boris Gubenko">
+             On HP-UX platform, this test must be compiled/linked in multithread mode.
+             When compiled/linked with aC++ with -mt, it succeeds. When compiled/linked
+             with GCC with -pthread, it links cleanly but fails in run-time.
+          </note>
         </mark-expected-failures>
 
     </library>
@@ -4777,6 +4867,8 @@ for more information.
         <mark-expected-failures>
             <test name="test_tss_lib"/>
             <toolset name="borland-*"/>
+            <toolset name="como-win-*"/>
+            <toolset name="msvc*wm5*"/>
             <toolset name="cw-9.4"/>
             <note author="Roland Schwarz" date="2006-12-14">
                 When a thread ends, tss data needs to be cleaned up. This process
@@ -4795,10 +4887,15 @@ for more information.
         <mark-expected-failures>
             <test name="test_thread_move"/>
             <test name="test_thread_move_lib"/>
+            <test name="test_move_function"/>
+            <test name="test_move_function_lib"/>
+            <toolset name="acc"/>
             <toolset name="borland-*"/>
+            <toolset name="sun-*"/>
             <note author="Anthony Williams" date="2007-12-14">
-The Borland compiler fails to bind rvalues to the thread move constructor,
+The Borland compiler and HP-UX aC++ compiler in default mode fail to bind rvalues to the thread move constructor,
 choosing instead to bind them to the private (and unimplemented) copy constructor.
+With aC++, the tests compile cleanly in strict ansi mode and succeed.
             </note>
         </mark-expected-failures>
     </library>
@@ -5031,6 +5128,27 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
                 work by someone who has this compiler.
             </note>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="test_mem_fn_tricky"/>
+            <test name="test_bind_tricky"/>
+            <test name="test_ref_wrapper_tricky"/>
+            <test name="test_function_tricky"/>
+            <test name="std_test_mem_fn_tricky"/>
+            <test name="std_test_bind_tricky"/>
+            <test name="std_test_ref_wrapper_tricky"/>
+            <test name="std_test_function_tricky"/>
+            <test name="std_test_reference_wrapper_tricky"/>
+            <test name="test_reference_wrapper_tricky"/>
+            <test name="std_test_cmath_tricky"/>
+            <test name="test_cmath_tricky"/>
+            <toolset name="*"/>
+            <note author="John Maddock">
+                These tests test features that are not supported in the
+                current Boost implementations of TR1 components, they will
+                currently fail on all compilers, unless that compiler has
+                native TR1 support.
+            </note>
+        </mark-expected-failures>
 
        <mark-expected-failures>
           <test name="run_random"/>
@@ -5058,26 +5176,6 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
        </mark-expected-failures>
 
        <mark-expected-failures>
-            <test name="test_mem_fn_tricky"/>
-            <test name="test_bind_tricky"/>
-            <test name="test_ref_wrapper_tricky"/>
-            <test name="test_function_tricky"/>
-            <test name="std_test_mem_fn_tricky"/>
-            <test name="std_test_bind_tricky"/>
-            <test name="std_test_ref_wrapper_tricky"/>
-            <test name="std_test_function_tricky"/>
-            <test name="std_test_reference_wrapper_tricky"/>
-            <test name="test_reference_wrapper_tricky"/>
-            <toolset name="*"/>
-            <note author="John Maddock">
-                These tests test features that are not supported in the
-                current Boost implementations of TR1 components, they will
-                currently fail on all compilers, unless that compiler has
-                native TR1 support.
-            </note>
-        </mark-expected-failures>
-
-        <mark-expected-failures>
             <test name="test_regex"/>
             <test name="std_test_regex"/>
             <test name="test_hash"/>
@@ -5091,7 +5189,18 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
             </note>
         </mark-expected-failures>
 
-        <mark-expected-failures>
+       <mark-expected-failures>
+          <test name="test_cmath"/>
+          <test name="std_test_cmath"/>
+          <toolset name="intel-linux-9.0"/>
+          <toolset name="darwin-4.0.1"/>
+          <note author="John Maddock">
+             These tests fail due to a lack of adequate
+             long double std math lib support.
+          </note>
+       </mark-expected-failures>
+
+       <mark-expected-failures>
             <test name="test_regex"/>
             <test name="std_test_regex"/>
             <toolset name="gcc-mingw*"/>
@@ -5581,6 +5690,15 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
         </mark-expected-failures>
     </library>
 
+    <!-- units -->
+    <library name="units">
+        <mark-expected-failures>
+            <test name="fail_base_dimension"/>
+            <toolset name="vacpp"/>
+            <note author="Steven Watanabe" refid="16"/>
+        </mark-expected-failures>
+    </library>
+
     <!-- unordered -->
     <library name="unordered">
       <mark-expected-failures>
@@ -5634,19 +5752,35 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
     <!-- utility/swap -->
     <library name="utility/swap">
         <mark-expected-failures>
+          <test name="array_of_array_of_class"/>
+          <test name="array_of_class"/>
           <test name="specialized_in_std"/>
             <toolset name="borland-6.10.0"/>
-          <note author="Niels Dekker" date="2008-11-11">
+          <note refid="3" author="Niels Dekker" date="2008-11-11">
             The definition of a custom template specialization of std::swap
-            appears to trigger an Internal compiler error ("Fatal F1004") on
-            Codegear/Borland 6.10.0.  Nicola Musatti helped me with this issue.
-            See also: "[boost] [utility/swap] Internal compiler error
-            Siliconman borland-6.10.0 (CodeGear?)",
+            appears to trigger an internal compiler error ("Fatal F1004") on
+            CodeGear 6.10.0 (formerly named Borland), as I reported,
+            with help from Nicola Musatti and David Dean.
+            Related Boost mailing list discussion:
             http://lists.boost.org/Archives/boost/2008/11/144465.php
+            CodeGear bug reports on this issue:
+            http://qc.codegear.com/wc/qcmain.aspx?d=68959  
+            http://qc.codegear.com/wc/qcmain.aspx?d=69196
+          </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+          <test name="array_of_array_of_class"/>
+          <test name="array_of_array_of_int"/>
+            <toolset name="borland-5.9.3"/>
+          <note refid="3" author="Niels Dekker" date="2008-12-09">
+            Borland 5.9.3 has an error (E2285) when trying to pass a
+            multi-dimensional array by reference to a function template.
+            A bug report by Christopher Yeleighton appears related:
+            "The compiler obligatorily converts member arrays to pointers" 
+            http://qc.codegear.com/wc/qcmain.aspx?d=10267
           </note>
         </mark-expected-failures>
     </library>
-
 
     <!-- utility -->
     <library name="utility">
@@ -5692,43 +5826,6 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
                 This failure is caused by a compiler bug (default-constructed scalar
                 types are not zero-initialized) that has been fixed in the latest
                 versions of the compiler (VC 7.1 and greater).
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="value_init_test"/>
-            <toolset name="borland-5.6*"/>
-            <toolset name="borland-5.8*"/>
-            <toolset name="borland-5.9*"/>
-            <note author="Niels Dekker">
-                This test typically fails on Borland C++, because of an issue described by
-                <a href="http://svn.boost.org/trac/boost/ticket/1459">
-                ticket #1459, "value_initialized leaves data uninitialized,
-                when using Borland"</a>. The issue is caused by a 
-                compiler bug, reported at the website of Codegear/Borland:
-                <a href="http://qc.codegear.com/wc/qcmain.aspx?d=51854">
-                Report #51854, "Value-initialization: POD struct
-                should be zero-initialized"</a>.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="value_init_test"/>
-            <toolset name="gcc-3.3*"/>
-            <toolset name="gcc-3.4*"/>
-            <toolset name="gcc-4.0*"/>
-            <toolset name="gcc-4.1*"/>
-            <toolset name="gcc-4.2*"/>
-            <toolset name="gcc-mingw-3.4*"/>
-            <note author="Niels Dekker">
-                This test typically fails on GCC, because of an issue described by
-                <a href="http://svn.boost.org/trac/boost/ticket/1491">
-                ticket #1491, "value_initialized leaves data uninitialized,
-                when using GCC"</a>. The issue is caused by some GCC compiler bugs:  
-                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=30111">
-                Value-initialization of POD base class doesn't initialize members</a>,
-                reported by Jonathan Wakely, and
-                <a href="http://gcc.gnu.org/bugzilla/show_bug.cgi?id=33916">
-                Default constructor fails to initialize array members</a>,
-                reported by Michael Elizabeth Chastain. 
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -6144,6 +6241,11 @@ choosing instead to bind them to the private (and unimplemented) copy constructo
         The test does not compile, most likely because of new version of EDG Front End
         implementing Core Issue 574. In the HP bug tracking system, it is tracked as
         QuIX ID: QXCR1000804484.
+    </note>
+
+    <note id="47">
+        Depending on system load, the compile time may exceed specified timeout value.
+        The test passes when the timeout value is increased.
     </note>
 
 </explicit-failures-markup>
