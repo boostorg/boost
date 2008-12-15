@@ -23,7 +23,7 @@ if no_update:
 root = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 print '# Running regressions in %s...' % root
 
-script_sources = [ 'collect_and_upload_logs.py', 'regression.py' ]
+script_sources = [ 'collect_and_upload_logs.py', 'process_jam_log.py', 'regression.py' ]
 script_local = os.path.join(root,'tools','regression','src')
 script_remote = 'http://svn.boost.org/svn/boost/trunk/tools/regression/src'
 script_dir = os.path.join(root,'tools_regression_src')

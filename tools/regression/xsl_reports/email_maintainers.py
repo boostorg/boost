@@ -16,6 +16,7 @@ import sys
 
 report_author = "Douglas Gregor <dgregor@osl.iu.edu>"
 boost_dev_list = "Boost Developer List <boost@lists.boost.org>"
+boost_testing_list = "Boost Testing List <boost-testing@lists.boost.org>"
 
 def sorted_keys( dict ):
     result = dict.keys()
@@ -30,6 +31,7 @@ class Platform:
     def __init__(self, name):
         self.name = name
         self.failures = list()
+        self.maintainers = list()
         return
 
     def addFailure(self, failure):
@@ -38,6 +40,13 @@ class Platform:
 
     def isBroken(self):
         return len(self.failures) > 300
+
+    def addMaintainer(self, maintainer):
+        """
+        Add a new maintainer for this platform.
+        """
+        self.maintainers.append(maintainer)
+        return
 
 class Failure:
     """
@@ -200,6 +209,67 @@ There are failures in these libraries you maintain:
 
         return message
 
+class PlatformMaintainer:
+    """
+    Information about the platform maintainer of a library
+    """
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+        self.platforms = list()
+        return
+
+    def addPlatform(self, runner, platform):
+        self.platforms.append(platform)
+        return
+
+    def composeEmail(self, report):
+        """
+        Composes an e-mail to this platform maintainer if one or more of
+        the platforms s/he maintains has a large number of failures.
+        Returns the e-mail text if a message needs to be sent, or None
+        otherwise.
+        """
+
+        # Determine if we need to send a message to this developer.
+        requires_message = False
+        for platform in self.platforms:
+            if platform.isBroken():
+                requires_message = True
+                break
+
+        if not requires_message:
+            return None
+
+        # Build the message header
+        message = """From: Douglas Gregor <dgregor@osl.iu.edu>
+To: """
+        message += self.name + ' <' + self.email + '>'
+        message += """
+Reply-To: boost@lists.boost.org
+Subject: Large number of Boost failures on a platform you maintain as of """
+        message += str(datetime.date.today()) + " [" + report.branch + "]"
+        message += """
+
+You are receiving this report because one or more of the testing
+platforms that you maintain has a large number of Boost failures that
+are not accounted for. A full version of the report is sent to the
+Boost developer's mailing list.
+
+Detailed report:
+"""
+        message += '  ' + report.url + """
+
+The following platforms have a large number of failures:
+"""
+
+        for platform in self.platforms:
+            if platform.isBroken():
+                message += ('  ' + platform.name + ' ('
+                            + str(len(platform.failures))  + ' failures)\n')
+
+        return message
+    
 class Report:
     """
     The complete report of all failing test cases.
@@ -211,6 +281,7 @@ class Report:
         self.libraries = dict()
         self.platforms = dict()
         self.maintainers = dict()
+        self.platform_maintainers = dict()
         return
 
     def getPlatform(self, name):
@@ -232,6 +303,17 @@ class Report:
         else:
             self.maintainers[name] = Maintainer(name, email)
             return self.maintainers[name]
+
+    def getPlatformMaintainer(self, name, email):
+        """
+        Retrieve the platform maintainer with the given name and
+        e-mail address.
+        """
+        if self.platform_maintainers.has_key(name):
+            return self.platform_maintainers[name]
+        else:
+            self.platform_maintainers[name] = PlatformMaintainer(name, email)
+            return self.platform_maintainers[name]
 
     def parseIssuesEmail(self):
         """
@@ -317,7 +399,7 @@ class Report:
             time.sleep (30)
 
         return False
-        
+
     # Parses the file $BOOST_ROOT/libs/maintainers.txt to create a hash
     # mapping from the library name to the list of maintainers.
     def parseLibraryMaintainersFile(self):
@@ -329,6 +411,8 @@ class Report:
         name_email_regex = re.compile('\s*(\w*(\s*\w+)+)\s*<\s*(\S*(\s*\S+)+)\S*>')
         at_regex = re.compile('\s*-\s*at\s*-\s*')
         for line in file('../../../libs/maintainers.txt', 'r'):
+            if line.startswith('#'):
+                continue
             m = lib_maintainer_regex.match (line)
             if m:
                 libname = m.group(1)
@@ -348,6 +432,41 @@ class Report:
                     pass
                 pass
             pass
+        pass
+
+    # Parses the file $BOOST_ROOT/libs/platform_maintainers.txt to
+    # create a hash mapping from the platform name to the list of
+    # maintainers.
+    def parsePlatformMaintainersFile(self):
+        """
+        Parse the platform maintainers file in
+        ../../../libs/platform_maintainers.txt to collect information
+        about the maintainers of the various platforms.
+        """
+        platform_maintainer_regex = re.compile('([A-Za-z0-9_.-]*|"[^"]*")\s+(\S+)\s+(.*)')
+        name_email_regex = re.compile('\s*(\w*(\s*\w+)+)\s*<\s*(\S*(\s*\S+)+)\S*>')
+        at_regex = re.compile('\s*-\s*at\s*-\s*')
+        for line in file('../../../libs/platform_maintainers.txt', 'r'):
+            if line.startswith('#'):
+                continue
+            m = platform_maintainer_regex.match (line)
+            if m:
+                platformname = m.group(2)
+                if self.platforms.has_key(platformname):
+                    platform = self.platforms[platformname]
+                    for person in re.split('\s*,\s*', m.group(3)):
+                        nmm = name_email_regex.match(person)
+                        if nmm:
+                            name = nmm.group(1)
+                            email = nmm.group(3)
+                            email = at_regex.sub('@', email)
+                            maintainer = self.getPlatformMaintainer(name, email)
+                            maintainer.addPlatform(m.group(1), platform)
+                            platform.addMaintainer(maintainer)
+                            pass
+                        pass
+                    pass
+                pass
         pass
 
     def numFailures(self):
@@ -374,6 +493,8 @@ To: boost@lists.boost.org
 Reply-To: boost@lists.boost.org
 Subject: [Report] """
         message += str(self.numFailures()) + " failures on " + branch
+        if branch != 'trunk':
+            message += ' branch'
         message += " (" + str(datetime.date.today()) + ")"
         message += """
 
@@ -381,7 +502,7 @@ Boost regression test failures
 """
         message += "Report time: " + self.date + """
 
-This report lists all regression test failures on release platforms.
+This report lists all regression test failures on high-priority platforms.
 
 Detailed report:
 """
@@ -399,54 +520,107 @@ Detailed report:
 """
             for platform in sorted_keys( self.platforms ):
                 if self.platforms[platform].isBroken():
-                    message += '  ' + platform + '\n'
+                    message += ('  ' + platform + ' ('
+                                + str(len(self.platforms[platform].failures))
+                                + ' failures)\n')
 
-            message += '\n'
+            message += """
+Failures on these "broken" platforms will be omitted from the results below.
+Please see the full report for information about these failures.
+
+"""
    
         # Display the number of failures
-        message += (str(self.numFailures()) + ' failures in ' + 
+        message += (str(self.numReportableFailures()) + ' failures in ' + 
                     str(len(self.libraries)) + ' libraries')
         if any_broken_platforms:
-            message += ' (' + str(self.numReportableFailures()) + ' are from non-broken platforms)'
+            message += (' (plus ' + str(self.numFailures() - self.numReportableFailures())
+                        + ' from broken platforms)')
+                        
         message += '\n'
 
         # Display the number of failures per library
         for k in sorted_keys( self.libraries ):
             library = self.libraries[k]
             num_failures = library.numFailures()
-            message += ('  ' + library.name + ' (' 
-                        + str(library.numReportableFailures()))
+            message += '  ' + library.name + ' ('
+                
+            if library.numReportableFailures() > 0:
+                message += (str(library.numReportableFailures())
+                            + " failures")
+                
             if library.numReportableFailures() < num_failures:
-                message += (' of ' + str(num_failures) 
-                            + ' failures are from non-broken platforms')
+                if library.numReportableFailures() > 0:
+                    message += ', plus '
+                                
+                message += (str(num_failures-library.numReportableFailures()) 
+                            + ' failures on broken platforms')
             message += ')\n'
             pass
 
-        # If we have any broken platforms, tell the user how we're
-        # displaying them.
-        if any_broken_platforms:
-            message += """
-Test failures marked with a (*) represent tests that failed on
-platforms that are considered broken. They are likely caused by
-misconfiguration by the regression tester or a failure in a core
-library such as Test or Config."""
         message += '\n'
 
         # Provide the details for the failures in each library.
         for k in sorted_keys( self.libraries ):
             library = self.libraries[k]
-            message += '\n|' + library.name + '|\n'
-            for test in library.tests:
-                message += '  ' + test.name + ':'
-                for failure in test.failures:
-                    platform = failure.platform
-                    message += '  ' + platform.name
-                    if platform.isBroken():
-                        message += '*'
-                    pass
-                message += '\n'
-                pass
-            pass
+            if library.numReportableFailures() > 0:
+                message += '\n|' + library.name + '|\n'
+                for test in library.tests:
+                    if test.numReportableFailures() > 0:
+                        message += '  ' + test.name + ':'
+                        for failure in test.failures:
+                            platform = failure.platform
+                            if not platform.isBroken():
+                                message += '  ' + platform.name
+                        message += '\n'
+
+        return message
+
+    def composeTestingSummaryEmail(self):
+        """
+        Compose a message to send to the Boost Testing list. Returns
+        the message text if a message is needed, returns None
+        otherwise.
+        """
+        brokenPlatforms = 0
+        for platform in sorted_keys( self.platforms ):
+            if self.platforms[platform].isBroken():
+                brokenPlatforms = brokenPlatforms + 1
+
+        if brokenPlatforms == 0:
+            return None;
+        
+        message = """From: Douglas Gregor <dgregor@osl.iu.edu>
+To: boost-testing@lists.boost.org
+Reply-To: boost-testing@lists.boost.org
+Subject: [Report] """
+        message += str(brokenPlatforms) + " potentially broken platforms on " + branch
+        if branch != 'trunk':
+            message += ' branch'
+        message += " (" + str(datetime.date.today()) + ")"
+        message += """
+
+Potentially broken platforms for Boost regression testing
+"""
+        message += "Report time: " + self.date + """
+
+This report lists the high-priority platforms that are exhibiting a
+large number of regression test failures, which might indicate a problem
+with the test machines or testing harness.
+
+Detailed report:
+"""
+
+        message += '  ' + self.url + '\n'
+
+        message += """
+Platforms with a large number of failures:
+"""
+        for platform in sorted_keys( self.platforms ):
+            if self.platforms[platform].isBroken():
+                message += ('  ' + platform + ' ('
+                            + str(len(self.platforms[platform].failures))
+                            + ' failures)\n')
 
         return message
 
@@ -594,7 +768,9 @@ if not okay:
 
 # Try to parse maintainers information
 report.parseLibraryMaintainersFile()
+report.parsePlatformMaintainersFile()
 
+# Generate individualized e-mail for library maintainers
 for maintainer_name in report.maintainers:
     maintainer = report.maintainers[maintainer_name]
 
@@ -613,7 +789,27 @@ for maintainer_name in report.maintainers:
         if '--debug' in sys.argv:
             print ('Message text for ' + maintainer.name + ':\n')
             print email
-            
+
+# Generate individualized e-mail for platform maintainers
+for maintainer_name in report.platform_maintainers:
+    maintainer = report.platform_maintainers[maintainer_name]
+
+    email = maintainer.composeEmail(report)
+    if email:
+        if '--send' in sys.argv:
+            print ('Sending notification email to ' + maintainer.name + '...')
+            smtp = smtplib.SMTP('milliways.osl.iu.edu')
+            smtp.sendmail(from_addr = report_author, 
+                          to_addrs = maintainer.email,
+                          msg = email)
+            print 'done.\n'
+        else:
+            print 'Would send a notification e-mail to',maintainer.name
+
+        if '--debug' in sys.argv:
+            print ('Message text for ' + maintainer.name + ':\n')
+            print email
+
 email = report.composeSummaryEmail()
 if '--send' in sys.argv:
     print 'Sending summary email to Boost developer list...'
@@ -625,6 +821,19 @@ if '--send' in sys.argv:
 if '--debug' in sys.argv:
     print 'Message text for summary:\n'
     print email
+
+email = report.composeTestingSummaryEmail()
+if email:
+    if '--send' in sys.argv:
+        print 'Sending summary email to Boost testing list...'
+        smtp = smtplib.SMTP('milliways.osl.iu.edu')
+        smtp.sendmail(from_addr = report_author, 
+                      to_addrs = boost_testing_list,
+                      msg = email)
+        print 'done.\n'
+    if '--debug' in sys.argv:
+        print 'Message text for testing summary:\n'
+        print email
 
 if not ('--send' in sys.argv):
     print 'Chickening out and not sending any e-mail.'

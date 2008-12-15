@@ -17,6 +17,8 @@ import httplib
 import os.path
 import string
 import sys
+import re
+import urlparse
 
 
 def process_xml_file( input_file, output_file ):
@@ -176,23 +178,32 @@ def publish_test_logs(
             utils.log('Dart server error: %s' % e)
 
 
-def upload_to_ftp( tag, results_file, ftp_proxy, debug_level ):
-    ftp_site = 'fx.meta-comm.com'
-    site_path = '/boost-regression'
-    utils.log( 'Uploading log archive "%s" to ftp://%s%s/%s' % ( results_file, ftp_site, site_path, tag ) )
+def upload_to_ftp( tag, results_file, ftp_proxy, debug_level, ftp_url ):
+    
+    if not ftp_url:
+        ftp_host = 'boost.cowic.de'
+        ftp_url = ''.join(['ftp','://anonymous','@',ftp_host,'/boost/do-not-publish-this-url/results/'])
+    utils.log( 'Uploading log archive "%s" to %s/%s' % ( results_file, ftp_url, tag ) )
+    
+    ftp_parts = urlparse.urlparse(ftp_url)
+    ftp_netloc = re.split('[@]',ftp_parts[1])
+    ftp_user = re.split('[:]',ftp_netloc[0])[0]
+    ftp_password = re.split('[:]',ftp_netloc[0]+':anonymous')[1]
+    ftp_site = re.split('[:]',ftp_netloc[1])[0]
+    ftp_path = ftp_parts[2]
     
     if not ftp_proxy:
         ftp = ftplib.FTP( ftp_site )
         ftp.set_debuglevel( debug_level )
-        ftp.login()
+        ftp.login( ftp_user, ftp_password )
     else:
         utils.log( '    Connecting through FTP proxy server "%s"' % ftp_proxy )
         ftp = ftplib.FTP( ftp_proxy )
         ftp.set_debuglevel( debug_level )
         ftp.set_pasv (0) # turn off PASV mode
-        ftp.login( 'anonymous@%s' % ftp_site, 'anonymous@' )
+        ftp.login( '%s@%s' % (ftp_user,ftp_site), ftp_password )
 
-    ftp.cwd( site_path )
+    ftp.cwd( ftp_path )
     try:
         ftp.cwd( tag )
     except ftplib.error_perm:
@@ -323,11 +334,12 @@ def upload_logs(
         , send_bjam_log = False
         , timestamp_file = None
         , dart_server = None
+        , ftp_url = None
         , **unused
         ):
 
     logs_archive = os.path.join( results_dir, '%s.zip' % runner_id )
-    upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level )
+    upload_to_ftp( tag, logs_archive, ftp_proxy, debug_level, ftp_url )
     if send_bjam_log:
         bjam_log_path = os.path.join( results_dir, 'bjam.log' )
         if not timestamp_file:
@@ -336,7 +348,7 @@ def upload_logs(
         timestamp = time.strftime( '%Y-%m-%d-%H-%M-%S', read_timestamp( timestamp_file ) )
         logs_archive = os.path.join( results_dir, '%s.%s.log.zip' % ( runner_id, timestamp ) )
         compress_file( bjam_log_path, logs_archive )
-        upload_to_ftp( '%s/logs' % tag, logs_archive, ftp_proxy, debug_level )
+        upload_to_ftp( '%s/logs' % tag, logs_archive, ftp_proxy, debug_level, ftp_url )
 
 
 def collect_and_upload_logs( 
@@ -355,6 +367,7 @@ def collect_and_upload_logs(
         , send_bjam_log = False
         , dart_server = None
         , http_proxy = None
+        , ftp_url = None
         , **unused
         ):
     
@@ -383,6 +396,7 @@ def collect_and_upload_logs(
         , send_bjam_log
         , timestamp_file
         , dart_server = dart_server
+        , ftp_url = ftp_url
         )
 
 
@@ -404,6 +418,7 @@ def accept_args( args ):
         , 'help'
         , 'dart-server='
         , 'revision='
+        , 'ftp='
         ]
     
     options = {
@@ -419,6 +434,7 @@ def accept_args( args ):
         , '--debug-level'   : 0
         , '--dart-server'   : 'beta.boost.org:8081'
         , '--revision'      : None
+        , '--ftp'           : None
         
         }
     
@@ -439,7 +455,8 @@ def accept_args( args ):
         , 'debug_level'     : int(options[ '--debug-level' ])
         , 'send_bjam_log'   : options.has_key( '--send-bjam-log' )
         , 'dart_server'     : options[ '--dart-server' ]
-        , 'revision   '     : options[ '--revision' ]
+        , 'revision'        : options[ '--revision' ]
+        , 'ftp'             : options[ '--ftp' ]
         }
 
 
@@ -475,6 +492,7 @@ Options:
 \t--debug-level   debugging level; controls the amount of debugging 
 \t                output printed; 0 by default (no debug output)
 \t--dart-server   The dart server to send results to.
+\t--ftp           The ftp URL to upload results to.
 ''' % '\n\t'.join( commands.keys() )
 
     

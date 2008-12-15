@@ -6,6 +6,8 @@
 
 //  See http://www.boost.org/tools/regression for documentation.
 
+#include <boost/config/warning_disable.hpp>
+
 #include "detail/tiny_xml.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/fstream.hpp"
@@ -555,57 +557,117 @@ int main( int argc, char ** argv )
   std::ios::sync_with_stdio(false);
 
   fs::initial_path();
+  std::istream* input = 0;
 
   if ( argc <= 1 )
-    std::cout << "Usage: bjam [bjam-args] | process_jam_log [--echo] [--create-directories] [--v1|v2] [locate-root]\n"
-                 "locate-root         - the same as the bjam ALL_LOCATE_TARGET\n"
-                 "                      parameter, if any. Default is boost-root.\n"
-                 "create-directories  - if the directory for xml file doesn't exists - creates it.\n"
-                 "                      usually used for processing logfile on different machine\n"
-                 "v2                  - bjam version 2 used (default).\n"
-                 "v1                  - bjam version 1 used.\n"
-                 ;
-
-  set_boost_root();
-
-  boost_root.normalize();
-  
-  if ( argc > 1 && std::strcmp( argv[1], "--echo" ) == 0 )
   {
-    echo = true;
-    --argc; ++argv;
+    std::cout <<  "process_jam_log [--echo] [--create-directories] [--v1|--v2]\n"
+                  "                [--boost-root boost_root] [--locate-root locate_root]\n"
+                  "                [--input-file input_file]\n"
+                  "                [locate-root]\n"
+                  "--echo               - verbose diagnostic output.\n"
+                  "--create-directories - if the directory for xml file doesn't exists - creates it.\n"
+                  "                       usually used for processing logfile on different machine\n"
+                  "--v2                 - bjam version 2 used (default).\n"
+                  "--v1                 - bjam version 1 used.\n"
+                  "--boost-root         - the root of the boost installation being used. If not defined\n"
+                  "                       assume to run from within it and discover it heuristically.\n"
+                  "--locate-root        - the same as the bjam ALL_LOCATE_TARGET\n"
+                  "                       parameter, if any. Default is boost-root.\n"
+                  "--input-file         - the output of a bjam --dump-tests run. Default is std input.\n"
+                  ;
+    return 1;
   }
 
-
-  if (argc > 1 && std::strcmp( argv[1], "--create-directories" ) == 0 )
+  while ( argc > 1 )
   {
-      create_dirs = true;
+    if ( std::strcmp( argv[1], "--echo" ) == 0 )
+    {
+      echo = true;
       --argc; ++argv;
-  } 
-
-  if ( argc > 1 && std::strcmp( argv[1], "--v2" ) == 0 )
-  {
-    boost_build_v2 = true;
-    --argc; ++argv;
-  }
-
-  if ( argc > 1 && std::strcmp( argv[1], "--v1" ) == 0 )
-  {
-    boost_build_v2 = false;
-    --argc; ++argv;
-  }
-
-  if (argc > 1)
-  {
-      locate_root = fs::path( argv[1], fs::native );
-      if ( !locate_root.is_complete() )
-        locate_root = ( fs::initial_path() / locate_root ).normalize();
+    }
+    else if ( std::strcmp( argv[1], "--create-directories" ) == 0 )
+    {
+        create_dirs = true;
+        --argc; ++argv;
+    } 
+    else if ( std::strcmp( argv[1], "--v2" ) == 0 )
+    {
+      boost_build_v2 = true;
+      --argc; ++argv;
+    }
+    else if ( std::strcmp( argv[1], "--v1" ) == 0 )
+    {
+      boost_build_v2 = false;
+      --argc; ++argv;
+    }
+    else if ( std::strcmp( argv[1], "--boost-root" ) == 0 )
+    {
+      --argc; ++argv;
+      if ( argc == 1 )
+      {
+        std::cout << "Abort: option --boost-root requires a directory argument\n";
+        std::exit(1);
+      }
+      boost_root = fs::path( argv[1], fs::native );
+      if ( !boost_root.is_complete() )
+        boost_root = ( fs::initial_path() / boost_root ).normalize();
       
       --argc; ++argv;
-  } 
-  else
+    } 
+    else if ( std::strcmp( argv[1], "--locate-root" ) == 0 )
+    {
+      --argc; ++argv;
+      if ( argc == 1 )
+      {
+        std::cout << "Abort: option --locate-root requires a directory argument\n";
+        std::exit(1);
+      }
+      locate_root = fs::path( argv[1], fs::native );
+      --argc; ++argv;
+    } 
+    else if ( std::strcmp( argv[1], "--input-file" ) == 0 )
+    {
+      --argc; ++argv;
+      if ( argc == 1 )
+      {
+        std::cout << "Abort: option --input-file requires a filename argument\n";
+        std::exit(1);
+      }
+      input = new std::ifstream(argv[1]);
+      --argc; ++argv;
+    }
+    else if ( *argv[1] == '-' )
+    {
+      std::cout << "Abort: unknown option; invoke with no arguments to see list of valid options\n";
+      return 1;
+    }
+    else
+    {
+      locate_root = fs::path( argv[1], fs::native );
+      --argc; ++argv;
+    }
+  }
+
+  if ( boost_root.empty() )
   {
-      locate_root = boost_root;
+    set_boost_root();
+    boost_root.normalize();
+  }
+
+  
+  if ( locate_root.empty() )
+  {
+    locate_root = boost_root;
+  }
+  else if ( !locate_root.is_complete() )
+  {
+    locate_root = ( fs::initial_path() / locate_root ).normalize();
+  }   
+
+  if ( input == 0 )
+  {
+    input = &std::cin;
   }
 
   std::cout << "boost_root: " << boost_root.string() << '\n'
@@ -617,25 +679,18 @@ int main( int argc, char ** argv )
   string content;
   bool capture_lines = false;
 
-  std::istream* input;
-  if (argc > 1)
-  {
-      input = new std::ifstream(argv[1]);
-  }
-  else
-  {
-      input = &std::cin;
-  }
-
   // This loop looks at lines for certain signatures, and accordingly:
   //   * Calls start_message() to start capturing lines. (start_message() will
   //     automatically call stop_message() if needed.)
   //   * Calls stop_message() to stop capturing lines.
   //   * Capture lines if line capture on.
 
+  static const int max_line_length = 8192;
   int line_num = 0;
   while ( std::getline( *input, line ) )
   {
+    if (max_line_length < line.size()) line = line.substr(0, max_line_length);
+
     ++line_num;
     
     std::vector<std::string> const line_parts( split( line ) );
