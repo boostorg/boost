@@ -67,8 +67,7 @@ following elements:
   convention.  On most unix-style platforms the extensions are
   ``.a`` and ``.so`` for static libraries (archives) and shared
   libraries, respectively.  On Windows, ``.dll`` indicates a shared
-  library and (except for static libraries built by the ``gcc``
-  toolset_, whose names always end in ``.a``) ``.lib`` indicates a
+  library and ``.lib`` indicates a
   static or import library.  Where supported by toolsets on unix
   variants, a full version extension is added (e.g. ".so.1.34") and
   a symbolic link to the library file, named without the trailing
