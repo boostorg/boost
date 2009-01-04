@@ -215,7 +215,7 @@ For example, your session might look like this: [#continuation]_
    C:\\WINDOWS> cd |default-root|
    |default-root|> bjam **^**
    More? **--build-dir=**\ "C:\\Documents and Settings\\dave\\build-boost" **^**
-   More? **--toolset=**\  **--build-type=complete** msvc stage
+   More? **--toolset=**\ msvc **--build-type=complete** stage
 
 Be sure to read `this note`__ about the appearance of ``^``,
 ``More?`` and quotation marks (``"``) in that line.
