@@ -18,10 +18,10 @@ rem  leave an audit trail, which is used by inspect to determine revision number
 svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
-rem echo "Building docs..."
-rem pushd posix/doc
-rem TODO
-rem popd
+echo "Building docs..."
+pushd posix\doc
+xcopy /s /y ..\..\docs_temp\html html
+popd
 
 echo Setting SNAPSHOT_DATE
 strftime "%%Y-%%m-%%d" >date.txt

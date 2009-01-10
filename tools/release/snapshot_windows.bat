@@ -18,10 +18,10 @@ rem  leave an audit trail, which is used by inspect to determine revision number
 svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/branches/release windows
 
-rem echo "Building docs..."
-rem pushd windows/doc
-rem TODO
-rem popd
+echo "Building docs..."
+pushd windows\doc
+xcopy /s /y ..\..\docs_temp\html html
+popd
 
 echo Setting SNAPSHOT_DATE
 strftime "%%Y-%%m-%%d" >date.txt
@@ -45,6 +45,8 @@ echo The ftp transfer will be done in two steps because that has proved more
 echo reliable on Beman's Windows XP 64-bit system.
 
 echo Creating ftp script 1 ...
+rem user.txt must be a single line: user userid password
+rem where "userid" and "password" are replace with the appropriate values
 copy user.txt windows.ftp
 echo dir >>windows.ftp
 echo binary >>windows.ftp
