@@ -4532,6 +4532,41 @@ for more information.
         </mark-expected-failures>
     </library>
 
+    <!-- scope_exit -->
+    <library name="scope_exit">
+        <mark-expected-failures>
+            <test name="emulation_tpl"/>
+            <toolset name="intel-*-10.1"/>
+            <toolset name="intel-*-11.0"/>
+            <note author="Alexander Nasonov">
+                The test does not compile in typeof emulation mode,
+                most likely due to a compiler bug. Users are advised
+                to use native typeof.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="native"/>
+            <toolset name="acc"/>
+            <note author="Alexander Nasonov" refid="39"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="native_tpl"/>
+            <toolset name="acc"/>
+            <note author="Alexander Nasonov" refid="39"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="native_tu_test"/>
+            <toolset name="acc"/>
+            <note author="Alexander Nasonov" refid="39"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="native_tu_test"/>
+            <toolset name="msvc-7.1"/>
+            <toolset name="msvc-8.0"/>
+            <note author="Alexander Nasonov" refid="2"/>
+        </mark-expected-failures>
+    </library>
+
     <!-- signals -->
     <library name="signals">
         <mark-unusable>
