@@ -7,18 +7,21 @@ rem  See http://www.boost.org/LICENSE_1_0.txt
 
 echo Build a branches/release snapshot for POSIX, using LF line termination...
 
-echo "Removing old files..."
+echo Removing old files...
 rmdir /s /q posix >nul
 rmdir /s /q svn_info >nul
 del posix.tar.gz >nul
 del posix.tar.bz2 >nul
 
-echo "Exporting files from subversion..."
+echo Exporting files from subversion...
 rem  leave an audit trail, which is used by inspect to determine revision number
 svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
-echo "Building docs..."
+echo Creating release history README.txt...
+lynx -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >posix\README.txt
+
+echo Copying docs into posix\doc...
 pushd posix\doc
 xcopy /s /y ..\..\docs_temp\html html
 popd
@@ -28,7 +31,7 @@ strftime "%%Y-%%m-%%d" >date.txt
 set /p SNAPSHOT_DATE= <date.txt
 echo SNAPSHOT_DATE is %SNAPSHOT_DATE%
 
-echo "Renaming..."
+echo Renaming root directory...
 ren posix boost-posix-%SNAPSHOT_DATE%
 
 echo Building .gz file...
@@ -41,7 +44,7 @@ ren boost-posix-%SNAPSHOT_DATE% posix
 echo The ftp transfer will be done in two steps because that has proved more
 echo reliable on Beman's Windows XP 64-bit system.
 
-echo "Creating ftp script 1 ..."
+echo Creating ftp script 1 ...
 copy user.txt posix.ftp
 echo dir >>posix.ftp
 echo binary >>posix.ftp
@@ -56,7 +59,7 @@ echo bye >>posix.ftp
 echo Running ftp script 1 ...
 ftp -n -i -s:posix.ftp boost.cowic.de
 
-echo "Creating ftp script 2 ..."
+echo Creating ftp script 2 ...
 copy user.txt posix.ftp
 echo dir >>posix.ftp
 echo mdelete boost-posix*.bz2 >>posix.ftp
