@@ -7,18 +7,21 @@ rem  See http://www.boost.org/LICENSE_1_0.txt
 
 echo Build a branches/release snapshot for Windows, using CRLF line termination...
 
-echo "Removing old files..."
+echo Removing old files...
 rmdir /s /q windows >nul
 rmdir /s /q svn_info >nul
 del windows.7z >nul
 del windows.zip >nul
 
-echo "Exporting files from subversion..."
+echo Exporting files from subversion...
 rem  leave an audit trail, which is used by inspect to determine revision number
 svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/branches/release windows
 
-echo "Building docs..."
+echo Creating release history README.txt...
+lynx -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >windows\README.txt
+
+echo Copying docs into windows\doc...
 pushd windows\doc
 xcopy /s /y ..\..\docs_temp\html html
 popd
@@ -28,7 +31,7 @@ strftime "%%Y-%%m-%%d" >date.txt
 set /p SNAPSHOT_DATE= <date.txt
 echo SNAPSHOT_DATE is %SNAPSHOT_DATE%
 
-echo "Renaming..."
+echo Renaming root directory...
 ren windows boost-windows-%SNAPSHOT_DATE%
 
 echo Building .7z file...
