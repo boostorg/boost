@@ -2,7 +2,7 @@
 # CMake Build Rules for Boost                                            #
 ##########################################################################
 # Copyright (C) 2007, 2008 Douglas Gregor <doug.gregor@gmail.com>        #
-# Copyright (C) 2007 Troy Straszheim                                     #
+# Copyright (C) 2007, 2009 Troy Straszheim <troy@resophonic.com>         #
 #                                                                        #
 # Distributed under the Boost Software License, Version 1.0.             #
 # See accompanying file LICENSE_1_0.txt or copy at                       #
@@ -34,13 +34,24 @@ project(Boost)
 ##########################################################################
 if (NOT CMAKE_IS_EXPERIMENTAL)
 message(STATUS "##########################################################################")
-message(STATUS " THE CMAKE BUILD SYSTEM IS CURRENTLY UNDER DEVELOPMENT. PLEASE USE THE    ")
-message(STATUS " BJAM BASED SYSTEM INSTEAD TO BUILD A PRODUCTION VERSION OF BOOST. IF YOU ")
-message(STATUS " STILL WANT TO TRY IT OUT INVOKE CMake WITH '-DCMAKE_IS_EXPERIMENTAL:boolean=TRUE'")
-message(STATUS " ARGUMENT. After this first run of cmake you will no longer have to supply")
-message(STATUS " the argument unless you need to run a cmake on a clean build directory.")
+message(STATUS " This cmake-based build system is currently under development.  The ")
+message(STATUS " bjam-based system is the 'standard' way to build boost.  To try ")
+message(STATUS " try out the cmake build, invoke CMake with the argument")
+message(STATUS "        -DCMAKE_IS_EXPERIMENTAL=YES_I_KNOW")
+message(STATUS " Or use the gui to set the variable CMAKE_IS_EXPERIMENTAL to some value.")
+message(STATUS " This will only be necessary the first time.")
+message(STATUS " ")
+message(STATUS " For more information on boost-cmake see the wiki:")
+message(STATUS "     https://svn.boost.org/trac/boost/wiki/CMake")
+message(STATUS "")
+message(STATUS " Subscribe to the mailing list:")
+message(STATUS "     http://lists.boost.org/mailman/listinfo.cgi/boost-cmake")
+message(STATUS "")
+message(STATUS " And/or check the archives:")
+message(STATUS "     http://news.gmane.org/gmane.comp.lib.boost.cmake")
+message(STATUS "")
 message(STATUS "##########################################################################")
-message(FATAL_ERROR "")
+message(FATAL_ERROR "Magic variable CMAKE_IS_EXPERIMENTAL unset.")
 endif (NOT CMAKE_IS_EXPERIMENTAL)
 
 ##########################################################################
@@ -92,6 +103,13 @@ option(BUILD_SINGLE_THREADED "Whether to build single-threaded libraries"
        ${BUILD_SINGLE_THREADED_DEFAULT})
 option(BUILD_MULTI_THREADED "Whether to build multi-threaded libraries" ON)
 
+if (UNIX)
+  option(BUILD_VERSIONED "Add versioning information to names of built files" OFF)
+else(UNIX)
+  option(BUILD_VERSIONED "Add versioning information to names of built files" ON)
+endif(UNIX)
+
+
 # For now, we only actually support static/dynamic run-time variants for 
 # Visual C++. Provide both options for Visual C++ users, but just fix
 # the values of the variables for all other platforms.
@@ -117,13 +135,19 @@ boost_add_extra_variant(PYTHON_NODEBUG PYTHON_DEBUG)
 ##########################################################################
 # Installation                                                           #
 ##########################################################################
-if(BOOST_VERSION_SUBMINOR GREATER 0)
-  set(BOOST_HEADER_DIR 
+if(BUILD_VERSIONED)
+
+  if(BOOST_VERSION_SUBMINOR GREATER 0)
+    set(BOOST_HEADER_DIR 
       "include/boost-${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_SUBMINOR}")
-else(BOOST_VERSION_SUBMINOR GREATER 0)
-  set(BOOST_HEADER_DIR 
+  else(BOOST_VERSION_SUBMINOR GREATER 0)
+    set(BOOST_HEADER_DIR 
       "include/boost-${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}")  
-endif(BOOST_VERSION_SUBMINOR GREATER 0)
+  endif(BOOST_VERSION_SUBMINOR GREATER 0)
+else(BUILD_VERSIONED)
+  set(BOOST_HEADER_DIR "include/")
+endif(BUILD_VERSIONED)
+
 install(DIRECTORY boost 
         DESTINATION ${BOOST_HEADER_DIR}
         PATTERN "CVS" EXCLUDE
@@ -151,10 +175,17 @@ install(DIRECTORY boost
 set(CPACK_PACKAGE_NAME "Boost")
 set(CPACK_PACKAGE_VENDOR "Boost.org")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Boost ${BOOST_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${Boost_SOURCE_DIR}/README.txt")
-set(CPACK_RESOURCE_FILE_README "${Boost_SOURCE_DIR}/README.txt")
+if (EXISTS "${Boost_SOURCE_DIR}/README.txt")
+  message(STATUS "Using generic cpack package description file.")
+  set(CPACK_PACKAGE_DESCRIPTION_FILE "${Boost_SOURCE_DIR}/README.txt")
+  set(CPACK_RESOURCE_FILE_README "${Boost_SOURCE_DIR}/README.txt")
+endif()
 set(CPACK_RESOURCE_FILE_LICENSE "${Boost_SOURCE_DIR}/LICENSE_1_0.txt")
-set(CPACK_RESOURCE_FILE_WELCOME "${Boost_SOURCE_DIR}/Welcome.txt")
+if (EXISTS "${Boost_SOURCE_DIR}/Welcome.txt")
+  message(STATUS "Using generic cpack welcome file.")
+  set(CPACK_RESOURCE_FILE_WELCOME "${Boost_SOURCE_DIR}/Welcome.txt")
+endif()
+
 set(CPACK_PACKAGE_VERSION "${BOOST_VERSION}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${BOOST_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${BOOST_VERSION_MINOR}")
