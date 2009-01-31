@@ -103,6 +103,12 @@ option(BUILD_SINGLE_THREADED "Whether to build single-threaded libraries"
        ${BUILD_SINGLE_THREADED_DEFAULT})
 option(BUILD_MULTI_THREADED "Whether to build multi-threaded libraries" ON)
 
+if(UNIX)
+  option(BUILD_VERSIONED "Add versioning information to names of built files" OFF)
+else(UNIX)
+  option(BUILD_VERSIONED "Add versioning information to names of built files" ON)
+endif(UNIX)
+
 # For now, we only actually support static/dynamic run-time variants for 
 # Visual C++. Provide both options for Visual C++ users, but just fix
 # the values of the variables for all other platforms.
@@ -128,17 +134,21 @@ boost_add_extra_variant(PYTHON_NODEBUG PYTHON_DEBUG)
 ##########################################################################
 # Installation                                                           #
 ##########################################################################
-if(BOOST_VERSION_SUBMINOR GREATER 0)
-  set(BOOST_HEADER_DIR 
+if(BUILD_VERSIONED)
+  if(BOOST_VERSION_SUBMINOR GREATER 0)
+    set(BOOST_HEADER_DIR 
       "include/boost-${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_SUBMINOR}")
-else(BOOST_VERSION_SUBMINOR GREATER 0)
-  set(BOOST_HEADER_DIR 
+  else(BOOST_VERSION_SUBMINOR GREATER 0)
+    set(BOOST_HEADER_DIR 
       "include/boost-${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}")  
-endif(BOOST_VERSION_SUBMINOR GREATER 0)
+  endif(BOOST_VERSION_SUBMINOR GREATER 0)
+else(BUILD_VERSIONED)
+  set(BOOST_HEADER_DIR "include/")
+endif(BUILD_VERSIONED)
 install(DIRECTORY boost 
-        DESTINATION ${BOOST_HEADER_DIR}
-        PATTERN "CVS" EXCLUDE
-        PATTERN ".svn" EXCLUDE)
+  DESTINATION ${BOOST_HEADER_DIR}
+  PATTERN "CVS" EXCLUDE
+  PATTERN ".svn" EXCLUDE)
 #
 # TDS 20080526:  Getting a segfault here even with the ifs.   At r45780, with these lines 
 # uncommented:
