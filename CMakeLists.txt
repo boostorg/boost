@@ -2,7 +2,7 @@
 # CMake Build Rules for Boost                                            #
 ##########################################################################
 # Copyright (C) 2007, 2008 Douglas Gregor <doug.gregor@gmail.com>        #
-# Copyright (C) 2007 Troy Straszheim                                     #
+# Copyright (C) 2007, 2009 Troy Straszheim <troy@resophonic.com>         #
 #                                                                        #
 # Distributed under the Boost Software License, Version 1.0.             #
 # See accompanying file LICENSE_1_0.txt or copy at                       #
@@ -34,13 +34,24 @@ project(Boost)
 ##########################################################################
 if (NOT CMAKE_IS_EXPERIMENTAL)
 message(STATUS "##########################################################################")
-message(STATUS " THE CMAKE BUILD SYSTEM IS CURRENTLY UNDER DEVELOPMENT. PLEASE USE THE    ")
-message(STATUS " BJAM BASED SYSTEM INSTEAD TO BUILD A PRODUCTION VERSION OF BOOST. IF YOU ")
-message(STATUS " STILL WANT TO TRY IT OUT INVOKE CMake WITH '-DCMAKE_IS_EXPERIMENTAL=TRUE'")
-message(STATUS " ARGUMENT. After this first run of cmake you will no longer have to supply")
-message(STATUS " the argument unless you need to run a cmake on a clean build directory.")
+message(STATUS " This cmake-based build system is currently under development.  The ")
+message(STATUS " bjam-based system is the 'standard' way to build boost.  To try ")
+message(STATUS " try out the cmake build, invoke CMake with the argument")
+message(STATUS "        -DCMAKE_IS_EXPERIMENTAL=YES_I_KNOW")
+message(STATUS " Or use the gui to set the variable CMAKE_IS_EXPERIMENTAL to some value.")
+message(STATUS " This will only be necessary the first time.")
+message(STATUS " ")
+message(STATUS " For more information on boost-cmake see the wiki:")
+message(STATUS "     https://svn.boost.org/trac/boost/wiki/CMake")
+message(STATUS "")
+message(STATUS " Subscribe to the mailing list:")
+message(STATUS "     http://lists.boost.org/mailman/listinfo.cgi/boost-cmake")
+message(STATUS "")
+message(STATUS " And/or check the archives:")
+message(STATUS "     http://news.gmane.org/gmane.comp.lib.boost.cmake")
+message(STATUS "")
 message(STATUS "##########################################################################")
-message(FATAL_ERROR "")
+message(FATAL_ERROR "Magic variable CMAKE_IS_EXPERIMENTAL unset.")
 endif (NOT CMAKE_IS_EXPERIMENTAL)
 
 ##########################################################################
