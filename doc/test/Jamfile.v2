@@ -6,6 +6,7 @@ import os ;
 import common ;
 import doxygen ;
 using quickbook ;
+import modules ;
 
 path-constant images_location : html ;
 
@@ -141,12 +142,40 @@ doxygen statsdoc
         <dependency>gs.check
     ;
 
+if htmlhelp in [ modules.peek : ARGV ]
+{
+	#
+	# Start with a rule to convert htmlhelp project into
+	# compiled help file:
+	#
+	make htmlhelp/htmlhelp.chm : standalone : @hhc ;
+	actions ignore hhc
+	{
+		hhc htmlhelp/htmlhelp.hhp
+	}
+	#
+	# These install rules copy our images into a subdirectory of the created
+	# htmlhelp project directory: unfortunately hhc.exe will only embed
+	# images in a subdirectory of the project root.
+	#
+	install htmlhelp1 : [ glob html/images/*.png ] : <location>htmlhelp/images ;
+	install htmlhelp1a : [ glob html/images/*.svg ] : <location>htmlhelp/images ;
+	install htmlhelp2 : [ glob html/images/accumulators/*.png ] : <dependency>statsdoc <location>htmlhelp/images/accumulators ;
+	install htmlhelp3 : [ glob ../src/images/*.png ] : <dependency>statsdoc <location>htmlhelp/images ;
+	install htmlhelp4 : [ glob ../src/images/callouts/*.png ] : <dependency>statsdoc <location>htmlhelp/images/callouts ;
+}
+
 xml test : test.qbk ;
 boostbook standalone
     :
         test
     :
         <dependency>statsdoc
+        <format>htmlhelp:<dependency>htmlhelp1
+        <format>htmlhelp:<dependency>htmlhelp1a
+        <format>htmlhelp:<dependency>htmlhelp2
+        <format>htmlhelp:<dependency>htmlhelp3
+        <format>htmlhelp:<dependency>htmlhelp4
 
         # HTML options first:
         #======================================================================
@@ -164,8 +193,17 @@ boostbook standalone
         # PDF Options:
         #======================================================================
         <format>pdf:<xsl:param>img.src.path=$(images_location)/
-        <xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/test/html
+        <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/test/html
+
+        # HTML Help Options:
+        #======================================================================
+        #<format>htmlhelp:<xsl:param>img.src.path=../html
+        <format>htmlhelp:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/pdf/htmlhelp
+        <format>htmlhelp:<xsl:param>htmlhelp.chm=test.chm
     ;
 
 
 install pdf-install : standalone : <location>. <install-type>PDF ;
+
+
+
