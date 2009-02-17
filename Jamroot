@@ -350,8 +350,26 @@ rule tag ( name : type ? : property-set )
         }
         else
         {
-            return [ common.format-name <base> <threading> <runtime>
-                -$(BUILD_ID) : $(name) : $(type) : $(property-set) ] ;
+            local result = [ common.format-name
+                <base> 
+                -$(BUILD_ID)
+                : $(name) : $(type) : $(property-set) ] ;
+
+            # Optionally add version suffix. On NT, library with version suffix
+            # will not be recognized by linkers. On CYGWIN, we get strage
+            # duplicate symbol errors when library is generated with version
+            # suffix. On OSX, version suffix is not needed -- the linker expects
+            # the libFoo.1.2.3.dylib format. AIX linkers do not accept version
+            # suffixes either. Pgi compilers can not accept library with version
+            # suffix.
+            if $(type) = SHARED_LIB &&
+              ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
+                ! ( [ $(property-set).get <toolset> ] in pgi ) )
+            {
+                result = $(result).$(BOOST_VERSION)  ;
+            }
+
+            return $(result) ;
         }
     }
 }
