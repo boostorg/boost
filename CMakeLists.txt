@@ -51,7 +51,7 @@ message(STATUS "")
 message(STATUS " Subscribe to the mailing list:")
 message(STATUS "     http://lists.boost.org/mailman/listinfo.cgi/boost-cmake")
 message(STATUS "")
-message(STATUS " NOTE:  Please ask questions about this build system on the boost-cmake list,")c
+message(STATUS " NOTE:  Please ask questions about this build system on the boost-cmake list,")
 message(STATUS "        not on other boost lists.")
 message(STATUS "")
 message(STATUS " And/or check the archives:")
