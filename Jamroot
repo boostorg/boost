@@ -212,6 +212,9 @@ all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
     ;
 
 all-libraries = [ sequence.unique $(all-libraries) ] ;
+# The function_types library has a Jamfile, but it's used for maintenance
+# purposes, there's no library to build and install.
+all-libraries = [ set.difference $(all-libraries) : function_types ] ;
 
 
 local rule explicit-alias ( id : targets + )
