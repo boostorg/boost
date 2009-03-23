@@ -2,7 +2,7 @@ if test $# -eq 0
 then
     echo "Usage: $0 <bjam arguments>"
     echo "Typical bjam arguments are:"
-    echo "  --toolset=msvc-7.1,gcc"
+    echo "  toolset=msvc-7.1,gcc"
     echo "  variant=debug,release,profile"
     echo "  link=static,shared"
     echo "  threading=single,multi"
