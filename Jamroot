@@ -252,6 +252,15 @@ rule libraries-to-install ( existing-libraries * )
    local argv = [ modules.peek : ARGV ] ;
    local with-parameter = [ MATCH --with-(.*) : $(argv) ] ;
    local without-parameter = [ MATCH --without-(.*) : $(argv) ] ;
+   
+   if ! $(with-parameter) && ! $(without-parameter)
+   {
+       # Nothing is specified on command line. See if maybe
+       # project-config.jam has some choices. 
+       local project-config-libs = [ modules.peek project-config : libraries ] ;
+       with-parameter = [ MATCH --with-(.*) : $(project-config-libs) ] ;
+       without-parameter = [ MATCH --without-(.*) : $(project-config-libs) ] ;
+   }
 
    # Do some checks.
    if $(with-parameter) && $(without-parameter)
