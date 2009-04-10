@@ -63,10 +63,10 @@ __ http://www.boost.org/boost-build2/doc/html/bbv2/reference/tools.html
 |           |                    |require configuring__ another|
 |           |                    |toolset to act as its backend|
 +-----------+--------------------+-----------------------------+
-|``cw``     |Metrowerks/FreeScale|The CodeWarrior compiler.  We|
+|``cw``     |Metrowerks/Freescale|The CodeWarrior compiler.  We|
 |           |                    |have not tested versions of  |
 |           |                    |this compiler produced since |
-|           |                    |it was sold to FreeScale.    |
+|           |                    |it was sold to Freescale.    |
 +-----------+--------------------+-----------------------------+
 |``dmc``    |Digital Mars        |As of this Boost release, no |
 |           |                    |version of dmc is known to   |
