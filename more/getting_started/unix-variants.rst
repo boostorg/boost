@@ -140,7 +140,7 @@ For example, your session might look like this:
 .. parsed-literal::
 
    $ cd ~/|boost_ver|
-   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc stage
+   $ bjam **--build-dir=**\ /tmp/build-boost **toolset=**\ gcc stage
 
 That will build static and shared non-debug multi-threaded variants of the libraries. To build all variants, pass the additional option, “``--build-type=complete``”.
 

@@ -65,8 +65,8 @@ __ ../../libs/iostreams/doc/installation.html
 
 If it seems like the build system can't find your compiler and/or
 linker, consider setting up a ``user-config.jam`` file as described
-in the `Boost.Build documentation`_.  If that isn't your problem or
-the ``user-config.jam`` file doesn't work for you, please address
-questions about configuring Boost for your compiler to the
-`Boost.Build mailing list`_.
+`here`__.  If that isn't your problem or the ``user-config.jam`` file
+doesn't work for you, please address questions about configuring Boost
+for your compiler to the `Boost.Build mailing list`_.
 
+__ http://www.boost.org/boost-build2/doc/html/bbv2/advanced/configuration.html
