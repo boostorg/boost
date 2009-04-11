@@ -382,7 +382,7 @@ Further information:
      ./bjam --help
      
    - Getting started guide: 
-     http://www.boost.org/doc/libs/1_38_0/more/getting_started/unix-variants.html
+     http://www.boost.org/more/getting_started/unix-variants.html
      
    - Boost.Build documentation:
      http://www.boost.org/boost-build2/doc/html/index.html
