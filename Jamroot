@@ -151,16 +151,18 @@ if ! ( $(build-type) in minimal complete )
 
 rule handle-static-runtime ( properties * )
 {
-    # This property combination is dangerous. Ideally, we would add a constraint
-    # to default build, so that user can build this property combination only if
-    # requested directly. But we do not have any 'constraint' system for
-    # default-build, so we disable such builds in requirements.
+    # Using static runtime with shared libraries is impossible on Linux,
+    # and dangerous on Windows. Therefore, we disallow it. This might
+    # be drastic, but it was disabled for a while with nobody complaining.
 
     # For CW, static runtime is needed so that std::locale works.
     if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
         ! ( <toolset>cw in $(properties) )
     {
-        return <build>no ;
+        ECHO "error: link=static together with runtime=link is not allowed" ;
+        ECHO "error: such property combination is either impossible " ;
+        ECHO "error: or too dangerious to be of any use" ;
+        EXIT ;
     }
 }
 
