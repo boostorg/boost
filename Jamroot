@@ -507,8 +507,21 @@ class top-level-target : alias-target-class
         
         local m = [ $(project).project-module ] ;
         self.build-type = [ modules.peek $(m) : build-type ] ;
+        # On Linux, we build release variant by default, since few users will
+        # ever want to debug C++ Boost libraries, and there's no ABI
+        # incompatibility between debug and release variants. We build
+        # shared and static libraries since that's what most packages
+        # seem to provide (.so in libfoo and .a in libfoo-dev).
         self.minimal-properties = [ property-set.create 
             <variant>release <threading>multi <link>shared <link>static <runtime-link>shared ] ;
+        # On Windows, new IDE projects use:
+        #
+        #   runtime-link=dynamic, threading=multi, variant=(debug|release)
+        #
+        # and in addition, C++ Boost's autolink defaults to static linking.
+        self.minimal-properties-win = [ property-set.create 
+            <variant>debug <variant>release <threading>multi <link>static <runtime-link>shared ] ;
+
         self.complete-properties = [ property-set.create
             <variant>debug <variant>release
             <threading>single <threading>multi
@@ -520,8 +533,27 @@ class top-level-target : alias-target-class
     {
         if $(self.build-type) = minimal
         {
-            local expanded = [ targets.apply-default-build $(property-set)
-              : $(self.minimal-properties) ] ;
+            local expanded ;
+            
+            local os = [ $(property-set).get <target-os> ] ;
+            # Because we completely override parent's 'generate'
+            # we need to check for default value of feature ourself.
+            if ! $(os)
+            {
+                os = [ feature.defaults <target-os> ] ;
+                os = $(os:G=) ;
+            }
+            
+            if $(os) = windows
+            {                
+                expanded = [ targets.apply-default-build $(property-set)
+                  : $(self.minimal-properties-win) ] ;
+            }
+            else
+            {
+                expanded = [ targets.apply-default-build $(property-set)
+                  : $(self.minimal-properties) ] ;
+            }            
             return [ build-multiple $(expanded) ] ;
         }
         else if $(self.build-type) = complete
