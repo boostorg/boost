@@ -586,17 +586,22 @@ stage-abs = [ path.native [ path.root $(stage-locate)/lib [ path.pwd ] ] ] ;
 
 # This target is built by default, and will forward to 'stage'
 # after producing some explanations.
-alias forward : explain stage ;
+targets.create-metatarget top-level-target : [ project.current ]
+  : forward
+  : explain stage
+  ;
+
+
 message explain :
 "\nBuilding C++ Boost.
 
 After the build, the headers will be located at
   
-  $(BOOST_ROOT)
+    $(BOOST_ROOT)
     
 The libraries will be located at  
     
-   $(stage-abs)
+    $(stage-abs)
      
 Use 'bjam install --prefix=<path>' if you wish to install headers and 
 libraries to a different location and remove the source tree.\n\n"
