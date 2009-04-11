@@ -143,7 +143,8 @@ local build-type = [ MATCH "^--build-type=(.*)" : [ modules.peek : ARGV ] ] ;
 build-type ?= minimal ;
 if ! ( $(build-type) in minimal complete )
 {
-    build-type = minimal ;
+    ECHO "The value of the --build-type option should be either 'complete' or 'minimal'" ;
+    EXIT ;
 }
 
 # Specify the build variants keyed on the build-type.
