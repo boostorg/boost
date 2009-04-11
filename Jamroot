@@ -124,6 +124,8 @@ import "class" : new ;
 import common ;
 import sequence ;
 import symlink ;
+import targets ;
+import project ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.39.0 ;
@@ -146,32 +148,6 @@ if ! ( $(build-type) in minimal complete )
     ECHO "The value of the --build-type option should be either 'complete' or 'minimal'" ;
     EXIT ;
 }
-
-# Specify the build variants keyed on the build-type.
-local default-build,minimal =
-    release
-    <threading>multi
-    <link>shared <link>static
-    <runtime-link>shared
-    ;
-local default-build,complete =
-    debug release
-    <threading>single <threading>multi
-    <link>shared <link>static
-    <runtime-link>shared <runtime-link>static
-    ;
-
-# Set the default build.
-local default-build = $(default-build,$(build-type)) ;
-
-# We only use the default build when building at the root to avoid having it
-# impact the default regression testing of "debug".
-# TODO: Consider having a "testing" build type instead of this check.
-if $(__file__:D) != ""
-{
-    default-build = debug ;
-}
-
 
 rule handle-static-runtime ( properties * )
 {
@@ -202,7 +178,6 @@ project boost
       <toolset>sun:<stdlib>sun-stlport
     : usage-requirements <include>.
     : build-dir bin.v2
-    : default-build $(default-build)
     ;
 
 
@@ -515,8 +490,95 @@ else
     explicit install-unversioned ;
 }
 
+# This is a special metatarget class that handles the --build-type=complete
+# option.
+class top-level-target : alias-target-class
+{
+    import modules ;
+    import errors ; 
+    
+    rule __init__ ( name : project : sources * : requirements *
+        : default-build * : usage-requirements * )
+    {
+        alias-target-class.__init__ $(name) : $(project) : $(sources) :
+            $(requirements) : $(default-build) : $(usage-requirements) ;
+        
+        local m = [ $(project).project-module ] ;
+        self.build-type = [ modules.peek $(m) : build-type ] ;
+        self.minimal-properties = [ property-set.create 
+            <variant>release <threading>multi <link>shared <link>static <runtime-link>shared ] ;
+        self.complete-properties = [ property-set.create
+            <variant>debug <variant>release
+            <threading>single <threading>multi
+            <link>shared <link>static
+            <runtime-link>shared <runtime-link>static ] ;
+    }
+    
+    rule generate ( property-set )
+    {
+        if $(self.build-type) = minimal
+        {
+            local expanded = [ targets.apply-default-build $(property-set)
+              : $(self.minimal-properties) ] ;
+            return [ build-multiple $(expanded) ] ;
+        }
+        else if $(self.build-type) = complete
+        {                                    
+            local expanded = [ targets.apply-default-build $(property-set)
+              : $(self.complete-properties) ] ;
+            
+            # Filter inappopriate combinations
+            local filtered ;
+            for local p in $(expanded)
+            {
+                # See comment in handle-static-runtime regarding this logic.
+                if [ $(p).get <link> ] = shared && [ $(p).get <runtime-link> ] = static
+                   && [ $(p).get <toolset> ] != cw
+                {
+                    # Skip this
+                }
+                else
+                {
+                    filtered += $(p) ;
+                }
+            }            
+            return [ build-multiple $(filtered) ] ;            
+        }
+        else
+        {
+            errors.error "Unknown build type" ; 
+        }               
+    }
+    
+    rule build-multiple ( property-sets * )
+    {
+        local usage-requirements = [ property-set.empty ] ;
+        local result ;
+        for local p in $(property-sets)
+        {
+            local r = [ alias-target-class.generate $(p) ] ;
+            if $(r)
+            {
+                usage-requirements = [ $(usage-requirements).add $(r[1]) ] ;
+                result += $(r[2-]) ;
+            }
+        }
+        return $(usage-requirements) [ sequence.unique $(result) ] ;
+    }
+    
+}
+
 alias install : install-proper install-unversioned ;
-alias stage : stage-proper stage-unversioned ;
+
+targets.create-metatarget top-level-target : [ project.current ]
+  : install
+  : install-proper install-unversioned 
+  ;
+targets.create-metatarget top-level-target : [ project.current ]
+  : stage
+  : stage-proper stage-unversioned 
+  ;
+
 explicit install ;
 explicit stage ;
 
