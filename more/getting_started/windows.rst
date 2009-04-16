@@ -199,6 +199,24 @@ now.
 
 __ `Link Your Program to a Boost Library`_
 
+Or, Simplified Build From Source
+--------------------------------
+
+If you wish to build from source with Visual C++, you can use a 
+simple build procedure described in this section. Open the command prompt
+and change your current directory to the Boost root directory. Then, type
+the following commands::
+
+  bootstrap
+  .\bjam
+
+The first command prepares the Boost.Build system for use. The second
+command invokes Boost.Build to build the separately-compiled Boost
+libraries. Please consult the `Boost.Build documentation`__ for a list
+of options that can be passed to ``bjam``.
+
+__ http://www.boost.org/boost-build2/doc/html/bbv2/advanced/invocation.html
+
 Or, Build Binaries From Source
 ------------------------------
 
