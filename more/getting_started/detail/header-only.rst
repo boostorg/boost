@@ -27,6 +27,7 @@ The only Boost libraries that *must* be built separately are:
 * Boost.Regex_
 * Boost.Serialization_
 * Boost.Signals_
+* Boost.System_
 * Boost.Thread_
 * Boost.Wave_
 

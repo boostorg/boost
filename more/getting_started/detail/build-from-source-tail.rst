@@ -3,7 +3,7 @@
 .. file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 Building the special ``stage`` target places Boost
-library binaries in the ``stage``\ |/| subdirectory of your `build
+library binaries in the ``stage``\ |/|\ ``lib``\ |/| subdirectory of your `build
 directory`_.
 
 .. Note:: ``bjam`` is case-sensitive; it is important that all the
@@ -65,8 +65,8 @@ __ ../../libs/iostreams/doc/installation.html
 
 If it seems like the build system can't find your compiler and/or
 linker, consider setting up a ``user-config.jam`` file as described
-in the `Boost.Build documentation`_.  If that isn't your problem or
-the ``user-config.jam`` file doesn't work for you, please address
-questions about configuring Boost for your compiler to the
-`Boost.Build mailing list`_.
+`here`__.  If that isn't your problem or the ``user-config.jam`` file
+doesn't work for you, please address questions about configuring Boost
+for your compiler to the `Boost.Build mailing list`_.
 
+__ http://www.boost.org/boost-build2/doc/html/bbv2/advanced/configuration.html

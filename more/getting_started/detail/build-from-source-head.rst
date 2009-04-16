@@ -39,7 +39,10 @@ Identify Your Toolset
 .....................
 
 First, find the toolset corresponding to your compiler in the
-following table.  
+following table (an up-to-date list is always available `in the
+Boost.Build documentation`__).
+
+__ http://www.boost.org/boost-build2/doc/html/bbv2/reference/tools.html
 
 .. Note:: If you previously chose a toolset for the purposes of
   `building bjam`_, you should assume it won't work and instead
@@ -60,10 +63,10 @@ following table.
 |           |                    |require configuring__ another|
 |           |                    |toolset to act as its backend|
 +-----------+--------------------+-----------------------------+
-|``cw``     |Metrowerks/FreeScale|The CodeWarrior compiler.  We|
+|``cw``     |Metrowerks/Freescale|The CodeWarrior compiler.  We|
 |           |                    |have not tested versions of  |
 |           |                    |this compiler produced since |
-|           |                    |it was sold to FreeScale.    |
+|           |                    |it was sold to Freescale.    |
 +-----------+--------------------+-----------------------------+
 |``dmc``    |Digital Mars        |As of this Boost release, no |
 |           |                    |version of dmc is known to   |
@@ -81,8 +84,6 @@ following table.
 |           |                    |operating system.            |
 +-----------+--------------------+-----------------------------+
 |``intel``  |Intel               |                             |
-+-----------+--------------------+-----------------------------+
-|``kylix``  |Borland             |                             |
 +-----------+--------------------+-----------------------------+
 |``msvc``   |Microsoft           |                             |
 +-----------+--------------------+-----------------------------+
@@ -126,4 +127,10 @@ invoke ``bjam`` as follows:
 
 .. parsed-literal::
 
-  bjam **--build-dir=**\ |build-directory|_ **--toolset=**\ |toolset-name|_ |build-type-complete| stage
+  bjam **--build-dir=**\ |build-directory|_ **toolset=**\ |toolset-name|_ |build-type-complete| stage
+
+For a complete description of these and other invocation options,
+please see the `Boost.Build documentation`__.
+
+__ http://www.boost.org/boost-build2/doc/html/bbv2/advanced/invocation.html
+

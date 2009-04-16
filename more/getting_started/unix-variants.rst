@@ -96,16 +96,16 @@ represents the shell's prompt):
 .. parsed-literal::
 
   **$** cd |root|
-  **$** ./configure --help
+  **$** ./bootstrap.sh --help
 
-Select your configuration options and invoke ``./configure`` again
+Select your configuration options and invoke ``./bootstrap.sh`` again
 without the ``--help`` option.  Unless you have write permission in
 your system's ``/usr/local/`` directory, you'll probably want to at
 least use
 
 .. parsed-literal::
 
-  **$** ./configure **--prefix=**\ *path*\ /\ *to*\ /\ *installation*\ /\ *prefix* 
+  **$** ./bootstrap.sh **--prefix=**\ *path*\ /\ *to*\ /\ *installation*\ /\ *prefix* 
 
 to install somewhere else.  Also, consider using the
 ``--show-libraries`` and ``--with-libraries=`` options to limit the
@@ -113,7 +113,7 @@ long wait you'll experience if you build everything.  Finally,
 
 .. parsed-literal::
 
-  **$** make install
+  **$** ./bjam install
 
 will leave Boost binaries in the ``lib/`` subdirectory of your
 installation prefix.  You will also find a copy of the Boost
@@ -140,7 +140,7 @@ For example, your session might look like this:
 .. parsed-literal::
 
    $ cd ~/|boost_ver|
-   $ bjam **--build-dir=**\ /tmp/build-boost **--toolset=**\ gcc stage
+   $ bjam **--build-dir=**\ /tmp/build-boost **toolset=**\ gcc stage
 
 That will build static and shared non-debug multi-threaded variants of the libraries. To build all variants, pass the additional option, “``--build-type=complete``”.
 
@@ -155,7 +155,7 @@ A. You can specify the full path to each library:
    .. parsed-literal::
 
      $ c++ -I |root| example.cpp -o example **\\**
-        **~/boost/lib/libboost_regex-gcc34-mt-d-1_36.a**
+        **~/boost/stage/lib/libboost_regex-gcc34-mt-d-1_36.a**
 
 B. You can separately specify a directory to search (with ``-L``\
    *directory*) and a library name to search for (with ``-l``\
@@ -165,7 +165,7 @@ B. You can separately specify a directory to search (with ``-L``\
    .. parsed-literal::
 
      $ c++ -I |root| example.cpp -o example **\\**
-        **-L~/boost/lib/ -lboost_regex-gcc34-mt-d-1_36**
+        **-L~/boost/stage/lib/ -lboost_regex-gcc34-mt-d-1_36**
 
    As you can see, this method is just as terse as method A for one
    library; it *really* pays off when you're using multiple
