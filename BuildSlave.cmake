@@ -1,7 +1,7 @@
 ##########################################################################
 # Boost Build Slave Support                                              #
 ##########################################################################
-# Copyright (C) 2008 Troy D. Straszheim                                  #
+# Copyright (C) 2008,2009 Troy D. Straszheim                             #
 #                                                                        #
 # Distributed under the Boost Software License, Version 1.0.             #
 # See accompanying file LICENSE_1_0.txt or copy at                       #
