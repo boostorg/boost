@@ -1,7 +1,7 @@
-# Copyright (C) 2009 Vladimir Prus
-#
-# Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+REM Copyright (C) 2009 Vladimir Prus
+REM
+REM Distributed under the Boost Software License, Version 1.0.
+REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
 @ECHO OFF
 
@@ -28,13 +28,13 @@ ECHO using %toolset% ; > project-config.jam
 ECHO.
 ECHO Bootstrapping is done. To build, run:
 ECHO.
-ECHO     .\bjam.exe
+ECHO     .\bjam
 ECHO.    
 ECHO To adjust configuration, edit 'project-config.jam'.
 ECHO Further information:
 ECHO.
 ECHO     - Command line help:
-ECHO     ./bjam --help
+ECHO     .\bjam --help
 ECHO.     
 ECHO     - Getting started guide: 
 ECHO     http://boost.org/more/getting_started/windows.html
