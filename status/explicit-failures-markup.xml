@@ -4593,7 +4593,6 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="DllTestNormal"/>
-            <toolset name="*cygwin*"/>
             <toolset name="*mingw*"/>
             <toolset name="intel-darwin-10*"/>
             <toolset name="intel-darwin-11*"/>
@@ -4604,6 +4603,14 @@ for more information.
                 header-defined static class member can exist at runtime. See
                 <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">FAQ</a>
                 for more information.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="DllTest*"/>
+            <toolset name="intel-vc9-win-11.0*"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <note author="Andreas Huber">
+                This looks like a configuration problem.
             </note>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
@@ -4621,19 +4628,9 @@ for more information.
             <toolset name="pathscale-3.1"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="StopWatch*"/>
-            <toolset name="msvc-8.0~wm5~stlport5.1"/>
-            <note author="Andreas Huber">
-                This looks like a std library or configuration bug. Since
-                difftime is only used in the example, this failure can be
-                ignored.
-            </note>
-        </mark-expected-failures>
         <mark-expected-failures reason="?">
-            <test name="DllTest*"/>
-            <toolset name="cygwin-gcc-stdcxx-4.2.1"/>
-            <toolset name="msvc-8.0~wm5~stlport5.1"/>
+            <test name="UnconsumedResultTest*"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
     </library>
