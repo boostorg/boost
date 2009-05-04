@@ -249,7 +249,7 @@ if test "x$EPREFIX" = x; then
 fi
 
 if test "x$LIBDIR" = x; then
-  LIBDIR="$EXPREFIX/lib"
+  LIBDIR="$EPREFIX/lib"
 fi
 
 if test "x$INCLUDEDIR" = x; then
