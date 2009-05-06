@@ -268,7 +268,7 @@ add_definitions(-DBOOST_ALL_NO_LIB=1)
 add_subdirectory(doc)
 
 # Add build rules for all of the Boost libraries
-add_subdirectory(${BOOST_LIBS_DIR})
+add_subdirectory(libs)
 
 # Add build rules for all of the Boost tools
 # TODO: On hold while I work on the modularity code
