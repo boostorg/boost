@@ -235,11 +235,17 @@ if(WIN32 AND NOT UNIX)
 endif(WIN32 AND NOT UNIX)
 include(CPack)
 
-if(COMMAND cpack_configure_downloads)
-  cpack_configure_downloads(
-  "http://www.osl.iu.edu/~dgregor/Boost-CMake/${BOOST_VERSION}/"
-    ALL ADD_REMOVE)
+option(BOOST_INSTALLER_ON_THE_FLY
+       "Whether to build installers that download components on-the-fly" OFF)
+
+if (BOOST_INSTALLER_ON_THE_FLY)
+  if(COMMAND cpack_configure_downloads)
+    cpack_configure_downloads(
+    "http://www.osl.iu.edu/~dgregor/Boost-CMake/${BOOST_VERSION}/"
+      ALL ADD_REMOVE)
+  endif()
 endif()
+
 ##########################################################################
 
 ##########################################################################
