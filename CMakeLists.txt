@@ -84,9 +84,9 @@ SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 list(APPEND CMAKE_MODULE_PATH ${Boost_SOURCE_DIR}/tools/build/CMake)
 include(BoostUtils)
 include(BoostConfig)
-include(BoostBuildSlave)
 include(BoostCore)
 include(BoostDocs)
+include(CTest)
 include(BoostTesting)
 ##########################################################################
 
