@@ -32,6 +32,7 @@ project(Boost)
 # Post a warning to those attempting to use the CMake Build system. When #
 # the build system stabilizes this can be removed.                       #
 ##########################################################################
+set (CMAKE_IS_EXPERIMENTAL ON)
 if (NOT CMAKE_IS_EXPERIMENTAL)
 message(STATUS "##########################################################################")
 message(STATUS "")
@@ -65,7 +66,7 @@ endif (NOT CMAKE_IS_EXPERIMENTAL)
 # Version information                                                    #
 ##########################################################################
 set(BOOST_VERSION_MAJOR 1)
-set(BOOST_VERSION_MINOR 37)
+set(BOOST_VERSION_MINOR 49)
 set(BOOST_VERSION_SUBMINOR 0)
 set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
 ##########################################################################
