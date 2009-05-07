@@ -32,6 +32,7 @@ project(Boost)
 # Post a warning to those attempting to use the CMake Build system. When #
 # the build system stabilizes this can be removed.                       #
 ##########################################################################
+set(CMAKE_IS_EXPERIMENTAL ON) # while we do a testing sprint
 if (NOT CMAKE_IS_EXPERIMENTAL)
 message(STATUS "##########################################################################")
 message(STATUS "")
