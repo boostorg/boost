@@ -32,8 +32,6 @@ project(Boost)
 # Post a warning to those attempting to use the CMake Build system. When #
 # the build system stabilizes this can be removed.                       #
 ##########################################################################
-set (CMAKE_IS_EXPERIMENTAL ON)
-if (NOT CMAKE_IS_EXPERIMENTAL)
 message(STATUS "##########################################################################")
 message(STATUS "")
 message(STATUS "              Only Boost.Build is officially supported.")
@@ -41,10 +39,6 @@ message(STATUS "")
 message(STATUS "                      This is not Boost.Build.")
 message(STATUS "")
 message(STATUS " This is an alternate, cmake-based build system that is currently under development.")
-message(STATUS " To try it out, invoke CMake with the argument")
-message(STATUS "        -DCMAKE_IS_EXPERIMENTAL=YES_I_KNOW")
-message(STATUS " Or use the gui to set the variable CMAKE_IS_EXPERIMENTAL to some value.")
-message(STATUS " This will only be necessary the first time.")
 message(STATUS " ")
 message(STATUS " For more information on boost-cmake see the wiki:")
 message(STATUS "     https://svn.boost.org/trac/boost/wiki/CMake")
@@ -59,14 +53,12 @@ message(STATUS " And/or check the archives:")
 message(STATUS "     http://news.gmane.org/gmane.comp.lib.boost.cmake")
 message(STATUS "")
 message(STATUS "##########################################################################")
-message(FATAL_ERROR "Magic variable CMAKE_IS_EXPERIMENTAL unset.")
-endif (NOT CMAKE_IS_EXPERIMENTAL)
 
 ##########################################################################
 # Version information                                                    #
 ##########################################################################
 set(BOOST_VERSION_MAJOR 1)
-set(BOOST_VERSION_MINOR 49)
+set(BOOST_VERSION_MINOR 40)
 set(BOOST_VERSION_SUBMINOR 0)
 set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
 ##########################################################################
