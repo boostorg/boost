@@ -27,41 +27,6 @@
 cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
 project(Boost)
 
-
-##########################################################################
-# Post a warning to those attempting to use the CMake Build system. When #
-# the build system stabilizes this can be removed.                       #
-##########################################################################
-set(CMAKE_IS_EXPERIMENTAL ON) # while we do a testing sprint
-if (NOT CMAKE_IS_EXPERIMENTAL)
-message(STATUS "##########################################################################")
-message(STATUS "")
-message(STATUS "              Only Boost.Build is officially supported.")
-message(STATUS "")
-message(STATUS "                      This is not Boost.Build.")
-message(STATUS "")
-message(STATUS " This is an alternate, cmake-based build system that is currently under development.")
-message(STATUS " To try it out, invoke CMake with the argument")
-message(STATUS "        -DCMAKE_IS_EXPERIMENTAL=YES_I_KNOW")
-message(STATUS " Or use the gui to set the variable CMAKE_IS_EXPERIMENTAL to some value.")
-message(STATUS " This will only be necessary the first time.")
-message(STATUS " ")
-message(STATUS " For more information on boost-cmake see the wiki:")
-message(STATUS "     https://svn.boost.org/trac/boost/wiki/CMake")
-message(STATUS "")
-message(STATUS " Subscribe to the mailing list:")
-message(STATUS "     http://lists.boost.org/mailman/listinfo.cgi/boost-cmake")
-message(STATUS "")
-message(STATUS " NOTE:  Please ask questions about this build system on the boost-cmake list,")
-message(STATUS "        not on other boost lists.")
-message(STATUS "")
-message(STATUS " And/or check the archives:")
-message(STATUS "     http://news.gmane.org/gmane.comp.lib.boost.cmake")
-message(STATUS "")
-message(STATUS "##########################################################################")
-message(FATAL_ERROR "Magic variable CMAKE_IS_EXPERIMENTAL unset.")
-endif (NOT CMAKE_IS_EXPERIMENTAL)
-
 ##########################################################################
 # Version information                                                    #
 ##########################################################################
