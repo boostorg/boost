@@ -30,10 +30,21 @@ project(Boost)
 ##########################################################################
 # Version information                                                    #
 ##########################################################################
-set(BOOST_VERSION_MAJOR 1)
-set(BOOST_VERSION_MINOR 40)
-set(BOOST_VERSION_SUBMINOR 0)
-set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
+
+# We parse the version information from the boost/version.hpp header.
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/boost/version.hpp BOOST_VERSIONSTR
+  REGEX "#define[ ]+BOOST_VERSION[ ]+[0-9]+")
+string(REGEX MATCH "[0-9]+" BOOST_VERSIONSTR ${BOOST_VERSIONSTR})
+if (BOOST_VERSIONSTR)
+  math(EXPR BOOST_VERSION_MAJOR "${BOOST_VERSIONSTR} / 100000")
+  math(EXPR BOOST_VERSION_MINOR "${BOOST_VERSIONSTR} / 100 % 1000")
+  math(EXPR BOOST_VERSION_SUBMINOR "${BOOST_VERSIONSTR} % 100")
+  set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
+  message(STATUS "Boost version ${BOOST_VERSION}")
+else()
+  message(FATAL_ERROR 
+    "Unable to parse Boost version from ${CMAKE_CURRENT_SOURCE_DIR}/boost/version.hpp")
+endif()
 ##########################################################################
 
 # Put the libaries and binaries that get built into directories at the
