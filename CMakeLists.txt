@@ -45,6 +45,10 @@ else()
   message(FATAL_ERROR 
     "Unable to parse Boost version from ${CMAKE_CURRENT_SOURCE_DIR}/boost/version.hpp")
 endif()
+
+# Make sure that we reconfigure when boost/version.hpp changes.
+configure_file(boost/version.hpp
+   ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/version.stamp)
 ##########################################################################
 
 # Put the libaries and binaries that get built into directories at the
