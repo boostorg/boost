@@ -64,21 +64,26 @@
 #                           versions of Boost or multiple compilers can
 #                           be used on the same system.
 #
-#                               versioned (default) - Names of boost
-#                               binaries include the Boost version
-#                               number and the name and version of the
-#                               compiler.  Boost headers are installed
-#                               in a subdirectory of <HDRDIR> whose
-#                               name contains the Boost version
-#                               number.
+#                               versioned (default) - Names of boost binaries
+#                               include the Boost version number, name and
+#                               version of the compiler and encoded build
+#                               properties.  Boost headers are installed in a
+#                               subdirectory of <HDRDIR> whose name contains
+#                               the Boost version number.
 #
-#                               system - Binaries names do not include
-#                               the Boost version number or the name
-#                               and version number of the compiler.
-#                               Boost headers are installed directly
-#                               into <HDRDIR>.  This option is
-#                               intended for system integrators who
-#                               are building distribution packages.
+#                               tagged -- Names of boost binaries include the
+#                               encoded build properties such as variant and
+#                               threading, but do not including compiler name
+#                               and version, or Boost version. This option is
+#                               useful if you build several variants of Boost,
+#                               using the same compiler.
+#
+#                               system - Binaries names do not include the
+#                               Boost version number or the name and version
+#                               number of the compiler.  Boost headers are
+#                               installed directly into <HDRDIR>.  This option
+#                               is intended for system integrators who are
+#                               building distribution packages.
 #
 #   --buildid=ID            Adds the specified ID to the name of built
 #                           libraries.  The default is to not add anything.
@@ -318,53 +323,50 @@ rule tag ( name : type ? : property-set )
 {
     if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
     {
+        local result ;
         if $(layout) = versioned
         {
-            local result = [ common.format-name
+            result = [ common.format-name
                 <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
                 -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
-
-            # Optionally add version suffix. On NT, library with version suffix
-            # will not be recognized by linkers. On CYGWIN, we get strage
-            # duplicate symbol errors when library is generated with version
-            # suffix. On OSX, version suffix is not needed -- the linker expects
-            # the libFoo.1.2.3.dylib format. AIX linkers do not accept version
-            # suffixes either. Pgi compilers can not accept library with version
-            # suffix.
-            if $(type) = SHARED_LIB &&
-              ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
-                ! ( [ $(property-set).get <toolset> ] in pgi ) )
-            {
-                result = $(result).$(BOOST_VERSION)  ;
-            }
-
-            return $(result) ;
-        }
-        else
+        }        
+        else if $(layout) = tagged
         {
-            local result = [ common.format-name
+            result = [ common.format-name
+                <base> <threading> <runtime>
+                -$(BUILD_ID)
+                : $(name) : $(type) : $(property-set) ] ;            
+        }
+        else if $(layout) = system
+        {
+            result = [ common.format-name
                 <base> 
                 -$(BUILD_ID)
                 : $(name) : $(type) : $(property-set) ] ;
-
-            # Optionally add version suffix. On NT, library with version suffix
-            # will not be recognized by linkers. On CYGWIN, we get strage
-            # duplicate symbol errors when library is generated with version
-            # suffix. On OSX, version suffix is not needed -- the linker expects
-            # the libFoo.1.2.3.dylib format. AIX linkers do not accept version
-            # suffixes either. Pgi compilers can not accept library with version
-            # suffix.
-            if $(type) = SHARED_LIB &&
-              ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
-                ! ( [ $(property-set).get <toolset> ] in pgi ) )
-            {
-                result = $(result).$(BOOST_VERSION)  ;
-            }
-
-            return $(result) ;
         }
-    }
+        else
+        {
+            ECHO "error: invalid layout '$(layout)'" ;
+            EXIT ;               
+        }
+                
+        # Optionally add version suffix. On NT, library with version suffix
+        # will not be recognized by linkers. On CYGWIN, we get strage
+        # duplicate symbol errors when library is generated with version
+        # suffix. On OSX, version suffix is not needed -- the linker expects
+        # the libFoo.1.2.3.dylib format. AIX linkers do not accept version
+        # suffixes either. Pgi compilers can not accept library with version
+        # suffix.
+        if $(type) = SHARED_LIB &&
+          ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
+            ! ( [ $(property-set).get <toolset> ] in pgi ) )
+        {
+            result = $(result).$(BOOST_VERSION)  ;
+        }
+            
+        return $(result) ;
+    }    
 }
 
 
