@@ -27,40 +27,28 @@
 cmake_minimum_required(VERSION 2.6.0 FATAL_ERROR)
 project(Boost)
 
-
-##########################################################################
-# Post a warning to those attempting to use the CMake Build system. When #
-# the build system stabilizes this can be removed.                       #
-##########################################################################
-message(STATUS "##########################################################################")
-message(STATUS "")
-message(STATUS "              Only Boost.Build is officially supported.")
-message(STATUS "")
-message(STATUS "                      This is not Boost.Build.")
-message(STATUS "")
-message(STATUS " This is an alternate, cmake-based build system that is currently under development.")
-message(STATUS " ")
-message(STATUS " For more information on boost-cmake see the wiki:")
-message(STATUS "     https://svn.boost.org/trac/boost/wiki/CMake")
-message(STATUS "")
-message(STATUS " Subscribe to the mailing list:")
-message(STATUS "     http://lists.boost.org/mailman/listinfo.cgi/boost-cmake")
-message(STATUS "")
-message(STATUS " NOTE:  Please ask questions about this build system on the boost-cmake list,")
-message(STATUS "        not on other boost lists.")
-message(STATUS "")
-message(STATUS " And/or check the archives:")
-message(STATUS "     http://news.gmane.org/gmane.comp.lib.boost.cmake")
-message(STATUS "")
-message(STATUS "##########################################################################")
-
 ##########################################################################
 # Version information                                                    #
 ##########################################################################
-set(BOOST_VERSION_MAJOR 1)
-set(BOOST_VERSION_MINOR 40)
-set(BOOST_VERSION_SUBMINOR 0)
-set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
+
+# We parse the version information from the boost/version.hpp header.
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/boost/version.hpp BOOST_VERSIONSTR
+  REGEX "#define[ ]+BOOST_VERSION[ ]+[0-9]+")
+string(REGEX MATCH "[0-9]+" BOOST_VERSIONSTR ${BOOST_VERSIONSTR})
+if (BOOST_VERSIONSTR)
+  math(EXPR BOOST_VERSION_MAJOR "${BOOST_VERSIONSTR} / 100000")
+  math(EXPR BOOST_VERSION_MINOR "${BOOST_VERSIONSTR} / 100 % 1000")
+  math(EXPR BOOST_VERSION_SUBMINOR "${BOOST_VERSIONSTR} % 100")
+  set(BOOST_VERSION "${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_SUBMINOR}")
+  message(STATUS "Boost version ${BOOST_VERSION}")
+else()
+  message(FATAL_ERROR 
+    "Unable to parse Boost version from ${CMAKE_CURRENT_SOURCE_DIR}/boost/version.hpp")
+endif()
+
+# Make sure that we reconfigure when boost/version.hpp changes.
+configure_file(boost/version.hpp
+   ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/version.stamp)
 ##########################################################################
 
 # Put the libaries and binaries that get built into directories at the
@@ -81,6 +69,7 @@ include(BoostCore)
 include(BoostDocs)
 include(CTest)
 include(BoostTesting)
+message(STATUS "Build name: ${BUILDNAME}")
 ##########################################################################
 
 ##########################################################################
@@ -103,12 +92,11 @@ option(BUILD_SINGLE_THREADED "Whether to build single-threaded libraries"
        ${BUILD_SINGLE_THREADED_DEFAULT})
 option(BUILD_MULTI_THREADED "Whether to build multi-threaded libraries" ON)
 
-if (UNIX)
+if(UNIX)
   option(BUILD_VERSIONED "Add versioning information to names of built files" OFF)
 else(UNIX)
   option(BUILD_VERSIONED "Add versioning information to names of built files" ON)
 endif(UNIX)
-
 
 # For now, we only actually support static/dynamic run-time variants for 
 # Visual C++. Provide both options for Visual C++ users, but just fix
@@ -136,7 +124,6 @@ boost_add_extra_variant(PYTHON_NODEBUG PYTHON_DEBUG)
 # Installation                                                           #
 ##########################################################################
 if(BUILD_VERSIONED)
-
   if(BOOST_VERSION_SUBMINOR GREATER 0)
     set(BOOST_HEADER_DIR 
       "include/boost-${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_SUBMINOR}")
@@ -147,11 +134,10 @@ if(BUILD_VERSIONED)
 else(BUILD_VERSIONED)
   set(BOOST_HEADER_DIR "include/")
 endif(BUILD_VERSIONED)
-
 install(DIRECTORY boost 
-        DESTINATION ${BOOST_HEADER_DIR}
-        PATTERN "CVS" EXCLUDE
-        PATTERN ".svn" EXCLUDE)
+  DESTINATION ${BOOST_HEADER_DIR}
+  PATTERN "CVS" EXCLUDE
+  PATTERN ".svn" EXCLUDE)
 #
 # TDS 20080526:  Getting a segfault here even with the ifs.   At r45780, with these lines 
 # uncommented:
@@ -175,11 +161,13 @@ install(DIRECTORY boost
 set(CPACK_PACKAGE_NAME "Boost")
 set(CPACK_PACKAGE_VENDOR "Boost.org")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Boost ${BOOST_VERSION}")
+
 if (EXISTS "${Boost_SOURCE_DIR}/README.txt")
   message(STATUS "Using generic cpack package description file.")
   set(CPACK_PACKAGE_DESCRIPTION_FILE "${Boost_SOURCE_DIR}/README.txt")
   set(CPACK_RESOURCE_FILE_README "${Boost_SOURCE_DIR}/README.txt")
-endif()
+endif ()
+
 set(CPACK_RESOURCE_FILE_LICENSE "${Boost_SOURCE_DIR}/LICENSE_1_0.txt")
 if (EXISTS "${Boost_SOURCE_DIR}/Welcome.txt")
   message(STATUS "Using generic cpack welcome file.")
