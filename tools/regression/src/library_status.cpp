@@ -111,7 +111,7 @@ namespace
             for(itr = m_subcolumns.begin(); itr != m_subcolumns.end(); ++itr){
                 std::pair<int, int> spans;
                 spans = itr->second.get_spans();
-                rows = std::max(rows, spans.first);
+                rows = (std::max)(rows, spans.first);
                 cols += spans.second;
             }
             ++rows;
@@ -661,7 +661,7 @@ namespace
         col_node::subcolumns_t::const_iterator itr;
         int max_depth = 1;
         for(itr = root.m_subcolumns.begin(); itr != root.m_subcolumns.end(); ++itr){
-            max_depth = std::max(max_depth, itr->second.rows);
+            max_depth = (std::max)(max_depth, itr->second.rows);
         }
         return max_depth;
     }
@@ -856,9 +856,9 @@ int cpp_main( int argc, char * argv[] ) // note name!
             "  options: --compiler name     Run for named compiler only\n"
             "           --ignore-pass       Do not report tests which pass all compilers\n"
             "           --no-warn           Warnings not reported if test passes\n"
-		    "           --boost-root path default derived from current path.\n"
-		    "           --locate-root path  Path to ALL_LOCATE_TARGET for bjam;\n"
-		    "                               default boost-root.\n"
+            "           --boost-root path default derived from current path.\n"
+            "           --locate-root path  Path to ALL_LOCATE_TARGET for bjam;\n"
+            "                               default boost-root.\n"
             "           --comment path      Path to file containing HTML\n"
             "                               to be copied into status-file.\n"
             "           --notes path        Path to file containing HTML\n"
@@ -873,10 +873,10 @@ int cpp_main( int argc, char * argv[] ) // note name!
         return 1;
     }
 
-	if(boost_root.empty())
-		boost_root = find_boost_root();
-	if ( locate_root.empty() ) 
-		locate_root = boost_root;
+    if(boost_root.empty())
+        boost_root = find_boost_root();
+    if ( locate_root.empty() ) 
+        locate_root = boost_root;
 
     report.open( fs::path( argv[1], fs::native ) );
     if ( !report )
