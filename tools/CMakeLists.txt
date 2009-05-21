@@ -80,8 +80,3 @@ endmacro(boost_tool_dependencies)
 add_subdirectory(quickbook)
 add_subdirectory(wave)
 add_subdirectory(bcp)
-
-#
-#  this one is just for docs
-#
-add_subdirectory(build/CMake)
