@@ -31,4 +31,7 @@ echo Run ftp script...
 ftp -n -i -s:inspect.ftp boost.cowic.de
 popd
 
+echo Update script for next run
+copy tools\release\inspect_trunk.bat .
+
 echo Inspect script complete
