@@ -17,7 +17,7 @@ dist\bin\inspect >%TEMP%\trunk_inspect.html
 
 echo Create ftp script...
 pushd %TEMP%
-copy user.txt inspect.ftp
+copy %BOOST_TRUNK%\..\user.txt inspect.ftp
 echo dir >>inspect.ftp
 echo binary >>inspect.ftp
 echo put trunk_inspect.html >>inspect.ftp
