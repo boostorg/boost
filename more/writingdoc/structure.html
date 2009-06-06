@@ -90,40 +90,44 @@
       </dl>
     </dd>
 
+    <dt><a href="#web">Web Reference Documentation</a></dt>
+
     <dt><a href="#footnotes">Footnotes</a></dt>
   </dl>
 
   <h2><a name="introduction" id="introduction">Introduction</a></h2>
 
-  <p>Boost itself does not require any specific documentation structure. The
-  C++ Standard, however, has very explicit requirements for the description
-  of library components (Section 17.3). So for Boost libraries likely to be
-  proposed for inclusion in the standard, it is highly desirable to structure
-  documentation in a way that meets the requirements of the the standard.
-  Doing so eliminates the need to rewrite the documentation for
-  standardization.</p>
-
-  <p>Library developers should remember that for a library to be accepted as
-  part of the C++ Standard Library, the proposal must include full wording.
-  The committee will not do that work for you.</p>
-
-  <p>Beyond that, the documentation structure required for the standard is an
-  effective way to communicate the technical specifications for a library.
-  Although terse, it is already familiar to many Boost users, and is far more
-  precise than most ad hoc documentation structures.</p>
-
-  <p>The following description is for the structure of documentation required
-  by the standard. Boost libraries should also provided additional
-  documentation, such as introductory, tutorial, example, and rationale
-  material.</p>
+  <p>Boost does not require any specific documentation structure.
+  However, there are some important considerations that
+  influence content and structure. For example, many Boost
+  libraries wind up being proposed for inclusion in the C++
+  Standard, so writing them initially with text suitable for
+  inclusion in the Standard may be helpful. Also, Boost library
+  documentation is often accessed via the World Wide Web,
+  including via search engines, so context is often important
+  for every page. Finally, Boost libraries should provide
+  additional documentation, such as introductory, tutorial,
+  example, and rationale content. With those things in mind, we
+  suggest the following guidelines for Boost library
+  documentation.</p>
 
   <h2><a name="standards-conforming" id="standards-conforming">Standards
   Conforming</a> Documentation</h2>
 
+  <p>The documentation structure required for the C++ Standard is
+  an effective way to describe the technical specifications for
+  a library.  Although terse, that format is familiar to many
+  Boost users and is far more precise than most ad hoc formats.
+  The following description is based upon &sect;17.3 of the
+  Standard.  (Note that while final Standard proposals must
+  include full standardese wording, which the committee will
+  not do for you, that level of detail is not expected of Boost
+  library documentation.)</p>
+
   <h3><a name="elements" id="elements">Document elements</a></h3>
 
   <p>Each document contains the following elements, as applicable<a class=
-  "footnote" href="#footnote1">(1)</a>:</p>
+  "footnote" href="#footnote1" id="footnote1-location">(1)</a>:</p>
 
   <ul>
     <li><a href="#summary">Summary</a></li>
@@ -197,7 +201,7 @@
   <p>In some cases the semantic requirements are presented as C++ code. Such
   code is intended as a specification of equivalance of a construct to
   another construct, not necessarily as the way the construct must be
-  implemented.<a class="footnote" href="#footnote2">(2)</a></p>
+  implemented.<a class="footnote" href="#footnote2" id="footnote2-location">(2)</a></p>
 
   <h4><a name="detailed-specs" id="detailed-specs">Detailed
   specification</a></h4>
@@ -218,7 +222,7 @@
   </ul>
 
   <p>Descriptions of class member functions follow the order (as
-  appropriate)<a class="footnote" href="#footnote3">(3)</a>:</p>
+  appropriate)<a class="footnote" href="#footnote3" id="footnote3-location">(3)</a>:</p>
 
   <ul>
     <li>Constructor(s) and destructor</li>
@@ -236,7 +240,7 @@
 
   <p>Descriptions of function semantics contain the following <a name=
   "function-elements" id="function-elements">elements</a> (as
-  appropriate)<a class="footnote" href="#footnote4">(4):</a></p>
+  appropriate)<a class="footnote" href="#footnote4" id="footnote4-location">(4):</a></p>
 
   <dl class="function-semantics">
     <dt><b><a href="#requires">Requires:</a></b> the preconditions for
@@ -390,24 +394,48 @@ void resize(size_type n, charT c);
   give users a lot of insight into why a library is designed the way it is.
   More importantly, it can help prevent "fixing" something that wasn't really
   broken as the library matures.</p>
+  
+  <h2 id="web">Web Reference Documentation</h2>
+
+  <p>Boost library documentation is often accessed via the World
+  Web. Using search engines, a page deep in the reference
+  content could be viewed without any further context.
+  Therefore, it is helpful to add extra context, such as the
+  following, to each page:</p>
+
+  <ul>
+  <li>Describe the enclosing namespace or use fully scoped
+    identifiers.
+  <li>Document required headers for each type or function.
+  <li>Link to relevant tutorial information.
+  <li>Link to related example code.
+  <li>Include the library name.
+  <li>Include navigation elements to the beginning of the
+    documentation.
+  </ul>
+
+  <p>It is also useful to consider the effectiveness of a
+  description in search engines. Terse or cryptic descriptions
+  are less likely to help the curious find a relevant function
+  or type.</p>
 
   <h2><a name="footnotes" id="footnotes">Footnotes</a></h2>
 
   <dl>
-    <dt><a class="footnote" name="footnote1" id="footnote1">(1)</a> To save
+    <dt><a class="footnote" id="footnote1" href="#footnote1-location">(1)</a> To save
     space, items that do not apply to a clause are omitted. For example, if a
     clause does not specify any requirements, there will be no "Requirements"
     subclause.</dt>
 
-    <dt><a class="footnote" name="footnote2" id="footnote2">(2)</a> Although
+    <dt><a class="footnote" id="footnote2" href="#footnote2-location">(2)</a> Although
     in some cases the code is unambiguously the optimum implementation.</dt>
 
-    <dt><a class="footnote" name="footnote3" id="footnote3">(3)</a> To save
+    <dt><a class="footnote" id="footnote3" href="#footnote3-location">(3)</a> To save
     space, items that do not apply to a class are omitted. For example, if a
     class does not specify any comparison functions, there will be no
     "Comparison functions" subclause.</dt>
 
-    <dt><a class="footnote" name="footnote4" id="footnote4">(4)</a> To save
+    <dt><a class="footnote" id="footnote4" href="#footnote4-location">(4)</a> To save
     space, items that do not apply to a function are omitted. For example, if
     a function does not specify any precondition, there will be no "Requires"
     paragraph.</dt>
