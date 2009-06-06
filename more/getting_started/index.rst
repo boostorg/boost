@@ -15,7 +15,7 @@ __ ../../index.htm
 .. Admonition:: Use the latest version of this Getting Started guide
 
   The `Boost website version of this Getting Started guide`_ may
-  have undated information, such as the location of additional installers
+  have updated information, such as the location of additional installers
   or improved installation procedures, so you might want use that version
   if you've got an Internet connection available.
 
