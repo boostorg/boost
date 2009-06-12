@@ -1792,8 +1792,10 @@
         <mark-unusable>
             <toolset name="borland-5.*"/>
             <toolset name="borland-6.*"/>
-            <toolset name="vacpp"/> <!-- Many graph tests ICE on this compiler -->
-            <toolset name="pathscale-3.1"/> <!-- Almost all graph tests ICE on this compiler -->
+            <!-- Open64 ICEs on almost all test cases, often because of
+            http://gcc.gnu.org/bugzilla/show_bug.cgi?id=17327; property type
+            detection fails because it uses enum types as tags. -->
+            <toolset name="gcc-open64"/>
         </mark-unusable>
         <mark-expected-failures>
           <test name="graphviz_test"/>
@@ -1814,16 +1816,9 @@
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="csr_graph_test"/>
-            <toolset name="msvc-8.0"/>
-            <toolset name="msvc-8.0_64"/>
-            <toolset name="msvc-8.0_x86_64"/>
-            <toolset name="msvc-9.0"/>
-            <toolset name="msvc-9.0express"/>
-            <toolset name="msvc-9.0_64"/>
-            <toolset name="msvc-9.0_x86_64"/>
-            <toolset name="msvc-9.0~stlport5.2"/>
-            <toolset name="msvc-9.0~wm5~stlport5.2"/>
-            <toolset name="msvc-10.0"/>
+            <toolset name="msvc-8.0*"/>
+            <toolset name="msvc-9.0*"/>
+            <toolset name="msvc-10.0*"/>
             <note author="Doug Gregor">
               This failure is due to a problem with partial ordering
               of class template partial specializations.
