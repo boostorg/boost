@@ -5745,6 +5745,16 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
                 <note refid="3" author="D. Gregor"/>
             </mark-failure>
         </test>
+        <test name="value_init_test">
+          <mark-failure>
+            <toolset name="intel-9.0"/>
+            <note author="Niels Dekker" date="2009-07-01">
+            When I made the conversion from value_initialized&lt;T&gt; to T&amp;
+            const-correct, this specific compiler version gave compile errors.
+            See also: Ticket #2548 - "Let's fix the logical constness of value_initialized!"
+            </note>
+          </mark-failure>
+        </test>
         <mark-expected-failures>
             <test name="value_init_test"/>
             <toolset name="msvc-6.5*"/>
