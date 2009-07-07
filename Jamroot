@@ -277,7 +277,21 @@ rule libraries-to-install ( existing-libraries * )
 
 # What kind of layout are we doing?
 layout = [ MATCH "^--layout=(.*)" : [ modules.peek : ARGV ] ] ;
-layout ?= versioned ;
+# On Windows, we used versioned layout by default in order to
+# be compatible with autolink. On other systems, we use system
+# layout which is what every other program uses. Note that windows
+# check is static, and won't 
+if ! $(layout)
+{
+    if [ modules.peek : NT ]
+    {
+        layout = versioned ;
+    }
+    else
+    {
+        layout = system ;
+    }
+}
 layout-$(layout) = true ;
 
 
