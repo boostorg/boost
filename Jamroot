@@ -130,6 +130,7 @@ import sequence ;
 import symlink ;
 import targets ;
 import project ;
+import option ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.40.0 ;
@@ -276,7 +277,7 @@ rule libraries-to-install ( existing-libraries * )
 
 
 # What kind of layout are we doing?
-layout = [ MATCH "^--layout=(.*)" : [ modules.peek : ARGV ] ] ;
+layout = [ option.get layout : "" ] ;
 # On Windows, we used versioned layout by default in order to
 # be compatible with autolink. On other systems, we use system
 # layout which is what every other program uses. Note that windows
@@ -640,7 +641,7 @@ targets.create-metatarget top-level-target : [ project.current ]
 
 
 message explain :
-"\nBuilding C++ Boost.
+"\nBuilding the Boost C++ Libraries.
 
 After the build, the headers will be located at
   
