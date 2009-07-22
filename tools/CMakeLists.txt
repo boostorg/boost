@@ -1,3 +1,9 @@
+#
+# Copyright Troy D. Straszheim
+#
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
+#
 # return a list of directories that we should add_subdirectory()
 macro(boost_collect_lib_dependencies varname filename)
   #message(STATUS "boost_collect_lib_dependencies.... ${Boost_SOURCE_DIR}/libs")
@@ -80,3 +86,4 @@ endmacro(boost_tool_dependencies)
 # add_subdirectory(quickbook)
 # add_subdirectory(wave)
 add_subdirectory(bcp)
+add_subdirectory(inspect)
