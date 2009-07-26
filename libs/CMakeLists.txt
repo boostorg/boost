@@ -1,3 +1,9 @@
+#
+# Copyright Troy D. Straszheim
+#
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
+#
 # Find each subdirectory containing a CMakeLists.txt file, and include
 # it. This avoids the need to manually list which libraries in Boost
 # have CMakeLists.txt files.
