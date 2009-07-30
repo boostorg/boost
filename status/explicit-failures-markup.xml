@@ -1791,7 +1791,7 @@
     <library name="graph">
         <mark-unusable>
             <toolset name="borland-5.*"/>
-            <toolset name="borland-6.*"/>
+            <!-- Testing 7/30/2009: <toolset name="borland-6.*"/> -->
             <!-- Open64 and Pathscale ICE on almost all test cases, often
             because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=17327;
             property type detection fails because it uses enum types as tags.
@@ -1818,7 +1818,10 @@
             <toolset name="qcc-3.3*"/>
             <note author="Jim Douglas" date="18 Feb 06" refid="27"/>
         </mark-expected-failures>
-        <mark-expected-failures>
+        <!--
+          This appears to be working as of 7/30/2009. - remove this block if
+          the tests cycle without problems.
+          <mark-expected-failures>
             <test name="csr_graph_test"/>
             <toolset name="msvc-8.0*"/>
             <toolset name="msvc-9.0*"/>
@@ -1827,7 +1830,7 @@
               This failure is due to a problem with partial ordering
               of class template partial specializations.
             </note>
-        </mark-expected-failures>
+        </mark-expected-failures> -->
         <mark-expected-failures>
           <test name="kolmogorov_max_flow_test"/>
           <test name="max_flow_test"/>
