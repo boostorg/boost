@@ -1,9 +1,9 @@
+@ECHO OFF
+
 REM Copyright (C) 2009 Vladimir Prus
 REM
 REM Distributed under the Boost Software License, Version 1.0.
 REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
-
-@ECHO OFF
 
 ECHO Building Boost.Jam build engine
 if exist ".\tools\jam\src\bin.ntx86\bjam.exe" del tools\jam\src\bin.ntx86\bjam.exe
