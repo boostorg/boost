@@ -151,7 +151,7 @@ http://www.boost.org/LICENSE_1_0.txt)
         <xsl:param name="test_log"/>       
         <xsl:variable name="type" select="$test_log/@test-type"/>
         <func:result select="$type='compile' or $type='compile_fail' or $type='link' or $type='link_fail' 
-                             or $type='run' or $type='run_fail' or $type='run_pyd'"/>
+                             or $type='run' or $type='run_fail' or $type='run_pyd' or $type='run_mpi'"/>
     </func:function>
 
 
