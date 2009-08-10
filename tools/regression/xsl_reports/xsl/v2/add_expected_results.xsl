@@ -36,7 +36,7 @@ http://www.boost.org/LICENSE_1_0.txt)
                 </xsl:when>
                 <xsl:when test="$type='link' or $type='link_fail' or $type='' or $type='lib' or $test_log/link/@result='fail'">
                     <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link) = 1 and count( $test_log/run) = 0"/></xsl:when>
-                <xsl:when test="$type='run' or $type='run_fail' or $type='run_pyd'">
+                <xsl:when test="$type='run' or $type='run_fail' or $type='run_pyd' or $type='run_mpi'">
                     <xsl:value-of select="count( $test_log/compile) = 1  and count( $test_log/link)  = 1 and count($test_log/run) = 1 "/>
                 </xsl:when>
                 <xsl:otherwise> 

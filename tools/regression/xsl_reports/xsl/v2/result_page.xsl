@@ -98,6 +98,7 @@ http://www.boost.org/LICENSE_1_0.txt)
             <xsl:variable name="test_type" select="./@test-type"/>
             <xsl:choose>
             <xsl:when test="$test_type='run_pyd'">      <xsl:text>r</xsl:text>  </xsl:when>
+            <xsl:when test="$test_type='run_mpi'">      <xsl:text>r</xsl:text>  </xsl:when>
             <xsl:when test="$test_type='run'">          <xsl:text>r</xsl:text>  </xsl:when>
             <xsl:when test="$test_type='run_fail'">     <xsl:text>rf</xsl:text> </xsl:when>
             <xsl:when test="$test_type='compile'">      <xsl:text>c</xsl:text>  </xsl:when>
