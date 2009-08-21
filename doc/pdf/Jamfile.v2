@@ -5,6 +5,11 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import boostbook ;
+import os ;
+import common ;
+import doxygen ;
+import quickbook ;
+
 
 boostbook array_docs 
 	: ../../libs/array/doc/array.xml 
@@ -103,4 +108,18 @@ install boost-build-install
     <format>pdf
     <name>boost_build.pdf
   ;
+
+install signals2-install
+  :
+    ../../libs/signals2/doc//standalone
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>signals2.pdf
+    <dependency>../../libs/signals2/doc//hello_world_def_code_snippet.xml
+  ;
+
+
+
 
