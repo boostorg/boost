@@ -3943,6 +3943,44 @@ for more information.
 
     </library>
 
+    <library name="property_tree">
+        <mark-unusable>
+            <toolset name="borland-*"/>
+            <note author="Sebastian Redl">Inherited from MultiIndex</note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="sun-5.*"/>
+            <note author="Sebastian Redl">
+                Lots of test failures complaining about the ambiguity of a
+                const and a non-const overload of the same function.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="vacpp"/>
+            <note author="Sebastian Redl">
+                This compiler seems to have very broken name lookup.
+            </note>
+        </mark-unusable>
+        <mark-expected-failures>
+            <test name="test_property_tree"/>
+            <test name="test_json_parser"/>
+            <toolset name="intel-darwin-*"/>
+            <toolset name="intel-linux-*"/>
+            <note author="Sebastian Redl">
+                Tend to crash the compiler (Intel 10) or simply take too long
+                (Intel 11).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_xml_parser_rapidxml"/>
+            <toolset name="gcc-3.4.3"/>
+            <note author="Sebastian Redl">
+                This ancient GCC doesn't like local const ints as template
+                parameters. Or something like that.
+            </note>
+        </mark-expected-failures>
+    </library>
+
      <!-- pointer container -->
     <library name="ptr_container">
         <mark-unusable>
