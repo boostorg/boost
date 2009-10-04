@@ -19,7 +19,7 @@ svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/branches/release windows
 
 echo Creating release history README.txt...
-lynx -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >windows\README.txt
+lynx -width=72 -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >windows\README.txt
 
 echo Copying docs into windows\doc...
 pushd windows\doc
