@@ -6,6 +6,9 @@ rem See http://www.boost.org/LICENSE_1_0.txt
 
 echo Must be run in directory containing svn checkout of trunk
 
+echo Clean trunk working copy ...
+rem cleanup clears locks or other residual problems (we learned this the hard way!)
+svn cleanup
 echo Update trunk working copy...
 svn up --non-interactive
 pushd tools\inspect\build
@@ -32,6 +35,6 @@ ftp -n -i -s:inspect.ftp boost.cowic.de
 popd
 
 echo Update script for next run
-copy tools\release\inspect_trunk.bat .
+copy /y tools\release\inspect_trunk.bat
 
 echo Inspect script complete
