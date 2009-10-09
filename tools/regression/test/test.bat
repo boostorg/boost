@@ -1,4 +1,9 @@
-set TEST_LOCATE_ROOT=d:\temp
+rem Copyright Beman Dawes 2005
+
+rem Distributed under the Boost Software License, Version 1.0.
+rem See http://www.boost.org/LICENSE_1_0.txt
+
+set TEST_LOCATE_ROOT=%TEMP%
 
 echo Begin test processing...
 bjam --dump-tests "-sALL_LOCATE_TARGET=%TEST_LOCATE_ROOT%" %* >bjam.log 2>&1
