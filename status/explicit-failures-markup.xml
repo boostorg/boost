@@ -5777,8 +5777,28 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
             is an acceptable failure.
         </note>
       </mark-expected-failures>
-    </library>
 
+      <mark-expected-failures>
+        <test name="unnecessary_copy_tests"/>
+        <toolset name="borland-*"/>
+        <toolset name="sun-*"/>
+        <note author="Daniel James">
+            This tests whether inserting elements creates as few copies as I think
+            is possible. If this fails it just means that the container might be
+            a little inefficient.
+        </note>
+      </mark-expected-failures>
+
+      <mark-expected-failures>
+        <test name="compile_map"/>
+        <test name="compile_set"/>
+        <toolset name="gcc-open64"/>
+        <toolset name="pathscale-3.1"/>
+        <note author="Daniel James">
+            Concept checks don't seem to work on pathscale.
+        </note>
+      </mark-expected-failures>
+    </library>
 
     <!-- utility/enable_if -->
     <library name="utility/enable_if">
