@@ -3,7 +3,8 @@
 # Build release packages
 
 # Copyright 2008 Beman Dawes
-# Distributed under the Boost Software License, Version 1.0. See http://www.boost.org/LICENSE_1_0.txt
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
 
 if [ $# -lt 1 ]
 then
@@ -21,7 +22,7 @@ rm -f $1.tar.bz2 2>/dev/null
 echo "creating gz..."
 tar cfz $1.tar.gz $1
 echo "creating bz2..."
-gunzip -c $1.tar.gz | bzip2 >$1.tar.bz2
+gzip -c $1.tar.gz | bzip2 >$1.tar.bz2
 echo "cleaning up..."
 mv $1 posix
 

@@ -10,17 +10,27 @@ echo "Build a branches/release snapshot for POSIX, using LF line termination..."
 
 echo "Removing old files..."
 rm -r -f posix
+rm -r -f svn_info
 
 echo "Exporting files from subversion..."
+# leave an audit trail, which is used by inspect to determine revision number
+#   use --non-recursive rather than --depth=files until the linux distros catch up
+svn co --non-recursive http://svn.boost.org/svn/boost/branches/release svn_info
 svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
-echo "Building docs..."
-pushd posix/doc
-bjam-cygwin --v2 --toolset=gcc &>../../posix-bjam.log
-popd
+#echo "Building bjam..."
+# failure to use an up-to-date copy of bjam has caused much wasted effort.
+#pushd posix/tools/jam/src
+#./build.sh gcc
+#popd
+#
+#echo "Building docs..."
+#pushd posix/doc
+#../tools/jam/src/bin.cygwinx86/bjam --toolset=gcc &>../../posix-bjam.log
+#popd
 
 echo "Cleaning up and renaming..."
-rm -r posix/bin.v2
+#rm -r posix/bin.v2
 SNAPSHOT_DATE=`eval date +%Y-%m-%d`
 echo SNAPSHOT_DATE is $SNAPSHOT_DATE
 mv posix boost-posix-$SNAPSHOT_DATE
@@ -52,4 +62,4 @@ echo "Running ftp script..."
 # use cygwin ftp rather than Windows ftp
 /usr/bin/ftp -v -i boost.cowic.de <posix.ftp
 
-echo "POSIX snapshot complete!
+echo POSIX snapshot complete!
