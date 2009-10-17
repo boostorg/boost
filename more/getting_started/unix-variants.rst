@@ -121,6 +121,14 @@ headers in the ``include/`` subdirectory of the installation
 prefix, so you can henceforth use that directory as an ``#include``
 path in place of the Boost root directory.
 
+.. Admonition:: Boost.CMake
+
+  There is a cmake build for boost, supported and distributed
+  separately.  See the `Boost.CMake`_ wiki page for more information.
+
+  .. _`Boost.CMake`:
+       https://svn.boost.org/trac/boost/wiki/CMake
+
 |next|__
 
 __ `Link Your Program to a Boost Library`_

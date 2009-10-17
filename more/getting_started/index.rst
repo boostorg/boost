@@ -54,6 +54,15 @@ provide.  For example:
 Here you're expected to imagine replacing the text “your name” with
 your actual name.
 
+Alternate method:  Boost.CMake
+------------------------------
+
+There is a cmake build for boost, supported and distributed
+separately.  See the `Boost.CMake`_ wiki page for more information.
+
+.. _`Boost.CMake`:
+     https://svn.boost.org/trac/boost/wiki/CMake
+
 Ready?
 ------
 
