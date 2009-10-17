@@ -217,6 +217,14 @@ of options that can be passed to ``bjam``.
 
 __ http://www.boost.org/boost-build2/doc/html/bbv2/advanced/invocation.html
 
+.. Admonition:: Boost.CMake
+
+  There is a also a cmake build for boost, supported and distributed
+  separately.  See the `Boost.CMake`_ wiki page for more information.
+
+  .. _`Boost.CMake`:
+       https://svn.boost.org/trac/boost/wiki/CMake
+
 Or, Build Binaries From Source
 ------------------------------
 
