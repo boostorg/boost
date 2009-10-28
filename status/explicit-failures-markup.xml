@@ -3666,7 +3666,12 @@ for more information.
             <test name="test3"/>
             <toolset name="qcc-3.3.5*cpp"/>
             <note author="Jim Douglas" date="14 Feb 06" refid="27"/>
-       </mark-expected-failures>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="begin_end"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Gunter Winkler" date="07 Oct 09" refid="48"/>
+        </mark-expected-failures>
     </library>
 
     <!-- program_options -->
@@ -6354,6 +6359,10 @@ These tests will fail in most compilers that don't support rvalue references.
     <note id="47">
         Depending on system load, the compile time may exceed specified timeout value.
         The test passes when the timeout value is increased.
+    </note>
+
+    <note id="48">
+        This test fails when BOOST_UBLAS_NO_NESTED_CLASS_RELATION is defined.
     </note>
 
 </explicit-failures-markup>
