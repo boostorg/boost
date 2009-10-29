@@ -410,15 +410,21 @@ const fs::path find_bin_path(const string& relative)
     // compile msgs sometimes modified, so make a local copy
     string compile( ((pass && no_warn)
       ? empty_string :  element_content( db, "compile" )) );
-
     const string & link( pass ? empty_string : element_content( db, "link" ) );
     const string & run( (pass && !always_show_run_output)
       ? empty_string : element_content( db, "run" ) );
     string lib( (pass ? empty_string : element_content( db, "lib" )) );
 
+    string::size_type pos;
+    if ( (pos = compile.find("30 DAY EVALUATION LICENSE")) != string::npos )
+    {
+      compile.erase(pos, 25);
+      while ( compile[0] == '\n' || compile[0] == '\r' ) compile.erase(0,1);
+    }
+
     // some compilers output the filename even if there are no errors or
     // warnings; detect this if one line of output and it contains no space.
-    string::size_type pos = compile.find( '\n', 1 );
+    pos = compile.find( '\n', 1 );
     if ( pos != string::npos && compile.size()-pos <= 2
         && compile.find( ' ' ) == string::npos ) compile.clear();
 
