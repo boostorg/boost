@@ -12,9 +12,9 @@ echo Using %BOOST_TRUNK% as boost trunk
 time /t
 pushd %BOOST_TRUNK%
 echo Running svn cleanup on %BOOST_TRUNK%
-svn cleanup
+svn --non-interactive --trust-server-cert cleanup
 echo Running svn update on %BOOST_TRUNK%
-svn up
+svn --non-interactive --trust-server-cert up
 popd
 call %BOOST_TRUNK%\tools\release\snapshot_download_docs.bat
 time /t
