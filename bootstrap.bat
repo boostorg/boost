@@ -7,15 +7,24 @@ REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.t
 
 ECHO Building Boost.Jam build engine
 if exist ".\tools\jam\src\bin.ntx86\bjam.exe" del tools\jam\src\bin.ntx86\bjam.exe
+if exist ".\tools\jam\src\bin.ntx86_64\bjam.exe" del tools\jam\src\bin.ntx86_64\bjam.exe
 cd tools\jam\src
 
 call .\build.bat > ..\..\..\bjam.log
 @ECHO OFF
 cd ..\..\..
 
-if not exist ".\tools\jam\src\bin.ntx86\bjam.exe" goto :bjam_failure
+if exist ".\tools\jam\src\bin.ntx86\bjam.exe" (
+   copy .\tools\jam\src\bin.ntx86\bjam.exe . > nul
+   goto :bjam_built)
 
-copy .\tools\jam\src\bin.ntx86\bjam.exe . > nul
+if exist ".\tools\jam\src\bin.ntx86_64\bjam.exe" (
+   copy .\tools\jam\src\bin.ntx86_64\bjam.exe . > nul
+   goto :bjam_built)
+
+goto :bjam_failure
+
+:bjam_built
 
 REM Ideally, we should obtain the toolset that build.bat has
 REM guessed. However, it uses setlocal at the start and does
