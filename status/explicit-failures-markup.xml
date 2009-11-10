@@ -5706,32 +5706,6 @@ These tests will fail in most compilers that don't support rvalue references.
     <!-- unordered -->
     <library name="unordered">
       <mark-expected-failures>
-        <test name="move_tests"/>
-        <toolset name="msvc-6*"/>
-        <toolset name="msvc-7*"/>
-        <toolset name="msvc-8*"/>
-        <toolset name="msvc-9.0"/>
-        <toolset name="msvc-9.0express"/>
-        <toolset name="msvc-10.0"/>
-        <toolset name="intel-win-10.1"/>
-        <toolset name="borland-*"/>
-        <toolset name="sun-*"/>
-        <toolset name="hp_css-*"/>
-        <toolset name="intel-linux-8*"/>
-        <toolset name="intel-linux-9.0*"/>
-        <toolset name="acc-pa_risc"/>
-        <note author="Daniel James">
-            This tests whether the container is successfully moved under
-            different circumstances, and fails if it is copied. Typically if
-            this one fails, it just means that return value optimization was
-            not applied. It might be possible to change the test to make it for
-            the compiler to apply ADL (by not having non-const reference
-            parameters for the function which returns the container). So this
-            is an acceptable failure.
-        </note>
-      </mark-expected-failures>
-
-      <mark-expected-failures>
         <test name="unnecessary_copy_tests"/>
         <toolset name="borland-*"/>
         <toolset name="sun-*"/>
