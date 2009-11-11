@@ -121,14 +121,6 @@ headers in the ``include/`` subdirectory of the installation
 prefix, so you can henceforth use that directory as an ``#include``
 path in place of the Boost root directory.
 
-.. Admonition:: Boost.CMake
-
-  There is a cmake build for boost, supported and distributed
-  separately.  See the `Boost.CMake`_ wiki page for more information.
-
-  .. _`Boost.CMake`:
-       https://svn.boost.org/trac/boost/wiki/CMake
-
 |next|__
 
 __ `Link Your Program to a Boost Library`_
@@ -137,9 +129,19 @@ Or, Build Custom Binaries
 -------------------------
 
 If you're using a compiler other than your system's default, you'll
-need to use Boost.Build_ to create binaries.  You'll also
+need to use Boost.Build_ to create binaries.
+
+You'll also
 use this method if you need a nonstandard build variant (see the
 `Boost.Build documentation`_ for more details).
+
+.. Admonition:: Boost.CMake
+
+  There is also an experimental CMake build for boost, supported and distributed
+  separately.  See the `Boost.CMake`_ wiki page for more information.
+
+  .. _`Boost.CMake`:
+       https://svn.boost.org/trac/boost/wiki/CMake
 
 .. include:: detail/build-from-source-head.rst
 
