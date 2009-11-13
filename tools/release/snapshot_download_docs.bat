@@ -6,6 +6,8 @@ rem  Copyright 2008 Beman Dawes
 rem  Distributed under the Boost Software License, Version 1.0.
 rem  See http://www.boost.org/LICENSE_1_0.txt
 
+echo Downloading docs subdirectory...
+
 echo Deleting old files and directories ...
 del boost-docs.7z 2>nul
 rmdir /s /q docs_temp 2>nul 
