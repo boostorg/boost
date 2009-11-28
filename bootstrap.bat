@@ -32,7 +32,12 @@ REM export BOOST_JAM_TOOLSET, and I don't know how to do that
 REM properly. Default to msvc for now.
 set toolset=msvc
 
-ECHO using %toolset% ; > project-config.jam
+ECHO import option ; > project-config.jam
+ECHO. >> project-config.jam
+ECHO using %toolset% ; >> project-config.jam
+ECHO. >> project-config.jam
+ECHO option.set keep-going : false ; >> project-config.jam
+ECHO. >> project-config.jam
 
 ECHO.
 ECHO Bootstrapping is done. To build, run:
