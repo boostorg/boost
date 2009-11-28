@@ -373,6 +373,9 @@ option.set prefix : $PREFIX ;
 option.set exec-prefix : $EPREFIX ;
 option.set libdir : $LIBDIR ;
 option.set includedir : $INCLUDEDIR ;
+
+# Stop on first error
+option.set keep-going : false ;
 EOF
 
 cat << EOF
