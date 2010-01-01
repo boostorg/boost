@@ -5856,6 +5856,25 @@ These tests will fail in most compilers that don't support rvalue references.
         </mark-expected-failures>
     </library>
 
+    <!-- uuid -->
+    <library name="uuid">
+        <mark-expected-failures>
+            <test name="compile*"/>
+            <test name="test*"/>
+            <toolset name="borland-cb2009"/>
+            <toolset name="borland-cb2010"/>
+            <toolset name="borland-5.9*"/>
+            <toolset name="borland-6.1*"/>
+            <toolset name="borland-6.2*"/>
+            <toolset name="intel-vc9-win-11.1"/>
+            <note author="Andy Tompkins" refid="6">
+                Boost.Test does not work on these platforms, thus the 
+                tests fail since they use it.  I plan to use
+                boost/detail/lightweight_test.hpp instead at a later
+                time.
+            </note>
+        </mark-expected-failures>
+    </library>
 
     <!-- variant -->
     <library name="variant">
