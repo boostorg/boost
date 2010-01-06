@@ -3198,6 +3198,14 @@ for more information.
            </note>
         </mark-unusable>
        <mark-expected-failures>
+          <test name="mpfr_concept_check"/>
+          <test name="ntl_concept_check"/>
+          <toolset name="*"/>
+          <note author="John Maddock">
+             This test relies on external software being installed in order to pass.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
           <test name="test_traits"/>
           <toolset name="gcc-3.3.6"/>
           <note author="John Maddock">
@@ -4903,6 +4911,16 @@ These tests will fail in most compilers that don't support rvalue references.
 
     <!-- type_traits -->
     <library name="type_traits">
+       <mark-expected-failures>
+          <test name="has_operator_new_test"/>
+          <test name="make_signed_test"/>
+          <test name="make_unsigned_test"/>
+          <toolset name="msvc-7.1"/>
+          <note author="John Maddock">
+             Apparently the compiler can't cope with these - later versions are fine though.
+             Probably work-round-able if someone would care to look into these.
+          </note>
+       </mark-expected-failures>
         <mark-expected-failures>
             <test name="function_traits_test"/>
             <test name="remove_bounds_test"/>
@@ -5132,6 +5150,15 @@ These tests will fail in most compilers that don't support rvalue references.
                 work by someone who has this compiler.
             </note>
         </mark-unusable>
+       <mark-expected-failures>
+          <test name="test_type_traits"/>
+          <test name="std_test_type_traits"/>
+          <toolset name="msvc-7.1"/>
+          <note author="John Maddock">
+             Later versions of MSVC are required for these tests - the issues may
+             be work-round-able if anyone cares enough to look into them.
+          </note>
+       </mark-expected-failures>
         <mark-expected-failures>
             <test name="test_mem_fn_tricky"/>
             <test name="test_bind_tricky"/>
@@ -6286,3 +6313,4 @@ These tests will fail in most compilers that don't support rvalue references.
     </note>
 
 </explicit-failures-markup>
+
