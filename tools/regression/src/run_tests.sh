@@ -1,5 +1,11 @@
 #!/bin/sh
 #
+# Copyright John Maddock
+# Copyright Rene Rivera
+#
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
+#
 # shell script for running the boost regression test suite and generating
 # a html table of results.
 

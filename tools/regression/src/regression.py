@@ -329,13 +329,13 @@ class runner:
     def command_test_run(self):
         self.import_utils()
         if self.pjl_toolset != 'python':
-            test_cmd = '%s -d2 --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
+            test_cmd = '%s -d2 preserve-test-targets=off --dump-tests %s "--build-dir=%s" >>"%s" 2>&1' % (
                 self.bjam_cmd( self.toolsets ),
                 self.bjam_options,
                 self.regression_results,
                 self.regression_log )
         else:
-            test_cmd = '%s -d1 --dump-tests --verbose-test %s "--build-dir=%s" "--out-xml=%s"' % (
+            test_cmd = '%s -d1 preserve-test-targets=off --dump-tests --verbose-test %s "--build-dir=%s" "--out-xml=%s"' % (
                 self.bjam_cmd( self.toolsets ),
                 self.bjam_options,
                 self.regression_results,

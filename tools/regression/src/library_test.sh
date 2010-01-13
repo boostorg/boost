@@ -1,3 +1,8 @@
+# Copyright Robert Ramey 2007
+
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
+
 if test $# -eq 0 
 then
     echo "Usage: $0 <bjam arguments>"
