@@ -13,9 +13,12 @@ rmdir /s /q svn_info >nul
 del windows.7z >nul
 del windows.zip >nul
 
-echo Exporting files from subversion...
 rem  leave an audit trail, which is used by inspect to determine revision number
-svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
+echo Getting current subversion revision number...
+svn co --non-interactive --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
+svn info svn_info
+
+echo Exporting files from subversion...
 svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/branches/release windows
 
 echo Creating release history README.txt...
