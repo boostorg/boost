@@ -661,19 +661,31 @@ targets.create-metatarget top-level-target : [ project.current ]
 
 
 message explain :
-"\nBuilding the Boost C++ Libraries.
+"\nBuilding the Boost C++ Libraries.\n\n" ;
+explicit explain ;
 
-After the build, the headers will be located at
-  
+import build-system ;
+rule say ( ok ? ) 
+{
+    if $(ok)
+    {
+        ECHO 
+"\n\nThe Boost C++ Libraries were successfully built!
+          
+The following directory should be added to compiler include paths:
+          
     $(BOOST_ROOT)
-    
-The libraries will be located at  
-    
+      
+The following directory should be added to linker library paths:
+      
     $(stage-abs)
-     
-Use 'bjam install --prefix=<path>' if you wish to install headers and 
-libraries to a different location and remove the source tree.\n\n"
-  ;
+" ;
+    }    
+}
+IMPORT $(__name__) : say : : $(__name__).say ;
+
+build-system.set-post-build-hook $(__name__).say ;
+
 
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The
