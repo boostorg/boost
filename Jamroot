@@ -567,7 +567,9 @@ class top-level-target : alias-target-class
     
     rule generate ( property-set )
     {
-        modules.poke : top-level-targets : $(__name__) ;
+        local x = [ modules.peek : top-level-targets ] ;
+        x += $(self.name) ;
+        modules.poke : top-level-targets : $(x) ;
         if $(self.build-type) = minimal
         {
             local expanded ;
