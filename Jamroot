@@ -567,6 +567,7 @@ class top-level-target : alias-target-class
     
     rule generate ( property-set )
     {
+        modules.poke : top-level-targets : $(__name__) ;
         if $(self.build-type) = minimal
         {
             local expanded ;
@@ -667,8 +668,10 @@ explicit explain ;
 import build-system ;
 rule say ( ok ? ) 
 {
-    if $(ok)
-    {
+    if forward in [ modules.peek : top-level-targets ] 
+    {        
+        if $(ok)
+        {
         ECHO 
 "\n\nThe Boost C++ Libraries were successfully built!
           
@@ -680,6 +683,7 @@ The following directory should be added to linker library paths:
       
     $(stage-abs)
 " ;
+        }    
     }    
 }
 IMPORT $(__name__) : say : : $(__name__).say ;
