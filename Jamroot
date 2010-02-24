@@ -135,6 +135,8 @@ import targets ;
 import project ;
 import option ;
 import xsltproc ;
+import build-system ;
+import configure ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.43.0 ;
@@ -208,6 +210,7 @@ all-libraries = [ sequence.unique $(all-libraries) ] ;
 # purposes, there's no library to build and install.
 all-libraries = [ set.difference $(all-libraries) : function_types ] ;
 
+configure.register-components $(all-libraries) ;
 
 local rule explicit-alias ( id : targets + )
 {
@@ -330,6 +333,7 @@ PYTHON_ROOT ?= $(python-root) ;
 
 # Select the libraries to install.
 libraries = [ libraries-to-install $(all-libraries) ] ;
+configure.components-building $(libraries) ;
 
 if --show-libraries in [ modules.peek : ARGV ]
 {
@@ -667,8 +671,23 @@ message explain :
 "\nBuilding the Boost C++ Libraries.\n\n" ;
 explicit explain ;
 
-import build-system ;
-rule say ( ok ? ) 
+rule pre-build ( )
+{
+    local tl = [ modules.peek : top-level-targets ] ;
+    if stage in $(tl) || install in $(tl)
+    {
+        # FIXME: remove if when Boost regression tests use trunk
+        # bjam.
+        if PAD in [ RULENAMES ]
+        {            
+            configure.print-component-configuration ;
+        }        
+    }
+}
+IMPORT $(__name__) : pre-build : : $(__name__).pre-build ;
+build-system.set-pre-build-hook $(__name__).pre-build ;
+
+rule post-build ( ok ? ) 
 {
     if forward in [ modules.peek : top-level-targets ] 
     {        
@@ -688,10 +707,8 @@ The following directory should be added to linker library paths:
         }    
     }    
 }
-IMPORT $(__name__) : say : : $(__name__).say ;
-
-build-system.set-post-build-hook $(__name__).say ;
-
+IMPORT $(__name__) : post-build : : $(__name__).post-build ;
+build-system.set-post-build-hook $(__name__).post-build ;
 
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The
