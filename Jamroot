@@ -90,6 +90,12 @@
 #   --buildid=ID            Adds the specified ID to the name of built
 #                           libraries.  The default is to not add anything.
 #
+#   --python-buildid=ID     Adds the specified ID to the name of built
+#                           libraries that depend on Python.  The default 
+#                           is to not add anything. This ID is added in 
+#                           addition t --buildid.
+#
+#
 #   --help                  This message.
 #
 #   --with-<library>        Build and install the specified <library>
@@ -352,6 +358,12 @@ if $(build-id)
     constant BUILD_ID : [ regex.replace $(build-id) "[*\\/:.\"\' ]" "_" ] ;
 }
 
+# Python build id (only for Python libraries)
+local python-id = [ MATCH "^--python-buildid=(.*)" : [ modules.peek : ARGV ] ] ;
+if $(python-id)
+{
+    constant PYTHON_ID : [ regex.replace $(python-id) "[*\\/:.\"\']" "_" ] ;
+}
 
 # This rule is called by Boost.Build to determine the name of target. We use it
 # to encode the build variant, compiler name and boost version in the target
