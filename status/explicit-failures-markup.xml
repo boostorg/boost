@@ -5915,20 +5915,50 @@ These tests will fail in most compilers that don't support rvalue references.
     <!-- uuid -->
     <library name="uuid">
         <mark-expected-failures>
-            <test name="compile*"/>
-            <test name="test*"/>
+            <test name="test_serialization"/>
+            <toolset name="cuda-2.2"/>
             <toolset name="borland-cb2009"/>
             <toolset name="borland-cb2010"/>
-            <toolset name="borland-5.9*"/>
-            <toolset name="borland-6.1*"/>
-            <toolset name="borland-6.2*"/>
-            <toolset name="intel-vc9-win-11.1"/>
-            <note author="Andy Tompkins" refid="6">
-                Boost.Test does not work on these platforms, thus the 
-                tests fail since they use it.  I plan to use
-                boost/detail/lightweight_test.hpp instead at a later
-                time.
+            <toolset name="borland-5.9.3"/>
+            <toolset name="borland-6.1.3"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins">
+                The test relies on Boost.Serialization which is not
+                supported on this toolset.
             </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_random_generator"/>
+            <test name="test_tagging"/>
+            <test name="test_uuid_class"/>
+            <toolset name="borland-cb2009"/>
+            <toolset name="borland-cb2010"/>
+            <toolset name="borland-5.9.3"/>
+            <toolset name="borland-6.1.3"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins">
+                The test relies on Boost.Random which is not supported
+                on this toolset.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_uuid"/>
+            <toolset name="borland-cb2009"/>
+            <toolset name="borland-cb2010"/>
+            <toolset name="borland-5.9.3"/>
+            <toolset name="borland-6.1.3"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins" refid="28"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="compile_random_generator"/>
+            <test name="compile_uuid_generators"/>
+            <test name="test_include1"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins">
+                 The test relies on Boost.Iterator (iterator_facade) 
+                 which is not supported on this toolset.
+           </note>
         </mark-expected-failures>
     </library>
 
