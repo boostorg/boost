@@ -5970,6 +5970,56 @@ These tests will fail in most compilers that don't support rvalue references.
     </library>
 
 
+    <!-- uuid -->
+    <library name="uuid">
+        <mark-expected-failures>
+            <test name="test_serialization"/>
+            <toolset name="cuda-2.2"/>
+            <toolset name="borland-cb2009"/>
+            <toolset name="borland-cb2010"/>
+            <toolset name="borland-5.9.3"/>
+            <toolset name="borland-6.1.3"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins">
+                The test relies on Boost.Serialization which is not
+                supported on this toolset.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_random_generator"/>
+            <test name="test_tagging"/>
+            <test name="test_uuid_class"/>
+            <toolset name="borland-cb2009"/>
+            <toolset name="borland-cb2010"/>
+            <toolset name="borland-5.9.3"/>
+            <toolset name="borland-6.1.3"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins">
+                The test relies on Boost.Random which is not supported
+                on this toolset.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="test_uuid"/>
+            <toolset name="borland-cb2009"/>
+            <toolset name="borland-cb2010"/>
+            <toolset name="borland-5.9.3"/>
+            <toolset name="borland-6.1.3"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins" refid="28"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="compile_random_generator"/>
+            <test name="compile_uuid_generators"/>
+            <test name="test_include1"/>
+            <toolset name="borland-6.2.1"/>
+            <note author="Andy Tompkins">
+                 The test relies on Boost.Iterator (iterator_facade) 
+                 which is not supported on this toolset.
+           </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- variant -->
     <library name="variant">
         <mark-unusable>
