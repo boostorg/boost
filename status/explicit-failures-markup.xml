@@ -619,7 +619,7 @@
                 <toolset name="msvc-7.1*"/>
                 <toolset name="acc"/>
                 <note author="Alexander Nasonov">
-                    Conversion double-string-double may give a different value (or even throw) on many compilers 
+                    Conversion double-string-double may give a different value (or even throw) on many compilers
                 </note>
             </mark-failure>
         </test>
@@ -1394,7 +1394,7 @@
           <toolset name="sun-5.7"/>
           <toolset name="sun-5.8"/>
           <note author="Beman Dawes">
-              The library works well with versions of this compiler 5.9 and later 
+              The library works well with versions of this compiler 5.9 and later
           </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -1795,7 +1795,7 @@
             <toolset name="acc"/>
             <note author="Tobias Schwinger">
                 Those failures are due to not quite const-correct overload
-                resolution. The complaints from the test suite should rarely 
+                resolution. The complaints from the test suite should rarely
                 matter in practice - the corresponding components are basically
                 usable. With aCC6, when compiled in strict ansi mode, the test
                 succeeds.
@@ -1858,7 +1858,7 @@
                 When compiling with aC++, depending on system load, the compile time may exceed
                 specified timeout value. The test passes when the timeout value is increased.
                 When compiling with GCC, linker takes segmentation fault.
-                In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.  
+                In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.
             </note>
         </mark-expected-failures>
     </library>
@@ -2104,7 +2104,7 @@
             <toolset name="vacpp"/>
             <note author="Jonathan Turkanis" date="06 Jan 2008">
                 "restrict" is treated as a keyword on this platform (as in C99);
-                use the alias "slice" instead, defined in 
+                use the alias "slice" instead, defined in
                 "boost/iostreams/slice.hpp."
             </note>
         </mark-expected-failures>
@@ -2128,8 +2128,8 @@
             <test name="stream_offset_64bit_test"/>
             <toolset name="borland-*"/>
             <note author="Jonathan Turkanis" date="04 Jan 2008">
-                In the Dinkumware standard library, streampos relies on fpos_t 
-                to store stream offsets, but fpos_t is defined as a 32-bit 
+                In the Dinkumware standard library, streampos relies on fpos_t
+                to store stream offsets, but fpos_t is defined as a 32-bit
                 long by the Borland runtime library. In Borland's modified
                 version of STLPort, streampos relies on streamoff to store
                 stream offsets, but streamoff is defined to be a 32-bit long.
@@ -2147,8 +2147,8 @@
             <test name="stream_offset_64bit_test"/>
             <toolset name="vacpp*"/>
             <note author="Jonathan Turkanis" date="09 Jan 2008">
-                On this platform, streampos is an alias for fpos, whose 
-                implementation stores stream offsets using streamsize and 
+                On this platform, streampos is an alias for fpos, whose
+                implementation stores stream offsets using streamsize and
                 fpos_t; both of the latter types are 32-bit
             </note>
         </mark-expected-failures>
@@ -2169,8 +2169,8 @@
             <test name="stream_offset_64bit_test"/>
             <toolset name="gcc-4.2"/>
             <note author="Jonathan Turkanis" date="09 Jan 2008">
-              The following applies only to gcc-4.2 using the stdcxx 
-              standard library: On this platform, streampos is an alias for 
+              The following applies only to gcc-4.2 using the stdcxx
+              standard library: On this platform, streampos is an alias for
               ptrdiff_t, which is an alias for a 32-bit type
             </note>
         </mark-expected-failures>
@@ -4110,8 +4110,8 @@ for more information.
             <toolset name="pathscale-3.1"/>
             <toolset name="sun-5.*"/>
             <note author="Thorsten Ottosen">
-                For codewarrior, the cause of this problem is unknown. Please 
-                submit a patch. Other failures are due to problems with 
+                For codewarrior, the cause of this problem is unknown. Please
+                submit a patch. Other failures are due to problems with
                 the serialization library, or to a minor problem with the use of
                 the library.
             </note>
@@ -4340,6 +4340,15 @@ for more information.
             <note refid="27" author="Thorsten Ottosen"/>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="adl_conformance"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Neil Groves">
+                This test is designed to give users visibility of the ADL problems with their compilers.
+                Lack of Argument Dependent Lookup changes how one can extend the library. The lack of
+                ADL is worked-around internally so that most of the functionality is preserved.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="iterator_range"/>
             <toolset name="msvc-stlport"/>
             <toolset name="msvc-6.5_stlport4"/>
@@ -4463,7 +4472,7 @@ for more information.
           <toolset name="darwin*"/>
           <note author="J. Maddock">
              This tests fails because a dependency (Boost.Test)
-             fails to initialise correctly.  The issue has been 
+             fails to initialise correctly.  The issue has been
              reported to the library's author.
           </note>
        </mark-expected-failures>
@@ -5823,7 +5832,7 @@ These tests will fail in most compilers that don't support rvalue references.
             Related Boost mailing list discussion:
             http://lists.boost.org/Archives/boost/2008/11/144465.php
             CodeGear bug reports on this issue:
-            http://qc.codegear.com/wc/qcmain.aspx?d=68959  
+            http://qc.codegear.com/wc/qcmain.aspx?d=68959
             http://qc.codegear.com/wc/qcmain.aspx?d=69196
           </note>
         </mark-expected-failures>
@@ -5835,7 +5844,7 @@ These tests will fail in most compilers that don't support rvalue references.
             Borland 5.9.3 has an error (E2285) when trying to pass a
             multi-dimensional array by reference to a function template.
             A bug report by Christopher Yeleighton appears related:
-            "The compiler obligatorily converts member arrays to pointers" 
+            "The compiler obligatorily converts member arrays to pointers"
             http://qc.codegear.com/wc/qcmain.aspx?d=10267
           </note>
         </mark-expected-failures>
@@ -5956,7 +5965,7 @@ These tests will fail in most compilers that don't support rvalue references.
             <test name="test_include1"/>
             <toolset name="borland-6.2.1"/>
             <note author="Andy Tompkins">
-                 The test relies on Boost.Iterator (iterator_facade) 
+                 The test relies on Boost.Iterator (iterator_facade)
                  which is not supported on this toolset.
            </note>
         </mark-expected-failures>
