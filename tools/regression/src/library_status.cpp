@@ -630,10 +630,14 @@ namespace
                 continue;
             
             string test_name = itr->filename();
-            // strip off the ".test" is there is one
+            // if the file name contains ".test"
             string::size_type s = test_name.find( ".test" );
             if(string::npos != s)
+                // strip it off
                 test_name.resize(s);
+            else
+                // if it doesn't - skip this directory
+                continue;
 
             results.push_back( std::string() ); 
             do_row(
