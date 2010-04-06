@@ -758,13 +758,13 @@ int main( int argc, char ** argv )
            line_start.find( ".linkonce" ) == string::npos )
     )
     {
-      if ( !test2info.size() )
-      {
-        std::cout << "*****Error - No \"boost-test\" lines encountered.\n"
-                     "     (Usually occurs when bjam was envoked without the --dump-tests option\n"
-                     "      or bjam was envoked in the wrong directory)\n";
-        return 1;
-      }
+      //~ if ( !test2info.size() )
+      //~ {
+        //~ std::cout << "*****Error - No \"boost-test\" lines encountered.\n"
+                     //~ "     (Usually occurs when bjam was envoked without the --dump-tests option\n"
+                     //~ "      or bjam was envoked in the wrong directory)\n";
+        //~ return 1;
+      //~ }
 
       string action( ( line_start.find( "Link-action" ) != string::npos
             || line_start.find( "vc-Link" ) != string::npos 
