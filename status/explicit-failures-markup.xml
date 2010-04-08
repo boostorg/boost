@@ -4325,6 +4325,7 @@ for more information.
     <!-- range -->
     <library name="range">
         <mark-unusable>
+            <toolset name="borland-*"/>
             <toolset name="mipspro"/>
             <toolset name="dmc-8_43-stlport-4_5_3"/>
             <toolset name="gcc-2.95.3*"/>
@@ -4360,6 +4361,14 @@ for more information.
                 fixes the problem.
 
                 For other compilers it is simply a bug in the standard library.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="push_front"/>
+            <toolset name="msvc-9.0~stlport5.2"/>
+            <note author="Neil Groves">
+                push_front fails the unit test in this configuration. I do not have this
+                configuration available to determine if a work-around is possible.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
