@@ -90,6 +90,12 @@
 #   --buildid=ID            Adds the specified ID to the name of built
 #                           libraries.  The default is to not add anything.
 #
+#   --python-buildid=ID     Adds the specified ID to the name of built
+#                           libraries that depend on Python.  The default 
+#                           is to not add anything. This ID is added in 
+#                           addition t --buildid.
+#
+#
 #   --help                  This message.
 #
 #   --with-<library>        Build and install the specified <library>
@@ -134,9 +140,12 @@ import symlink ;
 import targets ;
 import project ;
 import option ;
+import xsltproc ;
+import build-system ;
+import configure ;
 
 path-constant BOOST_ROOT : . ;
-constant BOOST_VERSION : 1.42.0 ;
+constant BOOST_VERSION : 1.43.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 local version-tag = [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ]
@@ -186,6 +195,11 @@ project boost
       # The standard library Sun compilers use by default has no chance
       # of working with Boost. Override it.
       <toolset>sun:<stdlib>sun-stlport
+      # Comeau does not support shared lib
+      <toolset>como:<link>static
+      <toolset>como-linux:<define>_GNU_SOURCE=1
+      # When building docs within Boost, we want the standard Boost style
+      <xsl:param>boost.defaults=Boost
     : usage-requirements <include>.
     : build-dir bin.v2
     ;
@@ -202,6 +216,7 @@ all-libraries = [ sequence.unique $(all-libraries) ] ;
 # purposes, there's no library to build and install.
 all-libraries = [ set.difference $(all-libraries) : function_types ] ;
 
+configure.register-components $(all-libraries) ;
 
 local rule explicit-alias ( id : targets + )
 {
@@ -324,6 +339,7 @@ PYTHON_ROOT ?= $(python-root) ;
 
 # Select the libraries to install.
 libraries = [ libraries-to-install $(all-libraries) ] ;
+configure.components-building $(libraries) ;
 
 if --show-libraries in [ modules.peek : ARGV ]
 {
@@ -342,6 +358,12 @@ if $(build-id)
     constant BUILD_ID : [ regex.replace $(build-id) "[*\\/:.\"\' ]" "_" ] ;
 }
 
+# Python build id (only for Python libraries)
+local python-id = [ MATCH "^--python-buildid=(.*)" : [ modules.peek : ARGV ] ] ;
+if $(python-id)
+{
+    constant PYTHON_ID : [ regex.replace $(python-id) "[*\\/:.\"\']" "_" ] ;
+}
 
 # This rule is called by Boost.Build to determine the name of target. We use it
 # to encode the build variant, compiler name and boost version in the target
@@ -561,6 +583,9 @@ class top-level-target : alias-target-class
     
     rule generate ( property-set )
     {
+        local x = [ modules.peek : top-level-targets ] ;
+        x += $(self.name) ;
+        modules.poke : top-level-targets : $(x) ;
         if $(self.build-type) = minimal
         {
             local expanded ;
@@ -655,19 +680,47 @@ targets.create-metatarget top-level-target : [ project.current ]
 
 
 message explain :
-"\nBuilding the Boost C++ Libraries.
+"\nBuilding the Boost C++ Libraries.\n\n" ;
+explicit explain ;
 
-After the build, the headers will be located at
-  
+rule pre-build ( )
+{
+    local tl = [ modules.peek : top-level-targets ] ;
+    if stage in $(tl) || install in $(tl)
+    {
+        # FIXME: remove if when Boost regression tests use trunk
+        # bjam.
+        if PAD in [ RULENAMES ]
+        {            
+            configure.print-component-configuration ;
+        }        
+    }
+}
+IMPORT $(__name__) : pre-build : : $(__name__).pre-build ;
+build-system.set-pre-build-hook $(__name__).pre-build ;
+
+rule post-build ( ok ? ) 
+{
+    if forward in [ modules.peek : top-level-targets ] 
+    {        
+        if $(ok)
+        {
+        ECHO 
+"\n\nThe Boost C++ Libraries were successfully built!
+          
+The following directory should be added to compiler include paths:
+          
     $(BOOST_ROOT)
-    
-The libraries will be located at  
-    
+      
+The following directory should be added to linker library paths:
+      
     $(stage-abs)
-     
-Use 'bjam install --prefix=<path>' if you wish to install headers and 
-libraries to a different location and remove the source tree.\n\n"
-  ;
+" ;
+        }    
+    }    
+}
+IMPORT $(__name__) : post-build : : $(__name__).post-build ;
+build-system.set-post-build-hook $(__name__).post-build ;
 
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The
