@@ -21,9 +21,6 @@ svn info svn_info
 echo Exporting files from subversion...
 svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
-echo Creating release history README.txt...
-lynx -width=72 -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >posix\README.txt
-
 echo Copying docs into posix\doc...
 pushd posix\doc
 xcopy /s /y ..\..\docs_temp\html html

@@ -21,9 +21,6 @@ svn info svn_info
 echo Exporting files from subversion...
 svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/branches/release windows
 
-echo Creating release history README.txt...
-lynx -width=72 -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >windows\README.txt
-
 echo Copying docs into windows\doc...
 pushd windows\doc
 xcopy /s /y ..\..\docs_temp\html html
