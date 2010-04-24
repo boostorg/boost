@@ -33,23 +33,21 @@ following elements:
    interoperability with other compiled code.  For each such
    feature, a single letter is added to the tag:
 
-     +-----+------------------------------------------------------------------------------+
-     |Key  |Use this library when:                                                        |
-     +=====+==============================================================================+
-     |``s``|linking statically to the C++ standard library and compiler runtime support   |
-     |     |libraries.                                                                    |
-     +-----+------------------------------------------------------------------------------+
-     |``g``|using debug versions of the standard and runtime support libraries.           |
-     +-----+------------------------------------------------------------------------------+
-     |``y``|using a special `debug build of Python`__.                                    |
-     +-----+------------------------------------------------------------------------------+
-     |``d``|building a debug version of your code. [#debug-abi]_                          |
-     +-----+------------------------------------------------------------------------------+
-     |``p``|using the STLPort standard library rather than the default one supplied with  |
-     |     |your compiler.                                                                |
-     +-----+------------------------------------------------------------------------------+
-     |``n``|using STLPort's deprecated “native iostreams” feature. [#native]_             |
-     +-----+------------------------------------------------------------------------------+
+     +-----+------------------------------------------------------------------------------+---------------------+
+     |Key  |Use this library when:                                                        |Boost.Build option   |
+     +=====+==============================================================================+=====================+
+     |``s``|linking statically to the C++ standard library and compiler runtime support   |runtime-link=static  |
+     |     |libraries.                                                                    |                     |
+     +-----+------------------------------------------------------------------------------+---------------------+
+     |``g``|using debug versions of the standard and runtime support libraries.           |runtime-debugging=on |
+     +-----+------------------------------------------------------------------------------+---------------------+
+     |``y``|using a special `debug build of Python`__.                                    |python-debugging=on  |
+     +-----+------------------------------------------------------------------------------+---------------------+
+     |``d``|building a debug version of your code. [#debug-abi]_                          |variant=debug        |
+     +-----+------------------------------------------------------------------------------+---------------------+
+     |``p``|using the STLPort standard library rather than the default one supplied with  |stdlib=stlport       |
+     |     |your compiler.                                                                |                     |
+     +-----+------------------------------------------------------------------------------+---------------------+
 
    For example, if you build a debug version of your code for use
    with debug versions of the static runtime library and the
