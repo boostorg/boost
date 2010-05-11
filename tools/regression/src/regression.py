@@ -362,7 +362,7 @@ class runner:
                 bjam_path = os.path.dirname (self.tool_path( self.bjam ))
                 self.log( "Using bjam binary in '%s'" % (bjam_path))
                 os.putenv('PATH', bjam_path + os.pathsep + os.environ['PATH'])
-                utils.system ( [ "%s test_all.py --default-bjam --xml %s > %s" % (sys.executable, t, fn) ] )
+                utils.system ( [ '"%s" test_all.py --default-bjam --xml %s > %s' % (sys.executable, t, fn) ] )
             finally:
                 os.chdir( cd )
                             
