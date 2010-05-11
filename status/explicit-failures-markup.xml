@@ -1827,6 +1827,11 @@
             <toolset name="sun-5.9"/>
         </mark-unusable>
         <mark-expected-failures>
+          <test name="graphviz_test"/>
+          <toolset name="*mingw*"/>
+          <note author="Jeremiah Willcock" refid="49"/>
+        </mark-expected-failures>
+        <mark-expected-failures>
           <test name="kolmogorov_max_flow_test"/>
           <test name="max_flow_test"/>
           <toolset name="acc*"/>
@@ -6391,6 +6396,10 @@ These tests will fail in most compilers that don't support rvalue references.
 
     <note id="48">
         This test fails when BOOST_UBLAS_NO_NESTED_CLASS_RELATION is defined.
+    </note>
+
+    <note id="49">
+        This test fails because MinGW apparently does not always catch exceptions properly.
     </note>
 
 </explicit-failures-markup>
