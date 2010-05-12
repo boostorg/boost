@@ -199,6 +199,10 @@ namespace
   {
     std::string result;
     string::size_type start_pos( path.find( "libs/" ) );
+    if ( start_pos == string::npos ) {
+      start_pos = path.find( "tools/" );
+    }
+
     if ( start_pos != string::npos )
     {
       // The path format is ...libs/functional/hash/test/something.test/....      
@@ -214,7 +218,7 @@ namespace
       // file.
 
       std::string interesting;
-      start_pos += 5;
+      start_pos = path.find( '/', start_pos ) + 1;
       string::size_type end_pos( path.find( ".test/", start_pos ) );
       end_pos = path.rfind('/', end_pos);
       if (path.substr(end_pos - 5, 5) == "/test")
