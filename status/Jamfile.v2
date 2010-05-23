@@ -20,7 +20,7 @@ project status
 import testing ;
 import modules ;
 
-local rule run-tests ( tests * )
+local rule run-tests ( root : tests * )
 {
     local limit-tests = [ MATCH "^--limit-tests=(.*)" : [ modules.peek : ARGV ] ] ;
     for local test in $(tests)
@@ -29,23 +29,23 @@ local rule run-tests ( tests * )
         {
             if [ MATCH "^($(limit-tests))" : $(test) ]
             {
-                build-project ../libs/$(test) ;
+                build-project ../$(root)/$(test) ;
             }
             else
             {
-                use-project /boost/$(test) : ../libs/$(test) ;
+                use-project /boost/$(test) : ../$(root)/$(test) ;
             }
         }
         else
         {
-            build-project ../libs/$(test) ;
+            build-project ../$(root)/$(test) ;
         }
     }
 }
 
 # Tests from Jamfiles in individual library test subdirectories
 # Please keep these in alphabetic order by test-suite name
-run-tests
+run-tests libs :
     accumulators/test           # test-suite accumulators
     algorithm/minmax/test       # test-suite algorith/minmax
     algorithm/string/test       # test-suite algorithm/string
@@ -139,4 +139,8 @@ run-tests
     variant/test                # test-suite variant
     wave/test/build             # test-suite wave
     xpressive/test              # test-suite xpressive
+    ;
+
+run-tests tools :
+    bcp/test
     ;
