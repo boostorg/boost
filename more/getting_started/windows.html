@@ -39,10 +39,10 @@ not supported—they may or may not work.</p>
 <li><a class="reference internal" href="#install-visual-studio-binaries" id="id37">5.1&nbsp;&nbsp;&nbsp;Install Visual Studio Binaries</a></li>
 <li><a class="reference internal" href="#or-simplified-build-from-source" id="id38">5.2&nbsp;&nbsp;&nbsp;Or, Simplified Build From Source</a></li>
 <li><a class="reference internal" href="#or-build-binaries-from-source" id="id39">5.3&nbsp;&nbsp;&nbsp;Or, Build Binaries From Source</a><ul class="auto-toc">
-<li><a class="reference internal" href="#get-bjam" id="id40">5.3.1&nbsp;&nbsp;&nbsp;Get <tt class="docutils literal">bjam</tt></a></li>
+<li><a class="reference internal" href="#get-bjam" id="id40">5.3.1&nbsp;&nbsp;&nbsp;Get <tt class="docutils literal"><span class="pre">bjam</span></tt></a></li>
 <li><a class="reference internal" href="#identify-your-toolset" id="id41">5.3.2&nbsp;&nbsp;&nbsp;Identify Your Toolset</a></li>
 <li><a class="reference internal" href="#select-a-build-directory" id="id42">5.3.3&nbsp;&nbsp;&nbsp;Select a Build Directory</a></li>
-<li><a class="reference internal" href="#invoke-bjam" id="id43">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">bjam</tt></a></li>
+<li><a class="reference internal" href="#invoke-bjam" id="id43">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal"><span class="pre">bjam</span></tt></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#expected-build-output" id="id44">5.4&nbsp;&nbsp;&nbsp;Expected Build Output</a></li>
@@ -73,7 +73,7 @@ least install the Static Multithreaded variants of the <a class="reference exter
 binaries when given the option.</p>
 <p>If you're using an earlier version of Visual Studio or some other
 compiler, or if you prefer to build everything yourself, you can
-download <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">.7z</tt></a> or <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">.zip</tt></a> and unpack it to install a complete Boost
+download <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt><tt class="docutils literal"><span class="pre">.7z</span></tt></a> or <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt><tt class="docutils literal"><span class="pre">.zip</span></tt></a> and unpack it to install a complete Boost
 distribution.<a class="footnote-reference" href="#zip" id="id2"><sup>1</sup></a></p>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
 <!-- Software License, Version 1.0. (See accompanying -->
@@ -104,43 +104,43 @@ distribution.<a class="footnote-reference" href="#zip" id="id2"><sup>1</sup></a>
 but most libraries follow a few patterns:</p>
 <ul class="pre-wrap last">
 <li><p class="first">Some older libraries and most very small libraries place all
-public headers directly into <tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt>.</p>
+public headers directly into <tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt>.</p>
 </li>
 <li><p class="first">Most libraries' public headers live in a subdirectory of
-<tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt>, named after the library.  For example, you'll find
-the Python library's <tt class="docutils literal">def.hpp</tt> header in</p>
+<tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt>, named after the library.  For example, you'll find
+the Python library's <tt class="docutils literal"><span class="pre">def.hpp</span></tt> header in</p>
 <pre class="literal-block">
-<tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt><tt class="docutils literal">python</tt><tt class="docutils literal">\</tt><tt class="docutils literal">def.hpp</tt>.
+<tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">python</span></tt><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">def.hpp</span></tt>.
 </pre>
 </li>
-<li><p class="first">Some libraries have an “aggregate header” in <tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt> that
-<tt class="docutils literal">#include</tt>s all of the library's other headers.  For
+<li><p class="first">Some libraries have an “aggregate header” in <tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt> that
+<tt class="docutils literal"><span class="pre">#include</span></tt>s all of the library's other headers.  For
 example, <a class="reference external" href="../../libs/python/doc/building.html">Boost.Python</a>'s aggregate header is</p>
 <pre class="literal-block">
-<tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt><tt class="docutils literal">python.hpp</tt>.
+<tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">python.hpp</span></tt>.
 </pre>
 </li>
 <li><p class="first">Most libraries place private headers in a subdirectory called
-<tt class="docutils literal">detail</tt><tt class="docutils literal">\</tt>, or <tt class="docutils literal">aux_</tt><tt class="docutils literal">\</tt>.  Don't expect to find
+<tt class="docutils literal"><span class="pre">detail</span></tt><tt class="docutils literal"><span class="pre">\</span></tt>, or <tt class="docutils literal"><span class="pre">aux_</span></tt><tt class="docutils literal"><span class="pre">\</span></tt>.  Don't expect to find
 anything you can use in these directories.</p>
 </li>
 </ul>
 </div>
 <p>It's important to note the following:</p>
 <ol class="arabic" id="boost-root-directory">
-<li><p class="first">The path to the <strong>boost root directory</strong> (often <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt>) is
-sometimes referred to as <tt class="docutils literal">$BOOST_ROOT</tt> in documentation and
+<li><p class="first">The path to the <strong>boost root directory</strong> (often <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt>) is
+sometimes referred to as <tt class="docutils literal"><span class="pre">$BOOST_ROOT</span></tt> in documentation and
 mailing lists .</p>
 </li>
 <li><p class="first">To compile anything in Boost, you need a directory containing
-the <tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt> subdirectory in your <tt class="docutils literal">#include</tt> path.  Specific steps for setting up <tt class="docutils literal">#include</tt>
+the <tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt> subdirectory in your <tt class="docutils literal"><span class="pre">#include</span></tt> path.  Specific steps for setting up <tt class="docutils literal"><span class="pre">#include</span></tt>
 paths in Microsoft Visual Studio follow later in this document;
 if you use another IDE, please consult your product's
 documentation for instructions.</p>
 </li>
-<li><p class="first">Since all of Boost's header files have the <tt class="docutils literal">.hpp</tt> extension,
-and live in the <tt class="docutils literal">boost</tt><tt class="docutils literal">\</tt> subdirectory of the boost root, your
-Boost <tt class="docutils literal">#include</tt> directives will look like:</p>
+<li><p class="first">Since all of Boost's header files have the <tt class="docutils literal"><span class="pre">.hpp</span></tt> extension,
+and live in the <tt class="docutils literal"><span class="pre">boost</span></tt><tt class="docutils literal"><span class="pre">\</span></tt> subdirectory of the boost root, your
+Boost <tt class="docutils literal"><span class="pre">#include</span></tt> directives will look like:</p>
 <pre class="literal-block">
 #include &lt;boost/<em>whatever</em>.hpp&gt;
 </pre>
@@ -151,11 +151,11 @@ Boost <tt class="docutils literal">#include</tt> directives will look like:</p>
 <p>depending on your preference regarding the use of angle bracket
 includes.  Even Windows users can (and, for
 portability reasons, probably should) use forward slashes in
-<tt class="docutils literal">#include</tt> directives; your compiler doesn't care.</p>
+<tt class="docutils literal"><span class="pre">#include</span></tt> directives; your compiler doesn't care.</p>
 </li>
-<li><p class="first">Don't be distracted by the <tt class="docutils literal">doc</tt><tt class="docutils literal">\</tt> subdirectory; it only
+<li><p class="first">Don't be distracted by the <tt class="docutils literal"><span class="pre">doc</span></tt><tt class="docutils literal"><span class="pre">\</span></tt> subdirectory; it only
 contains a subset of the Boost documentation.  Start with
-<tt class="docutils literal">libs</tt><tt class="docutils literal">\</tt><tt class="docutils literal">index.html</tt> if you're looking for the whole enchilada.</p>
+<tt class="docutils literal"><span class="pre">libs</span></tt><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">index.html</span></tt> if you're looking for the whole enchilada.</p>
 </li>
 </ol>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
@@ -191,7 +191,7 @@ before building and installing it)</li>
 <p>A few libraries have optional separately-compiled binaries:</p>
 <ul class="simple">
 <li><a class="reference external" href="../../libs/date_time/index.html">Boost.DateTime</a> has a binary component that is only needed if
-you're using its <tt class="docutils literal">to_string</tt>/<tt class="docutils literal">from_string</tt> or serialization
+you're using its <tt class="docutils literal"><span class="pre">to_string</span></tt>/<tt class="docutils literal"><span class="pre">from_string</span></tt> or serialization
 features, or if you're targeting Visual C++ 6.x or Borland.</li>
 <li><a class="reference external" href="../../libs/graph/index.html">Boost.Graph</a> also has a binary component that is only needed if
 you intend to <a class="reference external" href="../../libs/graph/doc/read_graphviz.html">parse GraphViz files</a>.</li>
@@ -224,7 +224,7 @@ int main()
         in(std::cin), in(), std::cout &lt;&lt; (_1 * 3) &lt;&lt; &quot; &quot; );
 }
 </pre>
-<p>Copy the text of this program into a file called <tt class="docutils literal">example.cpp</tt>.</p>
+<p>Copy the text of this program into a file called <tt class="docutils literal"><span class="pre">example.cpp</span></tt>.</p>
 <div class="note" id="command-line-tool">
 <span id="command-prompt"></span><p class="first admonition-title">Note</p>
 <p class="last">To build the examples in this guide, you can use an
@@ -253,10 +253,10 @@ cd <em>path</em>\<em>to</em>\<em>some</em>\<em>directory</em>
 </pre>
 <p>followed by Return.  For example,</p>
 <pre class="literal-block">
-cd <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt>
+cd <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt>
 </pre>
 <p class="last">Long commands can be continued across several lines by typing a
-caret (<tt class="docutils literal">^</tt>) at the end of all but the last line.  Some examples
+caret (<tt class="docutils literal"><span class="pre">^</span></tt>) at the end of all but the last line.  Some examples
 on this page use that technique to save horizontal space.</p>
 </div>
 <div class="section" id="build-from-the-visual-studio-ide">
@@ -278,14 +278,14 @@ select <em>Properties</em> from the resulting pop-up menu</p>
 <li><p class="first">In <em>Configuration Properties</em> &gt; <em>C/C++</em> &gt; <em>General</em> &gt; <em>Additional Include
 Directories</em>, enter the path to the Boost root directory, for example</p>
 <blockquote>
-<p><tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt></p>
+<p><tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt></p>
 </blockquote>
 </li>
 <li><p class="first">In <em>Configuration Properties</em> &gt; <em>C/C++</em> &gt; <em>Precompiled Headers</em>, change
 <em>Use Precompiled Header (/Yu)</em> to <em>Not Using Precompiled
 Headers</em>.<a class="footnote-reference" href="#pch" id="id5"><sup>3</sup></a></p>
 </li>
-<li><p class="first">Replace the contents of the <tt class="docutils literal">example.cpp</tt> generated by the IDE
+<li><p class="first">Replace the contents of the <tt class="docutils literal"><span class="pre">example.cpp</span></tt> generated by the IDE
 with the example code above.</p>
 </li>
 <li><p class="first">From the <em>Build</em> menu, select <em>Build Solution</em>.</p>
@@ -316,7 +316,7 @@ Visual Studio compiler.  In that window, set the <a class="reference internal" h
 directory</a> to a suitable location for creating some temporary
 files and type the following command followed by the Return key:</p>
 <pre class="literal-block">
-cl /EHsc /I <em>path\to\</em><tt class="docutils literal">boost_1_44_0</tt> <em>path</em>\<em>to</em>\example.cpp
+cl /EHsc /I <em>path\to\</em><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt> <em>path</em>\<em>to</em>\example.cpp
 </pre>
 <p>To test the result, type:</p>
 <pre class="literal-block">
@@ -346,8 +346,8 @@ you'll need to acquire library binaries.</p>
 <div class="section" id="install-visual-studio-binaries">
 <h2><a class="toc-backref" href="#id37">5.1&nbsp;&nbsp;&nbsp;Install Visual Studio Binaries</a></h2>
 <p>The installers supplied by BoostPro Computing will download and
-install pre-compiled binaries into the <tt class="docutils literal">lib\</tt> subdirectory of the
-boost root, typically <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">\lib\</tt>.  If you installed
+install pre-compiled binaries into the <tt class="docutils literal"><span class="pre">lib\</span></tt> subdirectory of the
+boost root, typically <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt><tt class="docutils literal"><span class="pre">\lib\</span></tt>.  If you installed
 all variants of the <a class="reference external" href="../../libs/regex/index.html">Boost.Regex</a> binary, you're done with this
 step.  Otherwise, please run the installer again and install them
 now.</p>
@@ -366,7 +366,7 @@ bootstrap
 <p>The first command prepares the Boost.Build system for use. The second
 command invokes Boost.Build to build the separately-compiled Boost
 libraries. Please consult the <a class="reference external" href="http://www.boost.org/boost-build2/doc/html/bbv2/overview/invocation.html">Boost.Build documentation</a> for a list
-of options that can be passed to <tt class="docutils literal">bjam</tt>.</p>
+of options that can be passed to <tt class="docutils literal"><span class="pre">bjam</span></tt>.</p>
 </div>
 <div class="section" id="or-build-binaries-from-source">
 <h2><a class="toc-backref" href="#id39">5.3&nbsp;&nbsp;&nbsp;Or, Build Binaries From Source</a></h2>
@@ -383,19 +383,19 @@ separately.  See the <a class="reference external" href="https://svn.boost.org/t
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <p><a class="reference external" href="../../tools/build/index.html">Boost.Build</a> is a text-based system for developing, testing, and
 installing software.  To use it, you'll need an executable called
-<tt class="docutils literal">bjam</tt>.</p>
+<tt class="docutils literal"><span class="pre">bjam</span></tt>.</p>
 <!-- .. _Boost.Jam documentation: Boost.Jam_ -->
 <div class="section" id="get-bjam">
-<h3><a class="toc-backref" href="#id40">5.3.1&nbsp;&nbsp;&nbsp;Get <tt class="docutils literal">bjam</tt></a></h3>
-<p><tt class="docutils literal">bjam</tt> is the <a class="reference internal" href="#command-line-tool">command-line tool</a> that drives the Boost Build
-system.  To build Boost binaries, you'll invoke <tt class="docutils literal">bjam</tt> from the
+<h3><a class="toc-backref" href="#id40">5.3.1&nbsp;&nbsp;&nbsp;Get <tt class="docutils literal"><span class="pre">bjam</span></tt></a></h3>
+<p><tt class="docutils literal"><span class="pre">bjam</span></tt> is the <a class="reference internal" href="#command-line-tool">command-line tool</a> that drives the Boost Build
+system.  To build Boost binaries, you'll invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> from the
 Boost root.</p>
-<p>We suggest you <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=72941">download a pre-built <tt class="docutils literal">bjam</tt> executable</a> for your platform.
-Alternatively, you can build <tt class="docutils literal">bjam</tt> yourself using <a class="reference external" href="../../doc/html/jam/building.html">these
+<p>We suggest you <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=72941">download a pre-built <tt class="docutils literal"><span class="pre">bjam</span></tt> executable</a> for your platform.
+Alternatively, you can build <tt class="docutils literal"><span class="pre">bjam</span></tt> yourself using <a class="reference external" href="../../doc/html/jam/building.html">these
 instructions</a>.</p>
-<p>Move the <tt class="docutils literal">bjam</tt> executable into a directory in your PATH.  You can
+<p>Move the <tt class="docutils literal"><span class="pre">bjam</span></tt> executable into a directory in your PATH.  You can
 see the list of directories in your PATH, separated by semicolons,
-by typing “<tt class="docutils literal">PATH</tt>” at the command prompt.</p>
+by typing “<tt class="docutils literal"><span class="pre">PATH</span></tt>” at the command prompt.</p>
 </div>
 <div class="section" id="identify-your-toolset">
 <span id="toolset-name"></span><span id="toolset"></span><h3><a class="toc-backref" href="#id41">5.3.2&nbsp;&nbsp;&nbsp;Identify Your Toolset</a></h3>
@@ -422,70 +422,70 @@ Name</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal">acc</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">acc</span></tt></td>
 <td>Hewlett Packard</td>
 <td>Only very recent versions are
 known to work well with Boost</td>
 </tr>
-<tr><td><tt class="docutils literal">borland</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">borland</span></tt></td>
 <td>Borland</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td><tt class="docutils literal">como</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">como</span></tt></td>
 <td>Comeau Computing</td>
 <td>Using this toolset may
 require <a class="reference external" href="../../tools/build/index.html">configuring</a> another
 toolset to act as its backend</td>
 </tr>
-<tr><td><tt class="docutils literal">cw</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">cw</span></tt></td>
 <td>Metrowerks/Freescale</td>
 <td>The CodeWarrior compiler.  We
 have not tested versions of
 this compiler produced since
 it was sold to Freescale.</td>
 </tr>
-<tr><td><tt class="docutils literal">dmc</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">dmc</span></tt></td>
 <td>Digital Mars</td>
 <td>As of this Boost release, no
 version of dmc is known to
 handle Boost well.</td>
 </tr>
-<tr><td><tt class="docutils literal">darwin</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">darwin</span></tt></td>
 <td>Apple Computer</td>
 <td>Apple's version of the GCC
 toolchain with support for
 Darwin and MacOS X features
 such as frameworks.</td>
 </tr>
-<tr><td><tt class="docutils literal">gcc</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">gcc</span></tt></td>
 <td>The Gnu Project</td>
 <td>Includes support for Cygwin
 and MinGW compilers.</td>
 </tr>
-<tr><td><tt class="docutils literal">hp_cxx</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">hp_cxx</span></tt></td>
 <td>Hewlett Packard</td>
 <td>Targeted at the Tru64
 operating system.</td>
 </tr>
-<tr><td><tt class="docutils literal">intel</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">intel</span></tt></td>
 <td>Intel</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td><tt class="docutils literal">msvc</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">msvc</span></tt></td>
 <td>Microsoft</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td><tt class="docutils literal">qcc</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">qcc</span></tt></td>
 <td>QNX Software Systems</td>
 <td>&nbsp;</td>
 </tr>
-<tr><td><tt class="docutils literal">sun</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">sun</span></tt></td>
 <td>Sun</td>
 <td>Only very recent versions are
 known to work well with
 Boost.</td>
 </tr>
-<tr><td><tt class="docutils literal">vacpp</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">vacpp</span></tt></td>
 <td>IBM</td>
 <td>The VisualAge C++ compiler.</td>
 </tr>
@@ -504,13 +504,13 @@ detection code) or <a class="reference internal" href="#auto-linking">auto-linki
 <p><a class="reference external" href="../../tools/build/index.html">Boost.Build</a> will place all intermediate files it generates while
 building into the <strong>build directory</strong>.  If your Boost root
 directory is writable, this step isn't strictly necessary: by
-default Boost.Build will create a <tt class="docutils literal">bin.v2/</tt> subdirectory for that
+default Boost.Build will create a <tt class="docutils literal"><span class="pre">bin.v2/</span></tt> subdirectory for that
 purpose in your current working directory.</p>
 </div>
 <div class="section" id="invoke-bjam">
-<h3><a class="toc-backref" href="#id43">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">bjam</tt></a></h3>
+<h3><a class="toc-backref" href="#id43">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal"><span class="pre">bjam</span></tt></a></h3>
 <p>Change your current directory to the Boost root directory and
-invoke <tt class="docutils literal">bjam</tt> as follows:</p>
+invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> as follows:</p>
 <pre class="literal-block">
 bjam <strong>--build-dir=</strong><a class="reference internal" href="#id14"><em>build-directory</em></a> <strong>toolset=</strong><a class="reference internal" href="#toolset-name"><em>toolset-name</em></a> <strong>--build-type=complete</strong> stage
 </pre>
@@ -518,30 +518,30 @@ bjam <strong>--build-dir=</strong><a class="reference internal" href="#id14"><em
 please see the <a class="reference external" href="http://www.boost.org/boost-build2/doc/html/bbv2/advanced/invocation.html">Boost.Build documentation</a>.</p>
 <p>For example, your session might look like this:<a class="footnote-reference" href="#continuation" id="id16"><sup>4</sup></a></p>
 <pre class="literal-block">
-C:\WINDOWS&gt; cd <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt>
-<tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt>&gt; bjam <strong>^</strong>
+C:\WINDOWS&gt; cd <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt>
+<tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt>&gt; bjam <strong>^</strong>
 More? <strong>--build-dir=</strong>&quot;C:\Documents and Settings\dave\build-boost&quot; <strong>^</strong>
 More? <strong>--build-type=complete</strong> <strong>msvc</strong> stage
 </pre>
-<p>Be sure to read <a class="reference internal" href="#continuation">this note</a> about the appearance of <tt class="docutils literal">^</tt>,
-<tt class="docutils literal">More?</tt> and quotation marks (<tt class="docutils literal">&quot;</tt>) in that line.</p>
-<p>The option “<strong>--build-type=complete</strong>” causes <tt class="docutils literal">bjam</tt> to build
+<p>Be sure to read <a class="reference internal" href="#continuation">this note</a> about the appearance of <tt class="docutils literal"><span class="pre">^</span></tt>,
+<tt class="docutils literal"><span class="pre">More?</span></tt> and quotation marks (<tt class="docutils literal"><span class="pre">&quot;</span></tt>) in that line.</p>
+<p>The option “<strong>--build-type=complete</strong>” causes <tt class="docutils literal"><span class="pre">bjam</span></tt> to build
 all supported variants of the libraries.  For instructions on how to
 build only specific variants, please ask on the <a class="reference external" href="http://www.boost.org/more/mailing_lists.htm#jamboost">Boost.Build mailing
 list</a>.</p>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
 <!-- Software License, Version 1.0. (See accompanying -->
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
-<p>Building the special <tt class="docutils literal">stage</tt> target places Boost
-library binaries in the <tt class="docutils literal">stage</tt><tt class="docutils literal">\</tt><tt class="docutils literal">lib</tt><tt class="docutils literal">\</tt> subdirectory of your <a class="reference internal" href="#build-directory">build
+<p>Building the special <tt class="docutils literal"><span class="pre">stage</span></tt> target places Boost
+library binaries in the <tt class="docutils literal"><span class="pre">stage</span></tt><tt class="docutils literal"><span class="pre">\</span></tt><tt class="docutils literal"><span class="pre">lib</span></tt><tt class="docutils literal"><span class="pre">\</span></tt> subdirectory of your <a class="reference internal" href="#build-directory">build
 directory</a>.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
-<p class="last"><tt class="docutils literal">bjam</tt> is case-sensitive; it is important that all the
+<p class="last"><tt class="docutils literal"><span class="pre">bjam</span></tt> is case-sensitive; it is important that all the
 parts shown in <strong>bold</strong> type above be entirely lower-case.</p>
 </div>
 <p>For a description of other options you can pass when invoking
-<tt class="docutils literal">bjam</tt>, type:</p>
+<tt class="docutils literal"><span class="pre">bjam</span></tt>, type:</p>
 <pre class="literal-block">
 bjam --help
 </pre>
@@ -549,16 +549,16 @@ bjam --help
 be interested in:</p>
 <ul class="simple">
 <li>reviewing the list of library names with <tt class="docutils literal"><span class="pre">--show-libraries</span></tt></li>
-<li>limiting which libraries get built with the <tt class="docutils literal"><span class="pre">--with-</span></tt><em>library-name</em> or <tt class="docutils literal"><span class="pre">--without-</span></tt><em>library-name</em> options</li>
-<li>choosing a specific build variant by adding <tt class="docutils literal">release</tt> or
-<tt class="docutils literal">debug</tt> to the command line.</li>
+<li>limiting which libraries get built with the <tt class="docutils literal"><span class="pre">--with-libraries=</span></tt><em>library-name-list</em> option</li>
+<li>choosing a specific build variant by adding <tt class="docutils literal"><span class="pre">release</span></tt> or
+<tt class="docutils literal"><span class="pre">debug</span></tt> to the command line.</li>
 </ul>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p class="last">Boost.Build can produce a great deal of output, which can
 make it easy to miss problems.  If you want to make sure
 everything is went well, you might redirect the output into a
-file by appending “<tt class="docutils literal">&gt;build.log <span class="pre">2&gt;&amp;1</span></tt>” to your command line.</p>
+file by appending “<tt class="docutils literal"><span class="pre">&gt;build.log</span> <span class="pre">2&gt;&amp;1</span></tt>” to your command line.</p>
 </div>
 </div>
 </div>
@@ -657,7 +657,7 @@ earlier:</p>
 select <em>Properties</em> from the resulting pop-up menu</li>
 <li>In <em>Configuration Properties</em> &gt; <em>Linker</em> &gt; <em>Additional Library
 Directories</em>, enter the path to the Boost binaries,
-e.g. <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">\lib\</tt>.</li>
+e.g. <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt><tt class="docutils literal"><span class="pre">\lib\</span></tt>.</li>
 <li>From the <em>Build</em> menu, select <em>Build Solution</em>.</li>
 </ol>
 <p><a class="reference internal" href="#test-your-program"><em>skip to the next step</em></a></p>
@@ -667,9 +667,9 @@ e.g. <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boos
 <p>For example, we can compile and link the above program from the
 Visual C++ command-line by simply adding the <strong>bold</strong> text below to
 the command line we used earlier, assuming your Boost binaries are
-in <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">\lib</tt>:</p>
+in <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\boost\</span></tt><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt><tt class="docutils literal"><span class="pre">\lib</span></tt>:</p>
 <pre class="literal-block">
-cl /EHsc /I <em>path\to\</em><tt class="docutils literal">boost_1_44_0</tt> example.cpp   <strong>^</strong>
+cl /EHsc /I <em>path\to\</em><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt> example.cpp   <strong>^</strong>
      <strong>/link /LIBPATH:</strong> <strong>C:\Program Files\boost\</strong><strong>boost_1_44_0</strong><strong>\lib</strong>
 </pre>
 </div>
@@ -692,13 +692,13 @@ how it was built.  For example,
 <tt class="docutils literal"><span class="pre">libboost_regex-vc71-mt-d-1_34.lib</span></tt> can be broken down into the
 following elements:</p>
 <dl class="docutils">
-<dt><tt class="docutils literal">lib</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">lib</span></tt></dt>
 <dd><em>Prefix</em>: except on Microsoft Windows, every Boost library
 name begins with this string.  On Windows, only ordinary static
-libraries use the <tt class="docutils literal">lib</tt> prefix; import libraries and DLLs do
+libraries use the <tt class="docutils literal"><span class="pre">lib</span></tt> prefix; import libraries and DLLs do
 not.<a class="footnote-reference" href="#distinct" id="id24"><sup>6</sup></a></dd>
-<dt><tt class="docutils literal">boost_regex</tt></dt>
-<dd><em>Library name</em>: all boost library filenames begin with <tt class="docutils literal">boost_</tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">boost_regex</span></tt></dt>
+<dd><em>Library name</em>: all boost library filenames begin with <tt class="docutils literal"><span class="pre">boost_</span></tt>.</dd>
 <dt><tt class="docutils literal"><span class="pre">-vc71</span></tt></dt>
 <dd><em>Toolset tag</em>: identifies the <a class="reference internal" href="#toolset">toolset</a> and version used to build
 the binary.</dd>
@@ -725,24 +725,24 @@ feature, a single letter is added to the tag:</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal">s</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">s</span></tt></td>
 <td>linking statically to the C++ standard library and compiler runtime support
 libraries.</td>
 <td>runtime-link=static</td>
 </tr>
-<tr><td><tt class="docutils literal">g</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">g</span></tt></td>
 <td>using debug versions of the standard and runtime support libraries.</td>
 <td>runtime-debugging=on</td>
 </tr>
-<tr><td><tt class="docutils literal">y</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">y</span></tt></td>
 <td>using a special <a class="reference external" href="../../libs/python/doc/building.html#variants">debug build of Python</a>.</td>
 <td>python-debugging=on</td>
 </tr>
-<tr><td><tt class="docutils literal">d</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">d</span></tt></td>
 <td>building a debug version of your code.<a class="footnote-reference" href="#debug-abi" id="id25"><sup>7</sup></a></td>
 <td>variant=debug</td>
 </tr>
-<tr><td><tt class="docutils literal">p</tt></td>
+<tr><td><tt class="docutils literal"><span class="pre">p</span></tt></td>
 <td>using the STLPort standard library rather than the default one supplied with
 your compiler.</td>
 <td>stdlib=stlport</td>
@@ -760,12 +760,12 @@ ABI tag is ommitted.</p>
 <dd><em>Version tag</em>: the full Boost release number, with periods
 replaced by underscores. For example, version 1.31.1 would be
 tagged as &quot;-1_31_1&quot;.</dd>
-<dt><tt class="docutils literal">.lib</tt></dt>
+<dt><tt class="docutils literal"><span class="pre">.lib</span></tt></dt>
 <dd><em>Extension</em>: determined according to the operating system's usual
 convention.  On most unix-style platforms the extensions are
-<tt class="docutils literal">.a</tt> and <tt class="docutils literal">.so</tt> for static libraries (archives) and shared
-libraries, respectively.  On Windows, <tt class="docutils literal">.dll</tt> indicates a shared
-library and <tt class="docutils literal">.lib</tt> indicates a
+<tt class="docutils literal"><span class="pre">.a</span></tt> and <tt class="docutils literal"><span class="pre">.so</span></tt> for static libraries (archives) and shared
+libraries, respectively.  On Windows, <tt class="docutils literal"><span class="pre">.dll</span></tt> indicates a shared
+library and <tt class="docutils literal"><span class="pre">.lib</span></tt> indicates a
 static or import library.  Where supported by toolsets on unix
 variants, a full version extension is added (e.g. &quot;.so.1.34&quot;) and
 a symbolic link to the library file, named without the trailing
@@ -779,7 +779,7 @@ version number, will also be created.</dd>
 <div class="section" id="test-your-program">
 <h2><a class="toc-backref" href="#id50">6.4&nbsp;&nbsp;&nbsp;Test Your Program</a></h2>
 <p>To test our subject extraction, we'll filter the following text
-file.  Copy it out of your browser and save it as <tt class="docutils literal">jayne.txt</tt>:</p>
+file.  Copy it out of your browser and save it as <tt class="docutils literal"><span class="pre">jayne.txt</span></tt>:</p>
 <pre class="literal-block">
 To: George Shmidlap
 From: Rita Marlowe
@@ -828,7 +828,7 @@ mailing list</a>.</p>
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>We recommend
-downloading <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">.7z</tt></a> and using <a class="reference external" href="http://www.7-zip.org">7-Zip</a> to decompress
+downloading <a class="reference external" href="http://sourceforge.net/project/showfiles.php?group_id=7586&amp;package_id=8041"><tt class="docutils literal"><span class="pre">boost_1_44_0</span></tt><tt class="docutils literal"><span class="pre">.7z</span></tt></a> and using <a class="reference external" href="http://www.7-zip.org">7-Zip</a> to decompress
 it.  We no longer recommend .zip files for Boost because they are twice
 as large as the equivalent .7z files.  We don't recommend using Windows'
 built-in decompression as it can be painfully slow for large archives.</td></tr>
@@ -839,7 +839,7 @@ built-in decompression as it can be painfully slow for large archives.</td></tr>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>If you used the <a class="reference external" href="http://www.boostpro.com/products/free">installer</a> from Boost
 Consulting and deselected “Source and Documentation”  (it's
-selected by default), you won't see the <tt class="docutils literal">libs/</tt> subdirectory.
+selected by default), you won't see the <tt class="docutils literal"><span class="pre">libs/</span></tt> subdirectory.
 That won't affect your ability to use precompiled binaries, but
 you won't be able to rebuild libraries from scratch.</td></tr>
 </tbody>
@@ -856,21 +856,21 @@ used in the examples.</td></tr>
 <table class="docutils footnote" frame="void" id="continuation" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id16">[4]</a></td><td><p class="first">In this example, the caret character <tt class="docutils literal">^</tt> is a
+<tr><td class="label"><a class="fn-backref" href="#id16">[4]</a></td><td><p class="first">In this example, the caret character <tt class="docutils literal"><span class="pre">^</span></tt> is a
 way of continuing the command on multiple lines, and must be the
 <strong>final character</strong> used on the line to be continued (i.e. do
 not follow it with spaces).  The command prompt responds with
-<tt class="docutils literal">More?</tt> to prompt for more input.  Feel free to omit the
+<tt class="docutils literal"><span class="pre">More?</span></tt> to prompt for more input.  Feel free to omit the
 carets and subsequent newlines; we used them so the example
 would fit on a page of reasonable width.</p>
 <p>The command prompt treats each bit of whitespace in the command
-as an argument separator.  That means quotation marks (<tt class="docutils literal">&quot;</tt>)
+as an argument separator.  That means quotation marks (<tt class="docutils literal"><span class="pre">&quot;</span></tt>)
 are required to keep text together whenever a single
 command-line argument contains spaces, as in</p>
 <pre class="literal-block">
 --build-dir=<span class="raw-html"><strong style="background-color:#B4FFB4">"</strong></span>C:\Documents<span class="raw-html"><strong style="color:#B4B4B4; background-color:#B4FFB4">_</strong></span>and<span class="raw-html"><strong style="color:#B4B4B4; background-color:#B4FFB4">_</strong></span>Settings\dave\build-boost<span class="raw-html"><strong style="background-color:#B4FFB4">"</strong></span>
 </pre>
-<p>Also, for example, you can't add spaces around the <tt class="docutils literal">=</tt> sign as in</p>
+<p>Also, for example, you can't add spaces around the <tt class="docutils literal"><span class="pre">=</span></tt> sign as in</p>
 <pre class="last literal-block">
 --build-dir<span class="raw-html"><strong style="color:#B4B4B4; background-color:#FFB4B4">_</strong></span>=<span class="raw-html"><strong style="color:#B4B4B4; background-color:#FFB4B4">_</strong></span>&quot;C:\Documents and Settings\dave\build-boost&quot;
 </pre>
@@ -905,7 +905,7 @@ same name.</td></tr>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id25">[7]</a></td><td>These libraries were compiled without optimization
 or inlining, with full debug symbols enabled, and without
-<tt class="docutils literal">NDEBUG</tt> <tt class="docutils literal">#define</tt>d.  Although it's true that sometimes
+<tt class="docutils literal"><span class="pre">NDEBUG</span></tt> <tt class="docutils literal"><span class="pre">#define</span></tt>d.  Although it's true that sometimes
 these choices don't affect binary compatibility with other
 compiled code, you can't count on that with Boost libraries.</td></tr>
 </tbody>
