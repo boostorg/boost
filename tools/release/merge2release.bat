@@ -17,6 +17,7 @@ popd
 pushd libs\%1  
 svn merge %2 %3 %4 %5 %6 https://svn.boost.org/svn/boost/branches/release/libs/%1 ^
   https://svn.boost.org/svn/boost/trunk/libs/%1
-popd  
+popd 
+popd 
 
 :done
