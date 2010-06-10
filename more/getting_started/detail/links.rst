@@ -5,9 +5,13 @@
 .. _Boost.DateTime: ../../libs/date_time/index.html
 .. _Boost.Filesystem: ../../libs/filesystem/index.html
 .. _Boost.Graph: ../../libs/graph/index.html
+.. _Boost.GraphParallel: ../../libs/graph_parallel/index.html
 .. _Boost.IOStreams: ../../libs/iostreams/index.html
+.. _Boost.Math: ../../libs/math/index.html
+.. _Boost.MPI: ../../libs/mpi/index.html
 .. _Boost.ProgramOptions: ../../libs/program_options/index.html
 .. _Boost.Python: ../../libs/python/doc/building.html
+.. _Boost.Random: ../../libs/random/index.html
 .. _Boost.Regex: ../../libs/regex/index.html
 .. _Boost.Serialization: ../../libs/serialization/index.html
 .. _Boost.Signals: ../../libs/signals/index.html
