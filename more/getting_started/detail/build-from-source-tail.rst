@@ -18,8 +18,8 @@ In particular, to limit the amount of time spent building, you may
 be interested in:
 
 * reviewing the list of library names with ``--show-libraries``
-* limiting which libraries get built with the ``--with-libraries=``\
-  *library-name-list* option
+* limiting which libraries get built with the ``--with-``\
+  *library-name* or ``--without-``\ *library-name* options
 * choosing a specific build variant by adding ``release`` or
   ``debug`` to the command line.
 

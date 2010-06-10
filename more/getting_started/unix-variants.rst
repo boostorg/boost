@@ -108,7 +108,7 @@ least use
   **$** ./bootstrap.sh **--prefix=**\ *path*\ /\ *to*\ /\ *installation*\ /\ *prefix* 
 
 to install somewhere else.  Also, consider using the
-``--show-libraries`` and ``--with-libraries=``\ *library_name_list* options to limit the
+``--show-libraries`` and ``--with-libraries=``\ *library-name-list* options to limit the
 long wait you'll experience if you build everything.  Finally,
 
 .. parsed-literal::
