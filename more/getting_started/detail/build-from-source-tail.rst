@@ -3,8 +3,9 @@
 .. file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 Building the special ``stage`` target places Boost
-library binaries in the ``stage``\ |/|\ ``lib``\ |/| subdirectory of your `build
-directory`_.
+library binaries in the ``stage``\ |/|\ ``lib``\ |/| subdirectory of
+the Boost tree.  To use a different directory pass the
+``--stagedir=``\ *directory* option to ``bjam``.
 
 .. Note:: ``bjam`` is case-sensitive; it is important that all the
    parts shown in **bold** type above be entirely lower-case.
