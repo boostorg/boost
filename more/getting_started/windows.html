@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>Boost Getting Started on Windows</title>
 <link rel="stylesheet" href="../../rst.css" type="text/css" />
 </head>
@@ -177,7 +177,9 @@ treatment when linking.</p>
 <p>The only Boost libraries that <em>must</em> be built separately are:</p>
 <ul class="simple">
 <li><a class="reference external" href="../../libs/filesystem/index.html">Boost.Filesystem</a></li>
+<li><a class="reference external" href="../../libs/graph_parallel/index.html">Boost.GraphParallel</a></li>
 <li><a class="reference external" href="../../libs/iostreams/index.html">Boost.IOStreams</a></li>
+<li><a class="reference external" href="../../libs/mpi/index.html">Boost.MPI</a></li>
 <li><a class="reference external" href="../../libs/program_options/index.html">Boost.ProgramOptions</a></li>
 <li><a class="reference external" href="../../libs/python/doc/building.html">Boost.Python</a> (see the <a class="reference external" href="../../libs/python/doc/building.html">Boost.Python build documentation</a>
 before building and installing it)</li>
@@ -195,6 +197,10 @@ you're using its <tt class="docutils literal">to_string</tt>/<tt class="docutils
 features, or if you're targeting Visual C++ 6.x or Borland.</li>
 <li><a class="reference external" href="../../libs/graph/index.html">Boost.Graph</a> also has a binary component that is only needed if
 you intend to <a class="reference external" href="../../libs/graph/doc/read_graphviz.html">parse GraphViz files</a>.</li>
+<li><a class="reference external" href="../../libs/math/index.html">Boost.Math</a> has binary components for the TR1 and C99
+cmath functions.</li>
+<li><a class="reference external" href="../../libs/random/index.html">Boost.Random</a> has a binary component which is only needed if
+you're using <tt class="docutils literal">random_device</tt>.</li>
 <li><a class="reference external" href="../../libs/test/index.html">Boost.Test</a> can be used in “header-only” or “separately compiled”
 mode, although <strong>separate compilation is recommended for serious
 use</strong>.</li>
@@ -533,8 +539,9 @@ list</a>.</p>
 <!-- Software License, Version 1.0. (See accompanying -->
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <p>Building the special <tt class="docutils literal">stage</tt> target places Boost
-library binaries in the <tt class="docutils literal">stage</tt><tt class="docutils literal">\</tt><tt class="docutils literal">lib</tt><tt class="docutils literal">\</tt> subdirectory of your <a class="reference internal" href="#build-directory">build
-directory</a>.</p>
+library binaries in the <tt class="docutils literal">stage</tt><tt class="docutils literal">\</tt><tt class="docutils literal">lib</tt><tt class="docutils literal">\</tt> subdirectory of
+the Boost tree.  To use a different directory pass the
+<tt class="docutils literal"><span class="pre">--stagedir=</span></tt><em>directory</em> option to <tt class="docutils literal">bjam</tt>.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p class="last"><tt class="docutils literal">bjam</tt> is case-sensitive; it is important that all the
@@ -670,7 +677,7 @@ the command line we used earlier, assuming your Boost binaries are
 in <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_44_0</tt><tt class="docutils literal">\lib</tt>:</p>
 <pre class="literal-block">
 cl /EHsc /I <em>path\to\</em><tt class="docutils literal">boost_1_44_0</tt> example.cpp   <strong>^</strong>
-     <strong>/link /LIBPATH:</strong> <strong>C:\Program Files\boost\</strong><strong>boost_1_44_0</strong><strong>\lib</strong>
+     <strong>/link /LIBPATH:</strong><strong>C:\Program Files\boost\</strong><strong>boost_1_44_0</strong><strong>\lib</strong>
 </pre>
 </div>
 <div class="section" id="library-naming">

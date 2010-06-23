@@ -20,7 +20,9 @@ Boost?”  The good news is that often, there's nothing to build.
 The only Boost libraries that *must* be built separately are:
 
 * Boost.Filesystem_
+* Boost.GraphParallel_
 * Boost.IOStreams_
+* Boost.MPI_
 * Boost.ProgramOptions_
 * Boost.Python_ (see the `Boost.Python build documentation`__
   before building and installing it)
@@ -41,6 +43,12 @@ A few libraries have optional separately-compiled binaries:
 
 * Boost.Graph_ also has a binary component that is only needed if
   you intend to `parse GraphViz files`__.
+
+* Boost.Math_ has binary components for the TR1 and C99
+  cmath functions.
+
+* Boost.Random_ has a binary component which is only needed if
+  you're using ``random_device``.
 
 * Boost.Test_ can be used in “header-only” or “separately compiled”
   mode, although **separate compilation is recommended for serious

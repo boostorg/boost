@@ -305,7 +305,7 @@ in |default-root|\ ``\lib``:
 .. parsed-literal::
 
    cl /EHsc /I |root| example.cpp   **^**
-        **/link /LIBPATH:** |default-root-bold|\ **\\lib**
+        **/link /LIBPATH:**\ |default-root-bold|\ **\\lib**
 
 Library Naming
 --------------
