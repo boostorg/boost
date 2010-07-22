@@ -1,9 +1,10 @@
 #!/bin/bash
 boost_version=$(grep 'define.*BOOST_LIB_VERSION' ../../boost/version.hpp | sed 's/.*"\([^"]*\)".*/\1/')
 echo Boost version tag = $boost_version
-bjam -a pdf xsl:param=fop1.extensions=0 xsl:param=xep.extensions=1
+bjam -a pdf xsl:param=fop1.extensions=0 xsl:param=xep.extensions=1 2>&1 | tee build.log
 mkdir boost_${boost_version}_pdf
 mv *.pdf boost_${boost_version}_pdf
+
 
 
 
