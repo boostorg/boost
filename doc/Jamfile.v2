@@ -1,0 +1,88 @@
+# Copyright (c) 2002 Douglas Gregor <doug.gregor -at- gmail.com>
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+project boost/doc ;
+import boostbook : boostbook ;
+
+alias asio : ../libs/asio/doc//asio/<xsl:param>boost.libraries=../../libs/libraries.htm ;
+
+boostbook doc
+    :
+    src/boost.xml
+    :
+    ## Build the various generated docs (Doxygen and QuickBook)...
+
+    <dependency>../libs/accumulators/doc//accdoc.xml
+    <dependency>../libs/accumulators/doc//statsdoc.xml
+    <dependency>../libs/accumulators/doc//opdoc.xml
+    <dependency>../libs/accumulators/doc//accumulators
+    <dependency>../libs/program_options/doc//autodoc.xml
+    <dependency>../libs/algorithm/string/doc//autodoc.xml
+    <dependency>../libs/logic/doc//reference.xml
+    <dependency>../libs/functional/hash/doc//hash
+    #<dependency>../libs/type_traits/doc//type_traits
+    <dependency>../libs/static_assert/doc//static_assert
+    <dependency>../libs/tr1/doc//tr1
+    <dependency>../libs/foreach/doc//foreach
+    <dependency>../libs/mpi/doc//mpi
+    <dependency>../libs/mpi/doc//mpi_autodoc.xml
+    <dependency>../libs/property_tree/doc//autodoc.xml
+    <dependency>../libs/property_tree/doc//property_tree
+    #<dependency>../libs/proto/doc//protodoc.xml
+    <dependency>../libs/proto/doc//proto
+    <dependency>../libs/typeof/doc//typeof
+    <dependency>../libs/xpressive/doc//autodoc.xml
+    <dependency>../libs/xpressive/doc//xpressive
+    <dependency>../libs/date_time/xmldoc//date_time_autodoc.xml
+    <dependency>../libs/date_time/xmldoc//gregorian_autodoc.xml
+    <dependency>../libs/date_time/xmldoc//posix_time_autodoc.xml
+    <dependency>../libs/date_time/xmldoc//local_time_autodoc.xml
+    <dependency>../tools/jam/doc//bjam
+    <dependency>../tools/quickbook/doc//quickbook
+    <dependency>../libs/interprocess/doc//autodoc.xml
+    <dependency>../libs/interprocess/doc//interprocess
+    <dependency>../libs/intrusive/doc//autodoc.xml
+    <dependency>../libs/intrusive/doc//intrusive
+    <dependency>../libs/units/doc//units
+    <dependency>../libs/unordered/doc//unordered
+    <dependency>../libs/thread/doc//thread
+    <dependency>../libs/signals2/doc//hello_world_def_code_snippet.xml
+    <dependency>../libs/random/doc//random
+
+    ## Add path references to the QuickBook generated docs...
+
+    <implicit-dependency>../libs/accumulators/doc//accumulators
+    <implicit-dependency>../libs/functional/hash/doc//hash
+    #<implicit-dependency>../libs/type_traits/doc//type_traits
+    <implicit-dependency>../libs/static_assert/doc//static_assert
+    <implicit-dependency>../libs/tr1/doc//tr1
+    <implicit-dependency>../libs/foreach/doc//foreach
+    <implicit-dependency>../libs/property_tree/doc//property_tree
+    <implicit-dependency>../libs/proto/doc//proto
+    <implicit-dependency>../libs/typeof/doc//typeof
+    <implicit-dependency>../libs/xpressive/doc//xpressive
+    <implicit-dependency>../tools/jam/doc//bjam
+    <implicit-dependency>../tools/quickbook/doc//quickbook
+    <implicit-dependency>../libs/mpi/doc//mpi
+    <implicit-dependency>../libs/interprocess/doc//interprocess
+    <implicit-dependency>../libs/intrusive/doc//intrusive
+    <implicit-dependency>../libs/units/doc//units
+    <implicit-dependency>../libs/unordered/doc//unordered
+    <implicit-dependency>../libs/thread/doc//thread
+    <implicit-dependency>../libs/signals2/doc//hello_world_def_code_snippet.xml
+    <implicit-dependency>../libs/random/doc//random
+
+    <xsl:param>boost.libraries=../../libs/libraries.htm
+
+    <dependency>images
+    <dependency>callouts
+    ;
+
+install images : [ glob src/images/*.png ] : <location>html/images ;
+explicit images ;
+install callouts : [ glob src/images/callouts/*.png ] : <location>html/images/callouts ;
+explicit callouts ;
+
+
