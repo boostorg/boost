@@ -31,6 +31,7 @@ import package ;
 ##############################################################################  
 
 BOOST_ROOT = [ modules.binding $(__name__) ] ;
+BOOST_ROOT = $(BOOST_ROOT:D) ;
 
 rule set-version ( version )
 {
@@ -552,7 +553,7 @@ rule libraries-to-install ( existing-libraries * )
    }
 }
 
-rule declare_targets ( all-libraries * : headers * )
+rule declare-targets ( all-libraries * : headers * )
 {
     configure.register-components $(all-libraries) ;
     

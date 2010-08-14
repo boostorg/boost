@@ -129,6 +129,7 @@ import package ;
 import sequence ;
 import xsltproc ;
 import set ;
+import path ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.44.0 ;
@@ -242,9 +243,7 @@ rule boost-install ( libraries * )
 
     install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;
 
-    local c = [ project.current ] ;
-    local project-module = [ $(c).project-module ] ;
-    module $(project-module)
+    module [ CALLER_MODULE ]
     {
         explicit stage ;
         explicit install ;
@@ -261,4 +260,4 @@ headers =
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare_targets $(all-libraries) : $(headers) ;
+boostcpp.declare-targets $(all-libraries) : $(headers) ;
