@@ -26,7 +26,7 @@ repo_path = {
     'trunk'         : 'trunk',
     'release'       : 'branches/release',
     'build'         : 'trunk/tools/build/v2',
-    'jam'           : 'tags/tools/jam/Boost_Jam_3_1_17/src',
+    'jam'           : 'trunk/tools/build/v2/engine',
     'regression'    : 'trunk/tools/regression',
     'boost-build.jam'
                     : 'trunk/boost-build.jam'
