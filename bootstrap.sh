@@ -233,7 +233,6 @@ fi
 
 # If there is a list of libraries 
 if test "x$flag_show_libraries" = xyes; then
-  libraries=`$BJAM -d0 --show-libraries`
   cat <<EOF
 
 The following Boost libraries have portions that require a separate build
@@ -242,10 +241,7 @@ the headers only.
 
 The Boost libraries requiring separate building and installation are:
 EOF
-  for lib in $libraries
-  do
-    echo "         $lib"
-  done
+  $BJAM -d0 --show-libraries | grep '^\s*-'
   exit 0
 fi
 
