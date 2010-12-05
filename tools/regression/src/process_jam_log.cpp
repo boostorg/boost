@@ -6,6 +6,8 @@
 
 //  See http://www.boost.org/tools/regression for documentation.
 
+#define BOOST_FILESYSTEM_VERSION 3
+
 #include <boost/config/warning_disable.hpp>
 
 #include "detail/tiny_xml.hpp"
@@ -613,7 +615,7 @@ int main( int argc, char ** argv )
         std::cout << "Abort: option --boost-root requires a directory argument\n";
         std::exit(1);
       }
-      boost_root = fs::path( argv[1], fs::native );
+      boost_root = fs::path( argv[1] );
       if ( !boost_root.is_complete() )
         boost_root = ( fs::initial_path() / boost_root ).normalize();
       
@@ -627,7 +629,7 @@ int main( int argc, char ** argv )
         std::cout << "Abort: option --locate-root requires a directory argument\n";
         std::exit(1);
       }
-      locate_root = fs::path( argv[1], fs::native );
+      locate_root = fs::path( argv[1] );
       --argc; ++argv;
     } 
     else if ( std::strcmp( argv[1], "--input-file" ) == 0 )
@@ -648,7 +650,7 @@ int main( int argc, char ** argv )
     }
     else
     {
-      locate_root = fs::path( argv[1], fs::native );
+      locate_root = fs::path( argv[1] );
       --argc; ++argv;
     }
   }
