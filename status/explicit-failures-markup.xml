@@ -4648,114 +4648,29 @@ for more information.
 
     <!-- statechart -->
     <library name="statechart">
-        <mark-unusable>
-            <toolset name="borland-5*"/>
-            <toolset name="cw-8*"/>
-            <toolset name="dmc-8*"/>
-            <toolset name="gcc-2*"/>
-            <toolset name="hp_cxx-65*"/>
-            <toolset name="msvc-6.5*"/>
-            <toolset name="msvc-7.0*"/>
-            <toolset name="pgi-7*"/>
-            <toolset name="sun-5*"/>
-            <note author="Andreas Huber" refid="17"/>
-        </mark-unusable>
-        <mark-unusable>
-            <toolset name="acc-pa_risc"/>
-            <note author="Andreas Huber">
-                Marked unusable because TransitionTest.cpp compiled but did
-                the wrong thing at runtime!
-            </note>
-        </mark-unusable>
-        <mark-expected-failures>
-            <test name="DllTestNative"/>
-            <toolset name="gcc-mingw-4.2*"/>
-            <note author="Andreas Huber">
-                A runtime failure of this test indicates that the RTTI
-                implementation of this platform is broken in conjunction
-                with dynamic linking.
-            </note>
-        </mark-expected-failures>
         <mark-expected-failures>
             <test name="DllTestNormal"/>
-            <toolset name="*cygwin*"/>
             <toolset name="*mingw*"/>
-            <toolset name="hp_cxx-71*"/>
-            <toolset name="cw-9*"/>
+            <toolset name="intel-darwin-11*"/>
             <note author="Andreas Huber">
                 A runtime failure of this test indicates that this platform
                 <b>dynamically</b> links code in a manner such that under
                 certain circumstances more than one instance of a
                 header-defined static class member can exist at runtime. See
-                <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">here</a>
-                for more information.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="LibTestNormal"/>
-            <toolset name="hp_cxx-71*"/>
-            <note author="Andreas Huber">
-                A runtime failure of this test indicates that this platform
-                <b>statically</b> links code in a manner such that under
-                certain circumstances more than one instance of a
-                header-defined static class member can exist at runtime. See
-                <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">here</a>
+                <a href="http://www.boost.org/libs/statechart/doc/faq.html#Dll">FAQ</a>
                 for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
-            <test name="CameraExample"/>
-            <test name="CustomReactionTest*"/>
-            <test name="PerformanceExample"/>
-            <toolset name="cw-9*"/>
-            <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="CustomReactionTest*"/>
-            <toolset name="hp_cxx-71*"/>
+            <test name="FifoSchedulerTest*"/>
+            <toolset name="intel-darwin-11*"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
         <mark-expected-failures reason="?">
             <test name="TransitionTest*"/>
-            <toolset name="cw-9*"/>
-            <toolset name="hp_cxx-71*"/>
-            <toolset name="intel-linux-9.1"/>
             <toolset name="intel-linux-10*"/>
-            <toolset name="intel-darwin-9.1"/>
-            <toolset name="intel-darwin-10*"/>
-            <toolset name="vacpp-8.0"/>
-            <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="TransitionTestBoth"/>
-            <test name="TransitionTestNative"/>
-            <toolset name="pathscale-3.1"/>
-            <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="InvalidTransitionTest1Relaxed"/>
-            <test name="StopWatchExample"/>
-            <toolset name="vacpp-8.0"/>
-            <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="CustomReactionTest*"/>
-            <toolset name="acc*"/>
-            <note author="Andreas Huber" refid="29"/>
-        </mark-expected-failures>
-        <mark-expected-failures>
-            <test name="StopWatch*"/>
-            <toolset name="msvc-8.0~wm5~stlport5.1"/>
-            <note author="Andreas Huber">
-                This looks like a std library or configuration bug. Since
-                difftime is only used in the example, this failure can be
-                ignored.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures reason="?">
-            <test name="DllTest*"/>
-            <toolset name="cygwin-gcc-stdcxx-4.2.1"/>
-            <toolset name="msvc-8.0~wm5~stlport5.1"/>
+            <toolset name="gcc-4.3.4_0x"/>
+            <toolset name="pathscale-3.2"/>
             <note author="Andreas Huber" refid="29"/>
         </mark-expected-failures>
     </library>
