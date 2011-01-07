@@ -2546,24 +2546,52 @@ for more information.
             <toolset name="gcc-3.4.6_linux_ia64"/>
             <toolset name="gcc-4.2.*"/>
             <toolset name="gcc-4.1.2_sunos_i86pc"/>
-                <note author="Fernando Cacciola" refid="2"/>
+                <note author="Fernando Cacciola" id="optional-compiler-bug">
+                <p>This failure is caused by a compiler bug, and as far as we can 
+                tell, can't be worked around in the library, although we think 
+                the library might be made safer with respect to this bug.</p>
+
+                <p>Specifics: the following simple test fails when it should succeed.</p>
+                <pre>
+                #include &lt;cassert&gt;
+
+                int const x = 0;
+                struct A
+                {
+                   A(int const&amp; y)
+                   {
+                     assert(&amp;x == &amp;y);
+                   }
+                };
+
+                int main()
+                {
+                    A a(x);  // direct initialization works fine
+                    A b = x; // copy initialization causes x to be copied before it is bound
+                }
+                </pre>
+
+                The possible safety enhancement would be to cause the constructor 
+                in question to be explicit for optional&lt;T const&amp;&gt;; that 
+                would prevent copy initialization.
+                </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="optional_test_ref_fail1"/>
             <toolset name="borland-5.6*"/>
             <toolset name="borland-5.8*"/>
             <toolset name="borland-5.9*"/>
-            <note author="Fernando Cacciola" refid="2"/>
+            <note author="Fernando Cacciola" refid="optional-compiler-bug"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="optional_test_fail3a"/>
             <toolset name="gcc-3_3-darwin"/>
-            <note author="Fernando Cacciola" refid="2"/>
+            <note author="Fernando Cacciola" refid="optional-compiler-bug"/>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="optional_test_inplace_fail2"/>
             <toolset name="gcc-3_3-darwin"/>
-            <note author="Fernando Cacciola" refid="2"/>
+            <note author="Fernando Cacciola" refid="optional-compiler-bug"/>
         </mark-expected-failures>
     </library>
 
