@@ -13,13 +13,13 @@ rmdir /s /q svn_info >nul
 del posix.tar.gz >nul
 del posix.tar.bz2 >nul
 
-echo Exporting files from subversion...
 rem  leave an audit trail, which is used by inspect to determine revision number
-svn co --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
-svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
+echo Getting current subversion revision number...
+svn co --non-interactive --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
+svn info svn_info
 
-echo Creating release history README.txt...
-lynx -width=72 -dump -nolist -display_charset=utf-8 http://beta.boost.org/users/history/minimal.php >posix\README.txt
+echo Exporting files from subversion...
+svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
 
 echo Copying docs into posix\doc...
 pushd posix\doc
