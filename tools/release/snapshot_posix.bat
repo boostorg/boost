@@ -6,20 +6,15 @@ rem  Distributed under the Boost Software License, Version 1.0.
 rem  See http://www.boost.org/LICENSE_1_0.txt
 
 echo Build a branches/release snapshot for POSIX, using LF line termination...
-
+echo Revision %BOOST_REVISION_NUMBER%
 echo Removing old files...
 rmdir /s /q posix >nul
 rmdir /s /q svn_info >nul
 del posix.tar.gz >nul
 del posix.tar.bz2 >nul
 
-rem  leave an audit trail, which is used by inspect to determine revision number
-echo Getting current subversion revision number...
-svn co --non-interactive --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
-svn info svn_info
-
 echo Exporting files from subversion...
-svn export --non-interactive --native-eol LF http://svn.boost.org/svn/boost/branches/release posix
+svn export --non-interactive --native-eol LF -r %BOOST_REVISION_NUMBER% http://svn.boost.org/svn/boost/branches/release posix
 
 echo Copying docs into posix\doc...
 pushd posix\doc

@@ -6,6 +6,7 @@ rem  Distributed under the Boost Software License, Version 1.0.
 rem  See http://www.boost.org/LICENSE_1_0.txt
 
 echo Build a branches/release snapshot for Windows, using CRLF line termination...
+echo Revision %BOOST_REVISION_NUMBER%
 
 echo Removing old files...
 rmdir /s /q windows >nul
@@ -13,13 +14,8 @@ rmdir /s /q svn_info >nul
 del windows.7z >nul
 del windows.zip >nul
 
-rem  leave an audit trail, which is used by inspect to determine revision number
-echo Getting current subversion revision number...
-svn co --non-interactive --depth=files http://svn.boost.org/svn/boost/branches/release svn_info
-svn info svn_info
-
 echo Exporting files from subversion...
-svn export --non-interactive --native-eol CRLF http://svn.boost.org/svn/boost/branches/release windows
+svn export --non-interactive --native-eol CRLF -r %BOOST_REVISION_NUMBER% http://svn.boost.org/svn/boost/branches/release windows
 
 echo Copying docs into windows\doc...
 pushd windows\doc
