@@ -16,6 +16,8 @@ svn --non-interactive --trust-server-cert cleanup
 echo Running svn update on %BOOST_TRUNK%
 svn --non-interactive --trust-server-cert up
 popd
+call %BOOST_TRUNK%\tools\release\revision_number.bat
+time /t
 call %BOOST_TRUNK%\tools\release\snapshot_download_docs.bat
 time /t
 call %BOOST_TRUNK%\tools\release\snapshot_posix.bat
@@ -24,3 +26,4 @@ call %BOOST_TRUNK%\tools\release\snapshot_windows.bat
 time /t
 call %BOOST_TRUNK%\tools\release\snapshot_inspection.bat
 time /t
+echo Revision %BOOST_REVISION_NUMBER% snapshot complete
