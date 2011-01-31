@@ -1896,22 +1896,86 @@
         </mark-expected-failures>
     </library>
 
-    <!-- integer -->
-    <library name="integer">
-        <mark-expected-failures>
-            <test name="integer_test"/>
-            <toolset name="acc"/>
-            <toolset name="gcc-4.2.1_hpux_ia64"/>
-            <note author="Boris Gubenko">
-                When compiling with aC++, depending on system load, the compile time may exceed
-                specified timeout value. The test passes when the timeout value is increased.
-                When compiling with GCC, linker takes segmentation fault.
-                In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.
-            </note>
-        </mark-expected-failures>
-    </library>
+	<!-- icl -->
+	<library name="icl">
+		<mark-unusable>
+			<toolset name="vacpp"/>
+			<toolset name="borland-cb2009"/>
+			<toolset name="borland-cb2010"/>
+			<toolset name="sun-5.10"/>
+			<note author="Joachim Faulhaber">
+				The compiler does not support features that are essential for the library.
+			</note>
+		</mark-unusable>
+		<mark-expected-failures>
+			<test name="fastest_icl_map"/>
+			<test name="fastest_interval_map"/>
+			<test name="fastest_interval_map_infix"/>
+			<test name="fastest_interval_set"/>
+			<test name="fastest_interval_set_infix"/>
+			<test name="fastest_partial_icl_quantifier"/>
+			<test name="fastest_partial_interval_quantifier"/>
+			<test name="fastest_separate_interval_set"/>
+			<test name="fastest_separate_interval_set_infix"/>
+			<test name="fastest_set_icl_set"/>
+			<test name="fastest_set_interval_set"/>
+			<test name="fastest_split_interval_map"/>
+			<test name="fastest_split_interval_map_infix"/>
+			<test name="fastest_split_interval_set"/>
+			<test name="fastest_split_interval_set_infix"/>
+			<test name="fastest_total_icl_quantifier"/>
+			<test name="fastest_total_interval_quantifier"/>
+			<toolset name="clang-darwin-4.2.1"/>
+			<toolset name="clang-linux-4.2.1"/>
+			<note author="Joachim Faulhaber">
+				The clang compiler seems to have problems with passing template template type
+				arguments with test function templates. This is done in the tests in order to be
+				able to vary more than one type arguments in the tests. Because this is a feature
+				of the test system, failure does not necessarily mean, that icl can not be used
+				with clang. Only the tests fail.
+			</note>
+		</mark-expected-failures>
+		<mark-expected-failures>
+			<test name="cmp_clang_ttp_passing"/>
+			<toolset name="clang-darwin-4.2.1"/>
+			<toolset name="clang-linux-4.2.1"/>
+			<note author="Joachim Faulhaber">
+				Compiler error expected for clang: A minimal example for passing template template type parameter.
+			</note>
+		</mark-expected-failures>
+		<mark-expected-failures>
+			<test name="cmp_msvc_value_born_error"/>
+			<toolset name="msvc-7.1"/>
+			<toolset name="msvc-8.0"/>
+			<toolset name="msvc-9.0*"/>
+			<toolset name="msvc-10.0"/>
+			<note author="Joachim Faulhaber">
+				Compiler error expected for msvc: A minimal example of a class template 'value' that
+				results in syntax error in a subsequent meta function.
+				See <a
+		            href="https://svn.boost.org/trac/boost/ticket/5141">
+					ticket #5141
+				</a> for details.
+			</note>
+		</mark-expected-failures>
+	</library>
 
-    <!-- interprocess-->
+	<!-- integer -->
+	<library name="integer">
+		<mark-expected-failures>
+			<test name="integer_test"/>
+			<toolset name="acc"/>
+			<toolset name="gcc-4.2.1_hpux_ia64"/>
+			<note author="Boris Gubenko">
+				When compiling with aC++, depending on system load, the compile time may exceed
+				specified timeout value. The test passes when the timeout value is increased.
+				When compiling with GCC, linker takes segmentation fault.
+				In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.
+			</note>
+		</mark-expected-failures>
+	</library>
+
+	<!-- interprocess-->
     <library name="interprocess">
         <mark-unusable>
             <toolset name="borland-5.*"/>
