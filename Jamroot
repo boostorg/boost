@@ -1,0 +1,757 @@
+# Copyright Vladimir Prus 2002-2006.
+# Copyright Dave Abrahams 2005-2006.
+# Copyright Rene Rivera 2005-2007.
+# Copyright Douglas Gregor 2005.
+#
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+
+# Usage:
+#
+#   bjam [options] [properties] [install|stage]
+#
+#   Builds and installs Boost.
+#
+# Targets and Related Options:
+#
+#   install                 Install headers and compiled library files to the
+#   =======                 configured locations (below).
+#
+#   --prefix=<PREFIX>       Install architecture independent files here.
+#                           Default; C:\Boost on Win32
+#                           Default; /usr/local on Unix. Linux, etc.
+#
+#   --exec-prefix=<EPREFIX> Install architecture dependent files here.
+#                           Default; <PREFIX>
+#
+#   --libdir=<DIR>          Install library files here.
+#                           Default; <EPREFIX>/lib
+#
+#   --includedir=<HDRDIR>   Install header files here.
+#                           Default; <PREFIX>/include
+#
+#   stage                   Build and install only compiled library files
+#   =====                   to the stage directory.
+#
+#   --stagedir=<STAGEDIR>   Install library files here
+#                           Default; ./stage
+#
+# Other Options:
+#
+#   --build-type=<type>     Build the specified pre-defined set of variations
+#                           of the libraries. Note, that which variants get
+#                           built depends on what each library supports.
+#
+#                               minimal (default) - Builds a minimal set of 
+#                               variants. On Windows, these are static 
+#                               multithreaded libraries in debug and release
+#                               modes, using shared runtime. On Linux, these
+#                               are static and shared multithreaded libraries
+#                               in release mode.
+#
+#                               complete - Build all possible variations.
+#
+#   --build-dir=DIR         Build in this location instead of building
+#                           within the distribution tree. Recommended!
+#
+#   --show-libraries        Displays the list of Boost libraries that require
+#                           build and installation steps, then exit.
+#
+#   --layout=<layout>       Determines whether to choose library names
+#                           and header locations such that multiple
+#                           versions of Boost or multiple compilers can
+#                           be used on the same system.
+#
+#                               versioned - Names of boost binaries
+#                               include the Boost version number, name and
+#                               version of the compiler and encoded build
+#                               properties.  Boost headers are installed in a
+#                               subdirectory of <HDRDIR> whose name contains
+#                               the Boost version number.
+#
+#                               tagged -- Names of boost binaries include the
+#                               encoded build properties such as variant and
+#                               threading, but do not including compiler name
+#                               and version, or Boost version. This option is
+#                               useful if you build several variants of Boost,
+#                               using the same compiler.
+#
+#                               system - Binaries names do not include the
+#                               Boost version number or the name and version
+#                               number of the compiler.  Boost headers are
+#                               installed directly into <HDRDIR>.  This option
+#                               is intended for system integrators who are
+#                               building distribution packages.
+#
+#                           The default value is 'versioned' on Windows, and
+#                           'system' on Unix.
+#
+#   --buildid=ID            Adds the specified ID to the name of built
+#                           libraries.  The default is to not add anything.
+#
+#   --python-buildid=ID     Adds the specified ID to the name of built
+#                           libraries that depend on Python.  The default 
+#                           is to not add anything. This ID is added in 
+#                           addition t --buildid.
+#
+#
+#   --help                  This message.
+#
+#   --with-<library>        Build and install the specified <library>
+#                           If this option is used, only libraries
+#                           specified using this option will be built.
+#
+#   --without-<library>     Do not build, stage, or install the specified
+#                           <library>. By default, all libraries are built.
+#
+# Properties:
+#
+#   toolset=toolset         Indicates the toolset to build with.
+#
+#   variant=debug|release   Select the build variant
+#
+#   link=static|shared      Whether to build static or shared libraries
+#
+#   threading=single|multi  Whether to build single or multithreaded binaries
+# 
+#   runtime-link=static|shared      
+#                           Whether to link to static or shared C and C++ runtime.
+#   
+
+# TODO:
+#  - handle boost version
+#  - handle python options such as pydebug
+
+import generate ;
+import modules ;
+import set ;
+import stage ;
+import package ;
+import path ;
+import common ;
+import os ;
+import regex ;
+import errors ;
+import "class" : new ;
+import common ;
+import sequence ;
+import symlink ;
+import targets ;
+import project ;
+import option ;
+import xsltproc ;
+import build-system ;
+import configure ;
+
+path-constant BOOST_ROOT : . ;
+constant BOOST_VERSION : 1.46.0 ;
+constant BOOST_JAMROOT_MODULE : $(__name__) ;
+
+local version-tag = [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ]
+    ;
+if $(version-tag[3]) = 0
+{
+    version-tag = $(version-tag[1-2]) ;
+}
+
+constant BOOST_VERSION_TAG : $(version-tag:J="_") ;
+
+# Option to choose how many variants to build. The default is "minimal".
+local build-type = [ MATCH "^--build-type=(.*)" : [ modules.peek : ARGV ] ] ;
+build-type ?= minimal ;
+if ! ( $(build-type) in minimal complete )
+{
+    ECHO "The value of the --build-type option should be either 'complete' or 'minimal'" ;
+    EXIT ;
+}
+
+rule handle-static-runtime ( properties * )
+{
+    # Using static runtime with shared libraries is impossible on Linux,
+    # and dangerous on Windows. Therefore, we disallow it. This might
+    # be drastic, but it was disabled for a while with nobody complaining.
+
+    # For CW, static runtime is needed so that std::locale works.
+    if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
+        ! ( <toolset>cw in $(properties) )
+    {
+        ECHO "error: link=shared together with runtime-link=static is not allowed" ;
+        ECHO "error: such property combination is either impossible " ;
+        ECHO "error: or too dangerious to be of any use" ;
+        EXIT ;
+    }
+}
+
+
+project boost
+    : requirements <include>.
+      # Disable auto-linking for all targets here, primarily because it caused
+      # troubles with V2.
+      <define>BOOST_ALL_NO_LIB=1
+      # Used to encode variant in target name. See the 'tag' rule below.
+      <tag>@$(__name__).tag
+      <conditional>@handle-static-runtime
+      # The standard library Sun compilers use by default has no chance
+      # of working with Boost. Override it.
+      <toolset>sun:<stdlib>sun-stlport
+      # Comeau does not support shared lib
+      <toolset>como:<link>static
+      <toolset>como-linux:<define>_GNU_SOURCE=1
+      # When building docs within Boost, we want the standard Boost style
+      <xsl:param>boost.defaults=Boost
+    : usage-requirements <include>.
+    : build-dir bin.v2
+    ;
+
+
+# Setup convenient aliases for all libraries.
+
+all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
+    [ glob libs/*/build/Jamfile ] ]
+    ;
+
+all-libraries = [ sequence.unique $(all-libraries) ] ;
+# The function_types library has a Jamfile, but it's used for maintenance
+# purposes, there's no library to build and install.
+all-libraries = [ set.difference $(all-libraries) : function_types ] ;
+
+configure.register-components $(all-libraries) ;
+
+local rule explicit-alias ( id : targets + )
+{
+    alias $(id) : $(targets) ;
+    explicit $(id) ;
+}
+
+
+# First, the complicated libraries: where the target name in Jamfile is
+# different from its directory name.
+explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
+explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
+explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
+explicit-alias bgl-vis : libs/graps/build//bgl-vis ;
+explicit-alias serialization : libs/serialization/build//boost_serialization ;
+explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
+for local l in $(all-libraries)
+{
+    if ! $(l) in test graph serialization
+    {
+        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
+    }
+}
+
+alias headers : : : : <include>. ;
+
+
+# Decides which libraries are to be installed by looking at --with-<library>
+# --without-<library> arguments. Returns the list of directories under "libs"
+# which must be built and installed.
+#
+rule libraries-to-install ( existing-libraries * )
+{
+   local argv = [ modules.peek : ARGV ] ;
+   local with-parameter = [ MATCH --with-(.*) : $(argv) ] ;
+   local without-parameter = [ MATCH --without-(.*) : $(argv) ] ;
+   
+   if ! $(with-parameter) && ! $(without-parameter)
+   {
+       # Nothing is specified on command line. See if maybe
+       # project-config.jam has some choices. 
+       local project-config-libs = [ modules.peek project-config : libraries ] ;
+       with-parameter = [ MATCH --with-(.*) : $(project-config-libs) ] ;
+       without-parameter = [ MATCH --without-(.*) : $(project-config-libs) ] ;
+   }
+
+   # Do some checks.
+   if $(with-parameter) && $(without-parameter)
+   {
+       ECHO "error: both --with-<library> and --without-<library> specified" ;
+       EXIT ;
+   }
+
+   local wrong = [ set.difference $(with-parameter) : $(existing-libraries) ] ;
+   if $(wrong)
+   {
+       ECHO "error: wrong library name '$(wrong[1])' in the --with-<library> option." ;
+       EXIT ;
+   }
+   local wrong = [ set.difference $(without-parameter) : $(existing-libraries) ] ;
+   if $(wrong)
+   {
+       ECHO "error: wrong library name '$(wrong[1])' in the --without-<library> option." ;
+       EXIT ;
+   }
+
+   if $(with-parameter)
+   {
+       return [ set.intersection $(existing-libraries) : $(with-parameter) ] ;
+   }
+   else
+   {
+       return [ set.difference $(existing-libraries) : $(without-parameter) ] ;
+   }
+}
+
+
+# What kind of layout are we doing?
+layout = [ option.get layout : "" ] ;
+# On Windows, we used versioned layout by default in order to
+# be compatible with autolink. On other systems, we use system
+# layout which is what every other program uses. Note that windows
+# check is static, and won't 
+if ! $(layout)
+{
+    if [ modules.peek : NT ]
+    {
+        layout = versioned ;
+    }
+    else
+    {
+        layout = system ;
+    }
+}
+layout-$(layout) = true ;
+
+if $(layout) = system && $(build-type) = complete
+{
+    ECHO "error: Cannot use --layout=system with --build-type complete." ;
+    ECHO "error: Please used either --layout=versioned or --layout=tagged " ;
+    ECHO "error: if you wish to build multiple variants." ;
+    if ! [ modules.peek : NT ] 
+    {        
+        ECHO "error: Note that --layout=system is default on Unix starting with Boost 1.40." ;
+    }    
+    EXIT ;
+}
+
+# Possible stage only location.
+local stage-locate = [ MATCH "^--stagedir=(.*)" : [ modules.peek : ARGV ] ] ;
+stage-locate ?= stage ;
+path-constant BOOST_STAGE_LOCATE : $(stage-locate) ;
+
+
+# Python location.
+local python-root = [ MATCH "^--with-python-root=(.*)" : [ modules.peek : ARGV ]
+    ] ;
+PYTHON_ROOT ?= $(python-root) ;
+
+
+# Select the libraries to install.
+libraries = [ libraries-to-install $(all-libraries) ] ;
+configure.components-building $(libraries) ;
+
+if --show-libraries in [ modules.peek : ARGV ]
+{
+    ECHO "The following libraries require building:" ;
+    for local l in $(libraries)
+    {
+        ECHO "    - $(l)" ;
+    }
+    EXIT ;
+}
+
+# Custom build ID.
+local build-id = [ MATCH "^--buildid=(.*)" : [ modules.peek : ARGV ] ] ;
+if $(build-id)
+{
+    constant BUILD_ID : [ regex.replace $(build-id) "[*\\/:.\"\' ]" "_" ] ;
+}
+
+# Python build id (only for Python libraries)
+local python-id = [ MATCH "^--python-buildid=(.*)" : [ modules.peek : ARGV ] ] ;
+if $(python-id)
+{
+    constant PYTHON_ID : [ regex.replace $(python-id) "[*\\/:.\"\']" "_" ] ;
+}
+
+# This rule is called by Boost.Build to determine the name of target. We use it
+# to encode the build variant, compiler name and boost version in the target
+# name.
+#
+rule tag ( name : type ? : property-set )
+{
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
+    {
+        local result ;
+        if $(layout) = versioned
+        {
+            result = [ common.format-name
+                <base> <toolset> <threading> <runtime> -$(BOOST_VERSION_TAG)
+                -$(BUILD_ID)
+                : $(name) : $(type) : $(property-set) ] ;
+        }        
+        else if $(layout) = tagged
+        {
+            result = [ common.format-name
+                <base> <threading> <runtime>
+                -$(BUILD_ID)
+                : $(name) : $(type) : $(property-set) ] ;            
+        }
+        else if $(layout) = system
+        {
+            result = [ common.format-name
+                <base> 
+                -$(BUILD_ID)
+                : $(name) : $(type) : $(property-set) ] ;
+        }
+        else
+        {
+            ECHO "error: invalid layout '$(layout)'" ;
+            EXIT ;               
+        }
+                
+        # Optionally add version suffix. On NT, library with version suffix
+        # will not be recognized by linkers. On CYGWIN, we get strage
+        # duplicate symbol errors when library is generated with version
+        # suffix. On OSX, version suffix is not needed -- the linker expects
+        # the libFoo.1.2.3.dylib format. AIX linkers do not accept version
+        # suffixes either. Pgi compilers can not accept library with version
+        # suffix.
+        if $(type) = SHARED_LIB &&
+          ( ! ( [ $(property-set).get <target-os> ] in windows cygwin darwin aix ) &&
+            ! ( [ $(property-set).get <toolset> ] in pgi ) )
+        {
+            result = $(result).$(BOOST_VERSION)  ;
+        }
+            
+        return $(result) ;
+    }    
+}
+
+
+# Install to system location.
+
+install-requirements = <install-source-root>$(BOOST_ROOT)/boost ;
+
+if $(layout-versioned)
+{
+    install-requirements += <install-header-subdir>boost-$(BOOST_VERSION_TAG)/boost ;
+}
+else
+{
+    install-requirements += <install-header-subdir>boost ;
+}
+if [ modules.peek : NT ]
+{
+    install-requirements += <install-default-prefix>C:/Boost ;
+}
+else if [ modules.peek : UNIX ]
+{
+    install-requirements += <install-default-prefix>/usr/local ;
+}
+
+local headers =
+    # The .SUNWCCh files are present in tr1 include directory and have to be installed,
+    # see http://lists.boost.org/Archives/boost/2007/05/121430.php
+    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
+    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ] 
+    [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
+          ;
+
+# Complete install.
+package.install install-proper
+    : $(install-requirements) <install-no-version-symlinks>on
+    :
+    : libs/$(libraries)/build
+    : $(headers)
+    ;
+explicit install-proper ;
+
+# Install just library.
+install stage-proper
+    : libs/$(libraries)/build
+    : <location>$(stage-locate)/lib
+      <install-dependencies>on <install-type>LIB
+      <install-no-version-symlinks>on
+    ;
+explicit stage-proper ;
+
+
+if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
+{
+    rule make-unversioned-links ( project name ? : property-set : sources * )
+    {
+        local result ;
+        local filtered ;
+        local pattern ;
+        local nt = [ modules.peek : NT ] ;
+
+        # Collect the libraries that have the version number in 'filtered'.
+        for local s in $(sources)
+        {
+            local m ;
+            if $(nt)
+            {
+                m = [ MATCH "(.*[.]lib)" : [ $(s).name ] ] ;
+            }
+            else
+            {
+                m = [ MATCH "(.*[.]so[.0-9]+)" "(.*[.]dylib)" "(.*[.]a)" :
+                    [ $(s).name ] ] ;
+            }
+            if $(m)
+            {
+                filtered += $(s) ;
+            }
+        }
+
+        # Create links without version.
+        for local s in $(filtered)
+        {
+            local name = [ $(s).name ] ;
+            local ea = [ $(s).action ] ;
+            local ep = [ $(ea).properties ] ;
+            local a  = [ new non-scanning-action $(s) : symlink.ln : $(ep) ] ;
+
+            local noversion-file ;
+            if $(nt)
+            {
+                noversion-file = [ MATCH "(.*)-[0-9_]+(.*[.]lib)" : $(name) ] ;
+            }
+            else
+            {
+                noversion-file =
+                  [ MATCH "(.*)-[0-9_]+(.*[.]so)[.0-9]*" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+(.*[.]dylib)" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+(.*[.]a)" : $(name) ]
+                  [ MATCH "(.*)-[0-9_]+(.*[.]dll[.]a)" : $(name) ] ;
+            }
+
+            local new-name =
+               $(noversion-file[1])$(noversion-file[2]) ;
+            result += [ new file-target $(new-name) exact : [ $(s).type ] : $(project)
+                    : $(a) ] ;
+
+        }
+        return $(result) ;
+    }
+
+    generate stage-unversioned : stage-proper :
+        <generating-rule>@make-unversioned-links ;
+    explicit stage-unversioned ;
+
+    generate install-unversioned : install-proper :
+        <generating-rule>@make-unversioned-links ;
+    explicit install-unversioned ;
+}
+else
+{
+    # Create do-nothing aliases.
+    alias stage-unversioned ;
+    explicit stage-unversioned ;
+    alias install-unversioned ;
+    explicit install-unversioned ;
+}
+
+# This is a special metatarget class that handles the --build-type=complete
+# option.
+class top-level-target : alias-target-class
+{
+    import modules ;
+    import errors ; 
+    
+    rule __init__ ( name : project : sources * : requirements *
+        : default-build * : usage-requirements * )
+    {
+        alias-target-class.__init__ $(name) : $(project) : $(sources) :
+            $(requirements) : $(default-build) : $(usage-requirements) ;
+        
+        local m = [ $(project).project-module ] ;
+        self.build-type = [ modules.peek $(m) : build-type ] ;
+        # On Linux, we build release variant by default, since few users will
+        # ever want to debug C++ Boost libraries, and there's no ABI
+        # incompatibility between debug and release variants. We build
+        # shared and static libraries since that's what most packages
+        # seem to provide (.so in libfoo and .a in libfoo-dev).
+        self.minimal-properties = [ property-set.create 
+            <variant>release <threading>multi <link>shared <link>static <runtime-link>shared ] ;
+        # On Windows, new IDE projects use:
+        #
+        #   runtime-link=dynamic, threading=multi, variant=(debug|release)
+        #
+        # and in addition, C++ Boost's autolink defaults to static linking.
+        self.minimal-properties-win = [ property-set.create 
+            <variant>debug <variant>release <threading>multi <link>static <runtime-link>shared ] ;
+
+        self.complete-properties = [ property-set.create
+            <variant>debug <variant>release
+            <threading>single <threading>multi
+            <link>shared <link>static
+            <runtime-link>shared <runtime-link>static ] ;
+    }
+    
+    rule generate ( property-set )
+    {
+        local x = [ modules.peek : top-level-targets ] ;
+        x += $(self.name) ;
+        modules.poke : top-level-targets : $(x) ;
+        if $(self.build-type) = minimal
+        {
+            local expanded ;
+            
+            local os = [ $(property-set).get <target-os> ] ;
+            # Because we completely override parent's 'generate'
+            # we need to check for default value of feature ourself.
+            if ! $(os)
+            {
+                os = [ feature.defaults <target-os> ] ;
+                os = $(os:G=) ;
+            }
+            
+            if $(os) = windows
+            {                
+                expanded = [ targets.apply-default-build $(property-set)
+                  : $(self.minimal-properties-win) ] ;
+            }
+            else
+            {
+                expanded = [ targets.apply-default-build $(property-set)
+                  : $(self.minimal-properties) ] ;
+            }            
+            return [ build-multiple $(expanded) ] ;
+        }
+        else if $(self.build-type) = complete
+        {                                    
+            local expanded = [ targets.apply-default-build $(property-set)
+              : $(self.complete-properties) ] ;
+            
+            # Filter inappopriate combinations
+            local filtered ;
+            for local p in $(expanded)
+            {
+                # See comment in handle-static-runtime regarding this logic.
+                if [ $(p).get <link> ] = shared && [ $(p).get <runtime-link> ] = static
+                   && [ $(p).get <toolset> ] != cw
+                {
+                    # Skip this
+                }
+                else
+                {
+                    filtered += $(p) ;
+                }
+            }            
+            return [ build-multiple $(filtered) ] ;            
+        }
+        else
+        {
+            errors.error "Unknown build type" ; 
+        }               
+    }
+    
+    rule build-multiple ( property-sets * )
+    {
+        local usage-requirements = [ property-set.empty ] ;
+        local result ;
+        for local p in $(property-sets)
+        {
+            local r = [ alias-target-class.generate $(p) ] ;
+            if $(r)
+            {
+                usage-requirements = [ $(usage-requirements).add $(r[1]) ] ;
+                result += $(r[2-]) ;
+            }
+        }
+        return $(usage-requirements) [ sequence.unique $(result) ] ;
+    }
+    
+}
+
+targets.create-metatarget top-level-target : [ project.current ]
+  : install
+  : install-proper install-unversioned 
+  ;
+targets.create-metatarget top-level-target : [ project.current ]
+  : stage
+  : stage-proper stage-unversioned 
+  ;
+
+explicit install ;
+explicit stage ;
+
+stage-abs = [ path.native [ path.root $(stage-locate)/lib [ path.pwd ] ] ] ;
+
+# This target is built by default, and will forward to 'stage'
+# after producing some explanations.
+targets.create-metatarget top-level-target : [ project.current ]
+  : forward
+  : explain stage
+  ;
+
+
+message explain :
+"\nBuilding the Boost C++ Libraries.\n\n" ;
+explicit explain ;
+
+rule pre-build ( )
+{
+    local tl = [ modules.peek : top-level-targets ] ;
+    if stage in $(tl) || install in $(tl)
+    {
+        # FIXME: remove if when Boost regression tests use trunk
+        # bjam.
+        if PAD in [ RULENAMES ]
+        {            
+            configure.print-component-configuration ;
+        }        
+    }
+}
+IMPORT $(__name__) : pre-build : : $(__name__).pre-build ;
+build-system.set-pre-build-hook $(__name__).pre-build ;
+
+rule post-build ( ok ? ) 
+{
+    if forward in [ modules.peek : top-level-targets ] 
+    {        
+        if $(ok)
+        {
+        ECHO 
+"\n\nThe Boost C++ Libraries were successfully built!
+          
+The following directory should be added to compiler include paths:
+          
+    $(BOOST_ROOT)
+      
+The following directory should be added to linker library paths:
+      
+    $(stage-abs)
+" ;
+        }    
+    }    
+}
+IMPORT $(__name__) : post-build : : $(__name__).post-build ;
+build-system.set-post-build-hook $(__name__).post-build ;
+
+# This rule should be called from libraries' Jamfiles and will create two
+# targets, "install" and "stage", that will install or stage that library. The
+# --prefix option is respected, but --with and --without options, naturally, are
+# ignored.
+#
+# - libraries -- list of library targets to install.
+#
+rule boost-install ( libraries * )
+{
+    package.install install
+        : <dependency>/boost//install-proper-headers $(install-requirements)
+        : # No binaries
+        : $(libraries)
+        : # No headers, it is handled by the dependency.
+    ;
+
+    install stage : $(libraries) : <location>$(BOOST_STAGE_LOCATE) ;
+
+    local c = [ project.current ] ;
+    local project-module = [ $(c).project-module ] ;
+    module $(project-module)
+    {
+        explicit stage ;
+        explicit install ;
+    }
+}
+
+
+# Make project ids of all libraries known.
+for local l in $(all-libraries)
+{
+    use-project /boost/$(l) : libs/$(l)/build ;
+}
