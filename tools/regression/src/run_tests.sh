@@ -75,7 +75,7 @@ exe_suffix=
 # The location of the binary for running bjam. The default should work
 # under most circumstances.
 #
-bjam="$boost_root/tools/build/v2/engine/src/bin/bjam$exe_suffix"
+bjam="$boost_root/tools/build/v2/engine/bin/bjam$exe_suffix"
 
 #
 # "process_jam_log", and "compiler_status" paths to built helper programs:
@@ -133,7 +133,7 @@ fi
 # rebuild bjam if required:
 #
 echo building bjam:
-cd "$boost_root/tools/build/v2/engine/src" && \
+cd "$boost_root/tools/build/v2/engine" && \
 LOCATE_TARGET=bin sh ./build.sh
 if test $? != 0 ; then
     echo "bjam build failed."
