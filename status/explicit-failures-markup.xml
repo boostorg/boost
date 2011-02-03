@@ -1931,11 +1931,12 @@
 			<toolset name="clang-linux-2.8"/>
 			<toolset name="clang-linux-4.2.1"/>
 			<note author="Joachim Faulhaber">
-				The clang compiler seems to have problems with passing template template type
-				arguments with test function templates. This is done in the tests in order to be
-				able to vary more than one type arguments in the tests. Because this is a feature
-				of the test system, failure does not necessarily mean, that icl can not be used
-				with clang. Only the tests fail.
+				The clang compiler seems to have problems with passing template template parameters	in 
+				some combinations with test function templates. This is done in the tests in order to be
+				able to vary more than one template parameter in the tests. Because this is a feature
+				of the tests, failure does not necessarily mean, that icl can not be used with clang. 
+				The tests most likely fail for a property that relates to the test environment rather
+				than to library code itself.
 			</note>
 		</mark-expected-failures>
 		<mark-expected-failures>
@@ -1944,7 +1945,8 @@
 			<toolset name="clang-darwin-4.2.1"/>
 			<toolset name="clang-linux-4.2.1"/>
 			<note author="Joachim Faulhaber">
-				Compiler error expected for clang: Examples for passing template template type parameter.
+				Compiler error expected for clang: Minimal examples for passing combinations 
+				template template parameters that derail clang.
 			</note>
 		</mark-expected-failures>
 		<mark-expected-failures>
