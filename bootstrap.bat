@@ -8,11 +8,12 @@ REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.t
 ECHO Building Boost.Jam build engine
 if exist ".\tools\build\v2\engine\bin.ntx86\bjam.exe" del tools\build\v2\engine\bin.ntx86\bjam.exe
 if exist ".\tools\build\v2\engine\bin.ntx86_64\bjam.exe" del tools\build\v2\engine\bin.ntx86_64\bjam.exe
-cd tools\build\v2\engine
+pushd tools\build\v2\engine
 
-call .\build.bat %* > ..\..\..\..\..\bootstrap.log
+call .\build.bat %* > ..\..\..\..\bootstrap.log
 @ECHO OFF
-cd ..\..\..\..\..
+
+popd
 
 if exist ".\tools\build\v2\engine\bin.ntx86\bjam.exe" (
    copy .\tools\build\v2\engine\bin.ntx86\bjam.exe . > nul
