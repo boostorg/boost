@@ -47,7 +47,7 @@ least install the Static Multithreaded variants of the Boost.Regex_
 binaries when given the option.
 
 .. _`Boost website version of this Getting Started guide`:
-       http://www.boost.org/doc/libs/1_36_0/more/getting_started/index.html
+       http://www.boost.org/more/getting_started/index.html
 .. _`Boost downloads`: `sf-download`_      
 .. _installer: http://www.boostpro.com/products/free
 .. _BoostPro Computing: http://www.boostpro.com
