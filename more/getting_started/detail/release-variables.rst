@@ -9,4 +9,4 @@
 .. |boost_ver| replace:: ``boost_1_46_0``
 .. |boost_ver-bold| replace:: **boost_1_46_0**
 
-.. _sf-download: http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=8041
+.. _sf-download: http://www.boost.org/users/history/version_1_46_0.html
