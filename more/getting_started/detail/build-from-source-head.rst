@@ -6,7 +6,7 @@ Install Boost.Build
 ...................
 
 Boost.Build_ is a text-based system for developing, testing, and
-installing software. To use it, you'll first need to build and
+installing software. First, you'll need to build and
 install it. To do this:
 
 1. Go to the directory ``tools``\ |/|\ ``build``\ |/|\ ``v2``\ |/|.
