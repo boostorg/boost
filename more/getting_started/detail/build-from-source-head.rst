@@ -2,35 +2,21 @@
 .. Software License, Version 1.0. (See accompanying
 .. file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+Install Boost.Build
+...................
+
 Boost.Build_ is a text-based system for developing, testing, and
-installing software.  To use it, you'll need an executable called
-``bjam``.
+installing software. First, you'll need to build and
+install it. To do this:
 
-.. |precompiled-bjam| replace:: download a pre-built ``bjam`` executable
+1. Go to the directory ``tools``\ |/|\ ``build``\ |/|\ ``v2``\ |/|.
+2. Run ``bootstrap.bat``
+3. Run ``bjam install --prefix=``\ *PREFIX* where *PREFIX* is
+   the directory where you want Boost.Build to be installed
+4. Add *PREFIX*\ |/|\ ``bin`` to your PATH environment variable.
 
-
-.. _precompiled-bjam: http://sourceforge.net/project/showfiles.php?group_id=7586&package_id=72941
-.. .. _Boost.Jam documentation: Boost.Jam_
 .. _Boost.Build: ../../tools/build/index.html
-.. _Boost.Jam: ../../tools/build/v2/engine/index.html
 .. _Boost.Build documentation: Boost.Build_
-
-Get ``bjam``
-............
-
-``bjam`` is the |command-line tool| that drives the Boost Build
-system.  To build Boost binaries, you'll invoke ``bjam`` from the
-Boost root.  
-
-We suggest you |precompiled-bjam|_ for your platform.
-Alternatively, you can build ``bjam`` yourself using `these
-instructions`__.
-
-__ `building bjam`_
-
-Move the ``bjam`` executable into a directory in your PATH.  You can
-see the list of directories in your PATH, separated by |pathsep|\ s,
-by typing “\ |path|\ ” at the command prompt.
 
 .. _toolset:
 .. _toolset-name:
@@ -48,7 +34,7 @@ __ http://www.boost.org/boost-build2/doc/html/bbv2/reference/tools.html
   `building bjam`_, you should assume it won't work and instead
   choose newly from the table below.
 
-.. _building bjam: ../../doc/html/jam/building.html
+.. _building bjam: ../../doc/html/bbv2/installation.html
 
 +-----------+--------------------+-----------------------------+
 |Toolset    |Vendor              |Notes                        |

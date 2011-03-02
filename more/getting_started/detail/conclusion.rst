@@ -15,10 +15,8 @@ make this document clearer, please post it to the `Boost Users'
 mailing list`_.
 
 * `Boost.Build reference manual`_
-* `Boost.Jam reference manual`_
 * `Boost Users' mailing list`_
 * `Boost.Build mailing list`_
-* `Boost.Build Wiki`_
 * `Index of all Boost library documentation`_
 
 .. _Index of all Boost library documentation: ../../libs/index.html
@@ -32,8 +30,6 @@ mailing list`_.
      -- the Boost Developers
 
 .. _Boost.Build reference manual: ../../tools/build/v2/index.html
-.. _Boost.Jam reference manual: `Boost.Jam`_
 .. _Boost Users' mailing list: http://www.boost.org/more/mailing_lists.htm#users
-.. _Boost.Build Wiki: http://www.crystalclearsoftware.com/cgi-bin/boost_wiki/wiki.pl?Boost.Build_V2
 .. _Boost.Build mailing list: http://www.boost.org/more/mailing_lists.htm#jamboost
 
