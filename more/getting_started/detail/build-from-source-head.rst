@@ -49,15 +49,6 @@ __ http://www.boost.org/boost-build2/doc/html/bbv2/reference/tools.html
 |           |                    |require configuring__ another|
 |           |                    |toolset to act as its backend|
 +-----------+--------------------+-----------------------------+
-|``cw``     |Metrowerks/Freescale|The CodeWarrior compiler.  We|
-|           |                    |have not tested versions of  |
-|           |                    |this compiler produced since |
-|           |                    |it was sold to Freescale.    |
-+-----------+--------------------+-----------------------------+
-|``dmc``    |Digital Mars        |As of this Boost release, no |
-|           |                    |version of dmc is known to   |
-|           |                    |handle Boost well.           |
-+-----------+--------------------+-----------------------------+
 |``darwin`` |Apple Computer      |Apple's version of the GCC   |
 |           |                    |toolchain with support for   |
 |           |                    |Darwin and MacOS X features  |
@@ -72,8 +63,6 @@ __ http://www.boost.org/boost-build2/doc/html/bbv2/reference/tools.html
 |``intel``  |Intel               |                             |
 +-----------+--------------------+-----------------------------+
 |``msvc``   |Microsoft           |                             |
-+-----------+--------------------+-----------------------------+
-|``qcc``    |QNX Software Systems|                             |
 +-----------+--------------------+-----------------------------+
 |``sun``    |Sun                 |Only very recent versions are|
 |           |                    |known to work well with      |
