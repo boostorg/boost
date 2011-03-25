@@ -24,4 +24,6 @@
 
 .. |path| replace:: ``echo $PATH``
 
+.. |bootstrap| replace:: ``bootstrap.sh``
+
 .. include:: common.rst
