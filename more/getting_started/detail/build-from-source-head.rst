@@ -10,7 +10,7 @@ installing software. First, you'll need to build and
 install it. To do this:
 
 1. Go to the directory ``tools``\ |/|\ ``build``\ |/|\ ``v2``\ |/|.
-2. Run ``bootstrap.bat``
+2. Run |bootstrap|
 3. Run ``bjam install --prefix=``\ *PREFIX* where *PREFIX* is
    the directory where you want Boost.Build to be installed
 4. Add *PREFIX*\ |/|\ ``bin`` to your PATH environment variable.
