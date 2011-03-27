@@ -1854,12 +1854,29 @@
             <toolset name="borland-cb2009"/>
             <toolset name="borland-cb2010"/>
             <toolset name="sun-5.10"/>
-            <toolset name="pgi-10.1"/>
             <toolset name="vacpp"/>
             <toolset name="vacpp-10.1"/>
             <toolset name="msvc-7.1"/>
             <note author="Barend Gehrels">
                 These compilers do not support features that are essential for the library.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="intel-darwin-11.1"/>
+            <note author="Barend Gehrels">
+                Intel 11.1 on Darwin raises a SIGSEGV in almost all unit tests.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="pgi-11.2"/>
+            <note author="Barend Gehrels">
+                pgi 11.1 does not support BOOST_AUTO and is not configured for UBLAS
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <note author="Barend Gehrels">
+                This configruation is not well configured for UBLAS
             </note>
         </mark-unusable>
     </library>
