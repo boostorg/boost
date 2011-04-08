@@ -511,11 +511,11 @@ class runner:
                 self.unpack_tarball( self.local, self.boost_root )
                 
             elif self.have_source:
-                if not self.incremental: self.command_cleanup( [ 'bin' ] )
+                if not self.incremental: self.command_cleanup( 'bin' )
                 
             else:
                 if self.incremental or self.force_update:
-                    if not self.incremental: self.command_cleanup( [ 'bin' ] )
+                    if not self.incremental: self.command_cleanup( 'bin' )
                 else:
                     self.command_cleanup()
                 self.command_get_source()
