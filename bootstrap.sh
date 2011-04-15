@@ -241,7 +241,7 @@ the headers only.
 
 The Boost libraries requiring separate building and installation are:
 EOF
-  $BJAM -d0 --show-libraries | grep '^\s*-'
+  $BJAM -d0 --show-libraries | grep '^[[:space:]]*-'
   exit 0
 fi
 
