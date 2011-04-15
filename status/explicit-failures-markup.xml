@@ -2693,11 +2693,18 @@ for more information.
         <toolset name="sun-5.10"/>
         <toolset name="borland-*"/>
         <toolset name="vacpp*"/>
-        <note author="Thomas Heller" id="phoenix-incompatible compilers">
+        <note author="Thomas Heller" id="phoenix-incompatible-compilers">
             These compilers don't work with phoenix.
             This is due to the fact that phoenix uses proto
         </note>
-      </mark-unusable>
+        </mark-unusable>
+        <mark-expected-failures>
+            <test name="member"/>
+            <toolset name="*msvc*"/>
+            <note author="Thomas Heller" id="phoenix-operator-member-bug">
+                MSVC seems to have a code generation bug showing up when using operator->* with a member variable
+            </note>
+        </mark-expected-failures>
     </library>
 
 
