@@ -19,7 +19,7 @@ svn export --non-interactive --native-eol CRLF -r %BOOST_REVISION_NUMBER% http:/
 
 echo Copying docs into windows\doc...
 pushd windows\doc
-xcopy /s /y ..\..\docs_temp
+xcopy /s /y ..\..\docs_temp\html html
 popd
 
 echo Setting SNAPSHOT_DATE
