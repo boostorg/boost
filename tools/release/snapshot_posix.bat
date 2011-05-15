@@ -18,7 +18,7 @@ svn export --non-interactive --native-eol LF -r %BOOST_REVISION_NUMBER% http://s
 
 echo Copying docs into posix\doc...
 pushd posix\doc
-xcopy /s /y ..\..\docs_temp\html html
+xcopy /s /y ..\..\docs_temp
 popd
 
 echo Setting SNAPSHOT_DATE
