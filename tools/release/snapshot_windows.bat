@@ -17,9 +17,9 @@ del windows.zip >nul
 echo Exporting files from subversion...
 svn export --non-interactive --native-eol CRLF -r %BOOST_REVISION_NUMBER% http://svn.boost.org/svn/boost/branches/release windows
 
-echo Copying docs into windows\doc...
-pushd windows\doc
-xcopy /s /y ..\..\docs_temp\html html
+echo Copying docs into windows...
+pushd windows
+xcopy /s /y ..\docs_temp
 popd
 
 echo Setting SNAPSHOT_DATE
