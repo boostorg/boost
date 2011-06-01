@@ -16,9 +16,9 @@ del posix.tar.bz2 >nul
 echo Exporting files from subversion...
 svn export --non-interactive --native-eol LF -r %BOOST_REVISION_NUMBER% http://svn.boost.org/svn/boost/branches/release posix
 
-echo Copying docs into posix\doc...
-pushd posix\doc
-xcopy /s /y ..\..\docs_temp\html html
+echo Copying docs into posix...
+pushd posix
+xcopy /s /y ..\docs_temp
 popd
 
 echo Setting SNAPSHOT_DATE
