@@ -185,7 +185,7 @@ my_dir="."
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" = x; then
-  guessed_toolset=`$my_dir/tools/build/v2/engine/src/build.sh --guess-toolset`
+  guessed_toolset=`$my_dir/tools/build/v2/engine/build.sh --guess-toolset`
   case $guessed_toolset in
     acc | darwin | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
@@ -215,7 +215,7 @@ rm -f config.log
 if test "x$BJAM" = x; then
   echo -n "Building Boost.Jam with toolset $TOOLSET... "
   pwd=`pwd`
-  (cd "$my_dir/tools/build/v2/engine/src" && ./build.sh "$TOOLSET") > bootstrap.log 2>&1
+  (cd "$my_dir/tools/build/v2/engine" && ./build.sh "$TOOLSET") > bootstrap.log 2>&1
   if [ $? -ne 0 ]; then
       echo
       echo "Failed to build Boost.Jam" 
@@ -223,17 +223,18 @@ if test "x$BJAM" = x; then
       exit 1
   fi
   cd "$pwd"
-  arch=`cd $my_dir/tools/build/v2/engine/src && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
-  BJAM="$my_dir/tools/build/v2/engine/src/$arch/bjam"
-  echo "tools/build/v2/engine/src/$arch/bjam"
+  arch=`cd $my_dir/tools/build/v2/engine && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
+  BJAM="$my_dir/tools/build/v2/engine/$arch/b2"
+  echo "tools/build/v2/engine/$arch/b2"
   cp "$BJAM" .
+  cp "$my_dir/tools/build/v2/engine/$arch/bjam" .
+
 fi
 
 # TBD: Turn BJAM into an absolute path
 
 # If there is a list of libraries 
 if test "x$flag_show_libraries" = xyes; then
-  libraries=`$BJAM -d0 --show-libraries`
   cat <<EOF
 
 The following Boost libraries have portions that require a separate build
@@ -242,10 +243,7 @@ the headers only.
 
 The Boost libraries requiring separate building and installation are:
 EOF
-  for lib in $libraries
-  do
-    echo "         $lib"
-  done
+  $BJAM -d0 --show-libraries | grep '^[[:space:]]*-'
   exit 0
 fi
 
@@ -373,19 +371,22 @@ option.set prefix : $PREFIX ;
 option.set exec-prefix : $EPREFIX ;
 option.set libdir : $LIBDIR ;
 option.set includedir : $INCLUDEDIR ;
+
+# Stop on first error
+option.set keep-going : false ;
 EOF
 
 cat << EOF
 
 Bootstrapping is done. To build, run:
 
-    ./bjam
+    ./b2
     
 To adjust configuration, edit 'project-config.jam'.
 Further information:
 
    - Command line help:
-     ./bjam --help
+     ./b2 --help
      
    - Getting started guide: 
      http://www.boost.org/more/getting_started/unix-variants.html
