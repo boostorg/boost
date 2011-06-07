@@ -2266,6 +2266,18 @@
               ptrdiff_t, which is an alias for a 32-bit type
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="path_test_filesystem2"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Daniel James" date="07 Jun 2011">
+              Visual C++ 7.1's SFINAE implementation can't deal with multiple
+			  assignment functions with the same parameters (but disabled with
+			  SFINAE). So path's assignment from boost::filesystem2::path is
+			  disabled. Would be pretty easy to workaround, but probably not
+			  worth it since this is pretty obscure, and filesystem2 will be
+			  removed soon.
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- lambda -->
