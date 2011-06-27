@@ -20,7 +20,7 @@ This is a sketch of the resulting directory structure:
       **array**\ |//|
                       *…more libraries…*
     **status**\ |//| .........................\ *Boost-wide test suite*
-    **tools**\ |//| ...........\ *Utilities, e.g. bjam, quickbook, bcp*
+    **tools**\ |//| ...........\ *Utilities, e.g. Boost.Build, quickbook, bcp*
     **more**\ |//| ..........................\ *Policy documents, etc.*
     **doc**\ |//| ...............\ *A subset of all Boost library docs*
 

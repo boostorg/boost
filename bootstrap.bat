@@ -6,7 +6,9 @@ REM Distributed under the Boost Software License, Version 1.0.
 REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
 ECHO Building Boost.Jam build engine
+if exist ".\tools\build\v2\engine\bin.ntx86\b2.exe" del tools\build\v2\engine\bin.ntx86\b2.exe
 if exist ".\tools\build\v2\engine\bin.ntx86\bjam.exe" del tools\build\v2\engine\bin.ntx86\bjam.exe
+if exist ".\tools\build\v2\engine\bin.ntx86_64\b2.exe" del tools\build\v2\engine\bin.ntx86_64\b2.exe
 if exist ".\tools\build\v2\engine\bin.ntx86_64\bjam.exe" del tools\build\v2\engine\bin.ntx86_64\bjam.exe
 pushd tools\build\v2\engine
 
@@ -16,10 +18,12 @@ call .\build.bat %* > ..\..\..\..\bootstrap.log
 popd
 
 if exist ".\tools\build\v2\engine\bin.ntx86\bjam.exe" (
+   copy .\tools\build\v2\engine\bin.ntx86\b2.exe . > nul
    copy .\tools\build\v2\engine\bin.ntx86\bjam.exe . > nul
    goto :bjam_built)
 
 if exist ".\tools\build\v2\engine\bin.ntx86_64\bjam.exe" (
+   copy .\tools\build\v2\engine\bin.ntx86_64\b2.exe . > nul
    copy .\tools\build\v2\engine\bin.ntx86_64\bjam.exe . > nul
    goto :bjam_built)
 
@@ -43,13 +47,13 @@ ECHO. >> project-config.jam
 ECHO.
 ECHO Bootstrapping is done. To build, run:
 ECHO.
-ECHO     .\bjam
+ECHO     .\b2
 ECHO.    
 ECHO To adjust configuration, edit 'project-config.jam'.
 ECHO Further information:
 ECHO.
 ECHO     - Command line help:
-ECHO     .\bjam --help
+ECHO     .\b2 --help
 ECHO.     
 ECHO     - Getting started guide: 
 ECHO     http://boost.org/more/getting_started/windows.html
@@ -62,7 +66,7 @@ goto :end
 :bjam_failure
 
 ECHO.
-ECHO Failed to build Boost.Jam build engine.
+ECHO Failed to build Boost.Boost build engine.
 ECHO Please consult bootstrap.log for furter diagnostics.
 ECHO.
 ECHO You can try to obtain a prebuilt binary from

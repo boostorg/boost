@@ -42,7 +42,7 @@ not supported—they may or may not work.</p>
 <li><a class="reference internal" href="#install-boost-build" id="id39">5.3.1&nbsp;&nbsp;&nbsp;Install Boost.Build</a></li>
 <li><a class="reference internal" href="#identify-your-toolset" id="id40">5.3.2&nbsp;&nbsp;&nbsp;Identify Your Toolset</a></li>
 <li><a class="reference internal" href="#select-a-build-directory" id="id41">5.3.3&nbsp;&nbsp;&nbsp;Select a Build Directory</a></li>
-<li><a class="reference internal" href="#invoke-bjam" id="id42">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">bjam</tt></a></li>
+<li><a class="reference internal" href="#invoke-b2" id="id42">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">b2</tt></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#expected-build-output" id="id43">5.4&nbsp;&nbsp;&nbsp;Expected Build Output</a></li>
@@ -94,7 +94,7 @@ distribution.<a class="footnote-reference" href="#zip" id="id2"><sup>1</sup></a>
      <strong>array</strong><strong>\</strong>
                      <em>…more libraries…</em>
    <strong>status</strong><strong>\</strong> .........................<em>Boost-wide test suite</em>
-   <strong>tools</strong><strong>\</strong> ...........<em>Utilities, e.g. bjam, quickbook, bcp</em>
+   <strong>tools</strong><strong>\</strong> ...........<em>Utilities, e.g. Boost.Build, quickbook, bcp</em>
    <strong>more</strong><strong>\</strong> ..........................<em>Policy documents, etc.</em>
    <strong>doc</strong><strong>\</strong> ...............<em>A subset of all Boost library docs</em>
 </pre>
@@ -367,12 +367,12 @@ and change your current directory to the Boost root directory. Then, type
 the following commands:</p>
 <pre class="literal-block">
 bootstrap
-.\bjam
+.\b2
 </pre>
 <p>The first command prepares the Boost.Build system for use. The second
 command invokes Boost.Build to build the separately-compiled Boost
 libraries. Please consult the <a class="reference external" href="http://www.boost.org/boost-build2/doc/html/bbv2/overview/invocation.html">Boost.Build documentation</a> for a list
-of options that can be passed to <tt class="docutils literal">bjam</tt>.</p>
+of allowed options.</p>
 </div>
 <div class="section" id="or-build-binaries-from-source">
 <h2><a class="toc-backref" href="#id38">5.3&nbsp;&nbsp;&nbsp;Or, Build Binaries From Source</a></h2>
@@ -395,7 +395,7 @@ install it. To do this:</p>
 <ol class="arabic simple">
 <li>Go to the directory <tt class="docutils literal">tools</tt><tt class="docutils literal">\</tt><tt class="docutils literal">build</tt><tt class="docutils literal">\</tt><tt class="docutils literal">v2</tt><tt class="docutils literal">\</tt>.</li>
 <li>Run <tt class="docutils literal">bootstrap.bat</tt></li>
-<li>Run <tt class="docutils literal">bjam install <span class="pre">--prefix=</span></tt><em>PREFIX</em> where <em>PREFIX</em> is
+<li>Run <tt class="docutils literal">b2 install <span class="pre">--prefix=</span></tt><em>PREFIX</em> where <em>PREFIX</em> is
 the directory where you want Boost.Build to be installed</li>
 <li>Add <em>PREFIX</em><tt class="docutils literal">\</tt><tt class="docutils literal">bin</tt> to your PATH environment variable.</li>
 </ol>
@@ -408,7 +408,7 @@ Boost.Build documentation</a>).</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you previously chose a toolset for the purposes of
-<a class="reference external" href="../../doc/html/bbv2/installation.html">building bjam</a>, you should assume it won't work and instead
+<a class="reference external" href="../../doc/html/bbv2/installation.html">building b2</a>, you should assume it won't work and instead
 choose newly from the table below.</p>
 </div>
 <table border="1" class="docutils">
@@ -493,25 +493,25 @@ directory is writable, this step isn't strictly necessary: by
 default Boost.Build will create a <tt class="docutils literal">bin.v2/</tt> subdirectory for that
 purpose in your current working directory.</p>
 </div>
-<div class="section" id="invoke-bjam">
-<h3><a class="toc-backref" href="#id42">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">bjam</tt></a></h3>
+<div class="section" id="invoke-b2">
+<h3><a class="toc-backref" href="#id42">5.3.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">b2</tt></a></h3>
 <p>Change your current directory to the Boost root directory and
-invoke <tt class="docutils literal">bjam</tt> as follows:</p>
+invoke <tt class="docutils literal">b2</tt> as follows:</p>
 <pre class="literal-block">
-bjam <strong>--build-dir=</strong><a class="reference internal" href="#id13"><em>build-directory</em></a> <strong>toolset=</strong><a class="reference internal" href="#toolset-name"><em>toolset-name</em></a> <strong>--build-type=complete</strong> stage
+b2 <strong>--build-dir=</strong><a class="reference internal" href="#id13"><em>build-directory</em></a> <strong>toolset=</strong><a class="reference internal" href="#toolset-name"><em>toolset-name</em></a> <strong>--build-type=complete</strong> stage
 </pre>
 <p>For a complete description of these and other invocation options,
 please see the <a class="reference external" href="http://www.boost.org/boost-build2/doc/html/bbv2/advanced/invocation.html">Boost.Build documentation</a>.</p>
 <p>For example, your session might look like this:<a class="footnote-reference" href="#continuation" id="id15"><sup>4</sup></a></p>
 <pre class="literal-block">
 C:\WINDOWS&gt; cd <tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_47_0</tt>
-<tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_47_0</tt>&gt; bjam <strong>^</strong>
+<tt class="docutils literal"><span class="pre">C:\Program</span> Files\boost\</tt><tt class="docutils literal">boost_1_47_0</tt>&gt; b2 <strong>^</strong>
 More? <strong>--build-dir=</strong>&quot;C:\Documents and Settings\dave\build-boost&quot; <strong>^</strong>
 More? <strong>--build-type=complete</strong> <strong>msvc</strong> stage
 </pre>
 <p>Be sure to read <a class="reference internal" href="#continuation">this note</a> about the appearance of <tt class="docutils literal">^</tt>,
 <tt class="docutils literal">More?</tt> and quotation marks (<tt class="docutils literal">&quot;</tt>) in that line.</p>
-<p>The option “<strong>--build-type=complete</strong>” causes <tt class="docutils literal">bjam</tt> to build
+<p>The option “<strong>--build-type=complete</strong>” causes Boost.Build to build
 all supported variants of the libraries.  For instructions on how to
 build only specific variants, please ask on the <a class="reference external" href="http://www.boost.org/more/mailing_lists.htm#jamboost">Boost.Build mailing
 list</a>.</p>
@@ -521,16 +521,16 @@ list</a>.</p>
 <p>Building the special <tt class="docutils literal">stage</tt> target places Boost
 library binaries in the <tt class="docutils literal">stage</tt><tt class="docutils literal">\</tt><tt class="docutils literal">lib</tt><tt class="docutils literal">\</tt> subdirectory of
 the Boost tree.  To use a different directory pass the
-<tt class="docutils literal"><span class="pre">--stagedir=</span></tt><em>directory</em> option to <tt class="docutils literal">bjam</tt>.</p>
+<tt class="docutils literal"><span class="pre">--stagedir=</span></tt><em>directory</em> option to <tt class="docutils literal">b2</tt>.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
-<p class="last"><tt class="docutils literal">bjam</tt> is case-sensitive; it is important that all the
+<p class="last"><tt class="docutils literal">b2</tt> is case-sensitive; it is important that all the
 parts shown in <strong>bold</strong> type above be entirely lower-case.</p>
 </div>
 <p>For a description of other options you can pass when invoking
-<tt class="docutils literal">bjam</tt>, type:</p>
+<tt class="docutils literal">b2</tt>, type:</p>
 <pre class="literal-block">
-bjam --help
+b2 --help
 </pre>
 <p>In particular, to limit the amount of time spent building, you may
 be interested in:</p>
