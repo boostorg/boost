@@ -208,12 +208,12 @@ and change your current directory to the Boost root directory. Then, type
 the following commands::
 
   bootstrap
-  .\bjam
+  .\b2
 
 The first command prepares the Boost.Build system for use. The second
 command invokes Boost.Build to build the separately-compiled Boost
 libraries. Please consult the `Boost.Build documentation`__ for a list
-of options that can be passed to ``bjam``.
+of allowed options.
 
 __ http://www.boost.org/boost-build2/doc/html/bbv2/overview/invocation.html
 
@@ -239,14 +239,14 @@ For example, your session might look like this: [#continuation]_
 .. parsed-literal::
 
    C:\\WINDOWS> cd |default-root|
-   |default-root|> bjam **^**
+   |default-root|> b2 **^**
    More? **--build-dir=**\ "C:\\Documents and Settings\\dave\\build-boost" **^**
    More? **--build-type=complete** **msvc** stage
 
 Be sure to read `this note`__ about the appearance of ``^``,
 ``More?`` and quotation marks (``"``) in that line.
 
-The option “\ **--build-type=complete**\ ” causes ``bjam`` to build
+The option “\ **--build-type=complete**\ ” causes Boost.Build to build
 all supported variants of the libraries.  For instructions on how to
 build only specific variants, please ask on the `Boost.Build mailing
 list`_.

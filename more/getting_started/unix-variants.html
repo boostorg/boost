@@ -43,7 +43,7 @@
 <li><a class="reference internal" href="#install-boost-build" id="id27">5.2.1&nbsp;&nbsp;&nbsp;Install Boost.Build</a></li>
 <li><a class="reference internal" href="#identify-your-toolset" id="id28">5.2.2&nbsp;&nbsp;&nbsp;Identify Your Toolset</a></li>
 <li><a class="reference internal" href="#select-a-build-directory" id="id29">5.2.3&nbsp;&nbsp;&nbsp;Select a Build Directory</a></li>
-<li><a class="reference internal" href="#invoke-bjam" id="id30">5.2.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">bjam</tt></a></li>
+<li><a class="reference internal" href="#invoke-b2" id="id30">5.2.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">b2</tt></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#expected-build-output" id="id31">5.3&nbsp;&nbsp;&nbsp;Expected Build Output</a></li>
@@ -102,7 +102,7 @@ from <a class="reference external" href="http://www.boost.org/users/history/vers
      <strong>array</strong><strong>/</strong>
                      <em>…more libraries…</em>
    <strong>status</strong><strong>/</strong> .........................<em>Boost-wide test suite</em>
-   <strong>tools</strong><strong>/</strong> ...........<em>Utilities, e.g. bjam, quickbook, bcp</em>
+   <strong>tools</strong><strong>/</strong> ...........<em>Utilities, e.g. Boost.Build, quickbook, bcp</em>
    <strong>more</strong><strong>/</strong> ..........................<em>Policy documents, etc.</em>
    <strong>doc</strong><strong>/</strong> ...............<em>A subset of all Boost library docs</em>
 </pre>
@@ -282,7 +282,7 @@ least use</p>
 <tt class="docutils literal"><span class="pre">--show-libraries</span></tt> and <tt class="docutils literal"><span class="pre">--with-libraries=</span></tt><em>library-name-list</em> options to limit the
 long wait you'll experience if you build everything.  Finally,</p>
 <pre class="literal-block">
-<strong>$</strong> ./bjam install
+<strong>$</strong> ./b2 install
 </pre>
 <p>will leave Boost binaries in the <tt class="docutils literal">lib/</tt> subdirectory of your
 installation prefix.  You will also find a copy of the Boost
@@ -314,7 +314,7 @@ install it. To do this:</p>
 <ol class="arabic simple">
 <li>Go to the directory <tt class="docutils literal">tools</tt><tt class="docutils literal">/</tt><tt class="docutils literal">build</tt><tt class="docutils literal">/</tt><tt class="docutils literal">v2</tt><tt class="docutils literal">/</tt>.</li>
 <li>Run <tt class="docutils literal">bootstrap.sh</tt></li>
-<li>Run <tt class="docutils literal">bjam install <span class="pre">--prefix=</span></tt><em>PREFIX</em> where <em>PREFIX</em> is
+<li>Run <tt class="docutils literal">b2 install <span class="pre">--prefix=</span></tt><em>PREFIX</em> where <em>PREFIX</em> is
 the directory where you want Boost.Build to be installed</li>
 <li>Add <em>PREFIX</em><tt class="docutils literal">/</tt><tt class="docutils literal">bin</tt> to your PATH environment variable.</li>
 </ol>
@@ -327,7 +327,7 @@ Boost.Build documentation</a>).</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you previously chose a toolset for the purposes of
-<a class="reference external" href="../../doc/html/bbv2/installation.html">building bjam</a>, you should assume it won't work and instead
+<a class="reference external" href="../../doc/html/bbv2/installation.html">building b2</a>, you should assume it won't work and instead
 choose newly from the table below.</p>
 </div>
 <table border="1" class="docutils">
@@ -409,19 +409,19 @@ directory is writable, this step isn't strictly necessary: by
 default Boost.Build will create a <tt class="docutils literal">bin.v2/</tt> subdirectory for that
 purpose in your current working directory.</p>
 </div>
-<div class="section" id="invoke-bjam">
-<h3><a class="toc-backref" href="#id30">5.2.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">bjam</tt></a></h3>
+<div class="section" id="invoke-b2">
+<h3><a class="toc-backref" href="#id30">5.2.4&nbsp;&nbsp;&nbsp;Invoke <tt class="docutils literal">b2</tt></a></h3>
 <p>Change your current directory to the Boost root directory and
-invoke <tt class="docutils literal">bjam</tt> as follows:</p>
+invoke <tt class="docutils literal">b2</tt> as follows:</p>
 <pre class="literal-block">
-bjam <strong>--build-dir=</strong><a class="reference internal" href="#id10"><em>build-directory</em></a> <strong>toolset=</strong><a class="reference internal" href="#toolset-name"><em>toolset-name</em></a> <tt class="docutils literal"> </tt> stage
+b2 <strong>--build-dir=</strong><a class="reference internal" href="#id10"><em>build-directory</em></a> <strong>toolset=</strong><a class="reference internal" href="#toolset-name"><em>toolset-name</em></a> <tt class="docutils literal"> </tt> stage
 </pre>
 <p>For a complete description of these and other invocation options,
 please see the <a class="reference external" href="http://www.boost.org/boost-build2/doc/html/bbv2/advanced/invocation.html">Boost.Build documentation</a>.</p>
 <p>For example, your session might look like this:</p>
 <pre class="literal-block">
 $ cd ~/<tt class="docutils literal">boost_1_47_0</tt>
-$ bjam <strong>--build-dir=</strong>/tmp/build-boost <strong>toolset=</strong>gcc stage
+$ b2 <strong>--build-dir=</strong>/tmp/build-boost <strong>toolset=</strong>gcc stage
 </pre>
 <p>That will build static and shared non-debug multi-threaded variants of the libraries. To build all variants, pass the additional option, “<tt class="docutils literal"><span class="pre">--build-type=complete</span></tt>”.</p>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
@@ -430,16 +430,16 @@ $ bjam <strong>--build-dir=</strong>/tmp/build-boost <strong>toolset=</strong>gc
 <p>Building the special <tt class="docutils literal">stage</tt> target places Boost
 library binaries in the <tt class="docutils literal">stage</tt><tt class="docutils literal">/</tt><tt class="docutils literal">lib</tt><tt class="docutils literal">/</tt> subdirectory of
 the Boost tree.  To use a different directory pass the
-<tt class="docutils literal"><span class="pre">--stagedir=</span></tt><em>directory</em> option to <tt class="docutils literal">bjam</tt>.</p>
+<tt class="docutils literal"><span class="pre">--stagedir=</span></tt><em>directory</em> option to <tt class="docutils literal">b2</tt>.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
-<p class="last"><tt class="docutils literal">bjam</tt> is case-sensitive; it is important that all the
+<p class="last"><tt class="docutils literal">b2</tt> is case-sensitive; it is important that all the
 parts shown in <strong>bold</strong> type above be entirely lower-case.</p>
 </div>
 <p>For a description of other options you can pass when invoking
-<tt class="docutils literal">bjam</tt>, type:</p>
+<tt class="docutils literal">b2</tt>, type:</p>
 <pre class="literal-block">
-bjam --help
+b2 --help
 </pre>
 <p>In particular, to limit the amount of time spent building, you may
 be interested in:</p>
