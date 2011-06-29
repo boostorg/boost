@@ -213,7 +213,7 @@ rm -f config.log
 
 # Build bjam
 if test "x$BJAM" = x; then
-  echo -n "Building Boost.Jam with toolset $TOOLSET... "
+  echo -n "Building Boost.Build engine with toolset $TOOLSET... "
   pwd=`pwd`
   (cd "$my_dir/tools/build/v2/engine" && ./build.sh "$TOOLSET") > bootstrap.log 2>&1
   if [ $? -ne 0 ]; then
