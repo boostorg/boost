@@ -5,7 +5,7 @@ REM
 REM Distributed under the Boost Software License, Version 1.0.
 REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
-ECHO Building Boost.Jam build engine
+ECHO Building Boost.Build engine
 if exist ".\tools\build\v2\engine\bin.ntx86\b2.exe" del tools\build\v2\engine\bin.ntx86\b2.exe
 if exist ".\tools\build\v2\engine\bin.ntx86\bjam.exe" del tools\build\v2\engine\bin.ntx86\bjam.exe
 if exist ".\tools\build\v2\engine\bin.ntx86_64\b2.exe" del tools\build\v2\engine\bin.ntx86_64\b2.exe
@@ -66,7 +66,7 @@ goto :end
 :bjam_failure
 
 ECHO.
-ECHO Failed to build Boost.Boost build engine.
+ECHO Failed to build Boost.Build engine.
 ECHO Please consult bootstrap.log for furter diagnostics.
 ECHO.
 ECHO You can try to obtain a prebuilt binary from
