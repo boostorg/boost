@@ -198,11 +198,11 @@ namespace
     if ( !fs::exists( dir_path ) ) return false;
     for ( fs::directory_iterator itr( dir_path ); itr != end_itr; ++itr )
       if ( fs::is_directory( *itr )
-        && itr->filename() != ignore_dir_named )
+        && itr->path().filename() != ignore_dir_named )
       {
         if ( find_file( *itr, name, path_found ) ) return true;
       }
-      else if ( itr->filename() == name )
+      else if ( itr->path().filename() == name )
       {
         path_found = *itr;
         return true;
@@ -288,16 +288,16 @@ namespace
         // SunCC creates an internal subdirectory everywhere it writes
         // object files.  This confuses the target_directory() algorithm.
         // This patch ignores the SunCC internal directory. Jens Maurer
-        if ( (*itr).filename() == "SunWS_cache" ) continue;
+        if ( itr->path().filename() == "SunWS_cache" ) continue;
         // SGI does something similar for template instantiations. Jens Maurer
-        if(  (*itr).filename() == "ii_files" ) continue; 
+        if(  itr->path().filename() == "ii_files" ) continue; 
 
         if ( child.empty() ) child = *itr;
         else
         {
           std::cout << "Warning: only first of two target possibilities will be reported for: \n "
             << root.string() << ": " << child.filename()
-            << " and " << (*itr).filename() << "\n";
+            << " and " << itr->path().filename() << "\n";
         }
       }
     }
@@ -369,7 +369,7 @@ const fs::path find_bin_path(const string& relative)
       std::cerr << "warning: could not find build results for '" 
                 << relative << "'.\n";
       std::cerr << "warning: tried directory " 
-                << bin_path.native_directory_string() << "\n";
+                << bin_path.string() << "\n";
       bin_path = "";
     }
   }
@@ -742,11 +742,12 @@ const fs::path find_bin_path(const string& relative)
     for ( fs::directory_iterator itr( bin_dir ); itr != end_itr; ++itr )
     {
       if ( fs::is_directory( *itr )
-        && itr->string().find( ".test" ) == (itr->string().size()-5) )
+        && itr->path().string().find( ".test" ) == (itr->path().string().size()-5) )
       {
         results.push_back( std::string() ); 
         do_row( *itr,
-                itr->filename().substr( 0, itr->filename().size()-5 ),
+                itr->path().filename().string().substr( 0,
+                  itr->path().filename().string().size()-5 ),
                 results[results.size()-1] );
       }
     }
@@ -762,15 +763,15 @@ const fs::path find_bin_path(const string& relative)
     for (; compiler_itr != end_itr; ++compiler_itr )
     {
       if ( fs::is_directory( *compiler_itr )  // check just to be sure
-        && compiler_itr->filename() != "test" ) // avoid strange directory (Jamfile bug?)
+        && compiler_itr->path().filename() != "test" ) // avoid strange directory (Jamfile bug?)
       {
         if ( specific_compiler.size() != 0
-          && specific_compiler != compiler_itr->filename() ) continue;
-        toolsets.push_back( compiler_itr->filename() );
-        string desc( compiler_desc( compiler_itr->filename() ) );
-        string vers( version_desc( compiler_itr->filename() ) );
+          && specific_compiler != compiler_itr->path().filename() ) continue;
+        toolsets.push_back( compiler_itr->path().filename().string() );
+        string desc( compiler_desc( compiler_itr->path().filename().string() ) );
+        string vers( version_desc( compiler_itr->path().filename().string() ) );
         report << "<td>"
-             << (desc.size() ? desc : compiler_itr->filename())
+             << (desc.size() ? desc : compiler_itr->path().filename().string())
              << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
              << "</td>\n";
         error_count.push_back( 0 );
@@ -884,7 +885,7 @@ const fs::path find_bin_path(const string& relative)
       fs::recursive_directory_iterator ritr( bin_path );
       fs::recursive_directory_iterator end_ritr;
       while ( ritr != end_ritr 
-        && ((ritr->string().find( ".test" ) != (ritr->string().size()-5))
+        && ((ritr->path().string().find( ".test" ) != (ritr->path().string().size()-5))
         || !fs::is_directory( *ritr )))
         ++ritr; // bypass chaff
       if ( ritr != end_ritr )
@@ -896,7 +897,7 @@ const fs::path find_bin_path(const string& relative)
     {
       fs::directory_iterator itr( bin_path );
       while ( itr != end_itr 
-        && ((itr->string().find( ".test" ) != (itr->string().size()-5))
+        && ((itr->path().string().find( ".test" ) != (itr->path().string().size()-5))
         || !fs::is_directory( *itr )))
         ++itr; // bypass chaff
       if ( itr != end_itr )
@@ -941,19 +942,19 @@ int cpp_main( int argc, char * argv[] ) // note name!
     if ( argc > 2 && std::strcmp( argv[1], "--compiler" ) == 0 )
       { specific_compiler = argv[2]; --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--locate-root" ) == 0 )
-      { locate_root = fs::path( argv[2], fs::native ); --argc; ++argv; }
+      { locate_root = fs::path( argv[2] ); --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--comment" ) == 0 )
-      { comment_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
+      { comment_path = fs::path( argv[2] ); --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--notes" ) == 0 )
-      { notes_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
+      { notes_path = fs::path( argv[2] ); --argc; ++argv; }
     else if ( argc > 2 && std::strcmp( argv[1], "--notes-map" ) == 0 )
-      { notes_map_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
+      { notes_map_path = fs::path( argv[2] ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--ignore-pass" ) == 0 ) ignore_pass = true;
     else if ( std::strcmp( argv[1], "--no-warn" ) == 0 ) no_warn = true;
     else if ( std::strcmp( argv[1], "--v1" ) == 0 ) boost_build_v2 = false;
     else if ( std::strcmp( argv[1], "--v2" ) == 0 ) boost_build_v2 = true;
     else if ( argc > 2 && std::strcmp( argv[1], "--jamfile" ) == 0)
-      { jamfile_path = fs::path( argv[2], fs::native ); --argc; ++argv; }
+      { jamfile_path = fs::path( argv[2] ); --argc; ++argv; }
     else if ( std::strcmp( argv[1], "--compile-time" ) == 0 ) compile_time = true;
     else if ( std::strcmp( argv[1], "--run-time" ) == 0 ) run_time = true;
     else { std::cerr << "Unknown option: " << argv[1] << "\n"; argc = 1; }
@@ -969,8 +970,6 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "  status-file and links-file are paths to the output files.\n"
       "Must be run from directory containing Jamfile\n"
       "  options: --compiler name     Run for named compiler only\n"
-      "           --ignore-pass       Do not report tests which pass all compilers\n"
-      "           --no-warn           Warnings not reported if test passes\n"
       "           --locate-root path  Path to ALL_LOCATE_TARGET for bjam;\n"
       "                               default boost-root.\n"
       "           --comment path      Path to file containing HTML\n"
@@ -994,7 +993,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
     return 1;
   }
 
-  boost_root = fs::path( argv[1], fs::native );
+  boost_root = fs::path( argv[1] );
   if ( locate_root.empty() ) locate_root = boost_root;
   
   if (jamfile_path.empty())
@@ -1002,15 +1001,15 @@ int cpp_main( int argc, char * argv[] ) // note name!
       jamfile_path = "Jamfile.v2";
     else
       jamfile_path = "Jamfile";
-  jamfile_path = fs::complete( jamfile_path, fs::initial_path() );
+  jamfile_path = fs::absolute( jamfile_path, fs::initial_path() );
   jamfile.open( jamfile_path );
   if ( !jamfile )
   {
-    std::cerr << "Could not open Jamfile: " << jamfile_path.native_file_string() << std::endl;
+    std::cerr << "Could not open Jamfile: " << jamfile_path.string() << std::endl;
     return 1;
   }
 
-  report.open( fs::path( argv[2], fs::native ) );
+  report.open( fs::path( argv[2] ) );
   if ( !report )
   {
     std::cerr << "Could not open report output file: " << argv[2] << std::endl;
@@ -1019,8 +1018,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
 
   if ( argc == 4 )
   {
-    fs::path links_path( argv[3], fs::native );
-    links_name = links_path.filename();
+    fs::path links_path( argv[3] );
+    links_name = links_path.filename().string();
     links_file.open( links_path );
     if ( !links_file )
     {
