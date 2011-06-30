@@ -5154,6 +5154,21 @@ These tests will fail in most compilers that don't support rvalue references.
     <!-- type_traits -->
     <library name="type_traits">
        <mark-expected-failures>
+          <test name="is_virtual_base_of_test"/>
+          <toolset name="gcc-3.4.6"/>
+          <note author="John Maddock">
+             Type Traits tests are run with warnings-as-errors and GCC 3.x emits warnings with this test
+             that I haven't been able to suppress.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="tricky_rvalue_test"/>
+          <toolset name="msvc-10.0"/>
+          <note author="John Maddock">
+             RValue reference suppprt in VC10 is unable to handle these tests fully.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
           <test name="has_operator_new_test"/>
           <test name="make_signed_test"/>
           <test name="make_unsigned_test"/>
@@ -5226,6 +5241,7 @@ These tests will fail in most compilers that don't support rvalue references.
             <toolset name="msvc-7.1*"/>
             <toolset name="msvc-8.0*"/>
             <toolset name="msvc-9.0*"/>
+            <toolset name="msvc-10.0*"/>
             <note author="Alexander Nasonov">
                 See bug 99776 'enum UIntEnum { value = UINT_MAX } is promoted to int'
                 http://lab.msdn.microsoft.com/ProductFeedback/viewfeedback.aspx?feedbackid=22b0a6b7-120f-4ca0-9136-fa1b25b26efe
