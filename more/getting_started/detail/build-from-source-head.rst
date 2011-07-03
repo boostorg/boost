@@ -11,7 +11,7 @@ install it. To do this:
 
 1. Go to the directory ``tools``\ |/|\ ``build``\ |/|\ ``v2``\ |/|.
 2. Run ``bootstrap.bat``
-3. Run ``bjam install --prefix=``\ *PREFIX* where *PREFIX* is
+3. Run ``b2 install --prefix=``\ *PREFIX* where *PREFIX* is
    the directory where you want Boost.Build to be installed
 4. Add *PREFIX*\ |/|\ ``bin`` to your PATH environment variable.
 
@@ -31,10 +31,10 @@ Boost.Build documentation`__).
 __ http://www.boost.org/boost-build2/doc/html/bbv2/reference/tools.html
 
 .. Note:: If you previously chose a toolset for the purposes of
-  `building bjam`_, you should assume it won't work and instead
+  `building b2`_, you should assume it won't work and instead
   choose newly from the table below.
 
-.. _building bjam: ../../doc/html/bbv2/installation.html
+.. _building b2: ../../doc/html/bbv2/installation.html
 
 +-----------+--------------------+-----------------------------+
 |Toolset    |Vendor              |Notes                        |
@@ -102,18 +102,18 @@ directory is writable, this step isn't strictly necessary: by
 default Boost.Build will create a ``bin.v2/`` subdirectory for that
 purpose in your current working directory.
 
-Invoke ``bjam``
+Invoke ``b2``
 ...............
 
 .. |build-directory| replace:: *build-directory*
 .. |toolset-name| replace:: *toolset-name*
 
 Change your current directory to the Boost root directory and
-invoke ``bjam`` as follows:
+invoke ``b2`` as follows:
 
 .. parsed-literal::
 
-  bjam **--build-dir=**\ |build-directory|_ **toolset=**\ |toolset-name|_ |build-type-complete| stage
+  b2 **--build-dir=**\ |build-directory|_ **toolset=**\ |toolset-name|_ |build-type-complete| stage
 
 For a complete description of these and other invocation options,
 please see the `Boost.Build documentation`__.
