@@ -1,0 +1,168 @@
+# Copyright (c) 2008 John Maddock
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import boostbook ;
+import os ;
+import common ;
+import doxygen ;
+import quickbook ;
+
+
+boostbook array_docs 
+	: ../../libs/array/doc/array.xml 
+	:
+        <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/html
+        <format>pdf
+	;
+
+boostbook any_docs 
+	: ../../libs/any/doc/any.xml 
+	:
+        <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/doc/html
+        <format>pdf
+	;
+
+install pdf-install 
+  : 
+    array_docs
+    any_docs
+    ../../libs/accumulators/doc//standalone 
+    ../../libs/algorithm/string/doc//string_algo 
+    ../../libs/bimap/doc//standalone 
+    ../../libs/bind/doc//ref-doc 
+    ../../libs/concept_check/doc//concepts 
+    ../../libs/config/doc//standalone 
+    ../../libs/date_time/xmldoc//date_time 
+    ../../libs/foreach/doc//standalone 
+    ../../libs/function/doc//function-doc 
+    ../../libs/functional/factory/doc//standalone
+    ../../libs/functional/forward/doc//standalone
+    ../../libs/functional/hash/doc//standalone
+    ../../libs/fusion/doc//quickbook
+    ../../libs/icl/doc//standalone
+    ../../libs/interprocess/doc//standalone
+    ../../libs/integer/doc//standalone
+    ../../libs/intrusive/doc//standalone
+    ../../libs/iterator/doc//standalone
+    ../../libs/lambda/doc//lambda-doc
+    ../../libs/logic/doc//tribool
+    ../../libs/math/doc/complex//standalone
+    ../../libs/math/doc/octonion//standalone
+    ../../libs/math/doc/quaternion//standalone
+    ../../libs/math/doc/gcd//standalone
+    ../../libs/math/doc/sf_and_dist//standalone
+    ../../libs/mpi/doc//standalone
+    ../../libs/numeric/conversion/doc//standalone
+    ../../libs/optional/doc//standalone
+    ../../libs/program_options/doc//program_option
+    ../../libs/property_tree/doc//standalone
+    ../../libs/proto/doc//standalone
+    # Invalid Jamfile, doesn't use Boostbook anyway??
+    #../../libs/ptr_container/doc//standalone
+    ../../libs/regex/doc//standalone
+    ../../libs/scope_exit/doc//standalone
+    ../../libs/signals/doc//doc
+    ../../libs/spirit/doc//spirit2
+    ../../libs/spirit/repository/doc//spirit2_repository
+    ../../libs/static_assert/doc//standalone
+    ../../libs/thread/doc//standalone
+    ../../libs/tr1/doc//standalone
+    ../../libs/type_traits/doc//standalone
+    ../../libs/typeof/doc//standalone
+    ../../libs/units/doc//standalone
+    ../../libs/unordered/doc//standalone
+    ../../libs/variant/doc//variant-doc
+    ../../libs/xpressive/doc//standalone
+
+    ../../tools/boostbook/doc//boostbook
+    ../../tools/build/v2/doc//jam_docs
+    ../../tools/quickbook/doc//standalone
+    ../../tools/bcp/doc//standalone
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+  ;
+
+
+install python-tutorial-install
+  :
+    ../../libs/python/doc/tutorial/doc//tutorial
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>python_tutorial.pdf
+  ;
+
+install asio-install
+  :
+    ../../libs/asio/doc//asio 
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>asio.pdf
+  ;
+
+install phoenix-install
+  :
+    ../../libs/spirit/phoenix/doc//quickbook
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>phoenix.pdf
+  ;
+
+install boost-build-install
+  :
+    ../../tools/build/v2/doc//userman
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>boost_build.pdf
+  ;
+
+install signals2-install
+  :
+    ../../libs/signals2/doc//standalone
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>signals2.pdf
+    <dependency>../../libs/signals2/doc//hello_world_def_code_snippet.xml
+  ;
+
+install range-install
+  :
+    ../../libs/range/doc//quickbook
+  :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>range.pdf
+  ;
+
+# Just copy the MSM PDF over:
+install msm_install : ../../libs/msm/doc/pdf/msm.pdf : <location>. ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
