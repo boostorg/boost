@@ -35,4 +35,6 @@
 
 .. |path| replace:: ``PATH``
 
+.. |bootstrap| replace:: ``bootstrap.bat``
+
 .. include:: common.rst
