@@ -10,6 +10,9 @@ import common ;
 import doxygen ;
 import quickbook ;
 
+project : requirements <include>../../libs/geometry/doc ;
+
+
 
 boostbook array_docs 
 	: ../../libs/array/doc/array.xml 
@@ -33,6 +36,7 @@ install pdf-install
     ../../libs/algorithm/string/doc//string_algo 
     ../../libs/bimap/doc//standalone 
     ../../libs/bind/doc//ref-doc 
+    ../../libs/chrono/doc//standalone
     ../../libs/concept_check/doc//concepts 
     ../../libs/config/doc//standalone 
     ../../libs/date_time/xmldoc//date_time 
@@ -42,6 +46,7 @@ install pdf-install
     ../../libs/functional/forward/doc//standalone
     ../../libs/functional/hash/doc//standalone
     ../../libs/fusion/doc//quickbook
+    ../../libs/geometry/doc//geometry
     ../../libs/icl/doc//standalone
     ../../libs/interprocess/doc//standalone
     ../../libs/integer/doc//standalone
@@ -53,24 +58,25 @@ install pdf-install
     ../../libs/math/doc/octonion//standalone
     ../../libs/math/doc/quaternion//standalone
     ../../libs/math/doc/gcd//standalone
-    ../../libs/math/doc/sf_and_dist//standalone
+    ../../libs/math/doc/sf_and_dist//pdf-install
     ../../libs/mpi/doc//standalone
     ../../libs/numeric/conversion/doc//standalone
     ../../libs/optional/doc//standalone
+    ../../libs/phoenix/doc//phoenix-doc
     ../../libs/program_options/doc//program_option
     ../../libs/property_tree/doc//standalone
     ../../libs/proto/doc//standalone
     # Invalid Jamfile, doesn't use Boostbook anyway??
     #../../libs/ptr_container/doc//standalone
+    ../../libs/ratio/doc//standalone
     ../../libs/regex/doc//standalone
     ../../libs/scope_exit/doc//standalone
     ../../libs/signals/doc//doc
-    ../../libs/spirit/doc//spirit2
     ../../libs/spirit/repository/doc//spirit2_repository
     ../../libs/static_assert/doc//standalone
     ../../libs/thread/doc//standalone
     ../../libs/tr1/doc//standalone
-    ../../libs/type_traits/doc//standalone
+    ../../libs/type_traits/doc//pdf-install
     ../../libs/typeof/doc//standalone
     ../../libs/units/doc//standalone
     ../../libs/unordered/doc//standalone
@@ -115,7 +121,7 @@ install phoenix-install
     <location>.
     <install-type>PDF
     <format>pdf
-    <name>phoenix.pdf
+    <name>spirit-phoenix-v2.pdf
   ;
 
 install boost-build-install
@@ -151,6 +157,21 @@ install range-install
 
 # Just copy the MSM PDF over:
 install msm_install : ../../libs/msm/doc/pdf/msm.pdf : <location>. ;
+
+install spirit-install
+   :
+      ../../libs/spirit/doc//spirit2
+   :
+    <location>.
+    <install-type>PDF
+    <format>pdf
+    <name>spirit2.pdf
+;
+
+
+
+
+
 
 
 
