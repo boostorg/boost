@@ -6349,6 +6349,18 @@ These tests will fail in most compilers that don't support rvalue references.
 
     </library>
 
+    <library name="locale">
+        <mark-unusable>
+            <toolset name="*msvc*wm5*" />
+            <note author="Artyom Beilis">
+                Windows Mobile lacks essential features of the standard C
+                library like gmtime, mktime, localtime making it impossible
+                to use Boost.Locale on this platform.
+            </note>
+        </mark-unusable>
+    </library>
+
+
     <!-- /////////////// Standard note definitions /////////////// -->
 
     <note id="0">
