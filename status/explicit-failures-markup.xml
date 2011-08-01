@@ -1335,6 +1335,45 @@
 
     </library>
 
+    <!-- detail -->
+    <library name="detail">
+        <mark-expected-failures>
+            <test name="correctly_disable"/>
+            <test name="correctly_disable_debug"/>
+            <toolset name="pathscale-4.*"/>
+            <toolset name="sun-5.10"/>
+            <toolset name="pgi-*"/>
+            <toolset name="msvc-9.0~stlport*"/>
+            <toolset name="msvc-9.0~wm5~stlport*"/>
+            <note author="Daniel James">
+            This indicates that forward declarations could probably be used
+            for these compilers but currently aren't. All these compilers use
+            STLport, which is compatible with forward declarations in some
+            circumstances, but not in others. I haven't looked into how to
+            determine this, so I've just set container_fwd to never forward
+            declare for STLport.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="container_fwd"/>
+            <test name="container_fwd_debug"/>
+            <test name="container_no_fwd_test"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <note author="Daniel James">
+            Failing because these tests are run with warnings as errors,
+            and the standard library is causing warnings.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="container_fwd_debug"/>
+            <toolset name="sun-5.10"/>
+            <note author="Daniel James">
+            STLport debug mode seems to be broken here.
+            </note>
+        </mark-expected-failures>
+    </library>
 
     <!-- dynamic_bitset -->
     <library name="dynamic_bitset">
@@ -2230,6 +2269,18 @@
               The following applies only to gcc-4.2 using the stdcxx
               standard library: On this platform, streampos is an alias for
               ptrdiff_t, which is an alias for a 32-bit type
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="path_test_filesystem2"/>
+            <toolset name="msvc-7.1"/>
+            <note author="Daniel James" date="07 Jun 2011">
+              Visual C++ 7.1's SFINAE implementation can't deal with multiple
+              assignment functions with the same parameters (but disabled with
+              SFINAE). So path's assignment from boost::filesystem2::path is
+              disabled. Would be pretty easy to workaround, but probably not
+              worth it since this is pretty obscure, and filesystem2 will be
+              removed soon.
             </note>
         </mark-expected-failures>
     </library>
@@ -5927,16 +5978,6 @@ These tests will fail in most compilers that don't support rvalue references.
             This tests whether inserting elements creates as few copies as I think
             is possible. If this fails it just means that the container might be
             a little inefficient.
-        </note>
-      </mark-expected-failures>
-
-      <mark-expected-failures>
-        <test name="compile_map"/>
-        <test name="compile_set"/>
-        <toolset name="gcc-open64"/>
-        <toolset name="pathscale-*"/>
-        <note author="Daniel James">
-            Concept checks don't seem to work on pathscale.
         </note>
       </mark-expected-failures>
     </library>
