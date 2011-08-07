@@ -632,6 +632,7 @@
                 <toolset name="gcc-4.1*"/>
                 <toolset name="gcc-4.2.0*"/>
                 <toolset name="gcc-mingw-3.4*"/>
+                <toolset name="gcc-mingw-4.*"/>
                 <toolset name="sun-5.7*"/>
                 <toolset name="sun-5.8*"/>
                 <toolset name="sun-5.9*"/>
@@ -644,6 +645,15 @@
                 <toolset name="acc"/>
                 <note author="Alexander Nasonov">
                     Conversion double-string-double may give a different value (or even throw) on many compilers
+                </note>
+            </mark-failure>
+        </test>
+        <test name="lexical_cast_float_types_test">
+            <mark-failure>
+                <toolset name="gcc-mingw-4.*"/>
+                <toolset name="vacpp-10.1"/>
+                <note author="Antony Polukhin">
+                    Some compilers and STL realizations convert double and long double types with bigger precision loss than minimal. Such failures are not a lexical_cast, but a compiler fault. 
                 </note>
             </mark-failure>
         </test>
