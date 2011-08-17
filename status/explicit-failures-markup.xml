@@ -6397,6 +6397,7 @@ These tests will fail in most compilers that don't support rvalue references.
                 on this compiler.
             </note>
         </mark-unusable>
+
         <mark-unusable>
             <toolset name="msvc-9.0~wm5~stlport5.2" />
             <note author="Artyom Beilis">
@@ -6405,6 +6406,24 @@ These tests will fail in most compilers that don't support rvalue references.
                 to use Boost.Locale on this platform.
             </note>
         </mark-unusable>
+
+        <mark-expected-failures>
+            <test name="test_date_time" />
+            <toolset name="gcc-mingw-4.4.0"/>
+            <note author="Artyom Beilis">
+                Compiler does not support shared runtime linking
+                thus is makes it problematic to use Boost.Locale as dll
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="test_codepage"/>
+            <toolset name="msvc- 9.0~stlport5.2"/>
+            <toolset name="pathscale-4*"/>
+            <note author="Artyom Beilis">
+                Problems with wide file stream I/O
+            </note>
+        </mark-expected-failures>
     </library>
 
 
