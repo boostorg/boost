@@ -57,6 +57,8 @@ class runner:
             help="the tag for the results" )
         opt.add_option( '--toolsets',
             help="comma-separated list of toolsets to test with" )
+        opt.add_option( '--libraries',
+            help="comma separated list of libraries to test")
         opt.add_option( '--incremental',
             help="do incremental run (do not remove previous binaries)",
             action='store_true' )
@@ -113,6 +115,7 @@ class runner:
         self.comment='comment.html'
         self.tag='trunk'
         self.toolsets=None
+        self.libraries=None
         self.incremental=False
         self.timeout=5
         self.bjam_options=''
@@ -189,6 +192,15 @@ class runner:
             self.log('XSL reports dir =     %s'%self.xsl_reports_dir)
             self.log('Timestamp =           %s'%self.timestamp_path)
             self.log('Patch Boost script =  %s'%self.patch_boost)
+
+        if self.libraries is not None:
+            self.libraries = self.libraries.split(",")
+            # Boost.Build depends on any having run
+            if "build" in self.libraries and "any" not in self.libraries:
+                self.libraries += ["any"]
+                
+            self.bjam_options += ' "--limit-tests=' + \
+                "|".join(lib for lib in self.libraries if lib != "build") + '"'
         
         self.main()
     
@@ -347,6 +359,9 @@ class runner:
         os.chdir( cd )
 
     def command_test_boost_build(self):
+        if self.libraries is not None and "build" not in self.libraries:
+            return
+        
         self.import_utils()
         self.log( 'Running Boost.Build tests' )
         # Find the true names of the toolsets used for testing
@@ -362,7 +377,7 @@ class runner:
                 bjam_path = os.path.dirname (self.tool_path( self.bjam ))
                 self.log( "Using bjam binary in '%s'" % (bjam_path))
                 os.putenv('PATH', bjam_path + os.pathsep + os.environ['PATH'])
-                utils.system ( [ "%s test_all.py --default-bjam --xml %s > %s" % (sys.executable, t, fn) ] )
+                utils.system ( [ '"%s" test_all.py --default-bjam --xml %s > %s' % (sys.executable, t, fn) ] )
             finally:
                 os.chdir( cd )
                             
@@ -496,11 +511,11 @@ class runner:
                 self.unpack_tarball( self.local, self.boost_root )
                 
             elif self.have_source:
-                if not self.incremental: self.command_cleanup( [ 'bin' ] )
+                if not self.incremental: self.command_cleanup( 'bin' )
                 
             else:
                 if self.incremental or self.force_update:
-                    if not self.incremental: self.command_cleanup( [ 'bin' ] )
+                    if not self.incremental: self.command_cleanup( 'bin' )
                 else:
                     self.command_cleanup()
                 self.command_get_source()

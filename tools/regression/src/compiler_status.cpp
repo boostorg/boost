@@ -1,15 +1,16 @@
 //  Generate Compiler Status HTML from jam regression test output  -----------//
 
-//  Copyright Bryce Lelbach 2011 
-//  Copyright Beman Dawes 2002-2011.
+//  Copyright Beman Dawes 2002.
 
-//  Distributed under the Boost Software License, Version 1.0. (See accompanying
-//  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//  See http://www.boost.org/tools/regression/ for documentation.
+//  Distributed under the Boost Software License, Version 1.0.
+//  See http://www.boost.org/LICENSE_1_0.txt
 
 //  See http://www.boost.org/tools/regression/ for documentation.
 
 /*******************************************************************************
+
+    Please contact the maintainer, bdawes <at> acm <dot> org, before making
+    any non-trivial changes.
 
     This program was designed to work unchanged on all platforms and
     configurations.  All output which is platform or configuration dependent
@@ -197,11 +198,11 @@ namespace
     if ( !fs::exists( dir_path ) ) return false;
     for ( fs::directory_iterator itr( dir_path ); itr != end_itr; ++itr )
       if ( fs::is_directory( *itr )
-        && itr->path().string() != ignore_dir_named )
+        && itr->path().filename() != ignore_dir_named )
       {
         if ( find_file( *itr, name, path_found ) ) return true;
       }
-      else if ( itr->path().string() == name )
+      else if ( itr->path().filename() == name )
       {
         path_found = *itr;
         return true;
@@ -287,16 +288,16 @@ namespace
         // SunCC creates an internal subdirectory everywhere it writes
         // object files.  This confuses the target_directory() algorithm.
         // This patch ignores the SunCC internal directory. Jens Maurer
-        if ( (*itr).path().string() == "SunWS_cache" ) continue;
+        if ( itr->path().filename() == "SunWS_cache" ) continue;
         // SGI does something similar for template instantiations. Jens Maurer
-        if(  (*itr).path().string() == "ii_files" ) continue; 
+        if(  itr->path().filename() == "ii_files" ) continue; 
 
         if ( child.empty() ) child = *itr;
         else
         {
           std::cout << "Warning: only first of two target possibilities will be reported for: \n "
-            << root.string() << ": " << child.string()
-            << " and " << (*itr).path().string() << "\n";
+            << root.string() << ": " << child.filename()
+            << " and " << itr->path().filename() << "\n";
         }
       }
     }
@@ -368,7 +369,7 @@ const fs::path find_bin_path(const string& relative)
       std::cerr << "warning: could not find build results for '" 
                 << relative << "'.\n";
       std::cerr << "warning: tried directory " 
-                << bin_path.parent_path().string() << "\n";
+                << bin_path.string() << "\n";
       bin_path = "";
     }
   }
@@ -563,7 +564,7 @@ const fs::path find_bin_path(const string& relative)
 
     if ( !fs::exists( target_dir / "test_log.xml" ) )
     {
-      std::cerr << "Missing jam_log.xml in target:\n "
+      std::cerr << "Missing test_log.xml in target:\n "
         << target_dir.string() << "\n";
       target += "<td>" + missing_residue_msg + "</td>";
       return true;
@@ -574,9 +575,9 @@ const fs::path find_bin_path(const string& relative)
 
     fs::path pth( target_dir / "test_log.xml" );
     fs::ifstream file( pth );
-    if ( !file ) // could not open jam_log.xml
+    if ( !file )
     {
-      std::cerr << "Can't open jam_log.xml in target:\n "
+      std::cerr << "Can't open test_log.xml in target:\n "
         << target_dir.string() << "\n";
       target += "<td>" + missing_residue_msg + "</td>";
       return false;
@@ -745,7 +746,8 @@ const fs::path find_bin_path(const string& relative)
       {
         results.push_back( std::string() ); 
         do_row( *itr,
-                itr->path().string().substr( 0, itr->path().string().size()-5 ),
+                itr->path().filename().string().substr( 0,
+                  itr->path().filename().string().size()-5 ),
                 results[results.size()-1] );
       }
     }
@@ -761,15 +763,15 @@ const fs::path find_bin_path(const string& relative)
     for (; compiler_itr != end_itr; ++compiler_itr )
     {
       if ( fs::is_directory( *compiler_itr )  // check just to be sure
-        && compiler_itr->path().string() != "test" ) // avoid strange directory (Jamfile bug?)
+        && compiler_itr->path().filename() != "test" ) // avoid strange directory (Jamfile bug?)
       {
         if ( specific_compiler.size() != 0
-          && specific_compiler != compiler_itr->path().string() ) continue;
-        toolsets.push_back( compiler_itr->path().string() );
-        string desc( compiler_desc( compiler_itr->path().string() ) );
-        string vers( version_desc( compiler_itr->path().string() ) );
+          && specific_compiler != compiler_itr->path().filename() ) continue;
+        toolsets.push_back( compiler_itr->path().filename().string() );
+        string desc( compiler_desc( compiler_itr->path().filename().string() ) );
+        string vers( version_desc( compiler_itr->path().filename().string() ) );
         report << "<td>"
-             << (desc.size() ? desc : compiler_itr->path().string())
+             << (desc.size() ? desc : compiler_itr->path().filename().string())
              << (vers.size() ? (string( "<br>" ) + vers ) : string( "" ))
              << "</td>\n";
         error_count.push_back( 0 );
@@ -968,8 +970,6 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "  status-file and links-file are paths to the output files.\n"
       "Must be run from directory containing Jamfile\n"
       "  options: --compiler name     Run for named compiler only\n"
-      "           --ignore-pass       Do not report tests which pass all compilers\n"
-      "           --no-warn           Warnings not reported if test passes\n"
       "           --locate-root path  Path to ALL_LOCATE_TARGET for bjam;\n"
       "                               default boost-root.\n"
       "           --comment path      Path to file containing HTML\n"
@@ -1001,7 +1001,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
       jamfile_path = "Jamfile.v2";
     else
       jamfile_path = "Jamfile";
-  jamfile_path = fs::system_complete( jamfile_path );
+  jamfile_path = fs::absolute( jamfile_path, fs::initial_path() );
   jamfile.open( jamfile_path );
   if ( !jamfile )
   {
@@ -1019,7 +1019,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( argc == 4 )
   {
     fs::path links_path( argv[3] );
-    links_name = links_path.string();
+    links_name = links_path.filename().string();
     links_file.open( links_path );
     if ( !links_file )
     {

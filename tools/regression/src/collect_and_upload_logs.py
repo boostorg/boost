@@ -228,6 +228,34 @@ def copy_comments( results_xml, comment_file ):
             f.close()    
     else:
         utils.log( 'Warning: comment file "%s" is not found.' % comment_file )
+
+    lines = ['']
+    for arg in sys.argv:
+        # Make sure that the ftp details are hidden
+        arg = re.sub( 'ftp://.*$', 'ftp://XXXXX', arg )
+
+        # Escape quotes
+        arg = re.sub( r'(\\|")', r'\\\1', arg )
+
+        # Quote arguments if needed
+        if arg.find( ' ' ) != -1:
+            arg = '"%s"' % arg
+        if len( lines[-1] ) + len( arg ) + 2 >= 80:
+            # align backslashes
+            lines[-1] += ' ' * ( 79 - len( lines[-1] ) )
+            # indent lines after the first
+            lines.append( '  ' )
+        lines[-1] += ( arg + ' ' )
+
+    results_xml.characters( '<hr>' )
+    results_xml.characters( '<dl>' )
+    results_xml.characters( '<dt>Command Line</dt>' )
+    results_xml.characters( '<dd>' )
+    results_xml.characters( '<pre>' )
+    results_xml.characters( '\\\n'.join(lines) )
+    results_xml.characters( '</pre>' )
+    results_xml.characters( '</dd>' )
+    results_xml.characters( '</dl>\n' )
  
     results_xml.endElement( 'comment' )
 
