@@ -646,6 +646,7 @@
                 <toolset name="borland-5.8*"/>
                 <toolset name="borland-5.9*"/>
                 <toolset name="intel-darwin-11.*"/>
+                <toolset name="intel-darwin-12.0"/>
                 <toolset name="gcc-3.4.0*"/>
                 <toolset name="gcc-4.1*"/>
                 <toolset name="gcc-4.2.0*"/>
@@ -670,8 +671,13 @@
             <mark-failure>
                 <toolset name="gcc-mingw-4.*"/>
                 <toolset name="vacpp-10.1"/>
+                <toolset name="vacpp"/>
+                <toolset name="msvc-9.0~stlport5.2"/>
+                <toolset name="msvc-9.0~wm5~stlport5.2"/>
+                <toolset name="intel-darwin-11.*"/>
+                <toolset name="intel-darwin-12.0"/>
                 <note author="Antony Polukhin">
-                    Some compilers and STL realizations convert double and long double types with bigger precision loss than minimal. Such failures are not a lexical_cast, but a compiler fault. 
+                    Some compilers and STL realizations convert double and long double types with bigger precision loss than minimal (or even round to infinity). Such failures are not a lexical_cast, but a compiler fault. 
                 </note>
             </mark-failure>
         </test>
