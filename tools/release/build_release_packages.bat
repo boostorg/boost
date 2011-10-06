@@ -41,6 +41,7 @@ echo Creating 7z...
 echo Cleaning up windows...
 ren %1 windows
 
+grep "Revision:" snapshot.log
 echo Build release packages complete
 
 :done
