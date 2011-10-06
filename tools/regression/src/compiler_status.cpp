@@ -564,7 +564,7 @@ const fs::path find_bin_path(const string& relative)
 
     if ( !fs::exists( target_dir / "test_log.xml" ) )
     {
-      std::cerr << "Missing jam_log.xml in target:\n "
+      std::cerr << "Missing test_log.xml in target:\n "
         << target_dir.string() << "\n";
       target += "<td>" + missing_residue_msg + "</td>";
       return true;
@@ -575,9 +575,9 @@ const fs::path find_bin_path(const string& relative)
 
     fs::path pth( target_dir / "test_log.xml" );
     fs::ifstream file( pth );
-    if ( !file ) // could not open jam_log.xml
+    if ( !file )
     {
-      std::cerr << "Can't open jam_log.xml in target:\n "
+      std::cerr << "Can't open test_log.xml in target:\n "
         << target_dir.string() << "\n";
       target += "<td>" + missing_residue_msg + "</td>";
       return false;
