@@ -72,7 +72,7 @@ namespace
     struct char_xlate {
         typedef char result_type;
         result_type operator()(char c) const{
-            if(c == '/')
+            if(c == '/' || c == '\\')
                 return '-';
             return c;
         }
@@ -131,7 +131,7 @@ namespace
             if(fs::is_directory(*itr)){
                 std::pair<col_node::subcolumns_t::iterator, bool> result 
                     = node.m_subcolumns.insert(
-                        std::make_pair(itr->path().native(), col_node())
+                        std::make_pair(itr->path().filename().string(), col_node())
                     );
                 build_node_tree(*itr, result.first->second);
             }
@@ -303,15 +303,17 @@ namespace
             compile += "...\n   (remainder deleted because of excessive size)\n";
         }
 
+        const string target_dir_string = target_dir.string();
+
         links_file << "<h2><a name=\"";
         links_file << std::make_pair(
-            html_from_path(target_dir.string().begin()), 
-            html_from_path(target_dir.string().end())
+            html_from_path(target_dir_string.begin()), 
+            html_from_path(target_dir_string.end())
             )
             << "\">"
             << std::make_pair(
-            html_from_path(target_dir.string().begin()), 
-            html_from_path(target_dir.string().end())
+            html_from_path(target_dir_string.begin()), 
+            html_from_path(target_dir_string.end())
             )
             ;
         links_file << "</a></h2>\n";;
@@ -347,14 +349,14 @@ namespace
                 << source_library_name << "-"
                 << object_library_name << "-" 
                 << std::make_pair(
-                html_from_path(target_dir.string().begin()), 
-                html_from_path(target_dir.string().end())
+                html_from_path(target_dir_string.begin()), 
+                html_from_path(target_dir_string.end())
                 )
                 << source_library_name << " - "
                 << object_library_name << " - " 
                 << std::make_pair(
-                html_from_path(target_dir.string().begin()), 
-                html_from_path(target_dir.string().end())
+                html_from_path(target_dir_string.begin()), 
+                html_from_path(target_dir_string.end())
                 )
                 << "</a>";
             if ( failed_lib_target_dirs.find( lib ) == failed_lib_target_dirs.end() )
@@ -379,14 +381,14 @@ namespace
                     links_file << "<h2><a name=\""
                         << object_library_name << "-" 
                         << std::make_pair(
-                        html_from_path(target_dir.string().begin()), 
-                        html_from_path(target_dir.string().end())
+                        html_from_path(target_dir_string.begin()), 
+                        html_from_path(target_dir_string.end())
                         )
                         << "\">"
                         << object_library_name << " - " 
                         << std::make_pair(
-                        html_from_path(target_dir.string().begin()), 
-                        html_from_path(target_dir.string().end())
+                        html_from_path(target_dir_string.begin()), 
+                        html_from_path(target_dir_string.end())
                         )
                         << "</a></h2>\n"
                         << "test_log.xml not found\n";
@@ -508,9 +510,10 @@ namespace
             target += "<a href=\"";
             target += links_name;
             target += "#";
+            const string target_dir_string = target_dir.string();
             std::copy(
-                html_from_path(target_dir.string().begin()), 
-                html_from_path(target_dir.string().end()),
+                html_from_path(target_dir_string.begin()), 
+                html_from_path(target_dir_string.end()),
                 std::back_inserter(target)
                 );
             target += "\">";
@@ -588,7 +591,7 @@ namespace
         target += "<td>";
         //target += "<a href=\"" + url_prefix_dir_view + "/libs/" + lib_name + "\">";
         target += test_name;
-        target += "</a>";
+        //target += "</a>";
         target += "</td>";
 
 //        target += "<td>" + test_type + "</td>";
@@ -630,7 +633,7 @@ namespace
             if(! fs::is_directory(*itr))
                 continue;
             
-            string test_name = itr->path().native();
+            string test_name = itr->path().filename().string();
             // if the file name contains ".test"
             string::size_type s = test_name.find( ".test" );
             if(string::npos != s)
@@ -758,7 +761,7 @@ namespace
         }
         string library_name;
         for(;;){
-            library_name.append((*++e_itr).native());
+            library_name.append((*++e_itr).string());
             if(1 == --count)
                 break;
             library_name.append("/");
@@ -896,7 +899,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
     if ( argc == 3 )
     {
         fs::path links_path( argv[2] );
-        links_name = links_path.native();
+        links_name = links_path.filename().string();
         links_file.open( links_path );
         if ( !links_file )
         {
