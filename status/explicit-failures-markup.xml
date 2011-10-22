@@ -1408,6 +1408,17 @@
             STLport debug mode seems to be broken here.
             </note>
         </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="container_fwd_debug"/>
+            <toolset name="clang-darwin-0x"/>
+            <toolset name="clang-darwin-normal"/>
+            <note author="Daniel James">
+            Some old versions of GCC's libstdc++ don't work on clang with
+            _GLIBCXX_DEBUG defined.
+            http://lists.cs.uiuc.edu/pipermail/cfe-dev/2011-May/015178.html
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- dynamic_bitset -->
