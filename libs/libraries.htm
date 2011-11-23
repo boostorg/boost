@@ -42,6 +42,7 @@ content="text/html; charset=iso-8859-1">
   <dt><a href="#Category">Libraries Listed by Category</a></dt>
     <dl>
       <dt><a href="#Algorithms">Algorithms</a></dt>
+      <dt><a href="#workarounds">Broken Compiler Workarounds</a></dt>
       <dt><a href="#Concurrent">Concurrent Programming</a></dt>
       <dt><a href="#Containers">Containers</a></dt>
       <dt><a href="#Correctness">Correctness and Testing</a></dt>
@@ -49,7 +50,6 @@ content="text/html; charset=iso-8859-1">
       <dt><a href="#Domain">Domain Specific</a></dt>
       <dt><a href="#Function-objects">Function Objects and Higher-order Programming</a></dt>
       <dt><a href="#Generic">Generic Programming</a></dt>
-      <dt><a href="#Idioms">Idioms</a></dt>
       <dt><a href="#Image-processing">Image Processing</a></dt>
       <dt><a href="#IO">Input/Output</a><a href="#Memory"></a></dt>
       <dt><a href="#Inter-language">Inter-language Support</a></dt>
@@ -58,7 +58,7 @@ content="text/html; charset=iso-8859-1">
       <dt><a href="#Math">Math and Numerics</a></dt>
       <dt><a href="#Memory">Memory</a></dt>
       <dt><a href="#Parsing">Parsing</a></dt>
-      <dt><a href="#Patterns">Patterns</a></dt>
+      <dt><a href="#PatternsIdioms">Patterns and Idioms</a></dt>
       <dt><a href="#Preprocessor">Preprocessor Metaprogramming</a></dt>
       <dt><a href="#Programming">Programming Interfaces</a></dt>
       <dt><a href="#StateMachines">State Machines</a></dt>
@@ -66,7 +66,6 @@ content="text/html; charset=iso-8859-1">
       <dt><a href="#SystemC">System</a></dt>
       <dt><a href="#Metaprogramming">Template Metaprogramming</a></dt>
       <dt><a href="#Miscellaneous">Miscellaneous</a></dt>
-      <dt><a href="#workarounds">Broken Compiler Workarounds</a></dt>
     </dl>
   <dt><a href="#Removed">Libraries Retired from Boost</a></dt>
 </dl>
@@ -342,29 +341,55 @@ how to download, build, and install the libraries.</p>
 
 <h2>Libraries Listed by <a name="Category">Category</a></h2>
 
-<h3><a name="String">String</a> and text processing</h3>
+
+<h3><a name="Algorithms">Algorithms</a></h3>
 
 <ul>
-    <li><a href="conversion/lexical_cast.htm">conversion/lexical_cast</a> - <tt>lexical_cast</tt>
-      class template, from Kevlin Henney.</li>
-    <li><a href="format/index.html">format</a> - Type-safe 'printf-like' format
-    operations, from Samuel Krempp.</li>
-    <li><a href="iostreams/doc/index.html">iostreams</a> - Framework for defining streams, stream buffers and i/o filters, from Jonathan Turkanis.</li>
-    <li><a href="locale/index.html">locale</a> - Provide localization and Unicode
-    handling tools for C++, from Artyom Beilis</li>
-    <li><a href="regex/index.html">regex</a> - Regular expression
-        library, from John Maddock</li>
-    <li><a href="spirit/index.html">spirit</a> - LL parser framework&nbsp;
-    represents parsers directly as EBNF grammars in inlined C++, from Joel de
-    Guzman, Hartmut Kaiser, Dan Nuffer and team.</li>
+    <li><a href="foreach/index.html">foreach</a> - BOOST_FOREACH macro for easily
+        iterating over the elements of a sequence, from Eric Niebler.</li>
+    <li><a href="gil/doc/index.html">gil</a> - Generic Image Library, from
+        Lubomir Bourdev and Hailin Jin.</li>
+    <li><a href="geometry/index.html">geometry</a> - Geometry Library, from
+        Barend Gehrels, Bruno Lalande and Mateusz Loskot.</li>
+    <li><a href="graph/doc/table_of_contents.html">graph</a> -
+        Generic graph components and algorithms, from Jeremy Siek
+        and a University of Notre Dame team; now maintained by Andrew Sutton and Jeremiah Willcock.</li>
+    <li><a href="algorithm/minmax/index.html">minmax</a> - standard library
+        extensions for simultaneous min/max and min/max element computations,
+        from Herv&eacute; Br&ouml;nnimann.</li>
+    <li><a href="range/index.html">range</a> - A new infrastructure
+        for generic algorithms that builds on top
+        of the new iterator concepts, from Thorsten Ottosen.</li>
     <li><a href="algorithm/string/index.html">string_algo</a> -
-    String algorithms library, from Pavol Droba</li>
-    <li><a href="tokenizer/index.html">tokenizer</a> - Break of a string or other
-      character sequence into a series of tokens, from John Bandela</li>
-    <li><a href="wave/index.html">wave</a> - Standards conformant implementation of the mandated C99/C++ preprocessor functionality packed behind an easy to use iterator interface, from Hartmut&nbsp;Kaiser.</li>
-    <li><a href="xpressive/index.html">xpressive</a> - Regular expressions that can be written as strings or as expression templates,
-        and that can refer to each other and themselves recursively with the power of context-free grammars, from Eric Niebler.</li>
+        String algorithms library, from Pavol Droba</li>
+    <li><a href="utility/utility.htm">utility</a> - Class <b>next(),</b>&nbsp; <b>prior()</b>
+      function templates, from Dave Abrahams and others. </li>
 </ul>
+
+<h3>Broken Compiler <a name="workarounds">Workarounds</a></h3>
+
+<ul>
+    <li><a href="compatibility/index.html">compatibility</a> - Help for
+      non-conforming standard libraries, from Ralf Grosse-Kunstleve and Jens
+      Maurer.</li>
+    <li><a href="config/config.htm">config</a> - Helps boost
+        library developers adapt to compiler idiosyncrasies; not
+        intended for library users.</li>
+</ul>
+
+<h3><a name="Concurrent">Concurrent</a> Programming</h3>
+
+<ul>
+    <li><a href="asio/index.html">asio</a> - Portable networking and other low-level
+        I/O, including sockets, timers, hostname resolution, socket iostreams, serial
+        ports, file descriptors and Windows HANDLEs, from Chris Kohlhoff.</li>
+    <li><a href="interprocess/index.html">interprocess</a> - Shared memory, memory mapped files,
+    process-shared mutexes, condition variables, containers and allocators, from Ion Gazta&ntilde;aga</li>
+    <li><a href="../doc/html/mpi.html">MPI</a> - Message Passing Interface library, for use in distributed-memory parallel application programming, from Douglas Gregor and Matthias Troyer.</li>
+    <li><a href="thread/doc/index.html">thread</a> - Portable C++
+      multi-threading, from William Kempf.</li>
+</ul>
+
 
 <h3><a name="Containers">Containers</a></h3>
 
@@ -405,49 +430,69 @@ how to download, build, and install the libraries.</p>
     discriminated union container, from Eric Friedman and Itay Maman.</li>
 </ul>
 
-<h3><a name="Iterators">Iterators</a></h3>
+<h3><a name="Correctness">Correctness</a> and testing</h3>
 
 <ul>
-    <li><a href="gil/doc/index.html">gil</a> - Generic Image Library, from
-     Lubomir Bourdev and Hailin Jin.</li>
-    <li><a href="graph/doc/table_of_contents.html">graph</a> -
-        Generic graph components and algorithms, from Jeremy Siek
-        and a University of Notre Dame team; now maintained by Andrew Sutton and Jeremiah Willcock.</li>
-    <li><a href="iterator/doc/index.html">iterators</a> - Iterator
-        construction framework, adaptors, concepts, and more, from Dave
-        Abrahams, Jeremy Siek, and Thomas Witt.</li>
-    <li><a href="utility/operators.htm">operators</a> - Templates
-        ease arithmetic classes and iterators, from Dave Abrahams
-        and Jeremy Siek.</li>
-    <li><a href="tokenizer/index.html">tokenizer</a> - Break of a string or other
-      character sequence into a series of tokens, from John Bandela.</li>
+    <li><a href="concept_check/concept_check.htm">concept check</a>
+        - Tools for generic programming, from Jeremy Siek.</li>
+    <li><a href="static_assert/static_assert.htm">static_assert</a>
+        - Static assertions (compile time assertions), from John
+        Maddock.</li>
+    <li><a href="test/index.html">test</a> - Support for simple program testing,
+    full unit testing, and for program
+      execution monitoring, from Gennadiy Rozental.</li>
 </ul>
 
-<h3><a name="Algorithms">Algorithms</a></h3>
+<h3><a name="Data">Data</a> structures</h3>
 
 <ul>
-    <li><a href="foreach/index.html">foreach</a> - BOOST_FOREACH macro for easily
-        iterating over the elements of a sequence, from Eric Niebler.</li>
-    <li><a href="gil/doc/index.html">gil</a> - Generic Image Library, from
-        Lubomir Bourdev and Hailin Jin.</li>
-    <li><a href="geometry/index.html">geometry</a> - Geometry Library, from
-        Barend Gehrels, Bruno Lalande and Mateusz Loskot.</li>
-    <li><a href="graph/doc/table_of_contents.html">graph</a> -
-        Generic graph components and algorithms, from Jeremy Siek
-        and a University of Notre Dame team; now maintained by Andrew Sutton and Jeremiah Willcock.</li>
-    <li><a href="algorithm/minmax/index.html">minmax</a> - standard library
-        extensions for simultaneous min/max and min/max element computations,
-        from Herv&eacute; Br&ouml;nnimann.</li>
-    <li><a href="range/index.html">range</a> - A new infrastructure
-        for generic algorithms that builds on top
-        of the new iterator concepts, from Thorsten Ottosen.</li>
-    <li><a href="algorithm/string/index.html">string_algo</a> -
-        String algorithms library, from Pavol Droba</li>
-    <li><a href="utility/utility.htm">utility</a> - Class <b>next(),</b>&nbsp; <b>prior()</b>
-      function templates, from Dave Abrahams and others. </li>
+    <li><a href="any/index.html">any</a> - Safe, generic container for single
+      values of different value types, from Kevlin Henney.</li>
+    <li><a href="bimap/index.html">bimap</a> - Bidirectional maps, from Matias Capeletto.
+        </li>
+    <li><a href="container/index.html">container</a> - Standard library containers and extensions, from Ion Gazta&ntilde;aga</li>
+    <li><a href="utility/compressed_pair.htm">compressed_pair</a>
+        - Empty member optimization, from John Maddock, Howard
+        Hinnant, et al.</li>
+    <li><a href="fusion/index.html">fusion</a> -
+        Library for working with tuples, including various containers, algorithms, etc.
+        From Joel de Guzman and Dan Marsden and Tobias Schwinger.</li>
+    <li><a href="icl/index.html">icl</a> -
+        Interval Container Library, interval sets and maps and aggregation
+        of associated values, from Joachim Faulhaber.</li>
+    <li><a href="intrusive/index.html">intrusive</a> - Intrusive containers and algorithms, from Ion Gazta&ntilde;aga</li>
+    <li><a href="multi_index/doc/index.html">multi_index</a> - Containers with
+    multiple STL-compatible access interfaces, from Joaqu&iacute;n M L&oacute;pez
+    Mu&ntilde;oz.</li>
+    <li><a href="optional/doc/html/index.html">optional</a> - Discriminated-union
+    wrapper for optional values, from Fernando Cacciola.</li>
+    <li><a href="ptr_container/index.html">pointer container</a>
+    - Containers for storing heap-allocated polymorphic objects to ease OO-programming, from Thorsten Ottosen. </li>
+    <li><a href="property_tree/index.html">property tree</a> - A tree data
+        structure especially suited to storing configuration data, from Marcin
+        Kalicinski and Sebastian Redl.</li>
+    <li><a href="../doc/html/tribool.html">tribool</a> - 3-state boolean type library, from Doug Gregor.</li>
+
+    <li><a href="tuple/doc/tuple_users_guide.html">tuple</a> - Ease definition of functions returning multiple values, and more,
+    from Jaakko J&auml;rvi.</li>
+    <li><a href="variant/index.html">variant</a> - Safe, generic, stack-based
+    discriminated union container, from Eric Friedman and Itay Maman.</li>
 </ul>
 
-<h3><a name="Function-objects">Function objects</a> and higher-order programming</h3>
+<h3><a name="Domain">Domain Specific</a></h3>
+<ul>
+    <li><a href="chrono/index.html">chrono</a> - Useful time utilities,
+        from Howard Hinnant, Beman Dawes, Vicente J. Botet Escrib&aacute;.</li>
+    <li><a href="crc/index.html">crc</a> - Cyclic Redundancy Code, from Daryle
+      Walker.</li>
+    <li><a href="date_time/doc/index.html">date_time</a> - Date-Time library from Jeff Garland.</li>
+    <li><a href="units/index.html">units</a> -
+        Zero-overhead dimensional analysis and unit/quantity
+        manipulation and conversion, from Matthias Schabel and Steven Watanabe.</li>
+    <li><a href="uuid/index.html">uuid</a> - A universally unique identifier, from Andy Tompkins.</li>
+</ul>
+
+<h3><a name="Function-objects">Function Objects</a> and Higher-order Programming</h3>
 
 <ul>
     <li><a href="bind/bind.html">bind</a> and <a href="bind/mem_fn.html"> mem_fn</a> - Generalized binders for function/object/pointers and member functions, from Peter Dimov.</li>
@@ -515,49 +560,94 @@ how to download, build, and install the libraries.</p>
         Maddock, Steve Cleary, et al.</li>
 </ul>
 
-<h3>Template <a name="Metaprogramming"> Metaprogramming</a></h3>
-
+<h3><a name="Image-processing">Image Processing</a></h3>
 <ul>
-    <li><a href="function_types/index.html">function_types</a> - Type traits
-        for callable, built-in types, from Tobias Schwinger</li>
-    <li><a href="fusion/index.html">fusion</a> -
-        Library for working with tuples, including various containers,
-    algorithms, etc. From Joel de Guzman, Dan Marsden and Tobias Schwinger.</li>
-    <li><a href="mpl/doc/index.html">mpl</a> - Template metaprogramming
-    framework of compile-time algorithms, sequences and metafunction classes,
-    from Aleksey Gurtovoy.</li>
-    <li><a href="proto/index.html">proto</a> - Expression template library and compiler
-        construction toolkit for domain-specific embedded languages, from Eric Niebler.</li>
-    <li><a href="static_assert/static_assert.htm">static_assert</a>
-        - Static assertions (compile time assertions), from John
-        Maddock.</li>
-    <li><a href="type_traits/index.html">type_traits</a> -
-        Templates for fundamental properties of types, from John
-        Maddock, Steve Cleary, et al.</li>
+  <li><a href="gil/doc/index.html">gil</a> - Generic Image Library, from
+  Lubomir Bourdev and Hailin Jin.</li>
 </ul>
 
-<h3><a name="Preprocessor">Preprocessor</a> Metaprogramming</h3>
-
-<ul>
-    <li><a href="preprocessor/doc/index.html">preprocessor</a> - Preprocessor
-    metaprogramming tools including repetition and recursion, from Vesa Karvonen
-    and Paul Mensonides.</li>
-</ul>
-
-<h3><a name="Concurrent">Concurrent</a> Programming</h3>
-
+<h3><a name="IO">Input/Output</a></h3>
 <ul>
     <li><a href="asio/index.html">asio</a> - Portable networking and other low-level
         I/O, including sockets, timers, hostname resolution, socket iostreams, serial
         ports, file descriptors and Windows HANDLEs, from Chris Kohlhoff.</li>
-    <li><a href="interprocess/index.html">interprocess</a> - Shared memory, memory mapped files,
-    process-shared mutexes, condition variables, containers and allocators, from Ion Gazta&ntilde;aga</li>
-    <li><a href="../doc/html/mpi.html">MPI</a> - Message Passing Interface library, for use in distributed-memory parallel application programming, from Douglas Gregor and Matthias Troyer.</li>
-    <li><a href="thread/doc/index.html">thread</a> - Portable C++
-      multi-threading, from William Kempf.</li>
+    <li><a href="assign/index.html">assign</a> - Filling containers
+    with constant or generated data has never been
+    easier, from Thorsten Ottosen.
+    </li>
+  <li><a href="format/index.html">format</a> - Type-safe 'printf-like' format
+  operations, from Samuel Krempp.</li>
+  <li><a href="io/doc/ios_state.html">io state savers</a> - Save I/O state to
+  prevent jumbled data, from Daryle Walker.</li>
+  <li><a href="iostreams/doc/index.html">iostreams</a> - Framework for defining streams, stream buffers and i/o filters, from Jonathan Turkanis.</li>
+  <li><a href="locale/index.html">locale</a> - Provide localization and Unicode
+  handling tools for C++, from Artyom Beilis</li>
+  <li><a href="../doc/html/program_options.html">program_options</a> - Access to configuration
+  data given on command line, in config files and other sources, from Vladimir Prus.</li>
+  <li><a href="serialization/doc/index.html">serialization</a> - Serialization
+of arbitrary data for persistence and marshalling, from Robert Ramey</li>
+
 </ul>
 
-<h3><a name="Math">Math</a> and numerics</h3>
+<h3><a name="Inter-language">Inter-language</a> Support</h3>
+
+<ul>
+    <li><a href="python/doc/index.html">python</a> - Reflects C++
+        classes and functions into <a
+        href="http://www.python.org">Python</a>, from Dave
+        Abrahams.</li>
+</ul>
+
+<h3><a name="Iterators">Iterators</a></h3>
+
+<ul>
+    <li><a href="gil/doc/index.html">gil</a> - Generic Image Library, from
+     Lubomir Bourdev and Hailin Jin.</li>
+    <li><a href="graph/doc/table_of_contents.html">graph</a> -
+        Generic graph components and algorithms, from Jeremy Siek
+        and a University of Notre Dame team; now maintained by Andrew Sutton and Jeremiah Willcock.</li>
+    <li><a href="iterator/doc/index.html">iterators</a> - Iterator
+        construction framework, adaptors, concepts, and more, from Dave
+        Abrahams, Jeremy Siek, and Thomas Witt.</li>
+    <li><a href="utility/operators.htm">operators</a> - Templates
+        ease arithmetic classes and iterators, from Dave Abrahams
+        and Jeremy Siek.</li>
+    <li><a href="tokenizer/index.html">tokenizer</a> - Break of a string or other
+      character sequence into a series of tokens, from John Bandela.</li>
+</ul>
+
+<h3><a name="LanguageFeatureEmulation">Language Features Emulation</a></h3>
+<ul>
+    <li><a href="exception/doc/boost-exception.html">exception</a> - A library for transporting of arbitrary data in exception objects, and transporting of exceptions between threads (<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2179.html">N2179</a>), from Emil Dotchevski.</li>
+    <li><a href="foreach/index.html">foreach</a> - BOOST_FOREACH macro for easily
+    iterating over the elements of a sequence, from Eric Niebler.</li>
+    <li><a href="move/index.html">move</a> - Portable move semantics for C++03 and C++1 compilers, from Ion Gazta&ntilde;aga</li>
+    <li><span class="library"><a href=
+    "parameter/doc/html/index.html">parameter</a></span> -
+    Write functions that accept arguments by name, by David Abrahams
+    and Daniel Wallin.</li>
+    <li><a href="scope_exit/doc/html/index.html">scope_exit</a>
+        - Execute arbitrary code at scope exit, from Alexander Nasonov.</li>
+    <li><a href="typeof/index.html">typeof</a> -
+        Typeof operator emulation, from Arkadiy Vertleyb and Peder Holt.</li>
+</ul>
+
+
+<h3><a name="Memory">Memory</a></h3>
+
+<ul>
+    <li><a href="pool/doc/html/index.html">pool</a> - Memory pool management, from
+      Steve Cleary.</li>
+    <li><a href="smart_ptr/index.html">smart_ptr</a> - Six smart
+        pointer class templates, from Greg Colvin, Beman Dawes,
+        Peter Dimov, and Darin Adler.</li>
+    <li><a href="utility/utility.htm">utility</a> - Class <b>noncopyable</b>
+        plus <b>checked_delete()</b>, <b>checked_array_delete()</b>, <b>next(),</b>&nbsp;
+      <b>prior()</b>
+        function templates, plus <b>base-from-member idiom</b>, from Dave Abrahams and others. </li>
+</ul>
+
+<h3><a name="Math">Math</a> and Numerics</h3>
 
 <ul>
     <li><a href="accumulators/index.html">accumulators</a> - Framework for incremental
@@ -590,6 +680,8 @@ how to download, build, and install the libraries.</p>
     <li><a href="utility/operators.htm">operators</a> - Templates
         ease arithmetic classes and iterators, from Dave Abrahams
         and Jeremy Siek.</li>
+    <li><a href="polygon/index.html">polygon</a> - Booleans/clipping, resizing/offsetting and more for planar polygons with integral coordinates, from
+      Lucanus Simonson.</li>
     <li><a href="random/index.html">random</a> - A complete
         system for random number generation, from Jens Maurer.</li>
     <li><a href="ratio/index.html">ratio</a> - A compile time ratio arithmetic,
@@ -600,105 +692,51 @@ how to download, build, and install the libraries.</p>
     for dense, packed and sparse matrices, from Joerg Walter and Mathias Koch.</li>
 </ul>
 
-<h3><a name="Correctness">Correctness</a> and testing</h3>
+<h3>Template <a name="Metaprogramming"> Metaprogramming</a></h3>
 
 <ul>
-    <li><a href="concept_check/concept_check.htm">concept check</a>
-        - Tools for generic programming, from Jeremy Siek.</li>
+    <li><a href="function_types/index.html">function_types</a> - Type traits
+        for callable, built-in types, from Tobias Schwinger</li>
+    <li><a href="fusion/index.html">fusion</a> -
+        Library for working with tuples, including various containers,
+    algorithms, etc. From Joel de Guzman, Dan Marsden and Tobias Schwinger.</li>
+    <li><a href="mpl/doc/index.html">mpl</a> - Template metaprogramming
+    framework of compile-time algorithms, sequences and metafunction classes,
+    from Aleksey Gurtovoy.</li>
+    <li><a href="proto/index.html">proto</a> - Expression template library and compiler
+        construction toolkit for domain-specific embedded languages, from Eric Niebler.</li>
+    <li><a href="ratio/index.html">ratio</a> - A compile time ratio arithmetic,
+        from Howard Hinnant, Beman Dawes, Vicente J. Botet Escrib&aacute;.</li>
     <li><a href="static_assert/static_assert.htm">static_assert</a>
         - Static assertions (compile time assertions), from John
         Maddock.</li>
-    <li><a href="test/index.html">test</a> - Support for simple program testing,
-    full unit testing, and for program
-      execution monitoring, from Gennadiy Rozental.</li>
+    <li><a href="type_traits/index.html">type_traits</a> -
+        Templates for fundamental properties of types, from John
+        Maddock, Steve Cleary, et al.</li>
 </ul>
 
-<h3><a name="Data">Data</a> structures</h3>
 
+<h3><a name="PatternsIdioms">Patterns and Idioms</a></h3>
 <ul>
-    <li><a href="any/index.html">any</a> - Safe, generic container for single
-      values of different value types, from Kevlin Henney.</li>
-    <li><a href="bimap/index.html">bimap</a> - Bidirectional maps, from Matias Capeletto.
-        </li>
-    <li><a href="container/index.html">container</a> - Standard library containers and extensions, from Ion Gazta&ntilde;aga</li>
+    <li><a href="flyweight/doc/index.html">flyweight</a> - Design pattern
+    to manage large quantities of highly redundant objects,
+    from Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.</li>
+    <li><a href="signals/index.html">signals</a> - managed signals &amp;
+         slots callback implementation, from Doug Gregor.</li>
+    <li><a href="signals2/index.html">signals2</a> - managed signals &amp;
+         slots callback implementation (thread-safe version 2), from Frank Mori Hess.</li>
+    <li><a href="utility/utility.htm">utility</a> <b>base-from-member idiom</b>, from Dave Abrahams and others.</li>
     <li><a href="utility/compressed_pair.htm">compressed_pair</a>
         - Empty member optimization, from John Maddock, Howard
         Hinnant, et al.</li>
-    <li><a href="fusion/index.html">fusion</a> -
-        Library for working with tuples, including various containers, algorithms, etc.
-        From Joel de Guzman and Dan Marsden and Tobias Schwinger.</li>
-    <li><a href="icl/index.html">icl</a> -
-        Interval Container Library, interval sets and maps and aggregation
-        of associated values, from Joachim Faulhaber.</li>
-    <li><a href="intrusive/index.html">intrusive</a> - Intrusive containers and algorithms, from Ion Gazta&ntilde;aga</li>
-    <li><a href="multi_index/doc/index.html">multi_index</a> - Containers with
-    multiple STL-compatible access interfaces, from Joaqu&iacute;n M L&oacute;pez
-    Mu&ntilde;oz.</li>
-    <li><a href="optional/doc/html/index.html">optional</a> - Discriminated-union
-    wrapper for optional values, from Fernando Cacciola.</li>
-    <li><a href="ptr_container/index.html">pointer container</a>
-    - Containers for storing heap-allocated polymorphic objects to ease OO-programming, from Thorsten Ottosen. </li>
-    <li><a href="property_tree/index.html">property tree</a> - A tree data
-        structure especially suited to storing configuration data, from Marcin
-        Kalicinski and Sebastian Redl.</li>
-    <li><a href="../doc/html/tribool.html">tribool</a> - 3-state boolean type library, from Doug Gregor.</li>
-
-    <li><a href="tuple/doc/tuple_users_guide.html">tuple</a> - Ease definition of functions returning multiple values, and more,
-    from Jaakko J&auml;rvi.</li>
-    <li><a href="uuid/index.html">uuid</a> - A universally unique identifier, from Andy Tompkins.</li>
-    <li><a href="variant/index.html">variant</a> - Safe, generic, stack-based
-    discriminated union container, from Eric Friedman and Itay Maman.</li>
 </ul>
 
-<h3><a name="Image-processing">Image processing</a></h3>
+<h3><a name="StateMachines">State Machines</a></h3>
 <ul>
-  <li><a href="gil/doc/index.html">gil</a> - Generic Image Library, from
-  Lubomir Bourdev and Hailin Jin.</li>
-</ul>
-
-<h3><a name="IO">Input/Output</a></h3>
-<ul>
-    <li><a href="asio/index.html">asio</a> - Portable networking and other low-level
-        I/O, including sockets, timers, hostname resolution, socket iostreams, serial
-        ports, file descriptors and Windows HANDLEs, from Chris Kohlhoff.</li>
-    <li><a href="assign/index.html">assign</a> - Filling containers
-    with constant or generated data has never been
-    easier, from Thorsten Ottosen.
-    </li>
-
-  <li><a href="format/index.html">format</a> - Type-safe 'printf-like' format
-  operations, from Samuel Krempp.</li>
-  <li><a href="io/doc/ios_state.html">io state savers</a> - Save I/O state to
-  prevent jumbled data, from Daryle Walker.</li>
-  <li><a href="iostreams/doc/index.html">iostreams</a> - Framework for defining streams, stream buffers and i/o filters, from Jonathan Turkanis.</li>
-  <li><a href="../doc/html/program_options.html">program_options</a> - Access to configuration
-  data given on command line, in config files and other sources, from Vladimir Prus.</li>
-  <li><a href="serialization/doc/index.html">serialization</a> - Serialization
-of arbitrary data for persistence and marshalling, from Robert Ramey</li>
-
-</ul>
-
-<h3><a name="Inter-language">Inter-language</a> support</h3>
-
-<ul>
-    <li><a href="python/doc/index.html">python</a> - Reflects C++
-        classes and functions into <a
-        href="http://www.python.org">Python</a>, from Dave
-        Abrahams.</li>
-</ul>
-
-<h3><a name="Memory">Memory</a></h3>
-
-<ul>
-    <li><a href="pool/doc/html/index.html">pool</a> - Memory pool management, from
-      Steve Cleary.</li>
-    <li><a href="smart_ptr/index.html">smart_ptr</a> - Six smart
-        pointer class templates, from Greg Colvin, Beman Dawes,
-        Peter Dimov, and Darin Adler.</li>
-    <li><a href="utility/utility.htm">utility</a> - Class <b>noncopyable</b>
-        plus <b>checked_delete()</b>, <b>checked_array_delete()</b>, <b>next(),</b>&nbsp;
-      <b>prior()</b>
-        function templates, plus <b>base-from-member idiom</b>, from Dave Abrahams and others. </li>
+    <li><a href="msm/index.html">meta state machine</a> - High-performance expressive UML 2.0 finite state machines, from Christophe Henry.</li>
+    <li><a href="statechart/doc/index.html">statechart</a> - Arbitrarily
+    complex finite state machines can be implemented in easily readable and
+    maintainable C++ code, from Andreas Huber.</li>
 </ul>
 
 <h3><a name="Parsing">Parsing</a></h3>
@@ -707,6 +745,14 @@ of arbitrary data for persistence and marshalling, from Robert Ramey</li>
     <li><a href="spirit/index.html">spirit</a> - LL parser framework&nbsp;
     represents parsers directly as EBNF grammars in inlined C++, from Joel de
     Guzman, Hartmut Kaiser, Dan Nuffer and team.</li>
+</ul>
+
+<h3><a name="Preprocessor">Preprocessor</a> Metaprogramming</h3>
+
+<ul>
+    <li><a href="preprocessor/doc/index.html">preprocessor</a> - Preprocessor
+    metaprogramming tools including repetition and recursion, from Vesa Karvonen
+    and Paul Mensonides.</li>
 </ul>
 
 <h3><a name="Programming">Programming Interfaces</a></h3>
@@ -721,126 +767,29 @@ of arbitrary data for persistence and marshalling, from Robert Ramey</li>
     and Daniel Wallin.</li>
 </ul>
 
-<h3><a name="Miscellaneous">Miscellaneous</a></h3>
+
+<h3><a name="String">String</a> and Text Processing</h3>
 
 <ul>
-    <li><a href="utility/base_from_member.html">base-from-member</a> - Idiom to
-    initialize a base class with a member, from Daryle Walker.</li>
-    <li><a href="chrono/index.html">chrono</a> - Useful time utilities,
-        from Howard Hinnant, Beman Dawes, Vicente J. Botet Escrib&aacute;.</li>
-    <li><a href="utility/compressed_pair.htm">compressed_pair</a>
-        - Empty member optimization, from John Maddock, Howard
-        Hinnant, et al.</li>
-    <li><a href="conversion/index.html">conversion</a> - Polymorphic and lexical casts, from Dave Abrahams and
-        Kevlin Henney.</li>
-    <li><a href="crc/index.html">crc</a> - Cyclic Redundancy Code, from Daryle
-      Walker.</li>
-    <li><a href="date_time/doc/index.html">date_time</a> - Date-Time library from Jeff Garland.</li>
-    <li><a href="exception/doc/boost-exception.html">exception</a> - A library for transporting of arbitrary data in exception objects, and transporting of exceptions between threads (<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2179.html">N2179</a>), from Emil Dotchevski.</li>
-    <li><a href="filesystem/index.html">filesystem</a> - Portable paths,
-    iteration over directories, and other useful filesystem operations, from
-    Beman Dawes.</li>
-    <li><a href="flyweight/doc/index.html">flyweight</a> - Design pattern
-    to manage large quantities of highly redundant objects,
-    from Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.</li>
-    <li><a href="conversion/lexical_cast.htm">lexical_cast</a> -&nbsp; General literal text conversions, such as an <code>int</code> represented as
-    a <code>string</code>, or vice-versa, from Kevlin Henney.</li>
-    <li><a href="msm/index.html">meta state machine</a> - High-performance expressive UML 2.0 finite state machines, from Christophe Henry.</li>
-    <li><a href="move/index.html">move</a> - Portable move semantics for C++03 and C++1 compilers, from Ion Gazta&ntilde;aga</li>
-    <li><a href="numeric/conversion/doc/html/index.html">numeric/conversion</a> - Optimized Policy-based Numeric Conversions,
-        from Fernando Cacciola.</li>
-    <li><a href="optional/doc/html/index.html">optional</a> - Discriminated-union
-    wrapper for optional values, from Fernando Cacciola.</li>
-    <li><a href="../doc/html/program_options.html">program_options</a> - Access to configuration
-        data given on command line, in config files and other sources, from Vladimir Prus.</li>
-    <li><a href="scope_exit/doc/html/index.html">scope_exit</a>
-        - Execute arbitrary code at scope exit, from Alexander Nasonov.</li>
-    <li><a href="statechart/doc/index.html">statechart</a> - Arbitrarily
-    complex finite state machines can be implemented in easily readable and
-    maintainable C++ code, from Andreas Huber.</li>
-    <li><a href="utility/swap.html">swap</a> -
-    Enhanced generic swap function, from Joseph Gauterin.</li>
-    <li><a href="system/doc/index.html">system</a> - Operating
-    system support, including the diagnostics support that will be part of the
-    C++0x standard library, from Beman Dawes.</li>
-    <li><a href="timer/index.html">timer</a> - Event timer,
-    progress timer, and progress display classes, from Beman
-    Dawes.</li>
-    <li><a href="tr1/index.html">TR1</a> - An implementation of the Technical
-        Report on C++ Library Extensions, using other Boost libraries as a basis, from John Maddock.</li>
-    <li><a href="../doc/html/tribool.html">tribool</a> - 3-state boolean type library, from Doug Gregor.</li>
-    <li><a href="typeof/index.html">typeof</a> -
-        Typeof operator emulation, from Arkadiy Vertleyb and Peder Holt.</li>
-    <li><a href="units/index.html">units</a> -
-        Zero-overhead dimensional analysis and unit/quantity
-        manipulation and conversion, from Matthias Schabel and Steven Watanabe.</li>
-    <li><a href="utility/utility.htm">utility</a> - Class <b>noncopyable</b>
-        plus <b>checked_delete()</b>, <b>checked_array_delete()</b>, <b>next(),</b>&nbsp;
-      <b>prior()</b>
-        function templates, plus <b>base-from-member idiom</b>, from Dave Abrahams and others. </li>
-    <li><a href="utility/value_init.htm">value_initialized</a> - Wrapper for uniform-syntax value initialization,
-    from Fernando Cacciola, based on the original idea of David Abrahams.</li>
-</ul>
-
-<h3>Broken compiler <a name="workarounds">workarounds</a></h3>
-
-<ul>
-    <li><a href="compatibility/index.html">compatibility</a> - Help for
-      non-conforming standard libraries, from Ralf Grosse-Kunstleve and Jens
-      Maurer.</li>
-    <li><a href="config/config.htm">config</a> - Helps boost
-        library developers adapt to compiler idiosyncrasies; not
-        intended for library users.</li>
-</ul>
-
-
-<h3><a name="Domain">Domain Specific</a></h3>
-<ul>
-    <li><a href="crc/index.html">crc</a> - Cyclic Redundancy Code, from Daryle
-      Walker.</li>
-    <li><a href="units/index.html">units</a> -
-        Zero-overhead dimensional analysis and unit/quantity
-        manipulation and conversion, from Matthias Schabel and Steven Watanabe.</li>
-    <li><a href="uuid/index.html">uuid</a> - A universally unique identifier, from Andy Tompkins.</li>
-</ul>
-
-<h3><a name="Idioms">Idioms</a></h3>
-<ul>
-    <li><a href="utility/utility.htm">utility</a> <b>base-from-member idiom</b>, from Dave Abrahams and others.</li>
-    <li><a href="utility/compressed_pair.htm">compressed_pair</a>
-        - Empty member optimization, from John Maddock, Howard
-        Hinnant, et al.</li>
-</ul>
-
-<h3><a name="LanguageFeatureEmulation">Language Features Emulation</a></h3>
-<ul>
-    <li><a href="exception/doc/boost-exception.html">exception</a> - A library for transporting of arbitrary data in exception objects, and transporting of exceptions between threads (<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2179.html">N2179</a>), from Emil Dotchevski.</li>
-    <li><a href="foreach/index.html">foreach</a> - BOOST_FOREACH macro for easily
-    iterating over the elements of a sequence, from Eric Niebler.</li>
-    <li><a href="move/index.html">move</a> - Portable move semantics for C++03 and C++1 compilers, from Ion Gazta&ntilde;aga</li>
-    <li><a href="scope_exit/doc/html/index.html">scope_exit</a>
-        - Execute arbitrary code at scope exit, from Alexander Nasonov.</li>
-    <li><a href="typeof/index.html">typeof</a> -
-        Typeof operator emulation, from Arkadiy Vertleyb and Peder Holt.</li>
-</ul>
-
-<h3><a name="Patterns">Patterns</a></h3>
-<ul>
-    <li><a href="flyweight/doc/index.html">flyweight</a> - Design pattern
-    to manage large quantities of highly redundant objects,
-    from Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz.</li>
-    <li><a href="signals/index.html">signals</a> - managed signals &amp;
-         slots callback implementation, from Doug Gregor.</li>
-    <li><a href="signals2/index.html">signals2</a> - managed signals &amp;
-         slots callback implementation (thread-safe version 2), from Frank Mori Hess.</li>
-</ul>
-
-<h3><a name="StateMachines">State Machines</a></h3>
-<ul>
-    <li><a href="msm/index.html">meta state machine</a> - High-performance expressive UML 2.0 finite state machines, from Christophe Henry.</li>
-    <li><a href="statechart/doc/index.html">statechart</a> - Arbitrarily
-    complex finite state machines can be implemented in easily readable and
-    maintainable C++ code, from Andreas Huber.</li>
+    <li><a href="conversion/lexical_cast.htm">conversion/lexical_cast</a> - <tt>lexical_cast</tt>
+      class template, from Kevlin Henney.</li>
+    <li><a href="format/index.html">format</a> - Type-safe 'printf-like' format
+    operations, from Samuel Krempp.</li>
+    <li><a href="iostreams/doc/index.html">iostreams</a> - Framework for defining streams, stream buffers and i/o filters, from Jonathan Turkanis.</li>
+    <li><a href="locale/index.html">locale</a> - Provide localization and Unicode
+    handling tools for C++, from Artyom Beilis</li>
+    <li><a href="regex/index.html">regex</a> - Regular expression
+        library, from John Maddock</li>
+    <li><a href="spirit/index.html">spirit</a> - LL parser framework&nbsp;
+    represents parsers directly as EBNF grammars in inlined C++, from Joel de
+    Guzman, Hartmut Kaiser, Dan Nuffer and team.</li>
+    <li><a href="algorithm/string/index.html">string_algo</a> -
+    String algorithms library, from Pavol Droba</li>
+    <li><a href="tokenizer/index.html">tokenizer</a> - Break of a string or other
+      character sequence into a series of tokens, from John Bandela</li>
+    <li><a href="wave/index.html">wave</a> - Standards conformant implementation of the mandated C99/C++ preprocessor functionality packed behind an easy to use iterator interface, from Hartmut&nbsp;Kaiser.</li>
+    <li><a href="xpressive/index.html">xpressive</a> - Regular expressions that can be written as strings or as expression templates,
+        and that can refer to each other and themselves recursively with the power of context-free grammars, from Eric Niebler.</li>
 </ul>
 
 <h3><a name="SystemC">System</a></h3>
@@ -856,6 +805,28 @@ of arbitrary data for persistence and marshalling, from Robert Ramey</li>
     library, from Beman Dawes.</li>
     <li><a href="thread/doc/index.html">thread</a> - Portable C++
       multi-threading, from William Kempf and Anthony Williams.</li>
+</ul>
+
+<h3><a name="Miscellaneous">Miscellaneous</a></h3>
+
+<ul>
+    <li><a href="conversion/index.html">conversion</a> - Polymorphic and lexical casts, from Dave Abrahams and
+        Kevlin Henney.</li>
+    <li><a href="numeric/conversion/doc/html/index.html">numeric/conversion</a> - Optimized Policy-based Numeric Conversions,
+        from Fernando Cacciola.</li>
+    <li><a href="utility/swap.html">swap</a> -
+    Enhanced generic swap function, from Joseph Gauterin.</li>
+    <li><a href="timer/index.html">timer</a> - Event timer,
+    progress timer, and progress display classes, from Beman
+    Dawes.</li>
+    <li><a href="tr1/index.html">TR1</a> - An implementation of the Technical
+        Report on C++ Library Extensions, using other Boost libraries as a basis, from John Maddock.</li>
+    <li><a href="utility/utility.htm">utility</a> - Class <b>noncopyable</b>
+        plus <b>checked_delete()</b>, <b>checked_array_delete()</b>, <b>next(),</b>&nbsp;
+      <b>prior()</b>
+        function templates, plus <b>base-from-member idiom</b>, from Dave Abrahams and others. </li>
+    <li><a href="utility/value_init.htm">value_initialized</a> - Wrapper for uniform-syntax value initialization,
+    from Fernando Cacciola, based on the original idea of David Abrahams.</li>
 </ul>
 
 
