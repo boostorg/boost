@@ -37,7 +37,7 @@ Get Boost
 
 The easiest way to get a copy of Boost is to use an installer.  The
 `Boost website version of this Getting Started guide`_ will have
-undated information on installers as they become available, or see
+updated information on installers as they become available, or see
 `Boost downloads`_ or the installer_ provided by `BoostPro
 Computing`_.  We especially recommend using an installer if you use
 Microsoft Visual Studio, because the installer can download and
