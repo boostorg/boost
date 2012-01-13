@@ -1402,6 +1402,29 @@
         </mark-expected-failures>
 
         <mark-expected-failures>
+            <test name="correctly_disable"/>
+            <toolset name="gcc-4.2*"/>
+            <toolset name="gcc-4.3*"/>
+            <toolset name="gcc-4.4*"/>
+            <toolset name="gcc-4.5*"/>
+            <toolset name="gcc-4.6*"/>
+            <toolset name="gcc-4.7*"/>
+            <toolset name="gcc-mingw-*"/>
+            <toolset name="darwin-4.2"/>
+            <toolset name="clang-darwin-trunk"/>
+            <toolset name="clang-darwin-normal"/>
+            <toolset name="clang-darwin-linux-2.9"/>
+            <toolset name="intel-linux-*"/>
+            <note author="Daniel James">
+                GCC's libstdc++ has a versioned namespace feature which breaks
+                container forwarding. I don't know how to detect it so I'm just
+                always disabling it, which means that a lot of setups which
+                means that it's disabled for a lot of setups where it could
+                work - which is what these failures represent.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
             <test name="container_fwd"/>
             <test name="container_fwd_debug"/>
             <test name="container_no_fwd_test"/>
