@@ -34,7 +34,7 @@ namespace fs = boost::filesystem;
 namespace xml = boost::tiny_xml;
 
 #include <cstdlib>  // for abort, exit
-#include <cctype>   // for toupper
+#include <cctype>   // for toupper, isdigit
 #include <string>
 #include <vector>
 #include <set>
@@ -45,6 +45,15 @@ namespace xml = boost::tiny_xml;
 #include <ctime>
 #include <stdexcept>
 #include <cassert>
+
+#include <stdio.h>  // for popen, pclose
+#if defined(_MSC_VER)
+# define POPEN _popen
+# define PCLOSE _pclose
+#else
+# define POPEN popen
+# define PCLOSE pclose
+#endif
 
 using std::string;
 
@@ -107,15 +116,24 @@ namespace
   string revision( const fs::path & boost_root )
   {
     string rev;
-    fs::path entries( boost_root / ".svn" / "entries" );
-    fs::ifstream entries_file( entries );
-    if ( entries_file )
+    string command("cd ");
+    command += boost_root.string() + " & svn info";
+    FILE* fp = POPEN(command.c_str(), "r");
+    if (fp)
     {
-      std::getline( entries_file, rev );
-      std::getline( entries_file, rev );
-      std::getline( entries_file, rev );
-      std::getline( entries_file, rev );  // revision number as a string
+      static const int line_max = 128;
+      char line[line_max];
+      while (fgets(line, line_max, fp) != NULL)
+      {
+        string ln(line);
+        if (ln.find("Revision: ") != string::npos)
+        {
+          for(auto itr = ln.begin()+10; itr != ln.end() && isdigit(*itr); ++itr)
+            rev += *itr;
+        }
+      }
     }
+    std::cout << "Revision: " << rev << std::endl;
     return rev;
   }
 
