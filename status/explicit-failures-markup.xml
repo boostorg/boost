@@ -5253,9 +5253,33 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
             <test name="test_thread_move_return_lib"/>
             <test name="test_thread_return_local"/>
             <test name="test_thread_return_local_lib"/>
-            <toolset name="*"/>
+            <toolset name="sun-*"/>
+            <toolset name="pgi-*"/>
+            <toolset name="vacpp-*"/>
             <note author="Anthony Williams" date="2009-10-28">
 These tests will fail in most compilers that don't support rvalue references.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*native_handle*"/>
+            <toolset name="msvc-*"/>
+            <toolset name="gcc-mingw*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+The implementation of native_handle() is not possible on this platform.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*sleep_for*"/>
+            <test name="*sleep_until*"/>
+            <test name="*wait_for*"/>
+            <test name="*wait_until*"/>
+            <test name="*cons_duration*"/>
+            <test name="*cons_time_point*"/>
+            <test name="*try_to_*_for*"/>
+            <test name="*try_to_*_until*"/>
+            <toolset name="vaccp-*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+This platform doesn't supports Boost.Chrono.
             </note>
         </mark-expected-failures>
     </library>
