@@ -4921,7 +4921,6 @@ for more information.
             <test name="emulation_tpl"/>
             <toolset name="intel-*-9.1"/>
             <toolset name="intel-*-10.0"/>
-            <toolset name="intel-*-10.1"/>
             <toolset name="intel-*-11.0"/>
             <note author="Alexander Nasonov">
                 The test does not compile in typeof emulation mode,
@@ -4956,10 +4955,68 @@ for more information.
             <toolset name="msvc-8.0*"/>
             <note author="Alexander Nasonov" refid="2"/>
         </mark-expected-failures>
+        <!-- MSVC type-of emulation cannot capture `this` -->
+        <mark-expected-failures>
+            <test name="emulation_this"/>
+            <test name="emulation_this_tpl"/>
+            <toolset name="msvc-10.0"/>
+            <toolset name="msvc-8.0"/>
+            <toolset name="msvc-9.0"/>
+            <toolset name="msvc-9.0~stlport5.2"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <note author="Lorenzo Caminiti">
+                This compiler cannot capture the object `this` using type-of
+                emulation mode (use native type-of instead).
+            </note>
+        </mark-expected-failures>
+        <!-- variadic macros required -->
         <mark-expected-failures>
             <test name="same_line"/>
+            <test name="world"/>
+            <test name="world_checkpoint"/>
+            <test name="world_this"/>
+            <test name="world_tpl"/>
             <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-linux-10.1"/>
+            <toolset name="intel-linux-11.1"/>
+            <toolset name="pgi-11.9"/>
             <note author="Lorenzo Caminiti" refid="51"/>
+        </mark-expected-failures>
+        <!-- lambda functions required -->
+        <mark-expected-failures>
+            <test name="world_check_point_all"/>
+            <test name="world_check_point_all_seq"/>
+            <test name="world_check_point_all_seqnova"/>
+            <toolset name="clang-darwin-trunk"/>
+            <toolset name="darwin-4.4"/>
+            <toolset name="darwin-4.4_0x"/>
+            <toolset name="gcc-4.2.4"/>
+            <toolset name="gcc-4.3.4"/>
+            <toolset name="gcc-4.3.4_0x"/>
+            <toolset name="gcc-4.4.4"/>
+            <toolset name="gcc-4.4.4_0x"/>
+            <toolset name="gcc-4.5.3"/>
+            <toolset name="gcc-4.6.2"/>
+            <toolset name="gcc-mingw-4.4.0"/>
+            <toolset name="gcc-mingw-4.4.7"/>
+            <toolset name="gcc-mingw-4.5.2"/>
+            <toolset name="gcc-mingw-4.5.4"/>
+            <toolset name="gcc-mingw-4.6.3"/>
+            <toolset name="gcc-mingw-4.7.0"/>
+            <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-darwin-12.0"/>
+            <toolset name="intel-linux-10.1"/>
+            <toolset name="intel-linux-11.1"/>
+            <toolset name="intel-linux-12.0"/>
+            <toolset name="intel-linux-12.1"/>
+            <toolset name="intel-pathscale-4.0.8"/>
+            <toolset name="msvc-8.0"/>
+            <toolset name="msvc-9.0"/>
+            <toolset name="msvc-9.0~stlport5.2"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <toolset name="pgi-11.9"/>
+            <toolset name="vacpp"/>
+            <note author="Lorenzo Caminiti" refid="52"/>
         </mark-expected-failures>
     </library>
 
@@ -6833,6 +6890,10 @@ This platform doesn't supports Boost.Chrono.
 
     <note id="51">
         This test requires variadic macro support.
+    </note>
+    
+    <note id="52">
+        This test requires lambda function support.
     </note>
 
 </explicit-failures-markup>
