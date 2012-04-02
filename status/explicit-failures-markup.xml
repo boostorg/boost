@@ -1932,8 +1932,21 @@
             </note>
         </mark-expected-failures>
     </library>
-
-
+    
+    <!-- functional/overloaded_function -->
+    <library name="functional/overloaded_function">
+        <!-- type-of emulation mode required -->
+        <mark-expected-failures>
+            <test name="make_call"/>
+            <test name="make_decl"/>
+            <toolset name="sun-5.10"/>
+            <note author="Lorenzo Caminiti">
+                This compiler does not support native type-of and type-of
+                emulation mode is not atuomatically detected for this compiler
+                (force it by defining the BOOST_TYPEOF_EMULATION macro).
+            </note>
+        </mark-expected-failures>
+    </library>
 
     <!-- fusion -->
     <library name="fusion">
@@ -4955,6 +4968,29 @@ for more information.
             <toolset name="msvc-8.0*"/>
             <note author="Alexander Nasonov" refid="2"/>
         </mark-expected-failures>
+        <!-- type-of emulation mode required -->
+        <mark-expected-failures>
+            <test name="native"/>
+            <test name="native_this"/>
+            <test name="native_this_tpl"/>
+            <test name="native_tu_test"/>
+            <test name="same_line_seq"/>
+            <test name="same_line_seq_nova"/>
+            <test name="world_checkpoint_seq"/>
+            <test name="world_checkpoint_seq_nova"/>
+            <test name="world_seq"/>
+            <test name="world_seq_nova"/>
+            <test name="world_this_seq"/>
+            <test name="world_this_seq_nova"/>
+            <test name="world_tpl_seq"/>
+            <test name="world_tpl_seq_nova"/>
+            <toolset name="sun-5.10"/>
+            <note author="Lorenzo Caminiti">
+                This compiler does not support native type-of and type-of
+                emulation mode is not atuomatically detected for this compiler
+                (force it by defining the BOOST_TYPEOF_EMULATION macro).
+            </note>
+        </mark-expected-failures>
         <!-- MSVC type-of emulation cannot capture `this` -->
         <mark-expected-failures>
             <test name="emulation_this"/>
@@ -4980,6 +5016,7 @@ for more information.
             <toolset name="intel-linux-10.1"/>
             <toolset name="intel-linux-11.1"/>
             <toolset name="pgi-11.9"/>
+            <toolset name="sun-5.10"/>
             <note author="Lorenzo Caminiti" refid="51"/>
         </mark-expected-failures>
         <!-- lambda functions required -->
@@ -5016,6 +5053,7 @@ for more information.
             <toolset name="msvc-9.0~wm5~stlport5.2"/>
             <toolset name="pathscale-4.0.8"/>
             <toolset name="pgi-11.9"/>
+            <toolset name="sun-5.10"/>
             <toolset name="vacpp-10.1"/>
             <toolset name="vacpp"/>
             <note author="Lorenzo Caminiti" refid="52"/>
