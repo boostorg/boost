@@ -1935,17 +1935,10 @@
     
     <!-- functional/overloaded_function -->
     <library name="functional/overloaded_function">
-        <!-- type-of emulation mode required -->
-        <mark-expected-failures>
-            <test name="make_call"/>
-            <test name="make_decl"/>
+        <!-- Boost.Preprocessor (iteration?) error on Sun -->
+        <mark-unusable>
             <toolset name="sun-5.10"/>
-            <note author="Lorenzo Caminiti">
-                This compiler does not support native type-of and type-of
-                emulation mode is not atuomatically detected for this compiler
-                (force it by defining the BOOST_TYPEOF_EMULATION macro).
-            </note>
-        </mark-expected-failures>
+        </mark-unusable>
     </library>
 
     <!-- fusion -->
@@ -2444,6 +2437,58 @@
             <test name="control_structures"/>
             <toolset name="gcc-4.2.1*"/>
             <note author="Boris Gubenko" refid="42"/>
+        </mark-expected-failures>
+    </library>
+
+    <!-- local_function -->
+    <library name="local_function">
+        <!-- variadic macros required -->
+        <mark-expected-failures>
+            <test name="add"/>
+            <test name="add_classifiers"/>
+            <test name="add_default"/>
+            <test name="add_except"/>
+            <test name="add_inline"/>
+            <test name="add_params_only"/>
+            <test name="add_template"/>
+            <test name="add_this"/>
+            <test name="add_typed"/>
+            <test name="add_with_default"/>
+            <test name="all_decl"/>
+            <test name="factorial"/>
+            <test name="goto"/>
+            <test name="macro_commas"/>
+            <test name="nesting"/>
+            <test name="operator"/>
+            <test name="overload"/>
+            <test name="return_assign"/>
+            <test name="return_derivative"/>
+            <test name="return_inc"/>
+            <test name="return_getset"/>
+            <test name="return_this"/>
+            <test name="same_line"/>
+            <test name="transform"/>
+            <test name="typeof"/>
+            <test name="typeof_template"/>
+            <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-linux-10.1"/>
+            <toolset name="intel-linux-11.1"/>
+            <toolset name="pgi-11.9"/>
+            <toolset name="sun-5.10"/>
+            <note author="Lorenzo Caminiti" refid="51"/>
+        </mark-expected-failures>
+        <!-- auto-declarations not allowed -->
+        <mark-expected-failures>
+            <test name="add_classifiers"/>
+            <test name="add_classifiers_seq"/>
+            <test name="add_classifiers_seq_nova"/>
+            <toolset name="darwin-4.4_0x"/>
+            <toolset name="gcc-4.5.3_0x"/>
+            <toolset name="gcc-4.4.4_0x"/>
+            <note author="Lorenzo Caminiti">
+                This test does not allow C++11 auto-declaration support
+                (beccause it uses the `auto` keyword as storage classifier).
+            </note>
         </mark-expected-failures>
     </library>
 
@@ -4973,6 +5018,7 @@ for more information.
             <test name="native"/>
             <test name="native_this"/>
             <test name="native_this_tpl"/>
+            <test name="native_tpl"/>
             <test name="native_tu_test"/>
             <test name="same_line_seq"/>
             <test name="same_line_seq_nova"/>
@@ -5034,6 +5080,7 @@ for more information.
             <toolset name="gcc-4.4.4"/>
             <toolset name="gcc-4.4.4_0x"/>
             <toolset name="gcc-4.5.3"/>
+            <toolset name="gcc-4.6"/>
             <toolset name="gcc-4.6.2"/>
             <toolset name="gcc-mingw-4.4.0"/>
             <toolset name="gcc-mingw-4.4.7"/>
