@@ -480,13 +480,24 @@
 
     <!-- chrono -->
     <library name="chrono">
-      <mark-unusable>
-        <toolset name="borland-*"/>
-        <toolset name="pathscale*"/>
-        <note author="Vicente J. Botet Escriba">
-            The compiler does not support features that are essential for the library.
-        </note>
-      </mark-unusable>
+        <mark-unusable>
+            <toolset name="borland-*"/>
+            <toolset name="vacpp*"/>
+            <note author="Vicente J. Botet Escriba">
+                The compiler does not support features that are essential for the library.
+            </note>
+        </mark-unusable>
+        <test name="*_h" category="Header Only">
+        </test>
+        <test name="*_l" category="Non Header Only">
+        </test>
+        <test name="*_s" category="Static Link">
+        </test>
+        <test name="*_d" category="Dynamic Link">
+        </test>
+        <test name="*_f" category="Compile Diagnostic Required">
+        </test>
+      
     </library>
 
     <!-- circular_buffer -->
@@ -594,6 +605,24 @@
         </test>
     </library>
 
+    <!-- container-->
+    <library name="container">
+        <mark-unusable>
+            <toolset name="borland-5.*"/>
+            <toolset name="msvc-6.5*"/>
+            <toolset name="cw-9.*"/>
+            <toolset name="gcc-2.95*"/>
+            <toolset name="gcc-3.0*"/>
+            <toolset name="gcc-3.1*"/>
+            <toolset name="gcc-3.2*"/>
+            <toolset name="gcc-3.3*"/>
+            <toolset name="mipspro"/>
+            <toolset name="intel-linux-8.*"/>
+            <note author="Ion Gazta&#241;aga">
+                The compiler does not support features that are essential for the library.
+            </note>
+        </mark-unusable>
+    </library>
 
     <!-- conversion -->
     <library name="conversion">
@@ -619,10 +648,12 @@
                 <toolset name="borland-5.8*"/>
                 <toolset name="borland-5.9*"/>
                 <toolset name="intel-darwin-11.*"/>
+                <toolset name="intel-darwin-12.0"/>
                 <toolset name="gcc-3.4.0*"/>
                 <toolset name="gcc-4.1*"/>
                 <toolset name="gcc-4.2.0*"/>
                 <toolset name="gcc-mingw-3.4*"/>
+                <toolset name="gcc-mingw-4.*"/>
                 <toolset name="sun-5.7*"/>
                 <toolset name="sun-5.8*"/>
                 <toolset name="sun-5.9*"/>
@@ -630,19 +661,29 @@
                 <toolset name="msvc-8.0*"/>
                 <toolset name="msvc-9.0*"/>
                 <toolset name="msvc-10.0*"/>
+                <toolset name="msvc-11.0*"/>
                 <toolset name="msvc-7.1*"/>
+                <toolset name="vacpp-10.1"/>
+                <toolset name="qcc-4*"/>
                 <toolset name="acc"/>
                 <note author="Alexander Nasonov">
                     Conversion double-string-double may give a different value (or even throw) on many compilers
                 </note>
             </mark-failure>
         </test>
-        <test name="lexical_cast_vc8_bug_test">
+        <test name="lexical_cast_float_types_test">
             <mark-failure>
-                <toolset name="msvc-8.0*"/>
-                <note author="Alexander Nasonov">
-		    I don't have an access to Windows and VC++ to
-		    investigate this issue.
+                <toolset name="gcc-mingw-4.*"/>
+                <toolset name="vacpp-10.1"/>
+                <toolset name="vacpp"/>
+                <toolset name="msvc-9.0~stlport5.2"/>
+                <toolset name="msvc-9.0~wm5~stlport5.2"/>
+                <toolset name="intel-darwin-11.*"/>
+                <toolset name="intel-darwin-12.0"/>
+                <toolset name="qcc-4*"/>
+                <toolset name="clang-darwin-libcxx*"/>
+                <note author="Antony Polukhin">
+                    Some compilers and STL realizations convert double and long double types with bigger precision loss than minimal (or even round to infinity). Such failures are not a lexical_cast, but a compiler fault. 
                 </note>
             </mark-failure>
         </test>
@@ -1364,11 +1405,14 @@
             <toolset name="gcc-4.6*"/>
             <toolset name="gcc-4.7*"/>
             <toolset name="gcc-mingw-*"/>
-            <toolset name="darwin-4.2"/>
+            <toolset name="darwin-4.2*"/>
+            <toolset name="darwin-4.3*"/>
+            <toolset name="darwin-4.4*"/>
             <toolset name="clang-darwin-trunk"/>
             <toolset name="clang-darwin-normal"/>
             <toolset name="clang-darwin-linux-2.9"/>
             <toolset name="intel-linux-*"/>
+            <toolset name="intel-darwin-*"/>
             <note author="Daniel James">
                 GCC's libstdc++ has a versioned namespace feature which breaks
                 container forwarding. I don't know how to detect it so I'm just
@@ -1394,6 +1438,18 @@
             <toolset name="sun-5.10"/>
             <note author="Daniel James">
             STLport debug mode seems to be broken here.
+            </note>
+        </mark-expected-failures>
+
+        <mark-expected-failures>
+            <test name="container_fwd_debug"/>
+            <toolset name="clang-darwin-0x"/>
+            <toolset name="clang-darwin-normal"/>
+            <toolset name="clang-darwin-trunk"/>
+            <note author="Daniel James">
+            Some old versions of GCC's libstdc++ don't work on clang with
+            _GLIBCXX_DEBUG defined.
+            http://lists.cs.uiuc.edu/pipermail/cfe-dev/2011-May/015178.html
             </note>
         </mark-expected-failures>
     </library>
@@ -1560,7 +1616,6 @@
             <toolset name="acc*"/>
             <toolset name="msvc-8.0~wm5*"/>
             <toolset name="vacpp*"/>
-            <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
             <toolset name="gcc-3.4.6_linux_ia64"/>
             <note author="J. L&#195;&#179;pez" date="03 Dec 2008">
@@ -1877,8 +1932,14 @@
             </note>
         </mark-expected-failures>
     </library>
-
-
+    
+    <!-- functional/overloaded_function -->
+    <library name="functional/overloaded_function">
+        <!-- Boost.Preprocessor (iteration?) error on Sun -->
+        <mark-unusable>
+            <toolset name="sun-5.10"/>
+        </mark-unusable>
+    </library>
 
     <!-- fusion -->
     <library name="fusion">
@@ -1930,13 +1991,15 @@
             </note>
         </mark-unusable>
         <mark-unusable>
-            <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-darwin-10*"/>
+            <toolset name="intel-darwin-11*"/>
+            <toolset name="intel-darwin-12*"/>
             <note author="Barend Gehrels">
-                Intel 11.1 on Darwin raises a SIGSEGV in almost all unit tests.
+                Intel 11.1 and 12.0 on Darwin raises a SIGSEGV in almost all unit tests.
             </note>
         </mark-unusable>
         <mark-unusable>
-            <toolset name="pgi-11.2"/>
+            <toolset name="pgi-11*"/>
             <note author="Barend Gehrels">
                 pgi 11.1 does not support BOOST_AUTO and is not configured for UBLAS
             </note>
@@ -1944,7 +2007,7 @@
         <mark-unusable>
             <toolset name="msvc-9.0~wm5~stlport5.2"/>
             <note author="Barend Gehrels">
-                This configruation is not well configured for UBLAS
+                This configuration is not well configured for UBLAS
             </note>
         </mark-unusable>
     </library>
@@ -1980,20 +2043,48 @@
         </mark-expected-failures>
     </library>
 
-    <!-- integer -->
-    <library name="integer">
-        <mark-expected-failures>
-            <test name="integer_test"/>
-            <toolset name="acc"/>
-            <toolset name="gcc-4.2.1_hpux_ia64"/>
-            <note author="Boris Gubenko">
-                When compiling with aC++, depending on system load, the compile time may exceed
-                specified timeout value. The test passes when the timeout value is increased.
-                When compiling with GCC, linker takes segmentation fault.
-                In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.
-            </note>
-        </mark-expected-failures>
-    </library>
+	<!-- icl -->
+	<library name="icl">
+		<mark-unusable>
+			<toolset name="borland-cb2009"/>
+			<toolset name="borland-cb2010"/>
+			<toolset name="sun-5.10"/>
+			<toolset name="vacpp"/>
+			<note author="Joachim Faulhaber">
+				The compiler does not support features that are essential for the library.
+			</note>
+		</mark-unusable>
+		<mark-expected-failures>
+			<test name="cmp_msvc_value_born_error"/>
+			<toolset name="msvc-7.1"/>
+			<toolset name="msvc-8.0"/>
+			<toolset name="msvc-9.0*"/>
+			<toolset name="msvc-10.0*"/>
+			<note author="Joachim Faulhaber">
+				Compiler error expected for msvc: A minimal example of a class template 'value' that
+				results in syntax error in a subsequent meta function.
+				See <a
+		            href="https://svn.boost.org/trac/boost/ticket/5141">
+					ticket #5141
+				</a> for details.
+			</note>
+		</mark-expected-failures>
+	</library>
+
+	<!-- integer -->
+	<library name="integer">
+		<mark-expected-failures>
+			<test name="integer_test"/>
+			<toolset name="acc"/>
+			<toolset name="gcc-4.2.1_hpux_ia64"/>
+			<note author="Boris Gubenko">
+				When compiling with aC++, depending on system load, the compile time may exceed
+				specified timeout value. The test passes when the timeout value is increased.
+				When compiling with GCC, linker takes segmentation fault.
+				In the HP bug tracking system, this issue is tracked as QuIX ID: QXCR1000836120.
+			</note>
+		</mark-expected-failures>
+	</library>
 
     <!-- interprocess-->
     <library name="interprocess">
@@ -2032,7 +2123,6 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
-            <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
@@ -2350,6 +2440,58 @@
         </mark-expected-failures>
     </library>
 
+    <!-- local_function -->
+    <library name="local_function">
+        <!-- variadic macros required -->
+        <mark-expected-failures>
+            <test name="add"/>
+            <test name="add_classifiers"/>
+            <test name="add_default"/>
+            <test name="add_except"/>
+            <test name="add_inline"/>
+            <test name="add_params_only"/>
+            <test name="add_template"/>
+            <test name="add_this"/>
+            <test name="add_typed"/>
+            <test name="add_with_default"/>
+            <test name="all_decl"/>
+            <test name="factorial"/>
+            <test name="goto"/>
+            <test name="macro_commas"/>
+            <test name="nesting"/>
+            <test name="operator"/>
+            <test name="overload"/>
+            <test name="return_assign"/>
+            <test name="return_derivative"/>
+            <test name="return_inc"/>
+            <test name="return_getset"/>
+            <test name="return_this"/>
+            <test name="same_line"/>
+            <test name="transform"/>
+            <test name="typeof"/>
+            <test name="typeof_template"/>
+            <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-linux-10.1"/>
+            <toolset name="intel-linux-11.1"/>
+            <toolset name="pgi-11.9"/>
+            <toolset name="sun-5.10"/>
+            <note author="Lorenzo Caminiti" refid="51"/>
+        </mark-expected-failures>
+        <!-- auto-declarations not allowed -->
+        <mark-expected-failures>
+            <test name="add_classifiers"/>
+            <test name="add_classifiers_seq"/>
+            <test name="add_classifiers_seq_nova"/>
+            <toolset name="darwin-4.4_0x"/>
+            <toolset name="gcc-4.5.3_0x"/>
+            <toolset name="gcc-4.4.4_0x"/>
+            <note author="Lorenzo Caminiti">
+                This test does not allow C++11 auto-declaration support
+                (beccause it uses the `auto` keyword as storage classifier).
+            </note>
+        </mark-expected-failures>
+    </library>
+
     <!-- logic -->
     <library name="logic">
       <test name="tribool_io_test">
@@ -2375,7 +2517,6 @@
             <toolset name="gcc-3.2*"/>
             <toolset name="gcc-3.3*"/>
             <toolset name="mipspro"/>
-            <toolset name="pathscale*"/>
             <toolset name="intel-linux-8.*"/>
             <note author="Ion Gazta&#241;aga">
                 The compiler does not support features that are essential for the library.
@@ -4653,7 +4794,6 @@ for more information.
     <library name="ratio">
       <mark-unusable>
         <toolset name="borland-*"/>
-        <toolset name="pathscale*"/>
         <note author="Vicente J. Botet Escriba">
             The compiler does not support features that are essential for the library.
         </note>
@@ -4668,6 +4808,13 @@ for more information.
                 internal error: assertion failed: copy_template_param_expr.
                 It seems to be already an Intel internal bug database (tracker number #82149).
                 I have no workaround yet.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="si_physics"/>
+            <toolset name="vacpp*"/>
+            <note author="Vicente J. Botet Escriba">
+                The compiler does not support features that are essential for this test .
             </note>
         </mark-expected-failures>
     </library>
@@ -4829,7 +4976,6 @@ for more information.
             <test name="emulation_tpl"/>
             <toolset name="intel-*-9.1"/>
             <toolset name="intel-*-10.0"/>
-            <toolset name="intel-*-10.1"/>
             <toolset name="intel-*-11.0"/>
             <note author="Alexander Nasonov">
                 The test does not compile in typeof emulation mode,
@@ -4863,6 +5009,98 @@ for more information.
             <toolset name="msvc-7.1*"/>
             <toolset name="msvc-8.0*"/>
             <note author="Alexander Nasonov" refid="2"/>
+        </mark-expected-failures>
+        <!-- type-of emulation mode required -->
+        <mark-expected-failures>
+            <test name="native"/>
+            <test name="native_this"/>
+            <test name="native_this_tpl"/>
+            <test name="native_tpl"/>
+            <test name="native_tu_test"/>
+            <test name="same_line_seq"/>
+            <test name="same_line_seq_nova"/>
+            <test name="world_checkpoint_seq"/>
+            <test name="world_checkpoint_seq_nova"/>
+            <test name="world_seq"/>
+            <test name="world_seq_nova"/>
+            <test name="world_this_seq"/>
+            <test name="world_this_seq_nova"/>
+            <test name="world_tpl_seq"/>
+            <test name="world_tpl_seq_nova"/>
+            <toolset name="sun-5.10"/>
+            <note author="Lorenzo Caminiti">
+                This compiler does not support native type-of and type-of
+                emulation mode is not atuomatically detected for this compiler
+                (force it by defining the BOOST_TYPEOF_EMULATION macro).
+            </note>
+        </mark-expected-failures>
+        <!-- MSVC type-of emulation cannot capture `this` -->
+        <mark-expected-failures>
+            <test name="emulation_this"/>
+            <test name="emulation_this_tpl"/>
+            <toolset name="msvc-10.0"/>
+            <toolset name="msvc-8.0"/>
+            <toolset name="msvc-9.0"/>
+            <toolset name="msvc-9.0~stlport5.2"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <note author="Lorenzo Caminiti">
+                This compiler cannot capture the object `this` using type-of
+                emulation mode (use native type-of instead).
+            </note>
+        </mark-expected-failures>
+        <!-- variadic macros required -->
+        <mark-expected-failures>
+            <test name="same_line"/>
+            <test name="world"/>
+            <test name="world_checkpoint"/>
+            <test name="world_this"/>
+            <test name="world_tpl"/>
+            <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-linux-10.1"/>
+            <toolset name="intel-linux-11.1"/>
+            <toolset name="pgi-11.9"/>
+            <toolset name="sun-5.10"/>
+            <note author="Lorenzo Caminiti" refid="51"/>
+        </mark-expected-failures>
+        <!-- lambda functions required -->
+        <mark-expected-failures>
+            <test name="world_checkpoint_all"/>
+            <test name="world_checkpoint_all_seq"/>
+            <test name="world_checkpoint_all_seq_nova"/>
+            <toolset name="clang-darwin-trunk"/>
+            <toolset name="darwin-4.4"/>
+            <toolset name="darwin-4.4_0x"/>
+            <toolset name="gcc-4.2.1"/>
+            <toolset name="gcc-4.2.4"/>
+            <toolset name="gcc-4.3.4"/>
+            <toolset name="gcc-4.3.4_0x"/>
+            <toolset name="gcc-4.4.4"/>
+            <toolset name="gcc-4.4.4_0x"/>
+            <toolset name="gcc-4.5.3"/>
+            <toolset name="gcc-4.6"/>
+            <toolset name="gcc-4.6.2"/>
+            <toolset name="gcc-mingw-4.4.0"/>
+            <toolset name="gcc-mingw-4.4.7"/>
+            <toolset name="gcc-mingw-4.5.2"/>
+            <toolset name="gcc-mingw-4.5.4"/>
+            <toolset name="gcc-mingw-4.6.3"/>
+            <toolset name="gcc-mingw-4.7.0"/>
+            <toolset name="intel-darwin-11.1"/>
+            <toolset name="intel-darwin-12.0"/>
+            <toolset name="intel-linux-10.1"/>
+            <toolset name="intel-linux-11.1"/>
+            <toolset name="intel-linux-12.0"/>
+            <toolset name="intel-linux-12.1"/>
+            <toolset name="msvc-8.0"/>
+            <toolset name="msvc-9.0"/>
+            <toolset name="msvc-9.0~stlport5.2"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+            <toolset name="pathscale-4.0.8"/>
+            <toolset name="pgi-11.9"/>
+            <toolset name="sun-5.10"/>
+            <toolset name="vacpp-10.1"/>
+            <toolset name="vacpp"/>
+            <note author="Lorenzo Caminiti" refid="52"/>
         </mark-expected-failures>
     </library>
 
@@ -5082,6 +5320,41 @@ for more information.
             <toolset name="*como-4_3_3*"/>
             <note author="B. Dawes" refid="10"/>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="test_thread*"/>
+            <test name="test_thread_id*"/>
+            <test name="test_hardware_concurrency*"/>
+            <test name="test_thread_move*"/>
+            <test name="test_thread_return_local*"/>
+            <test name="test_thread_move_return*"/>
+            <test name="test_thread_launching*"/>
+            <test name="test_thread_mf*"/>
+            <test name="test_thread_exit*"/>
+            <test name="test_move_function*"/>
+            <test name="test_mutex*"/>
+            <test name="test_condition_notify_one*"/>
+            <test name="test_condition_timed_wait_times_out*"/>
+            <test name="test_condition_notify_all*"/>
+            <test name="test_condition*"/>
+            <test name="test_tss*"/>
+            <test name="test_once*"/>
+            <test name="test_xtime*"/>
+            <test name="test_barrier*"/>
+            <test name="test_shared_mutex*"/>
+            <test name="test_shared_mutex_part_2*"/>
+            <test name="test_shared_mutex_timed_locks*"/>
+            <test name="test_shared_mutex_timed_locks_chrono*"/>
+            <test name="test_lock_concept*"/>
+            <test name="test_generic_locks*"/>
+            <test name="test_futures*"/>
+            <test name="test_2309*"/>
+            <test name="test_2741*"/>
+            <toolset name="sun-*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-03-28">
+This test uses Boost.Test and Boost.Test doesn't works on this compiler.
+            </note>
+        </mark-expected-failures>
+
         <test name="test_mutex">
             <mark-failure>
                 <toolset name="msvc-7.0"/>
@@ -5128,6 +5401,7 @@ for more information.
             <toolset name="como-win-*"/>
             <toolset name="msvc*wm5*"/>
             <toolset name="cw-9.4"/>
+            <toolset name="gcc-mingw*"/>
             <note author="Roland Schwarz" date="2006-12-14">
                 When a thread ends, tss data needs to be cleaned up. This process
                 is mostly automatic. When threads are launched by the Boost.Thread API
@@ -5161,9 +5435,45 @@ With aC++, the tests compile cleanly in strict ansi mode and succeed.
             <test name="test_thread_move_return_lib"/>
             <test name="test_thread_return_local"/>
             <test name="test_thread_return_local_lib"/>
-            <toolset name="*"/>
+            <toolset name="sun-*"/>
             <note author="Anthony Williams" date="2009-10-28">
 These tests will fail in most compilers that don't support rvalue references.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*mutex__native_handle*"/>
+            <test name="*variable__native_handle*"/>
+            <toolset name="msvc-*"/>
+            <toolset name="gcc-mingw*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+The implementation of native_handle() is not possible on this platform.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="recursive_mutex__native_handle*"/>
+            <toolset name="pgi-*"/>
+            <toolset name="sun-*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+The implementation of native_handle() is not possible on this platform.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="*sleep_for*"/>
+            <test name="*sleep_until*"/>
+            <test name="*wait_for*"/>
+            <test name="*wait_until*"/>
+            <test name="*cons__duration*"/>
+            <test name="*cons__time_point*"/>
+            <test name="*try_lock_for*"/>
+            <test name="*try_lock_until*"/>
+            <test name="*upgrade_lock_for*"/>
+            <test name="*upgrade_lock_until*"/>
+            <test name="*try_join_for*"/>
+            <test name="*try_join_until*"/>
+            <test name="*chrono*"/>
+            <toolset name="vacpp*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+This platform doesn't supports Boost.Chrono.
             </note>
         </mark-expected-failures>
     </library>
@@ -5177,6 +5487,21 @@ These tests will fail in most compilers that don't support rvalue references.
 
     <!-- type_traits -->
     <library name="type_traits">
+       <mark-expected-failures>
+          <test name="is_virtual_base_of_test"/>
+          <toolset name="gcc-3.4.6"/>
+          <note author="John Maddock">
+             Type Traits tests are run with warnings-as-errors and GCC 3.x emits warnings with this test
+             that I haven't been able to suppress.
+          </note>
+       </mark-expected-failures>
+       <mark-expected-failures>
+          <test name="tricky_rvalue_test"/>
+          <toolset name="msvc-10.0"/>
+          <note author="John Maddock">
+             RValue reference suppprt in VC10 is unable to handle these tests fully.
+          </note>
+       </mark-expected-failures>
        <mark-expected-failures>
           <test name="has_operator_new_test"/>
           <test name="make_signed_test"/>
@@ -5250,6 +5575,7 @@ These tests will fail in most compilers that don't support rvalue references.
             <toolset name="msvc-7.1*"/>
             <toolset name="msvc-8.0*"/>
             <toolset name="msvc-9.0*"/>
+            <toolset name="msvc-10.0*"/>
             <note author="Alexander Nasonov">
                 See bug 99776 'enum UIntEnum { value = UINT_MAX } is promoted to int'
                 http://lab.msdn.microsoft.com/ProductFeedback/viewfeedback.aspx?feedbackid=22b0a6b7-120f-4ca0-9136-fa1b25b26efe
@@ -6644,6 +6970,14 @@ These tests will fail in most compilers that don't support rvalue references.
 
     <note id="50">
         This test requires C++0x support.
+    </note>
+
+    <note id="51">
+        This test requires variadic macro support.
+    </note>
+    
+    <note id="52">
+        This test requires lambda function support.
     </note>
 
 </explicit-failures-markup>
