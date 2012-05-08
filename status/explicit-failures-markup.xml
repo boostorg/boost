@@ -2458,6 +2458,10 @@
 
     <!-- local_function -->
     <library name="local_function">
+        <mark-unusable>
+            <!-- most Preprocessor tests also fail on this compiler -->
+            <toolset name="cray-8.0"/>
+        </mark-unusable>
         <!-- variadic macros required -->
         <mark-expected-failures>
             <test name="add"/>
@@ -2499,12 +2503,14 @@
             <test name="add_classifiers_seq"/>
             <test name="add_classifiers_seq_nova"/>
             <toolset name="clang-darwin-trunkLX"/>
+            <toolset name="clang-darwin-trunkRX"/>
             <toolset name="darwin-4.4_0x"/>
             <toolset name="gcc-4.4.4_0x"/>
-            <toolset name="gcc-mingw-4.5.2_0x"/>
             <toolset name="gcc-4.5.3_0x"/>
             <toolset name="gcc-4.6.2_0x"/>
+            <toolset name="gcc-mingw-4.5.2_0x"/>
             <toolset name="msvc-10.0"/>
+            <toolset name="msvc-11.0"/>
             <note author="Lorenzo Caminiti">
                 This test does not allow C++11 auto-declaration support
                 (beccause it uses the `auto` keyword as storage classifier).
@@ -4992,6 +4998,10 @@ for more information.
 
     <!-- scope_exit -->
     <library name="scope_exit">
+        <mark-unusable>
+            <!-- most Preprocessor tests also fail on this compiler -->
+            <toolset name="cray-8.0"/>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="emulation_tpl"/>
             <toolset name="intel-*-9.1"/>
