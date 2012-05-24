@@ -1942,14 +1942,6 @@
         </mark-expected-failures>
     </library>
     
-    <!-- functional/overloaded_function -->
-    <library name="functional/overloaded_function">
-        <!-- Boost.Preprocessor (iteration?) error on Sun -->
-        <mark-unusable>
-            <toolset name="sun-5.10"/>
-        </mark-unusable>
-    </library>
-
     <!-- fusion -->
     <library name="fusion">
         <mark-unusable>
@@ -2451,6 +2443,10 @@
 
     <!-- local_function -->
     <library name="local_function">
+        <mark-unusable>
+            <!-- most Preprocessor tests also fail on this compiler -->
+            <toolset name="cray-8.0"/>
+        </mark-unusable>
         <!-- variadic macros required -->
         <mark-expected-failures>
             <test name="add"/>
@@ -2473,7 +2469,7 @@
             <test name="return_assign"/>
             <test name="return_derivative"/>
             <test name="return_inc"/>
-            <test name="return_getset"/>
+            <test name="return_setget"/>
             <test name="return_this"/>
             <test name="same_line"/>
             <test name="transform"/>
@@ -2491,9 +2487,15 @@
             <test name="add_classifiers"/>
             <test name="add_classifiers_seq"/>
             <test name="add_classifiers_seq_nova"/>
+            <toolset name="clang-darwin-trunkLX"/>
+            <toolset name="clang-darwin-trunkRX"/>
             <toolset name="darwin-4.4_0x"/>
-            <toolset name="gcc-4.5.3_0x"/>
             <toolset name="gcc-4.4.4_0x"/>
+            <toolset name="gcc-4.5.3_0x"/>
+            <toolset name="gcc-4.6.2_0x"/>
+            <toolset name="gcc-mingw-4.5.2_0x"/>
+            <toolset name="msvc-10.0"/>
+            <toolset name="msvc-11.0"/>
             <note author="Lorenzo Caminiti">
                 This test does not allow C++11 auto-declaration support
                 (beccause it uses the `auto` keyword as storage classifier).
@@ -4981,6 +4983,10 @@ for more information.
 
     <!-- scope_exit -->
     <library name="scope_exit">
+        <mark-unusable>
+            <!-- most Preprocessor tests also fail on this compiler -->
+            <toolset name="cray-8.0"/>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="emulation_tpl"/>
             <toolset name="intel-*-9.1"/>
@@ -5026,35 +5032,10 @@ for more information.
             <test name="native_this_tpl"/>
             <test name="native_tpl"/>
             <test name="native_tu_test"/>
-            <test name="same_line_seq"/>
-            <test name="same_line_seq_nova"/>
-            <test name="world_checkpoint_seq"/>
-            <test name="world_checkpoint_seq_nova"/>
-            <test name="world_seq"/>
-            <test name="world_seq_nova"/>
-            <test name="world_this_seq"/>
-            <test name="world_this_seq_nova"/>
-            <test name="world_tpl_seq"/>
-            <test name="world_tpl_seq_nova"/>
             <toolset name="sun-5.10"/>
             <note author="Lorenzo Caminiti">
-                This compiler does not support native type-of and type-of
-                emulation mode is not atuomatically detected for this compiler
-                (force it by defining the BOOST_TYPEOF_EMULATION macro).
-            </note>
-        </mark-expected-failures>
-        <!-- MSVC type-of emulation cannot capture `this` -->
-        <mark-expected-failures>
-            <test name="emulation_this"/>
-            <test name="emulation_this_tpl"/>
-            <toolset name="msvc-10.0"/>
-            <toolset name="msvc-8.0"/>
-            <toolset name="msvc-9.0"/>
-            <toolset name="msvc-9.0~stlport5.2"/>
-            <toolset name="msvc-9.0~wm5~stlport5.2"/>
-            <note author="Lorenzo Caminiti">
-                This compiler cannot capture the object `this` using type-of
-                emulation mode (use native type-of instead).
+                This compiler does not support native type-of (force type-of
+                emulation mode defining the BOOST_TYPEOF_EMULATION macro).
             </note>
         </mark-expected-failures>
         <!-- variadic macros required -->
