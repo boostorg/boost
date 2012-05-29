@@ -1765,16 +1765,6 @@
                 ADL which these compilers do not support.
             </note>
         </mark-expected-failures>
-
-        <mark-expected-failures>
-            <test name="noncopyable_rvalue_const"/>
-            <test name="noncopyable_rvalue_const_r"/>
-            <test name="noncopyable_rvalue_nonconst"/>
-            <test name="noncopyable_rvalue_nonconst_r"/>
-            <toolset name="*"/>
-            <note refid="50" author="Eric Niebler"/>
-        </mark-expected-failures>
-
     </library>
 
     <!-- format -->
@@ -2898,6 +2888,7 @@ for more information.
         <toolset name="sun-5.10"/>
         <toolset name="borland-*"/>
         <toolset name="vacpp*"/>
+        <toolset name="cray-8.0"/>
         <note author="Thomas Heller" id="phoenix-incompatible-compilers">
             These compilers don't work with phoenix.
             This is due to the fact that phoenix uses proto
@@ -2939,6 +2930,7 @@ for more information.
         <toolset name="borland-*"/>
         <toolset name="vacpp"/>
         <toolset name="vacpp-*"/>
+        <toolset name="cray-8.0"/>
       </mark-unusable>
     </library>
 
@@ -3183,12 +3175,13 @@ for more information.
     <!-- spirit (v2) -->
     <library name="spirit">
       <mark-unusable>
-	<toolset name="sun-5.7"/>
-	<toolset name="sun-5.8"/>
+        <toolset name="sun-5.7"/>
+        <toolset name="sun-5.8"/>
         <toolset name="sun-5.9"/>
         <toolset name="sun-5.10"/>
-	<toolset name="vacpp*"/>
-	<toolset name="borland-*"/>
+        <toolset name="vacpp*"/>
+        <toolset name="borland-*"/>
+        <toolset name="cray-8.0"/>
       </mark-unusable>
     </library>
 
@@ -6661,6 +6654,12 @@ This platform doesn't supports Boost.Chrono.
             <toolset name="sun-5.10"/>
             <note refid="17"/>
         </mark-unusable>
+        <mark-unusable>
+            <toolset name="cray-8.0"/>
+            <note author="Eric Niebler">
+                Boost.Proto doesn't work on the cray compiler.
+            </note>
+        </mark-unusable>
 
         <mark-expected-failures>
             <test name="test_actions"/>
@@ -6959,10 +6958,6 @@ This platform doesn't supports Boost.Chrono.
 
     <note id="49">
         This test fails because MinGW apparently does not always catch exceptions properly.
-    </note>
-
-    <note id="50">
-        This test requires C++0x support.
     </note>
 
     <note id="51">
