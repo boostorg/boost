@@ -50,9 +50,8 @@ build-type = [ option.get build-type ] ;
 build-type ?= minimal ;
 if ! ( $(build-type) in complete minimal )
 {
-    ECHO The value of the --build-type option should be either 'complete' or
+    EXIT The value of the --build-type option should be either 'complete' or
         'minimal' ;
-    EXIT ;
 }
 
 # What kind of layout are we doing?
@@ -477,8 +476,9 @@ rule post-build ( ok ? )
     {
         if $(ok)
         {
-        ECHO
-"\n\nThe Boost C++ Libraries were successfully built!
+            ECHO "
+
+The Boost C++ Libraries were successfully built!
 
 The following directory should be added to compiler include paths:
 
@@ -559,7 +559,7 @@ rule declare-targets ( all-libraries * : headers * )
 
     if [ option.get "show-libraries" : : true ]
     {
-        ECHO "The following libraries require building:" ;
+        ECHO The following libraries require building: ;
         for local l in $(libraries)
         {
             ECHO "    - $(l)" ;
