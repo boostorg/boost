@@ -508,16 +508,16 @@ build-system.set-post-build-hook $(__name__).post-build ;
 rule libraries-to-install ( existing-libs * )
 {
     local argv = [ modules.peek : ARGV ] ;
-    local with-parameter = [ MATCH --with-(.*) : $(argv) ] ;
-    local without-parameter = [ MATCH --without-(.*) : $(argv) ] ;
+    local with-parameter = [ MATCH ^--with-(.*) : $(argv) ] ;
+    local without-parameter = [ MATCH ^--without-(.*) : $(argv) ] ;
 
     if ! $(with-parameter) && ! $(without-parameter)
     {
         # Nothing is specified on command line. See if maybe project-config.jam
         # has some choices.
         local libs = [ modules.peek project-config : libraries ] ;
-        with-parameter = [ MATCH --with-(.*) : $(libs) ] ;
-        without-parameter = [ MATCH --without-(.*) : $(libs) ] ;
+        with-parameter = [ MATCH ^--with-(.*) : $(libs) ] ;
+        without-parameter = [ MATCH ^--without-(.*) : $(libs) ] ;
     }
 
     # Do some checks.
