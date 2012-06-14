@@ -8,6 +8,7 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
+import "class" : new ;
 import common ;
 import configure ;
 import build-system ;
@@ -279,11 +280,11 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
     if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
     {
         generate stage-unversioned : stage-proper :
-            <generating-rule>boostcpp.make-unversioned-links ;
+          <generating-rule>@boostcpp.make-unversioned-links ;
         $(p).mark-target-as-explicit stage-unversioned ;
 
         generate install-unversioned : install-proper :
-            <generating-rule>boostcpp.make-unversioned-links ;
+          <generating-rule>@boostcpp.make-unversioned-links ;
         $(p).mark-target-as-explicit install-unversioned ;
     }
     else
