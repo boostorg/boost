@@ -255,12 +255,18 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
     if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
     {
         generate stage-unversioned : stage-proper :
-          <generating-rule>@boostcpp.make-unversioned-links ;
+            <generating-rule>@boostcpp.make-unversioned-links ;
         $(p).mark-target-as-explicit stage-unversioned ;
 
-        generate install-unversioned : install-proper :
-          <generating-rule>@boostcpp.make-unversioned-links ;
-        $(p).mark-target-as-explicit install-unversioned ;
+        # Commented out as it does not seem to work. Whoever wrote this
+        # originally, left some typos in it, but when that got corrected and the
+        # code got enabled - it started reporting ambiguous/duplicate target
+        # Boost Build errors. Anyone requiring unversioned staged libraries
+        # needs to correct those errors before reenabling this code.
+        #                                            (06.07.2012.) (Jurko)
+        #~ generate install-unversioned : install-proper :
+        #~     <generating-rule>@boostcpp.make-unversioned-links ;
+        #~ $(p).mark-target-as-explicit install-unversioned ;
     }
     else
     {
