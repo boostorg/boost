@@ -252,23 +252,25 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
         ;
     $(p).mark-target-as-explicit stage-proper ;
 
-    if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
-    {
-        generate stage-unversioned : stage-proper :
-            <generating-rule>@boostcpp.make-unversioned-links ;
-        $(p).mark-target-as-explicit stage-unversioned ;
-
-        # Commented out as it does not seem to work. Whoever wrote this
-        # originally, left some typos in it, but when that got corrected and the
-        # code got enabled - it started reporting ambiguous/duplicate target
-        # Boost Build errors. Anyone requiring unversioned staged libraries
-        # needs to correct those errors before reenabling this code.
-        #                                            (06.07.2012.) (Jurko)
-        #~ generate install-unversioned : install-proper :
-        #~     <generating-rule>@boostcpp.make-unversioned-links ;
-        #~ $(p).mark-target-as-explicit install-unversioned ;
-    }
-    else
+    # Commented out as it does not seem to work. Whoever wrote this originally,
+    # left some typos in the code, but when that got corrected and the code got
+    # enabled - it started reporting ambiguous/duplicate target Boost Build
+    # errors. Anyone requiring unversioned staged libraries needs to correct
+    # those errors before reenabling this code. For more detailed information
+    # see the related Boost library development mailing list thread at
+    # 'http://lists.boost.org/Archives/boost/2012/06/194312.php'.
+    #                                                (06.07.2012.) (Jurko)
+    #~ if $(layout-versioned) && ( [ modules.peek : NT ] || [ modules.peek : UNIX ] )
+    #~ {
+    #~     generate stage-unversioned : stage-proper :
+    #~         <generating-rule>@boostcpp.make-unversioned-links ;
+    #~     $(p).mark-target-as-explicit stage-unversioned ;
+    #~
+    #~     generate install-unversioned : install-proper :
+    #~         <generating-rule>@boostcpp.make-unversioned-links ;
+    #~     $(p).mark-target-as-explicit install-unversioned ;
+    #~ }
+    #~ else
     {
         # Create do-nothing aliases.
         alias stage-unversioned ;
