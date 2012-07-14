@@ -186,6 +186,8 @@ boostbook standalone
         <xsl:param>chunk.section.depth=1
         <xsl:param>boost.root=../../..
         <xsl:param>navig.graphics=1
+        <xsl:param>boost.mathjax=1
+        <xsl:path>$(images_location)/..
 
 
         # PDF Options:
@@ -201,7 +203,5 @@ boostbook standalone
     ;
 
 
-install pdf-install : standalone : <location>. <install-type>PDF ;
-
-
-
+install pdfinstall : standalone/<format>pdf : <location>. <install-type>PDF ;
+explicit pdfinstall ;
