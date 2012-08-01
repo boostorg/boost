@@ -18,11 +18,9 @@ import hashlib
 import argparse
 import subprocess
 
-# import svn.core
-# import svn.client
-
 from ftplib import FTP
 
+# kSVNReleaseURL	= "http://svn.boost.org/svn/boost/branches/release/libs/array"
 kSVNReleaseURL	= "http://svn.boost.org/svn/boost/branches/release"
 kDocsFileName	= "boost-release-docs.7z"
 kDocsTemp		= "docs_temp"
@@ -82,33 +80,9 @@ def mergetree(src, dst, symlinks=False, ignore=None):
 	if errors:
 		raise Error, errors
 
-# svnPool = svn.core.Pool()
-# svnCTX  = svn.client.create_context(svnPool)
-# svnCTX.auth_baton = svn.core.svn_auth_open([
-# 	svn.client.get_simple_provider(),
-# 	svn.client.get_username_provider(),
-# 	svn.client.get_ssl_server_trust_file_provider(),
-# 	svn.client.get_ssl_client_cert_file_provider(),
-# 	svn.client.get_ssl_client_cert_pw_file_provider(),
-# 	])
-
-
-def svnExport(client, url, eol, revisionStr, dest):
-#	rev = svn.core.svn_opt_revision_t()
-#	rev.kind = svn.core.svn_opt_revision_number
-#	rev.value.number = revNo
-#	svn.client.export2 ( kSVNReleaseURL, dest, rev, True, eol, svnCTX, svnPool )
+def svnExport(url, eol, revisionStr, dest):
 	command_arr = [ "svn", "export", "--non-interactive", "--native-eol", eol, "-r", revisionStr, url, dest ]
 	subprocess.check_output ( command_arr )
-
-# def svnLastRevision(url):
-# 	rev = svn.core.svn_opt_revision_t()
-# 	rev.kind = svn.core.svn_opt_revision_head
-# 	res = []
-# 	def receiver(path, raw_data, svnPool, retval=res):
-# 		res.append(raw_data)
-# 	svn.client.info ( kSVNReleaseURL, rev, rev, receiver, False, svnCTX )
-# 	return res[0].rev
 
 def ftp_get_file(ftp, filename, dest_file):
 	f = open(dest_file, 'wb')
@@ -132,20 +106,22 @@ def hash_file(filename):
 def print_hash(filename):
 	print "%s *%s" % (hash_file(filename).hexdigest(), filename)
 
-def compress_7z (source, dest):
+def compress_7z (dest, source):
 	command_arr = [ k7zName, "a", "-r", dest + ".7z",  source ]
 	subprocess.check_output ( command_arr )
 #	os.system ( "%s a -r %s.7z %s > /dev/null" % (k7zName, dest, source))
 	
-def expand_7z (source, dest):
+def expand_7z (dest, source):
 	command_arr = [ k7zName, "x", "-y", "-o" + dest, source ]
 	subprocess.check_output ( command_arr )
 #	os.system ( "%s x -y -o%s %s > /dev/null"  % (k7zName, dest, source))
 
 def do_it(suffix, releaseRevision, server, username, password, doUpload, doDocs):
-	client = None  # pysvn.Client ()
-	windowsName = "boost-windows" + suffix
-	posixName   = "boost-posix"   + suffix
+	windowsDir  = "windows"
+	posixDir    = "posix"
+	boostName   = "boost_" + suffix
+	windowsName = windowsDir + "/" + boostName
+	posixName   = posixDir   + "/" + boostName
 
 	# Download the docs - stash them somewhere (docs_temp)
 	## Old script "snapshot_download_docs.bat"
@@ -153,31 +129,38 @@ def do_it(suffix, releaseRevision, server, username, password, doUpload, doDocs)
 		ftp = FTP(server)
 		ftp.login(username, password)
 		ftp_get_file ( ftp, kDocsFileName, kDocsFileName )
-		expand_7z (	kDocsFileName, kDocsTemp )
+		expand_7z (	kDocsTemp, kDocsFileName )
 		ftp.quit ();		
 		
 	# Make Posix folder and export with LF line endings
-	svnExport(client, kSVNReleaseURL, "LF", releaseRevision, posixName)
+	os.mkdir ( posixDir )
+	svnExport(kSVNReleaseURL, "LF", releaseRevision, posixName)
 	# Merge in the docs
 	if doDocs:
 		mergetree ( kDocsTemp, posixName )
 		
 	# Make Windows folder export with CRLF line endings
-	svnExport(client, kSVNReleaseURL, "CRLF", releaseRevision, windowsName)
+	os.mkdir ( windowsDir )
+	svnExport(kSVNReleaseURL, "CRLF", releaseRevision, windowsName)
 	# Merge in the docs
 	if doDocs:
 		mergetree ( kDocsTemp, windowsName )
 
 	# Create tar.gz and tar.bz2 files
-	shutil.make_archive (posixName, "bztar", posixName)
-	shutil.make_archive (posixName, "gztar", posixName)
-	shutil.make_archive (windowsName, "zip", windowsName)
-	compress_7z (windowsName, windowsName)
+	outputName = "boost_" + suffix
+	shutil.make_archive (outputName, "bztar", posixDir )
+	shutil.make_archive (outputName, "gztar", posixDir )
+	shutil.make_archive (outputName, "zip",   windowsDir )
+	hereDir = os.getcwd ()
+	os.chdir ( windowsDir )
+	compress_7z ( "../" + outputName,  boostName )
+	os.chdir ( hereDir )
+	
 	files = [
-		posixName   + ".tar.gz", 
-		posixName   + ".tar.bz2", 
-		windowsName + ".zip", 
-		windowsName + ".7z"
+		outputName + ".tar.gz", 
+		outputName + ".tar.bz2", 
+		outputName + ".zip", 
+		outputName + ".7z"
 		]
 	
 	# Create the MD5 checksums; list them for easy checking
@@ -193,8 +176,8 @@ def do_it(suffix, releaseRevision, server, username, password, doUpload, doDocs)
 		ftp.quit ();		
 
 	# Clean up the remains
-	shutil.rmtree(posixName)
-	shutil.rmtree(windowsName)
+	shutil.rmtree(posixDir)
+	shutil.rmtree(windowsDir)
 	if doDocs:
 		shutil.rmtree(kDocsTemp)
 		os.remove(kDocsFileName)
