@@ -20,8 +20,6 @@ import subprocess
 
 from ftplib import FTP
 
-# kSVNReleaseURL	= "http://svn.boost.org/svn/boost/branches/release/libs/array"
-kSVNReleaseURL	= "http://svn.boost.org/svn/boost/branches/release"
 kDocsFileName	= "boost-release-docs.7z"
 kDocsTemp		= "docs_temp"
 kDocsFolder		= "docs_temp"
@@ -94,7 +92,7 @@ def ftp_put_file(ftp, filename):
 
 def hash_file(filename):
 	blockSize = 65536
-	hasher = hashlib.md5();
+	hasher = hashlib.md5()
 	aFile = open(filename, "rb")
 	buf = aFile.read(blockSize)
 	while len(buf) > 0:
@@ -116,10 +114,13 @@ def expand_7z (dest, source):
 	subprocess.check_output ( command_arr )
 #	os.system ( "%s x -y -o%s %s > /dev/null"  % (k7zName, dest, source))
 
-def do_it(suffix, releaseRevision, server, username, password, doUpload, doDocs):
+def fixDirPerms (dir):
+	os.system ( "find %s -type d -exec chmod 755 {} \;" % dir )
+	
+def do_it(svnUrl, tag, suffix, releaseRevision, server, username, password, doUpload, doDocs):
 	windowsDir  = "windows"
 	posixDir    = "posix"
-	boostName   = "boost_" + suffix
+	boostName   = "boost_" + tag
 	windowsName = windowsDir + "/" + boostName
 	posixName   = posixDir   + "/" + boostName
 
@@ -130,24 +131,29 @@ def do_it(suffix, releaseRevision, server, username, password, doUpload, doDocs)
 		ftp.login(username, password)
 		ftp_get_file ( ftp, kDocsFileName, kDocsFileName )
 		expand_7z (	kDocsTemp, kDocsFileName )
-		ftp.quit ();		
+		fixDirPerms ( kDocsTemp )
+		ftp.quit ()		
 		
 	# Make Posix folder and export with LF line endings
 	os.mkdir ( posixDir )
-	svnExport(kSVNReleaseURL, "LF", releaseRevision, posixName)
+	svnExport(svnUrl, "LF", releaseRevision, posixName)
+#	fixDirPerms ( posixName )
 	# Merge in the docs
 	if doDocs:
 		mergetree ( kDocsTemp, posixName )
 		
 	# Make Windows folder export with CRLF line endings
 	os.mkdir ( windowsDir )
-	svnExport(kSVNReleaseURL, "CRLF", releaseRevision, windowsName)
+	svnExport(svnUrl, "CRLF", releaseRevision, windowsName)
+#	fixDirPerms ( windowsName )
 	# Merge in the docs
 	if doDocs:
 		mergetree ( kDocsTemp, windowsName )
 
 	# Create tar.gz and tar.bz2 files
-	outputName = "boost_" + suffix
+	outputName = "boost_" + tag
+	if suffix != None:
+		outputName += suffix
 	shutil.make_archive (outputName, "bztar", posixDir )
 	shutil.make_archive (outputName, "gztar", posixDir )
 	shutil.make_archive (outputName, "zip",   windowsDir )
@@ -165,15 +171,15 @@ def do_it(suffix, releaseRevision, server, username, password, doUpload, doDocs)
 	
 	# Create the MD5 checksums; list them for easy checking
 	for f in files:
-		print_hash ( f );
+		print_hash ( f )
 	
 	# Upload the four files
 	if doUpload:
 		ftp = FTP(server)
 		ftp.login(username, password)
 		for f in files:
-			ftp_put_file(ftp, f );
-		ftp.quit ();		
+			ftp_put_file(ftp, f )
+		ftp.quit ()		
 
 	# Clean up the remains
 	shutil.rmtree(posixDir)
@@ -194,11 +200,16 @@ parser.add_argument ('-noupload',  action='store_true', default=False, dest='nou
                     help='Do not upload the snapshots to the server')
 parser.add_argument ('-revision',  dest="revision", default="HEAD", 
                     help='svn revision to snapshot (default=HEAD)')
+parser.add_argument ('-svnURL', dest="svnURL", 
+					default="http://svn.boost.org/svn/boost/branches/release",
+					help='subversion URL to fetch (optional; mostly for debugging)')
+parser.add_argument('-suffix', help='suffix to append to the snapshot name; i.e, rc1')
 parser.add_argument('--server', dest='server', default="boost.cowic.de", action="store",
 					help='ftp server to download docs from and upload snapshots to')
 parser.add_argument('--user', dest='username', default="", action="store")
 parser.add_argument('--pass', dest='password', default="", action="store")
-parser.add_argument('suffix', help='the tag to append to the snapshot name')
+parser.add_argument('tag', help='the tag to label the snapshot with')
 
 results = parser.parse_args()
-do_it(results.suffix, results.revision, results.server, results.username, results.password, not results.noupload, not results.nodocs)
+do_it(results.svnURL, results.tag, results.suffix, results.revision, results.server, results.username, \
+	results.password, not results.noupload, not results.nodocs)
