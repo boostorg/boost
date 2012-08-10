@@ -51,10 +51,13 @@ cmnd(['bjam', 'tools/inspect/build'])
 print 'Running inspect from ' + os.getcwd()
 subprocess.call('dist/bin/inspect', stdout=open(filepath, 'w'))
 
-print 'Upload web page via ftp...'
+print 'FTP: Sign on...'
 ftp = FTP(args.host, args.user, args.password)
+print 'FTP: List current contents...'
 ftp.retrlines('LIST')
+print 'FTP: Upload web page via ftp...'
 ftp.storlines('STOR ' + args.filename, open(filepath)) 
+print 'FTP: List updated contents...'
 ftp.retrlines('LIST')
 ftp.quit()
 
