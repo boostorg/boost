@@ -154,9 +154,9 @@ def do_it(svnUrl, tag, suffix, releaseRevision, server, username, password, doUp
 	outputName = "boost_" + tag
 	if suffix != None:
 		outputName += suffix
-	shutil.make_archive (outputName, "bztar", posixDir )
-	shutil.make_archive (outputName, "gztar", posixDir )
-	shutil.make_archive (outputName, "zip",   windowsDir )
+	shutil.make_archive ( outputName, "bztar", posixDir,   boostName )
+	shutil.make_archive ( outputName, "gztar", posixDir,   boostName )
+	shutil.make_archive ( outputName, "zip",   windowsDir, boostName )
 	hereDir = os.getcwd ()
 	os.chdir ( windowsDir )
 	compress_7z ( "../" + outputName,  boostName )
