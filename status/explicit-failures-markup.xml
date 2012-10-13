@@ -5422,6 +5422,7 @@ The implementation of native_handle() is not possible on this platform.
         <mark-expected-failures>
             <test name="*sleep_for*"/>
             <test name="*sleep_until*"/>
+            <test name="*thread__join*"/>
             <test name="*wait_for*"/>
             <test name="*wait_until*"/>
             <test name="*cons__duration*"/>
@@ -5435,11 +5436,31 @@ The implementation of native_handle() is not possible on this platform.
             <test name="*chrono*"/>
             <test name="*shared_lock_until*"/>
             <test name="*shared_lock_for*"/>
+            <test name="shared_mutex*"/>
+            <test name="future__get*"/>
+            <test name="packaged_task__operator*"/>
+            <test name="test_3628*"/>
+            <test name="test_7328*"/>
             <toolset name="vacpp-10*"/>
-            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+            <note author="Vicente J. Botet Escriba" date="2012-10-13">
 This platform doesn't supports Boost.Chrono.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="container__*"/>
+            <toolset name="vacpp-10*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-10-13">
+This platform doesn't supports Boost.Container.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="container__thread_vector*"/>
+            <toolset name="gcc-4.4.*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-10-13">
+This platform doesn't supports Boost.Container.
+            </note>
+        </mark-expected-failures>
+
     </library>
 
     <!-- tuple -->
