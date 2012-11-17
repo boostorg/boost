@@ -1,5 +1,6 @@
 //  Generate Library Status HTML from jam regression test output  -----------//
 
+//..Copyright Robert Ramey 2012
 //  Copyright Bryce Lelbach 2011 
 //  Copyright Beman Dawes 2002-2011.
 
