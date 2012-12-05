@@ -2845,8 +2845,34 @@ for more information.
         </mark-expected-failures>
     </library>
 
-
-    <!-- optional -->
+   <!-- multi_array -->
+   <library name="multi_array">
+      <mark-unusable>
+         <toolset name="borland-5.5*"/>
+         <toolset name="borland-5.6*"/>
+         <toolset name="borland-5.8*"/>
+         <toolset name="borland-5.9*"/>
+         <note author="John Maddock" date="05 Dec 2012">
+            <p>
+               These compilers are too antiquated for this library.
+            </p>
+         </note>
+      </mark-unusable>
+      <mark-unusable>
+         <toolset name="vacpp*"/>
+         <toolset name="pgi*"/>
+         <toolset name="msvc-8.0"/>
+         <toolset name="msvc- 9.0~wm5*"/>
+         <note author="John Maddock" date="05 Dec 2012">
+            <p>
+               These compilers don't quite have the necessary support for this library, it's possible
+               that they could be made to work if someone cares enough.
+            </p>
+         </note>
+      </mark-unusable>
+    </library>
+   
+         <!-- optional -->
     <library name="optional">
         <mark-expected-failures>
             <test name="optional_test_ref"/>
