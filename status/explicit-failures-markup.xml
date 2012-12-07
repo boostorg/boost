@@ -2846,8 +2846,8 @@ for more information.
         </mark-expected-failures>
     </library>
 
-   <!-- multi_array -->
-   <library name="multi_array">
+   <!-- multiprecision -->
+   <library name="multiprecision">
       <mark-unusable>
          <toolset name="borland-5.5*"/>
          <toolset name="borland-5.6*"/>
@@ -2862,6 +2862,7 @@ for more information.
       <mark-unusable>
          <toolset name="vacpp*"/>
          <toolset name="pgi*"/>
+         <toolset name="pgi*"/>
          <toolset name="msvc-8.0"/>
          <toolset name="msvc- 9.0~wm5*"/>
          <note author="John Maddock" date="05 Dec 2012">
@@ -2871,7 +2872,42 @@ for more information.
             </p>
          </note>
       </mark-unusable>
-    </library>
+
+      <mark-expected-failures>
+         <test name="test_round_cpp_dec_float"/>
+         <test name="test_atan_cpp_dec_float"/>
+         <test name="sf_concept_check_bessel_cpp_dec_float"/>
+         <test name="sf_concept_check_bessel_backend_concept"/>
+         <test name="sf_concept_check_basic_cpp_dec_float"/>
+         <test name="sf_concept_check_basic_cpp_dec_float_no_et"/>
+         <test name="sf_concept_check_basic_backend_concept"/>
+         <test name="sf_concept_check_poly_backend_concept"/>
+         <test name="sf_concept_check_gamma_backend_concept"/>
+         <test name="sf_concept_check_elliptic_cpp_dec_float"/>
+         <test name="sf_concept_check_elliptic_backend_concept"/>
+         <test name="test_sinh_cpp_dec_float"/>
+         <test name="test_sin_cpp_dec_float"/>
+         <test name="test_pow_cpp_dec_float"/>
+         <test name="test_log_cpp_dec_float"/>
+         <test name="test_cos_cpp_dec_float"/>
+         <test name="test_atan_cpp_dec_float"/>
+         <test name="test_asin_cpp_dec_float"/>
+         <toolset name="intel*"/>
+         <note author="John Maddock">
+            This failure is caused by a test-runner timeout: unfortunately the Intel
+            compiler is exceptionally slow at building some of these tests.
+         </note>
+      </mark-expected-failures>
+      <mark-expected-failures>
+         <test name="test_arithmetic_cpp_dec_float"/>
+         <test name="test_arithmetic_mpfr_50"/>
+         <test name="test_arithmetic_mpz"/>
+         <toolset name="gcc-4.7"/>
+         <note author="John Maddock">
+            This failure is caused by a test-runner timeout.
+         </note>
+      </mark-expected-failures>
+   </library>
    
          <!-- optional -->
     <library name="optional">
