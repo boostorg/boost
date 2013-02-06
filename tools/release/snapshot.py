@@ -201,7 +201,7 @@ parser.add_argument ('-noupload',  action='store_true', default=False, dest='nou
 parser.add_argument ('-revision',  dest="revision", default="HEAD", 
                     help='svn revision to snapshot (default=HEAD)')
 parser.add_argument ('-svnURL', dest="svnURL", 
-					default="http://svn.boost.org/svn/boost/branches/release",
+					default="https://svn.boost.org/svn/boost/branches/release",
 					help='subversion URL to fetch (optional; mostly for debugging)')
 parser.add_argument('-suffix', help='suffix to append to the snapshot name; i.e, rc1')
 parser.add_argument('--server', dest='server', default="boost.cowic.de", action="store",
