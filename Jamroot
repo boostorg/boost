@@ -4,8 +4,8 @@
 # Copyright Douglas Gregor 2005.
 #
 # Distributed under the Boost Software License, Version 1.0.
-#    (See accompanying file LICENSE_1_0.txt or copy at
-#          http://www.boost.org/LICENSE_1_0.txt)
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
 
 # Usage:
 #
@@ -31,93 +31,91 @@
 #   --includedir=<HDRDIR>   Install header files here.
 #                           Default; <PREFIX>/include
 #
-#   stage                   Build and install only compiled library files
-#   =====                   to the stage directory.
+#   stage                   Build and install only compiled library files to the
+#   =====                   stage directory.
 #
 #   --stagedir=<STAGEDIR>   Install library files here
 #                           Default; ./stage
 #
 # Other Options:
 #
-#   --build-type=<type>     Build the specified pre-defined set of variations
-#                           of the libraries. Note, that which variants get
-#                           built depends on what each library supports.
+#   --build-type=<type>     Build the specified pre-defined set of variations of
+#                           the libraries. Note, that which variants get built
+#                           depends on what each library supports.
 #
-#                               minimal (default) - Builds a minimal set of 
-#                               variants. On Windows, these are static 
+#                               -- minimal -- (default) Builds a minimal set of
+#                               variants. On Windows, these are static
 #                               multithreaded libraries in debug and release
-#                               modes, using shared runtime. On Linux, these
-#                               are static and shared multithreaded libraries
-#                               in release mode.
+#                               modes, using shared runtime. On Linux, these are
+#                               static and shared multithreaded libraries in
+#                               release mode.
 #
-#                               complete - Build all possible variations.
+#                               -- complete -- Build all possible variations.
 #
-#   --build-dir=DIR         Build in this location instead of building
-#                           within the distribution tree. Recommended!
+#   --build-dir=DIR         Build in this location instead of building within
+#                           the distribution tree. Recommended!
 #
-#   --show-libraries        Displays the list of Boost libraries that require
-#                           build and installation steps, then exit.
+#   --show-libraries        Display the list of Boost libraries that require
+#                           build and installation steps, and then exit.
 #
-#   --layout=<layout>       Determines whether to choose library names
-#                           and header locations such that multiple
-#                           versions of Boost or multiple compilers can
-#                           be used on the same system.
+#   --layout=<layout>       Determine whether to choose library names and header
+#                           locations such that multiple versions of Boost or
+#                           multiple compilers can be used on the same system.
 #
-#                               versioned - Names of boost binaries
-#                               include the Boost version number, name and
-#                               version of the compiler and encoded build
-#                               properties.  Boost headers are installed in a
-#                               subdirectory of <HDRDIR> whose name contains
-#                               the Boost version number.
+#                               -- versioned -- Names of boost binaries include
+#                               the Boost version number, name and version of
+#                               the compiler and encoded build properties. Boost
+#                               headers are installed in a subdirectory of
+#                               <HDRDIR> whose name contains the Boost version
+#                               number.
 #
-#                               tagged -- Names of boost binaries include the
+#                               -- tagged -- Names of boost binaries include the
 #                               encoded build properties such as variant and
 #                               threading, but do not including compiler name
 #                               and version, or Boost version. This option is
 #                               useful if you build several variants of Boost,
 #                               using the same compiler.
 #
-#                               system - Binaries names do not include the
+#                               -- system -- Binaries names do not include the
 #                               Boost version number or the name and version
-#                               number of the compiler.  Boost headers are
-#                               installed directly into <HDRDIR>.  This option
-#                               is intended for system integrators who are
-#                               building distribution packages.
+#                               number of the compiler. Boost headers are
+#                               installed directly into <HDRDIR>. This option is
+#                               intended for system integrators building
+#                               distribution packages.
 #
 #                           The default value is 'versioned' on Windows, and
 #                           'system' on Unix.
 #
-#   --buildid=ID            Adds the specified ID to the name of built
-#                           libraries.  The default is to not add anything.
+#   --buildid=ID            Add the specified ID to the name of built libraries.
+#                           The default is to not add anything.
 #
-#   --python-buildid=ID     Adds the specified ID to the name of built
-#                           libraries that depend on Python.  The default 
-#                           is to not add anything. This ID is added in 
-#                           addition to --buildid.
-#
+#   --python-buildid=ID     Add the specified ID to the name of built libraries
+#                           that depend on Python. The default is to not add
+#                           anything. This ID is added in addition to --buildid.
 #
 #   --help                  This message.
 #
-#   --with-<library>        Build and install the specified <library>
-#                           If this option is used, only libraries
-#                           specified using this option will be built.
+#   --with-<library>        Build and install the specified <library>. If this
+#                           option is used, only libraries specified using this
+#                           option will be built.
 #
 #   --without-<library>     Do not build, stage, or install the specified
 #                           <library>. By default, all libraries are built.
 #
 # Properties:
 #
-#   toolset=toolset         Indicates the toolset to build with.
+#   toolset=toolset         Indicate the toolset to build with.
 #
 #   variant=debug|release   Select the build variant
 #
 #   link=static|shared      Whether to build static or shared libraries
 #
 #   threading=single|multi  Whether to build single or multithreaded binaries
-# 
-#   runtime-link=static|shared      
-#                           Whether to link to static or shared C and C++ runtime.
-#   
+#
+#   runtime-link=static|shared
+#                           Whether to link to static or shared C and C++
+#                           runtime.
+#
 
 # TODO:
 #  - handle boost version
@@ -132,7 +130,7 @@ import set ;
 import path ;
 
 path-constant BOOST_ROOT : . ;
-constant BOOST_VERSION : 1.53.0 ;
+constant BOOST_VERSION : 1.54.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
@@ -165,12 +163,12 @@ rule tag ( name : type ? : property-set )
 {
     return [ boostcpp.tag $(name) : $(type) : $(property-set) ] ;
 }
-   
+
 rule handle-static-runtime ( properties * )
 {
-    # Using static runtime with shared libraries is impossible on Linux,
-    # and dangerous on Windows. Therefore, we disallow it. This might
-    # be drastic, but it was disabled for a while with nobody complaining.
+    # Using static runtime with shared libraries is impossible on Linux, and
+    # dangerous on Windows. Therefore, we disallow it. This might be drastic,
+    # but it was disabled for a while without anybody complaining.
 
     # For CW, static runtime is needed so that std::locale works.
     if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
@@ -184,8 +182,7 @@ rule handle-static-runtime ( properties * )
 }
 
 all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
-    [ glob libs/*/build/Jamfile ] ]
-    ;
+    [ glob libs/*/build/Jamfile ] ] ;
 
 all-libraries = [ sequence.unique $(all-libraries) ] ;
 # The function_types library has a Jamfile, but it's used for maintenance
@@ -251,10 +248,10 @@ rule boost-install ( libraries * )
 }
 
 headers =
-    # The .SUNWCCh files are present in tr1 include directory and have to be installed,
-    # see http://lists.boost.org/Archives/boost/2007/05/121430.php
+    # The .SUNWCCh files are present in tr1 include directory and have to be
+    # installed (see http://lists.boost.org/Archives/boost/2007/05/121430.php).
     [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
-    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ] 
+    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ]
     [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
     ;
 
