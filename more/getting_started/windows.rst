@@ -35,25 +35,7 @@ __ ../../index.htm
 Get Boost
 =========
 
-The easiest way to get a copy of Boost is to use an installer.  The
-`Boost website version of this Getting Started guide`_ will have
-updated information on installers as they become available, or see
-`Boost downloads`_ or the installer_ provided by `BoostPro
-Computing`_.  We especially recommend using an installer if you use
-Microsoft Visual Studio, because the installer can download and
-install precompiled library binaries, saving you the trouble of
-building them yourself.  To complete this tutorial, you'll need to at
-least install the Static Multithreaded variants of the Boost.Regex_
-binaries when given the option.
-
-.. _`Boost website version of this Getting Started guide`:
-       http://www.boost.org/more/getting_started/index.html
-.. _`Boost downloads`: `sf-download`_      
-.. _installer: http://www.boostpro.com/products/free
-.. _BoostPro Computing: http://www.boostpro.com
-
-If you're using an earlier version of Visual Studio or some other
-compiler, or if you prefer to build everything yourself, you can
+The most reliable way to get a copy of Boost is to
 download |boost.7z|_ or |boost_zip|_ and unpack it to install a complete Boost
 distribution. [#zip]_
 
@@ -185,22 +167,8 @@ To test the result, type:
 
 .. include:: detail/binary-head.rst
 
-Install Visual Studio Binaries
-------------------------------
-
-The installers supplied by BoostPro Computing will download and
-install pre-compiled binaries into the ``lib\`` subdirectory of the
-boost root, typically |default-root|\ ``\lib\``.  If you installed
-all variants of the Boost.Regex_ binary, you're done with this
-step.  Otherwise, please run the installer again and install them
-now.
-
-|next|__
-
-__ `Link Your Program to a Boost Library`_
-
-Or, Simplified Build From Source
---------------------------------
+Simplified Build From Source
+----------------------------
 
 If you wish to build from source with Visual C++, you can use a 
 simple build procedure described in this section. Open the command prompt
@@ -339,12 +307,6 @@ Spoil Rock Hunter?”
    built-in decompression as it can be painfully slow for large archives.
    
 .. _7-Zip: http://www.7-zip.org  
-
-.. [#installer-src] If you used the installer_ from Boost
-   Consulting and deselected “Source and Documentation”  (it's
-   selected by default), you won't see the ``libs/`` subdirectory.
-   That won't affect your ability to use precompiled binaries, but
-   you won't be able to rebuild libraries from scratch.
 
 .. [#pch] There's no problem using Boost with precompiled headers;
    these instructions merely avoid precompiled headers because it
