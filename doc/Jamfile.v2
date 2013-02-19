@@ -8,6 +8,19 @@ import boostbook : boostbook ;
 
 alias asio : ../libs/asio/doc//asio/<xsl:param>boost.libraries=../../libs/libraries.htm ;
 
+#
+# Note that when refering to libraries that use auto-index we must process all the way to
+# docbook before including here.  We must also ensure that auto-index uses it's own index
+# generation, otherwise we get one big index that's repeated in each library.  Xslt's index
+# generation is also so slow that it's impractical for a build this large (takes ~ 9 hrs
+# to build with just 3 indexed libraries).  Hence we refer to these libraries as for example:
+#
+# ../libs/interprocess/doc//standalone/<format>docbook/<auto-index-internal>on
+#
+# Finally, in boost.xml we xi:include interproces.auto_index.docbook which is the final
+# post-index generation docbook, rather than interprocess.xml which is the pre-indexed boostbook.
+#
+
 boostbook doc
     :
     src/boost.xml
@@ -45,13 +58,13 @@ boostbook doc
     <dependency>../tools/build/v2/doc//jam_docs
     <dependency>../tools/quickbook/doc//quickbook
     <dependency>../libs/interprocess/doc//autodoc.xml
-    <dependency>../libs/interprocess/doc//interprocess
+    <dependency>../libs/interprocess/doc//standalone/<format>docbook/<auto-index-internal>on
     <dependency>../libs/intrusive/doc//autodoc.xml
-    <dependency>../libs/intrusive/doc//intrusive
+    <dependency>../libs/intrusive/doc//standalone/<format>docbook/<auto-index-internal>on
     <dependency>../libs/move/doc//autodoc.xml
     <dependency>../libs/move/doc//move
     <dependency>../libs/container/doc//autodoc.xml
-    <dependency>../libs/container/doc//container
+    <dependency>../libs/container/doc//standalone/<format>docbook/<auto-index-internal>on
     <dependency>../libs/units/doc//units
     <dependency>../libs/unordered/doc//unordered
     <dependency>../libs/thread/doc//thread
@@ -82,9 +95,9 @@ boostbook doc
     <implicit-dependency>../tools/build/v2/doc//jam_docs
     <implicit-dependency>../tools/quickbook/doc//quickbook
     <implicit-dependency>../libs/mpi/doc//mpi
-    <implicit-dependency>../libs/container/doc//container
-    <implicit-dependency>../libs/interprocess/doc//interprocess
-    <implicit-dependency>../libs/intrusive/doc//intrusive
+    <implicit-dependency>../libs/container/doc//standalone/<format>docbook/<auto-index-internal>on
+    <implicit-dependency>../libs/interprocess/doc//standalone/<format>docbook/<auto-index-internal>on
+    <implicit-dependency>../libs/intrusive/doc//standalone/<format>docbook/<auto-index-internal>on
     <implicit-dependency>../libs/move/doc//move
     <implicit-dependency>../libs/units/doc//units
     <implicit-dependency>../libs/unordered/doc//unordered
