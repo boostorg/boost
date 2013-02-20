@@ -15,7 +15,16 @@ alias asio : ../libs/asio/doc//asio/<xsl:param>boost.libraries=../../libs/librar
 # generation is also so slow that it's impractical for a build this large (takes ~ 9 hrs
 # to build with just 3 indexed libraries).  Hence we refer to these libraries as for example:
 #
-# ../libs/interprocess/doc//standalone/<format>docbook/<auto-index-internal>on
+# ../libs/interprocess/doc//standalone/<format>docbook
+#
+# Within each library that uses this, make sure that the boostbook target contains
+#
+# <format>docbook:<auto-index-internal>on
+#
+# And if boost.root is set, restrict it to local html builds using:
+#
+# <format>html:<xsl:param>boost.root=../../../..
+# <format>html:<xsl:param>boost.libraries=../../../../libs/libraries.htm
 #
 # Finally, in boost.xml we xi:include interproces.auto_index.docbook which is the final
 # post-index generation docbook, rather than interprocess.xml which is the pre-indexed boostbook.
@@ -57,11 +66,11 @@ boostbook doc
     <dependency>../libs/date_time/xmldoc//local_time_autodoc.xml
     <dependency>../tools/build/v2/doc//jam_docs
     <dependency>../tools/quickbook/doc//quickbook
-    <dependency>../libs/interprocess/doc//standalone/<format>docbook/<auto-index-internal>on
-    <dependency>../libs/intrusive/doc//standalone/<format>docbook/<auto-index-internal>on
+    <dependency>../libs/interprocess/doc//standalone/<format>docbook
+    <dependency>../libs/intrusive/doc//standalone/<format>docbook
     <dependency>../libs/move/doc//autodoc.xml
     <dependency>../libs/move/doc//move
-    <dependency>../libs/container/doc//standalone/<format>docbook/<auto-index-internal>on
+    <dependency>../libs/container/doc//standalone/<format>docbook
     <dependency>../libs/units/doc//units
     <dependency>../libs/unordered/doc//unordered
     <dependency>../libs/thread/doc//thread
@@ -92,9 +101,9 @@ boostbook doc
     <implicit-dependency>../tools/build/v2/doc//jam_docs
     <implicit-dependency>../tools/quickbook/doc//quickbook
     <implicit-dependency>../libs/mpi/doc//mpi
-    <implicit-dependency>../libs/container/doc//standalone/<format>docbook/<auto-index-internal>on
-    <implicit-dependency>../libs/interprocess/doc//standalone/<format>docbook/<auto-index-internal>on
-    <implicit-dependency>../libs/intrusive/doc//standalone/<format>docbook/<auto-index-internal>on
+    <implicit-dependency>../libs/container/doc//standalone/<format>docbook
+    <implicit-dependency>../libs/interprocess/doc//standalone/<format>docbook
+    <implicit-dependency>../libs/intrusive/doc//standalone/<format>docbook
     <implicit-dependency>../libs/move/doc//move
     <implicit-dependency>../libs/units/doc//units
     <implicit-dependency>../libs/unordered/doc//unordered
@@ -116,5 +125,6 @@ install images : [ glob src/images/*.png ] : <location>html/images ;
 explicit images ;
 install callouts : [ glob src/images/callouts/*.png ] : <location>html/images/callouts ;
 explicit callouts ;
+
 
 
