@@ -723,7 +723,7 @@ class runner:
 
         if toolsets:
             import string
-            cmd += ' ' + string.join(string.split( toolsets, ',' ), ' ' )
+            cmd += ' toolset=' + toolsets 
 
         return cmd
 
