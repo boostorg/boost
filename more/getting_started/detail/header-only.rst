@@ -19,6 +19,8 @@ Boost?”  The good news is that often, there's nothing to build.
 
 The only Boost libraries that *must* be built separately are:
 
+* Boost.Chrono_
+* Boost.Context_
 * Boost.Filesystem_
 * Boost.GraphParallel_
 * Boost.IOStreams_
