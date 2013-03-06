@@ -33,6 +33,7 @@ The only Boost libraries that *must* be built separately are:
 * Boost.Signals_
 * Boost.System_
 * Boost.Thread_
+* Boost.Timer_
 * Boost.Wave_
 
 __ ../../libs/python/doc/building.html

@@ -20,4 +20,5 @@
 .. _Boost.System: ../../libs/system/index.html
 .. _Boost.Test: ../../libs/test/index.html
 .. _Boost.Thread: ../../doc/html/thread.html
+.. _Boost.Timer: ../../libs/timer/index.html
 .. _Boost.Wave: ../../libs/wave/index.html
