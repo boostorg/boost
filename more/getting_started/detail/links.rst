@@ -5,10 +5,12 @@
 .. _Boost.Chrono: ../../libs/chrono/index.html
 .. _Boost.Context: ../../libs/context/index.html
 .. _Boost.DateTime: ../../libs/date_time/index.html
+.. _Boost.Exception: ../../libs/exception/index.html
 .. _Boost.Filesystem: ../../libs/filesystem/index.html
 .. _Boost.Graph: ../../libs/graph/index.html
 .. _Boost.GraphParallel: ../../libs/graph_parallel/index.html
 .. _Boost.IOStreams: ../../libs/iostreams/index.html
+.. _Boost.Locale: ../../libs/locale/index.html
 .. _Boost.Math: ../../libs/math/index.html
 .. _Boost.MPI: ../../libs/mpi/index.html
 .. _Boost.ProgramOptions: ../../libs/program_options/index.html
