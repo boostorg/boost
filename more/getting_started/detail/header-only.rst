@@ -19,6 +19,8 @@ Boost?”  The good news is that often, there's nothing to build.
 
 The only Boost libraries that *must* be built separately are:
 
+* Boost.Chrono_
+* Boost.Context_
 * Boost.Filesystem_
 * Boost.GraphParallel_
 * Boost.IOStreams_
@@ -31,6 +33,7 @@ The only Boost libraries that *must* be built separately are:
 * Boost.Signals_
 * Boost.System_
 * Boost.Thread_
+* Boost.Timer_
 * Boost.Wave_
 
 __ ../../libs/python/doc/building.html
