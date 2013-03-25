@@ -61,7 +61,7 @@ public:
         return *this;
     }
 private:
-    boost::zip::deflate_sink sink;
+    boost::zip::nocompression_sink sink;
 };
 
 }

@@ -674,8 +674,32 @@ public:
     {}
 };
 
+class noop_filter
+{
+public:
+    typedef char char_type;
+
+    struct category :
+        ::boost::iostreams::output_filter_tag,
+        ::boost::iostreams::multichar_tag
+    {};
+
+    template<class Device>
+    std::streamsize write(Device& dev, const char * data, std::streamsize size) {
+        return boost::iostreams::write(dev, data, size);
+    }
+};
+
 template<class Filter>
 struct compression_method;
+
+template<>
+struct compression_method< ::boost::zip::noop_filter> :
+    ::boost::mpl::integral_c<
+        ::boost::uint16_t,
+        ::boost::zip::zip_archive::compression_method::none
+    >
+{};
 
 template<>
 struct compression_method< ::boost::zip::shrink_filter> :
@@ -726,6 +750,7 @@ private:
 
 typedef zip_member_sink<shrink_filter> shrink_sink;
 typedef zip_member_sink<deflate_filter> deflate_sink;
+typedef zip_member_sink<noop_filter> nocompression_sink;
 
 }
 }
