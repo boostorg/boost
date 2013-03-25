@@ -117,7 +117,7 @@ build_results()
         ;;
     esac
     report_info
-    python "/mnt/hgfs/boost/trunk/tools/regression/xsl_reports/boost_wide_report.py" \
+    python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
         --locate-root="${root}" \
         --tag=${tag} \
         --expected-results="${boost}/status/expected_results.xml" \
