@@ -161,17 +161,32 @@ void boost::regression::get_unusable(const failures_markup_t& markup,
 // string.  The only special character in the pattern
 // is '*', which matches any number of consecutive characters.
 bool boost::regression::re_match(const std::string& pattern, const std::string& text) {
-    std::size_t current_start = 0;
-    for(std::size_t i = 0; i < pattern.size(); ++i) {
-        if(pattern[i] == '*') {
-            regex_str += '.';
-        } else if(special.find(pattern[i]) != std::string::npos) {
-            regex_str += '\\';
+    std::size_t pattern_start = 0;
+    std::size_t pattern_end = 0;
+    std::size_t text_start = 0;
+    // check that the leading portion of the string matches
+    std::size_t first = pattern.find('*');
+    if(first == std::string::npos) return pattern == text;
+    if(pattern.substr(0, first) != text.substr(0, first)) return false;
+    text_start = first;
+    pattern_start = pattern_end = first + 1;
+    for(; pattern_end != pattern.size(); ++pattern_end) {
+        // split into blocks at '*'
+        if(pattern[pattern_end] == '*') {
+            // and search for each block
+            std::size_t size = pattern_end - pattern_start;
+            std::size_t off = text.find(pattern.data() + pattern_start, text_start, size);
+            // if not found, the pattern doesn't match
+            if(off == std::string::npos) return false;
+            text_start = off + size;
+            pattern_start = pattern_end + 1; // skip past the '*'
         }
-        regex_str += pattern[i];
     }
-    boost::regex regex(regex_str);
-    return(boost::regex_match(text, regex));
+    // check that the tails of the strings are the same
+    std::size_t tail_size = pattern_end - pattern_start;
+    if(tail_size == 0) return true; // a trailing star
+    std::size_t off = text.find(pattern.data() + pattern_start, text_start, tail_size);
+    return off != std::string::npos && (off + tail_size == text.size());
 }
 
 // date-time
