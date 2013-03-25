@@ -346,6 +346,7 @@ std::string boost::regression::result_cell_class(const failures_markup_t& explic
     return result_cell_class(explicit_markup, library, toolset, tmp);
 }
 
+// requires: purpose must be well-formed html
 void boost::regression::insert_report_header(
     html_writer& document,
     const boost::posix_time::ptime& run_date,
@@ -359,7 +360,7 @@ void boost::regression::insert_report_header(
 
     if(!purpose.empty()) {
         document << "    <div>\n";
-        document << "        <b>Purpose: </b> " << escape_xml(purpose) << "\n";
+        document << "        <b>Purpose: </b> " << purpose << "\n";
         document << "    </div>\n";
     }
 
