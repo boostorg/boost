@@ -48,24 +48,17 @@ class file_info:
 # Find the mod time from unix format directory listing line
 #
 
-def get_date( words ):
-    date = words[ 5: -1 ]
+def get_date( f, words ):
+    # f is an ftp object
 
-    month_names = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
-
-    year = time.gmtime()[0] # If year is not secified is it the current year
-    month = month_names.index( date[0] ) + 1
-    day = int( date[1] )
-    hours = 0 
-    minutes = 0
-
-    if  date[2].find( ":" ) != -1:
-        ( hours, minutes ) = [ int(x) for x in date[2].split( ":" ) ]
-    else:
-        # there is no way to get seconds for not current year dates
-        year = int( date[2] )
-
-    return ( year, month, day, hours, minutes, 0, 0, 0, 0 )
+    (response, modtime) = f.sendcmd('MDTM %s' % words[-1]).split( None, 2 )
+    year = int( modtime[0:4] )
+    month = int( modtime[4:6] )
+    day = int( modtime[6:8] )
+    hours = int( modtime[8:10] )
+    minutes = int( modtime[10:12] )
+    seconds = int( modtime[12:14] )
+    return ( year, month, day, hours, minutes, seconds, 0, 0, 0)
 
 def list_ftp( f ):
     # f is an ftp object
@@ -79,7 +72,7 @@ def list_ftp( f ):
     word_lines = [ x.split( None, 8 ) for x in lines ]
 
     # we don't need directories
-    result = [ file_info( l[-1], int( l[4] ), get_date( l ) ) for l in word_lines if l[0][0] != "d" ]
+    result = [ file_info( l[-1], int( l[4] ), get_date( f, l ) ) for l in word_lines if l[0][0] != "d" ]
     for f in result:
         utils.log( "    %s" % f )
     return result

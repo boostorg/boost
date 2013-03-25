@@ -161,8 +161,7 @@ void boost::regression::get_unusable(const failures_markup_t& markup,
 // string.  The only special character in the pattern
 // is '*', which matches any number of consecutive characters.
 bool boost::regression::re_match(const std::string& pattern, const std::string& text) {
-    std::string regex_str;
-    std::string special(".[{()\\+?|^$");
+    std::size_t current_start = 0;
     for(std::size_t i = 0; i < pattern.size(); ++i) {
         if(pattern[i] == '*') {
             regex_str += '.';
