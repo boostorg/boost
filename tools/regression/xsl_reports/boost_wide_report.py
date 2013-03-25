@@ -50,11 +50,10 @@ class file_info:
 
 def get_date( words ):
     date = words[ 5: -1 ]
-    t = time.localtime()
 
     month_names = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
 
-    year = time.localtime()[0] # If year is not secified is it the current year
+    year = time.gmtime()[0] # If year is not secified is it the current year
     month = month_names.index( date[0] ) + 1
     day = int( date[1] )
     hours = 0 
@@ -90,7 +89,7 @@ def list_dir( dir ):
     result = []
     for file_path in glob.glob( os.path.join( dir, "*.zip" ) ):
         if os.path.isfile( file_path ):
-            mod_time = time.localtime( os.path.getmtime( file_path ) )
+            mod_time = time.gmtime( os.path.getmtime( file_path ) )
             mod_time = ( mod_time[0], mod_time[1], mod_time[2], mod_time[3], mod_time[4], mod_time[5], 0, 0, mod_time[8] )
             # no size (for now)
             result.append( file_info( os.path.basename( file_path ), None, mod_time ) )
@@ -103,6 +102,25 @@ def find_by_name( d, name ):
         if dd.name == name:
             return dd
     return None
+
+# Proof:
+# gmtime(result) = time_tuple
+# mktime(gmtime(result)) = mktime(time_tuple)
+# correction = mktime(gmtime(result)) - result
+# result = mktime(time_tuple) - correction
+def mkgmtime(time_tuple):
+    # treat the tuple as if it were local time
+    local = time.mktime(time_tuple)
+    # calculate the correction to get gmtime
+    old_correction = 0
+    correction = time.mktime(time.gmtime(local)) - local
+    result = local
+    # iterate until the correction doesn't change
+    while correction != old_correction:
+        old_correction = correction
+        correction = time.mktime(time.gmtime(result)) - result
+        result = local - correction
+    return result
 
 def diff( source_dir_content, destination_dir_content ):
     utils.log( "Finding updated files" )
@@ -362,7 +380,7 @@ def ftp_task( site, site_path , destination ):
             f.retrbinary( 'RETR %s' % source, result.write )
             result.close()
             mod_date = find_by_name( source_content, source ).date
-            m = time.mktime( mod_date )
+            m = mkgmtime( mod_date )
             os.utime( os.path.join( destination, source ), ( m, m ) )
 
         for obsolete in d[1]:
