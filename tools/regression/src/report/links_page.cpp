@@ -21,8 +21,7 @@ using namespace boost::regression;
 
 namespace {
 
-void links_page(const boost::posix_time::ptime& run_date,
-                const failures_markup_t& explicit_markup,
+void links_page(const failures_markup_t& explicit_markup,
                 const std::string& runner_id,
                 const std::string& revision,
                 const boost::posix_time::ptime& timestamp,
@@ -34,15 +33,13 @@ void write_variants_reference_file(const std::string& path,
                                    const std::string& variants_file_path,
                                    const std::string release_postfix);
 std::string output_page_header(node_ptr test_log, const std::string& runner_id);
-void write_variants_file(const boost::posix_time::ptime& run_date,
-                         const failures_markup_t& explicit_markup,
+void write_variants_file(const failures_markup_t& explicit_markup,
                          const std::string& path,
                          const std::vector<test_structure_t::test_log_t>& test_logs,
                          const std::string& runner_id,
                          const std::string& revision,
                          const boost::posix_time::ptime& timestamp);
-void write_test_result_file(const boost::posix_time::ptime& run_date,
-                            const failures_markup_t& explicit_markup,
+void write_test_result_file(const failures_markup_t& explicit_markup,
                             const std::string& path,
                             const test_structure_t::test_log_t& test_log,
                             const std::string& runner_id,
@@ -51,8 +48,7 @@ void write_test_result_file(const boost::posix_time::ptime& run_date,
 void write_test_results_reference_file(const std::string& path, const std::string& log_file_path);
 
 // requires: revision must be a SVN revision.  i.e. of the form nnnnn
-void links_page(const boost::posix_time::ptime& run_date,
-                const failures_markup_t& explicit_markup,
+void links_page(const failures_markup_t& explicit_markup,
                 const std::string& runner_id,
                 const std::string& revision,
                 const boost::posix_time::ptime& timestamp,
@@ -70,7 +66,7 @@ void links_page(const boost::posix_time::ptime& run_date,
 
         std::string variants_file_path = output_file_path(runner_id + "-" + library_name + "-" + toolset_name + "-" + test_name + "-variants");
 
-        write_variants_file(run_date, explicit_markup, variants_file_path, test_logs, runner_id, revision, timestamp);
+        write_variants_file(explicit_markup, variants_file_path, test_logs, runner_id, revision, timestamp);
 
         BOOST_FOREACH(const std::string& release_postfix, postfixes) {
             BOOST_FOREACH(const std::string& directory, dirs) {
@@ -85,7 +81,7 @@ void links_page(const boost::posix_time::ptime& run_date,
 
         if(show_output(explicit_markup, test_log)) {
             std::string log_path = log_file_path(explicit_markup, test_log, runner_id);
-            write_test_result_file(run_date, explicit_markup, log_path, test_log, runner_id, revision, timestamp);
+            write_test_result_file(explicit_markup, log_path, test_log, runner_id, revision, timestamp);
             
             BOOST_FOREACH(const std::string& release_postfix, postfixes) {
                 BOOST_FOREACH(const std::string& directory, dirs) {
@@ -130,8 +126,7 @@ std::string output_page_header(const test_structure_t::test_log_t& test_log, con
 
 // requires revision is an SVN revision #
 // requires path is a valid path
-void write_variants_file(const boost::posix_time::ptime& run_date,
-                         const failures_markup_t& explicit_markup,
+void write_variants_file(const failures_markup_t& explicit_markup,
                          const std::string& path,
                          const std::vector<test_structure_t::test_log_t>& test_logs,
                          const std::string& runner_id,
@@ -142,7 +137,7 @@ void write_variants_file(const boost::posix_time::ptime& run_date,
     html_writer document(path);
 
     std::string component = output_page_header(test_logs[0], runner_id);
-    int age = timestamp_difference(timestamp, run_date);
+    int age = 0; // timestamp_difference(timestamp, run_date);
 
     document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
                 "<html>\n"
@@ -159,10 +154,6 @@ void write_variants_file(const boost::posix_time::ptime& run_date,
                 "                Rev " << revision << " /\n"
                 "                " << format_timestamp(timestamp) << "\n"
                 "            </span></div>\n"
-                "        </div>\n"
-                "\n"
-                "        <div>\n"
-                "            <b>Report Time: </b> " << format_timestamp(run_date) << "\n"
                 "        </div>\n"
                 "\n"
                 "        <p>Output by test variants:</p>\n"
@@ -208,8 +199,7 @@ const test_structure_t::target_t* lookup_target(const test_structure_t::test_log
 
 // requires: path is a valid path
 // requires: revision is an SVN revision
-void write_test_result_file(const boost::posix_time::ptime& run_date,
-                            const failures_markup_t& explicit_markup,
+void write_test_result_file(const failures_markup_t& explicit_markup,
                             const std::string& path,
                             const test_structure_t::test_log_t& test_log,
                             const std::string& runner_id,
@@ -221,7 +211,7 @@ void write_test_result_file(const boost::posix_time::ptime& run_date,
     html_writer document(path);
     
     std::string component = output_page_header(test_log, runner_id);
-    int age = timestamp_difference(timestamp, run_date);
+    int age = 0; // timestamp_difference(timestamp, run_date);
     
     document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
                 "<html>\n";
@@ -240,10 +230,6 @@ void write_test_result_file(const boost::posix_time::ptime& run_date,
                 "                Rev " << revision << " /\n"
                 "                " << format_timestamp(timestamp) << "\n"
                 "            </span></div>\n"
-                "        </div>\n";
-
-    document << "        <div>\n"
-                "            <b>Report Time: </b> " << format_timestamp(run_date) << "\n"
                 "        </div>\n";
     
     if(!test_log.notes.empty()) {
@@ -332,15 +318,13 @@ void write_test_results_reference_file(const std::string& path, const std::strin
 
 // okay
 void boost::regression::links_page(
-    const boost::posix_time::ptime& run_date,
     const failures_markup_t& explicit_markup,
     const test_structure_t::run_t& test_run)
 {
     BOOST_FOREACH(const test_structure_t::toolset_group_t::const_reference toolset, test_run.toolsets) {
         BOOST_FOREACH(const test_structure_t::toolset_t::const_reference library, toolset.second) {
             BOOST_FOREACH(const test_structure_t::library_t::const_reference test_case, library.second) {
-                ::links_page(run_date,
-                             explicit_markup,
+                ::links_page(explicit_markup,
                              test_run.runner,
                              test_run.revision,
                              test_run.timestamp,
@@ -354,8 +338,7 @@ void boost::regression::links_page(
     BOOST_FOREACH(const test_structure_t::toolset_group_t::const_reference toolset, test_run.non_test_case_targets) {
         BOOST_FOREACH(const test_structure_t::toolset_t::const_reference library, toolset.second) {
             BOOST_FOREACH(const test_structure_t::library_t::const_reference test_case, library.second) {
-                ::links_page(run_date,
-                             explicit_markup,
+                ::links_page(explicit_markup,
                              test_run.runner,
                              test_run.revision,
                              test_run.timestamp,
