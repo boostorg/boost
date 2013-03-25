@@ -73,6 +73,17 @@ public:
             self = 0;
             archive.open_file(path, creator_version, minimum_required_version, flags, compression_method, modification_time, this);
         }
+
+        file_handle(zip_archive& archive,
+                    const std::string& path,
+                    boost::uint16_t creator_version,
+                    boost::uint16_t minimum_required_version,
+                    boost::uint16_t flags,
+                    boost::uint16_t compression_method) 
+        {
+            self = 0;
+            archive.open_file(path.data(), path.size(), creator_version, minimum_required_version, flags, compression_method, 0, 0, this);
+        }
         ::std::streamsize write(const char* data, ::std::streamsize size) {
             assert(self != 0);
             self->output_file.write(data, size);
@@ -729,8 +740,7 @@ public:
 
     zip_member_sink(zip_archive& archive, const std::string& path)
       : file(archive, path, 10, 10, 0,
-             compression_method<Filter>::value,
-             boost::posix_time::second_clock::local_time()) {}
+             compression_method<Filter>::value) {}
     ~zip_member_sink() {
         close();
     }

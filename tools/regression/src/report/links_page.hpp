@@ -16,7 +16,6 @@ namespace boost {
 namespace regression {
 
 void links_page(
-    const boost::posix_time::ptime& run_date,
     const failures_markup_t& explicit_markup,
     const test_structure_t::run_t& test_run);
 

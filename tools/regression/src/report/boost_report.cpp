@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
                     std::cout << "Generating links pages" << std::endl;
                     // must be run before test_results is discarded
                     if(reports.count("l"))
-                        links_page(now, markup, *test_run);
+                        links_page(markup, *test_run);
                 } catch(std::ios_base::failure& e) {
                     std::cerr << e.what() << std::endl;
                 } catch(boost::property_tree::detail::rapidxml::parse_error& e) {
