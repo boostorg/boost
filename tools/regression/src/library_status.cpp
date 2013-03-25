@@ -169,18 +169,19 @@ namespace
 
     //  find_element  ------------------------------------------------------------//
 
+    struct element_equal {
+        const string & m_name;
+        element_equal(const string & name) :
+            m_name(name)
+        {}
+        bool operator()(const xml::element_ptr & xep) const {
+            return xep.get()->name == m_name;
+        }
+    };
+
     xml::element_list::const_iterator find_element(
         const xml::element & root, const string & name 
     ){
-        struct element_equal {
-            const string & m_name;
-            element_equal(const string & name) :
-                m_name(name)
-            {}
-            bool operator()(const xml::element_ptr & xep) const {
-                return xep.get()->name == m_name;
-            }
-        };
         return std::find_if(
             root.elements.begin(), 
             root.elements.end(), 
@@ -201,19 +202,20 @@ namespace
 
     //  attribute_value  ----------------------------------------------------------//
 
+    struct attribute_equal {
+        const string & m_name;
+        attribute_equal(const string & name) :
+            m_name(name)
+        {}
+        bool operator()(const xml::attribute & a) const {
+            return a.name == m_name;
+        }
+    };
+
     const string & attribute_value( 
         const xml::element & element,
         const string & attribute_name 
     ){
-        struct attribute_equal {
-            const string & m_name;
-            attribute_equal(const string & name) :
-                m_name(name)
-            {}
-            bool operator()(const xml::attribute & a) const {
-                return a.name == m_name;
-            }
-        };
         xml::attribute_list::const_iterator itr;
         itr = std::find_if(
             element.attributes.begin(), 
@@ -367,6 +369,13 @@ namespace
         return result;
     }
 
+    struct has_fail_result {
+        //bool operator()(const boost::shared_ptr<const xml::element> e) const {
+        bool operator()(const xml::element_ptr & e) const {
+            return attribute_value(*e, "result") == "fail";
+        }
+    };
+
     //  do_cell  ---------------------------------------------------------------//
     bool do_cell(
         const fs::path & target_dir,
@@ -401,16 +410,10 @@ namespace
 
         // if we don't find any failures
         // mark it as a pass
-        struct predicate {
-            //bool operator()(const boost::shared_ptr<const xml::element> e) const {
-            bool operator()(const xml::element_ptr & e) const {
-                return attribute_value(*e, "result") == "fail";
-            }
-        };
         pass = (db.elements.end() == std::find_if(
             db.elements.begin(),
             db.elements.end(),
-            predicate()
+            has_fail_result()
         ));
 
         int anything_generated = 0;
