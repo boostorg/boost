@@ -92,6 +92,9 @@ build_results()
     cd ${1}
     root=`pwd`
     boost=${cwd}/boost
+    if [ -x ${cwd}/boost_report ]; then
+      report_opt=--boost-report=${cwd}/boost_report
+    fi
     case ${1} in
         trunk)
         tag=trunk
@@ -114,14 +117,15 @@ build_results()
         ;;
     esac
     report_info
-    python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
+    python "/mnt/hgfs/boost/trunk/tools/regression/xsl_reports/boost_wide_report.py" \
         --locate-root="${root}" \
         --tag=${tag} \
         --expected-results="${boost}/status/expected_results.xml" \
         --failures-markup="${boost}/status/explicit-failures-markup.xml" \
         --comment="comment.html" \
         --user="" \
-        --reports=${reports}
+        --reports=${reports} \
+        ${report_opt}
     cd "${cwd}"
 }
 
@@ -130,11 +134,15 @@ upload_results()
     cwd=`pwd`
     upload_dir=/home/grafik/www.boost.org/testing
     
-    cd ${1}/all
-    rm -f ../../${1}.zip*
-    #~ zip -q -r -9 ../../${1} * -x '*.xml'
-    7za a -tzip -mx=9 ../../${1}.zip * '-x!*.xml'
-    cd "${cwd}"
+    if [ -f ${1}/report.zip ]; then
+        mv ${1}/report.zip ${1}.zip
+    else
+        cd ${1}/all
+        rm -f ../../${1}.zip*
+        #~ zip -q -r -9 ../../${1} * -x '*.xml'
+        7za a -tzip -mx=9 ../../${1}.zip * '-x!*.xml'
+        cd "${cwd}"
+    fi
     mv ${1}.zip ${1}.zip.uploading
     rsync -vuz --rsh=ssh --stats \
       ${1}.zip.uploading grafik@beta.boost.org:/${upload_dir}/incoming/

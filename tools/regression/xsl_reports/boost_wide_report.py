@@ -470,6 +470,7 @@ def execute_tasks(
         , dont_collect_logs
         , expected_results_file
         , failures_markup_file
+        , report_executable
         ):
 
     incoming_dir = os.path.join( results_dir, 'incoming', tag )
@@ -489,6 +490,29 @@ def execute_tasks(
         ftp_task( ftp_site, site_path, incoming_dir )
 
     unzip_archives_task( incoming_dir, processed_dir, utils.unzip )
+
+    if report_executable:
+        if not os.path.exists( merged_dir ):
+            os.makedirs( merged_dir )
+
+        command_line = report_executable
+        command_line += " --expected " + '"%s"' % expected_results_file 
+        command_line += " --markup " + '"%s"' % failures_markup_file
+        command_line += " --tag " + tag
+        # command_line += " --run-date " + '"%s"' % run_date
+        command_line += " -rl"
+        for r in reports:
+            command_line += ' -r' + r
+        command_line += " --css " + xsl_path( 'html/master.css' )
+
+        for f in glob.glob( os.path.join( processed_dir, '*.xml' ) ):
+            command_line += ' "%s"' % f
+
+        utils.log("Producing the reports...")
+        os.system(command_line)
+
+        return
+
     merge_xmls_task( incoming_dir, processed_dir, merged_dir, expected_results_file, failures_markup_file, tag )
     make_links_task( merged_dir
                      , output_dir
@@ -696,6 +720,7 @@ def build_xsl_reports(
         , result_file_prefix
         , dont_collect_logs = 0
         , reports = report_types
+        , report_executable = None
         , warnings = []
         , user = None
         , upload = False
@@ -732,6 +757,7 @@ def build_xsl_reports(
         , dont_collect_logs
         , expected_results_file
         , failures_markup_file
+        , report_executable
         )
 
     if upload:
@@ -759,6 +785,7 @@ def accept_args( args ):
         , 'results-prefix='
         , 'dont-collect-logs'
         , 'reports='
+        , 'boost-report='
         , 'user='
         , 'upload'
         , 'help'
@@ -769,6 +796,7 @@ def accept_args( args ):
         , '--expected-results': ''
         , '--failures-markup': ''
         , '--reports': string.join( report_types, ',' )
+        , '--boost-report': None
         , '--tag': None
         , '--user': None
         , 'upload': False
@@ -791,6 +819,7 @@ def accept_args( args ):
         , options[ '--results-prefix' ]
         , options.has_key( '--dont-collect-logs' )
         , options[ '--reports' ].split( ',' )
+        , options[ '--boost-report' ]
         , options[ '--user' ]
         , options.has_key( '--upload' )
         )
