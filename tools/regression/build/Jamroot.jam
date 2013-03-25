@@ -82,3 +82,20 @@ exe library_status
     release
     ;
 explicit library_status ;
+
+exe boost_report
+    :
+    [ glob report/*.cpp ]
+    /boost/filesystem//boost_filesystem/<link>static
+    /boost//filesystem/<link>static
+    /boost//date_time/<link>static
+    /boost//regex/<link>static
+    /boost//program_options/<link>static
+    /boost//iostreams/<link>static
+    :
+    <define>BOOST_ALL_NO_LIB=1
+    <use>/boost//headers
+    :
+    release
+    ;
+explicit boost_report ;
