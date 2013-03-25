@@ -79,7 +79,7 @@ def list_ftp( f ):
     word_lines = [ x.split( None, 8 ) for x in lines ]
 
     # we don't need directories
-    result = [ file_info( l[-1], None, get_date( l ) ) for l in word_lines if l[0][0] != "d" ]
+    result = [ file_info( l[-1], int( l[4] ), get_date( l ) ) for l in word_lines if l[0][0] != "d" ]
     for f in result:
         utils.log( "    %s" % f )
     return result
@@ -91,8 +91,8 @@ def list_dir( dir ):
         if os.path.isfile( file_path ):
             mod_time = time.gmtime( os.path.getmtime( file_path ) )
             mod_time = ( mod_time[0], mod_time[1], mod_time[2], mod_time[3], mod_time[4], mod_time[5], 0, 0, mod_time[8] )
-            # no size (for now)
-            result.append( file_info( os.path.basename( file_path ), None, mod_time ) )
+            size = os.path.getsize( file_path )
+            result.append( file_info( os.path.basename( file_path ), size, mod_time ) )
     for fi in result:
         utils.log( "    %s" % fi )
     return result
@@ -128,7 +128,9 @@ def diff( source_dir_content, destination_dir_content ):
     for source_file in source_dir_content:
         found = find_by_name( destination_dir_content, source_file.name )
         if found is None: result[0].append( source_file.name )
-        elif time.mktime( found.date ) != time.mktime( source_file.date ): result[0].append( source_file.name )
+        elif time.mktime( found.date ) != time.mktime( source_file.date ) or \
+             found.size != source_file.size:
+            result[0].append( source_file.name )
         else:
             pass
     for destination_file in destination_dir_content:
