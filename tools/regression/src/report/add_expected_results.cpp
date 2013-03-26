@@ -63,7 +63,8 @@ void add_note(test_structure_t::test_log_t& test_log, const std::string& text, c
 
 void process_test_log(test_structure_t::test_log_t& test_log,
                       const failures_markup_t& failures_markup,
-                      const expected_results_t& expected_results) {
+                      const expected_results_t& expected_results,
+                      const std::string& source) {
 
     bool is_complete = is_test_log_complete(test_log);
 
@@ -149,7 +150,7 @@ void process_test_log(test_structure_t::test_log_t& test_log,
     if(unexpected_success && has_explicit_markup) {
         add_note(test_log,
                  "This test case was explicitly marked up in \n"
-                 "<a href=\"http://svn.boost.org/svn/boost/{$source}/status/explicit-failures-markup.xml\">\n"
+                 "<a href=\"http://svn.boost.org/svn/boost/" + source + "/status/explicit-failures-markup.xml\">\n"
                  "    status/explicit-failures-markup.xml</a> file in the Boost SVN as \"expected to fail\",\n"
                  "but is passing. Please consult the notes/output below for more details.\n");
     }
@@ -161,7 +162,7 @@ void process_test_log(test_structure_t::test_log_t& test_log,
         } else {
             add_note(test_log,
                      "This failure was explicitly marked as expected in \n"
-                     "<a href=\"http://svn.boost.org/svn/boost/{$source}/status/explicit-failures-markup.xml\">\n"
+                     "<a href=\"http://svn.boost.org/svn/boost/" + source + "/status/explicit-failures-markup.xml\">\n"
                      "status/explicit-failures-markup.xml</a> file in the Boost SVN. \n"
                      "Please contact the library author(s)/maintainer(s) for the explanation of this markup.\n");
         }
@@ -196,16 +197,18 @@ void process_test_log(test_structure_t::test_log_t& test_log,
     test_log.category = category;
 }
 
+// requires: source must be an SVN branch
 void boost::regression::add_expected_results(
     test_structure_t::run_t& tests,
     const failures_markup_t& failures_markup,
-    const expected_results_t& expected_results)
+    const expected_results_t& expected_results,
+    const std::string& source)
 {
     BOOST_FOREACH(test_structure_t::toolset_group_t::reference toolset, tests.toolsets) {
         BOOST_FOREACH(test_structure_t::toolset_t::reference library, toolset.second) {
             BOOST_FOREACH(test_structure_t::library_t::reference test_case, library.second) {
                 BOOST_FOREACH(test_structure_t::test_case_t::reference test_log, test_case.second) {
-                    process_test_log(test_log, failures_markup, expected_results);
+                    process_test_log(test_log, failures_markup, expected_results, source);
                 }
             }
         }
