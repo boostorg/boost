@@ -1,19 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <test-run source="SVN" runner="runner1" timestamp="2013-03-26T14:23:59Z" platform="Windows" tag="trunk" run-type="full" revision="83542">
+  <!--
+    Copyright (c) 2013 Steven Watanabe
+    
+    Distributed under the Boost Software Licence Version 1.0. (See
+    accompanying file LICENSE_1_0.txt or copy at
+    http://www.boost.org/LICENSE_1_0.txt)
+    -->
   <comment>&lt;h1&gt;runner&lt;/h1&gt;
 Tests are run on the Windows platform</comment>
-  <test-log toolset="msvc-11.0" library="any" test-name="test1"
-            test-program="libs/any/test/test1.cpp"
-            target-directory="boost/bin.v2/libs/any/test/test1.test/msvc-11.0/debug"
+  <test-log toolset="msvc-11.0" library="any" test-name="run_pass"
+            test-program="libs/any/test/run_pass.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_pass.test/msvc-11.0/debug"
             test-type="run" show-run-output="false">
-    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">test1.cpp</compile>
-    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">test1</link>
-    <run result="succeed" timestamp="2013-03-26 14:47:12 UTC">
-Running 1 test case...
-
-*** No errors detected
-
-EXIT STATUS: 0
-</run>
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass</link>
+    <run result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass passed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_fail_expected_new"
+            test-program="libs/any/test/run_fail_expected_new.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_fail_expected_new.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new</link>
+    <run result="fail" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new failed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_fail"
+            test-program="libs/any/test/run_fail.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_fail.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail</link>
+    <run result="fail" timestamp="2013-03-26 14:47:12 UTC">run_fail failed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_fail_expected_new_nonote"
+            test-program="libs/any/test/run_fail_expected_new_nonote.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_fail_expected_new_nonote.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new_nonote.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new_nonote</link>
+    <run result="fail" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new_nonote failed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_fail_expected_new_unsearched"
+            test-program="libs/any/test/run_fail_expected_new_unsearched.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_fail_expected_new_unsearched.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new_unsearched.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new_unsearched</link>
+    <run result="fail" timestamp="2013-03-26 14:47:12 UTC">run_fail_expected_new_unsearched failed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_fail_new"
+            test-program="libs/any/test/run_fail_new.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_fail_new.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_new.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_new</link>
+    <run result="fail" timestamp="2013-03-26 14:47:12 UTC">run_fail_new failed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_fail_regress"
+            test-program="libs/any/test/run_fail_regress.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_fail_regress.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_regress.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_fail_regress</link>
+    <run result="fail" timestamp="2013-03-26 14:47:12 UTC">run_fail_regress failed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_pass_unexpected_new"
+            test-program="libs/any/test/run_pass_unexpected_new.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_pass_unexpected_new.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected_new.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected_new</link>
+    <run result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected_new passed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_pass_unexpected"
+            test-program="libs/any/test/run_pass_unexpected.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_pass_unexpected.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected</link>
+    <run result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected passed</run>
+  </test-log>
+  <test-log toolset="msvc-11.0" library="any" test-name="run_pass_unexpected_new_nonote"
+            test-program="libs/any/test/run_pass_unexpected_new_nonote.cpp"
+            target-directory="boost/bin.v2/libs/any/test/run_pass_unexpected_new_nonote.test/msvc-11.0/debug"
+            test-type="run" show-run-output="false">
+    <compile result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected_new_nonote.cpp</compile>
+    <link result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected_new_nonote</link>
+    <run result="succeed" timestamp="2013-03-26 14:47:12 UTC">run_pass_unexpected_new_nonote passed</run>
   </test-log>
 </test-run>
