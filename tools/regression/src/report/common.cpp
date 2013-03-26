@@ -184,8 +184,8 @@ bool boost::regression::re_match(const std::string& pattern, const std::string& 
     }
     // check that the tails of the strings are the same
     std::size_t tail_size = pattern_end - pattern_start;
-    if(tail_size == 0) return true; // a trailing star
-    std::size_t off = text.find(pattern.data() + pattern_start, text_start, tail_size);
+    if(tail_size == 0) return true; // a trailing star (rfind is buggy in msvc-11)
+    std::size_t off = text.rfind(pattern.data() + pattern_start, text_start, tail_size);
     return off != std::string::npos && (off + tail_size == text.size());
 }
 
