@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
                     load_test_structure(&*test_results, structure, runs);
                     test_structure_t::run_t* test_run = runs.back();
                     std::cout << "Merging expected results" << std::endl;
-                    add_expected_results(*test_run, markup, expected);
+                    add_expected_results(*test_run, markup, expected, tag);
                     std::cout << "Generating links pages" << std::endl;
                     // must be run before test_results is discarded
                     if(reports.count("l"))

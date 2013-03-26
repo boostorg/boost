@@ -17,7 +17,8 @@ namespace regression {
 void add_expected_results(
     test_structure_t::run_t& tests,
     const failures_markup_t& failures_markup,
-    const expected_results_t& expected_results);
+    const expected_results_t& expected_results,
+    const std::string& source);
 
 }
 }
