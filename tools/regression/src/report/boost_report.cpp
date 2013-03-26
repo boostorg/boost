@@ -43,6 +43,7 @@ int main(int argc, char* argv[]) {
         ("run-date", boost::program_options::value<boost::posix_time::ptime>()->default_value(boost::posix_time::second_clock::universal_time()), "the timestamp of the report")
         ("reports,r", boost::program_options::value<std::vector<std::string> >(), "The reports to generate")
         ("css", boost::program_options::value<std::string>(), "The CSS file")
+        ("comment", boost::program_options::value<std::string>()->required(), "The report comment file")
         ("help,h", "produce a help message")
         ;
 
@@ -116,7 +117,7 @@ int main(int argc, char* argv[]) {
         BOOST_FOREACH(const std::string& mode, modes) {
             if(reports.count(mode.substr(0, 1) + "d"))
                 result_page(structure, markup,
-                            false, tag, now, warnings, mode, "comment.html");
+                            false, tag, now, warnings, mode, vm["comment"].as<std::string>());
         }
 
         BOOST_FOREACH(const std::string& mode, modes) {
@@ -128,7 +129,7 @@ int main(int argc, char* argv[]) {
         BOOST_FOREACH(const std::string& mode, modes) {
             if(reports.count(mode.substr(0, 1) + "dr"))
                 result_page(structure, markup,
-                            true, tag, now, warnings, mode, "comment.html");
+                            true, tag, now, warnings, mode, vm["comment"].as<std::string>());
         }
 
         BOOST_FOREACH(const std::string& mode, modes) {

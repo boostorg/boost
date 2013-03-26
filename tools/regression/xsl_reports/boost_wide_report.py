@@ -511,6 +511,7 @@ def execute_tasks(
         command_line = report_executable
         command_line += " --expected " + '"%s"' % expected_results_file 
         command_line += " --markup " + '"%s"' % failures_markup_file
+        command_line += " --comment " + '"%s"' % comment_file
         command_line += " --tag " + tag
         # command_line += " --run-date " + '"%s"' % run_date
         command_line += " -rl"
