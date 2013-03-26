@@ -147,7 +147,7 @@ upload_results()
     rsync -vuz --rsh=ssh --stats \
       ${1}.zip.uploading grafik@beta.boost.org:/${upload_dir}/incoming/
     ssh grafik@beta.boost.org \
-      cp ${upload_dir}/incoming/${1}.zip.uploading ${upload_dir}/live/${1}.zip
+      cp --no-preserve=timestamps ${upload_dir}/incoming/${1}.zip.uploading ${upload_dir}/live/${1}.zip
     mv ${1}.zip.uploading ${1}.zip
 }
 
