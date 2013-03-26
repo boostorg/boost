@@ -13,7 +13,6 @@
 namespace boost {
 namespace regression {
 
-extern const char* const make_tinyurl;
 extern const char* const issues_legend;
 extern const char* const library_user_legend;
 extern const char* const library_developer_legend;
