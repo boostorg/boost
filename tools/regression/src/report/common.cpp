@@ -410,9 +410,7 @@ void boost::regression::insert_page_links(html_writer& document,
                                           const std::string& page,
                                           bool release,
                                           const std::string& mode) {
-    document << "<div class=\"links\">\n"
-             << make_tinyurl
-             << "&#160;|&#160;";
+    document << "<div class=\"links\">\n";
 
     // yes, really.  The class is set to ""
     insert_view_link(document, page, "", release);

@@ -212,7 +212,6 @@ void write_issues_list(const std::string& path,
         document << "    </table>\n";
     }
     document << issues_legend;
-    document << make_tinyurl;
     document << "  </body>\n";
     document << "</html>\n";
 }

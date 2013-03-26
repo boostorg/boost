@@ -9,21 +9,6 @@
 
 #include "html.hpp"
 
-const char* const boost::regression::make_tinyurl =
-    "<span>"
-    "<script type=\"text/javascript\">\n"
-    "<!--\n"
-    "function make_tinyurl()\n"
-    "{\n"
-    "    window.open( 'http://tinyurl.com/create.php?url=' + parent.location.href );\n"
-    "}\n"
-    "//-->\n"
-    "</script>\n"
-    "\n"
-    "<a href=\"javascript:make_tinyurl()\">TinyUrl</a>"
-    "</span>\n"
-;
-
 const char* const boost::regression::issues_legend =
     "<div class=\"legend\">\n"
     "<table border=\"0\" summary=\"report description\">\n"

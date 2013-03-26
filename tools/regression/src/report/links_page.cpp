@@ -290,8 +290,6 @@ void write_test_result_file(const failures_markup_t& explicit_markup,
         document << "        </p>\n";
     }
 
-    document << make_tinyurl;
-
     document << "    </body>\n";
     document << "</html>\n";
 }
