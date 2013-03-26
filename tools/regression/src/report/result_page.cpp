@@ -332,7 +332,7 @@ void boost::regression::result_page(const test_structure_t& tests,
     std::set<std::string> libraries;
     get_libraries(tests, libraries);
 
-    if(libraries.size() > 1) {
+    {
         std::string toc_path("toc" + release_postfix(release) + ".html");
         
         std::cout << "Writing document " << toc_path << std::endl;
