@@ -423,7 +423,7 @@ void boost::regression::result_page(const test_structure_t& tests,
 
                 document << "<h1 class=\"page-title\">\n"
                             "    <a class=\"hover-link\" name=\"" << escape_xml(library) << "\" href=\"http://www.boost.org/libs/" << escape_uri(library) << "\" target=\"_top\">"
-                         << escape_xml(library) << "\n"
+                         << escape_xml(library) <<
                             "</a>"
                             "/"
                             "<a class=\"hover-link\" href=\"summary.html\" target=\"_top\">" << source << "</a>\n"
