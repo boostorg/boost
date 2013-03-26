@@ -1,0 +1,23 @@
+# Copyright (c) 2013 Steven Watanabe
+#
+# Distributed under the Boost Software Licence Version 1.0. (See
+# accompanying file LICENCE_1_0.txt or copy at
+# http://www.boost.org/LICENCE_1_0.txt)
+
+path-constant expected-results : expected_results.xml ;
+path-constant failures-markup : explicit-failures-markup.xml ;
+path-constant css : ../../xsl_reports/xsl/v2/html/master.css ;
+path-constant comment : comment.html ;
+run ../../build//boost_report :
+    --expected=\"$(expected-results)\"
+    --markup=\"$(failures-markup)\"
+    -rl -rdd -rds -ri -rn
+    --css=\"$(css)\"
+    --tag=trunk
+    --run-date=\"2013-Mar-26 17:23:08\"
+    --comment=\"$(comment)\"
+  :
+    runner.xml
+  :
+  : boost_report_test
+;
