@@ -72,9 +72,10 @@ void write_issues_list_reference_file(const std::string& out,
                                       const std::string& issues_list)
 {
     html_writer document(out);
-    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
+    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n";
     document << "<html>\n";
     document << "  <head>\n";
+    document << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n";
     document << "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n";
     document << "    <title>Boost regression unresolved issues: " << source << "</title>\n";
     document << "  </head>\n";
@@ -124,11 +125,13 @@ void write_issues_list(const std::string& path,
 
     html_writer document(path);
 
-    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n";
+    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
       
     document << "<html>\n";
     document << "  <head>\n";
+    document << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n";
     document << "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n";
+    document << "    <title>Boost regression unresolved issues: " << source << "</title>\n";
     document << "  </head>\n";
     document << "  <body>\n";
     document << "\n";
@@ -211,6 +214,7 @@ void write_issues_list(const std::string& path,
 
         document << "    </table>\n";
     }
+    document << "    </div>\n";
     document << issues_legend;
     document << "  </body>\n";
     document << "</html>\n";

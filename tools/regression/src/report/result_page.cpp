@@ -275,7 +275,9 @@ void boost::regression::result_page(const test_structure_t& tests,
     std::cout << "Writing document " << "index" << release_postfix(release) << ".html" << std::endl;
 
     html_writer index(mode + "/" + "index" + release_postfix(release) + ".html");
-    index << "<head>\n"
+    index << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n"
+             "<html>\n"
+             "<head>\n"
              "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
              "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
              "    <title>Boost regression: " << source << "</title>\n"
@@ -283,17 +285,20 @@ void boost::regression::result_page(const test_structure_t& tests,
              "<frameset cols=\"190px,*\" frameborder=\"0\" framespacing=\"0\" border=\"0\">\n"
              "    <frame name=\"tocframe\" src=\"toc" << release_postfix(release) << ".html\" scrolling=\"auto\"/>\n"
              "    <frame name=\"docframe\" src=\"" << index_path << "\" scrolling=\"auto\"/>\n"
-             "</frameset>\n";
+             "</frameset>\n"
+             "</html>\n";
     }
 
     std::cout << "Writing document " << index_path << std::endl;
 
     {
         html_writer index(mode + "/" + index_path);
-        index << "<html>\n"
+        index << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+                 "<html>\n"
                  "<head>\n"
                  "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
                  "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
+                 "    <title>Boost regression: " << source << "</title>\n"
                  "</head>\n"
                  "<body>\n"
                  "\n"
@@ -324,6 +329,7 @@ void boost::regression::result_page(const test_structure_t& tests,
             std::string comment_data(std::istreambuf_iterator<char>(comment.rdbuf()), std::istreambuf_iterator<char>());
             index << comment_data;
         }
+        index << "    </div>\n";
 
         index << "</body>\n";
         index << "</html>\n";
@@ -339,11 +345,12 @@ void boost::regression::result_page(const test_structure_t& tests,
 
         html_writer toc(mode + "/" + toc_path);
 
-        toc << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+        toc << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
             << "<html>\n"
             << "<head>\n"
             << "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
             << "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\"/>\n"
+            << "    <title>Boost regression: " << source << "</title>\n"
             << "</head>\n"
             << "<body class=\"" << mode << "-toc\">\n"
             << "    <div class=\"toc-header-entry\">\n"
@@ -391,7 +398,7 @@ void boost::regression::result_page(const test_structure_t& tests,
             {
                 html_writer document(mode + "/" + library_page);
 
-                document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+                document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n"
                             "<html>\n"
                             "<head>\n"
                             "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
@@ -410,11 +417,12 @@ void boost::regression::result_page(const test_structure_t& tests,
             {
                 html_writer document(mode + "/" + library_results);
 
-                document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+                document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
                             "<html>\n"
                             "<head>\n"
                             "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
                             "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
+                            "    <title>Boost regression: " << escape_xml(library) << "/" << source << "</title>\n"
                             "</head>\n"
                             "\n"
                             "<body>\n";

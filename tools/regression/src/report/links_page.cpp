@@ -31,7 +31,9 @@ void links_page(const failures_markup_t& explicit_markup,
                 const std::vector<test_structure_t::test_log_t>& test_logs);
 void write_variants_reference_file(const std::string& path,
                                    const std::string& variants_file_path,
-                                   const std::string release_postfix);
+                                   const std::string release_postfix,
+                                   const std::vector<test_structure_t::test_log_t>& test_logs,
+                                   const std::string& runner_id);
 std::string output_page_header(node_ptr test_log, const std::string& runner_id);
 void write_variants_file(const failures_markup_t& explicit_markup,
                          const std::string& path,
@@ -45,7 +47,10 @@ void write_test_result_file(const failures_markup_t& explicit_markup,
                             const std::string& runner_id,
                             const std::string& revision,
                             const boost::posix_time::ptime& timestamp);
-void write_test_results_reference_file(const std::string& path, const std::string& log_file_path);
+void write_test_results_reference_file(const std::string& path,
+                                       const std::string& log_file_path,
+                                       const test_structure_t::test_log_t& test_log,
+                                       const std::string& runner_id);
 
 // requires: revision must be a SVN revision.  i.e. of the form nnnnn
 void links_page(const failures_markup_t& explicit_markup,
@@ -71,7 +76,7 @@ void links_page(const failures_markup_t& explicit_markup,
         BOOST_FOREACH(const std::string& release_postfix, postfixes) {
             BOOST_FOREACH(const std::string& directory, dirs) {
                 std::string variants__file_path = directory + "/" + (encode_path(runner_id + "-" + library_name + "-" + toolset_name + "-" + test_name + "-variants_" + release_postfix) + ".html");
-                write_variants_reference_file(variants__file_path, "../" + variants_file_path, release_postfix);
+                write_variants_reference_file(variants__file_path, "../" + variants_file_path, release_postfix, test_logs, runner_id);
             }
         }
     }
@@ -86,33 +91,11 @@ void links_page(const failures_markup_t& explicit_markup,
             BOOST_FOREACH(const std::string& release_postfix, postfixes) {
                 BOOST_FOREACH(const std::string& directory, dirs) {
                     std::string reference_file_path = directory + "/" + log_file_path(explicit_markup, test_log, runner_id, release_postfix);
-                    write_test_results_reference_file(reference_file_path, log_path);
+                    write_test_results_reference_file(reference_file_path, log_path, test_log, runner_id);
                 }
             }
         }
     }
-}
-
-// requires: path must be a valid file path.
-// requires: variants_file_path must be the path to the variants file relative to path
-void write_variants_reference_file(const std::string& path,
-                                   const std::string& variants_file_path,
-                                   const std::string release_postfix)
-{
-    //utils::log("    Writing variants reference file %s" % path);
-
-    html_writer document(path);
-    
-    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
-                "<html>\n"
-                "    <head>\n"
-                "        <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
-                "    </head>\n"
-                "    <frameset cols=\"190px,*\" frameborder=\"0\" framespacing=\"0\" border=\"0\">\n"
-                "        <frame name=\"tocframe\" src=\"toc" << release_postfix  << ".html\" scrolling=\"auto\"/>\n"
-                "        <frame name=\"docframe\" src=\"" << escape_uri(variants_file_path) << "\" scrolling=\"auto\"/>\n"
-                "    </frameset>\n"
-                "</html>\n";
 }
 
 // okay. result is unconstrained
@@ -122,6 +105,33 @@ std::string output_page_header(const test_structure_t::test_log_t& test_log, con
     } else {
         return test_log.target_directory;
     }
+}
+
+// requires: path must be a valid file path.
+// requires: variants_file_path must be the path to the variants file relative to path
+void write_variants_reference_file(const std::string& path,
+                                   const std::string& variants_file_path,
+                                   const std::string release_postfix,
+                                   const std::vector<test_structure_t::test_log_t>& test_logs,
+                                   const std::string& runner_id)
+{
+    //utils::log("    Writing variants reference file %s" % path);
+    std::string component = output_page_header(test_logs[0], runner_id);
+
+    html_writer document(path);
+    
+    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n"
+                "<html>\n"
+                "    <head>\n"
+                "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
+                "        <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
+                "        <title>Test output: " << escape_xml(component) << "</title>\n"
+                "    </head>\n"
+                "    <frameset cols=\"190px,*\" frameborder=\"0\" framespacing=\"0\" border=\"0\">\n"
+                "        <frame name=\"tocframe\" src=\"toc" << release_postfix  << ".html\" scrolling=\"auto\"/>\n"
+                "        <frame name=\"docframe\" src=\"" << escape_uri(variants_file_path) << "\" scrolling=\"auto\"/>\n"
+                "    </frameset>\n"
+                "</html>\n";
 }
 
 // requires revision is an SVN revision #
@@ -139,9 +149,10 @@ void write_variants_file(const failures_markup_t& explicit_markup,
     std::string component = output_page_header(test_logs[0], runner_id);
     int age = 0; // timestamp_difference(timestamp, run_date);
 
-    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                 "<html>\n"
                 "    <head>\n"
+                "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
                 "        <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
                 "        <title>Test output: " << escape_xml(component) << "</title>\n"
                 "    </head>\n"
@@ -213,10 +224,11 @@ void write_test_result_file(const failures_markup_t& explicit_markup,
     std::string component = output_page_header(test_log, runner_id);
     int age = 0; // timestamp_difference(timestamp, run_date);
     
-    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                 "<html>\n";
 
     document << "    <head>\n"
+                "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
                 "        <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
                 "        <title>Test output: " << escape_xml(component) << "</title>\n"
                 "    </head>\n";
@@ -234,41 +246,41 @@ void write_test_result_file(const failures_markup_t& explicit_markup,
     
     if(!test_log.notes.empty()) {
 
-        document << "        <p>\n"
+        document << "        <div class=\"notes\">\n"
                     "            <div class=\"notes-title\">Notes</div>\n";
 
         show_notes(document, test_log.notes, explicit_markup);
 
-        document << "        </p>\n";
+        document << "        </div>\n";
 
     }
 
     if(const test_structure_t::target_t* compile = lookup_target(test_log, "compile")) {
         const char* compile_result = compile->result? "succeed" : "fail";
-        document << "        <p>\n";
+        document << "        <div>\n";
         document << "            <div class=\"log-compiler-output-title\">Compile [" << escape_xml(compile->timestamp) << "]:"
                                  " <span class=\"output-" << compile_result << "\">" << compile_result << "</span></div>\n";
         document << "            <pre>\n";
         write_contents(document, compile->contents, true);
         document << "            </pre>\n";
-        document << "        </p>\n";
+        document << "        </div>\n";
     }
 
     if(const test_structure_t::target_t* link = lookup_target(test_log, "link")) {
         const char* link_result = link->result? "succeed" : "fail";
-        document << "        <p>\n";
+        document << "        <div>\n";
         document << "            <div class=\"log-linker-output-title\">Link [" << escape_xml(link->timestamp) << "]:"
                                  " <span class=\"output-" << link_result << "\">" << link_result << "</span></div>\n";
         document << "            <pre>\n";
         write_contents(document, link->contents, true);
         document << "            </pre>\n";
-        document << "        </p>\n";
+        document << "        </div>\n";
     }
 
     if(const test_structure_t::target_t* lib = lookup_target(test_log, "lib")) {
         const char* lib_result = lib->result? "succeed" : "fail";
         std::string lib_name(lib->contents->value(), lib->contents->value_size());
-        document << "        <p>\n";
+        document << "        <div>\n";
         document << "            <div class=\"log-linker-output-title\">Lib [" << escape_xml(lib->timestamp) << "]:"
                                  " <span class=\"output-" << lib_result << "\">" << lib_result << "</span></div>\n";
         document << "            <p>\n";
@@ -276,18 +288,18 @@ void write_test_result_file(const failures_markup_t& explicit_markup,
         document << "                " << escape_xml(lib_name) << "\n";
         document << "                </a>\n";
         document << "            </p>\n";
-        document << "        </p>\n";
+        document << "        </div>\n";
     }
          
     if(const test_structure_t::target_t* run = lookup_target(test_log, "run")) {
         const char* run_result = run->result? "succeed" : "fail";
-        document << "        <p>\n";
+        document << "        <div>\n";
         document << "            <div class=\"log-linker-output-title\">Run [" << escape_xml(run->timestamp) << "]:"
                                  " <span class=\"output-" << run_result << "\">" << run_result << "</span></div>\n";
         document << "            <pre>\n";
         write_contents(document, run->contents, true);
         document << "            </pre>\n";
-        document << "        </p>\n";
+        document << "        </div>\n";
     }
 
     document << "    </body>\n";
@@ -296,14 +308,21 @@ void write_test_result_file(const failures_markup_t& explicit_markup,
 
 // requires path is a valid path
 // requires: log_file_path is the location of the log file relative to path
-void write_test_results_reference_file(const std::string& path, const std::string& log_file_path)
+void write_test_results_reference_file(const std::string& path,
+                                       const std::string& log_file_path,
+                                       const test_structure_t::test_log_t& test_log,
+                                       const std::string& runner_id)
 {
+    std::string component = output_page_header(test_log, runner_id);
+
     html_writer document(path);
     
-    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+    document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n"
                 "<html>\n"
                 "    <head>\n"
+                "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
                 "        <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\" />\n"
+                "        <title>Test output: " << escape_xml(component) << "</title>\n"
                 "    </head>\n"
                 "    <frameset cols=\"190px,*\" frameborder=\"0\" framespacing=\"0\" border=\"0\">\n"
                 "        <frame name=\"tocframe\" src=\"../toc.html\" scrolling=\"auto\"/>\n"
