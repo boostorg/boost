@@ -13,9 +13,13 @@
 void boost::regression::runners(const test_structure_t& tests) {
     {
         html_writer document("runners.html");
-        document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+        document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                     "<html>\n"
-                    "  <body bgcolor=\"#FFFFFF\">\n";
+                    "  <head>\n"
+                    "    <link rel=\"stylesheet\" type=\"text/css\" href=\"master.css\" title=\"master\" />\n"
+                    "    <title>runners</title>\n"
+                    "  </head>\n"
+                    "  <body>\n";
         BOOST_FOREACH(test_structure_t::platform_group_t::const_reference platform, tests.platforms) {
             BOOST_FOREACH(test_structure_t::platform_t::const_reference run, platform.second) {
                 document << "    <table>"
@@ -37,9 +41,9 @@ void boost::regression::runners(const test_structure_t& tests) {
 
             html_writer document(encode_path(run.runner) + ".html");
 
-            document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n"
+            document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
                         "<html>\n"
-                        "  <head>\n"
+                        "<head>\n"
                         "<title>" << escape_xml(run.runner) << "</title>\n"
                         "</head>\n"
                         "<body>\n"

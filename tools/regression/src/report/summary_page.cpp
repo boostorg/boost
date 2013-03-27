@@ -121,7 +121,7 @@ void boost::regression::summary_page(const std::string& mode,
     {
         html_writer document(mode + "/" + "summary" + release_postfix(release) + ".html");
 
-        document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD html 4.01 Transitional//EN\">\n"
+        document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD html 4.01 Frameset//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd\">\n"
                     "<html>\n"
                     "    <head>\n"
                     "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
@@ -141,11 +141,12 @@ void boost::regression::summary_page(const std::string& mode,
     {
         html_writer document(mode + "/" + summary_results);
 
-        document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\">\n"
+        document << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
                     "<html>\n"
                     "<head>\n"
                     "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n"
                     "    <link rel=\"stylesheet\" type=\"text/css\" href=\"../master.css\" title=\"master\"/>\n"
+                    "    <title>Boost regression summary: " << source << "</title>\n"
                     "</head>\n"
                     "<body>\n";
 
