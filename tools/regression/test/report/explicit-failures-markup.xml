@@ -13,9 +13,6 @@
 
   <!-- accumulators -->
   <library name="any">
-    <mark-unusable>
-      <toolset name="borland-*"/>
-    </mark-unusable>
     <mark-expected-failures>
       <test name="run_fail_expected_new"/>
       <toolset name="msvc*"/>
@@ -38,6 +35,13 @@
       <test name="run_pass_unexpected_new_nonote"/>
       <toolset name="msvc*"/>
     </mark-expected-failures>
+  </library>
+
+  <library name="lambda">
+    <mark-unusable>
+      <toolset name="msvc-11.0"/>
+      <note author="Steven Watanabe">The library requires features that are not supported by this compiler</note>
+    </mark-unusable>
   </library>
   
   <note id="1">
