@@ -144,6 +144,10 @@ namespace
   }
 
 
+  string test_path_to_library_name( string const& path );
+  string test_name( const string & s );
+
+
 //  extract a target directory path from a jam target string  ----------------//
 //  s may be relative to the initial_path:
 //    ..\..\..\libs\foo\build\bin\libfoo.lib\vc7\debug\runtime-link-dynamic\boo.obj
@@ -160,6 +164,34 @@ namespace
     temp = split( trim_left( temp ) ).back();
     if ( temp[0] == '.' ) temp.erase( 0, temp.find_first_not_of( "./" ) ); 
     else temp.erase( 0, locate_root.string().size()+1 );
+
+    std::string testid = test_path_to_library_name( temp ) + "/" + test_name( temp );
+    test2info_map::const_iterator info = test2info.find(testid);
+    if ( info != test2info.end() )
+    {
+      // Only keep path components that are part of the
+      // build variant.
+
+      string source_directory = info->second.file_path;
+      string::size_type last = source_directory.find_last_of( "/" );
+      if ( last == string::npos )
+        source_directory.clear();
+      else
+        source_directory.erase( last );
+
+      // find the start of the shared tail
+      string::size_type source_pos = source_directory.size(), temp_pos = temp.size();
+      for ( ; source_pos != 0 && temp_pos != 0; --source_pos, --temp_pos )
+      {
+        if ( source_directory[ source_pos - 1 ] != temp[ temp_pos - 1 ] ) break;
+      }
+
+      // erase all path components in the shared tail
+      temp_pos = temp.find( '/', temp_pos );
+      if ( temp_pos != string::npos )
+        temp.erase( temp_pos );
+    }
+
     if ( echo )
         std::cout << "\ttarget_directory( \"" << s << "\") -> \"" << temp << "\"" << std::endl;
     return temp;
