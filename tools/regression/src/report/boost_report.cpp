@@ -25,6 +25,7 @@
 #include <boost/exception/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/program_options.hpp>
+#include <boost/range/algorithm/sort.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -83,7 +84,9 @@ int main(int argc, char* argv[]) {
         global_zip.reset(new boost::zip::zip_archive(zip_file));
 
         if(vm.count("input-file")) {
-            BOOST_FOREACH(const std::string& file, vm["input-file"].as<std::vector<std::string> >()) {
+            std::vector<std::string> input_files = vm["input-file"].as<std::vector<std::string> >();
+            boost::sort(input_files);
+            BOOST_FOREACH(const std::string& file, input_files) {
                 boost::shared_ptr<document_type> test_results;
                 try {
                     std::cout << "Reading " << file << std::endl;
