@@ -83,8 +83,8 @@ struct test_structure_t {
         std::vector<note_t> notes;
     };
     typedef std::vector<test_log_t> test_case_t;
-    typedef boost::unordered_map<std::string, test_case_t> library_t;
-    typedef boost::unordered_map<std::string, library_t> toolset_t;
+    typedef std::map<std::string, test_case_t> library_t;
+    typedef std::map<std::string, library_t> toolset_t;
     typedef std::map<std::string, toolset_t> toolset_group_t;
     struct run_t {
         std::string runner;
