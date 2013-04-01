@@ -24,6 +24,7 @@ The only Boost libraries that *must* be built separately are:
 * Boost.Filesystem_
 * Boost.GraphParallel_
 * Boost.IOStreams_
+* Boost.Locale_
 * Boost.MPI_
 * Boost.ProgramOptions_
 * Boost.Python_ (see the `Boost.Python build documentation`__
