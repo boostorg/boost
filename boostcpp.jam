@@ -222,6 +222,7 @@ rule filtered-target ( name : message + : sources + : requirements * )
 
 rule declare_install_and_stage_proper_targets ( libraries * : headers * )
 {
+    local p = [ project.current ] ;
     for local l in $(libraries)
     {
         if $(l) = locale
@@ -245,6 +246,7 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
         else
         {
             alias $(l)-for-install : libs/$(l)/build ; 
+            $(p).mark-target-as-explicit $(l)-for-install ;
         }
     }
     local library-targets = $(libraries)-for-install ;
