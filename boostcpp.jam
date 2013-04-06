@@ -500,13 +500,14 @@ rule post-build ( ok ? )
     {
         if $(ok)
         {
+            local include-path = [ path.native $(BOOST_ROOT) ] ;
             ECHO "
 
 The Boost C++ Libraries were successfully built!
 
 The following directory should be added to compiler include paths:
 
-    $(BOOST_ROOT)
+    $(include-path)
 
 The following directory should be added to linker library paths:
 
