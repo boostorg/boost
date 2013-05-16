@@ -280,6 +280,11 @@ namespace
       }
     }
 
+    // Strip off a trailing /test
+    // This needs to be applied after the sublibs search.
+    if(result.size() >= 5 && result.substr(result.size() - 5, 5) == "/test")
+      result = result.substr(0, result.size() - 5);
+
     return result;
   }
 
