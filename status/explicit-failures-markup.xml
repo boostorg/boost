@@ -468,16 +468,14 @@
 
     <!-- build -->
     <library name="build">
-        <test name="timedata">
-            <mark-failure>
-                <toolset name="msvc-7.1"/>
-                <toolset name="msvc-8.0"/>
-                <toolset name="msvc-9.0"/>
-                <note author="Vladimir Prus">
-                  See https://zigzag.lvk.cs.msu.su:7813/boost.build/ticket/218
-                </note>
-            </mark-failure>
-        </test>
+        <mark-expected-failures>
+            <test name="collect_debug_info"/>
+            <toolset name="*"/>
+            <note author="Jurko Gospodnetić">
+                Temporarily enabled and always failing test used for collecting
+                additional feedback from the testing site.
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- chrono -->
