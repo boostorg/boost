@@ -683,7 +683,19 @@
                 <toolset name="cray-8.0"/>
                 <toolset name="acc"/>
                 <note author="Alexander Nasonov">
-                    Conversion double-string-double may give a different value (or even throw) on many compilers
+                    Conversion double-string-double may give a different 
+                    value (or even throw) on many compilers
+                </note>
+            </mark-failure>
+        </test>
+        <test name="lexical_cast_float_types_test">
+            <mark-failure>
+                <toolset name="clang-darwin-11"/>
+                <toolset name="clang-darwin-tot11"/>
+                <toolset name="clang-3.2~c++11_libc++"/>
+                <note author="Antony Polukhin">
+                    libc++ had a bug in implementation of srteam conversions for 
+                    values that shall be represented as infinity. 
                 </note>
             </mark-failure>
         </test>
@@ -699,7 +711,10 @@
                 <toolset name="clang-darwin-libcxx*"/>
                 <toolset name="msvc-9.0~wm5"/>
                 <note author="Antony Polukhin">
-                    Some compilers and STL realizations convert double and long double types with bigger precision loss than minimal (or even round to infinity). Such failures are not a lexical_cast, but a compiler fault. 
+                    Some compilers and STL realizations convert double and long 
+                    double types with bigger precision loss than minimal (or 
+                    even round to infinity). Such failures are not a 
+                    lexical_cast, but a compiler fault. 
                 </note>
             </mark-failure>
         </test>
