@@ -5479,6 +5479,35 @@ This platform doesn't supports Boost.Chrono.
             <toolset name="sunpro-5_3-sunos"/>
         </mark-unusable>
     </library>
+  
+    <!-- type_erasure -->
+    <library name="type_erasure">
+      <mark-unusable>
+        <toolset name="gcc-4.2.1"/>
+        <toolset name="gcc-4.4*"/>
+        <toolset name="gcc-mingw-4.4*"/>
+        <toolset name="darwin-4.2.1"/>
+        <note author="Steven Watanabe" refid="17"/>
+      </mark-unusable>
+      <mark-expected-failures>
+        <test name="test_add"/>
+        <test name="test_add_assign"/>
+        <test name="test_equal"/>
+        <test name="test_less"/>
+        <test name="test_construct"/>
+        <toolset name="msvc-8.0*"/>
+        <note author="Steven Watanabe">
+          SFINAE for the constructors of param doesn't work correctly on this compiler.
+          This affects free functions (including operators) with more than one
+          any argument and overloaded member functions.
+        </note>
+      </mark-expected-failures>
+      <mark-expected-failures reason="?">
+        <test name="test_free"/>
+        <toolset name="msvc-8.0"/>
+        <note>This looks like an instance of MSVC substituting int in a template-id.</note>
+      </mark-expected-failures>
+    </library>
 
     <!-- type_traits -->
     <library name="type_traits">
