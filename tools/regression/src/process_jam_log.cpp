@@ -836,7 +836,8 @@ int main( int argc, char ** argv )
     // these actions are only used to stop the previous action
     else if ( line_start.find( "-Archive" ) != string::npos
       || line_start.find( "MkDir" ) == 0
-      || line_start.find( "common.mkdir" ) == 0 )
+      || line_start.find( "common.mkdir" ) == 0
+      || line_start.find( ".manifest" ) != string::npos )
     {
       mgr.stop_message( content );
       content.clear();
