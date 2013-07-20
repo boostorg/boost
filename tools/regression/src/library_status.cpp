@@ -1,6 +1,5 @@
 //  Generate Library Status HTML from jam regression test output  -----------//
 
-//  Copyright Robert Ramey 2012
 //  Copyright Bryce Lelbach 2011 
 //  Copyright Beman Dawes 2002-2011.
 
@@ -170,18 +169,19 @@ namespace
 
     //  find_element  ------------------------------------------------------------//
 
+    struct element_equal {
+        const string & m_name;
+        element_equal(const string & name) :
+            m_name(name)
+        {}
+        bool operator()(const xml::element_ptr & xep) const {
+            return xep.get()->name == m_name;
+        }
+    };
+
     xml::element_list::const_iterator find_element(
         const xml::element & root, const string & name 
     ){
-        struct element_equal {
-            const string & m_name;
-            element_equal(const string & name) :
-                m_name(name)
-            {}
-            bool operator()(const xml::element_ptr & xep) const {
-                return xep.get()->name == m_name;
-            }
-        };
         return std::find_if(
             root.elements.begin(), 
             root.elements.end(), 
@@ -202,19 +202,20 @@ namespace
 
     //  attribute_value  ----------------------------------------------------------//
 
+    struct attribute_equal {
+        const string & m_name;
+        attribute_equal(const string & name) :
+            m_name(name)
+        {}
+        bool operator()(const xml::attribute & a) const {
+            return a.name == m_name;
+        }
+    };
+
     const string & attribute_value( 
         const xml::element & element,
         const string & attribute_name 
     ){
-        struct attribute_equal {
-            const string & m_name;
-            attribute_equal(const string & name) :
-                m_name(name)
-            {}
-            bool operator()(const xml::attribute & a) const {
-                return a.name == m_name;
-            }
-        };
         xml::attribute_list::const_iterator itr;
         itr = std::find_if(
             element.attributes.begin(), 
@@ -368,6 +369,13 @@ namespace
         return result;
     }
 
+    struct has_fail_result {
+        //bool operator()(const boost::shared_ptr<const xml::element> e) const {
+        bool operator()(const xml::element_ptr & e) const {
+            return attribute_value(*e, "result") == "fail";
+        }
+    };
+
     //  do_cell  ---------------------------------------------------------------//
     bool do_cell(
         const fs::path & target_dir,
@@ -389,8 +397,6 @@ namespace
             return true;
         }
 
-        int anything_generated = 0;
-
 
         string test_type( "unknown" );
         bool always_show_run_output( false );
@@ -402,33 +408,15 @@ namespace
         always_show_run_output
             = attribute_value( db, "show-run-output" ) == "true";
 
-        /*
-        test_type = attribute_value( db, "test-type" );
-        std::string test_type_base( test_type );
-        if ( test_type_base.size() > 5 )
-        {
-            const string::size_type trailer = test_type_base.size() - 5;
-            if ( test_type_base.substr( trailer ) == "_fail" )
-            {
-                test_type_base.erase( trailer );
-            }
-        }
-        if ( test_type_base.size() > 4 )
-        {
-            const string::size_type trailer = test_type_base.size() - 4;
-            if ( test_type_base.substr( trailer ) == "_pyd" )
-            {
-                test_type_base.erase( trailer );
-            }
-        }
-        
-        xml::element_list::const_iterator itr;
-        itr = find_element( db, test_type_base );
-        if(db.elements.end() == itr)
-            return pass;
-        */
-        pass = (attribute_value( db, "result" ) != "fail");
+        // if we don't find any failures
+        // mark it as a pass
+        pass = (db.elements.end() == std::find_if(
+            db.elements.begin(),
+            db.elements.end(),
+            has_fail_result()
+        ));
 
+        int anything_generated = 0;
         if (!no_links){
             anything_generated = 
                 generate_report(
@@ -483,7 +471,7 @@ namespace
     ){
         bool retval = false;
         if(node.is_leaf){
-            retval = do_cell(
+            return do_cell(
                 dir_root,
                 lib_name,
                 test_name,
