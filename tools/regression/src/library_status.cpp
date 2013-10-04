@@ -655,6 +655,7 @@ namespace
                 }
                 break;
             }
+            test_lib_dir.remove_filename();
         }while(! test_lib_dir.empty());
 
         if(test_lib_dir.empty())
