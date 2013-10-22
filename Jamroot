@@ -128,12 +128,41 @@ import sequence ;
 import xsltproc ;
 import set ;
 import path ;
+import link ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.55.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
+
+	
+local all-headers =
+    [ MATCH .*libs/(.*)/include/boost : [ glob libs/*/include/boost ] ] ;
+
+for dir in $(all-headers)
+{
+    link-directory $(dir)-headers : libs/$(dir)/include/boost : <location>. ;
+    explicit $(dir)-headers ;
+}
+
+local numeric-headers =
+   [ MATCH .*libs/numeric/(.*)/include/boost : [ glob libs/*/*/include/boost ] ] ;
+
+for dir in $(numeric-headers)
+{
+    link-directory numeric-$(dir)-headers : libs/numeric/$(dir)/include/boost : <location>. ;
+    explicit numeric-$(dir)-headers ;
+}
+
+if $(all-headers)
+{
+    constant BOOST_MODULARLAYOUT : $(all-headers) $(numeric-headers) ;
+}
+if $(BOOST_MODULARLAYOUT)
+{
+    echo modularized layout build ;
+}
 
 project boost
     : requirements <include>.
@@ -210,7 +239,7 @@ for local l in $(all-libraries)
     }
 }
 
-alias headers : : : : <include>. ;
+alias headers : $(all-headers)-headers numeric-$(numeric-headers)-headers : : : <include>.  ;
 explicit headers ;
 
 # Make project ids of all libraries known.
