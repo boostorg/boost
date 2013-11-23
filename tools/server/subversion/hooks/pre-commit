@@ -80,10 +80,10 @@ $SVNLOOK log -t "$TXN" "$REPOS" | \
 /bin/touch /home/dikim/temp/pre-babo
 
 # Check for problems with case-insensitive names
-/usr/bin/python24 /home/subversion/boost/hooks/case-insensitive.py "$REPOS" "$TXN" || exit 1
+python /home/subversion/boost/hooks/case-insensitive.py "$REPOS" "$TXN" || exit 1
 
 # Check svn:mime-type and svn:eol-style
-/usr/local/bin/perl /home/subversion/boost/hooks/check-mime-type.pl \
+perl /home/subversion/boost/hooks/check-mime-type.pl \
   "$REPOS" "$TXN" || exit 1
 
 # Check for an empty log message
