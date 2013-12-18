@@ -185,7 +185,7 @@ my_dir="."
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" = x; then
-  guessed_toolset=`$my_dir/tools/build/v2/engine/build.sh --guess-toolset`
+  guessed_toolset=`$my_dir/tools/build/src/engine/build.sh --guess-toolset`
   case $guessed_toolset in
     acc | darwin | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
@@ -215,7 +215,7 @@ rm -f config.log
 if test "x$BJAM" = x; then
   echo -n "Building Boost.Build engine with toolset $TOOLSET... "
   pwd=`pwd`
-  (cd "$my_dir/tools/build/v2/engine" && ./build.sh "$TOOLSET") > bootstrap.log 2>&1
+  (cd "$my_dir/tools/build/src/engine" && ./build.sh "$TOOLSET") > bootstrap.log 2>&1
   if [ $? -ne 0 ]; then
       echo
       echo "Failed to build Boost.Build build engine" 
@@ -223,11 +223,11 @@ if test "x$BJAM" = x; then
       exit 1
   fi
   cd "$pwd"
-  arch=`cd $my_dir/tools/build/v2/engine && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
-  BJAM="$my_dir/tools/build/v2/engine/$arch/b2"
-  echo "tools/build/v2/engine/$arch/b2"
+  arch=`cd $my_dir/tools/build/src/engine && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
+  BJAM="$my_dir/tools/build/src/engine/$arch/b2"
+  echo "tools/build/src/engine/$arch/b2"
   cp "$BJAM" .
-  cp "$my_dir/tools/build/v2/engine/$arch/bjam" .
+  cp "$my_dir/tools/build/src/engine/$arch/bjam" .
 
 fi
 
