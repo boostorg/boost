@@ -26,7 +26,7 @@ repo_path = {
     'trunk'         : 'trunk',
     'release'       : 'branches/release',
     'build'         : 'trunk/tools/build/v2',
-    'jam'           : 'trunk/tools/build/v2/engine',
+    'jam'           : 'trunk/tools/build/engine',
     'regression'    : 'trunk/tools/regression',
     'boost-build.jam'
                     : 'trunk/boost-build.jam'
@@ -373,7 +373,7 @@ class runner:
             fn = os.path.join(d, "test_log.xml")
             cd = os.getcwd()
             try:                
-                os.chdir (os.path.join (self.boost_root, 'tools/build/v2/test'));
+                os.chdir (os.path.join (self.boost_root, 'tools/build/test'));
                 bjam_path = os.path.dirname (self.tool_path( self.bjam ))
                 self.log( "Using bjam binary in '%s'" % (bjam_path))
                 os.putenv('PATH', bjam_path + os.pathsep + os.environ['PATH'])
