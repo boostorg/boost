@@ -29,7 +29,7 @@ mailing list`_.
 
      -- the Boost Developers
 
-.. _Boost.Build reference manual: ../../tools/build/index.html
+.. _Boost.Build reference manual: ../../tools/build/v2/index.html
 .. _Boost Users' mailing list: http://www.boost.org/more/mailing_lists.htm#users
 .. _Boost.Build mailing list: http://www.boost.org/more/mailing_lists.htm#jamboost
 
