@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # Copyright MetaCommunications, Inc. 2003-2007
-# Copyright Redshift Software, Inc. 2007
+# Copyright Rene Rivera 2007-2013
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
@@ -30,6 +30,32 @@ repo_path = {
     'regression'    : 'trunk/tools/regression',
     'boost-build.jam'
                     : 'trunk/boost-build.jam'
+    }
+
+git_info = {
+    'build' : {
+        'git' : 'https://github.com/boostorg/build.git',
+        'dir' : 'tools_bb',
+        'subdir' : '',
+        },
+    'regression' : {
+        'git' : 'https://github.com/boostorg/boost.git',
+        'dir' : 'boost_root',
+        'subdir' : 'tools/regression',
+        },
+    'boost-build.jam' : {
+        'raw' : 'https://raw.github.com/boostorg/boost/%s/boost-build.jam'
+        },
+    'boost' : {
+        'git' : 'https://github.com/boostorg/boost.git',
+        'dir' : 'boost_root',
+        'subdir' : '',
+        },
+    }
+
+git_branch = {
+    'trunk' : 'develop',
+    'release' : 'master',
     }
 
 class runner:
@@ -79,11 +105,20 @@ class runner:
         opt.add_option( '--local',
             help="the name of the boost tarball" )
         opt.add_option( '--force-update',
-            help="do an SVN update (if applicable) instead of a clean checkout, even when performing a full run",
+            help="do an update (if applicable) instead of a clean checkout, even when performing a full run",
             action='store_true' )
         opt.add_option( '--have-source',
-            help="do neither a tarball download nor an SVN update; used primarily for testing script changes",
+            help="do neither a tarball download nor a repo update; used primarily for testing script changes",
             action='store_true' )
+        opt.add_option( '--use-svn',
+            help="use old svn repo",
+            action='store_true')
+        opt.add_option( '--use-git',
+            help="use the canonical git repo",
+            action='store_true')
+        opt.add_option( '--use-dulwich',
+            help="use dulwich git implementation for git access",
+            action='store_true')
 
         #~ Connection Options:
         opt.add_option( '--ftp',
@@ -135,21 +170,30 @@ class runner:
         self.mail=None
         self.smtp_login=None
         self.skip_tests=False
+        self.use_git=True
+        self.use_dulwich=False
         ( _opt_, self.actions ) = opt.parse_args(None,self)
         if not self.actions or self.actions == []:
             self.actions = [ 'regression' ]
         
         #~ Initialize option dependent values.
         self.regression_root = root
-        self.boost_root = os.path.join( self.regression_root, 'boost' )
+        self.boost_root = os.path.join( self.regression_root, 'boost_root' )
         self.regression_results = os.path.join( self.regression_root, 'results' )
         if self.pjl_toolset != 'python':
             self.regression_log = os.path.join( self.regression_results, 'bjam.log' )
         else:
             self.regression_log = os.path.join( self.regression_results, 'bjam.xml' )
         self.tools_bb_root = os.path.join( self.regression_root,'tools_bb' )
-        self.tools_bjam_root = os.path.join( self.regression_root,'tools_bjam' )
-        self.tools_regression_root = os.path.join( self.regression_root,'tools_regression' )
+        if self.use_git:
+            self.tools_bb_root = os.path.join( self.tools_bb_root, 'src')
+            self.tools_bjam_root = os.path.join( self.regression_root,'tools_bb', 'src', 'engine' )
+        else:
+            self.tools_bjam_root = os.path.join( self.regression_root,'tools_bb', 'v2', 'engine' )
+        if self.use_git:
+            self.tools_regression_root = os.path.join( self.regression_root,'boost_root', 'tools', 'regression' )
+        else:
+            self.tools_regression_root = os.path.join( self.regression_root,'tools_regression' )
         self.xsl_reports_dir = os.path.join( self.tools_regression_root, 'xsl_reports' )
         self.timestamp_path = os.path.join( self.regression_root, 'timestamp' )
         if sys.platform == 'win32':
@@ -228,7 +272,11 @@ class runner:
     def command_get_tools(self):
         #~ Get Boost.Build v2...
         self.log( 'Getting Boost.Build v2...' )
-        if self.user and self.user != '':
+        if self.use_git:
+            self.git_checkout(
+                git_info['build'],
+                git_branch[self.tag])
+        elif self.user and self.user != '':
             os.chdir( os.path.dirname(self.tools_bb_root) )
             self.svn_command( 'co %s %s' % (
                 self.svn_repository_url(repo_path['build']),
@@ -240,23 +288,13 @@ class runner:
             self.unpack_tarball(
                 self.tools_bb_root+".tar.bz2",
                 os.path.basename(self.tools_bb_root) )
-        #~ Get Boost.Jam...
-        self.log( 'Getting Boost.Jam...' )
-        if self.user and self.user != '':
-            os.chdir( os.path.dirname(self.tools_bjam_root) )
-            self.svn_command( 'co %s %s' % (
-                self.svn_repository_url(repo_path['jam']),
-                os.path.basename(self.tools_bjam_root) ) )
-        else:
-            self.retry( lambda: self.download_tarball(
-                os.path.basename(self.tools_bjam_root)+".tar.bz2",
-                self.tarball_url(repo_path['jam']) ) )
-            self.unpack_tarball(
-                self.tools_bjam_root+".tar.bz2",
-                os.path.basename(self.tools_bjam_root) )
         #~ Get the regression tools and utilities...
-        self.log( 'Getting regression tools an utilities...' )
-        if self.user and self.user != '':
+        self.log( 'Getting regression tools and utilities...' )
+        if self.use_git:
+            self.git_checkout(
+                git_info['regression'],
+                git_branch[self.tag])
+        elif self.user and self.user != '':
             os.chdir( os.path.dirname(self.tools_regression_root) )
             self.svn_command( 'co %s %s' % (
                 self.svn_repository_url(repo_path['regression']),
@@ -270,24 +308,33 @@ class runner:
                 os.path.basename(self.tools_regression_root) )
         
         #~ We get a boost-build.jam to make the tool build work even if there's
-        #~ and existing boost-build.jam above the testing root.
+        #~ an existing boost-build.jam above the testing root.
         self.log( 'Getting boost-build.jam...' )
-        self.http_get(
-            self.svn_repository_url(repo_path['boost-build.jam']),
-            os.path.join( self.regression_root, 'boost-build.jam' ) )
+        if self.use_git:
+            self.http_get(
+                git_info['boost-build.jam']['raw']%(git_branch[self.tag]),
+                os.path.join(self.regression_root, 'boost-build.jam') )
+        else:
+            self.http_get(
+                self.svn_repository_url(repo_path['boost-build.jam']),
+                os.path.join( self.regression_root, 'boost-build.jam' ) )
     
     def command_get_source(self):
         self.refresh_timestamp()
         self.log( 'Getting sources (%s)...' % self.timestamp() )
 
-        if self.user and self.user != '':
+        if self.use_git:
+            self.retry(self.git_source_checkout)
+        elif self.user and self.user != '':
             self.retry( self.svn_checkout )
         else:
             self.retry( self.get_tarball )
         pass
     
     def command_update_source(self):
-        if self.user and self.user != '' \
+        if self.use_git:
+            self.retry(self.git_source_checkout)
+        elif self.user and self.user != '' \
             or os.path.exists( os.path.join( self.boost_root, '.svn' ) ):
             open( self.timestamp_path, 'w' ).close()
             self.log( 'Updating sources from SVN (%s)...' % self.timestamp() )
@@ -405,23 +452,34 @@ class runner:
 
         source = 'tarball'
         revision = ''
-        svn_root_file = os.path.join( self.boost_root, '.svn' )
-        svn_info_file = os.path.join( self.boost_root, 'svn_info.txt' )
-        if os.path.exists( svn_root_file ):
-            source = 'SVN'
-            self.svn_command( 'info --xml "%s" >"%s"' % (self.boost_root,svn_info_file) )
-
-        if os.path.exists( svn_info_file ):
-            f = open( svn_info_file, 'r' )
-            svn_info = f.read()
+        
+        if self.use_git:
+            git_head_file = os.path.join(self.boost_root, '.git', 'HEAD')
+            f = open( git_head_file, 'r' )
+            git_head_info = f.read()
             f.close()
-            i = svn_info.find( 'Revision:' )
-            if i < 0: i = svn_info.find( 'revision=' )  # --xml format
-            if i >= 0:
-                i += 10
-                while svn_info[i] >= '0' and svn_info[i] <= '9':
-                  revision += svn_info[i]
-                  i += 1
+            git_ref_file = os.path.join(self.boost_root, '.git', git_head_info.strip())
+            f = open( git_ref_file, 'r' )
+            revision = f.read()
+            f.close()
+            revision = revision.strip()
+        else:
+            svn_root_file = os.path.join( self.boost_root, '.svn' )
+            svn_info_file = os.path.join( self.boost_root, 'svn_info.txt' )
+            if os.path.exists( svn_root_file ):
+                source = 'SVN'
+                self.svn_command( 'info --xml "%s" >"%s"' % (self.boost_root,svn_info_file) )
+            if os.path.exists( svn_info_file ):
+                f = open( svn_info_file, 'r' )
+                svn_info = f.read()
+                f.close()
+                i = svn_info.find( 'Revision:' )
+                if i < 0: i = svn_info.find( 'revision=' )  # --xml format
+                if i >= 0:
+                    i += 10
+                    while svn_info[i] >= '0' and svn_info[i] <= '9':
+                      revision += svn_info[i]
+                      i += 1
 
         if self.pjl_toolset != 'python':
             from collect_and_upload_logs import collect_logs
@@ -549,8 +607,8 @@ class runner:
             raise
 
     def command_show_revision(self):
-        modified = '$Date$'
-        revision = '$Revision$'
+        modified = '$Date: 2013-02-28 12:09:13 -0600 (Thu, 28 Feb 2013) $'
+        revision = '$Revision: 83205 $'
 
         import re
         re_keyword_value = re.compile( r'^\$\w+:\s+(.*)\s+\$$' )
@@ -802,6 +860,48 @@ class runner:
             return '%s%s' % (repo_root['user'],path)
         else:
             return '%s%s' % (repo_root['anon'],path)
+    
+    #~ Downloading source, from GIT...
+    
+    def git_command(self, command, *args):
+        git_cli = "'git' '%(command)s'" % { 'command': command }
+        for a in args:
+            git_cli += " '"+a+"'"
+        rc = os.system( git_cli )
+        if rc != 0:
+            raise Exception( 'GIT command "%s" failed with code %d' % (git_cli, rc) )
+        return rc
+    
+    def git_checkout(self, info, branch):
+        if self.use_dulwich:
+            import git;
+            git_root = os.path.join(self.regression_root, info['dir'])
+            g = git.RemoteRepo(git_root, info['git'], branch=branch, reset=False)
+            g.checkout()
+        else:
+            git_root = os.path.join(self.regression_root, info['dir'])
+            if os.path.exists( git_root ):
+                os.chdir( git_root )
+                self.git_command( 'pull' )
+                self.git_command( 'submodule', 'update')
+            else:
+                git_root_parent = os.path.dirname( git_root )
+                git_root_subdir = os.path.basename( git_root )
+                os.chdir( git_root_parent )
+                self.git_command(
+                    'clone',
+                    '--depth', '1',
+                    '--branch', branch,
+                    '--single-branch',
+                    info[ 'git' ],
+                    git_root_subdir )
+                os.chdir( git_root )
+                self.git_command(
+                    'submodule', 'update', '--init', '--merge' )
+    
+    def git_source_checkout(self):
+        os.chdir( self.regression_root )
+        self.git_checkout(git_info['boost'], git_branch[self.tag])
     
     #~ Downloading and extracting source archives, from tarballs or zipballs...
     

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright Redshift Software, Inc. 2012-2013
+# Copyright Rene Rivera 2012-2013
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
@@ -8,6 +8,10 @@
 
 import os
 import sys
+
+root = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0,os.path.join(root,'dulwich'))
+
 import shutil
 import stat
 import dulwich
@@ -17,6 +21,9 @@ from dulwich.repo import Repo
 from dulwich.objects import ZERO_SHA, Tree
 from dulwich.file import ensure_dir_exists
 from dulwich.index import changes_from_tree, Index, index_entry_from_stat
+
+if __name__ == '__main__':
+    print "#  Using dulwich version %s.%s.%s"%(dulwich.__version__)
 
 class RemoteRepo(Repo):
     def __init__(self, root, remote_uri, branch='develop', reset=False):
@@ -104,6 +111,8 @@ class RemoteRepo(Repo):
                     submodule_url = l.strip().rsplit(" ",1)[-1]
                     if submodule_url.startswith('git:'):
                         submodule_url = submodule_url.replace("git:","https:")
+                    if submodule_url.startswith('.'):
+                        submodule_url = self.remote_uri+"/"+submodule_url
     
     def _checkout_entry(self,index,path,mode,sha):
         full_path = os.path.join(self.path, path)
@@ -184,7 +193,7 @@ if __name__ == '__main__':
             'git_test_boost',
             'https://github.com/boostorg/boost.git',
             branch='master',
-            reset=True)
+            reset=False)
         g.checkout()
         g.status()
     if False:
