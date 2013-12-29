@@ -171,6 +171,7 @@ class runner:
         self.skip_tests=False
         self.use_git=True
         self.use_dulwich=False
+        self.use_svn=False
         ( _opt_, self.actions ) = opt.parse_args(None,self)
         if not self.actions or self.actions == []:
             self.actions = [ 'regression' ]
