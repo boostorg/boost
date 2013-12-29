@@ -419,8 +419,11 @@ class runner:
             utils.makedirs (d)
             fn = os.path.join(d, "test_log.xml")
             cd = os.getcwd()
-            try:                
-                os.chdir (os.path.join (self.boost_root, 'tools/build/v2/test'));
+            try:
+                if self.use_git:
+                    os.chdir (os.path.join (self.boost_root, 'tools/build/test'))
+                else:
+                    os.chdir (os.path.join (self.boost_root, 'tools/build/v2/test'))
                 bjam_path = os.path.dirname (self.tool_path( self.bjam ))
                 self.log( "Using bjam binary in '%s'" % (bjam_path))
                 os.putenv('PATH', bjam_path + os.pathsep + os.environ['PATH'])
