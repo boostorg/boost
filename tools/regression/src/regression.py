@@ -56,6 +56,8 @@ git_info = {
 git_branch = {
     'trunk' : 'develop',
     'release' : 'master',
+    'develop' : 'develop',
+    'master' : 'master',
     }
 
 class runner:
@@ -275,7 +277,7 @@ class runner:
         if self.use_git:
             self.git_checkout(
                 git_info['build'],
-                git_branch[self.tag])
+                'develop')
         elif self.user and self.user != '':
             os.chdir( os.path.dirname(self.tools_bb_root) )
             self.svn_command( 'co %s %s' % (

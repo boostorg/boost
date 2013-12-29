@@ -39,7 +39,7 @@ script_local = os.path.join(root,'tools','regression','src')
 if use_local:
     script_remote = 'file://'+os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 elif use_git:
-    script_remote = 'https://raw.github.com/boostorg/boost/master/tools/regression/src'
+    script_remote = 'https://raw.github.com/boostorg/boost/develop/tools/regression/src'
 else:
     script_remote = 'http://svn.boost.org/svn/boost/trunk/tools/regression/src'
 script_dir = os.path.join(root,'tools_regression_src')
