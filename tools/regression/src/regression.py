@@ -461,7 +461,8 @@ class runner:
             f = open( git_head_file, 'r' )
             git_head_info = f.read()
             f.close()
-            git_ref_file = os.path.join(self.boost_root, '.git', git_head_info.strip())
+            git_head_info = git_head_info.strip().rpartition(' ')[2]
+            git_ref_file = os.path.join(self.boost_root, '.git', git_head_info)
             f = open( git_ref_file, 'r' )
             revision = f.read()
             f.close()
