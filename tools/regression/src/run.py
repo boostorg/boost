@@ -24,8 +24,15 @@ use_local = use_local_argument in sys.argv
 if use_local:
     del sys.argv[sys.argv.index(use_local_argument)]
 
-use_git_argument = '--use-git'
-use_git = use_git_argument in sys.argv
+# Assume we use git.
+use_git = True
+
+# But allow overriding with svn for legacy comparison testing.
+use_svn_argument = '--use-svn'
+use_svn = use_svn_argument in sys.argv
+
+if use_svn:
+    use_git = False
 
 #~ The directory this file is in.
 if use_local:

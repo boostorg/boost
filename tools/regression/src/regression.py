@@ -113,10 +113,7 @@ class runner:
             help="do neither a tarball download nor a repo update; used primarily for testing script changes",
             action='store_true' )
         opt.add_option( '--use-svn',
-            help="use old svn repo",
-            action='store_true')
-        opt.add_option( '--use-git',
-            help="use the canonical git repo",
+            help="use old svn repo instead of new git repo",
             action='store_true')
         opt.add_option( '--use-dulwich',
             help="use dulwich git implementation for git access",
@@ -177,6 +174,10 @@ class runner:
         ( _opt_, self.actions ) = opt.parse_args(None,self)
         if not self.actions or self.actions == []:
             self.actions = [ 'regression' ]
+        
+        #~ Allow overriding git repo with legacy svn repo for comparison testing.
+        if self.use_svn:
+            self.use_git = False
         
         #~ Initialize option dependent values.
         self.regression_root = root
