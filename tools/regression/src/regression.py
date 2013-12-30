@@ -872,7 +872,7 @@ class runner:
     #~ Downloading source, from GIT...
     
     def git_command(self, command, *args):
-        git_cli = "'git' '%(command)s'" % { 'command': command }
+        git_cli = "git %(command)s" % { 'command': command }
         for a in args:
             git_cli += " '"+a+"'"
         rc = os.system( git_cli )
