@@ -874,7 +874,7 @@ class runner:
     def git_command(self, command, *args):
         git_cli = "git %(command)s" % { 'command': command }
         for a in args:
-            git_cli += " '"+a+"'"
+            git_cli += " \""+a+"\""
         rc = os.system( git_cli )
         if rc != 0:
             raise Exception( 'GIT command "%s" failed with code %d' % (git_cli, rc) )
