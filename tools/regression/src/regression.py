@@ -259,7 +259,10 @@ class runner:
 
         if 'source' in args:
             self.log( 'Cleaning up "%s" directory ...' % self.boost_root )
-            self.rmtree( self.boost_root )
+            if self.use_git:
+                self.git_source_checkout(True)
+            else:
+                self.rmtree( self.boost_root )
 
         if 'bin' in args:
             boost_bin_dir = os.path.join( self.boost_root, 'bin' )
@@ -875,41 +878,46 @@ class runner:
         git_cli = "git %(command)s" % { 'command': command }
         for a in args:
             git_cli += " \""+a+"\""
+        self.log( 'Executing GIT command: %s> %s' % (os.getcwd(), git_cli) )
         rc = os.system( git_cli )
         if rc != 0:
             raise Exception( 'GIT command "%s" failed with code %d' % (git_cli, rc) )
         return rc
     
-    def git_checkout(self, info, branch):
+    def git_checkout(self, info, branch, clean = False):
+        git_root = os.path.join(self.regression_root, info['dir'])
         if self.use_dulwich:
             import git;
-            git_root = os.path.join(self.regression_root, info['dir'])
             g = git.RemoteRepo(git_root, info['git'], branch=branch, reset=False)
             g.checkout()
         else:
-            git_root = os.path.join(self.regression_root, info['dir'])
-            if os.path.exists( git_root ):
+            if os.path.exists( os.path.join(git_root, ".git") ):
                 os.chdir( git_root )
-                self.git_command( 'pull' )
+                self.git_command( 'pull', '--recurse-submodules' )
                 self.git_command( 'submodule', 'update')
+                if clean:
+                    self.git_command( 'reset', '--hard' )
+                    self.git_command( 'clean', '-fxd')
+                    self.git_command( 'status' )
             else:
-                git_root_parent = os.path.dirname( git_root )
-                git_root_subdir = os.path.basename( git_root )
-                os.chdir( git_root_parent )
                 self.git_command(
-                    'clone',
-                    '--depth', '1',
-                    '--branch', branch,
-                    '--single-branch',
-                    info[ 'git' ],
-                    git_root_subdir )
+                    'init',
+                    git_root)
                 os.chdir( git_root )
+                self.git_command(
+                    'remote', 'add', '--no-tags', '-t', branch, 'origin',
+                    info[ 'git' ] )
+                self.git_command(
+                    'fetch', '--depth=1' )
+                self.git_command(
+                    'checkout', branch )
                 self.git_command(
                     'submodule', 'update', '--init', '--merge' )
-    
-    def git_source_checkout(self):
         os.chdir( self.regression_root )
-        self.git_checkout(git_info['boost'], git_branch[self.tag])
+    
+    def git_source_checkout(self, clean = False):
+        os.chdir( self.regression_root )
+        self.git_checkout(git_info['boost'], git_branch[self.tag], clean)
     
     #~ Downloading and extracting source archives, from tarballs or zipballs...
     
