@@ -198,11 +198,12 @@ void validate_run(const test_structure_t::run_t& run) {
     if(run.run_type != "incremental" && run.run_type != "full") {
         BOOST_THROW_EXCEPTION(xml_error("Expected run-type to be \"incremental\" or \"full\""));
     }
-    BOOST_FOREACH(char ch, run.revision) {
-        if(!('0' <= ch && ch <= '9')) {
-            BOOST_THROW_EXCEPTION(xml_error("Expected revision to be a numeric constant"));
-        }
-    }
+// For Git, revision is a SHA, and thus may contain alpha characters
+//    BOOST_FOREACH(char ch, run.revision) {
+//        if(!('0' <= ch && ch <= '9')) {
+//            BOOST_THROW_EXCEPTION(xml_error("Expected revision to be a numeric constant"));
+//        }
+//    }
 }
 
 }
