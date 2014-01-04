@@ -477,7 +477,7 @@ void boost::regression::insert_runners_rows(html_writer& document,
         BOOST_FOREACH(test_structure_t::platform_t::const_reference run, platform.second) {
             if(run.toolsets.size() > 0) {
                 document << "    <td colspan=\"" << run.toolsets.size() << "\" class=\"revision\">\n"
-                            "         rev " << run.revision << "\n"
+                            "         rev " << run.revision.substr(0, 6) << "\n"
                             "    </td>\n";
             }
         }
