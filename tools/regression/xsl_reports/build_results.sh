@@ -17,7 +17,7 @@ update_tools()
 {
     cwd=`pwd`
     cd boost
-    svn up
+    git pull
     cd "${cwd}"
 }
 
