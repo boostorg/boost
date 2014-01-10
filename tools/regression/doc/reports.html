@@ -12,42 +12,48 @@
   "center" width="277" height="86" /> Running Regression Test Reports</h1>
 
   <h2>Introduction</h2>
-  <p>After initial setup, a script is run that:</p>
+  <p>This page describes how to generate the
+  <a href="http://beta.boost.org/development/tests/trunk/developer/summary.html">
+  Regression Test Reports</a>. It is of interest primarily to the person 
+  designated by the release managers to run the reports.</p>
   <h2>Prerequisites</h2>
   <ul>
+    <li>A public ssh key.</li>
     <li><b>Linux</b>. In theory it should be possible to run the run the reports 
-    on most modern operating system, including OS X and Windows, but all testing 
-    and current use has been on Linux.</li>
+    on most modern operating system, including OS X and Windows (under <code>
+    bash</code>), but all testing and current use has been on Linux. Works fine 
+    in a Linux VirtualBox virtual machine running on a Windows host.</li>
     <li><b>Git</b> installed.</li>
     <li>A C++ compiler installed.</li>
   </ul>
   <h2>Initial setup</h2>
+  <p>Send your public ssh key to Rene Rivera.</p>
   <p>Run once only:</p>
   <blockquote>
     <pre>cd ~                   # or some other directory of your choice
 mkdir boost-reports    # or some other name of your choice
 cd boost-reports
-mkdir trunk            # TODO: change to develop | master | ?
+mkdir trunk            
 git clone --recursive git@github.com:boostorg/boost.git boost
-pushd boost
-git checkout develop
-git pull
-git submodule foreach &#39;git  
+cd boost
 ./bootstrap.sh
-./b2 headers</pre>
+git checkout develop   # we use the branch develop tools/regression
+git pull
+# Only tools/regression need to be on develop, so no submodule checkout here</pre>
   </blockquote>
   <h2>Build report generation program <code>boost_report</code></h2>
   <p>This only has to be done when there is a change to the report generation 
   program.</p>
   <blockquote>
-    <pre>
-pushd ~/modular-boost/tools/regression/build
-b2 boost_report
+    <pre>pushd ~/boost-reports/boost
+git pull
+pushd tools/regression/build
+../../../b2 boost_report
 # find location of exectuable, then:
-mv bin/gcc-4.8/release/boost_report ~/boost-reports
-popd</pre>
+mv bin/gcc-4.8/release/boost_report ~/boost/boost-reports # see todo below</pre>
   </blockquote>
   <h2>Run reports</h2>
+  <p>This step performs the following actions:</p>
   <ul>
     <li>Updates its internal procedures from the git public repository.</li>
     <li>Downloads current result zip files from an ftp server.</li>
@@ -57,16 +63,27 @@ popd</pre>
   </ul>
   <p>To run:</p>
   <blockquote>
-    <pre>boost/tools/regression/xsl_reports/build_results.sh develop</pre>
+    <pre>cd ~/boost/boost-reports/boost
+git pull
+cd ..
+boost/tools/regression/xsl_reports/build_results.sh trunk</pre>
   </blockquote>
   <h2>To Do</h2>
   <ul>
+    <li>Change build_results.sh from trunk, etc, to git names.</li>
     <li>build_results.sh should take care of updating boost_report if needed.</li>
     <li>Avoid the clone --recursive; just install the core libraries (for some 
     definition of core libraries).</li>
-    <li>Add install options to tools/regression/build/Jamroot.jam?</li>
+    <li>Add install options to tools/regression/build/Jamroot.jam? Or at least 
+    boost_report</li>
+    <li>Is it OK to run several reports (i.e. master and develop) in the same 
+    directory? Document answer.</li>
   </ul>
-  <p>&nbsp;</p>
+  <h2>Acknowledgements</h2>
+  <p>Thanks to Tom Kent,
+  <span email="watanabesj@gmail.com" name="Steven Watanabe" class="gD">Steven 
+  Watanabe, and Rene Rivera for illuminating various dark corners of how 
+  reporting works.</span></p>
   <hr>
 
   <p><font size="2">Revised
