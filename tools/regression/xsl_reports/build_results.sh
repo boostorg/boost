@@ -17,7 +17,7 @@ update_tools()
 {
     cwd=`pwd`
     cd boost
-    git pull
+#    git pull
     cd "${cwd}"
 }
 
@@ -88,6 +88,8 @@ HTML
 
 build_results()
 {
+    tag=${1?'error: command line missing branch-name argument'}
+    reports="dd,ds,i,n"
     cwd=`pwd`
     cd ${1}
     root=`pwd`
@@ -95,27 +97,6 @@ build_results()
     if [ -x ${cwd}/boost_report ]; then
       report_opt=--boost-report=${cwd}/boost_report
     fi
-    case ${1} in
-        trunk)
-        tag=trunk
-        reports="dd,ds,i,n"
-        ;;
-        
-        release)
-        tag=branches/release
-        reports="dd,ds,i,n"
-        ;;
-        
-        release-1_35_0)
-        tag=tags/release/Boost_1_35_0
-        reports="dd,ud,ds,us,ddr,udr,dsr,usr,i,n,e"
-        ;;
-        
-        release-1_36_0)
-        tag=tags/release/Boost_1_36_0
-        reports="dd,ud,ds,us,ddr,udr,dsr,usr,i,n,e"
-        ;;
-    esac
     report_info
     python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
         --locate-root="${root}" \
