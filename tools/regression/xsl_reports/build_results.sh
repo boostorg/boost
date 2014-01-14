@@ -17,7 +17,7 @@ update_tools()
 {
     cwd=`pwd`
     cd boost
-#    git pull
+    git pull
     cd "${cwd}"
 }
 
