@@ -64,7 +64,7 @@ if not no_update:
         for src in script_sources:
             shutil.copyfile( os.path.join(script_local,src), os.path.join(script_dir,src) )
     else:
-        print '# Dowloading regression scripts from %s...' % script_remote
+        print '# Downloading regression scripts from %s...' % script_remote
         proxy = None
         for a in sys.argv[1:]:
             if a.startswith('--proxy='):

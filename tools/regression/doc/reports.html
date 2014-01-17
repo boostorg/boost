@@ -14,8 +14,8 @@
   <h2>Introduction</h2>
   <p>This page describes how to generate the
   <a href="http://beta.boost.org/development/tests/trunk/developer/summary.html">
-  Regression Test Reports</a>. It is of interest primarily to the person 
-  designated by the release managers to run the reports.</p>
+  Regression Test Reports</a>. It is of interest primarily to people 
+  authorized by the release managers to run the reports.</p>
   <h2>Prerequisites</h2>
   <ul>
     <li>A public ssh key.</li>
@@ -33,7 +33,8 @@
     <pre>cd ~                   # or some other directory of your choice
 mkdir boost-reports    # or some other name of your choice
 cd boost-reports
-mkdir trunk            
+mkdir develop
+mkdir master            
 git clone --recursive git@github.com:boostorg/boost.git boost
 cd boost
 ./bootstrap.sh
@@ -66,28 +67,24 @@ mv bin/gcc-4.8/release/boost_report ~/boost/boost-reports # see todo below</pre>
     <pre>cd ~/boost/boost-reports/boost
 git pull
 cd ..
-boost/tools/regression/xsl_reports/build_results.sh trunk</pre>
+boost/tools/regression/xsl_reports/build_results.sh develop
+boost/tools/regression/xsl_reports/build_results.sh master</pre>
   </blockquote>
   <h2>To Do</h2>
   <ul>
-    <li>Change build_results.sh from trunk, etc, to git names.</li>
     <li>build_results.sh should take care of updating boost_report if needed.</li>
     <li>Avoid the clone --recursive; just install the core libraries (for some 
     definition of core libraries).</li>
     <li>Add install options to tools/regression/build/Jamroot.jam? Or at least 
     boost_report</li>
-    <li>Is it OK to run several reports (i.e. master and develop) in the same 
-    directory? Document answer.</li>
   </ul>
   <h2>Acknowledgements</h2>
-  <p>Thanks to Tom Kent,
-  <span email="watanabesj@gmail.com" name="Steven Watanabe" class="gD">Steven 
-  Watanabe, and Rene Rivera for illuminating various dark corners of how 
+  <p>Thanks to Tom Kent, Steven Watanabe, and Rene Rivera for illuminating various dark corners of how 
   reporting works.</span></p>
   <hr>
 
   <p><font size="2">Revised
-  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B %Y" startspan -->09 January 2014<!--webbot bot="Timestamp" endspan i-checksum="32406" --></font></p>
+  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B %Y" startspan -->17 January 2014<!--webbot bot="Timestamp" endspan i-checksum="32403" --></font></p>
 
   <p><font size="2">Copyright Beman Dawes 2014.</font></p>
 
