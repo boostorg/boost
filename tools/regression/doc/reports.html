@@ -67,8 +67,16 @@ mv bin/gcc-4.8/release/boost_report ~/boost/boost-reports # see todo below</pre>
     <pre>cd ~/boost/boost-reports/boost
 git pull
 cd ..
-boost/tools/regression/xsl_reports/build_results.sh develop
-boost/tools/regression/xsl_reports/build_results.sh master</pre>
+boost/tools/regression/xsl_reports/build_results.sh develop &amp;&gt;develop.log
+boost/tools/regression/xsl_reports/build_results.sh master &amp;&gt;master.log</pre>
+  </blockquote>
+
+<p>The log files are handy for debugging problems. You can put some or all of 
+this in a little bash script if you prefer. For example:</p>  
+  
+  <blockquote>
+    <pre>time boost/tools/regression/xsl_reports/build_results.sh ${1?&#39;error: missing tag\
+ argument; usually develop or master&#39;} 2&gt;&amp;1 | tee ${1}.log</pre>
   </blockquote>
   <h2>To Do</h2>
   <ul>
