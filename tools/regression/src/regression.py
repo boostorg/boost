@@ -406,8 +406,12 @@ class runner:
                 self.bjam_options,
                 self.regression_results,
                 self.regression_log )
-        self.log( 'Starting tests (%s)...' % test_cmd )
+        headers_cmd = self.bjam_cmd(None, 'headers')
         cd = os.getcwd()
+        self.log( 'Updating headers (%s)...' % headers_cmd )
+        os.chdir( self.boost_root )
+        utils.system( [ headers_cmd ] )
+        self.log( 'Starting tests (%s)...' % test_cmd )
         os.chdir( os.path.join( self.boost_root, 'status' ) )
         utils.system( [ test_cmd ] )
         os.chdir( cd )
