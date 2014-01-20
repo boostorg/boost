@@ -83,6 +83,8 @@ class runner:
             help="an HTML comment file to be inserted in the reports" )
         opt.add_option( '--tag',
             help="the tag for the results" )
+        opt.add_option( '--group',
+            help="the group in which the results are reported, defaults to the tag")
         opt.add_option( '--toolsets',
             help="comma-separated list of toolsets to test with" )
         opt.add_option( '--libraries',
@@ -147,7 +149,8 @@ class runner:
         #~ Defaults
         self.runner = None
         self.comment='comment.html'
-        self.tag='trunk'
+        self.tag='develop'
+        self.group=None
         self.toolsets=None
         self.libraries=None
         self.incremental=False
@@ -179,6 +182,10 @@ class runner:
         #~ Allow overriding git repo with legacy svn repo for comparison testing.
         if self.use_svn:
             self.use_git = False
+        
+        #~ Set the reporting group if it wasn't specified.
+        if not self.group:
+            self.group = self.tag
         
         #~ Initialize option dependent values.
         self.regression_root = root
@@ -300,7 +307,7 @@ class runner:
         if self.use_git:
             self.git_checkout(
                 git_info['regression'],
-                git_branch[self.tag])
+                self.git_branch())
         elif self.user and self.user != '':
             os.chdir( os.path.dirname(self.tools_regression_root) )
             self.svn_command( 'co %s %s' % (
@@ -319,7 +326,7 @@ class runner:
         self.log( 'Getting boost-build.jam...' )
         if self.use_git:
             self.http_get(
-                git_info['boost-build.jam']['raw']%(git_branch[self.tag]),
+                git_info['boost-build.jam']['raw']%(self.git_branch()),
                 os.path.join(self.regression_root, 'boost-build.jam') )
         else:
             self.http_get(
@@ -540,7 +547,7 @@ class runner:
                 lambda:
                     upload_logs(
                         self.regression_results,
-                        self.runner, self.tag,
+                        self.runner, self.group,
                         self.user,
                         self.ftp_proxy,
                         self.debug_level, self.send_bjam_log,
@@ -553,7 +560,7 @@ class runner:
                 lambda:
                     upload_logs(
                         self.regression_results,
-                        self.runner, self.tag,
+                        self.runner, self.group,
                         self.user,
                         self.ftp_proxy,
                         self.debug_level, self.send_bjam_log,
@@ -921,8 +928,14 @@ class runner:
     
     def git_source_checkout(self, clean = False):
         os.chdir( self.regression_root )
-        self.git_checkout(git_info['boost'], git_branch[self.tag], clean)
+        self.git_checkout(git_info['boost'], self.git_branch(), clean)
     
+    def git_branch(self):
+        if git_branch.has_key(self.tag):
+            return git_branch[self.tag]
+        else:
+            return self.tag
+        
     #~ Downloading and extracting source archives, from tarballs or zipballs...
     
     def get_tarball( self, *args ):
