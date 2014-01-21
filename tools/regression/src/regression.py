@@ -185,7 +185,7 @@ class runner:
         
         #~ Set the reporting group if it wasn't specified.
         if not self.group:
-            self.group = self.tag
+            self.group = self.git_branch()
         
         #~ Initialize option dependent values.
         self.regression_root = root
