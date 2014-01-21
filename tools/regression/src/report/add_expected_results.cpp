@@ -150,8 +150,8 @@ void process_test_log(test_structure_t::test_log_t& test_log,
     if(unexpected_success && has_explicit_markup) {
         add_note(test_log,
                  "This test case was explicitly marked up in \n"
-                 "<a href=\"http://svn.boost.org/svn/boost/" + source + "/status/explicit-failures-markup.xml\">\n"
-                 "    status/explicit-failures-markup.xml</a> file in the Boost SVN as \"expected to fail\",\n"
+                 "<a href=\"https://github.com/boostorg/boost/blob/" + source + "/status/explicit-failures-markup.xml\">\n"
+                 "    status/explicit-failures-markup.xml</a> file in the Boost repository as \"expected to fail\",\n"
                  "but is passing. Please consult the notes/output below for more details.\n");
     }
     if(has_explicit_markup && lookup_element(test_failures_markup, "note") == 0) {
@@ -162,8 +162,8 @@ void process_test_log(test_structure_t::test_log_t& test_log,
         } else {
             add_note(test_log,
                      "This failure was explicitly marked as expected in \n"
-                     "<a href=\"http://svn.boost.org/svn/boost/" + source + "/status/explicit-failures-markup.xml\">\n"
-                     "status/explicit-failures-markup.xml</a> file in the Boost SVN. \n"
+                     "<a href=\"https://github.com/boostorg/boost/blob/" + source + "/status/explicit-failures-markup.xml\">\n"
+                     "status/explicit-failures-markup.xml</a> file in the Boost repository. \n"
                      "Please contact the library author(s)/maintainer(s) for the explanation of this markup.\n");
         }
     }
@@ -197,7 +197,7 @@ void process_test_log(test_structure_t::test_log_t& test_log,
     test_log.category = category;
 }
 
-// requires: source must be an SVN branch
+// requires: source is a Git branch name
 void boost::regression::add_expected_results(
     test_structure_t::run_t& tests,
     const failures_markup_t& failures_markup,

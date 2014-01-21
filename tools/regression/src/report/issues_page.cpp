@@ -189,7 +189,7 @@ void write_issues_list(const std::string& path,
 
             document << "        <tr>\n";
             document << "          <td class=\"test-name\">\n";
-            document << "            <a href=\"http://svn.boost.org/svn/boost/"
+            document << "            <a href=\"https://github.com/boostorg/boost/blob/"
                      << source << "/" << escape_uri(test_program) << "\" class=\"test-link\" target=\"_top\">\n";
             document << "              " << escape_xml(test_name) << "\n";
             document << "            </a>\n";

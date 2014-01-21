@@ -163,7 +163,7 @@ done:
 }
 
 // requires: line_mod should be from an enumerated set
-// requires: source is a branch of svn
+// requires: source is a Git branch name
 // requires: mode = developer | user
 void insert_test_line(html_writer& document,
                       const failures_markup_t& explicit_markup,
@@ -180,7 +180,7 @@ void insert_test_line(html_writer& document,
 
     std::string test_header =
         "<td class=\"test-name\">\n"
-        "    <a href=\"http://svn.boost.org/svn/boost/" + source + "/" + escape_uri(test_program) + "\" class=\"test-link\" target=\"_top\">\n"
+        "    <a href=\"https://github.com/boostorg/" + library + "/blob/" + source + "/" + escape_uri(test_program) + "\" class=\"test-link\" target=\"_top\">\n"
         "        " + escape_xml(test_results.first.second) + "\n" // FIXME: sanitize test name
         "    </a>\n"
         "</td>\n";
@@ -212,7 +212,7 @@ void insert_test_line(html_writer& document,
              << "</tr>\n";
 }
 
-// requires: source is a branch of svn
+// requires: source is a Git branch name
 // requires: mode = developer | user
 void insert_test_section(html_writer& document,
                          const test_structure_t& test_structure,
