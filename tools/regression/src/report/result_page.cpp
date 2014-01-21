@@ -177,10 +177,14 @@ void insert_test_line(html_writer& document,
     // This is guaranteed to exist because of the way the nested maps are created
     const test_structure_t::test_log_t * first_log = (*test_results.second.begin()).second.front();
     std::string test_program(first_log->test_program);
+ 
+    std::string::size_type pos = test_program.find(library);
+    if (pos != std::string::npos)
+      test_program.erase(0, pos + library.size());
 
     std::string test_header =
         "<td class=\"test-name\">\n"
-        "    <a href=\"https://github.com/boostorg/" + library + "/blob/" + source + "/" + escape_uri(test_program) + "\" class=\"test-link\" target=\"_top\">\n"
+        "    <a href=\"https://github.com/boostorg/" + library + "/blob/" + source + escape_uri(test_program) + "\" class=\"test-link\" target=\"_top\">\n"
         "        " + escape_xml(test_results.first.second) + "\n" // FIXME: sanitize test name
         "    </a>\n"
         "</td>\n";
