@@ -68,8 +68,8 @@ if not no_update:
         proxy = None
         for a in sys.argv[1:]:
             if a.startswith('--proxy='):
-                proxy = {'http' : a.split('=')[1] }
-                print '--- %s' %(proxy['http'])
+                proxy = {'https' : a.split('=')[1] }
+                print '--- %s' %(proxy['https'])
                 break
         for src in script_sources:
             urllib.FancyURLopener(proxy).retrieve(
