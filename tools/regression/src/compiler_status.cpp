@@ -25,11 +25,12 @@
 
 #include <boost/config/warning_disable.hpp>
 
-#include "boost/config.hpp"
-#include "boost/filesystem/operations.hpp"
-#include "boost/filesystem/convenience.hpp"
-#include "boost/filesystem/fstream.hpp"
+#include <boost/config.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "detail/tiny_xml.hpp"
+#include "detail/common.hpp"
 namespace fs = boost::filesystem;
 namespace xml = boost::tiny_xml;
 
@@ -54,6 +55,8 @@ namespace xml = boost::tiny_xml;
 # define POPEN popen
 # define PCLOSE pclose
 #endif
+
+#include <boost/detail/lightweight_main.hpp>
 
 using std::string;
 
@@ -877,7 +880,7 @@ const fs::path find_bin_path(const string& relative)
   {
     // Find test result locations, trying:
     // - Boost.Build V1 location with ALL_LOCATE_TARGET
-    // - Boost.Build V2 location with top-lelve "build-dir" 
+    // - Boost.Build V2 location with top-level "build-dir" 
     // - Boost.Build V1 location without ALL_LOCATE_TARGET
     string relative( fs::initial_path().string() );
 
@@ -949,11 +952,9 @@ const fs::path find_bin_path(const string& relative)
 
 //  main  --------------------------------------------------------------------//
 
-#define BOOST_NO_CPP_MAIN_SUCCESS_MESSAGE
-#include <boost/test/included/prg_exec_monitor.hpp>
-
 int cpp_main( int argc, char * argv[] ) // note name!
 {
+  fs::initial_path();
   fs::path comment_path;
   while ( argc > 1 && *argv[1] == '-' )
   {
@@ -983,8 +984,8 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( argc != 3 && argc != 4 )
   {
     std::cerr <<
-      "Usage: compiler_status [options...] boost-root status-file [links-file]\n"
-      "  boost-root is the path to the boost tree root directory.\n"
+      "Usage: compiler_status [options...] boost-tree status-file [links-file]\n"
+      "  boost-tree is a path within a boost directory tree; may be a period.\n"
       "  status-file and links-file are paths to the output files.\n"
       "Must be run from directory containing Jamfile\n"
       "  options: --compiler name     Run for named compiler only\n"
@@ -1003,7 +1004,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
       "           --no-warn           Do not report warnings.\n"
       "           --compile-time      Show compile time.\n"
       "           --run-time          Show run time.\n"
-      "Example: compiler_status --compiler gcc /boost-root cs.html cs-links.html\n"
+      "Example: compiler_status --compiler gcc . cs.html cs-links.html\n"
       "Note: Only the leaf of the links-file path and --notes file string are\n"
       "used in status-file HTML links. Thus for browsing, status-file,\n"
       "links-file, and --notes file must all be in the same directory.\n"
@@ -1011,7 +1012,25 @@ int cpp_main( int argc, char * argv[] ) // note name!
     return 1;
   }
 
-  boost_root = fs::path( argv[1] );
+  boost_root = boost::regression_tools::boost_root_path( fs::absolute( argv[1] ));
+#ifdef BOOST_WINDOWS_API
+  // normalize drive letter to lowercase so later string compares are case independent
+  std::string root_string = boost_root.string();
+  if (root_string.size() > 1 && root_string[1] == ':')
+  {
+    root_string[0] = std::tolower(root_string[0]);
+    boost_root = root_string;
+  }
+#endif
+  std::cout << "boost-root: " << boost_root << std::endl;
+
+  if ( boost_root.empty() )
+  {
+    std::cerr << "error: boost-root argument \"" << argv[1]
+              << "\" is not within a boost directory tree\n";
+    return 1;
+  }
+
   if ( locate_root.empty() ) locate_root = boost_root;
   
   if (jamfile_path.empty())

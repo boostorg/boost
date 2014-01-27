@@ -11,6 +11,7 @@
 #include <boost/config/warning_disable.hpp>
 
 #include "detail/tiny_xml.hpp"
+#include "detail/common.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem/fstream.hpp"
 #include "boost/filesystem/exception.hpp"
@@ -48,32 +49,6 @@ namespace
 
   fs::path boost_root;
   fs::path locate_root; // ALL_LOCATE_TARGET (or boost_root if none)
-
-  //  set_boost_root  --------------------------------------------------------//
-
-  void set_boost_root()
-  {
-    
-    boost_root = fs::initial_path();
-
-    for(;;)
-    {
-      if ( fs::exists( boost_root / "libs" ) )
-      {
-        fs::current_path( fs::initial_path() ); // restore initial path
-        return;
-      }
-      fs::current_path( ".." );
-      if ( boost_root == fs::current_path() )
-      {
-        fs::current_path( fs::initial_path() ); // restore initial path
-        std::cout <<
-          "Abort: process_jam_log must be run from within a boost directory tree\n";
-        std::exit(1);
-      }
-      boost_root = fs::current_path();
-    }
-  }
  
  //  append_html  -------------------------------------------------------------//
 
@@ -694,7 +669,12 @@ int main( int argc, char ** argv )
 
   if ( boost_root.empty() )
   {
-    set_boost_root();
+    boost_root = boost::regression_tools::boost_root_path();
+    if ( boost_root.empty() )
+    {
+      std::cout << "Abort: not able to locate the boost root\n";
+      return 1;
+    }
     boost_root.normalize();
   }
 
@@ -732,7 +712,8 @@ int main( int argc, char ** argv )
   int line_num = 0;
   while ( std::getline( *input, line ) )
   {
-    if (max_line_length < line.size()) line = line.substr(0, max_line_length);
+    if (max_line_length < line.size())
+      line = line.substr(0, max_line_length);
 
     ++line_num;
     
