@@ -904,8 +904,11 @@ class runner:
         else:
             if os.path.exists( os.path.join(git_root, ".git") ):
                 os.chdir( git_root )
+                self.git_command( 'remote', 'set-branches', '--add', 'origin',
+                    branch)
                 self.git_command( 'pull', '--recurse-submodules' )
                 self.git_command( 'submodule', 'update')
+                self.git_command( 'checkout', branch)
                 if clean:
                     self.git_command( 'reset', '--hard' )
                     self.git_command( 'clean', '-fxd')
