@@ -61,7 +61,7 @@ git_branch = {
     }
 
 class runner:
-    
+
     def __init__(self,root):
         commands = map(
             lambda m: m[8:].replace('_','-'),
@@ -71,11 +71,11 @@ class runner:
             )
         commands.sort()
         commands = "commands: %s" % ', '.join(commands)
-        
+
         opt = optparse.OptionParser(
             usage="%prog [options] [commands]",
             description=commands)
-            
+
         #~ Base Options:
         opt.add_option( '--runner',
             help="runner ID (e.g. 'Metacomm')" )
@@ -145,7 +145,7 @@ class runner:
         opt.add_option( '--skip-tests',
             help="do not run bjam; used for testing script changes",
             action='store_true' )
-        
+
         #~ Defaults
         self.runner = None
         self.comment='comment.html'
@@ -178,15 +178,15 @@ class runner:
         ( _opt_, self.actions ) = opt.parse_args(None,self)
         if not self.actions or self.actions == []:
             self.actions = [ 'regression' ]
-        
+
         #~ Allow overriding git repo with legacy svn repo for comparison testing.
         if self.use_svn:
             self.use_git = False
-        
+
         #~ Set the reporting group if it wasn't specified.
         if not self.group:
             self.group = self.git_branch()
-        
+
         #~ Initialize option dependent values.
         self.regression_root = root
         self.boost_root = os.path.join( self.regression_root, 'boost_root' )
@@ -235,7 +235,7 @@ class runner:
             'build_dir' : os.path.join(self.tools_regression_root,'build'),
             'build_args' : 'process_jam_log -d2'
             }
-        
+
         if self.debug_level > 0:
             self.log('Regression root =     %s'%self.regression_root)
             self.log('Boost root =          %s'%self.boost_root)
@@ -253,14 +253,14 @@ class runner:
             # Boost.Build depends on any having run
             if "build" in self.libraries and "any" not in self.libraries:
                 self.libraries += ["any"]
-                
+
             self.bjam_options += ' "--limit-tests=' + \
                 "|".join(lib for lib in self.libraries if lib != "build") + '"'
-        
+
         self.main()
-    
+
     #~ The various commands that make up the testing sequence...
-    
+
     def command_cleanup(self,*args):
         if not args or args == None or args == []: args = [ 'source', 'bin' ]
 
@@ -282,7 +282,7 @@ class runner:
 
             self.log( 'Cleaning up "%s" directory ...' % self.regression_results )
             self.rmtree( self.regression_results )
-    
+
     def command_get_tools(self):
         #~ Get Boost.Build v2...
         self.log( 'Getting Boost.Build v2...' )
@@ -320,7 +320,7 @@ class runner:
             self.unpack_tarball(
                 self.tools_regression_root+".tar.bz2",
                 os.path.basename(self.tools_regression_root) )
-        
+
         #~ We get a boost-build.jam to make the tool build work even if there's
         #~ an existing boost-build.jam above the testing root.
         self.log( 'Getting boost-build.jam...' )
@@ -332,7 +332,7 @@ class runner:
             self.http_get(
                 self.svn_repository_url(repo_path['boost-build.jam']),
                 os.path.join( self.regression_root, 'boost-build.jam' ) )
-    
+
     def command_get_source(self):
         self.refresh_timestamp()
         self.log( 'Getting sources (%s)...' % self.timestamp() )
@@ -344,7 +344,7 @@ class runner:
         else:
             self.retry( self.get_tarball )
         pass
-    
+
     def command_update_source(self):
         if self.use_git:
             self.retry(self.git_source_checkout)
@@ -356,7 +356,7 @@ class runner:
         else:
             self.command_get_source( )
         pass
-    
+
     def command_patch(self):
         self.import_utils()
         patch_boost_path = os.path.join( self.regression_root, self.patch_boost )
@@ -365,13 +365,13 @@ class runner:
             os.chdir( self.regression_root )
             utils.system( [ patch_boost_path ] )
         pass
-    
+
     def command_setup(self):
         self.command_patch()
         self.build_if_needed(self.bjam,self.bjam_toolset)
         if self.pjl_toolset != 'python':
             self.build_if_needed(self.process_jam_log,self.pjl_toolset)
-    
+
     def command_test(self, *args):
         if not args or args == None or args == []: args = [ "test", "process" ]
         self.import_utils()
@@ -392,13 +392,13 @@ class runner:
         if "process" in args:
             if self.pjl_toolset != 'python':
                 self.command_test_process()
-    
+
     def command_test_clean(self):
         results_libs = os.path.join( self.regression_results, 'libs' )
         results_status = os.path.join( self.regression_results, 'status' )
         self.rmtree( results_libs )
         self.rmtree( results_status )
-    
+
     def command_test_run(self):
         self.import_utils()
         if self.pjl_toolset != 'python':
@@ -426,7 +426,7 @@ class runner:
     def command_test_boost_build(self):
         if self.libraries is not None and "build" not in self.libraries:
             return
-        
+
         self.import_utils()
         self.log( 'Running Boost.Build tests' )
         # Find the true names of the toolsets used for testing
@@ -448,7 +448,7 @@ class runner:
                 utils.system ( [ '"%s" test_all.py --default-bjam --xml %s > %s' % (sys.executable, t, fn) ] )
             finally:
                 os.chdir( cd )
-                            
+
     def command_test_process(self):
         self.import_utils()
         self.log( 'Getting test case results out of "%s"...' % self.regression_log )
@@ -461,7 +461,7 @@ class runner:
                 self.regression_log )
             ] )
         os.chdir( cd )
-    
+
     def command_collect_logs(self):
         self.import_utils()
         comment_path = os.path.join( self.regression_root, self.comment )
@@ -473,7 +473,7 @@ class runner:
 
         source = 'tarball'
         revision = ''
-        
+
         if self.use_git:
             git_head_file = os.path.join(self.boost_root, '.git', 'HEAD')
             f = open( git_head_file, 'r' )
@@ -538,7 +538,7 @@ class runner:
                 os.path.join(self.regression_results,self.runner+'.xml'),
                 os.path.join(self.regression_results,self.runner+'.zip')
                 )
-        
+
     def command_upload_logs(self):
         self.import_utils()
         from collect_and_upload_logs import upload_logs
@@ -567,7 +567,7 @@ class runner:
                         self.timestamp_path,
                         self.dart_server )
                 )
-    
+
     def command_regression(self):
         import socket
         import string
@@ -580,7 +580,7 @@ class runner:
                 self.send_mail(
                     '%s started at %s.' % ( mail_subject, format_time( start_time ) )
                     )
-            
+
             self.command_get_tools()
 
             if self.local is not None:
@@ -589,10 +589,10 @@ class runner:
                 tag = b[ 0: b.find( '.' ) ]
                 self.log( 'Tag: "%s"' % tag  )
                 self.unpack_tarball( self.local, self.boost_root )
-                
+
             elif self.have_source:
                 if not self.incremental: self.command_cleanup( 'bin' )
-                
+
             else:
                 if self.incremental or self.force_update:
                     if not self.incremental: self.command_cleanup( 'bin' )
@@ -604,7 +604,7 @@ class runner:
 
             # Not specifying --toolset in command line is not enough
             # that would mean to use Boost.Build default ones
-            # We can skip test only we were explictly 
+            # We can skip test only we were explictly
             # told to have no toolsets in command line "--toolset="
             if self.toolsets != '': # --toolset=,
                 if not self.skip_tests:
@@ -636,9 +636,9 @@ class runner:
         re_keyword_value = re.compile( r'^\$\w+:\s+(.*)\s+\$$' )
         print '\n\tRevision: %s' % re_keyword_value.match( revision ).group( 1 )
         print '\tLast modified on: %s\n' % re_keyword_value.match( modified ).group( 1 )
-    
+
     #~ Utilities...
-    
+
     def main(self):
         for action in self.actions:
             action_m = "command_"+action.replace('-','_')
@@ -694,10 +694,10 @@ class runner:
 
     def http_get( self, source_url, destination_file ):
         import urllib
-        
+
         proxies = None
         if hasattr(self,'proxy') and self.proxy is not None:
-            proxies = { 'http' : self.proxy }
+            proxies = { 'https' : self.proxy }
 
         src = urllib.urlopen( source_url, proxies = proxies )
 
@@ -769,7 +769,7 @@ class runner:
               name_or_spec[ 'name' ]
             , '\n'.join( [ name_or_spec[ 'path' ], build_dir ] )
             ) )
-    
+
     def bjam_build_cmd( self, *rest ):
         if sys.platform == 'win32':
             cmd = 'build.bat %s' % self.bjam_toolset
@@ -779,11 +779,11 @@ class runner:
         if os.environ.has_key( env_setup_key ):
             return '%s & %s' % ( os.environ[env_setup_key], cmd )
         return cmd
-    
+
     def bjam_cmd( self, toolsets, args = '', *rest ):
         build_path = self.regression_root
         if build_path[-1] == '\\': build_path += '\\'
-        
+
         if self.timeout > 0:
             args += ' -l%s' % (self.timeout*60)
 
@@ -803,7 +803,7 @@ class runner:
 
         if toolsets:
             import string
-            cmd += ' toolset=' + toolsets 
+            cmd += ' toolset=' + toolsets
 
         return cmd
 
@@ -849,7 +849,7 @@ class runner:
                 if os.path.exists( archive_path ):
                     os.unlink( archive_path )
                     utils.log( 'Removing stale "%s".' % archive_path )
-                    
+
                 zip_cmd.main( file_path, archive_path )
                 utils.log( 'Done compressing "%s".' % archive_path )
 
@@ -866,7 +866,7 @@ class runner:
     def svn_command( self, command ):
         svn_anonymous_command_line  = 'svn --non-interactive %(command)s'
         svn_command_line            = 'svn --non-interactive --username=%(user)s %(command)s'
-        
+
         if not hasattr(self,'user') or self.user is None or self.user == 'anonymous':
             cmd = svn_anonymous_command_line % { 'command': command }
         else:
@@ -882,9 +882,9 @@ class runner:
             return '%s%s' % (repo_root['user'],path)
         else:
             return '%s%s' % (repo_root['anon'],path)
-    
+
     #~ Downloading source, from GIT...
-    
+
     def git_command(self, command, *args):
         git_cli = "git %(command)s" % { 'command': command }
         for a in args:
@@ -894,7 +894,7 @@ class runner:
         if rc != 0:
             raise Exception( 'GIT command "%s" failed with code %d' % (git_cli, rc) )
         return rc
-    
+
     def git_checkout(self, info, branch, clean = False):
         git_root = os.path.join(self.regression_root, info['dir'])
         if self.use_dulwich:
@@ -904,8 +904,11 @@ class runner:
         else:
             if os.path.exists( os.path.join(git_root, ".git") ):
                 os.chdir( git_root )
+                self.git_command( 'remote', 'set-branches', '--add', 'origin',
+                    branch)
                 self.git_command( 'pull', '--recurse-submodules' )
                 self.git_command( 'submodule', 'update')
+                self.git_command( 'checkout', branch)
                 if clean:
                     self.git_command( 'reset', '--hard' )
                     self.git_command( 'clean', '-fxd')
@@ -925,19 +928,19 @@ class runner:
                 self.git_command(
                     'submodule', 'update', '--init', '--merge' )
         os.chdir( self.regression_root )
-    
+
     def git_source_checkout(self, clean = False):
         os.chdir( self.regression_root )
         self.git_checkout(git_info['boost'], self.git_branch(), clean)
-    
+
     def git_branch(self):
         if git_branch.has_key(self.tag):
             return git_branch[self.tag]
         else:
             return self.tag
-        
+
     #~ Downloading and extracting source archives, from tarballs or zipballs...
-    
+
     def get_tarball( self, *args ):
         if not args or args == []:
             args = [ 'download', 'unpack' ]
@@ -965,7 +968,7 @@ class runner:
         self.http_get( tarball_url, tarball_path )
 
         return tarball_path
-    
+
     def tarball_url( self, path ):
         return 'http://beta.boost.org/development/snapshot.php/%s' % path
 
@@ -992,7 +995,7 @@ class runner:
         if extension in ( ".tar.gz", ".tar.bz2" ):
             import tarfile
             import stat
-            
+
             mode = os.path.splitext( extension )[1][1:]
             tar = tarfile.open( tarball_path, 'r:%s' % mode )
             for tarinfo in tar:
