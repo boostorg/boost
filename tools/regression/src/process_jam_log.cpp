@@ -89,7 +89,8 @@ namespace
   void convert_path_separators( string & s )
   {
     for ( string::iterator itr = s.begin(); itr != s.end(); ++itr )
-      if ( *itr == '\\' || *itr == '!' ) *itr = '/';
+      if ( *itr == '\\' || *itr == '!' )
+        *itr = '/';
   }
 
 //  trim_left ----------------------------------------------------------------//
@@ -123,7 +124,7 @@ namespace
   string test_name( const string & s );
 
 
-//  extract a target directory path from a jam target string  ----------------//
+//  extract a target directory path from a jam target string  --------------------------//
 //  s may be relative to the initial_path:
 //    ..\..\..\libs\foo\build\bin\libfoo.lib\vc7\debug\runtime-link-dynamic\boo.obj
 //  s may be absolute:
@@ -137,8 +138,10 @@ namespace
     convert_path_separators( temp );
     temp.erase( temp.find_last_of( "/" ) ); // remove leaf
     temp = split( trim_left( temp ) ).back();
-    if ( temp[0] == '.' ) temp.erase( 0, temp.find_first_not_of( "./" ) ); 
-    else temp.erase( 0, locate_root.string().size()+1 );
+    if ( temp[0] == '.' )
+      temp.erase( 0, temp.find_first_not_of( "./" ) ); 
+    else
+      temp.erase( 0, locate_root.string().size()+1 );
 
     std::string testid = test_path_to_library_name( temp ) + "/" + test_name( temp );
     test2info_map::const_iterator info = test2info.find(testid);
@@ -158,7 +161,8 @@ namespace
       string::size_type source_pos = source_directory.size(), temp_pos = temp.size();
       for ( ; source_pos != 0 && temp_pos != 0; --source_pos, --temp_pos )
       {
-        if ( source_directory[ source_pos - 1 ] != temp[ temp_pos - 1 ] ) break;
+        if ( source_directory[ source_pos - 1 ] != temp[ temp_pos - 1 ] )
+          break;
       }
 
       // erase all path components in the shared tail
@@ -186,8 +190,10 @@ namespace
   string toolset( const string & s )
   {
     string::size_type pos = target_name_end( s );
-    if ( pos == string::npos ) pos = s.find( "build/" );
-    if ( pos == string::npos ) return "";
+    if ( pos == string::npos )
+      pos = s.find( "build/" );
+    if ( pos == string::npos )
+      return "";
     pos = s.find( "/", pos ) + 1;
     return s.substr( pos, s.find( "/", pos ) - pos );
   }
@@ -195,7 +201,8 @@ namespace
   string test_name( const string & s )
   {
     string::size_type pos = target_name_end( s );
-    if ( pos == string::npos ) return "";
+    if ( pos == string::npos )
+      return "";
     string::size_type pos_start = s.rfind( '/', pos ) + 1;
     return s.substr( pos_start,
       (s.find( ".test/" ) != string::npos
@@ -208,7 +215,8 @@ namespace
   {
     std::string result;
     string::size_type start_pos( path.find( "libs/" ) );
-    if ( start_pos == string::npos ) {
+    if ( start_pos == string::npos )
+    {
       start_pos = path.find( "tools/" );
     }
 
@@ -240,7 +248,8 @@ namespace
       for(;;)
       {
         end_pos = interesting.find('/', end_pos);
-        if (end_pos == string::npos) {
+        if (end_pos == string::npos)
+        {
           result = interesting;
           break;
         }
@@ -274,7 +283,8 @@ namespace
   {
     dir.clear();
     string::size_type start_pos = msg.find( '<', start );
-    if ( start_pos == string::npos ) return string::npos;
+    if ( start_pos == string::npos )
+      return string::npos;
     ++start_pos;
     string::size_type end_pos = msg.find( '>', start_pos );
     dir += msg.substr( start_pos, end_pos - start_pos );
@@ -334,7 +344,7 @@ namespace
     parse_skipped_msg_aux(msg, pos, second_dir);
   }
 
-//  test_log hides database details  -----------------------------------------//
+//  test_log hides database details  ---------------------------------------------------//
 
   class test_log
     : boost::noncopyable
@@ -432,7 +442,8 @@ namespace
       for ( itr = m_root->elements.begin();
             itr != m_root->elements.end() && (*itr)->name != action_name;
             ++itr ) {}
-      if ( itr != m_root->elements.end() ) m_root->elements.erase( itr );
+      if ( itr != m_root->elements.end() )
+        m_root->elements.erase( itr );
     }
 
     void add_action( const string & action_name,
@@ -483,7 +494,8 @@ namespace
     {
       assert( !target_directory.empty() );
 
-      if ( !m_action_name.empty() ) stop_message( prior_content );
+      if ( !m_action_name.empty() )
+        stop_message( prior_content );
       m_action_name = action_name;
       m_target_directory = target_directory;
       m_test_name = test_name;
@@ -499,7 +511,8 @@ namespace
 
     void stop_message( const string & content )
     {
-      if ( m_action_name.empty() ) return;
+      if ( m_action_name.empty() )
+        return;
       stop_message( m_action_name, m_target_directory,
         "succeed", timestamp(), content );
     }
@@ -523,8 +536,8 @@ namespace
         || action_name != "compile"
         || m_previous_target_directory != target_directory )
       {
-        if ( action_name == "compile"
-          && result == "fail" ) m_compile_failed = true;
+        if ( action_name == "compile" && result == "fail" )
+          m_compile_failed = true;
 
         test_log tl( target_directory,
           m_test_name, m_toolset, action_name == "compile" );
@@ -541,7 +554,8 @@ namespace
         {
           tl.remove_action( "link" );
           tl.remove_action( "run" );
-          if ( result == "fail" ) m_compile_failed = true;
+          if ( result == "fail" )
+            m_compile_failed = true;
         }
         else if ( action_name == "link" )
         {
