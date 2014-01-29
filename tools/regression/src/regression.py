@@ -907,8 +907,7 @@ class runner:
                 self.git_command( 'remote', 'set-branches', '--add', 'origin',
                     branch)
                 self.git_command( 'pull', '--recurse-submodules' )
-                self.git_command( 'submodule', 'init')
-                self.git_command( 'submodule', 'update')
+                self.git_command( 'submodule', 'update', '--init' )
                 self.git_command( 'checkout', branch)
                 if clean:
                     self.git_command( 'reset', '--hard' )
