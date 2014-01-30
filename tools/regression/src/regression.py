@@ -257,6 +257,11 @@ class runner:
             self.bjam_options += ' "--limit-tests=' + \
                 "|".join(lib for lib in self.libraries if lib != "build") + '"'
 
+        # if no -m bjam option add -m64 (limit target to 64kb)
+        if self.bjam_options.find('-m') == -1:
+            # match buffer size used in web results reporting
+            self.bjam_options += ' -m64'
+
         self.main()
 
     #~ The various commands that make up the testing sequence...
