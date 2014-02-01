@@ -131,7 +131,7 @@ namespace
         string ln(line);
         if (ln.find("Revision: ") != string::npos)
         {
-          for(auto itr = ln.begin()+10; itr != ln.end() && isdigit(*itr); ++itr)
+          for(string::iterator itr = ln.begin()+10; itr != ln.end() && isdigit(*itr); ++itr)
             rev += *itr;
         }
       }
@@ -311,7 +311,7 @@ namespace
         // This patch ignores the SunCC internal directory. Jens Maurer
         if ( itr->path().filename() == "SunWS_cache" ) continue;
         // SGI does something similar for template instantiations. Jens Maurer
-        if(  itr->path().filename() == "ii_files" ) continue; 
+        if(  itr->path().filename() == "ii_files" ) continue;
 
         if ( child.empty() ) child = *itr;
         else
@@ -370,7 +370,7 @@ const string & attribute_value( const xml::element & element,
 
 // Takes a relative path from boost root to a Jamfile.
 // Returns the directory where the build targets from
-// that Jamfile are located. If not found, emits a warning 
+// that Jamfile are located. If not found, emits a warning
 // and returns empty path.
 const fs::path find_bin_path(const string& relative)
 {
@@ -387,9 +387,9 @@ const fs::path find_bin_path(const string& relative)
     }
     if (!fs::exists(bin_path))
     {
-      std::cerr << "warning: could not find build results for '" 
+      std::cerr << "warning: could not find build results for '"
                 << relative << "'.\n";
-      std::cerr << "warning: tried directory " 
+      std::cerr << "warning: tried directory "
                 << bin_path.string() << "\n";
       bin_path = "";
     }
@@ -412,7 +412,7 @@ const fs::path find_bin_path(const string& relative)
     }
     if (!fs::exists(bin_path))
     {
-      std::cerr << "warning: could not find build results for '" 
+      std::cerr << "warning: could not find build results for '"
                 << relative << "'.\n";
       bin_path = "";
     }
@@ -558,9 +558,9 @@ const fs::path find_bin_path(const string& relative)
   {
     string sep;
     string target( "<sup>" );
-    add_notes( toolset + "/" + library + "/" + test, fail, sep, target ); 
-    add_notes( "*/" + library + "/" + test, fail, sep, target ); 
-    add_notes( toolset + "/" + library + "/*", fail, sep, target ); 
+    add_notes( toolset + "/" + library + "/" + test, fail, sep, target );
+    add_notes( "*/" + library + "/" + test, fail, sep, target );
+    add_notes( toolset + "/" + library + "/*", fail, sep, target );
     add_notes( "*/" + library + "/*", fail, sep, target );
     if ( target == "<sup>" ) target.clear();
     else target += "</sup>";
@@ -655,7 +655,7 @@ const fs::path find_bin_path(const string& relative)
     else  target += pass ? pass_msg : fail_msg;
 
     // if notes, generate the superscript HTML
-    if ( !notes.empty() ) 
+    if ( !notes.empty() )
       target += get_notes( toolset, lib_name, test_name, !pass );
 
     // generate compile-time if requested
@@ -673,7 +673,7 @@ const fs::path find_bin_path(const string& relative)
         }
       }
     }
-      
+
     // generate run-time if requested
     if ( run_time )
     {
@@ -691,7 +691,7 @@ const fs::path find_bin_path(const string& relative)
     }
 
     if ( !pass ) ++error_count[compiler];
-      
+
     target += "</td>";
     return (anything_generated != 0) || !pass;
   }
@@ -765,7 +765,7 @@ const fs::path find_bin_path(const string& relative)
       if ( fs::is_directory( *itr )
         && itr->path().string().find( ".test" ) == (itr->path().string().size()-5) )
       {
-        results.push_back( std::string() ); 
+        results.push_back( std::string() );
         do_row( *itr,
                 itr->path().filename().string().substr( 0,
                   itr->path().filename().string().size()-5 ),
@@ -831,7 +831,7 @@ const fs::path find_bin_path(const string& relative)
           sub_pos = line.find_first_not_of( " \t./", sub_pos+13 );
         else
           sub_pos = line.find_first_not_of( " \t./", sub_pos+10 );
-      
+
         if ( sub_pos == string::npos ) continue;
         string subinclude_bin_dir(
           line.substr( sub_pos, line.find_first_of( " \t", sub_pos )-sub_pos ) );
@@ -880,7 +880,7 @@ const fs::path find_bin_path(const string& relative)
   {
     // Find test result locations, trying:
     // - Boost.Build V1 location with ALL_LOCATE_TARGET
-    // - Boost.Build V2 location with top-level "build-dir" 
+    // - Boost.Build V2 location with top-level "build-dir"
     // - Boost.Build V1 location without ALL_LOCATE_TARGET
     string relative( fs::initial_path().string() );
 
@@ -905,7 +905,7 @@ const fs::path find_bin_path(const string& relative)
     {
       fs::recursive_directory_iterator ritr( bin_path );
       fs::recursive_directory_iterator end_ritr;
-      while ( ritr != end_ritr 
+      while ( ritr != end_ritr
         && ((ritr->path().string().find( ".test" ) != (ritr->path().string().size()-5))
         || !fs::is_directory( *ritr )))
         ++ritr; // bypass chaff
@@ -917,7 +917,7 @@ const fs::path find_bin_path(const string& relative)
     else
     {
       fs::directory_iterator itr( bin_path );
-      while ( itr != end_itr 
+      while ( itr != end_itr
         && ((itr->path().string().find( ".test" ) != (itr->path().string().size()-5))
         || !fs::is_directory( *itr )))
         ++itr; // bypass chaff
@@ -1032,7 +1032,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   }
 
   if ( locate_root.empty() ) locate_root = boost_root;
-  
+
   if (jamfile_path.empty())
     if (boost_build_v2)
       jamfile_path = "Jamfile.v2";
@@ -1092,7 +1092,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   if ( !rev.empty() ) report << ", <b>Revision</b> " << rev;
   report << "\n";
 
-  
+
   if ( compile_time )
     report << "<p>Times reported are elapsed wall clock time in seconds.</p>\n";
 
