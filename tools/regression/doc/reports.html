@@ -52,6 +52,23 @@ pushd tools/regression/build
 ../../../b2 boost_report
 # find location of exectuable, then:
 mv bin/gcc-4.8/release/boost_report ~/boost/boost-reports # see todo below</pre>
+</blockquote>
+<p>Issues building boost_report.</p>
+<blockquote>
+  <pre>RHEL release 6.3 (Santiago): there's no system installed libbz2.a 
+so you'll get build errors linking boost_report.  The static bz2 dependency 
+comes from tools/regression/build/Jamroot.jam and can be fixed by removing 
+the static link requirement.  Change this line:
+
+    /boost//iostreams/&lt;link&gt;static
+
+to this
+
+    /boost//iostreams
+
+in the boost_report target and build.
+</blockquote>
+
   </blockquote>
   <h2>Run reports</h2>
   <p>This step performs the following actions:</p>
