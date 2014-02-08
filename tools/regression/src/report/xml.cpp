@@ -31,8 +31,6 @@ bool boost::regression::operator==(const test_case_t& lhs, const test_case_t& rh
            lhs.toolset_name == rhs.toolset_name;
 }
 
-boost::regression::node_ptr boost::regression::lookup_element(node_ptr element, const std::string& name);
-
 boost::regression::attr_ptr boost::regression::lookup_attr(node_ptr element, const std::string& name) {
     if(element == 0) return 0;
     return element->first_attribute(name.data(), name.size());
