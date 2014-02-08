@@ -10,8 +10,8 @@ build_all()
 {
 	build_setup
     update_tools
-    time build_results develop 2>&1 | tee develop.log
-    time build_results master 2>&1 | tee master.log
+    time build_results develop 2>&1 | tee boost-reports/develop.log
+    time build_results master 2>&1 | tee boost-reports/master.log
     upload_results develop
     upload_results master
 }
@@ -47,7 +47,6 @@ update_tools()
     ./bootstrap.sh
     cd tools/regression/build
     ../../../b2 install
-    cp bin/boost_report "${cwd}/boost-reports"
     cd "${cwd}"
 }
 
@@ -68,14 +67,6 @@ cat - > comment.html <<HTML
         <td>
             <pre style="border: 1px solid #666; overflow: auto;">
 `uptime`
-            </pre>
-        </td>
-    </tr>
-    <tr>
-        <td style="vertical-align: top;"><tt>vmstat</tt></td>
-        <td>
-            <pre style="border: 1px solid #666; overflow: auto;">
-`vmstat`
             </pre>
         </td>
     </tr>
@@ -113,12 +104,10 @@ build_results()
     tag=${1?'error: command line missing branch-name argument'}
     reports="dd,ds,i,n"
     cwd=`pwd`
+    cd boost-reports
     cd ${1}
     root=`pwd`
-    boost=${cwd}/boost_root
-    if [ -x ${cwd}/boost_report ]; then
-      report_opt=--boost-report=${cwd}/boost_report
-    fi
+    boost=${cwd}/boost-reports/boost_root
     report_info
     python "${boost}/tools/regression/xsl_reports/boost_wide_report.py" \
         --locate-root="${root}" \
@@ -128,13 +117,14 @@ build_results()
         --comment="comment.html" \
         --user="" \
         --reports=${reports} \
-        ${report_opt}
+        --boost-report=${boost}/tools/regression/build/bin/boost_report
     cd "${cwd}"
 }
 
 upload_results()
 {
     cwd=`pwd`
+    cd boost-reports
     upload_dir=/home/grafik/www.boost.org/testing
     
     if [ -f ${1}/report.zip ]; then
@@ -152,6 +142,7 @@ upload_results()
     ssh grafik@beta.boost.org \
       cp --no-preserve=timestamps ${upload_dir}/incoming/${1}.zip.uploading ${upload_dir}/live/${1}.zip
     mv ${1}.zip.uploading ${1}.zip
+    cd "${cwd}"
 }
 
 build_all 2>&1 | tee boost-reports.log
