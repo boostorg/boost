@@ -35,7 +35,7 @@ build_setup()
 		git remote add --no-tags -t develop origin 'https://github.com/boostorg/boost.git'
 		git fetch --depth=1
 		git checkout develop
-		git submodule update --init --merge
+		git submodule update --init
 	fi
 	cd "${cwd}"
 }
