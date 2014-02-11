@@ -22,9 +22,9 @@ build_setup()
 	if [ -d boost-reports ]; then
 		cd boost-reports/boost_root
 		git remote set-branches --add origin develop
-		git pull --recurse-submodules
-		git submodule update --init
+		git pull
 		git checkout develop
+		git submodule update --init
 	else
 		mkdir boost-reports
 		cd boost-reports
