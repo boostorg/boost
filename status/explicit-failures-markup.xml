@@ -5658,6 +5658,36 @@ This platform doesn't supports Boost.Container.
       </mark-expected-failures>
     </library>
 
+    <!-- type_index -->
+    <library name="type_index">
+      <mark-expected-failures>
+        <test name="testing_crossmodule_anonymous"/>
+        <toolset name="clang-*"/>
+        <toolset name="darvin-*"/>
+        <toolset name="gcc-3.*"/>
+        <toolset name="gcc-4.0*"/>
+        <toolset name="gcc-4.1*"/>
+        <toolset name="gcc-4.2*"/>
+        <toolset name="qcc-4.4*"/>
+        <note author="Antony Polukhin">
+          Classes with exactly the same names defined in different modules in anonymous namespaces collapse
+          for this compiler even with RTTI on. This is a known compiler limitation that already fixed
+          in newer versions or will be fixed soon.
+        </note>
+      </mark-expected-failures>
+      <mark-expected-failures>
+        <test name="testing_crossmodule_anonymous_no_rtti"/>
+        <toolset name="clang-*"/>
+        <toolset name="darvin-*"/>
+        <toolset name="gcc-*"/>
+        <note author="Antony Polukhin">
+          Classes with exactly the same names defined in different modules in anonymous namespaces collapse
+          for this compiler with RTTI off. This is a known limitation of RTTI-off mode. Such behavior is
+          reflected in docs.
+        </note>
+      </mark-expected-failures>
+    </library>
+
     <!-- type_traits -->
     <library name="type_traits">
        <mark-expected-failures>
