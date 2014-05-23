@@ -67,7 +67,7 @@ goto :end
 
 ECHO.
 ECHO Failed to build Boost.Build engine.
-ECHO Please consult bootstrap.log for furter diagnostics.
+ECHO Please consult bootstrap.log for further diagnostics.
 ECHO.
 ECHO You can try to obtain a prebuilt binary from
 ECHO.
