@@ -914,7 +914,7 @@ class runner:
                 self.git_command( 'submodule', 'update', '--init' )
                 self.git_command( 'checkout', branch)
                 if clean:
-                    self.git_command( 'submodule foreach', 'git reset --quiet --hard; git clean -fxd')
+                    self.git_command( 'submodule foreach', '"git reset --quiet --hard; git clean -fxd"')
                     self.git_command( 'reset', '--hard' )
                     self.git_command( 'clean', '-fxd')
                     self.git_command( 'status' )
