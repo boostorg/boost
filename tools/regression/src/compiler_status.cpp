@@ -114,33 +114,6 @@ namespace
   string url_prefix_checkout_view( svn_root );
   string url_suffix_text_view( "" );
 
-//  get revision number (as a string) if boost_root is svn working copy  -----//
-
-  string revision( const fs::path & boost_root )
-  {
-    string rev;
-    string command("cd ");
-    command += boost_root.string() + " & svn info";
-    FILE* fp = POPEN(command.c_str(), "r");
-    if (fp)
-    {
-      static const int line_max = 128;
-      char line[line_max];
-      while (fgets(line, line_max, fp) != NULL)
-      {
-        string ln(line);
-        if (ln.find("Revision: ") != string::npos)
-        {
-          for(string::iterator itr = ln.begin()+10; itr != ln.end() && isdigit(*itr); ++itr)
-            rev += *itr;
-        }
-      }
-    }
-    std::cout << "Revision: " << rev << std::endl;
-    return rev;
-  }
-
-
 //  build notes_bookmarks from notes HTML  -----------------------------------//
 
   void build_notes_bookmarks()
@@ -350,6 +323,8 @@ namespace
     for ( itr = root.elements.begin();
           itr != root.elements.end() && (*itr)->name != name;
           ++itr ) {}
+    if (itr == root.elements.end())
+      std::cout << "did not find element " << name << std::endl;
     return itr != root.elements.end() ? *((*itr).get()) : empty_element;
   }
 
@@ -363,6 +338,8 @@ const string & attribute_value( const xml::element & element,
   for ( atr = element.attributes.begin();
         atr != element.attributes.end() && atr->name != attribute_name;
         ++atr ) {}
+  if (atr == element.attributes.end())
+    std::cout << "did not find attribute " << attribute_name << std::endl;
   return atr == element.attributes.end() ? empty_string : atr->value;
 }
 
@@ -622,6 +599,8 @@ const fs::path find_bin_path(const string& relative)
     pass = !test_type_element.name.empty()
       && attribute_value( test_type_element, "result" ) != "fail";
 
+    std::string revision = attribute_value(db, "revision");
+
     if ( !no_links )
     {
       note = attribute_value( test_type_element, "result" ) == "note";
@@ -653,6 +632,13 @@ const fs::path find_bin_path(const string& relative)
       if ( pass && note ) target += note_msg;
     }
     else  target += pass ? pass_msg : fail_msg;
+
+    if (!revision.empty())
+    {
+      target += "<br><font size=\"2\">";
+      target += revision;
+      target += "</font>";
+    }
 
     // if notes, generate the superscript HTML
     if ( !notes.empty() )
@@ -1074,7 +1060,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
   std::strftime( run_date, sizeof(run_date),
     "%X UTC, %A %d %B %Y", std::gmtime( &tod ) );
 
-  std::string rev = revision( boost_root );
+//  std::string rev = revision( boost_root );
 
   report << "<html>\n"
           "<head>\n"
@@ -1089,7 +1075,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
           "<h1>Boost Test Results - " + platform_desc() + "</h1>\n"
           "<b>Run</b> "
        << run_date;
-  if ( !rev.empty() ) report << ", <b>Revision</b> " << rev;
+  //if ( !rev.empty() ) report << ", <b>Revision</b> " << rev;
   report << "\n";
 
 
@@ -1127,7 +1113,7 @@ int cpp_main( int argc, char * argv[] ) // note name!
          "<h1>Boost Test Details - " + platform_desc() + "</h1>\n"
          "<b>Run Date:</b> "
       << run_date;
-    if ( !rev.empty() ) links_file << ", <b>Revision</b> " << rev;
+    //if ( !rev.empty() ) links_file << ", <b>Revision</b> " << rev;
     links_file << "\n</td>\n</table>\n<br>\n";
   }
 

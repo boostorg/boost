@@ -344,6 +344,23 @@ namespace
     parse_skipped_msg_aux(msg, pos, second_dir);
   }
 
+  string revision(const string & test_pgm)
+  {
+    if (test_pgm.empty())
+      return std::string();
+    std::string sha;
+    fs::path p(boost_root / test_pgm);
+    p.remove_filename();
+    fs::path cp(fs::current_path());
+    fs::current_path(p);
+    system("git rev-parse --short=6 HEAD >.short-sha");
+    std::fstream file(".short-sha");
+    file >> sha;
+    fs::current_path(cp);
+    std::cout << "***" << sha << std::endl;
+    return sha;
+  }
+
 //  test_log hides database details  ---------------------------------------------------//
 
   class test_log
@@ -403,7 +420,9 @@ namespace
   
       m_root.reset( new xml::element( "test-log" ) );
       m_root->attributes.push_back(
-        xml::attribute( "library", library_name ) );
+        xml::attribute("library", library_name));
+      m_root->attributes.push_back(
+        xml::attribute("revision", revision(info.file_path)));
       m_root->attributes.push_back(
         xml::attribute( "test-name", test_name ) );
       m_root->attributes.push_back(
