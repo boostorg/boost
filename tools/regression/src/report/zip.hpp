@@ -246,7 +246,8 @@ public:
         ++num_files;
     }
     void close() {
-        output_file.write(&central_directory[0], central_directory.size());
+        if ( !central_directory.empty() )
+            output_file.write(&central_directory[0], central_directory.size());
         
         if(num_files >= 65536) {
             boost::array<char, zip64_end_of_central_directory::size> data;
