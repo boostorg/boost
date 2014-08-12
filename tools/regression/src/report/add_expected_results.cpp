@@ -195,6 +195,12 @@ void process_test_log(test_structure_t::test_log_t& test_log,
     test_log.status = status;
     test_log.is_new = is_new;
     test_log.category = category;
+
+    // File too big or time limit exceeded
+    boost::unordered_map<std::string, test_structure_t::target_t>::const_iterator
+        it = test_log.targets.find("compile");
+    test_log.compilation_unfinished = it != test_log.targets.end()
+                                   && it->second.compilation_unfinished;
 }
 
 // requires: source is a Git branch name

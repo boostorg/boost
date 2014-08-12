@@ -110,7 +110,7 @@ void insert_cell_developer(html_writer& document,
         }
         BOOST_FOREACH(test_log_group_t::value_type log, test_logs) {
             if(!log->result && !log->status) {
-                insert_cell_link(document, "fail", cell_link);
+                insert_cell_link(document, log->compilation_unfinished ? "fail?" : "fail", cell_link);
                 goto done;
             }
         }
@@ -152,7 +152,7 @@ void insert_cell_user(html_writer& document,
         }
         BOOST_FOREACH(test_log_group_t::value_type log, test_logs) {
             if(!log->result && !log->status) {
-                insert_cell_link(document, "fail", cell_link);
+                insert_cell_link(document, log->compilation_unfinished ? "fail?" : "fail", cell_link);
                 goto done;
             }
         }

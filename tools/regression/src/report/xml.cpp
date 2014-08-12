@@ -133,6 +133,16 @@ void boost::regression::load_failures_markup(node_ptr root, failures_markup_t& f
 
 namespace {
 
+bool is_compilation_unfinished(node_ptr elem) {
+    if ( elem->value_size() >= 25 )
+    {
+        std::string val(elem->value() + elem->value_size() - 25, 25);
+        return val.find("File too big") != std::string::npos
+            || val.find("time limit exceeded") != std::string::npos;
+    }
+    return false;
+}
+
 void load_test_log(node_ptr root, test_structure_t::test_log_t& test_log) {
     lookup_attr(root, "library", test_log.library);
     lookup_attr(root, "test-program", test_log.test_program);
@@ -158,6 +168,10 @@ void load_test_log(node_ptr root, test_structure_t::test_log_t& test_log) {
             lookup_attr(elem, "timestamp", target.timestamp);
             target.result = !check_attr(elem, "result", "fail");
             target.contents = elem;
+
+            // "File too big" or "time limit exceeded"
+            target.compilation_unfinished = (name == "compile" && !target.result) ?
+                                            is_compilation_unfinished(elem) : false;
         }
     }
 }
