@@ -14,6 +14,7 @@
 #include <fstream>
 #include <boost/format.hpp>
 #include <boost/foreach.hpp>
+#include <boost/utility/string_ref.hpp>
 
 using namespace boost::regression;
 
@@ -134,13 +135,9 @@ void boost::regression::load_failures_markup(node_ptr root, failures_markup_t& f
 namespace {
 
 bool is_compilation_unfinished(node_ptr elem) {
-    if ( elem->value_size() >= 25 )
-    {
-        std::string val(elem->value() + elem->value_size() - 25, 25);
-        return val.find("File too big") != std::string::npos
-            || val.find("time limit exceeded") != std::string::npos;
-    }
-    return false;
+    boost::string_ref val(elem->value(), elem->value_size());
+    return val.find("File too big") != std::string::npos
+        || val.find("time limit exceeded") != std::string::npos;
 }
 
 void load_test_log(node_ptr root, test_structure_t::test_log_t& test_log) {
