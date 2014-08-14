@@ -136,8 +136,8 @@ namespace {
 
 bool is_compilation_unfinished(node_ptr elem) {
     boost::string_ref val(elem->value(), elem->value_size());
-    return val.find("File too big") != std::string::npos
-        || val.find("time limit exceeded") != std::string::npos;
+    return val.find("File too big") != boost::string_ref::npos
+        || val.find("time limit exceeded") != boost::string_ref::npos;
 }
 
 void load_test_log(node_ptr root, test_structure_t::test_log_t& test_log) {
