@@ -74,7 +74,10 @@ struct test_structure_t {
         std::string test_type;
         std::string test_name;
         std::string target_directory;
-        bool compilation_unfinished;
+        enum {
+            fail_none, fail_compilation_unfinished,
+            fail_compilation, fail_link, fail_run
+        } fail_info;
         bool result;
         bool expected_result;
         std::string expected_reason;
