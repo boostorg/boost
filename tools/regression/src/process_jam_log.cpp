@@ -357,7 +357,7 @@ namespace
     std::fstream file(".short-sha");
     file >> sha;
     fs::current_path(cp);
-    std::cout << "***" << sha << std::endl;
+//    std::cout << "***" << sha << std::endl;
     return sha;
   }
 
@@ -768,6 +768,8 @@ int main( int argc, char ** argv )
     {
       string::size_type pos = line.find( '"' );
       string test_name( line.substr( pos+1, line.find( '"', pos+1)-pos-1 ) );
+      if ( test_name.find( "/" ) == string::npos )
+        test_name = "/" + test_name;
       test_info info;
       info.always_show_run_output
         = line.find( "\"always_show_run_output\"" ) != string::npos;
@@ -776,22 +778,22 @@ int main( int argc, char ** argv )
         { info.type[i] = std::tolower( info.type[i] ); }
       pos = line.find( ':' );
       // the rest of line is missing if bjam didn't know how to make target
+      // or if inspect or another pre-built program is to be run.
       if ( pos + 1 != line.size() )
       {
         info.file_path = line.substr( pos+3,
           line.find( "\"", pos+3 )-pos-3 );
         convert_path_separators( info.file_path );
-        if ( info.file_path.find( "libs/libs/" ) == 0 ) info.file_path.erase( 0, 5 );
-        if ( test_name.find( "/" ) == string::npos )
-            test_name = "/" + test_name;
-        test2info.insert( std::make_pair( test_name, info ) );
-  //      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
+        if ( info.file_path.find( "libs/libs/" ) == 0 )
+          info.file_path.erase( 0, 5 );
       }
       else
       {
         std::cout << "*****Warning - missing test path: " << line << "\n"
-          << "  (Usually occurs when bjam doesn't know how to make a target)\n";
+          << "  (occurs when bjam doesn't know how to make a target)\n";
       }
+      test2info.insert( std::make_pair( test_name, info ) );
+//      std::cout << test_name << ", " << info.type << ", " << info.file_path << "\n";
       continue;
     }
 
