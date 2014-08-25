@@ -9,7 +9,7 @@ Boost.Build_ is a text-based system for developing, testing, and
 installing software. First, you'll need to build and
 install it. To do this:
 
-1. Go to the directory ``tools``\ |/|\ ``build``\ |/|\ ``v2``\ |/|.
+1. Go to the directory ``tools``\ |/|\ ``build``\ |/|.
 2. Run |bootstrap|
 3. Run ``b2 install --prefix=``\ *PREFIX* where *PREFIX* is
    the directory where you want Boost.Build to be installed
