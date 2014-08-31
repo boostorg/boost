@@ -136,9 +136,9 @@ constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
 
-	
+
 local all-headers =
-    [ MATCH .*libs/(.*)/include/boost : [ glob libs/*/include/boost ] ] ;
+    [ MATCH .*libs/(.*)/include/boost : [ glob libs/*/include/boost libs/*/*/include/boost ] ] ;
 
 for dir in $(all-headers)
 {
@@ -146,18 +146,9 @@ for dir in $(all-headers)
     explicit $(dir)-headers ;
 }
 
-local numeric-headers =
-   [ MATCH .*libs/numeric/(.*)/include/boost : [ glob libs/*/*/include/boost ] ] ;
-
-for dir in $(numeric-headers)
-{
-    link-directory numeric-$(dir)-headers : libs/numeric/$(dir)/include/boost : <location>. ;
-    explicit numeric-$(dir)-headers ;
-}
-
 if $(all-headers)
 {
-    constant BOOST_MODULARLAYOUT : $(all-headers) $(numeric-headers) ;
+    constant BOOST_MODULARLAYOUT : $(all-headers) ;
 }
 
 project boost
@@ -235,7 +226,7 @@ for local l in $(all-libraries)
     }
 }
 
-alias headers : $(all-headers)-headers numeric-$(numeric-headers)-headers : : : <include>.  ;
+alias headers : $(all-headers)-headers : : : <include>.  ;
 explicit headers ;
 
 # Make project ids of all libraries known.
