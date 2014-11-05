@@ -392,6 +392,6 @@ Further information:
      http://www.boost.org/more/getting_started/unix-variants.html
      
    - Boost.Build documentation:
-     http://www.boost.org/boost-build2/doc/html/index.html
+     http://www.boost.org/build/doc/html/index.html
 
 EOF

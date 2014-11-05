@@ -59,7 +59,7 @@ ECHO     - Getting started guide:
 ECHO     http://boost.org/more/getting_started/windows.html
 ECHO.     
 ECHO     - Boost.Build documentation:
-ECHO     http://www.boost.org/boost-build2/doc/html/index.html
+ECHO     http://www.boost.org/build/doc/html/index.html
 
 goto :end
 

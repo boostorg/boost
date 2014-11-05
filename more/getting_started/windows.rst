@@ -183,7 +183,7 @@ command invokes Boost.Build to build the separately-compiled Boost
 libraries. Please consult the `Boost.Build documentation`__ for a list
 of allowed options.
 
-__ http://www.boost.org/boost-build2/doc/html/bbv2/overview/invocation.html
+__ http://www.boost.org/build/doc/html/bbv2/overview/invocation.html
 
 Or, Build Binaries From Source
 ------------------------------

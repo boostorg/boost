@@ -70,4 +70,4 @@ linker, consider setting up a ``user-config.jam`` file as described
 doesn't work for you, please address questions about configuring Boost
 for your compiler to the `Boost.Build mailing list`_.
 
-__ http://www.boost.org/boost-build2/doc/html/bbv2/advanced/configuration.html
+__ http://www.boost.org/build/doc/html/bbv2/overview/configuration.html
