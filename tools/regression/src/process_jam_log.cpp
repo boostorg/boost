@@ -30,7 +30,7 @@ using std::string;
 namespace xml = boost::tiny_xml;
 namespace fs = boost::filesystem;
 
-// options 
+// options
 
 static bool echo = false;
 static bool create_dirs = false;
@@ -49,7 +49,7 @@ namespace
 
   fs::path boost_root;
   fs::path locate_root; // ALL_LOCATE_TARGET (or boost_root if none)
- 
+
  //  append_html  -------------------------------------------------------------//
 
   void append_html( const string & src, string & target )
@@ -103,7 +103,7 @@ namespace
         : ""
         ;
   }
-  
+
 
 //  split --------------------------------------------------------------------//
 
@@ -115,7 +115,7 @@ namespace
         return result;
 
     std::vector<std::string> const rest( split( trim_left( s.substr( pos, s.size() - pos + 1 ) ) ) );
-    result.insert( result.end(), rest.begin(), rest.end() );    
+    result.insert( result.end(), rest.begin(), rest.end() );
     return result;
   }
 
@@ -139,7 +139,7 @@ namespace
     temp.erase( temp.find_last_of( "/" ) ); // remove leaf
     temp = split( trim_left( temp ) ).back();
     if ( temp[0] == '.' )
-      temp.erase( 0, temp.find_first_not_of( "./" ) ); 
+      temp.erase( 0, temp.find_first_not_of( "./" ) );
     else
       temp.erase( 0, locate_root.string().size()+1 );
 
@@ -222,7 +222,7 @@ namespace
 
     if ( start_pos != string::npos )
     {
-      // The path format is ...libs/functional/hash/test/something.test/....      
+      // The path format is ...libs/functional/hash/test/something.test/....
       // So, the part between "libs" and "test/something.test" can be considered
       // as library name. But, for some libraries tests are located too deep,
       // say numeric/ublas/test/test1 directory, and some libraries have tests
@@ -272,7 +272,7 @@ namespace
     return result;
   }
 
-  // Tries to find target name in the string 'msg', starting from 
+  // Tries to find target name in the string 'msg', starting from
   // position start.
   // If found, extract the directory name from the target name and
   // stores it in 'dir', and return the position after the target name.
@@ -328,7 +328,7 @@ namespace
     }
     return end_pos;
   }
-  
+
   // the format of paths is really kinky, so convert to normal form
   //   first path is missing the leading "..\".
   //   first path is missing "\bin" after "status".
@@ -353,7 +353,7 @@ namespace
     p.remove_filename();
     fs::path cp(fs::current_path());
     fs::current_path(p);
-    system("git rev-parse --short=6 HEAD >.short-sha");
+    std::system("git rev-parse --short=6 HEAD >.short-sha");
     std::fstream file(".short-sha");
     file >> sha;
     fs::current_path(cp);
@@ -399,17 +399,17 @@ namespace
       test2info_map::iterator itr( test2info.find( library_name + "/" + test_name ) );
       if ( itr != test2info.end() )
         info = itr->second;
-      
+
       if ( !info.file_path.empty() )
         library_name = test_path_to_library_name( info.file_path );
-      
+
       if ( info.type.empty() )
       {
         if ( target_directory.find( ".lib/" ) != string::npos
-          || target_directory.find( ".dll/" ) != string::npos 
-          || target_directory.find( ".so/" ) != string::npos 
-          || target_directory.find( ".dylib/" ) != string::npos 
-          || target_directory.find( "/build/" ) != string::npos 
+          || target_directory.find( ".dll/" ) != string::npos
+          || target_directory.find( ".so/" ) != string::npos
+          || target_directory.find( ".dylib/" ) != string::npos
+          || target_directory.find( "/build/" ) != string::npos
           )
         {
           info.type = "lib";
@@ -417,7 +417,7 @@ namespace
         else if ( target_directory.find( ".pyd/" ) != string::npos )
           info.type = "pyd";
       }
-  
+
       m_root.reset( new xml::element( "test-log" ) );
       m_root->attributes.push_back(
         xml::attribute("library", library_name));
@@ -641,7 +641,7 @@ int main( int argc, char ** argv )
     {
         create_dirs = true;
         --argc; ++argv;
-    } 
+    }
     else if ( std::strcmp( argv[1], "--v2" ) == 0 )
     {
       boost_build_v2 = true;
@@ -663,9 +663,9 @@ int main( int argc, char ** argv )
       boost_root = fs::path( argv[1] );
       if ( !boost_root.is_complete() )
         boost_root = ( fs::initial_path() / boost_root ).normalize();
-      
+
       --argc; ++argv;
-    } 
+    }
     else if ( std::strcmp( argv[1], "--locate-root" ) == 0 )
     {
       --argc; ++argv;
@@ -676,7 +676,7 @@ int main( int argc, char ** argv )
       }
       locate_root = fs::path( argv[1] );
       --argc; ++argv;
-    } 
+    }
     else if ( std::strcmp( argv[1], "--input-file" ) == 0 )
     {
       --argc; ++argv;
@@ -711,7 +711,7 @@ int main( int argc, char ** argv )
     boost_root.normalize();
   }
 
-  
+
   if ( locate_root.empty() )
   {
     locate_root = boost_root;
@@ -719,7 +719,7 @@ int main( int argc, char ** argv )
   else if ( !locate_root.is_complete() )
   {
     locate_root = ( fs::initial_path() / locate_root ).normalize();
-  }   
+  }
 
   if ( input == 0 )
   {
@@ -749,18 +749,18 @@ int main( int argc, char ** argv )
       line = line.substr(0, max_line_length);
 
     ++line_num;
-    
+
     std::vector<std::string> const line_parts( split( line ) );
-    std::string const line_start( line_parts[0] != "...failed" 
+    std::string const line_start( line_parts[0] != "...failed"
         ? line_parts[0]
         : line_parts[0] + " " + line_parts[1]
         );
-    
+
     if ( echo )
     {
       std::cout
         << "line " << line_num << ": " << line << "\n"
-        << "\tline_start: " << line_start << "\n";        
+        << "\tline_start: " << line_start << "\n";
     }
 
     // create map of test-name to test-info
@@ -806,7 +806,7 @@ int main( int argc, char ** argv )
       || line_start.find( "compile-") != string::npos
       || line_start.find( "-compile") != string::npos
       || line_start.find( "Link-action" ) != string::npos
-      || line_start.find( "vc-Link" ) != string::npos 
+      || line_start.find( "vc-Link" ) != string::npos
       || line_start.find( "Archive-action" ) != string::npos
       || line_start.find( ".archive") != string::npos
       || ( line_start.find( ".link") != string::npos &&
@@ -824,14 +824,14 @@ int main( int argc, char ** argv )
       //~ }
 
       string action( ( line_start.find( "Link-action" ) != string::npos
-            || line_start.find( "vc-Link" ) != string::npos 
+            || line_start.find( "vc-Link" ) != string::npos
             || line_start.find( "Archive-action" ) != string::npos
             || line_start.find( ".archive") != string::npos
             || line_start.find( ".link") != string::npos
             )
           ? "link" : "compile"
         );
-      
+
       if ( line_start.find( "...failed " ) != string::npos )
       {
         mgr.stop_message( action, target_directory( line ),
@@ -858,7 +858,7 @@ int main( int argc, char ** argv )
       capture_lines = false;
     }
 
-    else if ( line_start.find( "execute-test" ) != string::npos 
+    else if ( line_start.find( "execute-test" ) != string::npos
              || line_start.find( "capture-output" ) != string::npos )
     {
       if ( line_start.find( "...failed " ) != string::npos )
@@ -893,7 +893,7 @@ int main( int argc, char ** argv )
     }
 
     // bjam indicates some prior dependency failed by a "...skipped" message
-    else if ( line_start.find( "...skipped" ) != string::npos 
+    else if ( line_start.find( "...skipped" ) != string::npos
         && line.find( "<directory-grist>" ) == string::npos
         )
     {
@@ -912,7 +912,7 @@ int main( int argc, char ** argv )
 
         if ( target_dir != lib_dir ) // it's a lib problem
         {
-          mgr.start_message( "lib", target_dir, 
+          mgr.start_message( "lib", target_dir,
             test_name( target_dir ), toolset( target_dir ), content );
           content = lib_dir;
           mgr.stop_message( "lib", target_dir, "fail", timestamp(), content );
