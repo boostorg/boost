@@ -357,7 +357,7 @@ namespace
     std::fstream file(".short-sha");
     file >> sha;
     fs::current_path(cp);
-    std::cout << "***" << sha << std::endl;
+    //std::cout << "***" << sha << std::endl;
     return sha;
   }
 
