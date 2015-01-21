@@ -3028,6 +3028,36 @@ for more information.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="optional_test_ref_converting_ctor"/>
+            <toolset name="gcc-4.4*"/>
+            <toolset name="gcc-4.2.1"/>
+            <toolset name="gcc-4.5*"/>
+            <toolset name="gcc-5.0.0"/>
+            <toolset name="qcc-4.4.2_x86"/>
+            <toolset name="qcc-4.4.2_arm"/>
+            <note author="Andrzej Krzemienski" id="optional-ref-convert-assign-bug">
+                <p>This is a compiler bug: it sometimes creates an illegal temporary object.
+		The following code illustrates the bug:</p>
+		<pre>
+		#include &lt;cassert&gt;
+		const int global_i = 0;
+		
+		struct TestingReferenceBinding
+		{
+		  TestingReferenceBinding(const int&amp; ii)
+		  {
+		    assert(&amp;ii == &amp;global_i);
+  		  }
+		};
+		
+		int main()
+		{
+		  TestingReferenceBinding ttt = global_i;
+		}
+                </pre>
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="optional_test_ref"/>
             <toolset name="msvc-6.5*"/>
             <toolset name="msvc-7.0"/>
