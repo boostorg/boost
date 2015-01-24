@@ -85,6 +85,21 @@
       </mark-expected-failures>
     </library>
 
+    <!-- algorithm -->
+    <library name="algorithm">
+      <mark-expected-failures>
+          <test name="empty_search_test"/>
+          <test name="search_test1"/>
+          <test name="search_test2"/>
+          <test name="search_test3"/>
+          <test name="is_permutation_test1"/>
+          <toolset name="vacpp-10.1"/>
+        <note author="Marshall Clow">
+          These failures are caused by a lack of support/configuration for Boost.Tr1
+        </note>
+      </mark-expected-failures>
+    </library>
+
     <!-- minmax -->
     <library name="algorithm/minmax">
       <mark-unusable>
@@ -488,7 +503,7 @@
     <library name="chrono">
         <mark-unusable>
             <toolset name="borland-*"/>
-            <toolset name="vacpp*"/>
+            <toolset name="vacpp-10*"/>
             <note author="Vicente J. Botet Escriba">
                 The compiler does not support features that are essential for the library.
             </note>
@@ -631,8 +646,23 @@
         </mark-unusable>
     </library>
 
-    <!-- conversion -->
-    <library name="conversion">
+    <!-- convert-->
+    <library name="convert">
+        <test name="convert_test_has_begin">
+          <mark-failure>
+            <toolset name="msvc-8.0*"/>
+            <toolset name="msvc-9.0*"/>
+            <toolset name="msvc-10.0*"/>
+            <toolset name="msvc-11.0*"/>
+            <note author="Vladimir Batov">
+                The relevant SFINAE support is broken in MSVC up to version 11.
+            </note>
+          </mark-failure>
+        </test>
+    </library>
+
+    <!-- lexical_cast -->
+    <library name="lexical_cast">
         <test name="lexical_cast_test">
             <mark-failure>
                 <toolset name="sunpro-5_3-sunos"/>
@@ -646,15 +676,6 @@
                 <toolset name="borland-5.9*"/>
                 <note author="Alisdair Meredith">
                     This compiler does not support the is_abstract type trait
-                </note>
-            </mark-failure>
-        </test>
-        <test name="lexical_cast_containers_test">
-            <mark-failure>
-                <toolset name="vacpp*"/>
-                <toolset name="msvc-9.0~wm5~*"/>
-                <note author="Antony Polukhin">
-                    This compiler is unable to compile Boost.Container library
                 </note>
             </mark-failure>
         </test>
@@ -683,16 +704,17 @@
                 <toolset name="msvc-7.1*"/>
                 <toolset name="vacpp-10.1"/>
                 <toolset name="qcc-4*"/>
+                <toolset name="cray-8.0"/>
                 <toolset name="acc"/>
                 <note author="Alexander Nasonov">
-                    Conversion double-string-double may give a different value (or even throw) on many compilers
+                    Conversion double-string-double may give a different 
+                    value (or even throw) on many compilers
                 </note>
             </mark-failure>
         </test>
         <test name="lexical_cast_float_types_test">
             <mark-failure>
-                <toolset name="gcc-mingw-4.*"/>
-                <toolset name="vacpp-10.1"/>
+                <toolset name="vacpp-*"/>
                 <toolset name="vacpp"/>
                 <toolset name="msvc-9.0~stlport5.2"/>
                 <toolset name="msvc-9.0~wm5~stlport5.2"/>
@@ -700,27 +722,40 @@
                 <toolset name="intel-darwin-12.0"/>
                 <toolset name="qcc-4*"/>
                 <toolset name="clang-darwin-libcxx*"/>
+                <toolset name="msvc-9.0~wm5"/>
                 <note author="Antony Polukhin">
-                    Some compilers and STL realizations convert double and long double types with bigger precision loss than minimal (or even round to infinity). Such failures are not a lexical_cast, but a compiler fault. 
+                    Some compilers and STL realizations convert double and long 
+                    double types with bigger precision loss than minimal (or 
+                    even round to infinity). Such failures are not a 
+                    lexical_cast, but a compiler fault. 
                 </note>
             </mark-failure>
         </test>
     </library>
+
 
     <!-- coroutine -->
     <library name="coroutine">
       <mark-unusable>
         <toolset name="cray-*"/>
         <toolset name="darwin-4.4"/>
-        <toolset name="darwin-4.4_0x"/>
-        <toolset name="gcc-4.4.4"/>
-        <toolset name="gcc-4.4.4_0x"/>
+        <toolset name="darwin-4.4*"/>
+        <toolset name="gcc-4.4"/>
+        <toolset name="gcc-4.4*"/>
+        <toolset name="gcc-mingw-4.4"/>
+        <toolset name="gcc-mingw-4.4*"/>
+        <toolset name="gcc-mingw-4.5"/>
+        <toolset name="gcc-mingw-4.5*"/>
+        <toolset name="gcc-mingw-4.6"/>
+        <toolset name="gcc-mingw-4.6*"/>
+        <toolset name="gcc-mingw-4.7"/>
+        <toolset name="gcc-mingw-4.7*"/>
         <toolset name="msvc-8.0"/>
         <toolset name="pgi-*"/>
         <toolset name="vacpp-*"/>
-        <toolset name="gcc-mingw-4.4*"/>
       </mark-unusable>
     </library>
+
 
     <!-- crc -->
     <library name="crc">
@@ -1437,13 +1472,18 @@
             <toolset name="gcc-4.5*"/>
             <toolset name="gcc-4.6*"/>
             <toolset name="gcc-4.7*"/>
+            <toolset name="gcc-4.8*"/>
+            <toolset name="gcc-4.9*"/>
             <toolset name="gcc-mingw-*"/>
             <toolset name="darwin-4.2*"/>
             <toolset name="darwin-4.3*"/>
             <toolset name="darwin-4.4*"/>
+            <toolset name="clang-darwin-4.2.1"/>
+            <toolset name="clang-darwin-asan"/>
+            <toolset name="clang-darwin-tot"/>
             <toolset name="clang-darwin-trunk"/>
             <toolset name="clang-darwin-normal"/>
-            <toolset name="clang-darwin-linux-2.9"/>
+            <toolset name="clang-linux-*"/>
             <toolset name="intel-linux-*"/>
             <toolset name="intel-darwin-*"/>
             <note author="Daniel James">
@@ -1995,12 +2035,12 @@
     <!-- geometry -->
     <library name="geometry">
         <mark-unusable>
-            <toolset name="borland-cb2009"/>
-            <toolset name="borland-cb2010"/>
+            <toolset name="borland-*"/>
             <toolset name="sun-5.10"/>
-            <toolset name="vacpp"/>
-            <toolset name="vacpp-10.1"/>
+            <toolset name="vacpp*"/>
             <toolset name="msvc-7.1"/>
+            <toolset name="*_fno_rtti"/>
+            <toolset name="cray-8.0"/>
             <note author="Barend Gehrels">
                 These compilers do not support features that are essential for the library.
             </note>
@@ -2011,6 +2051,12 @@
             <toolset name="intel-darwin-12*"/>
             <note author="Barend Gehrels">
                 Intel 11.1 and 12.0 on Darwin raises a SIGSEGV in almost all unit tests.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="intel-linux-13*"/>
+            <note author="Barend Gehrels" date="12 Aug 2013">
+                Intel 13.1.3 does not support BOOST_TEST
             </note>
         </mark-unusable>
         <mark-unusable>
@@ -2027,6 +2073,36 @@
         </mark-unusable>
     </library>
     
+    <library name="geometry/extensions">
+        <mark-unusable>
+            <toolset name="borland-*"/>
+            <toolset name="sun-5.10"/>
+            <toolset name="vacpp*"/>
+            <toolset name="msvc-7.1"/>
+            <toolset name="*_fno_rtti"/>
+            <toolset name="cray-8.0"/>
+            <toolset name="intel-darwin-*"/>
+            <toolset name="intel-linux-13*"/>
+            <toolset name="pgi-11*"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+        </mark-unusable>
+    </library>
+
+    <library name="geometry/index">
+        <mark-unusable>
+            <toolset name="borland-*"/>
+            <toolset name="sun-5.10"/>
+            <toolset name="vacpp*"/>
+            <toolset name="msvc-7.1"/>
+            <toolset name="*_fno_rtti"/>
+            <toolset name="cray-8.0"/>
+            <toolset name="intel-darwin-*"/>
+            <toolset name="intel-linux-13*"/>
+            <toolset name="pgi-11*"/>
+            <toolset name="msvc-9.0~wm5~stlport5.2"/>
+        </mark-unusable>
+    </library>
+
     <!-- gil -->
     <library name="gil">
       <mark-expected-failures>
@@ -2524,6 +2600,22 @@
         </mark-expected-failures>
     </library>
 
+	<!-- log -->
+	<library name="log">
+		<mark-unusable>
+			<toolset name="vacpp-12.1*"/>
+			<note author="Andrey Semashev" date="02 May 2013">
+				The compiler fails to compile Boost.Move and Boost.PropertyTree, which are used by this library.
+			</note>
+		</mark-unusable>
+		<mark-unusable>
+			<toolset name="msvc-9.0~w*"/>
+			<note author="Andrey Semashev" date="02 May 2013">
+				Boost.Filesystem used by Boost.Log does not support Windows Mobile.
+			</note>
+		</mark-unusable>
+	</library>
+
     <!-- logic -->
     <library name="logic">
       <test name="tribool_io_test">
@@ -2844,9 +2936,129 @@ for more information.
         </mark-expected-failures>
     </library>
 
+   <!-- multiprecision -->
+   <library name="multiprecision">
+      <mark-unusable>
+         <toolset name="borland-5.5*"/>
+         <toolset name="borland-5.6*"/>
+         <toolset name="borland-5.8*"/>
+         <toolset name="borland-5.9*"/>
+         <note author="John Maddock" date="05 Dec 2012">
+            <p>
+               These compilers are too antiquated for this library.
+            </p>
+         </note>
+      </mark-unusable>
+      <mark-unusable>
+         <toolset name="vacpp*"/>
+         <toolset name="pgi*"/>
+         <toolset name="pgi*"/>
+         <toolset name="msvc-8.0"/>
+         <toolset name="msvc- 9.0~wm5*"/>
+         <note author="John Maddock" date="05 Dec 2012">
+            <p>
+               These compilers don't quite have the necessary support for this library, it's possible
+               that they could be made to work if someone cares enough.
+            </p>
+         </note>
+      </mark-unusable>
 
-    <!-- optional -->
+      <mark-expected-failures>
+         <test name="test_round_cpp_dec_float"/>
+         <test name="test_atan_cpp_dec_float"/>
+         <test name="sf_concept_check_bessel_cpp_dec_float"/>
+         <test name="sf_concept_check_bessel_backend_concept"/>
+         <test name="sf_concept_check_basic_cpp_dec_float"/>
+         <test name="sf_concept_check_basic_cpp_dec_float_no_et"/>
+         <test name="sf_concept_check_basic_backend_concept"/>
+         <test name="sf_concept_check_poly_backend_concept"/>
+         <test name="sf_concept_check_gamma_backend_concept"/>
+         <test name="sf_concept_check_elliptic_cpp_dec_float"/>
+         <test name="sf_concept_check_elliptic_backend_concept"/>
+         <test name="test_sinh_cpp_dec_float"/>
+         <test name="test_sin_cpp_dec_float"/>
+         <test name="test_pow_cpp_dec_float"/>
+         <test name="test_log_cpp_dec_float"/>
+         <test name="test_cos_cpp_dec_float"/>
+         <test name="test_atan_cpp_dec_float"/>
+         <test name="test_asin_cpp_dec_float"/>
+         <toolset name="intel*"/>
+         <note author="John Maddock">
+            This failure is caused by a test-runner timeout: unfortunately the Intel
+            compiler is exceptionally slow at building some of these tests.
+         </note>
+      </mark-expected-failures>
+      <mark-expected-failures>
+         <test name="test_arithmetic_cpp_dec_float"/>
+         <test name="test_arithmetic_mpfr_50"/>
+         <test name="test_arithmetic_mpz"/>
+         <toolset name="gcc-4.7"/>
+         <note author="John Maddock">
+            This failure is caused by a test-runner timeout.
+         </note>
+      </mark-expected-failures>
+   </library>
+   
+         <!-- optional -->
     <library name="optional">
+        <mark-expected-failures>
+            <test name="optional_test_ref_assign_const_int"/>
+            <toolset name="msvc-10.0"/>
+            <note author="Andrzej Krzemienski" id="optional-const-int-ref-bug">
+                <p>This is a compiler bug: it sometimes creates an illegal temporary object.
+		The following code illustrates the bug:</p>
+		<pre>
+		#include &lt;cassert&gt;
+		const int global_i = 0;
+		
+		struct TestingReferenceBinding
+		{
+		  void operator=(const int&amp; ii)
+		  {
+		    assert(&amp;ii == &amp;global_i);
+		  }
+		};
+		
+		int main()
+		{
+		  TestingReferenceBinding ttt;
+		  ttt = global_i;
+		}
+                </pre>
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="optional_test_ref_converting_ctor"/>
+            <toolset name="gcc-4.4*"/>
+            <toolset name="gcc-4.2.1"/>
+            <toolset name="gcc-4.5*"/>
+            <toolset name="gcc-5.0.0"/>
+            <toolset name="qcc-4.4.2_x86"/>
+            <toolset name="qcc-4.4.2_arm"/>
+            <toolset name="gcc-mingw-4.4*"/>
+            <toolset name="gcc-mingw-4.5*"/>
+            <note author="Andrzej Krzemienski" id="optional-ref-convert-assign-bug">
+                <p>This is a compiler bug: it sometimes creates an illegal temporary object.
+		The following code illustrates the bug:</p>
+		<pre>
+		#include &lt;cassert&gt;
+		const int global_i = 0;
+		
+		struct TestingReferenceBinding
+		{
+		  TestingReferenceBinding(const int&amp; ii)
+		  {
+		    assert(&amp;ii == &amp;global_i);
+  		  }
+		};
+		
+		int main()
+		{
+		  TestingReferenceBinding ttt = global_i;
+		}
+                </pre>
+            </note>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="optional_test_ref"/>
             <toolset name="msvc-6.5*"/>
@@ -2856,11 +3068,19 @@ for more information.
         <mark-expected-failures>
             <test name="optional_test_ref"/>
             <toolset name="darwin-4.0.1"/>
+            <toolset name="darwin-4.2.1"/>
             <toolset name="gcc-mingw-3.4.5"/>
+            <toolset name="gcc-mingw-4.4.*"/>
+            <toolset name="gcc-mingw-4.5.*"/>
             <toolset name="gcc-3.4.2_hpux_pa_risc"/>
             <toolset name="gcc-3.4.6_linux_ia64"/>
             <toolset name="gcc-4.2.*"/>
             <toolset name="gcc-4.1.2_sunos_i86pc"/>
+            <toolset name="gcc-4.3*"/>
+            <toolset name="gcc-4.4*"/>
+            <toolset name="gcc-4.5*"/>
+            <toolset name="qcc-4.4.2_arm"/>
+            <toolset name="qcc-4.4.2_x86"/>
                 <note author="Fernando Cacciola" id="optional-compiler-bug">
                 <p>This failure is caused by a compiler bug, and as far as we can 
                 tell, can't be worked around in the library, although we think 
@@ -4841,7 +5061,7 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="si_physics"/>
-            <toolset name="vacpp*"/>
+            <toolset name="vacpp-10*"/>
             <note author="Vicente J. Botet Escriba">
                 The compiler does not support features that are essential for this test .
             </note>
@@ -5330,40 +5550,6 @@ for more information.
             <toolset name="*como-4_3_3*"/>
             <note author="B. Dawes" refid="10"/>
         </mark-unusable>
-        <mark-expected-failures>
-            <test name="test_thread*"/>
-            <test name="test_thread_id*"/>
-            <test name="test_hardware_concurrency*"/>
-            <test name="test_thread_move*"/>
-            <test name="test_thread_return_local*"/>
-            <test name="test_thread_move_return*"/>
-            <test name="test_thread_launching*"/>
-            <test name="test_thread_mf*"/>
-            <test name="test_thread_exit*"/>
-            <test name="test_move_function*"/>
-            <test name="test_mutex*"/>
-            <test name="test_condition_notify_one*"/>
-            <test name="test_condition_timed_wait_times_out*"/>
-            <test name="test_condition_notify_all*"/>
-            <test name="test_condition*"/>
-            <test name="test_tss*"/>
-            <test name="test_once*"/>
-            <test name="test_xtime*"/>
-            <test name="test_barrier*"/>
-            <test name="test_shared_mutex*"/>
-            <test name="test_shared_mutex_part_2*"/>
-            <test name="test_shared_mutex_timed_locks*"/>
-            <test name="test_shared_mutex_timed_locks_chrono*"/>
-            <test name="test_lock_concept*"/>
-            <test name="test_generic_locks*"/>
-            <test name="test_futures*"/>
-            <test name="test_2309*"/>
-            <test name="test_2741*"/>
-            <toolset name="sun-*"/>
-            <note author="Vicente J. Botet Escriba" date="2012-03-28">
-This test uses Boost.Test and Boost.Test doesn't works on this compiler.
-            </note>
-        </mark-expected-failures>
 
         <test name="test_mutex">
             <mark-failure>
@@ -5470,6 +5656,7 @@ The implementation of native_handle() is not possible on this platform.
         <mark-expected-failures>
             <test name="*sleep_for*"/>
             <test name="*sleep_until*"/>
+            <test name="*thread__join*"/>
             <test name="*wait_for*"/>
             <test name="*wait_until*"/>
             <test name="*cons__duration*"/>
@@ -5481,11 +5668,26 @@ The implementation of native_handle() is not possible on this platform.
             <test name="*try_join_for*"/>
             <test name="*try_join_until*"/>
             <test name="*chrono*"/>
-            <toolset name="vacpp*"/>
-            <note author="Vicente J. Botet Escriba" date="2012-03-21">
+            <test name="*shared_lock_until*"/>
+            <test name="*shared_lock_for*"/>
+            <test name="shared_mutex*"/>
+            <test name="future__get*"/>
+            <test name="packaged_task__operator*"/>
+            <test name="test_3628*"/>
+            <test name="test_7328*"/>
+            <toolset name="vacpp-10*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-10-13">
 This platform doesn't supports Boost.Chrono.
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="container__*"/>
+            <toolset name="vacpp-10*"/>
+            <note author="Vicente J. Botet Escriba" date="2012-10-13">
+This platform doesn't supports Boost.Container.
+            </note>
+        </mark-expected-failures>
+
     </library>
 
     <!-- tti -->
@@ -5536,6 +5738,48 @@ This platform doesn't supports Boost.Chrono.
         <test name="test_free"/>
         <toolset name="msvc-8.0"/>
         <note>This looks like an instance of MSVC substituting int in a template-id.</note>
+      </mark-expected-failures>
+    </library>
+
+    <!-- type_index -->
+    <library name="type_index">
+      <mark-expected-failures>
+        <test name="testing_crossmodule_anonymous"/>
+        <toolset name="clang-*"/>
+        <toolset name="darwin-*"/>
+        <toolset name="gcc-3.*"/>
+        <toolset name="gcc-4.0*"/>
+        <toolset name="gcc-4.1*"/>
+        <toolset name="gcc-4.2*"/>
+        <toolset name="gcc-4.3*"/>
+        <toolset name="gcc-4.4*"/>
+        <toolset name="gcc-4.5*"/>
+        <toolset name="gcc-mingw-3.*"/>
+        <toolset name="gcc-mingw-4.0*"/>
+        <toolset name="gcc-mingw-4.1*"/>
+        <toolset name="gcc-mingw-4.2*"/>
+        <toolset name="gcc-mingw-4.3*"/>
+        <toolset name="gcc-mingw-4.4*"/>
+        <toolset name="gcc-mingw-4.5*"/>
+        <toolset name="gcc-mingw-4.6*"/>
+        <toolset name="qcc-4.4*"/>
+        <note author="Antony Polukhin">
+          Classes with exactly the same names defined in different modules in anonymous namespaces collapse
+          for this compiler even with RTTI on. This is a known compiler limitation that already fixed
+          in newer versions or will be fixed soon.
+        </note>
+      </mark-expected-failures>
+      <mark-expected-failures>
+        <test name="testing_crossmodule_anonymous_no_rtti"/>
+        <toolset name="clang-*"/>
+        <toolset name="darwin-*"/>
+        <toolset name="intel-linux-*"/>
+        <toolset name="gcc-*"/>
+        <note author="Antony Polukhin">
+          Classes with exactly the same names defined in different modules in anonymous namespaces collapse
+          for this compiler with RTTI off. This is a known limitation of RTTI-off mode. Such behavior is
+          reflected in docs.
+        </note>
       </mark-expected-failures>
     </library>
 
