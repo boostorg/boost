@@ -77,7 +77,21 @@ void insert_cell_link(html_writer& document, const std::string& result, const st
         document << "&#160;&#160;" << result << "&#160;&#160;";
     }
 }
-     
+
+std::string unexpected_fail_link_name(test_structure_t::test_log_t const& log)
+{
+    if ( log.fail_info == test_structure_t::test_log_t::fail_compilation_unfinished )
+        return "fail?";
+    else if ( log.fail_info == test_structure_t::test_log_t::fail_compilation )
+        return "fail(c)";
+    else if ( log.fail_info == test_structure_t::test_log_t::fail_link )
+        return "fail(l)";
+    else if ( log.fail_info == test_structure_t::test_log_t::fail_run )
+        return "fail(r)";
+    else
+        return "fail";
+}
+
 // requires:
 void insert_cell_developer(html_writer& document,
                            const failures_markup_t& explicit_markup,
@@ -110,7 +124,7 @@ void insert_cell_developer(html_writer& document,
         }
         BOOST_FOREACH(test_log_group_t::value_type log, test_logs) {
             if(!log->result && !log->status) {
-                insert_cell_link(document, "fail", cell_link);
+                insert_cell_link(document, unexpected_fail_link_name(*log), cell_link);
                 goto done;
             }
         }
@@ -152,7 +166,7 @@ void insert_cell_user(html_writer& document,
         }
         BOOST_FOREACH(test_log_group_t::value_type log, test_logs) {
             if(!log->result && !log->status) {
-                insert_cell_link(document, "fail", cell_link);
+                insert_cell_link(document, unexpected_fail_link_name(*log), cell_link);
                 goto done;
             }
         }
