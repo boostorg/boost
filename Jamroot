@@ -136,7 +136,8 @@ constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
 
-	
+use-project /boost/architecture : libs/config/checks/architecture ;
+
 local all-headers =
     [ MATCH .*libs/(.*)/include/boost : [ glob libs/*/include/boost ] ] ;
 
@@ -162,6 +163,10 @@ if $(all-headers)
 
 project boost
     : requirements <include>.
+
+      [ boostcpp.architecture ]
+      [ boostcpp.address-model ]
+
       # Disable auto-linking for all targets here, primarily because it caused
       # troubles with V2.
       <define>BOOST_ALL_NO_LIB=1

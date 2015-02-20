@@ -22,7 +22,7 @@ import project ;
 import regex ;
 import set ;
 import targets ;
-
+import property ;
 
 ##############################################################################
 #
@@ -552,4 +552,70 @@ rule declare-targets ( all-libraries * : headers * )
     }
 
     declare_top_level_targets $(libraries) : $(headers) ;
+}
+
+rule deduce-address-model ( properties * )
+{
+    local result = [ property.select <address-model> : $(properties) ] ;
+    if $(result)
+    {
+        return $(result) ;
+    }
+    else
+    {
+        if [ configure.builds /boost/architecture//32 : $(properties) : 32-bit ]
+        {
+            return <address-model>32 ;
+        }
+        else if [ configure.builds /boost/architecture//64 : $(properties) : 64-bit ]
+        {
+            return <address-model>64 ;
+        }
+    }
+}
+
+rule address-model ( )
+{
+    return <conditional>@boostcpp.deduce-address-model ;
+}
+
+rule deduce-architecture ( properties * )
+{
+    local result = [ property.select <architecture> : $(properties) ] ;
+    if $(result)
+    {
+        return $(result) ;
+    }
+    else
+    {
+        if [ configure.builds /boost/architecture//arm : $(properties) : arm ]
+        {
+            return <architecture>arm ;
+        }
+        else if [ configure.builds /boost/architecture//mips1 : $(properties) : mips1 ]
+        {
+            return <architecture>mips1 ;
+        }
+        else if [ configure.builds /boost/architecture//power : $(properties) : power ]
+        {
+            return <architecture>power ;
+        }
+        else if [ configure.builds /boost/architecture//sparc : $(properties) : sparc ]
+        {
+            return <architecture>sparc ;
+        }
+        else if [ configure.builds /boost/architecture//x86 : $(properties) : x86 ]
+        {
+            return <architecture>x86 ;
+        }
+        else if [ configure.builds /boost/architecture//combined : $(properties) : combined ]
+        {
+            return <architecture>combined ;
+        }
+    }
+}
+
+rule architecture ( )
+{
+    return <conditional>@boostcpp.deduce-architecture ;
 }
