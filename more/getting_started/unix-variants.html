@@ -393,10 +393,17 @@ operating system.</td>
 <td>&nbsp;</td>
 </tr>
 <tr><td><tt class="docutils literal">sun</tt></td>
-<td>Sun</td>
+<td>Oracle/Sun</td>
 <td>Only very recent versions are
 known to work well with
-Boost.</td>
+Boost.  Note that the Oracle/Sun compiler has a 
+large number of options which effect binary compatibility: it is vital that the libraries
+are built with the same options that your appliction will use.  You can use the 
+library=native|sun-stlport|apache|cxx11 b2 command line option to select between the
+Rogue Wave C++03, STLPort C++03, Apache C++03 or GNU libstdc++ C++11 compiler options.
+Other compiler/linker options should be injected by using the cxxflags= and linkflags=
+options.
+</td>
 </tr>
 <tr><td><tt class="docutils literal">vacpp</tt></td>
 <td>IBM</td>
