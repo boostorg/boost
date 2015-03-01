@@ -353,7 +353,11 @@ if test "x$flag_no_python" = x; then
   cat >> project-config.jam <<EOF
 
 # Python configuration
-using python : $PYTHON_VERSION : $PYTHON_ROOT ;
+import python ;
+if ! [ python.configured ]
+{
+    using python : $PYTHON_VERSION : $PYTHON_ROOT ;
+}
 EOF
 fi
 
