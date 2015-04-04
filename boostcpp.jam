@@ -22,6 +22,7 @@ import project ;
 import regex ;
 import set ;
 import targets ;
+import feature ;
 import property ;
 
 ##############################################################################
@@ -554,24 +555,45 @@ rule declare-targets ( all-libraries * : headers * )
     declare_top_level_targets $(libraries) : $(headers) ;
 }
 
+# Returns the properties identifying the toolset. We'll use them
+# below to configure checks. These are essentially same as in
+# configure.builds, except we don't use address-model and
+# architecture - as we're trying to detect them here.
+#
+rule toolset-properties ( properties * )
+{
+    local toolset = [ property.select <toolset> : $(properties) ] ;
+    local toolset-version-property = "<toolset-$(toolset:G=):version>" ;
+    return [ property.select <target-os> <toolset> $(toolset-version-property) : $(properties) ] ;
+}
+
+feature.feature deduced-address-model : 32 64 : propagated optional composite hidden ;
+feature.compose <deduced-address-model>32 : <address-model>32 ;
+feature.compose <deduced-address-model>64 : <address-model>64 ;
+
 rule deduce-address-model ( properties * )
 {
-    local result = [ property.select <address-model> : $(properties) ] ;
+    local result ;
+    local filtered = [ toolset-properties $(properties) ] ;
+
+    if [ configure.builds /boost/architecture//32 : $(filtered) : 32-bit ]
+    {
+        result = 32 ;
+    }
+    else if [ configure.builds /boost/architecture//64 : $(filtered) : 64-bit ]
+    {
+        result = 64 ;
+    }
+
     if $(result)
     {
-        return $(result) ;
+        # Normally, returning composite feature here is equivalent to forcing
+        # consituent properties as well. But we only want to indicate toolset
+        # deduced default, so also pick whatever address-model is explicitly
+        # specified, if any.
+        result = <deduced-address-model>$(result) [ property.select <address-model> : $(properties) ] ;
     }
-    else
-    {
-        if [ configure.builds /boost/architecture//32 : $(properties) : 32-bit ]
-        {
-            return <address-model>32 ;
-        }
-        else if [ configure.builds /boost/architecture//64 : $(properties) : 64-bit ]
-        {
-            return <address-model>64 ;
-        }
-    }
+    return $(result) ;
 }
 
 rule address-model ( )
@@ -579,40 +601,48 @@ rule address-model ( )
     return <conditional>@boostcpp.deduce-address-model ;
 }
 
+local deducable-architectures = arm mips1 power sparc x86 combined ;
+feature.feature deduced-architecture : $(deducable-architectures) : propagated optional composite hidden ;
+for a in $(deducable-architectures)
+{
+    feature.compose <deduced-architecture>$(a) : <architecture>$(a) ;
+}
+
 rule deduce-architecture ( properties * )
 {
-    local result = [ property.select <architecture> : $(properties) ] ;
+    local result ;
+    local filtered = [ toolset-properties $(properties) ] ;
+    if [ configure.builds /boost/architecture//arm : $(filtered) : arm ]
+    {
+        result = arm ;
+    }
+    else if [ configure.builds /boost/architecture//mips1 : $(filtered) : mips1 ]
+    {
+        result = mips1 ;
+    }
+    else if [ configure.builds /boost/architecture//power : $(filtered) : power ]
+    {
+        result = power ;
+    }
+    else if [ configure.builds /boost/architecture//sparc : $(filtered) : sparc ]
+    {
+        result = sparc ;
+    }
+    else if [ configure.builds /boost/architecture//x86 : $(filtered) : x86 ]
+    {
+        result = x86 ;
+    }
+    else if [ configure.builds /boost/architecture//combined : $(filtered) : combined ]
+    {
+        result = combined ;
+    }
+
     if $(result)
     {
-        return $(result) ;
+        # See comment in deduce-address-model.
+        result = <deduced-architecture>$(result) [ property.select <architecture> : $(properties) ] ;
     }
-    else
-    {
-        if [ configure.builds /boost/architecture//arm : $(properties) : arm ]
-        {
-            return <architecture>arm ;
-        }
-        else if [ configure.builds /boost/architecture//mips1 : $(properties) : mips1 ]
-        {
-            return <architecture>mips1 ;
-        }
-        else if [ configure.builds /boost/architecture//power : $(properties) : power ]
-        {
-            return <architecture>power ;
-        }
-        else if [ configure.builds /boost/architecture//sparc : $(properties) : sparc ]
-        {
-            return <architecture>sparc ;
-        }
-        else if [ configure.builds /boost/architecture//x86 : $(properties) : x86 ]
-        {
-            return <architecture>x86 ;
-        }
-        else if [ configure.builds /boost/architecture//combined : $(properties) : combined ]
-        {
-            return <architecture>combined ;
-        }
-    }
+    return $(result) ;
 }
 
 rule architecture ( )
