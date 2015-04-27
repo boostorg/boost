@@ -87,6 +87,20 @@ To test the result, type:
 
 .. include:: detail/binary-head.rst
 
+Installing Boost pre-requisites
+-------------------------------
+
+The following pre-requisite software is required to build Boost:
+
+1. Install a supported C++ compiler toolchain: http://www.boost.org/doc/libs/release/libs/msm/doc/HTML/ch04s03.html
+
+2. install library dependencies
+
+  * Python 2.x with header files (libpython-dev)
+
+  * bzip2 library with header files (libbz2-dev)
+
+
 Easy Build and Install
 ----------------------
 
