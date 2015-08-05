@@ -139,7 +139,7 @@ boostcpp.set-version $(BOOST_VERSION) ;
 use-project /boost/architecture : libs/config/checks/architecture ;
 
 local all-headers =
-    [ MATCH .*libs/(.*)/include/boost : [ glob libs/*/include/boost ] ] ;
+    [ MATCH .*libs/(.*)/include/boost : [ glob libs/*/include/boost libs/*/*/include/boost ] ] ;
 
 for dir in $(all-headers)
 {
@@ -147,18 +147,9 @@ for dir in $(all-headers)
     explicit $(dir)-headers ;
 }
 
-local numeric-headers =
-   [ MATCH .*libs/numeric/(.*)/include/boost : [ glob libs/*/*/include/boost ] ] ;
-
-for dir in $(numeric-headers)
-{
-    link-directory numeric-$(dir)-headers : libs/numeric/$(dir)/include/boost : <location>. ;
-    explicit numeric-$(dir)-headers ;
-}
-
 if $(all-headers)
 {
-    constant BOOST_MODULARLAYOUT : $(all-headers) $(numeric-headers) ;
+    constant BOOST_MODULARLAYOUT : $(all-headers) ;
 }
 
 project boost
@@ -173,9 +164,6 @@ project boost
       # Used to encode variant in target name. See the 'tag' rule below.
       <tag>@$(__name__).tag
       <conditional>@handle-static-runtime
-      # The standard library Sun compilers use by default has no chance
-      # of working with Boost. Override it.
-      <toolset>sun:<stdlib>sun-stlport
       # Comeau does not support shared lib
       <toolset>como:<link>static
       <toolset>como-linux:<define>_GNU_SOURCE=1
@@ -243,7 +231,10 @@ for local l in $(all-libraries)
     }
 }
 
-alias headers : $(all-headers)-headers numeric-$(numeric-headers)-headers : : : <include>.  ;
+# Log has an additional target
+explicit-alias log_setup : libs/log/build//boost_log_setup ;
+
+alias headers : $(all-headers)-headers : : : <include>.  ;
 explicit headers ;
 
 # Make project ids of all libraries known.
@@ -252,8 +243,15 @@ for local l in $(all-libraries)
     use-project /boost/$(l) : libs/$(l)/build ;
 }
 
-use-project /boost/tools/inspect : tools/inspect/build ;
-use-project /boost/libs/wave/tool : libs/wave/tool/build ;
+if [ path.exists $(BOOST_ROOT)/tools/inspect ]
+{
+    use-project /boost/tools/inspect : tools/inspect/build ;
+}
+
+if [ path.exists $(BOOST_ROOT)/libs/wave/tool ]
+{
+    use-project /boost/libs/wave/tool : libs/wave/tool/build ;
+}
 
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The

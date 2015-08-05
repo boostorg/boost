@@ -700,7 +700,6 @@
                 <toolset name="msvc-10.0*"/>
                 <toolset name="msvc-11.0*"/>
                 <toolset name="msvc-12.0*"/>
-                <toolset name="msvc-14.0*"/>
                 <toolset name="msvc-7.1*"/>
                 <toolset name="vacpp-10.1"/>
                 <toolset name="qcc-4*"/>
@@ -716,8 +715,11 @@
             <mark-failure>
                 <toolset name="vacpp-*"/>
                 <toolset name="vacpp"/>
+                <toolset name="msvc-8.0"/>
+                <toolset name="msvc-9.0"/>
                 <toolset name="msvc-9.0~stlport5.2"/>
                 <toolset name="msvc-9.0~wm5~stlport5.2"/>
+                <toolset name="msvc-10.0"/>
                 <toolset name="intel-darwin-11.*"/>
                 <toolset name="intel-darwin-12.0"/>
                 <toolset name="qcc-4*"/>
@@ -2034,6 +2036,28 @@
     
     <!-- geometry -->
     <library name="geometry">
+        <test name="algorithms_*" category="Algorithms">
+        </test>
+        <test name="arithmetic_*" category="Arithmetic">
+        </test>
+        <test name="concepts_*" category="Concepts">
+        </test>
+        <test name="core_*" category="Core">
+        </test>
+        <test name="geometries_*" category="Geometries">
+        </test>
+        <test name="io_*" category="IO">
+        </test>
+        <test name="iterators_*" category="Iterators">
+        </test>
+        <test name="policies_*" category="Policies">
+        </test>
+        <test name="strategies_*" category="Strategies">
+        </test>
+        <test name="util_*" category="Util">
+        </test>
+        <test name="views_*" category="Views">
+        </test>
         <mark-unusable>
             <toolset name="borland-*"/>
             <toolset name="sun-5.10"/>
@@ -3059,6 +3083,17 @@ for more information.
                 </pre>
             </note>
         </mark-expected-failures>
+        <mark-expected-failures>
+		<test name="optional_test_ref_convert_assign_const_int"/>
+		<toolset name="msvc-8.0"/>
+		<toolset name="msvc-9.0"/>
+		<toolset name="msvc-10.0"/>
+		<toolset name="msvc-11.0"/>
+		<toolset name="msvc-12.0"/>
+		<note author="Andrzej Krzemienski" id="optional-const-int-ref-assign-bug">
+			<p>This is a compiler bug: it sometimes creates an illegal temporary object.</p>
+		</note>
+	</mark-expected-failures>
         <mark-expected-failures>
             <test name="optional_test_ref"/>
             <toolset name="msvc-6.5*"/>
@@ -5753,7 +5788,9 @@ This platform doesn't supports Boost.Container.
         <toolset name="gcc-4.2*"/>
         <toolset name="gcc-4.3*"/>
         <toolset name="gcc-4.4*"/>
-        <toolset name="gcc-4.5*"/>
+        <!-- gcc-4.5+ is passing the test -->
+        <toolset name="intel-linux"/>
+        <toolset name="vacpp"/>
         <toolset name="gcc-mingw-3.*"/>
         <toolset name="gcc-mingw-4.0*"/>
         <toolset name="gcc-mingw-4.1*"/>

@@ -21,6 +21,14 @@ PYTHON_VERSION=
 PYTHON_ROOT=
 ICU_ROOT=
 
+# Handle case where builtin shell version of echo command doesn't 
+# support -n.  Use the installed echo executable if there is one 
+# rather than builtin version to ensure -n is supported.
+ECHO=`which echo`
+if test "x$ECHO" = x; then
+  ECHO=echo
+fi
+
 # Internal flags
 flag_no_python=
 flag_icu=
@@ -213,7 +221,7 @@ rm -f config.log
 
 # Build bjam
 if test "x$BJAM" = x; then
-  echo -n "Building Boost.Build engine with toolset $TOOLSET... "
+  $ECHO -n "Building Boost.Build engine with toolset $TOOLSET... "
   pwd=`pwd`
   (cd "$my_dir/tools/build/src/engine" && ./build.sh "$TOOLSET") > bootstrap.log 2>&1
   if [ $? -ne 0 ]; then
@@ -270,20 +278,20 @@ fi
 
 if test "x$flag_no_python" = x; then
     if test "x$PYTHON_VERSION" = x; then
-        echo -n "Detecting Python version... "
+        $ECHO -n "Detecting Python version... "
         PYTHON_VERSION=`$PYTHON -c "import sys; print (\"%d.%d\" % (sys.version_info[0], sys.version_info[1]))"`
         echo $PYTHON_VERSION
     fi
 
     if test "x$PYTHON_ROOT" = x; then
-        echo -n "Detecting Python root... "
-        PYTHON_ROOT=`$PYTHON -c "import sys; print sys.prefix"`
+        $ECHO -n "Detecting Python root... "
+        PYTHON_ROOT=`$PYTHON -c "import sys; print(sys.prefix)"`
         echo $PYTHON_ROOT
     fi    
 fi
 
 # Configure ICU
-echo -n "Unicode/ICU support for Boost.Regex?... "
+$ECHO -n "Unicode/ICU support for Boost.Regex?... "
 if test "x$flag_icu" != xno; then
   if test "x$ICU_ROOT" = x; then
     COMMON_ICU_PATHS="/usr /usr/local /sw"
@@ -345,7 +353,11 @@ if test "x$flag_no_python" = x; then
   cat >> project-config.jam <<EOF
 
 # Python configuration
-using python : $PYTHON_VERSION : $PYTHON_ROOT ;
+import python ;
+if ! [ python.configured ]
+{
+    using python : $PYTHON_VERSION : $PYTHON_ROOT ;
+}
 EOF
 fi
 

@@ -32,7 +32,7 @@ goto :bjam_failure
 :bjam_built
 
 REM Ideally, we should obtain the toolset that build.bat has
-REM guessed. However, it uses setlocal at the start and does
+REM guessed. However, it uses setlocal at the start and does not
 REM export BOOST_JAM_TOOLSET, and I don't know how to do that
 REM properly. Default to msvc for now.
 set toolset=msvc
@@ -67,7 +67,7 @@ goto :end
 
 ECHO.
 ECHO Failed to build Boost.Build engine.
-ECHO Please consult bootstrap.log for furter diagnostics.
+ECHO Please consult bootstrap.log for further diagnostics.
 ECHO.
 ECHO You can try to obtain a prebuilt binary from
 ECHO.

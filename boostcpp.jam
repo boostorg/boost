@@ -210,8 +210,48 @@ rule make-unversioned-links ( project name ? : property-set : sources * )
     return $(result) ;
 }
 
+rule filtered-target ( name : message + : sources + : requirements * )
+{
+    message $(name)-message : warning: $(message) ;
+    alias $(name) : $(sources) : $(requirements) ;
+    alias $(name) : $(name)-message ;
+
+    local p = [ project.current ] ;
+    $(p).mark-target-as-explicit $(name) ;
+    $(p).mark-target-as-explicit $(name)-message ;
+}
+
 rule declare_install_and_stage_proper_targets ( libraries * : headers * )
 {
+    local p = [ project.current ] ;
+    for local l in $(libraries)
+    {
+        if $(l) = locale
+        {
+            filtered-target $(l)-for-install :
+                Skipping Boost.Locale library with threading=single. :
+                libs/$(l)/build : <threading>multi ;
+        }
+        else if $(l) = wave
+        {
+            filtered-target $(l)-for-install :
+                Skipping Boost.Wave library with threading=single. :
+                libs/$(l)/build : <threading>multi ;
+        }
+        else if $(l) = thread
+        {
+            filtered-target $(l)-for-install :
+                Skipping Boost.Thread library with threading=single. :
+                libs/$(l)/build : <threading>multi ;
+        }
+        else
+        {
+            alias $(l)-for-install : libs/$(l)/build ; 
+            $(p).mark-target-as-explicit $(l)-for-install ;
+        }
+    }
+    local library-targets = $(libraries)-for-install ;
+
     install-requirements = <install-source-root>$(BOOST_ROOT)/boost ;
 
     if $(layout-versioned)
@@ -239,14 +279,14 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
     package.install install-proper
         : $(install-requirements) <install-no-version-symlinks>on
         :
-        : libs/$(libraries)/build
+        : $(libraries)-for-install
         : $(headers)
         ;
     $(p).mark-target-as-explicit install-proper ;
 
     # Install just library.
     install stage-proper
-        : libs/$(libraries)/build
+        : $(libraries)-for-install
         : <location>$(stage-locate)/lib
           <install-dependencies>on <install-type>LIB
           <install-no-version-symlinks>on
@@ -461,13 +501,14 @@ rule post-build ( ok ? )
     {
         if $(ok)
         {
+            local include-path = [ path.native $(BOOST_ROOT) ] ;
             ECHO "
 
 The Boost C++ Libraries were successfully built!
 
 The following directory should be added to compiler include paths:
 
-    $(BOOST_ROOT)
+    $(include-path)
 
 The following directory should be added to linker library paths:
 
