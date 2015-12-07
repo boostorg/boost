@@ -1,9 +1,30 @@
-sudo: false
+sudo: 
+
 language: c
+
 compiler:
   - gcc
+
+env:
+  matrix:
+    - TRAVIS_EMPTY_JOB_WORKAROUND=true
+
+matrix:
+  exclude:
+    - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
+  include:
+    - env: STATUS_TESTS=true
+    - env: RELEASE_BUILD=true
+
 script:
-  - ./bootstrap.sh
-  - ./b2 -n
-  - cd status
-  - ../b2 -n -d0
+  - |
+    if [[ "${STATUS_TESTS}" == "true" ]]; then
+      ./bootstrap.sh
+      ./b2 -n
+      cd status
+      ../b2 -n -d0
+    fi
+  - |
+    if [[ "${RELEASE_BUILD}" == "true" ]]; then
+      echo "Build release package.."
+    fi
