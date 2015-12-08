@@ -61,6 +61,12 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
-      gnutar -zcf "${BOOST_RELEASE}.tar.gz" "${BOOST_RELEASE}"
-      gnutar -cjf "${BOOST_RELEASE}.tar.bz2" "${BOOST_RELEASE}"
+      tar -zcf "${BOOST_RELEASE}.tar.gz" "${BOOST_RELEASE}"
+      tar -cjf "${BOOST_RELEASE}.tar.bz2" "${BOOST_RELEASE}"
+    fi
+  - |
+    if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
+      cd "${TRAVIS_BUILD_DIR}/.."
+      zip -r "${BOOST_RELEASE}.zip" "${BOOST_RELEASE}"
+      7za a -r "${BOOST_RELEASE}.7z" "${BOOST_RELEASE}"
     fi
