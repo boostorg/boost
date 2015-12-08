@@ -22,6 +22,7 @@ matrix:
 
 before_install:
   - |
+    set -e # Fail the whole script whenever any command fails
     if [[ "${STATUS_TESTS}" == "true" ]]; then
       git submodule update --init --recursive
     fi
@@ -69,6 +70,6 @@ script:
     if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
       zip -qr "${BOOST_RELEASE}.zip" "${BOOST_RELEASE}"
-      7za a -r "${BOOST_RELEASE}.7z" "${BOOST_RELEASE}"
+      7z a -r "${BOOST_RELEASE}.7z" "${BOOST_RELEASE}"
       ls -la
     fi
