@@ -20,32 +20,37 @@ matrix:
     - env: RELEASE_BUILD=LF
     - env: RELEASE_BUILD=CRLF
 
-script:
+before_install:
   - |
     if [[ "${STATUS_TESTS}" == "true" ]]; then
       git submodule update --init --recursive
+    fi
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" ]]; then
+      git config core.eol lf
+      git config core.autocrlf false
+      git rm --cache -r .
+      git reset --hard HEAD
+      git submodule update --init --recursive
+    fi
+  - |
+    if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
+      git config core.eol crlf
+      git config core.autocrlf false
+      git rm --cache -r .
+      git reset --hard HEAD
+      git submodule update --init --recursive
+    fi
+
+script:
+  - |
+    if [[ "${STATUS_TESTS}" == "true" ]]; then
       ./bootstrap.sh
       ./b2 -n
       cd status
       ../b2 -n -d0
     fi
   - |
-    if [[ "${RELEASE_BUILD}" == "LF" ]]; then
-      echo "Build release package.."
-      git config core.eol lf
-      git config core.autocrlf false
-      git rm --cache -r .
-      git reset --hard HEAD
-      git submodule update --init --recursive
-      find . -name ".git" -print
-    fi
-  - |
-    if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
-      echo "Build release package.."
-      git config core.eol crlf
-      git config core.autocrlf false
-      git rm --cache -r .
-      git reset --hard HEAD
-      git submodule update --init --recursive
-      find . -name ".git" -print
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
+      find . -name ".git" -exec rm -rf {}
     fi
