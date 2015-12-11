@@ -35,6 +35,14 @@ matrix:
 
 before_install:
   - |
+    cd "${TRAVIS_BUILD_DIR}/.."
+    wget -O rapidxml.zip http://sourceforge.net/projects/rapidxml/files/latest/download
+    unzip -n -d rapidxml rapidxml.zip
+    export RAPIDXML=${PWD}/rapidxml
+    cd "${TRAVIS_BUILD_DIR}"
+
+before_script:
+  - |
     set -e # Fail the whole script whenever any command fails
     if [[ "${STATUS_TESTS}" == "true" ]]; then
       git submodule update --init --recursive
