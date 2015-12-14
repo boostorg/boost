@@ -35,20 +35,22 @@ matrix:
 
 before_install:
   - |
+    export "BOOST_BUILD_DIR=${TRAVIS_BUILD_DIR}/../build"
     cd "${TRAVIS_BUILD_DIR}/.."
     wget -O rapidxml.zip http://sourceforge.net/projects/rapidxml/files/latest/download
     unzip -n -d rapidxml rapidxml.zip
     export RAPIDXML=`ls -1d ${PWD}/rapidxml/rapidxml-*`
-    cd "${TRAVIS_BUILD_DIR}"
 
 before_script:
   - |
     set -e # Fail the whole script whenever any command fails
     if [[ "${STATUS_TESTS}" == "true" ]]; then
+      cd "${TRAVIS_BUILD_DIR}"
       git submodule update --init --recursive
     fi
   - |
     if [[ "${RELEASE_BUILD}" == "LF" ]]; then
+      cd "${TRAVIS_BUILD_DIR}"
       git config core.eol lf
       git config core.autocrlf false
       git rm --cache -r .
@@ -57,6 +59,7 @@ before_script:
     fi
   - |
     if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
+      cd "${TRAVIS_BUILD_DIR}"
       git config core.eol crlf
       git config core.autocrlf false
       git rm --cache -r .
@@ -67,10 +70,24 @@ before_script:
 script:
   - |
     if [[ "${STATUS_TESTS}" == "true" ]]; then
+      cd "${TRAVIS_BUILD_DIR}"
       ./bootstrap.sh
       ./b2 -n
       cd status
       ../b2 -n -d0
+    fi
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
+      mkdir -p "${BOOST_BUILD_DIR}/stage/bin"
+      export "PATH=${BOOST_BUILD_DIR}/stage/bin:${PATH}"
+      cd "${TRAVIS_BUILD_DIR}/tools/build"
+      ./bootstrap.sh
+      cp -p b2 "${BOOST_BUILD_DIR}/stage/bin/b2"
+      git clean -dfqx
+      cd "${TRAVIS_BUILD_DIR}/libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk"
+      b2 -n --build-dir="${BOOST_BUILD_DIR}" --stage-dir="${BOOST_BUILD_DIR}"
+      cd "${TRAVIS_BUILD_DIR}/libs/geometry"
+      git clean -dfqx
     fi
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
