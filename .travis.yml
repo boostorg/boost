@@ -84,6 +84,8 @@ script:
       ./bootstrap.sh
       cp -p b2 "${BOOST_BUILD_DIR}/dist/bin/b2"
       git clean -dfqx
+      cd "${TRAVIS_BUILD_DIR}"
+      b2 -q headers
       cd "${TRAVIS_BUILD_DIR}/libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk"
       b2 -a -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/libs/geometry"
