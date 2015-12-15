@@ -78,16 +78,25 @@ script:
     fi
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
-      mkdir -p "${BOOST_BUILD_DIR}/stage/bin"
-      export "PATH=${BOOST_BUILD_DIR}/stage/bin:${PATH}"
+      mkdir -p "${BOOST_BUILD_DIR}/dist/bin"
+      export "PATH=${BOOST_BUILD_DIR}/dist/bin:${PATH}"
       cd "${TRAVIS_BUILD_DIR}/tools/build"
       ./bootstrap.sh
-      cp -p b2 "${BOOST_BUILD_DIR}/stage/bin/b2"
+      cp -p b2 "${BOOST_BUILD_DIR}/dist/bin/b2"
       git clean -dfqx
       cd "${TRAVIS_BUILD_DIR}/libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk"
-      b2 -n --build-dir="${BOOST_BUILD_DIR}" --stage-dir="${BOOST_BUILD_DIR}"
+      b2 -a -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/libs/geometry"
       git clean -dfqx
+      cd "${TRAVIS_BUILD_DIR}/tools/quickbook"
+      b2 -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      git clean -dfqx
+      echo "using quickbook : \"${BOOST_BUILD_DIR}/dist/bin/quickbook\" ;" >> "${HOME}/user-config.jam"
+      cd "${TRAVIS_BUILD_DIR}/tools/auto_index/build"
+      b2 -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      cd "${TRAVIS_BUILD_DIR}/tools/auto_index"
+      git clean -dfqx
+      echo "using auto-index : \"${BOOST_BUILD_DIR}/dist/bin/auto_index\" ;" >> "${HOME}/user-config.jam"
     fi
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
