@@ -6,7 +6,21 @@
 project boost/doc ;
 import boostbook : boostbook ;
 
+path-constant BOOST_DOC : . ;
+
 alias asio : ../libs/asio/doc//asio/<xsl:param>boost.libraries=../../libs/libraries.htm ;
+
+if "--release-build" in [ modules.peek : ARGV ]
+{
+    import project ;
+    import path ;
+    local lib-docs = [ path.glob [ path.glob $(BOOST_DOC)/../libs : */doc ]
+        : [ modules.peek project : JAMFILE ] ] ;
+    for local lib-doc in $(lib-docs:D)
+    {
+        build-project [ path.relative-to $(BOOST_DOC) $(lib-doc) ] ;
+    }
+}
 
 #
 # Note that when refering to libraries that use auto-index we must process all the way to
