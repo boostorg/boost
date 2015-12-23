@@ -11,6 +11,8 @@ compiler:
   - gcc
 
 git:
+  # We avoid fetching submodules so that we can set the EOL
+  # style to fetch them as needed.
   submodules: false
 
 addons:
@@ -34,21 +36,35 @@ matrix:
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
   include:
+    # Simple integrated status tests check.
     - env: STATUS_TESTS=true
+    
+    # Build release package for LF end-of-line style text files.
     - env: RELEASE_BUILD=LF
+    
+    # Build release package for CRLF end-of-line style text files (i.e. for Windows).
     - env: RELEASE_BUILD=CRLF
 
-before_install:
+install:
+  # Set where we will place all our build byproducts.
   - |
     export "BOOST_BUILD_DIR=${TRAVIS_BUILD_DIR}/../build"
+  
+  # We use RapidXML for some doc building tools.
+  - |
     cd "${TRAVIS_BUILD_DIR}/.."
     wget -O rapidxml.zip http://sourceforge.net/projects/rapidxml/files/latest/download
     unzip -n -d rapidxml rapidxml.zip
     export RAPIDXML=`ls -1d ${PWD}/rapidxml/rapidxml-*`
 
 before_script:
+  # Fail the whole script whenever any command fails
   - |
-    set -e # Fail the whole script whenever any command fails
+    set -e
+  
+  # Fetch the rest of the Boost submodules in the appropriate
+  # EOL style.
+  - |
     if [[ "${STATUS_TESTS}" == "true" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
       git submodule update --init --recursive
@@ -59,7 +75,7 @@ before_script:
       git config core.eol lf
       git config core.autocrlf false
       git rm --cache -r .
-      git reset --hard HEAD
+      git reset --quiet --hard HEAD
       git submodule update --init --recursive
     fi
   - |
@@ -68,11 +84,14 @@ before_script:
       git config core.eol crlf
       git config core.autocrlf false
       git rm --cache -r .
-      git reset --hard HEAD
+      git reset --quiet --hard HEAD
       git submodule update --init --recursive
     fi
 
 script:
+  # Simple integrated status tests check. Currently this only
+  # veryfies that we will not get build system errors from things
+  # like missing test files.
   - |
     if [[ "${STATUS_TESTS}" == "true" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
@@ -81,30 +100,87 @@ script:
       cd status
       ../b2 -n -d0
     fi
+  
+  # Build a packaged release. This involves building a fresh set
+  # of docs and selectively packging parts of the tree. We try and
+  # avoid creating extra files in the base tree to avoid including
+  # extra stuff in the archives. Which means that we reset the git
+  # tree state to cleanup after building.
+  
+  # Set up where we will "install" built tools.
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       mkdir -p "${BOOST_BUILD_DIR}/dist/bin"
       export "PATH=${BOOST_BUILD_DIR}/dist/bin:${PATH}"
+    fi
+  
+  # Bootstrap Boost Build engine.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/build"
       ./bootstrap.sh
       cp -p b2 "${BOOST_BUILD_DIR}/dist/bin/b2"
       git clean -dfqx
+    fi
+  
+  # Generate include dir structure.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      b2 -q headers
+      b2 -q -d0 headers
+    fi
+  
+  # Build doxygen_xml2qbk for building Boost Geometry docs.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk"
-      b2 -a -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/libs/geometry"
       git clean -dfqx
+    fi
+  
+  # Build Quickbook documentation tool.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/quickbook"
-      b2 -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       git clean -dfqx
       echo "using quickbook : \"${BOOST_BUILD_DIR}/dist/bin/quickbook\" ;" >> "${HOME}/user-config.jam"
+    fi
+  
+  # Build auto-index documentation tool.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index/build"
-      b2 -q --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index"
       git clean -dfqx
       echo "using auto-index : \"${BOOST_BUILD_DIR}/dist/bin/auto_index\" ;" >> "${HOME}/user-config.jam"
     fi
+  
+  # Set up docutils config.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
+      echo "using docutils ;" >> "${HOME}/user-config.jam"
+    fi
+  
+  # Pre-build Boost Geometry docs.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
+      cd "${TRAVIS_BUILD_DIR}/lib/geometry/doc"
+      python make_qbk.py --release-build
+    fi
+  
+  # Build the full docs, and all the submodule docs.
+  - |
+    if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
+      cd "${TRAVIS_BUILD_DIR}/doc"
+      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
+    fi
+  
+  # Make the real distribution tree from the base tree. The
+  # distribution tree is "marked" with the commit hash to be
+  # able to track a package to the commit we test.
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
@@ -113,6 +189,8 @@ script:
       export BOOST_RELEASE=boost_${TRAVIS_BRANCH}_${TRAVIS_COMMIT}
       ./MakeBoostDistro.py "${TRAVIS_BUILD_DIR}" "${BOOST_RELEASE}"
     fi
+  
+  # Create packages for LF style content.
   - |
     if [[ "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
@@ -120,6 +198,8 @@ script:
       tar -cjf "${BOOST_RELEASE}.tar.bz2" "${BOOST_RELEASE}"
       ls -la
     fi
+  
+  # Create packages for CRLF style content.
   - |
     if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
@@ -129,6 +209,11 @@ script:
     fi
 
 after_success:
+  # Publish created packages depending on the EOL style and branch.
+  # We post archives to distribution services. But currently we only
+  # post master packages as they happen less often. And we are
+  # unlikely to ever want anything else as a package for the
+  # releases.
   - |
     if [[ "${TRAVIS_BRANCH}" == "master" && "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
