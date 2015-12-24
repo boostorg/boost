@@ -146,7 +146,6 @@ script:
       cd "${TRAVIS_BUILD_DIR}/tools/quickbook"
       b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       git clean -dfqx
-      echo "using quickbook : \"${BOOST_BUILD_DIR}/dist/bin/quickbook\" ;" >> "${HOME}/user-config.jam"
     fi
   
   # Build auto-index documentation tool.
@@ -156,13 +155,15 @@ script:
       b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index"
       git clean -dfqx
-      echo "using auto-index : \"${BOOST_BUILD_DIR}/dist/bin/auto_index\" ;" >> "${HOME}/user-config.jam"
     fi
   
-  # Set up docutils config.
+  # Set up build config.
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
+      echo "using quickbook : \"${BOOST_BUILD_DIR}/dist/bin/quickbook\" ;" >> "${HOME}/user-config.jam"
+      echo "using auto-index : \"${BOOST_BUILD_DIR}/dist/bin/auto_index\" ;" >> "${HOME}/user-config.jam"
       echo "using docutils ;" >> "${HOME}/user-config.jam"
+      echo "using doxygen ;" >> "${HOME}/user-config.jam"
     fi
   
   # Pre-build Boost Geometry docs.
