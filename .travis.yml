@@ -57,6 +57,9 @@ install:
     wget -O rapidxml.zip http://sourceforge.net/projects/rapidxml/files/latest/download
     unzip -n -d rapidxml rapidxml.zip
     export RAPIDXML=`ls -1d ${PWD}/rapidxml/rapidxml-*`
+  # Need docutils for building some docs.
+  - |
+    pip install docutils
 
 before_script:
   # Fail the whole script whenever any command fails
