@@ -1,3 +1,9 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Rivera 2015.
+
 branches:
   only:
     - master
@@ -182,7 +188,9 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/doc"
+      (while 1 ; do sleep 60 && echo "[[ ALIVE? ]]" ; done ;) &
       b2 -q -d2 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
+      kill %1
     fi
   
   # Make the real distribution tree from the base tree. The
