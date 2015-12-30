@@ -192,14 +192,6 @@ If you're using an earlier version of Visual C++, or a compiler
 from another vendor, you'll need to use Boost.Build_ to create your
 own binaries.
 
-.. Admonition:: Boost.CMake
-
-  There is also an experimental CMake build for boost, supported and distributed
-  separately.  See the `Boost.CMake`_ wiki page for more information.
-
-  .. _`Boost.CMake`:
-       https://svn.boost.org/trac/boost/wiki/CMake
-
 .. include:: detail/build-from-source-head.rst
 
 For example, your session might look like this: [#continuation]_
