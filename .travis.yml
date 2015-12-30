@@ -188,7 +188,7 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/doc"
-      (while 1 ; do sleep 60 && echo "[[ ALIVE? ]]" ; done ;) &
+      (while true ; do sleep 60 && echo "[[ ALIVE? ]]" ; done ;) &
       AWAKE_PID=$!
       b2 -q -d2 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
       kill $AWAKE_PID
