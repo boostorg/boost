@@ -377,7 +377,7 @@ cat >> project-config.jam << EOF
 # override this variable.
 libraries = $LIBS ;
 
-# These settings are equivivalent to corresponding command-line
+# These settings are equivalent to corresponding command-line
 # options.
 option.set prefix : $PREFIX ;
 option.set exec-prefix : $EPREFIX ;
