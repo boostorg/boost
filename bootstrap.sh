@@ -394,6 +394,10 @@ Bootstrapping is done. To build, run:
 
     ./b2
     
+To generate header files, run:
+
+    ./b2 headers
+    
 To adjust configuration, edit 'project-config.jam'.
 Further information:
 
