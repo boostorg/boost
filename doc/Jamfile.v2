@@ -6,7 +6,21 @@
 project boost/doc ;
 import boostbook : boostbook ;
 
+path-constant BOOST_DOC : . ;
+
 alias asio : ../libs/asio/doc//asio/<xsl:param>boost.libraries=../../libs/libraries.htm ;
+
+if "--release-build" in [ modules.peek : ARGV ]
+{
+    import project ;
+    import path ;
+    local lib-docs = [ path.glob [ path.glob $(BOOST_DOC)/../libs : */doc ]
+        : [ modules.peek project : JAMFILE ] ] ;
+    for local lib-doc in $(lib-docs:D)
+    {
+        build-project [ path.relative-to $(BOOST_DOC) $(lib-doc) ] ;
+    }
+}
 
 #
 # Note that when refering to libraries that use auto-index we must process all the way to
@@ -42,6 +56,8 @@ boostbook doc
     <dependency>../libs/accumulators/doc//accumulators
     <dependency>../libs/circular_buffer/doc//standalone/<format>docbook
     <dependency>../libs/lexical_cast/doc//lexical_cast
+    <dependency>../libs/crc/doc//crc
+    <dependency>../libs/crc/doc//autodoc.xml
     <dependency>../libs/chrono/doc//chrono
     <dependency>../libs/dll/doc//dll-doc
     <dependency>../libs/program_options/doc//autodoc.xml
@@ -87,12 +103,14 @@ boostbook doc
     <dependency>../libs/type_erasure/doc//type_erasure
     <dependency>../libs/align/doc//align
     <dependency>../libs/type_index/doc//type_index
+    <dependency>../libs/metaparse/doc//metaparse
 
     ## Add path references to the QuickBook generated docs...
 
     <implicit-dependency>../libs/accumulators/doc//accumulators
     <implicit-dependency>../libs/chrono/doc//chrono
     <implicit-dependency>../libs/lexical_cast/doc//lexical_cast
+    <implicit-dependency>../libs/crc/doc//crc
     <implicit-dependency>../libs/dll/doc//dll-doc
     <implicit-dependency>../libs/functional/hash/doc//hash
     #<implicit-dependency>../libs/type_traits/doc//type_traits
@@ -124,6 +142,7 @@ boostbook doc
     <implicit-dependency>../libs/type_erasure/doc//type_erasure
     <implicit-dependency>../libs/align/doc//align
     <implicit-dependency>../libs/type_index/doc//type_index
+    <implicit-dependency>../libs/metaparse/doc//metaparse
 
     <xsl:param>boost.libraries=../../libs/libraries.htm
     <format>html:<xsl:param>chunker.output.doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
