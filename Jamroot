@@ -129,6 +129,10 @@ import xsltproc ;
 import set ;
 import path ;
 import link ;
+import notfile ;
+import virtual-target ;
+import "class" : new ;
+import property-set ;
 import threadapi-feature ;
 
 path-constant BOOST_ROOT : . ;
@@ -246,7 +250,21 @@ for local l in $(all-libraries)
 # Log has an additional target
 explicit-alias log_setup : libs/log/build//boost_log_setup ;
 
-alias headers : $(all-headers)-headers : : : <include>.  ;
+rule do-nothing { }
+
+rule generate-alias ( project name : property-set : sources * )
+{
+    local action-name = [ $(property-set).get <action> ] ;
+    local m = [ MATCH ^@(.*) : $(action-name) ] ;
+    property-set = [ property-set.empty ] ;
+    local action = [ new action $(sources) : $(m[1]) : $(property-set) ] ;
+    local t = [ new notfile-target $(name) : $(project) : $(action) ] ;
+    return [ virtual-target.register $(t) ] ;
+}
+
+generate headers : $(all-headers)-headers : <generating-rule>@generate-alias <action>@do-nothing : : <include>.  ;
+
+#alias headers : $(all-headers)-headers : : : <include>.  ;
 explicit headers ;
 
 # Make project ids of all libraries known.
