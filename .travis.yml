@@ -85,7 +85,7 @@ before_script:
     if [[ "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
       git config core.eol lf
-      git config core.autocrlf false
+      git config core.autocrlf input
       git rm --cache -r .
       git reset --quiet --hard HEAD
       git submodule update --init --recursive
@@ -94,7 +94,7 @@ before_script:
     if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
       git config core.eol crlf
-      git config core.autocrlf false
+      git config core.autocrlf true
       git rm --cache -r .
       git reset --quiet --hard HEAD
       git submodule update --init --recursive
@@ -202,7 +202,7 @@ script:
       cd "${TRAVIS_BUILD_DIR}/.."
       wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/MakeBoostDistro.py"
       chmod +x MakeBoostDistro.py
-      export BOOST_RELEASE=boost_${TRAVIS_BRANCH}_${TRAVIS_COMMIT}
+      export BOOST_RELEASE=boost_1_61_0_b1_rc2
       ./MakeBoostDistro.py "${TRAVIS_BUILD_DIR}" "${BOOST_RELEASE}"
     fi
   
