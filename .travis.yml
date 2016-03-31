@@ -84,8 +84,8 @@ before_script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      git config core.eol lf
-      git config core.autocrlf input
+      git config --global core.eol lf
+      git config --global core.autocrlf input
       git rm --cache -r .
       git reset --quiet --hard HEAD
       git submodule update --init --recursive
@@ -93,8 +93,8 @@ before_script:
   - |
     if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      git config core.eol crlf
-      git config core.autocrlf true
+      git config --global core.eol crlf
+      git config --global core.autocrlf true
       git rm --cache -r .
       git reset --quiet --hard HEAD
       git submodule update --init --recursive
