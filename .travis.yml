@@ -233,12 +233,12 @@ after_success:
   - |
     if [[ "${TRAVIS_BRANCH}" == "master" && "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
-      curl -T "${BOOST_RELEASE}.tar.gz" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.gz?publish=1"
-      curl -T "${BOOST_RELEASE}.tar.bz2" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.bz2?publish=1"
+      curl -T "${BOOST_RELEASE}.tar.gz" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.gz?publish=1&override=1"
+      curl -T "${BOOST_RELEASE}.tar.bz2" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.bz2?publish=1&override=1"
     fi
   - |
     if [[ "${TRAVIS_BRANCH}" == "master" && "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
-      curl -T "${BOOST_RELEASE}.zip" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.zip?publish=1"
-      curl -T "${BOOST_RELEASE}.7z" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.7z?publish=1"
+      curl -T "${BOOST_RELEASE}.zip" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.zip?publish=1&override=1"
+      curl -T "${BOOST_RELEASE}.7z" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.7z?publish=1&override=1"
     fi
