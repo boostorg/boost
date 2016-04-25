@@ -139,14 +139,14 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      b2 -q -d0 headers
+      b2 -q -d0 -j2 headers
     fi
   
   # Build doxygen_xml2qbk for building Boost Geometry docs.
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk"
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 -j2 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/libs/geometry"
       git clean -dfqx
     fi
@@ -155,7 +155,7 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/quickbook"
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 -j2 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       git clean -dfqx
     fi
   
@@ -163,7 +163,7 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index/build"
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 -j2 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index"
       git clean -dfqx
     fi
@@ -190,7 +190,7 @@ script:
       cd "${TRAVIS_BUILD_DIR}/doc"
       (while true ; do sleep 60 && echo "[[ ALIVE? ]]" ; done ;) &
       AWAKE_PID=$!
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
+      b2 -q -d0 -j2 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
       kill $AWAKE_PID
     fi
   
