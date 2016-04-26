@@ -84,8 +84,8 @@ before_script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      git config core.eol lf
-      git config core.autocrlf input
+      git config --global core.eol lf
+      git config --global core.autocrlf input
       git rm --cache -r .
       git reset --quiet --hard HEAD
       git submodule update --init --recursive
@@ -93,8 +93,8 @@ before_script:
   - |
     if [[ "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      git config core.eol crlf
-      git config core.autocrlf true
+      git config --global core.eol crlf
+      git config --global core.autocrlf true
       git rm --cache -r .
       git reset --quiet --hard HEAD
       git submodule update --init --recursive
@@ -139,14 +139,14 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}"
-      b2 -q -d0 headers
+      b2 -q -d0 -j4 headers
     fi
   
   # Build doxygen_xml2qbk for building Boost Geometry docs.
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk"
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 -j4 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/libs/geometry"
       git clean -dfqx
     fi
@@ -155,7 +155,7 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/quickbook"
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 -j4 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       git clean -dfqx
     fi
   
@@ -163,7 +163,7 @@ script:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index/build"
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
+      b2 -q -d0 -j4 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist"
       cd "${TRAVIS_BUILD_DIR}/tools/auto_index"
       git clean -dfqx
     fi
@@ -190,7 +190,7 @@ script:
       cd "${TRAVIS_BUILD_DIR}/doc"
       (while true ; do sleep 60 && echo "[[ ALIVE? ]]" ; done ;) &
       AWAKE_PID=$!
-      b2 -q -d0 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
+      b2 -q -d0 -j4 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
       kill $AWAKE_PID
     fi
   
@@ -233,12 +233,12 @@ after_success:
   - |
     if [[ "${TRAVIS_BRANCH}" == "master" && "${RELEASE_BUILD}" == "LF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
-      curl -T "${BOOST_RELEASE}.tar.gz" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.gz?publish=1"
-      curl -T "${BOOST_RELEASE}.tar.bz2" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.bz2?publish=1"
+      curl -T "${BOOST_RELEASE}.tar.gz" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.gz?publish=1&override=1"
+      curl -T "${BOOST_RELEASE}.tar.bz2" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.tar.bz2?publish=1&override=1"
     fi
   - |
     if [[ "${TRAVIS_BRANCH}" == "master" && "${RELEASE_BUILD}" == "CRLF" ]]; then
       cd "${TRAVIS_BUILD_DIR}/.."
-      curl -T "${BOOST_RELEASE}.zip" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.zip?publish=1"
-      curl -T "${BOOST_RELEASE}.7z" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.7z?publish=1"
+      curl -T "${BOOST_RELEASE}.zip" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.zip?publish=1&override=1"
+      curl -T "${BOOST_RELEASE}.7z" "-ugrafikrobot:${BINTRAY}" "https://api.bintray.com/content/boostorg/snapshots/${TRAVIS_BRANCH}/${TRAVIS_COMMIT}/${BOOST_RELEASE}.7z?publish=1&override=1"
     fi
