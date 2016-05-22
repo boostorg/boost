@@ -193,6 +193,9 @@ script:
       b2 -q -d0 -j4 --build-dir="${BOOST_BUILD_DIR}" --distdir="${BOOST_BUILD_DIR}/dist" --release-build --enable-index
       kill $AWAKE_PID
     fi
+
+  # Download generated libs/libraries.htm from website.
+  - curl "http://www.boost.org/doc/generate.php?page=libs/libraries.htm&version=${TRAVIS_BRANCH}" > "${TRAVIS_BUILD_DIR}/libs/libraries.htm"
   
   # Make the real distribution tree from the base tree. The
   # distribution tree is "marked" with the commit hash to be
