@@ -58,11 +58,11 @@ before_install:
   # Fetch the script to do the actual building/testing.
   - |
     if [[ "${STATUS_TESTS}" == "true" ]]; then
-      wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -o ../script.py
+      wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -O ../script.py
     fi
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
-      wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -o ../script.py
+      wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -O ../script.py
     fi
 
 install: python "${TRAVIS_BUILD_DIR}/../script.py" install
