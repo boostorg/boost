@@ -19,26 +19,64 @@ project status
 
 import testing ;
 import modules ;
+import project ;
+import regex ;
+import modules ;
+
+local check-libs-only = [ MATCH "^--(check-libs-only)" : [ modules.peek : ARGV ] ] ;
+local check-libs-only-targets = ;
+local libraries = ;
 
 local rule run-tests ( root : tests * )
 {
     local limit-tests = [ MATCH "^--limit-tests=(.*)" : [ modules.peek : ARGV ] ] ;
+    local location = [ project.attribute $(__name__) location ] ;
     for local test in $(tests)
     {
+        local library = [ regex.split $(test) "/" ] ;
+        library = $(library[0]) ;
         if $(limit-tests)
         {
-            if [ MATCH "^($(limit-tests))" : $(test) ]
+            if ! [ MATCH "^($(limit-tests))" : $(test) ]
+            {
+                library = ;
+            }
+        }
+        if $(library)
+        {
+            use-project /boost/$(test) : ../$(root)/$(test) ;
+            if $(root) = libs && ( ! ( $(library) in $(libraries) ) )
+            {
+                libraries += $(library) ;
+                local test_module = [ project.find ../$(root)/$(test) : $(location) ] ;
+                modules.poke $(test_module) : __LIBRARY__ : $(root)/$(library) ;
+                modules.poke $(test_module) : __JAMFILE__ : [ modules.peek project : JAMFILE ] ;
+                project.push-current [ project.target $(test_module) ] ;
+                module $(test_module)
+                {
+                    import testing ;
+                    testing.make-test run-pyd :
+                        $(BOOST_ROOT)/status/boost_check_library.py
+                        :
+                        <pythonpath>$(BOOST_ROOT)/status
+                        <testing.arg>--boost-root=\"$(BOOST_ROOT)\"
+                        <testing.arg>--library=$(__LIBRARY__)
+                        <testing.arg>--jamfile=\"$(__JAMFILE__:J=;)\"
+                        <testing.arg>organization
+                        :
+                        __boost_check_library__ ;
+                }
+                project.pop-current ;
+                check-libs-only-targets += ../$(root)/$(test)//__boost_check_library__ ;
+            }
+            if ! $(check-libs-only)
             {
                 build-project ../$(root)/$(test) ;
-            }
-            else
-            {
-                use-project /boost/$(test) : ../$(root)/$(test) ;
             }
         }
         else
         {
-            build-project ../$(root)/$(test) ;
+            # use-project /boost/$(test) : ../$(root)/$(test) ;
         }
     }
 }
@@ -192,3 +230,7 @@ run-tests tools :
     bcp/test
     ;
 
+if $(check-libs-only-targets)
+{
+    alias check-libs-only : $(check-libs-only-targets) ;
+}
