@@ -48,6 +48,9 @@ matrix:
     
     # Build release package for CRLF end-of-line style text files (i.e. for Windows).
     - env: RELEASE_BUILD=CRLF
+    
+    # Library requirements tests.
+    - env: LIBRARY_CHECK=true
 
 before_install:
   # Fetch the script to do the actual building/testing.
@@ -58,6 +61,10 @@ before_install:
   - |
     if [[ "${RELEASE_BUILD}" == "LF" || "${RELEASE_BUILD}" == "CRLF" ]]; then
       wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -O ../script.py
+    fi
+  - |
+    if [[ "${LIBRARY_CHECK}" == "true" ]]; then
+      wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_library_check.py" -O ../script.py
     fi
 
 install: python "${TRAVIS_BUILD_DIR}/../script.py" install
