@@ -130,6 +130,12 @@ class check_library():
         self.jamfile = self.jamfile.split(';')
         self.library_name = os.path.basename(self.library)
 
+        #print ">>> cwd: %s"%(os.getcwd())
+        #print ">>> actions: %s"%(self.actions)
+        #print ">>> boost_root: %s"%(self.boost_root)
+        #print ">>> library: %s"%(self.library)
+        #print ">>> jamfile: %s"%(self.jamfile)
+
         for action in self.actions:
             action_m = "check_"+action.replace('-','_')
             if hasattr(self,action_m):
