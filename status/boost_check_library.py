@@ -68,11 +68,11 @@ class check_library():
                 negate = True,
                 globs_to_exclude = ['%s.h*'%(self.library_name)])
         else:
-            self.assert_file_exists(os.path.join(self.library_dir,'include','boost'), ['%s.h*'%(self.library_name)],
+            self.warn_file_exists(os.path.join(self.library_dir,'include','boost'), ['%s.h*'%(self.library_name)],
                 '''
                 Did not find [project-root]/include/boost/[library].h* file.
                 
-                A single header for the library is required at [project-root]/include/boost/[library].h*
+                A single header for the library is suggested at [project-root]/include/boost/[library].h*
                 if the library does not have a header directory at [project-root]/include/boost/[library].
                 ''')
     
