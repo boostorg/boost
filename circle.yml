@@ -10,18 +10,29 @@ machine:
   pre:
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ${HOME}
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/${SCRIPT}.py" -P ${HOME}
-  post: python "${HOME}/${SCRIPT}" machine_post
+  post:
+    - python "${HOME}/${SCRIPT}" machine_post
 checkout:
-  post: python "${HOME}/${SCRIPT}" checkout_post
+  post:
+    - python "${HOME}/${SCRIPT}" checkout_post
 dependencies:
-  pre: python "${HOME}/${SCRIPT}" dependencies_pre
-  override: python "${HOME}/${SCRIPT}" dependencies_override
-  post: python "${HOME}/${SCRIPT}" dependencies_post
+  pre:
+    - python "${HOME}/${SCRIPT}" dependencies_pre
+  override:
+    - python "${HOME}/${SCRIPT}" dependencies_override
+  post:
+    - python "${HOME}/${SCRIPT}" dependencies_post
 database:
-  pre: python "${HOME}/${SCRIPT}" database_pre
-  override: python "${HOME}/${SCRIPT}" database_override
-  post: python "${HOME}/${SCRIPT}" database_post
+  pre:
+    - python "${HOME}/${SCRIPT}" database_pre
+  override:
+    - python "${HOME}/${SCRIPT}" database_override
+  post:
+    - python "${HOME}/${SCRIPT}" database_post
 test:
-  pre: python "${HOME}/${SCRIPT}" test_pre
-  override: python "${HOME}/${SCRIPT}" test_override
-  post: python "${HOME}/${SCRIPT}" test_post
+  pre:
+    - python "${HOME}/${SCRIPT}" test_pre
+  override:
+    - python "${HOME}/${SCRIPT}" test_override
+  post:
+    - python "${HOME}/${SCRIPT}" test_post
