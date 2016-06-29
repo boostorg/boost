@@ -1,16 +1,8 @@
-# Boost regression-testing Jamfile
-#  (C) Copyright David Abrahams 2002. Permission to copy, use, modify, sell and
-#  distribute this software is granted provided this copyright notice appears in
-#  all copies. This software is provided "as is" without express or implied
-#  warranty, and with no claim as to its suitability for any purpose.
-
-#  Status:
-#  - std::locale-support usage is commented out.
-#  Two test suite have different names.
-#  <no-warn> in config test is commented out.
-#  One of the smart_ptr test is run only from invocation dir in V1, and not
-#  run in V2 at all.
-
+# Copyright 2002. Dave Abrahams
+# Copyright 2016. Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
 
 project status
     : source-location $(BOOST_ROOT)
@@ -34,8 +26,11 @@ local rule run-tests ( root : tests * )
     local location = [ project.attribute $(__name__) location ] ;
     for local test in $(tests)
     {
-        local library = [ regex.split $(test) "/" ] ;
-        library = $(library[0]) ;
+        local library = [ path.parent $(test) ] ;
+        if $(library) = "."
+        {
+            library = $(test) ;
+        }
         if $(limit-tests)
         {
             if ! [ MATCH "^($(limit-tests))" : $(test) ]
@@ -85,10 +80,21 @@ local rule run-tests ( root : tests * )
 local libs-to-test = ;
 for local libdir in [ path.glob $(BOOST_ROOT) : libs/* ]
 {
-    local jamfiles = [ path.glob [ path.join $(libdir) test ] : [ modules.peek project : JAMFILE ] ] ;
+    local jamfile = [ modules.peek project : JAMFILE ] ;
+    local jamfiles = [ path.glob [ path.join $(libdir) test ] : $(jamfile) ] ;
     if $(jamfiles)
     {
         libs-to-test += $(libdir:B) ;
+    }
+    if [ path.glob $(libdir) : sublibs ]
+    {
+        jamfiles = [ path.glob $(libdir) : */test/$(jamfile) ] ;
+        for local sublib_jamfile in $(jamfiles)
+        {
+            local sublibdir = [ path.parent [ path.parent $(sublib_jamfile) ] ] ;
+            local sublib = $(libdir:B)/$(sublibdir:B) ;
+            libs-to-test += $(sublib) ;
+        }
     }
 }
 libs-to-test = [ SORT $(libs-to-test) ] ;
