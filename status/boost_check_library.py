@@ -12,6 +12,7 @@ import optparse
 import sys
 import glob
 import fnmatch
+import json
 
 class check_library():
     '''
@@ -83,7 +84,25 @@ class check_library():
                 'org-inc-one')
     
     def check_organization_meta(self):
-        if self.assert_dir_exists(os.path.join(self.library_dir,'meta'),
+        parent_dir = os.path.dirname(self.library_dir)
+        # If this is a sublibrary it's possible that the library information is the
+        # parent library's meta/libraries.json. Otherwise it's a regular library
+        # and structure.
+        if not self.test_dir_exists(os.path.join(self.library_dir,'meta')) \
+            and self.test_file_exists(os.path.join(parent_dir,'meta'),['libraries.json']):
+            if self.get_library_meta():
+                return
+            self.assert_file_exists(os.path.join(self.library_dir, 'meta'), ['libraries.json'],
+                '''
+                Did not find [project-root]/meta/libraries.json file, nor did
+                [super-project]/meta/libraries.json contain an entry for the sublibrary.
+                
+                The file is required for all libraries. And contains information about
+                the library used to generate website and documentation for the
+                Boost C++ Libraries collection.
+                ''',
+                'org-meta-libs')
+        elif self.assert_dir_exists(os.path.join(self.library_dir,'meta'),
             '''
             Missing [project-root]/meta directory. The [project-root]/meta directory
             is required for all libraries.
@@ -140,7 +159,8 @@ class check_library():
         self.library_dir = os.path.join(self.boost_root, self.library)
         self.error_count = 0;
         self.jamfile = self.jamfile.split(';')
-        self.library_name = os.path.basename(self.library)
+        self.library_name = self.library.split('/',1)[1] #os.path.basename(self.library)
+        self.library_key = self.library.split('/',1)[1]
 
         if self.debug:
             print ">>> cwd: %s"%(os.getcwd())
@@ -158,7 +178,32 @@ class check_library():
         for method in inspect.getmembers(self, predicate=inspect.ismethod):
             if method[0].startswith(action_base):
                 getattr(self,method[0])(*args, **kargs)
-    
+
+    def get_library_meta(self):
+        '''
+        Fetches the meta data for the current library. The data could be in
+        the superlib meta data file. If we can't find the data None is returned.
+        '''
+        parent_dir = os.path.dirname(self.library_dir)
+        if self.test_file_exists(os.path.join(self.library_dir,'meta'),['libraries.json']):
+            with open(os.path.join(self.library_dir,'meta','libraries.json'),'r') as f:
+                meta_data = json.load(f)
+                if isinstance(meta_data,list):
+                    for lib in meta_data:
+                        if lib['key'] == self.library_key:
+                            return lib
+                elif 'key' in meta_data and meta_data['key'] == self.library_key:
+                    return meta_data
+        if not self.test_dir_exists(os.path.join(self.library_dir,'meta')) \
+            and self.test_file_exists(os.path.join(parent_dir,'meta'),['libraries.json']):
+            with open(os.path.join(parent_dir,'meta','libraries.json'),'r') as f:
+                libraries_json = json.load(f)
+                if isinstance(libraries_json,list):
+                    for lib in libraries_json:
+                        if lib['key'] == self.library_key:
+                            return lib
+        return None
+
     def error(self, reason, message, key):
         self.error_count += 1
         print("%s: error: %s; %s <<%s>>"%(
