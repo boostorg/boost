@@ -6,64 +6,58 @@
 
 machine:
   environment:
-    SCRIPT_N[0]: ci_boost_status
-    SCRIPT_N[1]: ci_boost_library_check
-    SCRIPT_N[2]: ci_boost_release
-    SCRIPT_N[3]: ci_boost_release
-    EOL_N[0]: NA
-    EOL_N[1]: NA
-    EOL_N[2]: LF
-    EOL_N[3]: CRLF
+    SCRIPT_N: ci_boost_status ci_boost_library_check ci_boost_release ci_boost_release
+    EOL_N: NA NA LF CRLF
   pre:
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ${HOME}
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_library_check.py" -P ${HOME}
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -P ${HOME}
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -P ${HOME}
   post:
-    - python "${HOME}/${SCRIPT}.py" machine_post:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" machine_post
 checkout:
   post:
-    - python "${HOME}/${SCRIPT}.py" checkout_post:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" checkout_post
 dependencies:
   pre:
-    - python "${HOME}/${SCRIPT}.py" dependencies_pre:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" dependencies_pre
   override:
-    - python "${HOME}/${SCRIPT}.py" dependencies_override:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" dependencies_override
   post:
-    - python "${HOME}/${SCRIPT}.py" dependencies_post:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" dependencies_post
 database:
   pre:
-    - python "${HOME}/${SCRIPT}.py" database_pre:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" database_pre
   override:
-    - python "${HOME}/${SCRIPT}.py" database_override:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" database_override
   post:
-    - python "${HOME}/${SCRIPT}.py" database_post:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" database_post
 test:
   pre:
-    - python "${HOME}/${SCRIPT}.py" test_pre:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" test_pre
   override:
-    - python "${HOME}/${SCRIPT}.py" test_override:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" test_override
   post:
-    - python "${HOME}/${SCRIPT}.py" test_post:
-        environment:
-          SCRIPT: ${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - SCRIPT_N=(${SCRIPT_N})
+    - SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}
+    - python "${HOME}/${SCRIPT}.py" test_post
