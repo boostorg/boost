@@ -34,8 +34,11 @@ database:
     - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_post
 test:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_pre
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_pre:
+        parallel: true
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_override
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_override:
+        parallel: true
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_post
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_post:
+        parallel: true
