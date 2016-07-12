@@ -6,8 +6,14 @@
 
 machine:
   environment:
-    SCRIPT_N: (ci_boost_status ci_boost_library_check ci_boost_release ci_boost_release)
-    EOL_N: (NA NA LF CRLF)
+    SCRIPT_N[0]: ci_boost_status
+    SCRIPT_N[1]: ci_boost_library_check
+    SCRIPT_N[2]: ci_boost_release
+    SCRIPT_N[3]: ci_boost_release
+    EOL_N[0]: NA
+    EOL_N[1]: NA
+    EOL_N[2]: LF
+    EOL_N[3]: CRLF
   pre:
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ${HOME}
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_library_check.py" -P ${HOME}
