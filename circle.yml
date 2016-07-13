@@ -14,31 +14,31 @@ machine:
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -P ${HOME}
     - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -P ${HOME}
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" machine_post
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" machine_post
 checkout:
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" checkout_post
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" checkout_post
 dependencies:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_pre
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_pre
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_override
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_override
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_post
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_post
 database:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_pre
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_pre
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_override
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_override
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_post
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_post
 test:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_pre:
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_pre:
         parallel: true
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_override:
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_override:
         parallel: true
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_post:
+    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_post:
         parallel: true
