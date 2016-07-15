@@ -24,31 +24,31 @@ machine:
           chmod +x "${HOME}/script.sh"
         fi
   post:
-    - "${HOME}/script.sh" machine_post
+    - exec "${HOME}/script.sh" machine_post
 checkout:
   post:
-    - "${HOME}/script.sh" checkout_post
+    - exec "${HOME}/script.sh" checkout_post
 dependencies:
   pre:
-    - "${HOME}/script.sh" dependencies_pre
+    - exec "${HOME}/script.sh" dependencies_pre
   override:
-    - "${HOME}/script.sh" dependencies_override
+    - exec "${HOME}/script.sh" dependencies_override
   post:
-    - "${HOME}/script.sh" dependencies_post
+    - exec "${HOME}/script.sh" dependencies_post
 database:
   pre:
-    - "${HOME}/script.sh" database_pre
+    - exec "${HOME}/script.sh" database_pre
   override:
-    - "${HOME}/script.sh" database_override
+    - exec "${HOME}/script.sh" database_override
   post:
-    - "${HOME}/script.sh" database_post
+    - exec "${HOME}/script.sh" database_post
 test:
   pre:
-    - "${HOME}/script.sh" test_pre:
+    - exec "${HOME}/script.sh" test_pre:
         parallel: true
   override:
-    - "${HOME}/script.sh" test_override:
+    - exec "${HOME}/script.sh" test_override:
         parallel: true
   post:
-    - "${HOME}/script.sh" test_post:
+    - exec "${HOME}/script.sh" test_post:
         parallel: true
