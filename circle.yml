@@ -21,33 +21,34 @@ machine:
           echo 'export EOL_N=(${EOL_N})' >> "${HOME}/script.sh"
           echo 'export EOL=${EOL_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
           echo 'python "${HOME}/${SCRIPT}" "$@"' >> "${HOME}/script.sh"
+          chmod +x "${HOME}/script.sh"
         fi
   post:
-    - exec "${HOME}/script.sh" machine_post
+    - "${HOME}/script.sh" machine_post
 checkout:
   post:
-    - exec "${HOME}/script.sh" checkout_post
+    - "${HOME}/script.sh" checkout_post
 dependencies:
   pre:
-    - exec "${HOME}/script.sh" dependencies_pre
+    - "${HOME}/script.sh" dependencies_pre
   override:
-    - exec "${HOME}/script.sh" dependencies_override
+    - "${HOME}/script.sh" dependencies_override
   post:
-    - exec "${HOME}/script.sh" dependencies_post
+    - "${HOME}/script.sh" dependencies_post
 database:
   pre:
-    - exec "${HOME}/script.sh" database_pre
+    - "${HOME}/script.sh" database_pre
   override:
-    - exec "${HOME}/script.sh" database_override
+    - "${HOME}/script.sh" database_override
   post:
-    - exec "${HOME}/script.sh" database_post
+    - "${HOME}/script.sh" database_post
 test:
   pre:
-    - exec "${HOME}/script.sh" test_pre:
+    - "${HOME}/script.sh" test_pre:
         parallel: true
   override:
-    - exec "${HOME}/script.sh" test_override:
+    - "${HOME}/script.sh" test_override:
         parallel: true
   post:
-    - exec "${HOME}/script.sh" test_post:
+    - "${HOME}/script.sh" test_post:
         parallel: true
