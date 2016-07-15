@@ -10,19 +10,19 @@ machine:
     EOL_N: NA NA LF CRLF
   pre:
     - |
+        df
+        ls -laF "${HOME}"
         wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ${HOME}
         wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_library_check.py" -P ${HOME}
         wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -P ${HOME}
         wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -P ${HOME}
-        if [ ${CIRCLE_NODE_INDEX} -eq 0 ]; then
-          echo '#!/bin/sh' > ${HOME}/script.sh
-          echo 'export SCRIPT_N=(${SCRIPT_N})' >> "${HOME}/script.sh"
-          echo 'export SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
-          echo 'export EOL_N=(${EOL_N})' >> "${HOME}/script.sh"
-          echo 'export EOL=${EOL_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
-          echo 'python "${HOME}/${SCRIPT}" "$@"' >> "${HOME}/script.sh"
-          chmod +x "${HOME}/script.sh"
-        fi
+        echo '#!/bin/sh' > ${HOME}/script.sh
+        echo 'export SCRIPT_N=(${SCRIPT_N})' >> "${HOME}/script.sh"
+        echo 'export SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
+        echo 'export EOL_N=(${EOL_N})' >> "${HOME}/script.sh"
+        echo 'export EOL=${EOL_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
+        echo 'python "${HOME}/${SCRIPT}" "$@"' >> "${HOME}/script.sh"
+        chmod +x "${HOME}/script.sh"
   post:
     - exec "${HOME}/script.sh" machine_post
 checkout:
