@@ -9,36 +9,45 @@ machine:
     SCRIPT_N: ci_boost_status ci_boost_library_check ci_boost_release ci_boost_release
     EOL_N: NA NA LF CRLF
   pre:
-    - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ${HOME}
-    - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_library_check.py" -P ${HOME}
-    - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -P ${HOME}
-    - wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -P ${HOME}
+    - |
+        wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ${HOME}
+        wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_library_check.py" -P ${HOME}
+        wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_release.py" -P ${HOME}
+        wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_status.py" -P ${HOME}
+        if [ ${CIRCLE_NODE_INDEX} -eq 0 ]; then
+          echo '#!/bin/sh' > ${HOME}/script.sh
+          echo 'export SCRIPT_N=(${SCRIPT_N})' >> "${HOME}/script.sh"
+          echo 'export SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
+          echo 'export EOL_N=(${EOL_N})' >> "${HOME}/script.sh"
+          echo 'export EOL=${EOL_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
+          echo 'python "${HOME}/${SCRIPT}" "$@"' >> "${HOME}/script.sh"
+        fi
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" machine_post
+    - exec "${HOME}/script.sh" machine_post
 checkout:
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" checkout_post
+    - exec "${HOME}/script.sh" checkout_post
 dependencies:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_pre
+    - exec "${HOME}/script.sh" dependencies_pre
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_override
+    - exec "${HOME}/script.sh" dependencies_override
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" dependencies_post
+    - exec "${HOME}/script.sh" dependencies_post
 database:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_pre
+    - exec "${HOME}/script.sh" database_pre
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_override
+    - exec "${HOME}/script.sh" database_override
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" database_post
+    - exec "${HOME}/script.sh" database_post
 test:
   pre:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_pre:
+    - exec "${HOME}/script.sh" test_pre:
         parallel: true
   override:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_override:
+    - exec "${HOME}/script.sh" test_override:
         parallel: true
   post:
-    - SCRIPT_N=(${SCRIPT_N}) ; SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]} ; EOL_N=(${EOL_N}) ; EOL=${EOL_N[$CIRCLE_NODE_INDEX]} ; python "${HOME}/${SCRIPT}.py" test_post:
+    - exec "${HOME}/script.sh" test_post:
         parallel: true
