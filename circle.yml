@@ -21,7 +21,7 @@ machine:
         echo 'export SCRIPT=${SCRIPT_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
         echo 'export EOL_N=(${EOL_N})' >> "${HOME}/script.sh"
         echo 'export EOL=${EOL_N[$CIRCLE_NODE_INDEX]}' >> "${HOME}/script.sh"
-        echo 'python "${HOME}/${SCRIPT}" "$@"' >> "${HOME}/script.sh"
+        echo 'python "${HOME}/${SCRIPT}.py" "$@"' >> "${HOME}/script.sh"
         chmod +x "${HOME}/script.sh"
   post:
     - exec "${HOME}/script.sh" machine_post
