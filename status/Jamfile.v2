@@ -15,6 +15,7 @@ import project ;
 import regex ;
 import modules ;
 import path ;
+import feature ;
 
 local check-libs-only = [ MATCH "^--(check-libs-only)" : [ modules.peek : ARGV ] ] ;
 local check-libs-only-targets = ;
@@ -24,6 +25,9 @@ local rule run-tests ( root : tests * )
 {
     local limit-tests = [ MATCH "^--limit-tests=(.*)" : [ modules.peek : ARGV ] ] ;
     local location = [ project.attribute $(__name__) location ] ;
+    # We only run the check library test when host-os == target-os.
+    # Hence we need that information.
+    local host-os-default = [ feature.defaults <host-os> ] ;
     for local test in $(tests)
     {
         local library = [ path.parent $(test) ] ;
@@ -47,6 +51,7 @@ local rule run-tests ( root : tests * )
                 local test_module = [ project.find ../$(root)/$(test) : $(location) ] ;
                 modules.poke $(test_module) : __LIBRARY__ : $(root)/$(library) ;
                 modules.poke $(test_module) : __JAMFILE__ : [ modules.peek project : JAMFILE ] ;
+                modules.poke $(test_module) : __REQUIRE__ : <target-os>$(host-os-default:G=) ;
                 project.push-current [ project.target $(test_module) ] ;
                 module $(test_module)
                 {
@@ -59,6 +64,7 @@ local rule run-tests ( root : tests * )
                         <testing.arg>--library=$(__LIBRARY__)
                         <testing.arg>--jamfile=\"$(__JAMFILE__:J=;)\"
                         <testing.arg>organization
+                        $(__REQUIRE__)
                         :
                         __boost_check_library__ ;
                 }
