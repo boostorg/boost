@@ -23,8 +23,6 @@ import path ;
 
 path-constant BOOST_DOC : . ;
 
-#alias asio : ../libs/asio/doc//asio/<xsl:param>boost.libraries=../../libs/libraries.htm ;
-
 if "--release-build" in [ modules.peek : ARGV ]
 {
     import project ;
@@ -168,6 +166,7 @@ xinclude tools :
     ../tools/boostbook/doc/boostbook.xml
     ../tools/build/doc/src/userman.xml
     ;
+explicit tools ;
 
 boostbook doc
     :
@@ -207,7 +206,6 @@ boostbook doc
     <dependency>callouts
     <xsl:path>$(BOOST_DOC)
     ;
-explicit doc ;
 
 install images : [ glob src/images/*.png ] : <location>html/images ;
 explicit images ;
