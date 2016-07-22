@@ -23,6 +23,56 @@ import path ;
 
 path-constant BOOST_DOC : . ;
 
+local BOOST_DOC_LIBS =
+    ../libs/accumulators/doc//accumulators
+    ../libs/algorithm/string/doc/string_algo.xml
+    ../libs/align/doc//align
+    ../libs/any/doc/any.xml
+    ../libs/array/doc/array.xml
+    ../libs/atomic/doc//atomic
+    ../libs/chrono/doc//chrono
+    ../libs/circular_buffer/doc//standalone/<format>docbook
+    ../libs/container/doc//standalone/<format>docbook
+    ../libs/crc/doc//crc
+    ../libs/date_time/xmldoc/date_time.xml
+    ../libs/dll/doc//dll-doc/<format>docbook
+    ../libs/foreach/doc//foreach
+    ../libs/function/doc/function.xml
+    ../libs/functional/hash/doc//hash
+    ../libs/heap/doc//heap
+    ../libs/interprocess/doc//standalone/<format>docbook
+    ../libs/intrusive/doc//standalone/<format>docbook
+    ../libs/lambda/doc/lambda.xml
+    ../libs/lexical_cast/doc//lexical_cast
+    ../libs/lockfree/doc//lockfree
+    ../libs/logic/doc//tribool/<format>docbook
+    ../libs/metaparse/doc//metaparse
+    ../libs/move/doc//move
+    ../libs/multi_array/doc/xml/bbref.xml
+    ../libs/mpi/doc//mpi
+    ../libs/predef/doc//boostdoc
+    ../libs/program_options/doc/program_options.xml
+    ../libs/property_tree/doc//property_tree
+    ../libs/proto/doc//proto
+    #../libs/proto/doc//protodoc.xml
+    ../libs/random/doc//random
+    ../libs/ratio/doc//ratio
+    ../libs/signals/doc/signals.xml
+    ../libs/signals2/doc/signals.xml
+    #../libs/spirit/doc//spirit
+    ../libs/static_assert/doc//static_assert
+    ../libs/thread/doc//thread
+    ../libs/tr1/doc//tr1
+    ../libs/type_erasure/doc//type_erasure
+    ../libs/type_index/doc//type_index
+    #../libs/type_traits/doc//type_traits
+    ../libs/typeof/doc//typeof
+    ../libs/units/doc//units
+    ../libs/variant/doc/variant.xml
+    ../libs/unordered/doc//unordered
+    ../libs/xpressive/doc//xpressive
+    ;
+
 if "--release-build" in [ modules.peek : ARGV ]
 {
     import project ;
@@ -31,7 +81,12 @@ if "--release-build" in [ modules.peek : ARGV ]
         : [ modules.peek project : JAMFILE ] ] ;
     for local lib-doc in $(lib-docs:D)
     {
-        build-project [ path.relative-to $(BOOST_DOC) $(lib-doc) ] ;
+        local lib-doc-project = [ path.relative-to $(BOOST_DOC) $(lib-doc) ] ;
+        local boost-doc-lib = [ MATCH "^($(lib-doc-project))" : $(BOOST_DOC_LIBS) ] ;
+        if ! $(boost-doc-lib)
+        {
+            build-project $(lib-doc-project) ;
+        }
     }
 }
 
@@ -110,53 +165,7 @@ rule xinclude ( name : sources * : requirements * : default-build * : usage-requ
 }
 
 xinclude libraries :
-    ../libs/accumulators/doc//accumulators
-    ../libs/algorithm/string/doc/string_algo.xml
-    ../libs/align/doc//align
-    ../libs/any/doc/any.xml
-    ../libs/array/doc/array.xml
-    ../libs/atomic/doc//atomic
-    ../libs/chrono/doc//chrono
-    ../libs/circular_buffer/doc//standalone/<format>docbook
-    ../libs/container/doc//standalone/<format>docbook
-    ../libs/crc/doc//crc
-    ../libs/date_time/xmldoc/date_time.xml
-    ../libs/dll/doc//dll-doc/<format>docbook
-    ../libs/foreach/doc//foreach
-    ../libs/function/doc/function.xml
-    ../libs/functional/hash/doc//hash
-    ../libs/heap/doc//heap
-    ../libs/interprocess/doc//standalone/<format>docbook
-    ../libs/intrusive/doc//standalone/<format>docbook
-    ../libs/lambda/doc/lambda.xml
-    ../libs/lexical_cast/doc//lexical_cast
-    ../libs/lockfree/doc//lockfree
-    ../libs/logic/doc//tribool/<format>docbook
-    ../libs/metaparse/doc//metaparse
-    ../libs/move/doc//move
-    ../libs/multi_array/doc/xml/bbref.xml
-    ../libs/mpi/doc//mpi
-    ../libs/predef/doc//boostdoc
-    ../libs/program_options/doc/program_options.xml
-    ../libs/property_tree/doc//property_tree
-    ../libs/proto/doc//proto
-    #../libs/proto/doc//protodoc.xml
-    ../libs/random/doc//random
-    ../libs/ratio/doc//ratio
-    ../libs/signals/doc/signals.xml
-    ../libs/signals2/doc/signals.xml
-    #../libs/spirit/doc//spirit
-    ../libs/static_assert/doc//static_assert
-    ../libs/thread/doc//thread
-    ../libs/tr1/doc//tr1
-    ../libs/type_erasure/doc//type_erasure
-    ../libs/type_index/doc//type_index
-    #../libs/type_traits/doc//type_traits
-    ../libs/typeof/doc//typeof
-    ../libs/units/doc//units
-    ../libs/variant/doc/variant.xml
-    ../libs/unordered/doc//unordered
-    ../libs/xpressive/doc//xpressive
+    $(BOOST_DOC_LIBS)
     ;
 explicit libraries ;
 
