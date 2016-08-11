@@ -4,6 +4,45 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+# This build project manages running the tests for all of Boost.
+# The tests to run are discovered from the structure of the libs tree.
+#
+# Usage:
+#
+# > cd boost-root/status
+# > b2 [--check-libs-only] [--limit-tests=/lib-name-regex../]* [--exclude-tests=/lib-name-regex../]*
+#
+# --check-libs-only
+#   Only runs the library conformance tests.
+#
+# --limit-tests, or --include-tests
+#   Only runs the tests for whom the name matches the regex.
+#   The value for the argument is a comma separated list of simple
+#   regular expressions to check against the names of all the libraries.
+#   If any one regex matches the matching library is tested.
+#
+# --exclude-tests
+#   Only runs the tests for whom the names does not match the regex.
+#   The argument is the same as for the limit-tests option except
+#   that the result is that libraries for whom the name matches
+#   are not tested.
+#
+# The test filters are evaluated in the order given in the command
+# and can be used to selectively narrow or widen the set of libraries
+# tested.
+#
+# Examples:
+#
+# > b2 --check-libs-only --include-tests=predef,config
+# 
+# Runs the library conformance tests for the predef and config
+# libraries only.
+#
+# > b2 --include-tests=[n-t] --exclude-tests=rat --limit-tests=[v-w]
+#
+# Runs all the tests for library names that begin with "n" through "t",
+# or "v" through "w", but not libraries that start with "rat".
+
 project status
     : source-location $(BOOST_ROOT)
     : requirements <hardcode-dll-paths>true
@@ -16,6 +55,7 @@ import regex ;
 import modules ;
 import path ;
 import feature ;
+import numbers ;
 
 local check-libs-only = [ MATCH "^--(check-libs-only)" : [ modules.peek : ARGV ] ] ;
 local check-libs-only-targets = ;
@@ -23,7 +63,25 @@ local libraries = ;
 
 local rule run-tests ( root : tests * )
 {
-    local limit-tests = [ MATCH "^--limit-tests=(.*)" : [ modules.peek : ARGV ] ] ;
+    local filter-args = [ MATCH "^--(limit|exclude|include)-tests=(.*)" : [ modules.peek : ARGV ] ] ;
+    local filter-tests ;
+    while $(filter-args)
+    {
+        local type = $(filter-args[1]) ;
+        for local test in [ regex.split-list $(filter-args[2]) : "[,]" ]
+        {
+            filter-tests += $(type) $(test) ;
+        }
+        filter-args = $(filter-args[3-]) ;
+    }
+    # If any filter is given we make the initial set of tested libraries we:
+    # (a) make it empty if the first filter is an include.
+    # (b) make it full otherwise.
+    local include-default = y ;
+    if $(filter-tests[1]) && ( $(filter-tests[1]) in limit include )
+    {
+        include-default = n ;
+    }
     local location = [ project.attribute $(__name__) location ] ;
     # We only run the check library test when host-os == target-os.
     # Hence we need that information.
@@ -35,16 +93,22 @@ local rule run-tests ( root : tests * )
         {
             library = $(test) ;
         }
-        if $(limit-tests)
+        local include-test = $(include-default) ;
+        local t = 1 ;
+        local f = 2 ;
+        while $(filter-tests[$(f)])
         {
-            if ! [ MATCH "^($(limit-tests))" : $(test) ]
+            if [ MATCH "^($(filter-tests[$(f)]))" : $(test) ]
             {
-                library = ;
+                if $(filter-tests[$(t)]) = exclude { include-test = n ; }
+                else { include-test = y ; }
             }
+            t = [ CALC $(t) + 2 ] ;
+            f = [ CALC $(f) + 2 ] ;
         }
-        if $(library)
+        use-project /boost/$(test) : ../$(root)/$(test) ;
+        if $(include-test) = y
         {
-            use-project /boost/$(test) : ../$(root)/$(test) ;
             if $(root) = libs && ( ! ( $(library) in $(libraries) ) )
             {
                 libraries += $(library) ;
@@ -75,10 +139,6 @@ local rule run-tests ( root : tests * )
             {
                 build-project ../$(root)/$(test) ;
             }
-        }
-        else
-        {
-            use-project /boost/$(test) : ../$(root)/$(test) ;
         }
     }
 }
