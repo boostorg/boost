@@ -20,97 +20,105 @@ import type ;
 import generators ;
 import sequence ;
 import path ;
+import "class" : is-a ;
 
 path-constant BOOST_DOC : . ;
 
-local BOOST_DOC_LIBS =
-    ../libs/accumulators/doc//accumulators
-    ../libs/algorithm/string/doc/string_algo.xml
-    ../libs/align/doc//align
-    ../libs/any/doc/any.xml
-    ../libs/array/doc/array.xml
-    ../libs/atomic/doc//atomic
-    ../libs/chrono/doc//chrono
-    ../libs/circular_buffer/doc//standalone/<format>docbook
-    ../libs/container/doc//standalone/<format>docbook
-    ../libs/crc/doc//crc
-    ../libs/date_time/xmldoc/date_time.xml
-    ../libs/dll/doc//dll-doc/<format>docbook
-    ../libs/foreach/doc//foreach
-    ../libs/function/doc/function.xml
-    ../libs/functional/hash/doc//hash
-    ../libs/heap/doc//heap
-    ../libs/interprocess/doc//standalone/<format>docbook
-    ../libs/intrusive/doc//standalone/<format>docbook
-    ../libs/lambda/doc/lambda.xml
-    ../libs/lexical_cast/doc//lexical_cast
-    ../libs/lockfree/doc//lockfree
-    ../libs/logic/doc//tribool/<format>docbook
-    ../libs/metaparse/doc//metaparse
-    ../libs/move/doc//move
-    ../libs/multi_array/doc/xml/bbref.xml
-    ../libs/mpi/doc//mpi
-    ../libs/predef/doc//boostdoc
-    ../libs/program_options/doc/program_options.xml
-    ../libs/property_tree/doc//property_tree
-    ../libs/proto/doc//proto
-    #../libs/proto/doc//protodoc.xml
-    ../libs/random/doc//random
-    ../libs/ratio/doc//ratio
-    ../libs/signals/doc/signals.xml
-    ../libs/signals2/doc/signals.xml
-    #../libs/spirit/doc//spirit
-    ../libs/static_assert/doc//static_assert
-    ../libs/thread/doc//thread
-    ../libs/tr1/doc//tr1
-    ../libs/type_erasure/doc//type_erasure
-    ../libs/type_index/doc//type_index
-    #../libs/type_traits/doc//type_traits
-    ../libs/typeof/doc//typeof
-    ../libs/units/doc//units
-    ../libs/variant/doc/variant.xml
-    ../libs/unordered/doc//unordered
-    ../libs/xpressive/doc//xpressive
-    ;
+local lib-docs = [ path.glob [ path.glob $(BOOST_DOC)/../libs : */doc ]
+    : [ modules.peek project : JAMFILE ] ] ;
 
-if "--release-build" in [ modules.peek : ARGV ]
+local rule find-target-of-class-or-type ( root-target : klass ? : type ? )
 {
-    import project ;
-    import path ;
-    local lib-docs = [ path.glob [ path.glob $(BOOST_DOC)/../libs : */doc ]
-        : [ modules.peek project : JAMFILE ] ] ;
-    for local lib-doc in $(lib-docs:D)
+    local result ;
+    if ! $(result) && $(klass) && [ is-a $(root-target) : $(klass) ]
     {
-        local lib-doc-project = [ path.relative-to $(BOOST_DOC) $(lib-doc) ] ;
-        local boost-doc-lib = [ MATCH "^($(lib-doc-project))" : $(BOOST_DOC_LIBS) ] ;
-        if ! $(boost-doc-lib)
+        result ?= $(root-target) $(klass) ;
+    }
+    if ! $(result) && $(type) && $(type:U) = [ modules.peek $(root-target) : self.type ]
+    {
+        result ?= $(root-target) $(type:U) ;
+    }
+    local alternatives = [ modules.peek $(root-target) : self.alternatives ] ;
+    if ! $(result)
+    {
+        for local alternative in $(alternatives)
         {
-            build-project $(lib-doc-project) ;
+            if $(result) { break ; }
+            result ?= [ find-target-of-class-or-type $(alternative) : $(klass) : $(type) ] ;
         }
+    }
+    if ! $(result)
+    {
+        for local alternative in $(alternatives)
+        {
+            if $(result) { break ; }
+            local sources = [ modules.peek $(alternative) : self.sources ] ;
+            for local source in [ $(alternative).sources ]
+            {
+                if $(result) { break ; }
+                result ?= [ find-target-of-class-or-type $(source) : $(klass) : $(type) ] ;
+            }
+        }
+    }
+    return $(result) ;
+}
+
+local rule docbook-target-spec ( main-target )
+{
+    local spec ;
+    local doc-sub-target
+        = [ find-target-of-class-or-type $(main-target) : boostbook-target-class : XML ] ;
+    if $(doc-sub-target)
+    {
+        #ECHO *** $(main-target) ;
+        #ECHO " ::" [ $(main-target).full-name ] ;
+        #ECHO " ::" $(doc-sub-target) :: [ $(doc-sub-target[0]).full-name ] ;
+        local full-name = [ $(doc-sub-target[0]).full-name ] ;
+        local target-path = $(full-name:D) ;
+        local target-name = $(full-name:B) ;
+        local this-path = [ path.root [ project.attribute $(__name__) location ] [ path.pwd ] ] ;
+        target-path = [ path.relative-to $(this-path) $(target-path) ] ;
+        #ECHO " ::" $(target-path) :: $(target-name) ;
+        spec = $(target-path)//$(target-name) ;
+    }
+    return $(spec) ;
+}
+
+local lib-doc-boostdoc-refs ;
+local lib-doc-boostrelease-refs ;
+
+local this-path = [ path.root [ project.attribute $(__name__) location ] [ path.pwd ] ] ;
+for local lib-doc in $(lib-docs)
+{
+    #ECHO === $(lib-doc) ... ;
+    local doc-project = $(lib-doc:D) ;
+    local doc-module = [ project.find $(doc-project)
+        : [ project.attribute $(__name__) location ] ] ;
+    local doc-target = [ project.target $(doc-module) ] ;
+    $(doc-target).build-main-targets ;
+    local boostrelease-target = [ $(doc-target).main-target boostrelease ] ;
+    if $(boostrelease-target)
+    {
+        local full-name = [ $(boostrelease-target).full-name ] ;
+        local target-path = [ path.relative-to $(this-path) $(full-name:D) ] ;
+        lib-doc-boostrelease-refs += $(target-path)//boostrelease ;
+        #ECHO "  ::" $(target-path)//boostrelease ;
+    }
+    local boostdoc-target = [ $(doc-target).main-target boostdoc ] ;
+    if $(boostdoc-target)
+    {
+        local full-name = [ $(boostdoc-target).full-name ] ;
+        local target-path = [ path.relative-to $(this-path) $(full-name:D) ] ;
+        lib-doc-boostdoc-refs += $(target-path)//boostdoc ;
+        #ECHO "  ::" $(target-path)//boostdoc ;
     }
 }
 
-#
-# Note that when refering to libraries that use auto-index we must process all the way to
-# docbook before including here.  We must also ensure that auto-index uses it's own index
-# generation, otherwise we get one big index that's repeated in each library.  Xslt's index
-# generation is also so slow that it's impractical for a build this large (takes ~ 9 hrs
-# to build with just 3 indexed libraries).  Hence we refer to these libraries as for example:
-#
-# ../libs/interprocess/doc//standalone/<format>docbook
-#
-# Within each library that uses this, make sure that the boostbook target contains
-#
-# <format>docbook:<auto-index-internal>on
-#
-# And if boost.root is set, restrict it to local html builds using:
-#
-# <format>html:<xsl:param>boost.root=../../../..
-# <format>html:<xsl:param>boost.libraries=../../../../libs/libraries.htm
-#
-# Finally, in boost.xml we xi:include interproces.auto_index.docbook which is the final
-# post-index generation docbook, rather than interprocess.xml which is the pre-indexed boostbook.
-#
+# Build non-integrated library docs for release.
+if "--release-build" in [ modules.peek : ARGV ]
+{
+    alias release-build : $(lib-doc-boostrelease-refs) ;
+}
 
 local rule component-order ( x y )
 {
@@ -147,7 +155,7 @@ rule xinclude-generator ( target : sources * : properties * )
         "<xml xmlns:xi=\"http://www.w3.org/2003/XInclude\">"
         $(includes)
         "</xml>"
-        ;
+        : overwrite ;
 }
 type.register XINCLUDE_XML : xinclude : XML ;
 generators.register-composing $(__name__).xinclude-generator : XML : XINCLUDE_XML ;
@@ -165,7 +173,7 @@ rule xinclude ( name : sources * : requirements * : default-build * : usage-requ
 }
 
 xinclude libraries :
-    $(BOOST_DOC_LIBS)
+    $(lib-doc-boostdoc-refs)
     ;
 explicit libraries ;
 
@@ -181,35 +189,11 @@ boostbook doc
     :
     src/boost.xml
     :
-    <dependency>libraries
+    <use>$(lib-doc-boostdoc-refs)
+    <use>libraries
     <implicit-dependency>libraries
-    <dependency>tools
+    <use>tools
     <implicit-dependency>tools
-    
-    ## Build the various generated docs (Doxygen and QuickBook)...
-    ## TODO: These should all eventually be moved to the respective library doc targets.
-
-    <dependency>../libs/accumulators/doc//accdoc.xml
-    <dependency>../libs/accumulators/doc//statsdoc.xml
-    <dependency>../libs/accumulators/doc//opdoc.xml
-    <dependency>../libs/crc/doc//autodoc.xml
-    <dependency>../libs/program_options/doc//autodoc.xml
-    <dependency>../libs/algorithm/string/doc//autodoc.xml
-    <dependency>../libs/mpi/doc//mpi_autodoc.xml
-    <dependency>../libs/property_tree/doc//autodoc.xml
-    <dependency>../libs/xpressive/doc//autodoc.xml
-    <dependency>../libs/date_time/xmldoc//date_time_autodoc.xml
-    <dependency>../libs/date_time/xmldoc//gregorian_autodoc.xml
-    <dependency>../libs/date_time/xmldoc//posix_time_autodoc.xml
-    <dependency>../libs/date_time/xmldoc//local_time_autodoc.xml
-    <dependency>../libs/move/doc//autodoc.xml
-    <dependency>../libs/signals2/doc//hello_world_def_code_snippet.xml
-    <dependency>../libs/heap/doc//autodoc.xml
-    <dependency>../libs/lockfree/doc//autodoc.xml
-
-    ## Add path references to generated docs...
-
-    <implicit-dependency>../libs/signals2/doc//hello_world_def_code_snippet.xml
 
     <dependency>images
     <dependency>callouts
