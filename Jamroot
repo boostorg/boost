@@ -283,6 +283,22 @@ rule boost-install ( libraries * )
     }
 }
 
+# Creates a library target, adding autolink support and also creates
+# stage and install targets via boost-install, above.
+rule boost-lib ( name : sources * : requirements * : default-build * : usage-requirements * )
+{
+    name = boost_$(name) ;
+    autolink = <link>shared:<define>BOOST_$(name:U)_DYN_LINK=1 ;
+    lib $(name)
+        : $(sources)
+        : $(requirements) $(autolink)
+        : $(default-build)
+        : $(usage-requirements) $(autolink)
+        ;
+    boost-install $(name) ;
+}
+
+
 headers =
     # The .SUNWCCh files are present in tr1 include directory and have to be
     # installed (see http://lists.boost.org/Archives/boost/2007/05/121430.php).
