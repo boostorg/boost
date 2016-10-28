@@ -163,6 +163,19 @@ rule tag ( name : type ? : property-set )
     }
 }
 
+# Specialized tag function to use for libraries linking to Python.
+# Appends value of --python-buildid if provided.
+rule python-tag ( name : type ? : property-set )
+{
+    local result = $(name) ;
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB && $(PYTHON_ID)
+    {
+        result = $(result)-$(PYTHON_ID) ;
+    }
+
+    # forward to the boost tagging rule
+    return  [ tag $(result) : $(type) : $(property-set) ] ;
+}
 
 ################################################################################
 #
