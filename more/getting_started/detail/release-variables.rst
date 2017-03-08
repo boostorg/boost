@@ -5,7 +5,7 @@
 .. This file contains all the definitions that need to be updated
 .. for each new release of Boost.
 
-.. |boost-version-number| replace:: 1.64.0
+.. |boost-version-number| replace:: 64
 .. |boost_ver| replace:: ``boost_1_64_0``
 .. |boost_ver-bold| replace:: **boost_1_64_0**
 
