@@ -73,5 +73,5 @@ following elements:
 
 .. .. _Boost.Build toolset names: toolset-name_
 
-__ ../../libs/python/doc/building.html#python-debugging-builds
+__ ../../libs/python/doc/html/building/python_debugging_builds.html
 
