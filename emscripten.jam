@@ -1,0 +1,143 @@
+# Boost.Build support for Emscipten.
+
+import generators ;
+import type ;
+import toolset ;
+import feature ;
+import common ;
+import errors ;
+
+if [ MATCH (--debug-configuration) : [ modules.peek : ARGV ] ]
+{
+  .debug-configuration = true ;
+}
+
+# add an emscripten toolset
+feature.extend toolset : emscripten ;
+
+# extend the target-os list to include emscripten
+feature.extend target-os : emscripten ;
+# make emscripten the default target-os when compiling with the emscripten toolset
+feature.set-default target-os : emscripten ;
+
+# initialize the emscripten toolset
+rule init ( version ? : command * : options * )
+{  
+  root = ;
+  if $(command)
+  {    
+    root = $(command:D) ;
+  }
+  
+  local condition = [ common.check-init-parameters emscripten : version $(version) ] ;
+
+  common.handle-options emscripten : $(condition) : $(command) : $(options) ;
+  
+  # @todo this seems to be the right way, but this is a list somehow
+  toolset.add-requirements <toolset>emscripten:<testing.launcher>node ;
+  toolset.flags emscripten.compile STDHDRS $(condition) : $(root)/system/include ;
+  toolset.flags emscripten.link STDLIBPATH $(condition) : $(root)/system/lib ;
+  toolset.flags emscripten AR $(condition) : $(root)/emar.bat ;  
+  toolset.flags emscripten RANLIB $(condition) : $(root)/emranlib.bat ;
+}
+
+type.set-generated-target-suffix EXE : <toolset>emscripten : js ;
+#type.set-generated-target-suffix STATIC_LIB : <toolset>emscripten : bc ;
+#type.set-generated-target-suffix SHARED_LIB : <toolset>emscripten : bc ;
+#type.set-generated-target-suffix OBJ : <toolset>emscripten : bc ;
+
+generators.register-linker emscripten.link : OBJ STATIC_LIB : EXE : <toolset>emscripten ;
+
+generators.register-archiver emscripten.archive : OBJ : STATIC_LIB : <toolset>emscripten ;
+
+generators.register-c-compiler emscripten.compile.c++.preprocess : CPP : PREPROCESSED_CPP : <toolset>emscripten ;
+generators.register-c-compiler emscripten.compile.c.preprocess   : C   : PREPROCESSED_C   : <toolset>emscripten ;
+generators.register-c-compiler emscripten.compile.c++ : CPP : OBJ : <toolset>emscripten ;
+generators.register-c-compiler emscripten.compile.c : C : OBJ : <toolset>emscripten ;
+
+# Declare flags
+
+# align build flags with ACAD CMake build
+toolset.flags emscripten.compile OPTIONS <optimization>off   : -std=c++11 -stdlib=libc++ -fstrict-aliasing -O2 ;
+toolset.flags emscripten.compile OPTIONS <optimization>speed : -std=c++11 -stdlib=libc++ -fstrict-aliasing -O3 ;
+toolset.flags emscripten.compile OPTIONS <optimization>space : -std=c++11 -stdlib=libc++ -fstrict-aliasing -Os ;
+
+toolset.flags emscripten.compile OPTIONS <inlining>off  : -fno-inline ;
+toolset.flags emscripten.compile OPTIONS <inlining>on   : -Wno-inline ;
+toolset.flags emscripten.compile OPTIONS <inlining>full : -Wno-inline ;
+
+toolset.flags emscripten.compile OPTIONS <warnings>off : -w ;
+toolset.flags emscripten.compile OPTIONS <warnings>on  : -Wall -Wno-backslash-newline-escape -Wno-warn-absolute-paths -Wno-unused-function -Wno-overloaded-virtual ;
+toolset.flags emscripten.compile OPTIONS <warnings>all : -Wall -pedantic ;
+toolset.flags emscripten.compile OPTIONS <warnings-as-errors>on : -Werror ;
+
+toolset.flags emscripten.compile OPTIONS <debug-symbols>on : -g ;
+toolset.flags emscripten.compile OPTIONS <profiling>on : -pg ;
+
+toolset.flags emscripten.compile.c++ OPTIONS <rtti>off : -fno-rtti ;
+toolset.flags emscripten.compile.c++ OPTIONS <exception-handling>off : -fno-exceptions ;
+
+toolset.flags emscripten.compile USER_OPTIONS <cflags> ;
+toolset.flags emscripten.compile.c++ USER_OPTIONS <cxxflags> ;
+toolset.flags emscripten.compile DEFINES <define> ;
+toolset.flags emscripten.compile INCLUDES <include> ;
+toolset.flags emscripten.compile.c++ TEMPLATE_DEPTH <c++-template-depth> ;
+toolset.flags emscripten.compile.fortran USER_OPTIONS <fflags> ;
+
+toolset.flags emscripten.link DEFAULTS : -Wno-warn-absolute-paths ;
+
+toolset.flags emscripten.link LIBRARY_PATH <library-path> ;
+toolset.flags emscripten.link FINDLIBS_ST <find-static-library> ;
+toolset.flags emscripten.link FINDLIBS_SA <find-shared-library> ;
+toolset.flags emscripten.link LIBRARIES <library-file> ;
+
+toolset.flags emscripten.link OPTIONS <linkflags> ;
+
+toolset.flags emscripten.archive AROPTIONS <archiveflags> ;
+
+rule compile.c++ ( targets * : sources * : properties * )
+{
+    # Some extensions are compiled as C++ by default. For others, we need to
+    # pass -x c++. We could always pass -x c++ but distcc does not work with it.
+    if ! $(>:S) in .cc .cp .cxx .cpp .c++ .C
+    {
+        LANG on $(<) = "-x c++" ;
+    }
+}
+
+rule compile.c ( targets * : sources * : properties * )
+{
+    LANG on $(<) = "-x c" ;
+}
+
+actions compile.c++
+{
+    "$(CONFIG_COMMAND)" $(LANG) $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" -c -o "$(<:W)" "$(>:W)"
+}
+
+actions compile.c
+{
+    "$(CONFIG_COMMAND)" $(LANG) $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" -c -o "$(<)" "$(>)"
+}
+
+actions compile.c++.preprocess
+{
+    "$(CONFIG_COMMAND)" $(LANG) $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" "$(>:W)" -E >"$(<:W)"
+}
+
+actions compile.c.preprocess
+{
+    "$(CONFIG_COMMAND)" $(LANG) $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" "$(>)" -E >$(<)
+}
+
+actions link
+{
+  "$(CONFIG_COMMAND)" $(DEFAULTS) $(OPTIONS) -L"$(LIBRARY_PATH:W)" -L"$(STDLIBPATH:W)" -o "$(<:W)" "$(>:W)" -l"$(LIBRARIES:W)" -l"$(STDLIBRARIES:W)"
+}
+
+RM = [ common.rm-command ] ;
+actions piecemeal archive
+{
+  $(RM) "$(<)"
+  $(AR) rc "$(<:W)" "$(>:W)"
+}
