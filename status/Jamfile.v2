@@ -106,12 +106,12 @@ local rule run-tests ( root : tests * )
             t = [ CALC $(t) + 2 ] ;
             f = [ CALC $(f) + 2 ] ;
         }
-        if [ path.exists ../$(root)/$(test) ]
-        {
-            use-project /boost/$(test) : ../$(root)/$(test) ;
-        }
         if $(include-test) = y
         {
+            if [ path.exists ../$(root)/$(test) ]
+            {
+                use-project /boost/$(test) : ../$(root)/$(test) ;
+            }
             if $(root) = libs && ( ! ( $(library) in $(libraries) ) )
             {
                 libraries += $(library) ;
