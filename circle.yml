@@ -22,7 +22,9 @@ machine:
         echo 'python "${HOME}/${SCRIPT}.py" "$@"' >> "${HOME}/script.sh"
         chmod +x "${HOME}/script.sh"
   post:
-    - sudo apt-get update; sudo apt-get install xsltproc
+    - sudo apt-get update
+    - sudo apt-get install xsltproc
+    - sudo apt-get install asciidoctor
     - exec "${HOME}/script.sh" machine_post
 checkout:
   post:
