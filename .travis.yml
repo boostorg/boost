@@ -30,7 +30,6 @@ addons:
       - dvipsk-ja
       - texlive
       - sshpass
-      - asciidoctor
   ssh_known_hosts: frs.sourceforge.net
 
 env:
@@ -69,6 +68,8 @@ before_install:
   - |
     wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ..
     wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/${SCRIPT}.py" -P ..
+    gem install asciidoctor
+    asciidoctor --version
 
 install: python "${TRAVIS_BUILD_DIR}/../${SCRIPT}.py" install
 before_script: python "${TRAVIS_BUILD_DIR}/../${SCRIPT}.py" before_script
