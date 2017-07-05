@@ -201,10 +201,15 @@ rule handle-static-runtime ( properties * )
     if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
         ! ( <toolset>cw in $(properties) )
     {
-        ECHO "error: link=shared together with runtime-link=static is not allowed" ;
-        ECHO "error: such property combination is either impossible " ;
-        ECHO "error: or too dangerious to be of any use" ;
-        EXIT ;
+        if ! $(.shared-static-warning-emitted)
+        {
+            ECHO "warning: skipping configuration link=shared, runtime-link=static" ;
+            ECHO "warning: this combination is either impossible or too dangerous" ;
+            ECHO "warning: to be of any use" ;
+            .shared-static-warning-emitted = 1 ;
+        }
+
+        return <build>no ;
     }
 }
 
