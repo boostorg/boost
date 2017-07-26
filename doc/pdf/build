@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 boost_version=$(grep 'define.*BOOST_LIB_VERSION' ../../boost/version.hpp | sed 's/.*"\([^"]*\)".*/\1/')
 echo Boost version tag = $boost_version
 (cd ../../libs/accumulators/doc && bjam -a --hash) 2>&1 | tee build.log
