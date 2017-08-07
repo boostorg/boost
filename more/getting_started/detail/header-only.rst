@@ -39,7 +39,7 @@ The only Boost libraries that *must* be built separately are:
 * Boost.Wave_
 
 __ ../../libs/log/doc/html/log/installation/config.html
-__ ../../libs/python/doc/building.html
+__ ../../libs/python/doc/html/building.html
 
 A few libraries have optional separately-compiled binaries:
 

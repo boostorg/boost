@@ -15,7 +15,7 @@
 .. _Boost.Math: ../../libs/math/index.html
 .. _Boost.MPI: ../../libs/mpi/index.html
 .. _Boost.ProgramOptions: ../../libs/program_options/index.html
-.. _Boost.Python: ../../libs/python/doc/building.html
+.. _Boost.Python: ../../libs/python/doc/html/building.html
 .. _Boost.Random: ../../libs/random/index.html
 .. _Boost.Regex: ../../libs/regex/index.html
 .. _Boost.Serialization: ../../libs/serialization/index.html
