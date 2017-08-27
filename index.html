@@ -14,7 +14,10 @@
         <a href="index.html">
         <img src="boost.png" alt="boost.png (6897 bytes)" align="middle" width="277" height="86" border="0"/></a></td>
       <td width="337" align="middle">
-      <h2 style="text-align: center">Release {{version}}</h2>
+      <h2 style="text-align: center">
+      {{#is_develop}}Development Snapshot{{/is_develop}}
+      {{^is_develop}}Release {{version}}{{/is_develop}}
+      </h2>
       </td>
     </tr>
   </table>
@@ -56,7 +59,10 @@
   <h3>Changes in this release</h3>
 
   {{#unreleased_lib_count}}
-  <p>The release includes {{unreleased_lib_count}} new
+  <p>
+  {{#is_develop}}This development snapshot{{/is_develop}}
+  {{^is_develop}}Boost {{minor_release}}{{/is_develop}}
+  includes {{unreleased_lib_count}} new
   {{#unreleased_library_plural}}libraries{{/unreleased_library_plural}}
   {{^unreleased_library_plural}}library{{/unreleased_library_plural}}
   ({{#unreleased_libs}}{{#index}}, {{/index}}<a href="{{link}}">{{name}}</a>{{/unreleased_libs}})
