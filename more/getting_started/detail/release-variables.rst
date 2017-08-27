@@ -6,7 +6,7 @@
 .. for each new release of Boost.
 
 .. |boost-version-number| replace:: 65
-.. |boost_ver| replace:: ``boost_1_65_0``
-.. |boost_ver-bold| replace:: **boost_1_65_0**
+.. |boost_ver| replace:: ``boost_1_65_1``
+.. |boost_ver-bold| replace:: **boost_1_65_1**
 
-.. _sf-download: http://www.boost.org/users/history/version_1_65_0.html
+.. _sf-download: http://www.boost.org/users/history/version_1_65_1.html
