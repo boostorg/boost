@@ -45,19 +45,11 @@ matrix:
     # Simple integrated status tests check.
     - env:
       - SCRIPT=ci_boost_status
-    
-    # Build release package for LF end-of-line style text files.
-    - env:
-      - SCRIPT=ci_boost_release
-      - EOL=LF
-    
-    # Build release package for CRLF end-of-line style text files (i.e. for Windows).
-    - env:
-      - SCRIPT=ci_boost_release
-      - EOL=CRLF
-    
+
     # Build release package, but skip the final archive/upload step,
     #  to stay under time limit
+    #
+    # Skip EOL=LF and EOL=CRLF because they often time out
 
     - env:
       - SCRIPT=ci_boost_release
