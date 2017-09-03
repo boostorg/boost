@@ -56,6 +56,13 @@ matrix:
       - SCRIPT=ci_boost_release
       - EOL=CRLF
     
+    # Build release package, but skip the final archive/upload step,
+    #  to stay under time limit
+
+    - env:
+      - SCRIPT=ci_boost_release
+      - EOL=NONE
+
     # Library requirements tests.
     - env:
       - SCRIPT=ci_boost_library_check
