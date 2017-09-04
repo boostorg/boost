@@ -150,6 +150,26 @@ local rule run-tests ( root : tests * )
     }
 }
 
+local rule find-targets ( target : libs * )
+{
+    local result = ;
+
+    for local lib in $(libs)
+    {
+        local path = ../libs/$(lib)/test ;
+        local project = [ project.load $(path) ] ;
+        local pt = [ project.target $(project) ] ;
+        local mt = [ $(pt).main-target $(target) ] ;
+
+        if $(mt)
+        {
+            result += $(path)//$(target) ;
+        }
+    }
+
+    return $(result) ;
+}
+
 local libs-to-test = ;
 for local libdir in [ path.glob $(BOOST_ROOT) : libs/* ]
 {
@@ -188,3 +208,9 @@ if $(check-libs-only-targets)
 {
     alias check-libs-only : $(check-libs-only-targets) ;
 }
+
+alias minimal : [ find-targets minimal : $(libs-to-test) ] ;
+explicit minimal ;
+
+alias quick : [ find-targets quick : $(libs-to-test) ] ;
+explicit quick ;
