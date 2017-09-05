@@ -63,6 +63,10 @@ matrix:
     - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang
       compiler: clang++
 
+    # Run tests for the library updated by this commit.
+    - env: SCRIPT=ci_boost_test_library TOOLSET=gcc CXXSTD=11
+      compiler: g++
+
     # Library requirements tests.
     - env: SCRIPT=ci_boost_library_check
 
