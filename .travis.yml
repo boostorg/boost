@@ -48,7 +48,9 @@ matrix:
     #
     # Skip EOL=LF and EOL=CRLF because they often time out
 
-    - env: SCRIPT=ci_boost_release EOL=NONE
+    - env: SCRIPT=ci_boost_release EOL=NONE JOBS=3
+
+    - env: SCRIPT=ci_boost_release MODE=check
 
     # Simple integrated status tests check.
     - env: SCRIPT=ci_boost_status
