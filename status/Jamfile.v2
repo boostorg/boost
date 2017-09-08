@@ -15,6 +15,9 @@
 # --check-libs-only
 #   Only runs the library conformance tests.
 #
+# --no-check-libs
+#   Do not run the library conformance tests.
+#
 # --limit-tests, or --include-tests
 #   Only runs the tests for whom the name matches the regex.
 #   The value for the argument is a comma separated list of simple
@@ -58,6 +61,7 @@ import feature ;
 import numbers ;
 
 local check-libs-only = [ MATCH "^--(check-libs-only)" : [ modules.peek : ARGV ] ] ;
+local no-check-libs = [ MATCH "^--(no-check-libs)$" : [ modules.peek : ARGV ] ] ;
 local check-libs-only-targets = ;
 local libraries = ;
 
@@ -106,13 +110,13 @@ local rule run-tests ( root : tests * )
             t = [ CALC $(t) + 2 ] ;
             f = [ CALC $(f) + 2 ] ;
         }
-        if [ path.exists ../$(root)/$(test) ]
-        {
-            use-project /boost/$(test) : ../$(root)/$(test) ;
-        }
         if $(include-test) = y
         {
-            if $(root) = libs && ( ! ( $(library) in $(libraries) ) )
+            if [ path.exists ../$(root)/$(test) ]
+            {
+                use-project /boost/$(test) : ../$(root)/$(test) ;
+            }
+            if $(root) = libs && ! $(no-check-libs) && ( ! ( $(library) in $(libraries) ) )
             {
                 libraries += $(library) ;
                 local test_module = [ project.find ../$(root)/$(test) : $(location) ] ;
@@ -144,6 +148,26 @@ local rule run-tests ( root : tests * )
             }
         }
     }
+}
+
+local rule find-targets ( target : libs * )
+{
+    local result = ;
+
+    for local lib in $(libs)
+    {
+        local path = ../libs/$(lib)/test ;
+        local project = [ project.load $(path) ] ;
+        local pt = [ project.target $(project) ] ;
+        local mt = [ $(pt).main-target $(target) ] ;
+
+        if $(mt)
+        {
+            result += $(path)//$(target) ;
+        }
+    }
+
+    return $(result) ;
 }
 
 local libs-to-test = ;
@@ -184,3 +208,9 @@ if $(check-libs-only-targets)
 {
     alias check-libs-only : $(check-libs-only-targets) ;
 }
+
+alias minimal : [ find-targets minimal : $(libs-to-test) ] ;
+explicit minimal ;
+
+alias quick : [ find-targets quick : $(libs-to-test) ] ;
+explicit quick ;
