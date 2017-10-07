@@ -806,24 +806,67 @@
     <!-- contract -->
     <library name="contract">
         <mark-unusable>
+            <toolset name="clang-gnu-linux-3.8"/>
+            <toolset name="gcc-gnu-4.9"/>
+            <toolset name="gcc-gnu-5"/>
             <toolset name="clang-gnu-linux-4.0~gnu++98"/>
-            <toolset name="clang-gnu-linux-4.0.1"/>
-            <toolset name="gcc-gnu-4.4*"/>
-            <toolset name="gcc-gnu-4.5*"/>
-            <toolset name="gcc-gnu-4.6*"/>
-            <toolset name="gcc-mngw-gnu-3*c+"/>
+            <toolset name="Sandia-clang-4.0"/>
+            <toolset name="Sandia-gcc-4.7.2"/>
+            <toolset name="Sandia-gcc-5.4.0"/>
+            <toolset name="clang-gnu-linux-3.8.1"/>
+            <toolset name="clang-gnu-linux-3.0~c++98"/>
+            <toolset name="clang-gnu-linux-3.0~gnu98"/>
+            <toolset name="clang-gnu-linux-5.0~c++98"/>
+            <toolset name="clang-gnu-linux-5.0~gnu98"/>
+            <toolset name="gcc-gnu-4.4~c++0x"/>
+            <toolset name="gcc-gnu-4.4~c++98"/>
+            <toolset name="gcc-gnu-4.4~gnu0x"/>
+            <toolset name="gcc-gnu-4.4~gnu98"/>
+            <toolset name="gcc-gnu-4.4~c++0x~O2"/>
+            <toolset name="gcc-gnu-4.4~c++0x~warn"/>
+            <toolset name="gcc-gnu-4.5"/>
+            <toolset name="gcc-gnu-4.6"/>
+            <toolset name="gcc-gnu-7~c++98"/>
+            <toolset name="gcc-gnu-7~gnu98"/>
+            <toolset name="gcc-mngw-gnu-3.4c+"/>
             <toolset name="gcc-mngw-gnu-4.1c+"/>
             <toolset name="gcc-mngw-gnu-4.2c+"/>
             <toolset name="gcc-mngw-gnu-4.3c+"/>
             <toolset name="gcc-mngw-gnu-4.4c+"/>
-            <toolset name="msvc-7*"/>
-            <toolset name="msvc-8*"/>
-            <toolset name="msvc-9*"/>
+            <toolset name="msvc-7.1"/>
+            <toolset name="msvc-8.0"/>
+            <toolset name="msvc-9.0"/>
             <note author="Lorenzo Caminiti">
-                Most tests require lambda function support (even if technically
-                the library itself does not require lambdas).
+                Most tests use C++11 lambda functions and variadic macros (even
+                if technically the library itself does not require C++11).
             </note>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="specify-auto_error"/>
+            <test name="specify-auto_pre_error"/>
+            <test name="specify-auto_pre_old_error"/>
+            <test name="specify-auto_pre_old_error"/>
+            <test name="specify-auto_pre_old_post_error"/>
+            <test name="specify-auto_pre_old_post_except_error"/>
+            <toolset name="clang-gnu-linux-5.0~c++1z"/>
+            <toolset name="clang-gnu-linux-5.0~c++1z~1c"/>
+            <toolset name="clang-gnu-linux-5.0~gnu1z"/>
+            <toolset name="clang-gnu-linux-5.0~c++1z~O2"/>
+            <toolset name="clang-gnu-linux-5.0~c++1z~warn"/>
+            <toolset name="gcc-gnu-7~c++1z"/>
+            <toolset name="gcc-gnu-7~gnu1z"/>
+            <toolset name="gcc-gnu-7~c++1z~O2"/>
+            <toolset name="gcc-gnu-7~c++1z~warn"/>
+            <toolset name="clang-gnu-linux-5.0~c++1z"/>
+            <toolset name="clang-gnu-linux-6.0~c++1z"/>
+            <toolset name="gcc-gnu-7~c++1z"/>
+            <note author="Lorenzo Caminiti">
+                Test fails because C++17 guarantees no copy on function returns
+                by value (so the library can only give run-time errors, and not
+                compile-time errors, if auto declaration types are misused
+                instead of `boost::contract::check` on C++17 compilers).
+            </note>
+        </mark-expected-failures>
     </library>
 
        <!-- coroutine -->
