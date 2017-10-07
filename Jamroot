@@ -133,6 +133,7 @@ import notfile ;
 import virtual-target ;
 import "class" : new ;
 import property-set ;
+import threadapi-feature ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.66.0 ;
@@ -173,6 +174,7 @@ project boost
       <toolset>como-linux:<define>_GNU_SOURCE=1
       # When building docs within Boost, we want the standard Boost style
       <xsl:param>boost.defaults=Boost
+      <conditional>@threadapi-feature.detect
     : usage-requirements <include>.
     : build-dir bin.v2
     ;
