@@ -841,8 +841,9 @@
             <toolset name="msvc-8.0"/>
             <toolset name="msvc-9.0"/>
             <note author="Lorenzo Caminiti">
-                Most tests use C++11 lambda functions and variadic macros (even
-                if technically the library itself does not require C++11).
+                Test fails because, as most tests, it uses C++11 lambda
+                functions and variadic macros (even if technically the library
+                itself does not require C++11).
             </note>
         </mark-unusable>
         <mark-unusable>
@@ -851,9 +852,9 @@
             <toolset name="clang-gnu-linux-3.0~c++11~O2"/>
             <toolset name="clang-gnu-linux-3.0~c++11~warn"/>
             <note author="Lorenzo Caminiti">
-                See https://bugs.llvm.org/show_bug.cgi?id=16312 "Clang 3.0 is
-                pretty old and lambdas there are known not to work" (this
-                compiler bug seems to be fixed in Clang 3.1 already).
+                Test fails because this compiler version does not propery
+                implements lambda functions (this seems to be fixed in Clang
+                3.1, see https://bugs.llvm.org/show_bug.cgi?id=16312).
             </note>
         </mark-unusable>
         <mark-expected-failures>
@@ -881,6 +882,45 @@
                 by value (so the library can only give run-time errors, and not
                 compile-time errors, if auto declaration types are misused
                 instead of `boost::contract::check` on C++17 compilers).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="old-if_copyable"/>
+            <test name="old-if_copyable_macro"/>
+            <toolset name="gcc-gnu-4.7.2"/>
+            <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="gcc-mngw-gnu-4.6c+"/>
+            <toolset name="gcc-mngw-gnu-4.7c+"/>
+            <toolset name="msvc-10.0"/>
+            <toolset name="msvc-11.0"/>
+            <note author="Lorenzo Caminiti">
+                Test fails because this complier version does not properly
+                implement SFINAE causing incorrect errors on substituion
+                failures for private and protected members (this seems to be
+                fixed in GCC 4.8 and MSVC 12.0).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="public_function-virtual_access_multi"/>
+            <toolset name="gcc-gnu-4.7.2"/>
+            <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="gcc-mngw-gnu-4.6c+"/>
+            <toolset name="gcc-mngw-gnu-4.7c+"/>
+            <note author="Lorenzo Caminiti">
+                Test fails because this compiler version seems to incorrectly
+                check access level of members in base classes in a context when
+                only dervied class' members are used (this seems to be fixed
+                in GCC 4.8, possibly related to
+                https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57973).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="constructor-smoke"/>
+            <toolset name="msvc-10.0"/>
+            <note author="Lorenzo Caminiti">
+                Test fails because of MSVC 10.0 bug for lambdas within template
+                class initialization list (this can be worked around using a
+                functor bind instead of a lambda but it was fixed in MSVC 11.0).
             </note>
         </mark-expected-failures>
     </library>
