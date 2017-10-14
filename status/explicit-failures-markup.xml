@@ -3285,32 +3285,24 @@ for more information.
    
          <!-- optional -->
     <library name="optional">
-        <mark-expected-failures>
-            <test name="optional_test_ref_assign_const_int"/>
-            <toolset name="msvc-10.0"/>
-            <note author="Andrzej Krzemienski" id="optional-const-int-ref-bug">
-                <p>This is a compiler bug: it sometimes creates an illegal temporary object.
-		The following code illustrates the bug:</p>
-		<pre>
-		#include &lt;cassert&gt;
-		const int global_i = 0;
-		
-		struct TestingReferenceBinding
-		{
-		  void operator=(const int&amp; ii)
-		  {
-		    assert(&amp;ii == &amp;global_i);
-		  }
-		};
-		
-		int main()
-		{
-		  TestingReferenceBinding ttt;
-		  ttt = global_i;
-		}
-                </pre>
+    	<mark-unusable>
+    	    <test name="optional_test_ref_convert_assign_const_int_prevented"/>
+            <toolset name="borland-*"/>
+            <toolset name="gcc-*"/>
+            <toolset name="sun-*"/>
+            <toolset name="qcc-*"/>
+            <toolset name="clang-linux-*"/>
+            <toolset name="clng-lnx-*"/>
+            <toolset name="intel-linux-*"/>
+            <toolset name="xlcpp"/>
+            <toolset name="darwin-*"/>
+            <toolset name="clang-darwin-*"/>
+            <toolset name="msvc-14.0"/>
+            <note author="Andrzej Krzemienski" refid="optional-msvc-ref-bug-prevent">
+            	This test only verifies a compile-time trap for a bug in MSVC.
+            	It has no value for other compilers (and newest MSVC).
             </note>
-        </mark-expected-failures>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="optional_test_ref_converting_ctor"/>
             <toolset name="gcc-4.4*"/>
@@ -3345,13 +3337,15 @@ for more information.
         </mark-expected-failures>
         <mark-expected-failures>
 		<test name="optional_test_ref_convert_assign_const_int"/>
+		<toolset name="msvc-7.1"/>
 		<toolset name="msvc-8.0"/>
 		<toolset name="msvc-9.0"/>
 		<toolset name="msvc-10.0"/>
 		<toolset name="msvc-11.0"/>
 		<toolset name="msvc-12.0"/>
 		<note author="Andrzej Krzemienski" id="optional-const-int-ref-assign-bug">
-			<p>This is a compiler bug: it sometimes creates an illegal temporary object.</p>
+			<p>This is a MSVC compiler bug: it sometimes creates an illegal temporary
+			when assigning from const lvalue of integral type.</p>
 		</note>
 	</mark-expected-failures>
         <mark-expected-failures>
