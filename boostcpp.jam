@@ -359,57 +359,84 @@ class top-level-target : alias-target-class
         # incompatibility between debug and release variants. We build shared
         # and static libraries since that is what most packages seem to provide
         # (.so in libfoo and .a in libfoo-dev).
+
         self.minimal-properties = [ property-set.create <variant>release
             <threading>multi <link>shared <link>static <runtime-link>shared ] ;
+
         # On Windows, new IDE projects use:
         #
         #   runtime-link=dynamic, threading=multi, variant=(debug|release)
         #
         # and in addition, C++ Boost's autolink defaults to static linking.
+
         self.minimal-properties-win = [ property-set.create <variant>debug
             <variant>release <threading>multi <link>static <runtime-link>shared
-            ] ;
+            <address-model>32 <address-model>64 ] ;
 
         self.complete-properties = [ property-set.create
             <variant>debug <variant>release
             <threading>multi
             <link>shared <link>static
             <runtime-link>shared <runtime-link>static ] ;
+
+        self.complete-properties-win = [ property-set.create
+            <variant>debug <variant>release
+            <threading>multi
+            <link>shared <link>static
+            <runtime-link>shared <runtime-link>static
+            <address-model>32 <address-model>64 ] ;
     }
 
     rule generate ( property-set )
     {
         modules.poke : top-level-targets : [ modules.peek : top-level-targets ]
             $(self.name) ;
+
+        local os = [ $(property-set).get <target-os> ] ;
+
+        # Because we completely override the parent's 'generate' we need to
+        # check for default feature values ourselves.
+
+        if ! $(os)
+        {
+            os = [ feature.defaults <target-os> ] ;
+            os = $(os:G=) ;
+        }
+
+        local build-type-set ;
+
         if $(self.build-type) = minimal
         {
-            local expanded ;
-
-            local os = [ $(property-set).get <target-os> ] ;
-            # Because we completely override the parent's 'generate' we need to
-            # check for default feature values ourselves.
-            if ! $(os)
-            {
-                os = [ feature.defaults <target-os> ] ;
-                os = $(os:G=) ;
-            }
-
             if $(os) = windows
             {
-                expanded = [ targets.apply-default-build $(property-set)
-                    : $(self.minimal-properties-win) ] ;
+                build-type-set = $(self.minimal-properties-win) ;
             }
             else
             {
-                expanded = [ targets.apply-default-build $(property-set)
-                    : $(self.minimal-properties) ] ;
+                build-type-set = $(self.minimal-properties) ;
             }
-            return [ build-multiple $(expanded) ] ;
         }
         else if $(self.build-type) = complete
         {
+            if $(os) = windows
+            {
+                build-type-set = $(self.complete-properties-win) ;
+            }
+            else
+            {
+                build-type-set = $(self.complete-properties) ;
+            }
+        }
+        else
+        {
+            import errors ;
+            errors.error "Unknown build type" ;
+        }
+
+        if $(build-type-set)
+        {
             local expanded = [ targets.apply-default-build $(property-set)
-                : $(self.complete-properties) ] ;
+                : $(build-type-set) ] ;
 
             # Filter inappopriate combinations.
             local filtered ;
@@ -427,12 +454,8 @@ class top-level-target : alias-target-class
                     filtered += $(p) ;
                 }
             }
+
             return [ build-multiple $(filtered) ] ;
-        }
-        else
-        {
-            import errors ;
-            errors.error "Unknown build type" ;
         }
     }
 
