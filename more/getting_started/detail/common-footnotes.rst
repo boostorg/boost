@@ -20,7 +20,3 @@
    these choices don't affect binary compatibility with other
    compiled code, you can't count on that with Boost libraries.
 
-.. [#native] This feature of STLPort is deprecated because it's
-   impossible to make it work transparently to the user; we don't
-   recommend it.
-

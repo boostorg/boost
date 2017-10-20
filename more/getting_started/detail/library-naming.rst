@@ -6,7 +6,7 @@ In order to choose the right binary for your build configuration
 you need to know how Boost binaries are named.  Each library
 filename is composed of a common sequence of elements that describe
 how it was built.  For example,
-``libboost_regex-vc71-mt-d-1_34.lib`` can be broken down into the
+``libboost_regex-vc71-mt-d-x86-1_34.lib`` can be broken down into the
 following elements:
 
 ``lib`` 
@@ -51,9 +51,39 @@ following elements:
 
    For example, if you build a debug version of your code for use
    with debug versions of the static runtime library and the
-   STLPort standard library in “native iostreams” mode,
-   the tag would be: ``-sgdpn``.  If none of the above apply, the
+   STLPort standard library,
+   the tag would be: ``-sgdp``.  If none of the above apply, the
    ABI tag is ommitted.
+
+``-x86``
+
+  *Architecture and address model tag*: in the first letter, encodes the architecture as follows:
+
+     +-----+------------------+---------------------+
+     |Key  |Architecture      |Boost.Build option   |
+     +=====+==================+=====================+
+     |``x``|x86-32, x86-64    |architecture=x86     |
+     +-----+------------------+---------------------+
+     |``a``|ARM               |architecture=arm     |
+     +-----+------------------+---------------------+
+     |``i``|IA-64             |architecture=ia64    |
+     +-----+------------------+---------------------+
+     |``s``|Sparc             |architecture=sparc   |
+     +-----+------------------+---------------------+
+     |``m``|MIPS/SGI          |architecture=mips*   |
+     +-----+------------------+---------------------+
+     |``p``|RS/6000 & PowerPC |architecture=power   |
+     +-----+------------------+---------------------+
+
+   The two digits following the letter encode the address model as follows:
+
+     +------+------------------+---------------------+
+     |Key   |Address model     |Boost.Build option   |
+     +======+==================+=====================+
+     |``32``|32 bit            |address-model=32     |
+     +------+------------------+---------------------+
+     |``64``|64 bit            |address-model=64     |
+     +------+------------------+---------------------+
 
 ``-1_34``
   *Version tag*: the full Boost release number, with periods
