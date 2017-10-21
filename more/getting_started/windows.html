@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.11: http://docutils.sourceforge.net/" />
 <title>Boost Getting Started on Windows</title>
 <link rel="stylesheet" href="../../rst.css" type="text/css" />
 </head>
@@ -660,7 +660,7 @@ you can probably <a class="reference internal" href="#test-your-program"><em>ski
 you need to know how Boost binaries are named.  Each library
 filename is composed of a common sequence of elements that describe
 how it was built.  For example,
-<tt class="docutils literal"><span class="pre">libboost_regex-vc71-mt-d-1_34.lib</span></tt> can be broken down into the
+<tt class="docutils literal"><span class="pre">libboost_regex-vc71-mt-d-x86-1_34.lib</span></tt> can be broken down into the
 following elements:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal">lib</tt></dt>
@@ -723,9 +723,79 @@ your compiler.</td>
 </blockquote>
 <p class="last">For example, if you build a debug version of your code for use
 with debug versions of the static runtime library and the
-STLPort standard library in “native iostreams” mode,
-the tag would be: <tt class="docutils literal"><span class="pre">-sgdpn</span></tt>.  If none of the above apply, the
+STLPort standard library,
+the tag would be: <tt class="docutils literal"><span class="pre">-sgdp</span></tt>.  If none of the above apply, the
 ABI tag is ommitted.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">-x86</span></tt></dt>
+<dd><p class="first"><em>Architecture and address model tag</em>: in the first letter, encodes the architecture as follows:</p>
+<blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="41%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Key</th>
+<th class="head">Architecture</th>
+<th class="head">Boost.Build option</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">x</tt></td>
+<td>x86-32, x86-64</td>
+<td>architecture=x86</td>
+</tr>
+<tr><td><tt class="docutils literal">a</tt></td>
+<td>ARM</td>
+<td>architecture=arm</td>
+</tr>
+<tr><td><tt class="docutils literal">i</tt></td>
+<td>IA-64</td>
+<td>architecture=ia64</td>
+</tr>
+<tr><td><tt class="docutils literal">s</tt></td>
+<td>Sparc</td>
+<td>architecture=sparc</td>
+</tr>
+<tr><td><tt class="docutils literal">m</tt></td>
+<td>MIPS/SGI</td>
+<td>architecture=mips*</td>
+</tr>
+<tr><td><tt class="docutils literal">p</tt></td>
+<td>RS/6000 &amp; PowerPC</td>
+<td>architecture=power</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>The two digits following the letter encode the address model as follows:</p>
+<blockquote class="last">
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="40%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Key</th>
+<th class="head">Address model</th>
+<th class="head">Boost.Build option</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">32</tt></td>
+<td>32 bit</td>
+<td>address-model=32</td>
+</tr>
+<tr><td><tt class="docutils literal">64</tt></td>
+<td>64 bit</td>
+<td>address-model=64</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
 </dd>
 <dt><tt class="docutils literal"><span class="pre">-1_34</span></tt></dt>
 <dd><em>Version tag</em>: the full Boost release number, with periods
@@ -867,14 +937,6 @@ or inlining, with full debug symbols enabled, and without
 <tt class="docutils literal">NDEBUG</tt> <tt class="docutils literal">#define</tt>d.  Although it's true that sometimes
 these choices don't affect binary compatibility with other
 compiled code, you can't count on that with Boost libraries.</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="native" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[7]</td><td>This feature of STLPort is deprecated because it's
-impossible to make it work transparently to the user; we don't
-recommend it.</td></tr>
 </tbody>
 </table>
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
