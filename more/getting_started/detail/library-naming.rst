@@ -56,7 +56,6 @@ following elements:
    ABI tag is ommitted.
 
 ``-x86``
-
   *Architecture and address model tag*: in the first letter, encodes the architecture as follows:
 
      +-----+------------------+---------------------+
@@ -75,7 +74,7 @@ following elements:
      |``p``|RS/6000 & PowerPC |architecture=power   |
      +-----+------------------+---------------------+
 
-   The two digits following the letter encode the address model as follows:
+  The two digits following the letter encode the address model as follows:
 
      +------+------------------+---------------------+
      |Key   |Address model     |Boost.Build option   |
