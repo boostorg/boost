@@ -49,16 +49,10 @@ matrix:
     - env: SCRIPT=ci_boost_status
 
     # Run 'quick' tests.
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11
       compiler: g++
 
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=11
-      compiler: g++
-
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang
-      compiler: clang++
-
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11
       compiler: clang++
 
     # Run tests for the library updated by this commit.
