@@ -34,8 +34,10 @@ goto :bjam_failure
 REM Ideally, we should obtain the toolset that build.bat has
 REM guessed. However, it uses setlocal at the start and does not
 REM export BOOST_JAM_TOOLSET, and I don't know how to do that
-REM properly. Default to msvc for now.
-set toolset=msvc
+REM properly. Default to msvc if not specified.
+
+SET toolset=%1
+IF "%toolset%"=="" SET toolset=msvc
 
 ECHO import option ; > project-config.jam
 ECHO. >> project-config.jam
