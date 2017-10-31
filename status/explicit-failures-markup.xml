@@ -2091,40 +2091,25 @@
 
     <!-- fusion -->
     <library name="fusion">
-        <mark-unusable>
-            <toolset name="gcc-2.95.3*"/>
-            <toolset name="msvc-6.5*"/>
-            <toolset name="msvc-7.0"/>
-            <toolset name="borland-5*"/>
-            <toolset name="cw-8.3"/>
-            <toolset name="dmc*"/>
-            <toolset name="sunpro-5_3-sunos"/>
-            <toolset name="sun-5.7"/>
-            <toolset name="sun-5.8"/>
-            <toolset name="sun-5.9"/>
-            <note author="Joel de Guzman">
-                The compiler does not support features that are
-                essential for the library.
-            </note>
-        </mark-unusable>
         <mark-expected-failures>
-            <test name="fused"/>
-            <test name="fused_function_object"/>
-            <test name="fused_procedure"/>
-            <test name="make_fused"/>
-            <test name="make_fused_function_object"/>
-            <test name="make_fused_procedure"/>
-            <toolset name="acc"/>
-            <note author="Tobias Schwinger">
-                Those failures are due to not quite const-correct overload
-                resolution. The complaints from the test suite should rarely
-                matter in practice - the corresponding components are basically
-                usable. With aCC6, when compiled in strict ansi mode, the test
-                succeeds.
+            <test name="define_struct_inline_move"/>
+            <test name="define_tpl_struct_inline_move"/>
+            <toolset name="msvc-10.0"/>
+            <toolset name="msvc-11.0"/>
+            <toolset name="msvc-12.0"/>
+            <toolset name="qcc-4.4.2_x86"/>
+            <toolset name="gcc-gnu-4.4~c++0x*"/>
+            <toolset name="gcc-gnu-4.4~gnu0x*"/>
+            <note author="Kohei Takahashi">
+                The compiler doesn't generate defaulted move ctor/assgin thus
+                perform copy construction/assginment. Even though such case,
+                the `inline` versions don't force generating move ctor/assign
+                to preserve trivial requirements. Since that is not documented
+                behaviour, it might be changed in future release.
             </note>
         </mark-expected-failures>
     </library>
-    
+
     <!-- geometry -->
     <library name="geometry">
         <mark-unusable>
