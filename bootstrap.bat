@@ -1,5 +1,7 @@
 @ECHO OFF
 
+SETLOCAL
+
 REM Copyright (C) 2009 Vladimir Prus
 REM
 REM Distributed under the Boost Software License, Version 1.0.
@@ -36,12 +38,22 @@ REM guessed. However, it uses setlocal at the start and does not
 REM export BOOST_JAM_TOOLSET, and I don't know how to do that
 REM properly. Default to msvc if not specified.
 
-SET toolset=%1
-IF "%toolset%"=="" SET toolset=msvc
+SET TOOLSET=msvc
+
+IF "%1"=="gcc" SET TOOLSET=gcc
+
+IF "%1"=="vc71" SET TOOLSET=msvc : 7.1
+IF "%1"=="vc8" SET TOOLSET=msvc : 8.0
+IF "%1"=="vc9" SET TOOLSET=msvc : 9.0
+IF "%1"=="vc10" SET TOOLSET=msvc : 10.0
+IF "%1"=="vc11" SET TOOLSET=msvc : 11.0
+IF "%1"=="vc12" SET TOOLSET=msvc : 12.0
+IF "%1"=="vc14" SET TOOLSET=msvc : 14.0
+IF "%1"=="vc141" SET TOOLSET=msvc : 14.1
 
 ECHO import option ; > project-config.jam
 ECHO. >> project-config.jam
-ECHO using %toolset% ; >> project-config.jam
+ECHO using %TOOLSET% ; >> project-config.jam
 ECHO. >> project-config.jam
 ECHO option.set keep-going : false ; >> project-config.jam
 ECHO. >> project-config.jam
@@ -62,6 +74,7 @@ ECHO     http://boost.org/more/getting_started/windows.html
 ECHO.     
 ECHO     - Boost.Build documentation:
 ECHO     http://www.boost.org/build/doc/html/index.html
+ECHO.
 
 goto :end
 
@@ -71,13 +84,8 @@ ECHO.
 ECHO Failed to build Boost.Build engine.
 ECHO Please consult bootstrap.log for further diagnostics.
 ECHO.
-ECHO You can try to obtain a prebuilt binary from
-ECHO.
-ECHO    http://sf.net/project/showfiles.php?group_id=7586^&package_id=72941
-ECHO.
-ECHO Also, you can file an issue at http://svn.boost.org 
-ECHO Please attach bootstrap.log in that case.
 
-goto :end
+REM Set an error code to allow `bootstrap && b2`
+cmd /c exit /b 1 > nul
 
 :end
