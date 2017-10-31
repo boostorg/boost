@@ -853,21 +853,27 @@
             <toolset name="clang-gnu-linux-3.0~c++11~O2"/>
             <toolset name="clang-gnu-linux-3.0~c++11~warn"/>
             <note author="Lorenzo Caminiti">
-                Test fails because this compiler version does not propery
+                Test fails because this compiler version does not properly
                 implements lambda functions (this seems to be fixed in Clang
                 3.1, see https://bugs.llvm.org/show_bug.cgi?id=16312).
+            </note>
+        </mark-unusable>
+        <mark-unusable>
+            <toolset name="gcc-gnu-6"/>
+            <note author="Lorenzo Caminiti">
+                Test fails because, as most tests, it uses C++11 lambda
+                functions and variadic macros (even if technically the library
+                itself does not require C++11).
             </note>
         </mark-unusable>
         <mark-expected-failures>
             <test name="specify-auto_error"/>
             <test name="specify-auto_pre_error"/>
             <test name="specify-auto_pre_old_error"/>
-            <test name="specify-auto_pre_old_error"/>
             <test name="specify-auto_pre_old_post_error"/>
             <test name="specify-auto_pre_old_post_except_error"/>
             <toolset name="clang-gnu-linux-4.0~gnu++1z"/>
             <toolset name="clang-gnu-linux-5.0~c++1z"/>
-            <toolset name="clang-gnu-linux-5.0~c++1z~1c"/>
             <toolset name="clang-gnu-linux-5.0~gnu1z"/>
             <toolset name="clang-gnu-linux-5.0~c++1z~O2"/>
             <toolset name="clang-gnu-linux-5.0~c++1z~warn"/>
@@ -879,10 +885,11 @@
             <toolset name="clang-gnu-linux-6.0~c++1z"/>
             <toolset name="gcc-gnu-7~c++1z"/>
             <note author="Lorenzo Caminiti">
-                Test fails because C++17 guarantees no copy on function returns
-                by value (so the library can only give run-time errors, and not
-                compile-time errors, if auto declaration types are misused
-                instead of `boost::contract::check` on C++17 compilers).
+                This test fails because C++17 guarantees no copies on function
+                returns by value (so this library can only give run-time errors,
+                and not compile-time errors, if auto declarations are misused
+                instead of using the `boost::contract::check` type explicitly on
+                C++17 compilers).
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -895,10 +902,10 @@
             <toolset name="msvc-10.0"/>
             <toolset name="msvc-11.0"/>
             <note author="Lorenzo Caminiti">
-                Test fails because this complier version does not properly
-                implement SFINAE causing incorrect errors on substituion
-                failures for private and protected members (this seems to be
-                fixed in GCC 4.8 and MSVC 12.0).
+                This test fails because this complier does not properly
+                implement SFINAE giving incorrect errors on substituion failures
+                for private and protected members (this seems to be fixed in GCC
+                4.8 and MSVC 12.0).
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -908,10 +915,10 @@
             <toolset name="gcc-mngw-gnu-4.6c+"/>
             <toolset name="gcc-mngw-gnu-4.7c+"/>
             <note author="Lorenzo Caminiti">
-                Test fails because this compiler version seems to incorrectly
-                check access level of members in base classes in a context when
-                only dervied class' members are used (this seems to be fixed
-                in GCC 4.8, possibly related to
+                This test fails because this compiler seems to incorrectly check
+                access level of members in base classes in a context when only
+                dervied class members are used (this seems to be fixed in GCC
+                4.8, possibly related to
                 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57973).
             </note>
         </mark-expected-failures>
@@ -919,9 +926,10 @@
             <test name="constructor-smoke"/>
             <toolset name="msvc-10.0"/>
             <note author="Lorenzo Caminiti">
-                Test fails because of MSVC 10.0 bug for lambdas within template
-                class initialization list (this can be worked around using a
-                functor bind instead of a lambda but it was fixed in MSVC 11.0).
+                Test fails because of a MSVC 10.0 bug for lambdas within
+                template class initialization list (this can be worked around
+                using a functor bind instead of a lambda but it was fixed in
+                MSVC 11.0).
             </note>
         </mark-expected-failures>
     </library>
