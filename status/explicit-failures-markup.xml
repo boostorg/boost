@@ -807,63 +807,26 @@
     <!-- contract -->
     <library name="contract">
         <mark-unusable>
-            <toolset name="clang-gnu-linux-3.6"/>
-            <toolset name="clang-gnu-linux-3.7"/>
-            <toolset name="clang-gnu-linux-3.8"/>
-            <toolset name="gcc-gnu-4.9"/>
-            <toolset name="gcc-gnu-5"/>
-            <toolset name="clang-gnu-linux-4.0~gnu++98"/>
-            <!--toolset name="Sandia-clang-4.0"/-->
-            <!--toolset name="Sandia-gcc-4.7.2"/-->
-            <!--toolset name="Sandia-gcc-5.4.0"/-->
-            <toolset name="clang-gnu-linux-3.8.1"/>
-            <toolset name="clang-gnu-linux-3.0~c++98"/>
-            <toolset name="clang-gnu-linux-3.0~gnu98"/>
-            <toolset name="clang-gnu-linux-5.0~c++98"/>
-            <toolset name="clang-gnu-linux-5.0~gnu98"/>
-            <toolset name="gcc-gnu-4.4~c++0x"/>
-            <toolset name="gcc-gnu-4.4~c++98"/>
-            <toolset name="gcc-gnu-4.4~gnu0x"/>
-            <toolset name="gcc-gnu-4.4~gnu98"/>
-            <toolset name="gcc-gnu-4.4~c++0x~O2"/>
-            <toolset name="gcc-gnu-4.4~c++0x~warn"/>
-            <toolset name="gcc-gnu-4.5"/>
-            <toolset name="gcc-gnu-4.6"/>
-            <toolset name="gcc-gnu-7~c++98"/>
-            <toolset name="gcc-gnu-7~gnu98"/>
-            <toolset name="qcc-4.4.2_x86"/>
-            <toolset name="gcc-mngw-gnu-3.4c+"/>
-            <toolset name="gcc-mngw-gnu-4.1c+"/>
-            <toolset name="gcc-mngw-gnu-4.2c+"/>
-            <toolset name="gcc-mngw-gnu-4.3c+"/>
-            <toolset name="gcc-mngw-gnu-4.4c+"/>
-            <toolset name="gcc-mngw-gnu-4.5c+"/>
-            <toolset name="msvc-7.1"/>
-            <toolset name="msvc-8.0"/>
-            <toolset name="msvc-9.0"/>
-            <note author="Lorenzo Caminiti">
-                Test fails because, as most tests, it uses C++11 lambda
-                functions and variadic macros (even if technically the library
-                itself does not require C++11).
-            </note>
-        </mark-unusable>
-        <mark-unusable>
             <toolset name="clang-gnu-linux-3.0~c++11"/>
             <toolset name="clang-gnu-linux-3.0~gnu11"/>
             <toolset name="clang-gnu-linux-3.0~c++11~O2"/>
             <toolset name="clang-gnu-linux-3.0~c++11~warn"/>
             <note author="Lorenzo Caminiti">
-                Test fails because this compiler version does not properly
-                implements lambda functions (this seems to be fixed in Clang
-                3.1, see https://bugs.llvm.org/show_bug.cgi?id=16312).
+                Tests fails on this compiler because it does not properly
+                implement lambda functions (most tests use lambda functions,
+                even if technically the library itself does not require C++11).
+                This seems to be fixed in Clang 3.1 (see
+                https://bugs.llvm.org/show_bug.cgi?id=16312).
             </note>
         </mark-unusable>
         <mark-unusable>
             <toolset name="gcc-gnu-6"/>
             <note author="Lorenzo Caminiti">
-                Test fails because, as most tests, it uses C++11 lambda
-                functions and variadic macros (even if technically the library
-                itself does not require C++11).
+                Tests fail to link on this compiler when libc++ is used, but
+                they link fine with libstdc++ (unfortunately these toolset names
+                do not diferentiate between libc++ and libstdc++ so libstdc++
+                tests had to be marked as expected failures for this compiler
+                as well even if they actually compile and run fine).
             </note>
         </mark-unusable>
         <mark-expected-failures>
@@ -904,8 +867,8 @@
             <note author="Lorenzo Caminiti">
                 This test fails because this complier does not properly
                 implement SFINAE giving incorrect errors on substituion failures
-                for private and protected members (this seems to be fixed in GCC
-                4.8 and MSVC 12.0).
+                for private and protected members.
+                This seems to be fixed in GCC 4.8 and MSVC 12.0.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -917,8 +880,8 @@
             <note author="Lorenzo Caminiti">
                 This test fails because this compiler seems to incorrectly check
                 access level of members in base classes in a context when only
-                dervied class members are used (this seems to be fixed in GCC
-                4.8, possibly related to
+                dervied class members are used.
+                This seems to be fixed in GCC 4.8 (possibly related to
                 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57973).
             </note>
         </mark-expected-failures>
@@ -926,10 +889,10 @@
             <test name="constructor-smoke"/>
             <toolset name="msvc-10.0"/>
             <note author="Lorenzo Caminiti">
-                Test fails because of a MSVC 10.0 bug for lambdas within
-                template class initialization list (this can be worked around
-                using a functor bind instead of a lambda but it was fixed in
-                MSVC 11.0).
+                This test fails because of a MSVC 10.0 bug for lambdas within
+                template class initialization list.
+                This can be worked around using a functor bind instead of a
+                lambda, but it is fixed in MSVC 11.0.
             </note>
         </mark-expected-failures>
     </library>
