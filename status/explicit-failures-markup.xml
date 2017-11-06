@@ -813,11 +813,29 @@
                 https://tracker.crystax.net/issues/1403).
                 This linker error does not occur with libstdc++ but
                 unfortunately the toolset name for this compiler does not
-                diferentiate between libc++ and libstdc++ runs so also libstdc++
-                tests had to be marked as expected failures (even if they
-                actually pass).
+                differentiate between libc++ and libstdc++ runs so also
+                libstdc++ tests had to be marked as expected failures (even if
+                they actually pass).
             </note>
         </mark-unusable>
+        <mark-expected-failures>
+            <test name="destructor-throwing_old"/>
+            <test name="destructor-throwing_post"/>
+            <test name="public_function-decl_pre_all"/>
+            <test name="public_function-decl_pre_ends"/>
+            <test name="public_function-smoke"/>
+            <test name="public_function-throwing_post"/>
+            <test name="public_function-virtual"/>
+            <test name="public_function-virtual_branch"/>
+            <toolset name="clang-gnu-linux-4.0~gnu++11"/>
+            <toolset name="clang-gnu-linux-4.0~gnu++14"/>
+            <toolset name="clang-gnu-linux-4.0~gnu++17"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because of a libcxxrt bug on Clang for FreeBSD
+                which causes `std::uncaught_exception` to not work properly on
+                re-throws (see https://github.com/pathscale/libcxxrt/issues/49).
+            </note>
+        </mark-expected-failures>
         <mark-expected-failures>
             <test name="specify-auto_error"/>
             <test name="specify-auto_pre_error"/>
@@ -857,9 +875,25 @@
             <toolset name="msvc-11.0"/>
             <note author="Lorenzo Caminiti">
                 This test fails because this complier does not properly
-                implement SFINAE giving incorrect errors on substituion failures
-                for private and protected members.
+                implement SFINAE giving incorrect errors on substitution
+                failures for private and protected members.
                 This seems to be fixed in GCC 4.8 and MSVC 12.0.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="public_function-protected_error"/>
+            <toolset name="clang-gnu-linux-3.0~c++11"/>
+            <toolset name="clang-gnu-linux-3.0~gnu11"/>
+            <toolset name="clang-gnu-linux-3.0~c++11~O2"/>
+            <toolset name="clang-gnu-linux-3.0~c++11~warn"/>
+            <toolset name="gcc-mngw-gnu-4.6c+"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because SFINAE on this complier seems to not
+                fail as it should when a derived class tries to call a
+                protected member function on a base class object via a function
+                pointer instead of via inheritance.
+                This seems to be fixed in Clang 3.1, and to be specific to
+                version 4.6 of GCC.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -871,7 +905,7 @@
             <note author="Lorenzo Caminiti">
                 This test fails because this compiler seems to incorrectly check
                 access level of members in base classes in a context when only
-                dervied class members are used.
+                derived class members are used.
                 This seems to be fixed in GCC 4.8 (possibly related to
                 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57973).
             </note>
@@ -884,6 +918,17 @@
                 template class initialization list.
                 This can be worked around using a functor bind instead of a
                 lambda, but it is fixed in MSVC 11.0.
+            </note>
+        </mark-expected-failures>
+        <!-- following due to other boost libs, could be fixed in master? -->
+        <mark-expected-failures>
+            <test name="old-auto"/>
+            <test name="old-copyable_traits"/>
+            <toolset name="gcc-mngw-gnu-4.6c+"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because of this compiler/platform cause an
+                error in Boost.TypeTraits (this could be fixed in the master
+                branch... not sure).
             </note>
         </mark-expected-failures>
     </library>
