@@ -829,7 +829,7 @@
             <test name="public_function-virtual_branch"/>
             <toolset name="clang-gnu-linux-4.0~gnu++11"/>
             <toolset name="clang-gnu-linux-4.0~gnu++14"/>
-            <toolset name="clang-gnu-linux-4.0~gnu++17"/>
+            <toolset name="clang-gnu-linux-4.0~gnu++1z"/>
             <note author="Lorenzo Caminiti">
                 This test fails because of a libcxxrt bug on Clang for FreeBSD
                 which causes `std::uncaught_exception` to not work properly on
@@ -844,6 +844,7 @@
             <test name="specify-auto_pre_old_post_except_error"/>
             <toolset name="clang-darwin-darwin-asan"/>
             <toolset name="clang-darwin-darwin-4.2.1"/>
+            <toolset name="intel-linux-linux"/>
             <toolset name="clang-gnu-linux-4.0~gnu++1z"/>
             <toolset name="clang-gnu-linux-5.0~c++1z"/>
             <toolset name="clang-gnu-linux-5.0~gnu1z"/>
@@ -911,13 +912,41 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="call_if-no_equal_call_if"/>
+            <toolset name="msvc-10.0"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because MSVC 10.0 is not able to properly deduce
+                a template specialization.
+                This is fixed in MSVC 11.0.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="constructor-smoke"/>
             <toolset name="msvc-10.0"/>
             <note author="Lorenzo Caminiti">
-                This test fails because of a MSVC 10.0 bug for lambdas within
+                This test fails because of a MSVC 10.0 bug with lambdas within
                 template class initialization list.
                 This can be worked around using a functor bind instead of a
                 lambda, but it is fixed in MSVC 11.0.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="destructor-smoke"/>
+            <toolset name="msvc-10.0"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because of a MSVC 10.0 bug for which lambdas
+                cannot access typedefs declared within classes.
+                This can be worked around declaring typedefs outside of
+                classes, but it is fixed in MSVC 11.0.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="disable-always_disable_post_except_lib"/>
+            <test name="disable-pre_disable_no_assertion_prog"/>
+            <toolset name="msvc-10.0"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because of an internal MSVC 10.0 compiler bug.
+                This is fixed in MSVC 11.0.
             </note>
         </mark-expected-failures>
         <!-- following due to other boost libs, could be fixed in master? -->
