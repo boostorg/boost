@@ -818,6 +818,17 @@
                 they actually pass).
             </note>
         </mark-unusable>
+        <mark-unusable>
+            <toolset name="gcc-mngw-gnu-3.4c+"/>
+            <toolset name="gcc-mngw-gnu-4.1c+"/>
+            <toolset name="gcc-mngw-gnu-4.2c+"/>
+            <note author="Lorenzo Caminiti">
+                Even tests that do not use C++11 lambda functions fail on this
+                compiler because it incorrectly attempts an extra copy when
+                objects are constructed via `boost::check c = ...`.
+                This is fixed in MinGW GCC 4.3.
+            </note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="destructor-throwing_old"/>
             <test name="destructor-throwing_post"/>
@@ -870,6 +881,7 @@
             <test name="old-if_copyable_macro"/>
             <toolset name="gcc-gnu-4.7.2"/>
             <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="qcc-4.7.3_x86"/>
             <toolset name="gcc-mngw-gnu-4.6c+"/>
             <toolset name="gcc-mngw-gnu-4.7c+"/>
             <toolset name="msvc-10.0"/>
@@ -877,7 +889,7 @@
             <note author="Lorenzo Caminiti">
                 This test fails because this complier does not properly
                 implement SFINAE giving incorrect errors on substitution
-                failures for private and protected members.
+                failures for private members.
                 This seems to be fixed in GCC 4.8 and MSVC 12.0.
             </note>
         </mark-expected-failures>
@@ -901,6 +913,7 @@
             <test name="public_function-virtual_access_multi"/>
             <toolset name="gcc-gnu-4.7.2"/>
             <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="qcc-4.7.3_x86"/>
             <toolset name="gcc-mngw-gnu-4.6c+"/>
             <toolset name="gcc-mngw-gnu-4.7c+"/>
             <note author="Lorenzo Caminiti">
@@ -942,11 +955,26 @@
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="disable-always_disable_post_except_lib"/>
+            <test name="disable-assertions_disable_assertions_lib"/>
+            <test name="disable-assertions_disable_assertions_prog"/>
             <test name="disable-pre_disable_no_assertion_prog"/>
             <toolset name="msvc-10.0"/>
             <note author="Lorenzo Caminiti">
                 This test fails because of an internal MSVC 10.0 compiler bug.
                 This is fixed in MSVC 11.0.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="invariant-ifdef"/>
+            <test name="invariant-ifdef_macro"/>
+            <test name="invariant-volatile_error"/>
+            <toolset name="msvc-8.0"/>
+            <note author="Lorenzo Caminiti">
+                This test fails because this complier seems to dispatch calls
+                incorrectly when both `const` and `const volatile` overloads
+                are present (even if the authors could not find a direct
+                reference to this possible compiler issue online).
+                This is fixed in MSVC 9.0.
             </note>
         </mark-expected-failures>
         <!-- following due to other boost libs, could be fixed in master? -->
