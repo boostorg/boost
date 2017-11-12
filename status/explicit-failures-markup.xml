@@ -829,6 +829,19 @@
                 This is fixed in MinGW GCC 4.3.
             </note>
         </mark-unusable>
+        <mark-unusable>
+            <toolset name="msvc-7.1"/>
+            <note author="Lorenzo Caminiti">
+                Even tests that do not use C++11 lambda functions fail on this
+                compiler because of a number of different issues
+                (Boost.Exception, which used by this library, also is not
+                supported on this compiler, incorrect implementation of some
+                aspects of friendship, incorrect dispatching of some `volatile`
+                calls, etc.).
+                These issues are fixed in MSVC 9.0 (but only MSVC 11.0 has
+                adequate lambda function support).
+            </note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="destructor-throwing_old"/>
             <test name="destructor-throwing_post"/>
@@ -877,10 +890,39 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="destructor-throwing_old"/>
+            <test name="destructor-throwing_post"/>
+            <toolset name="gcc-mngw-gnu-5.1c+"/>
+            <note author="Lorenzo Caminiti">
+                It is not clear why this test fails but when trying to install
+                MinGW GCC 5.1 using `mingw-get` it says that such a version does
+                not exist (so this issue could not be investigated any further).
+                This is fixed on MinGW 5.2.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="public_function-max_args"/>
+            <test name="public_function-max_args0"/>
+            <test name="public_function-max_args0_no_tva"/>
+            <test name="public_function-max_args1"/>
+            <test name="public_function-max_args1_no_tva"/>
+            <test name="public_function-max_args2"/>
+            <test name="public_function-max_args2_no_tva"/>
+            <test name="public_function-max_args_no_tva"/>
+            <toolset name="gcc-mngw-gnu-6.1c+"/>
+            <note author="Lorenzo Caminiti">
+                It is not clear why this test fails but when trying to install
+                MinGW GCC 6.1 using `mingw-get` it says that such a version does
+                not exist (so this issue could not be investigated any further).
+                This is fixed on MinGW 6.2.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="old-if_copyable"/>
             <test name="old-if_copyable_macro"/>
             <toolset name="gcc-gnu-4.7.2"/>
             <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="qcc-4.7.3_arm"/>
             <toolset name="qcc-4.7.3_x86"/>
             <toolset name="gcc-mngw-gnu-4.6c+"/>
             <toolset name="gcc-mngw-gnu-4.7c+"/>
@@ -913,6 +955,7 @@
             <test name="public_function-virtual_access_multi"/>
             <toolset name="gcc-gnu-4.7.2"/>
             <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="qcc-4.7.3_arm"/>
             <toolset name="qcc-4.7.3_x86"/>
             <toolset name="gcc-mngw-gnu-4.6c+"/>
             <toolset name="gcc-mngw-gnu-4.7c+"/>
@@ -922,6 +965,15 @@
                 derived class members are used.
                 This seems to be fixed in GCC 4.8 (possibly related to
                 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57973).
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="disable-always_disable_post_except_lib"/>
+            <toolset name="gcc-gnu-8.0.0"/>
+            <note author="Lorenzo Caminiti">
+                GCC 8 has not been released yet so this test might be failing
+                because of some work-in-progress aspect of the compiler.
+                This test did not fail on GCC 7.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -974,7 +1026,8 @@
                 incorrectly when both `const` and `const volatile` overloads
                 are present (even if the authors could not find a direct
                 reference to this possible compiler issue online).
-                This is fixed in MSVC 9.0.
+                This is fixed in MSVC 9.0 (but only MSVC 11.0 has adequate
+                lambda function support).
             </note>
         </mark-expected-failures>
         <!-- following due to other boost libs, could be fixed in master? -->
