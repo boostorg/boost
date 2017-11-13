@@ -838,8 +838,9 @@
                 supported on this compiler, incorrect implementation of some
                 aspects of friendship, incorrect dispatching of some `volatile`
                 calls, etc.).
-                These issues are fixed in MSVC 9.0 (but only MSVC 11.0 has
-                adequate lambda function support).
+                These specific issues are fixed in MSVC 9.0 (but only MSVC 11.0
+                has adequate lambda function support that makes this library
+                actually usable).
             </note>
         </mark-unusable>
         <mark-expected-failures>
@@ -890,17 +891,6 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="destructor-throwing_old"/>
-            <test name="destructor-throwing_post"/>
-            <toolset name="gcc-mngw-gnu-5.1c+"/>
-            <note author="Lorenzo Caminiti">
-                It is not clear why this test fails but when trying to install
-                MinGW GCC 5.1 using `mingw-get` it says that such a version does
-                not exist (so this issue could not be investigated any further).
-                This is fixed on MinGW 5.2.
-            </note>
-        </mark-expected-failures>
-        <mark-expected-failures>
             <test name="public_function-max_args"/>
             <test name="public_function-max_args0"/>
             <test name="public_function-max_args0_no_tva"/>
@@ -912,9 +902,10 @@
             <toolset name="gcc-mngw-gnu-6.1c+"/>
             <note author="Lorenzo Caminiti">
                 It is not clear why this test fails but when trying to install
-                MinGW GCC 6.1 using `mingw-get` it says that such a version does
-                not exist (so this issue could not be investigated any further).
-                This is fixed on MinGW 6.2.
+                MinGW GCC 6.1 using `mingw-get` it says that such a compiler
+                version does not exist (so this issue could not be investigated
+                any further).
+                This is fixed in MinGW GCC 6.2.
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
