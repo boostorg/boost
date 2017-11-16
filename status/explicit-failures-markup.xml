@@ -819,6 +819,14 @@
             </note>
         </mark-unusable>
         <mark-unusable>
+            <toolset name="clang-gnu-linux-5.0~c++1z~lc"/>
+            <note author="Lorenzo Caminiti">
+                Tests fail on this compiler because of a bug in libc++ (see
+                https://svn.boost.org/trac10/ticket/7872).
+                This is fixed in libstdc++.
+            </note>
+        </mark-unusable>
+        <mark-unusable>
             <toolset name="gcc-mngw-gnu-3.4c+"/>
             <toolset name="gcc-mngw-gnu-4.1c+"/>
             <toolset name="gcc-mngw-gnu-4.2c+"/>
@@ -844,6 +852,29 @@
             </note>
         </mark-unusable>
         <mark-expected-failures>
+            <test name="disable-audit"/>
+            <toolset name="gcc-gnu-4.9"/>
+            <toolset name="gcc-gnu-5"/>
+            <note author="Lorenzo Caminiti">
+                This test fails on this compiler because of a bug in libc++
+                (see http://grokbase.com/t/gg/android-ndk/1656csqqtp/assertion-ttypeencoding-dw-eh-pe-absptr-unexpected-ttypeencoding-failed).
+                This is fixed in libstdc++.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="invariant-ifdef"/>
+            <test name="invariant-ifdef_macro"/>
+            <test name="specify-nothing"/>
+            <toolset name="clang-gnu-linux-3.6"/>
+            <toolset name="clang-gnu-linux-3.7"/>
+            <toolset name="clang-gnu-linux-3.8"/>
+            <note author="Lorenzo Caminiti">
+                This test fails on this compiler because of a bug in libstdc++
+                (undefined references to `std::ios_base::failure::failure`).
+                This is fixed in libc++.
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
             <test name="destructor-throwing_old"/>
             <test name="destructor-throwing_post"/>
             <test name="public_function-decl_pre_all"/>
@@ -868,6 +899,7 @@
             <test name="specify-auto_pre_old_post_error"/>
             <test name="specify-auto_pre_old_post_except_error"/>
             <toolset name="clang-darwin-darwin-asan"/>
+            <toolset name="clang-darwin-darwin-ubsan"/>
             <toolset name="clang-darwin-darwin-4.2.1"/>
             <toolset name="intel-linux-linux"/>
             <toolset name="clang-gnu-linux-4.0~gnu++1z"/>
