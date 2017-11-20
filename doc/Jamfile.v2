@@ -181,7 +181,7 @@ xinclude tools :
     ../tools/build/doc//jam_docs
     ../tools/quickbook/doc//quickbook
     ../tools/boostbook/doc/boostbook.xml
-    ../tools/build/doc/src/userman.xml
+    ../tools/build/doc//boostdoc
     ;
 explicit tools ;
 
@@ -189,6 +189,7 @@ boostbook doc
     :
     src/boost.xml
     :
+    <xsl:param>generate.consistent.ids=1
     <use>$(lib-doc-boostdoc-refs)
     <dependency>libraries
     <implicit-dependency>libraries

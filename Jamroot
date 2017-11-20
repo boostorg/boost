@@ -129,9 +129,10 @@ import xsltproc ;
 import set ;
 import path ;
 import link ;
+import threadapi-feature ;
 
 path-constant BOOST_ROOT : . ;
-constant BOOST_VERSION : 1.65.0 ;
+constant BOOST_VERSION : 1.66.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
@@ -169,6 +170,7 @@ project boost
       <toolset>como-linux:<define>_GNU_SOURCE=1
       # When building docs within Boost, we want the standard Boost style
       <xsl:param>boost.defaults=Boost
+      <conditional>@threadapi-feature.detect
     : usage-requirements <include>.
     : build-dir bin.v2
     ;
@@ -197,10 +199,15 @@ rule handle-static-runtime ( properties * )
     if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
         ! ( <toolset>cw in $(properties) )
     {
-        ECHO "error: link=shared together with runtime-link=static is not allowed" ;
-        ECHO "error: such property combination is either impossible " ;
-        ECHO "error: or too dangerious to be of any use" ;
-        EXIT ;
+        if ! $(.shared-static-warning-emitted)
+        {
+            ECHO "warning: skipping configuration link=shared, runtime-link=static" ;
+            ECHO "warning: this combination is either impossible or too dangerous" ;
+            ECHO "warning: to be of any use" ;
+            .shared-static-warning-emitted = 1 ;
+        }
+
+        return <build>no ;
     }
 }
 
@@ -288,7 +295,7 @@ rule boost-install ( libraries * )
 rule boost-lib ( name : sources * : requirements * : default-build * : usage-requirements * )
 {
     name = boost_$(name) ;
-    autolink = <link>shared:<define>BOOST_$(name:U)_DYN_LINK=1 ;
+    autolink = <link>shared:<define>$(name:U)_DYN_LINK=1 ;
     lib $(name)
         : $(sources)
         : $(requirements) $(autolink)
