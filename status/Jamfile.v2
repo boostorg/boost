@@ -156,7 +156,7 @@ local rule find-targets ( target : libs * )
 
     for local lib in $(libs)
     {
-        local path = ../libs/$(lib)/test ;
+        local path = $(lib)/test ;
         local project = [ project.load $(path) ] ;
         local pt = [ project.target $(project) ] ;
         local mt = [ $(pt).main-target $(target) ] ;
@@ -194,20 +194,21 @@ libs-to-test = [ SORT $(libs-to-test) ] ;
 
 run-tests libs : $(libs-to-test)/test ;
 
-# Tests from Jamfiles in individual library test subdirectories
-# Please keep these in alphabetic order by test-suite name
+# Tests from Jamfiles in tools/
+# Please keep these in alphabetic order
 
-run-tests tools :
-    bcp/test
-    ;
+local tools-to-test = bcp quickbook ;
+
+run-tests tools : $(tools-to-test)/test ;
+
 
 if $(check-libs-only-targets)
 {
     alias check-libs-only : $(check-libs-only-targets) ;
 }
 
-alias minimal : [ find-targets minimal : $(libs-to-test) ] ;
+alias minimal : [ find-targets minimal : ../libs/$(libs-to-test) ] ;
 explicit minimal ;
 
-alias quick : [ find-targets quick : $(libs-to-test) ] ;
+alias quick : [ find-targets quick : ../libs/$(libs-to-test) ../tools/$(tools-to-test) ] ;
 explicit quick ;
