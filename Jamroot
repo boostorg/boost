@@ -329,9 +329,9 @@ headers =
     # installed (see http://lists.boost.org/Archives/boost/2007/05/121430.php).
     [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
     [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ]
-    [ path.glob boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
+    [ path.glob $(BOOST_ROOT)/boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
     ;
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries) : $(headers) ;
+boostcpp.declare-targets $(all-libraries) : $(headers) : $(all-headers) ;

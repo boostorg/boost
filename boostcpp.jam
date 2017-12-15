@@ -20,6 +20,7 @@ import package ;
 import path ;
 import project ;
 import regex ;
+import sequence ;
 import set ;
 import targets ;
 import feature ;
@@ -234,7 +235,7 @@ rule filtered-target ( name : message + : sources + : requirements * )
     $(p).mark-target-as-explicit $(name)-message ;
 }
 
-rule declare_install_and_stage_proper_targets ( libraries * : headers * )
+rule declare_install_and_stage_proper_targets ( libraries * : headers * : modular-headers * )
 {
     local p = [ project.current ] ;
     for local l in $(libraries)
@@ -265,7 +266,7 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
     }
     local library-targets = $(libraries)-for-install ;
 
-    install-requirements = <install-source-root>$(BOOST_ROOT)/boost ;
+    local install-requirements ;
 
     if $(layout-versioned)
     {
@@ -288,9 +289,40 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
 
     p = [ project.current ] ;
 
+    # These headers will be installed from the modular
+    # layout, and should be ignored in the global boost/
+    local skip-headers ;
+    # Install modular headers.
+    for local lib in $(modular-headers)
+    {
+        local header-root = $(BOOST_ROOT)/libs/$(lib)/include/boost ;
+        local lib-headers =
+            [ path.glob-tree $(header-root) : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
+            [ path.glob-tree $(header-root)/compatibility/cpp_c_headers : c* : CVS .svn ]
+            [ path.glob $(header-root)/tr1/tr1 : * : bcc32 sun CVS .svn ]
+        ;
+        skip-headers += [ sequence.transform path.relative-to [ path.make $(header-root) ] : $(lib-headers) ] ;
+        package.install install-$(lib)-headers
+            : <install-source-root>$(header-root)
+              $(install-requirements)
+              <install-no-version-symlinks>on
+            : # binaries
+            : # libraries
+            : $(lib-headers)
+            ;
+        $(p).mark-target-as-explicit install-$(lib)-headers ;
+    }
+
+    # Filter out headers that were created by b2 headers
+    local header-root = [ path.make $(BOOST_ROOT)/boost ] ;
+    headers = [ set.difference $(headers) : $(header-root)/$(skip-headers) ] ;
+
     # Complete install.
     package.install install-proper
-        : $(install-requirements) <install-no-version-symlinks>on
+        :  <install-source-root>$(BOOST_ROOT)/boost
+           $(install-requirements)
+           <install-no-version-symlinks>on
+           
         :
         : $(libraries)-for-install
         : $(headers)
@@ -476,17 +508,17 @@ class top-level-target : alias-target-class
     }
 }
 
-rule declare_top_level_targets ( libraries * : headers * )
+rule declare_top_level_targets ( libraries * : headers * : modular-headers * )
 {
-    declare_install_and_stage_proper_targets $(libraries) : $(headers) ;
+    declare_install_and_stage_proper_targets $(libraries) : $(headers) : $(modular-headers) ;
 
     targets.create-metatarget top-level-target : [ project.current ]
         : install
-        : install-proper install-unversioned
+        : install-$(modular-headers)-headers install-proper install-unversioned
         ;
     targets.create-metatarget top-level-target : [ project.current ]
         : stage
-        : stage-proper stage-unversioned
+        : stage-proper stage-unversioned headers
         ;
 
     p = [ project.current ] ;
@@ -611,7 +643,7 @@ rule libraries-to-install ( existing-libs * )
     }
 }
 
-rule declare-targets ( all-libraries * : headers * )
+rule declare-targets ( all-libraries * : headers * : modular-headers * )
 {
     configure.register-components $(all-libraries) ;
 
@@ -629,7 +661,7 @@ rule declare-targets ( all-libraries * : headers * )
         EXIT ;
     }
 
-    declare_top_level_targets $(libraries) : $(headers) ;
+    declare_top_level_targets $(libraries) : $(headers) : $(modular-headers) ;
 }
 
 # Returns the properties identifying the toolset. We'll use them
