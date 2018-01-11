@@ -906,9 +906,9 @@
             </note>
         </mark-unusable>
         <mark-unusable>
-            <toolset name="gcc-mngw-gnu-3.4c+"/>
-            <toolset name="gcc-mngw-gnu-4.1c+"/>
-            <toolset name="gcc-mngw-gnu-4.2c+"/>
+            <toolset name="gcc-3.4c+"/>
+            <toolset name="gcc-4.1c+"/>
+            <toolset name="gcc-4.2c+"/>
             <note author="Lorenzo Caminiti">
                 Even tests that do not use C++11 lambda functions fail on this
                 compiler because it incorrectly attempts an extra copy when
@@ -962,9 +962,9 @@
             <test name="public_function-throwing_post"/>
             <test name="public_function-virtual"/>
             <test name="public_function-virtual_branch"/>
-            <toolset name="clang-gnu-linux-4.0~gnu++11"/>
-            <toolset name="clang-gnu-linux-4.0~gnu++14"/>
-            <toolset name="clang-gnu-linux-4.0~gnu++1z"/>
+            <toolset name="clang-linux-4.0~gnu++11"/>
+            <toolset name="clang-linux-4.0~gnu++14"/>
+            <toolset name="clang-linux-4.0~gnu++1z"/>
             <note author="Lorenzo Caminiti">
                 This test fails because of a libcxxrt bug on Clang for FreeBSD
                 which causes `std::uncaught_exception` to not work properly on
@@ -977,23 +977,10 @@
             <test name="specify-auto_pre_old_error"/>
             <test name="specify-auto_pre_old_post_error"/>
             <test name="specify-auto_pre_old_post_except_error"/>
-            <toolset name="clang-darwin-darwin-asan"/>
-            <toolset name="clang-darwin-darwin-ubsan"/>
-            <toolset name="clang-darwin-darwin-4.2.1"/>
-            <toolset name="intel-linux-linux"/>
-            <toolset name="clang-gnu-linux-4.0~gnu++1z"/>
-            <toolset name="clang-gnu-linux-5.0~c++1z"/>
-            <toolset name="clang-gnu-linux-5.0~gnu1z"/>
-            <toolset name="clang-gnu-linux-5.0~c++1z~O2"/>
-            <toolset name="clang-gnu-linux-5.0~c++1z~warn"/>
-            <toolset name="gcc-gnu-7~c++1z"/>
-            <toolset name="gcc-gnu-7~gnu1z"/>
-            <toolset name="gcc-gnu-7~c++1z~O2"/>
-            <toolset name="gcc-gnu-7~c++1z~warn"/>
-            <toolset name="clang-gnu-linux-5.0~c++1z"/>
-            <toolset name="clang-gnu-linux-5.0~c++1z~lc"/>
-            <toolset name="clang-gnu-linux-6.0~c++1z"/>
-            <toolset name="gcc-gnu-7~c++1z"/>
+            <toolset name="clang-darwin*"/>
+            <toolset name="clang-darwin*"/>
+            <toolset name="clang-darwin*"/>
+            <toolset name="*1z*"/>
             <note author="Lorenzo Caminiti">
                 This test fails because C++17 guarantees no copies on function
                 returns by value (so this library can only give run-time errors,
@@ -1011,7 +998,7 @@
             <test name="public_function-max_args2"/>
             <test name="public_function-max_args2_no_tva"/>
             <test name="public_function-max_args_no_tva"/>
-            <toolset name="gcc-mngw-gnu-6.1c+"/>
+            <toolset name="gcc-6.1c+"/>
             <note author="Lorenzo Caminiti">
                 It is not clear why this test fails but when trying to install
                 MinGW GCC 6.1 using `mingw-get` it says that such a compiler
@@ -1023,12 +1010,12 @@
         <mark-expected-failures>
             <test name="old-if_copyable"/>
             <test name="old-if_copyable_macro"/>
-            <toolset name="gcc-gnu-4.7.2"/>
-            <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="gcc-4.7.2"/>
+            <toolset name="gcc-4.7~c++11"/>
             <toolset name="qcc-4.7.3_arm"/>
             <toolset name="qcc-4.7.3_x86"/>
-            <toolset name="gcc-mngw-gnu-4.6c+"/>
-            <toolset name="gcc-mngw-gnu-4.7c+"/>
+            <toolset name="gcc-4.6c+"/>
+            <toolset name="gcc-4.7c+"/>
             <toolset name="msvc-10.0"/>
             <toolset name="msvc-11.0"/>
             <note author="Lorenzo Caminiti">
@@ -1040,11 +1027,11 @@
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="public_function-protected_error"/>
-            <toolset name="clang-gnu-linux-3.0~c++11"/>
-            <toolset name="clang-gnu-linux-3.0~gnu11"/>
-            <toolset name="clang-gnu-linux-3.0~c++11~O2"/>
-            <toolset name="clang-gnu-linux-3.0~c++11~warn"/>
-            <toolset name="gcc-mngw-gnu-4.6c+"/>
+            <toolset name="clang-linux-3.0~c++11"/>
+            <toolset name="clang-linux-3.0~gnu11"/>
+            <toolset name="clang-linux-3.0~c++11~O2"/>
+            <toolset name="clang-linux-3.0~c++11~warn"/>
+            <toolset name="gcc-4.6c+"/>
             <note author="Lorenzo Caminiti">
                 This test fails because SFINAE on this complier seems to not
                 fail as it should when a derived class tries to call a
@@ -1056,12 +1043,12 @@
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="public_function-virtual_access_multi"/>
-            <toolset name="gcc-gnu-4.7.2"/>
-            <toolset name="gcc-gnu-4.7~c++11"/>
+            <toolset name="gcc-4.7.2"/>
+            <toolset name="gcc-4.7~c++11"/>
             <toolset name="qcc-4.7.3_arm"/>
             <toolset name="qcc-4.7.3_x86"/>
-            <toolset name="gcc-mngw-gnu-4.6c+"/>
-            <toolset name="gcc-mngw-gnu-4.7c+"/>
+            <toolset name="gcc-4.6c+"/>
+            <toolset name="gcc-4.7c+"/>
             <note author="Lorenzo Caminiti">
                 This test fails because this compiler seems to incorrectly check
                 access level of members in base classes in a context when only
@@ -1071,8 +1058,8 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="disable-always_disable_post_except_lib"/>
-            <toolset name="gcc-gnu-8.0.0"/>
+            <test name="disable-no_post_except_lib"/>
+            <toolset name="gcc-8.0.0"/>
             <note author="Lorenzo Caminiti">
                 GCC 8 has not been released yet so this test might be failing
                 because of some work-in-progress aspect of the compiler.
@@ -1117,6 +1104,7 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
+            <test name="constructor-ifdef_macro"/>
             <test name="constructor-smoke"/>
             <toolset name="msvc-10.0"/>
             <note author="Lorenzo Caminiti">
@@ -1137,10 +1125,12 @@
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
-            <test name="disable-always_disable_post_except_lib"/>
-            <test name="disable-assertions_disable_assertions_lib"/>
-            <test name="disable-assertions_disable_assertions_prog"/>
-            <test name="disable-pre_disable_no_assertion_prog"/>
+            <test name="disable-no_post_except_lib"/>
+            <test name="disable-no_post_except_unit"/>
+            <test name="disable-nothing_for_pre_prog"/>
+            <test name="disable-other_assertions_lib"/>
+            <test name="disable-other_assertions_prog"/>
+            <test name="disable-other_assertions_unit"/>
             <toolset name="msvc-10.0"/>
             <note author="Lorenzo Caminiti">
                 This test fails because of an internal MSVC 10.0 compiler bug.
@@ -1165,7 +1155,7 @@
         <mark-expected-failures>
             <test name="old-auto"/>
             <test name="old-copyable_traits"/>
-            <toolset name="gcc-mngw-gnu-4.6c+"/>
+            <toolset name="gcc-4.6c+"/>
             <note author="Lorenzo Caminiti">
                 This test fails because of this compiler/platform cause an
                 error in Boost.TypeTraits (this could be fixed in the master
