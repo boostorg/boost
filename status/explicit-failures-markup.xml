@@ -3651,19 +3651,24 @@ for more information.
     
     <!-- phoenix -->
     <library name="phoenix">
-      <mark-unusable>
-        <toolset name="sun-5.7"/>
-        <toolset name="sun-5.8"/>
-        <toolset name="sun-5.9"/>
-        <toolset name="sun-5.10"/>
-        <toolset name="borland-*"/>
-        <toolset name="vacpp*"/>
-        <toolset name="cray-8.0"/>
-        <note author="Thomas Heller" id="phoenix-incompatible-compilers">
-            These compilers don't work with phoenix.
-            This is due to the fact that phoenix uses proto
-        </note>
-        </mark-unusable>
+        <mark-expected-failures>
+            <test name="lambda_tests7"/>
+            <test name="lambda_tests10"/>
+            <test name="lambda_tests11"/>
+            <test name="lambda_tests14"/>
+            <test name="lambda_tests15"/>
+            <toolset name="msvc-12.0"/>
+            <note author="Kohei Takahsahi">
+                Wrokaround: define BOOST_RESULT_OF_USE_TR1
+            </note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="lambda_tests22"/>
+            <toolset name="msvc-14.*"/>
+            <note author="Kohei Takahsahi">
+                https://github.com/boostorg/phoenix/issues/62
+            </note>
+        </mark-expected-failures>
     </library>
 
     <!-- poly_collection -->
