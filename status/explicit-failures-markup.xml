@@ -912,7 +912,7 @@
             <note author="Lorenzo Caminiti">
                 Even tests that do not use C++11 lambda functions fail on this
                 compiler because it incorrectly attempts an extra copy when
-                objects are constructed via `boost::check c = ...`.
+                objects are constructed using `boost::check c = ...`.
                 This is fixed in MinGW GCC 4.3.
             </note>
         </mark-unusable>
@@ -920,11 +920,10 @@
             <toolset name="msvc-7.1"/>
             <note author="Lorenzo Caminiti">
                 Even tests that do not use C++11 lambda functions fail on this
-                compiler because of a number of different issues
-                (Boost.Exception, which used by this library, also is not
-                supported on this compiler, incorrect implementation of some
-                aspects of friendship, incorrect dispatching of some `volatile`
-                calls, etc.).
+                compiler because of a number of issues (Boost.Exception is not
+                supported on this compiler but it is used by this library
+                implementation, some aspects of `friend` and `volatile` are not
+                properly implemented on this compiler, etc.).
                 These specific issues are fixed in MSVC 9.0 (but only MSVC 11.0
                 has adequate lambda function support that makes this library
                 actually usable).
@@ -1149,17 +1148,6 @@
                 reference to this possible compiler issue online).
                 This is fixed in MSVC 9.0 (but only MSVC 11.0 has adequate
                 lambda function support).
-            </note>
-        </mark-expected-failures>
-        <!-- following due to other boost libs, could be fixed in master? -->
-        <mark-expected-failures>
-            <test name="old-auto"/>
-            <test name="old-copyable_traits"/>
-            <toolset name="gcc-4.6c+"/>
-            <note author="Lorenzo Caminiti">
-                This test fails because of this compiler/platform cause an
-                error in Boost.TypeTraits (this could be fixed in the master
-                branch... not sure).
             </note>
         </mark-expected-failures>
     </library>
