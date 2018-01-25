@@ -39,8 +39,8 @@ rule set-version ( version )
 {
     BOOST_VERSION = $(version) ;
 
-    local version-tag = [ MATCH ^([^.]+)[.]([^.]+)[.]([^.]+) : $(BOOST_VERSION)
-        ] ;
+    local version-tag =
+        [ MATCH "^([^.]+)[.]([^.]+)[.]([^.]+)" : $(BOOST_VERSION) ] ;
     if $(version-tag[3]) = 0
     {
         version-tag = $(version-tag[1-2]) ;
@@ -78,12 +78,12 @@ layout-$(layout) = true ;
 
 if $(layout) = system && $(build-type) = complete
 {
-    ECHO error: Cannot use --layout=system with --build-type complete. ;
-    ECHO error: Please use either --layout=versioned or --layout=tagged ;
-    ECHO error: if you wish to build multiple variants. ;
+    ECHO error\: Cannot use --layout=system with --build-type complete. ;
+    ECHO error\: Please use either --layout=versioned or --layout=tagged ;
+    ECHO error\: if you wish to build multiple variants. ;
     if [ os.name ] != NT
     {
-        ECHO error: Note that --layout=system is used by default on Unix
+        ECHO error\: Note that --layout=system is used by default on Unix
             starting with Boost 1.40. ;
     }
     EXIT ;
@@ -105,7 +105,7 @@ if $(build-id)
 python-id = [ option.get "python-buildid" ] ;
 if $(python-id)
 {
-    PYTHON_ID = [ regex.replace $(python-id) [*\\/:.\"\'] _ ] ;
+    PYTHON_ID = [ regex.replace $(python-id) "[*\\/:.\"\']" _ ] ;
 }
 
 
@@ -144,7 +144,7 @@ rule tag ( name : type ? : property-set )
         }
         else
         {
-            EXIT error: invalid layout '$(layout:E=)' ;
+            EXIT error\: invalid layout '$(layout:E=)' ;
         }
 
         # Optionally add version suffix. On NT, library with version suffix will
@@ -198,20 +198,20 @@ rule make-unversioned-links ( project name ? : property-set : sources * )
     local filter ;
     if [ modules.peek : NT ]
     {
-        filter = (.*[.]lib) ;
+        filter = "(.*[.]lib)" ;
     }
     else
     {
         filter =
-            (.*[.]so)[.0-9]*
-            (.*[.]dylib)
-            (.*[.]a) ;
+            "(.*[.]so)[.0-9]*"
+            "(.*[.]dylib)"
+            "(.*[.]a)" ;
     }
 
     local result ;
     for local s in $(sources)
     {
-        local m = [ MATCH ^(.*)-[0-9_]+$(filter)$ : [ $(s).name ] ] ;
+        local m = [ MATCH "^(.*)-[0-9_]+$(filter)$" : [ $(s).name ] ] ;
         if $(m)
         {
             local ea = [ $(s).action ] ;
@@ -226,7 +226,7 @@ rule make-unversioned-links ( project name ? : property-set : sources * )
 
 rule filtered-target ( name : message + : sources + : requirements * )
 {
-    message $(name)-message : warning: $(message) ;
+    message $(name)-message : warning\: $(message) ;
     alias $(name) : $(sources) : $(requirements) ;
     alias $(name) : $(name)-message ;
 
@@ -617,19 +617,19 @@ rule libraries-to-install ( existing-libs * )
     # Do some checks.
     if $(with-parameter) && $(without-parameter)
     {
-        EXIT error: both --with-<library> and --without-<library> specified ;
+        EXIT error\: both --with-<library> and --without-<library> specified ;
     }
 
     local wrong = [ set.difference $(with-parameter) : $(existing-libs) ] ;
     if $(wrong)
     {
-        EXIT error: wrong library name '$(wrong[1])' in the --with-<library>
+        EXIT error\: wrong library name '$(wrong[1])' in the --with-<library>
             option. ;
     }
     local wrong = [ set.difference $(without-parameter) : $(existing-libs) ] ;
     if $(wrong)
     {
-        EXIT error: wrong library name '$(wrong[1])' in the --without-<library>
+        EXIT error\: wrong library name '$(wrong[1])' in the --without-<library>
             option. ;
     }
 
@@ -653,7 +653,7 @@ rule declare-targets ( all-libraries * : headers * : modular-headers * )
 
     if [ option.get "show-libraries" : : true ]
     {
-        ECHO The following libraries require building: ;
+        ECHO The following libraries require building\: ;
         for local l in $(libraries)
         {
             ECHO "    - $(l)" ;
