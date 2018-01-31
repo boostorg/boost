@@ -25,6 +25,7 @@ import set ;
 import targets ;
 import feature ;
 import property ;
+import version : version-less ;
 
 ##############################################################################
 #
@@ -59,6 +60,23 @@ if ! ( $(build-type) in complete minimal )
 
 # What kind of layout are we doing?
 layout = [ option.get layout : "" ] ;
+
+layout = [ MATCH (versioned|tagged|system)(-(.+))? : $(layout) ] ;
+if $(layout[3])
+{
+    layout-version = $(layout[3]) ;
+    layout = $(layout[1]) ;
+    if [ version-less [ regex.split $(layout-version) "[.]" ] : 1 66 ]
+    {
+        layout-version = 1.40 ;
+    }
+    else if [ version-less [ regex.split $(layout-version) "[.]" ] : 1 67 ]
+    {
+        layout-version = 1.66 ;
+    }
+}
+layout-version ?= 1.67 ;
+
 # On Windows, we used versioned layout by default in order to be compatible with
 # autolink. On other systems, we use system layout which is what every other
 # program uses. Note that the Windows check is static, and will not be affected
@@ -109,6 +127,46 @@ if $(python-id)
 }
 
 
+if $(layout) = versioned
+{
+    switch $(layout-version)
+    {
+    case 1.40 :
+        .format-name-args =
+            <base> <toolset> <threading> <runtime> ;
+    case 1.66 :
+        .format-name-args =
+            <base> <toolset> <threading> <runtime> <arch-and-model> ;
+    case 1.67 :
+        .format-name-args =
+            <base> <toolset> <threading> <runtime> <arch-and-model> ;
+    }
+}
+else if $(layout) = tagged
+{
+    switch $(layout-version)
+    {
+    case 1.40 :
+        .format-name-args =
+            <base> <threading> <runtime> ;
+    case 1.66 :
+        .format-name-args =
+            <base> <threading> <runtime> ;
+    case 1.67 :
+        .format-name-args =
+            <base> <threading> <runtime> <arch-and-model> ;
+    }
+}
+else if $(layout) = system
+{
+    .format-name-args = <base> ;
+}
+else
+{
+    .format-name-error = true ;
+}
+
+
 ################################################################################
 #
 # 1. 'tag' function adding decorations suitable to the properties if versioned
@@ -120,29 +178,15 @@ rule tag ( name : type ? : property-set )
 {
     if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
     {
-        local result ;
+        local args = $(.format-name-args) ;
         if $(layout) = versioned
         {
-            result = [ common.format-name
-                <base> <toolset> <threading> <runtime> <arch-and-model> -$(BOOST_VERSION_TAG)
-                -$(BUILD_ID)
-                : $(name) : $(type) : $(property-set) ] ;
+            args += -$(BOOST_VERSION_TAG) ;
         }
-        else if $(layout) = tagged
-        {
-            result = [ common.format-name
-                <base> <threading> <runtime>
-                -$(BUILD_ID)
-                : $(name) : $(type) : $(property-set) ] ;
-        }
-        else if $(layout) = system
-        {
-            result = [ common.format-name
-                <base>
-                -$(BUILD_ID)
-                : $(name) : $(type) : $(property-set) ] ;
-        }
-        else
+        local result  = [ common.format-name
+            $(args) -$(BUILD_ID)
+            : $(name) : $(type) : $(property-set) ] ;
+        if $(.format-name-error)
         {
             EXIT error\: invalid layout '$(layout:E=)' ;
         }
