@@ -868,15 +868,11 @@
     <!-- contract -->
     <library name="contract">
         <mark-unusable>
-            <toolset name="gcc-gnu-6"/>
+            <toolset name="gcc-6"/>
             <note author="Lorenzo Caminiti">
-                Tests fail to link on this compiler when libc++ is used (see
+                Tests fail to link on this compiler because of a bug in its STL
+                implementation (undefined references to `operator delete`, see
                 https://tracker.crystax.net/issues/1403).
-                This linker error does not occur with libstdc++ but
-                unfortunately the toolset name for this compiler does not
-                differentiate between libc++ and libstdc++ runs so also
-                libstdc++ tests had to be marked as expected failures (even if
-                they actually pass).
             </note>
         </mark-unusable>
         <mark-unusable>
@@ -905,25 +901,26 @@
         </mark-unusable>
         <mark-expected-failures>
             <test name="disable-audit"/>
-            <toolset name="gcc-gnu-4.9"/>
-            <toolset name="gcc-gnu-5"/>
+            <toolset name="gcc-4.9"/>
+            <toolset name="gcc-5"/>
+            <toolset name="clang-linux-3.6"/>
+            <toolset name="clang-linux-3.7"/>
+            <toolset name="clang-linux-3.8"/>
             <note author="Lorenzo Caminiti">
-                This test fails on this compiler because of a bug in libc++
-                (see http://grokbase.com/t/gg/android-ndk/1656csqqtp/assertion-ttypeencoding-dw-eh-pe-absptr-unexpected-ttypeencoding-failed).
-                This is fixed in libstdc++.
+                This test fails on this compiler because of a bug with
+                exceptions (see http://grokbase.com/t/gg/android-ndk/1656csqqtp/assertion-ttypeencoding-dw-eh-pe-absptr-unexpected-ttypeencoding-failed).
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
             <test name="invariant-ifdef"/>
-            <test name="invariant-ifdef_macro"/>
             <test name="specify-nothing"/>
             <toolset name="clang-gnu-linux-3.6"/>
             <toolset name="clang-gnu-linux-3.7"/>
             <toolset name="clang-gnu-linux-3.8"/>
             <note author="Lorenzo Caminiti">
-                This test fails on this compiler because of a bug in libstdc++
-                (undefined references to `std::ios_base::failure::failure`).
-                This is fixed in libc++.
+                This test fails on this compiler because of a bug in its STL
+                implementation (undefined references to
+                `std::ios_base::failure::failure`).
             </note>
         </mark-expected-failures>
         <mark-expected-failures>
@@ -950,6 +947,7 @@
             <test name="specify-auto_pre_old_error"/>
             <test name="specify-auto_pre_old_post_error"/>
             <test name="specify-auto_pre_old_post_except_error"/>
+            <toolset name="intel-linux-linux"/>
             <toolset name="clang-darwin*"/>
             <toolset name="clang-darwin*"/>
             <toolset name="clang-darwin*"/>
