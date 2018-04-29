@@ -1,0 +1,28 @@
+#
+# Copyright (C) 2018 James E. King III
+#
+# Use, modification, and distribution are subject to the
+# Boost Software License, Version 1.0. (See accompanying file
+# LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+
+# Help bjam find clang++-6.0 for "clang"
+# (see: https://github.com/boostorg/build/issues/306)
+using clang : 6.0 : /usr/bin/clang++-6.0 ;
+using gcc : 7.3 : /usr/bin/g++-7 ;
+
+# For building documentation
+# This is what setup_boostbook.sh would do
+using boostbook
+  : /opt/docbook-xsl-1.75.2
+  : /opt/docbook-dtd-4.2
+  ;
+using xsltproc : /usr/bin/xsltproc ;
+using doxygen : /usr/bin/doxygen ;
+using fop : /opt/fop-0.94/fop : : /usr/bin/java ;
+
+# Python 3.6 dev kit is installed
+using python : 3.6 ;
+
+# Enable optional MPI build
+using mpi ;
