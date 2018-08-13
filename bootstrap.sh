@@ -293,6 +293,11 @@ fi
 $ECHO -n "Unicode/ICU support for Boost.Regex?... "
 if test "x$flag_icu" != xno; then
   if test "x$ICU_ROOT" = x; then
+    if command -v pkg-config > /dev/null && pkg-config icu-uc ; then
+      ICU_ROOT=`pkg-config --variable=prefix icu-uc`
+    fi
+  fi
+  if test "x$ICU_ROOT" = x; then
     COMMON_ICU_PATHS="/usr /usr/local /sw"
     for p in $COMMON_ICU_PATHS; do
       if test -r $p/include/unicode/utypes.h; then
