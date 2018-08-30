@@ -70,12 +70,12 @@ if $(layout[3])
     {
         layout-version = 1.40 ;
     }
-    else if [ version-less [ regex.split $(layout-version) "[.]" ] : 1 67 ]
+    else if [ version-less [ regex.split $(layout-version) "[.]" ] : 1 69 ]
     {
         layout-version = 1.66 ;
     }
 }
-layout-version ?= 1.67 ;
+layout-version ?= 1.69 ;
 
 # On Windows, we used versioned layout by default in order to be compatible with
 # autolink. On other systems, we use system layout which is what every other
@@ -137,7 +137,7 @@ if $(layout) = versioned
     case 1.66 :
         .format-name-args =
             <base> <toolset> <threading> <runtime> <arch-and-model> ;
-    case 1.67 :
+    case 1.69 :
         .format-name-args =
             <base> <toolset> <threading> <runtime> <arch-and-model> ;
     }
@@ -152,7 +152,7 @@ else if $(layout) = tagged
     case 1.66 :
         .format-name-args =
             <base> <threading> <runtime> ;
-    case 1.67 :
+    case 1.69 :
         .format-name-args =
             <base> <threading> <runtime> <arch-and-model> ;
     }
