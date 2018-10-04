@@ -135,6 +135,9 @@ import "class" : new ;
 import property-set ;
 import threadapi-feature ;
 import option ;
+import os ;
+import project ;
+import tools/cmake_config/cmake-config ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.69.0 ;
@@ -286,6 +289,21 @@ if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
     use-project /boost/libs/wave/tool : libs/wave/tool/build ;
 }
 
+rule generate-cmake-config ( project name : property-set : sources * )
+{
+    cmake-config.generate-cmake-config $(project) $(name) : $(property-set) : $(sources) ;
+}
+
+rule generate-cmake-config-version ( project name : property-set : sources * )
+{
+    cmake-config.generate-cmake-config-version $(project) $(name) : $(property-set) : $(sources) ;
+}
+
+rule generate-cmake-variant ( project name : property-set : sources * )
+{
+    cmake-config.generate-cmake-variant $(project) $(name) : $(property-set) : $(sources) ;
+}
+
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The
 # --prefix option is respected, but --with and --without options, naturally, are
@@ -295,22 +313,63 @@ if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
 #
 rule boost-install ( libraries * )
 {
-    package.install install
-        : <dependency>/boost//install-proper-headers $(install-requirements)
+    # install-requirements
+
+    local install-requirements ;
+
+    local layout = [ modules.peek boostcpp : layout ] ;
+    local BOOST_VERSION_TAG = [ modules.peek boostcpp : BOOST_VERSION_TAG ] ;
+
+    if $(layout) = versioned
+    {
+        install-requirements += <install-header-subdir>boost-$(BOOST_VERSION_TAG) ;
+    }
+
+    local install-default-prefix ;
+
+    if [ os.name ] = NT
+    {
+        install-default-prefix = C:/Boost ;
+    }
+    else
+    {
+        install-default-prefix = /usr/local ;
+    }
+
+    install-requirements += <install-default-prefix>$(install-default-prefix) ;
+
+    # install-libraries
+
+    local p = [ project.current ] ;
+
+    package.install install-libraries boost
+        : $(install-requirements)
         : # No binaries
         : $(libraries)
-        : # No headers, it is handled by the dependency.
+        : # No headers
     ;
+
+    $(p).mark-target-as-explicit install-libraries ;
+
+    # install-cmake-config
+
+    local prefix = [ option.get prefix : $(install-default-prefix) ] ;
+    local lib-locate = [ option.get libdir : $(prefix)/lib ] ;
+
+    cmake-config.libs install-cmake-config : $(lib-locate) : $(BOOST_VERSION) : $(libraries) ;
+    $(p).mark-target-as-explicit install-cmake-config ;
+
+    # install
+
+    alias install : install-libraries install-cmake-config ;
+    $(p).mark-target-as-explicit install ;
+
+    # stage
 
     local stage-locate = [ option.get stagedir : $(BOOST_ROOT)/stage ] ;
 
     install stage : $(libraries) : <location>$(stage-locate)/lib ;
-
-    module [ CALLER_MODULE ]
-    {
-        explicit stage ;
-        explicit install ;
-    }
+    $(p).mark-target-as-explicit stage ;
 }
 
 # Creates a library target, adding autolink support and also creates
