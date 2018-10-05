@@ -226,33 +226,6 @@ all-libraries = [ sequence.unique $(all-libraries) ] ;
 # purposes, there's no library to build and install.
 all-libraries = [ set.difference $(all-libraries) : function_types ] ;
 
-# Setup convenient aliases for all libraries.
-
-local rule explicit-alias ( id : targets + )
-{
-    alias $(id) : $(targets) ;
-    explicit $(id) ;
-}
-
-# First, the complicated libraries: where the target name in Jamfile is
-# different from its directory name.
-explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
-explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
-explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
-explicit-alias bgl-vis : libs/graps/build//bgl-vis ;
-explicit-alias serialization : libs/serialization/build//boost_serialization ;
-explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
-for local l in $(all-libraries)
-{
-    if ! $(l) in test graph serialization
-    {
-        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
-    }
-}
-
-# Log has an additional target
-explicit-alias log_setup : libs/log/build//boost_log_setup ;
-
 rule do-nothing { }
 
 rule generate-alias ( project name : property-set : sources * )
