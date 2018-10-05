@@ -359,9 +359,14 @@ rule boost-install ( libraries * )
     cmake-config.libs install-cmake-config : $(lib-locate) : $(BOOST_VERSION) : $(libraries) ;
     $(p).mark-target-as-explicit install-cmake-config ;
 
+    # install-detect-toolset
+
+    install install-detect-toolset : $(BOOST_ROOT)/tools/cmake_config/BoostDetectToolset.cmake : <location>$(lib-locate)/cmake <name>BoostDetectToolset-$(BOOST_VERSION).cmake ;
+    $(p).mark-target-as-explicit install-detect-toolset ;
+
     # install
 
-    alias install : install-libraries install-cmake-config ;
+    alias install : install-libraries install-cmake-config install-detect-toolset ;
     $(p).mark-target-as-explicit install ;
 
     # stage
