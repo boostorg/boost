@@ -7,10 +7,18 @@ cmake_minimum_required(VERSION 3.5)
 
 project(boost LANGUAGES CXX)
 
+#=== options ===
+
+option(boost_include_tools "Set to ON if (cmake compatible) boost tools should also be build (default is OFF)")
 # exclude libraries and tools that don't work with the superproject yet
 # (e.g. due to missing dependencies or conflicting target definitions)
-set(boost_main_excluded_libs DUMMY_LIB_NAME CACHE string "List of libraries that will be excluded from cmake build")
-set(boost_main_excluded_tools DUMMY_LIB_NAME CACHE string "List of tools that will be excluded from cmake build")
+set(boost_main_excluded_libs dummy1;dummy2;dummy3 CACHE string "List of libraries that will be excluded from cmake build")
+if(boost_include_tools)
+    set(boost_main_excluded_tools dummy1;dummy2;dummy3 CACHE string "List of tools that will be excluded from cmake build")
+endif()
+
+#~~~ options ~~~
+
 
 message("
 ================================ BOOST WARNING ===================================================
@@ -25,12 +33,14 @@ message("
 ")
 
 message("Manually excluded libs: ${boost_main_excluded_libs}")
-message("Manually excluded tools: ${boost_main_excluded_tools}")
+
+# cmake doesn't require autolinking and currently most cmake files don't produce
+# name mangled libraries anyway
+message("Deactivating boost auto linking mechanism (-DBOOST_ALL_NO_LIB)")
+add_definitions(-DBOOST_ALL_NO_LIB)
 
 # Detect and process all CMakeLists files that reside in the root folder of a library
 file(GLOB boost_libs_with_cmake_files libs/*/CMakeLists.txt)
-
-add_definitions(-DBOOST_ALL_NO_LIB)
 
 foreach(cmake_file IN ITEMS ${boost_libs_with_cmake_files})
 
@@ -46,19 +56,23 @@ foreach(cmake_file IN ITEMS ${boost_libs_with_cmake_files})
 
 endforeach()
 
-# Detect and process all CMakeLists files that reside in the root folder of a tool
-file(GLOB boost_tools_with_cmake_files tools/*/CMakeLists.txt)
+if(boost_include_tools)
+    message("Manually excluded tools: ${boost_main_excluded_tools}")
 
-foreach(cmake_file IN ITEMS ${boost_tools_with_cmake_files})
+    # Detect and process all CMakeLists files that reside in the root folder of a tool
+    file(GLOB boost_tools_with_cmake_files tools/*/CMakeLists.txt)
 
-    get_filename_component(dir ${cmake_file} DIRECTORY)
-    get_filename_component(tool_name ${dir} NAME)
+    foreach(cmake_file IN ITEMS ${boost_tools_with_cmake_files})
+        get_filename_component(dir ${cmake_file} DIRECTORY)
+        get_filename_component(tool_name ${dir} NAME)
 
-    if(tool_name IN_LIST boost_main_excluded_tools)
-        message("Ignoring boost tool: ${dir}")
-    else()
-        message("Adding boost tool: ${dir}")
-        add_subdirectory(${dir})
-    endif()
-endforeach()
+        if(tool_name IN_LIST boost_main_excluded_tools)
+            message("Ignoring boost tool: ${dir}")
+        else()
+            message("Adding boost tool: ${dir}")
+            add_subdirectory(${dir})
+        endif()
+    endforeach()
+
+endif() #boost_include_tools
 
