@@ -198,7 +198,7 @@ rule tag ( name : type ? : property-set )
         # libFoo.1.2.3.dylib format. AIX linkers do not accept version suffixes
         # either. Pgi compilers can not accept a library with version suffix.
         if $(type) = SHARED_LIB &&
-          ! [ $(property-set).get <target-os> ] in windows cygwin darwin aix &&
+          ! [ $(property-set).get <target-os> ] in windows cygwin darwin aix android &&
           ! [ $(property-set).get <toolset> ] in pgi
         {
             result = $(result).$(BOOST_VERSION)  ;
