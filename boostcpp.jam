@@ -213,9 +213,27 @@ rule tag ( name : type ? : property-set )
 rule python-tag ( name : type ? : property-set )
 {
     local result = $(name) ;
-    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB && $(PYTHON_ID)
+
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
     {
-        result = $(result)-$(PYTHON_ID) ;
+        # Add Python version suffix
+
+        local version = [ $(property-set).get <python> ] ;
+
+        local major-minor = [ MATCH "^([0-9]+)\.([0-9]+)" : $(version) ] ;
+        local suffix = $(major-minor:J="") ;
+
+        if $(suffix)
+        {
+            result = $(result)$(suffix) ;
+        }
+
+        # Add PYTHON_ID if supplied
+
+        if $(PYTHON_ID)
+        {
+            result = $(result)-$(PYTHON_ID) ;
+        }
     }
 
     # forward to the boost tagging rule
