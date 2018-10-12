@@ -206,8 +206,10 @@ rule tag ( name : type ? : property-set )
         # version suffix is not needed -- the linker expects the
         # libFoo.1.2.3.dylib format. AIX linkers do not accept version suffixes
         # either. Pgi compilers can not accept a library with version suffix.
+        # For android, if we link to libFoo.so, which is a soft link to libFoo.so.1.2.3,
+        # the android studio will only pack the former into the final apk.
         if $(type) = SHARED_LIB &&
-          ! [ $(property-set).get <target-os> ] in windows cygwin darwin aix &&
+          ! [ $(property-set).get <target-os> ] in windows cygwin darwin aix android &&
           ! [ $(property-set).get <toolset> ] in pgi
         {
             result = $(result).$(BOOST_VERSION)  ;
