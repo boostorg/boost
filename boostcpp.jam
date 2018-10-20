@@ -109,7 +109,16 @@ if $(layout) = system && $(build-type) = complete
 
 # Possible stage only location.
 stage-locate = [ option.get stagedir ] ;
-stage-locate ?= stage ;
+
+if $(stage-locate)
+{
+    stage-locate = [ path.root [ path.make $(stage-locate) ] [ path.pwd ] ] ;
+}
+else
+{
+    stage-locate = $(BOOST_ROOT)/stage ;
+}
+
 BOOST_STAGE_LOCATE = $(stage-locate) ;
 
 # Custom build ID.
@@ -427,9 +436,6 @@ rule declare_top_level_targets ( libraries * )
 }
 
 
-stage-abs = [ path.native [ path.root $(stage-locate)/lib [ path.pwd ] ] ] ;
-
-
 ################################################################################
 #
 # 4. Add hook to report configuration before the build, and confirmation with
@@ -456,7 +462,6 @@ rule pre-build ( )
 IMPORT $(__name__) : pre-build : : $(__name__).pre-build ;
 build-system.set-pre-build-hook $(__name__).pre-build ;
 
-# FIXME: Revise stage_abs.
 rule post-build ( ok ? )
 {
     if forward in [ modules.peek : top-level-targets ]
@@ -464,6 +469,8 @@ rule post-build ( ok ? )
         if $(ok)
         {
             local include-path = [ path.native $(BOOST_ROOT) ] ;
+            local stage-abs = [ path.native $(stage-locate)/lib ] ;
+
             ECHO "
 
 The Boost C++ Libraries were successfully built!
