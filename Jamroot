@@ -288,22 +288,7 @@ if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
     use-project /boost/libs/wave/tool : libs/wave/tool/build ;
 }
 
-# Make the boost-install rules visible in subprojects
-
-rule generate-cmake-config ( project name : property-set : sources * )
-{
-    boost-install.generate-cmake-config $(project) $(name) : $(property-set) : $(sources) ;
-}
-
-rule generate-cmake-config-version ( project name : property-set : sources * )
-{
-    boost-install.generate-cmake-config-version $(project) $(name) : $(property-set) : $(sources) ;
-}
-
-rule generate-cmake-variant ( project name : property-set : sources * )
-{
-    boost-install.generate-cmake-variant $(project) $(name) : $(property-set) : $(sources) ;
-}
+# Make the boost-install rule visible in subprojects
 
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The
