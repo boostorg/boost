@@ -1,5 +1,5 @@
 # Copyright (c) 2002 Douglas Gregor <doug.gregor -at- gmail.com>
-# Copyright (c) 2016 Rene Rivera
+# Copyright (c) 2016-2018 Rene Rivera
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
@@ -24,7 +24,7 @@ import "class" : is-a ;
 
 path-constant BOOST_DOC : . ;
 
-local lib-docs = [ path.glob [ path.glob $(BOOST_DOC)/../libs : */doc ]
+local lib-docs = [ path.glob [ path.glob $(BOOST_DOC)/../libs $(BOOST_DOC)/../tools : */doc ]
     : [ modules.peek project : JAMFILE ] ] ;
 
 local rule find-target-of-class-or-type ( root-target : klass ? : type ? )
@@ -180,7 +180,6 @@ explicit libraries ;
 xinclude tools :
     ../tools/quickbook/doc//quickbook
     ../tools/boostbook/doc/boostbook.xml
-    ../tools/build/doc//boostdoc
     ;
 explicit tools ;
 
