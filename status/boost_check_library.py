@@ -163,11 +163,11 @@ class check_library():
         self.library_key = self.library.split('/',1)[1]
 
         if self.debug:
-            print ">>> cwd: %s"%(os.getcwd())
-            print ">>> actions: %s"%(self.actions)
-            print ">>> boost_root: %s"%(self.boost_root)
-            print ">>> library: %s"%(self.library)
-            print ">>> jamfile: %s"%(self.jamfile)
+            print(">>> cwd: %s"%(os.getcwd()))
+            print(">>> actions: %s"%(self.actions))
+            print(">>> boost_root: %s"%(self.boost_root))
+            print(">>> library: %s"%(self.library))
+            print(">>> jamfile: %s"%(self.jamfile))
 
         for action in self.actions:
             action_m = "check_"+action.replace('-','_')
