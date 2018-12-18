@@ -19,23 +19,28 @@
 #   =======                 configured locations (below).
 #
 #   --prefix=<PREFIX>       Install architecture independent files here.
-#                           Default; C:\Boost on Win32
-#                           Default; /usr/local on Unix. Linux, etc.
+#                           Default: C:\Boost on Windows
+#                           Default: /usr/local on Unix, Linux, etc.
 #
 #   --exec-prefix=<EPREFIX> Install architecture dependent files here.
-#                           Default; <PREFIX>
+#                           Default: <PREFIX>
 #
-#   --libdir=<DIR>          Install library files here.
-#                           Default; <EPREFIX>/lib
+#   --libdir=<LIBDIR>       Install library files here.
+#                           Default: <EPREFIX>/lib
 #
 #   --includedir=<HDRDIR>   Install header files here.
-#                           Default; <PREFIX>/include
+#                           Default: <PREFIX>/include
+#
+#   --cmakedir=<CMAKEDIR>   Install CMake configuration files here.
+#                           Default: <LIBDIR>/cmake
+#
+#   --no-cmake-config       Do not install CMake configuration files.
 #
 #   stage                   Build and install only compiled library files to the
 #   =====                   stage directory.
 #
 #   --stagedir=<STAGEDIR>   Install library files here
-#                           Default; ./stage
+#                           Default: ./stage
 #
 # Other Options:
 #
@@ -135,6 +140,7 @@ import "class" : new ;
 import property-set ;
 import threadapi-feature ;
 import option ;
+import tools/boost_install/boost-install ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.70.0 ;
@@ -179,6 +185,7 @@ project boost
     : usage-requirements <include>.
     : default-build
       <visibility>hidden
+      <threading>multi
     : build-dir bin.v2
     ;
 
@@ -244,7 +251,7 @@ explicit-alias serialization : libs/serialization/build//boost_serialization ;
 explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
 for local l in $(all-libraries)
 {
-    if ! $(l) in test graph serialization
+    if ! $(l) in test graph serialization headers
     {
         explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
     }
@@ -286,31 +293,18 @@ if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
     use-project /boost/libs/wave/tool : libs/wave/tool/build ;
 }
 
+# Make the boost-install rule visible in subprojects
+
 # This rule should be called from libraries' Jamfiles and will create two
 # targets, "install" and "stage", that will install or stage that library. The
 # --prefix option is respected, but --with and --without options, naturally, are
 # ignored.
 #
 # - libraries -- list of library targets to install.
-#
+
 rule boost-install ( libraries * )
 {
-    package.install install
-        : <dependency>/boost//install-proper-headers $(install-requirements)
-        : # No binaries
-        : $(libraries)
-        : # No headers, it is handled by the dependency.
-    ;
-
-    local stage-locate = [ option.get stagedir : $(BOOST_ROOT)/stage ] ;
-
-    install stage : $(libraries) : <location>$(stage-locate)/lib ;
-
-    module [ CALLER_MODULE ]
-    {
-        explicit stage ;
-        explicit install ;
-    }
+    boost-install.boost-install $(libraries) ;
 }
 
 # Creates a library target, adding autolink support and also creates
@@ -329,14 +323,6 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 }
 
 
-headers =
-    # The .SUNWCCh files are present in tr1 include directory and have to be
-    # installed (see http://lists.boost.org/Archives/boost/2007/05/121430.php).
-    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
-    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* : CVS .svn ]
-    [ path.glob $(BOOST_ROOT)/boost/tr1/tr1 : * : bcc32 sun CVS .svn ]
-    ;
-
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries) : $(headers) : $(all-headers) ;
+boostcpp.declare-targets $(all-libraries) ;

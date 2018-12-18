@@ -109,7 +109,16 @@ if $(layout) = system && $(build-type) = complete
 
 # Possible stage only location.
 stage-locate = [ option.get stagedir ] ;
-stage-locate ?= stage ;
+
+if $(stage-locate)
+{
+    stage-locate = [ path.root [ path.make $(stage-locate) ] [ path.pwd ] ] ;
+}
+else
+{
+    stage-locate = $(BOOST_ROOT)/stage ;
+}
+
 BOOST_STAGE_LOCATE = $(stage-locate) ;
 
 # Custom build ID.
@@ -213,9 +222,27 @@ rule tag ( name : type ? : property-set )
 rule python-tag ( name : type ? : property-set )
 {
     local result = $(name) ;
-    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB && $(PYTHON_ID)
+
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
     {
-        result = $(result)-$(PYTHON_ID) ;
+        # Add Python version suffix
+
+        local version = [ $(property-set).get <python> ] ;
+
+        local major-minor = [ MATCH "^([0-9]+)\.([0-9]+)" : $(version) ] ;
+        local suffix = $(major-minor:J="") ;
+
+        if $(suffix)
+        {
+            result = $(result)$(suffix) ;
+        }
+
+        # Add PYTHON_ID if supplied
+
+        if $(PYTHON_ID)
+        {
+            result = $(result)-$(PYTHON_ID) ;
+        }
     }
 
     # forward to the boost tagging rule
@@ -231,118 +258,14 @@ rule python-tag ( name : type ? : property-set )
 #
 ################################################################################
 
-rule filtered-target ( name : message + : sources + : requirements * )
-{
-    message $(name)-message : warning\: $(message) ;
-    alias $(name) : $(sources) : $(requirements) ;
-    alias $(name) : $(name)-message ;
-
-    local p = [ project.current ] ;
-    $(p).mark-target-as-explicit $(name) ;
-    $(p).mark-target-as-explicit $(name)-message ;
-}
-
-rule declare_install_and_stage_proper_targets ( libraries * : headers * : modular-headers * )
+rule declare_install_and_stage_proper_targets ( libraries * )
 {
     local p = [ project.current ] ;
-    for local l in $(libraries)
-    {
-        if $(l) = locale
-        {
-            filtered-target $(l)-for-install :
-                Skipping Boost.Locale library with threading=single. :
-                libs/$(l)/build : <threading>multi ;
-        }
-        else if $(l) = wave
-        {
-            filtered-target $(l)-for-install :
-                Skipping Boost.Wave library with threading=single. :
-                libs/$(l)/build : <threading>multi ;
-        }
-        else if $(l) = thread
-        {
-            filtered-target $(l)-for-install :
-                Skipping Boost.Thread library with threading=single. :
-                libs/$(l)/build : <threading>multi ;
-        }
-        else
-        {
-            alias $(l)-for-install : libs/$(l)/build ; 
-            $(p).mark-target-as-explicit $(l)-for-install ;
-        }
-    }
-    local library-targets = $(libraries)-for-install ;
 
-    local install-requirements ;
-
-    if $(layout-versioned)
-    {
-        install-requirements +=
-            <install-header-subdir>boost-$(BOOST_VERSION_TAG)/boost ;
-    }
-    else
-    {
-        install-requirements += <install-header-subdir>boost ;
-    }
-
-    if [ os.name ] = NT
-    {
-        install-requirements += <install-default-prefix>C:/Boost ;
-    }
-    else
-    {
-        install-requirements += <install-default-prefix>/usr/local ;
-    }
-
-    p = [ project.current ] ;
-
-    # These headers will be installed from the modular
-    # layout, and should be ignored in the global boost/
-    local skip-headers ;
-    # Install modular headers.
-    for local lib in $(modular-headers)
-    {
-        local header-root = $(BOOST_ROOT)/libs/$(lib)/include/boost ;
-        local lib-headers =
-            [ path.glob-tree $(header-root) : *.hpp *.ipp *.h *.inc *.SUNWCCh : CVS .svn ]
-            [ path.glob-tree $(header-root)/compatibility/cpp_c_headers : c* : CVS .svn ]
-            [ path.glob $(header-root)/tr1/tr1 : * : bcc32 sun CVS .svn ]
-        ;
-        skip-headers += [ sequence.transform path.relative-to [ path.make $(header-root) ] : $(lib-headers) ] ;
-        package.install install-$(lib)-headers
-            : <install-source-root>$(header-root)
-              $(install-requirements)
-              <install-no-version-symlinks>on
-            : # binaries
-            : # libraries
-            : $(lib-headers)
-            ;
-        $(p).mark-target-as-explicit install-$(lib)-headers ;
-    }
-
-    # Filter out headers that were created by b2 headers
-    local header-root = [ path.make $(BOOST_ROOT)/boost ] ;
-    headers = [ set.difference $(headers) : $(header-root)/$(skip-headers) ] ;
-
-    # Complete install.
-    package.install install-proper
-        :  <install-source-root>$(BOOST_ROOT)/boost
-           $(install-requirements)
-           <install-no-version-symlinks>on
-           
-        :
-        : $(libraries)-for-install
-        : $(headers)
-        ;
+    alias install-proper : libs/$(libraries)/build//install ;
     $(p).mark-target-as-explicit install-proper ;
 
-    # Install just library.
-    install stage-proper
-        : $(libraries)-for-install
-        : <location>$(stage-locate)/lib
-          <install-dependencies>on <install-type>LIB
-          <install-no-version-symlinks>on
-        ;
+    alias stage-proper : libs/$(libraries)/build//stage ;
     $(p).mark-target-as-explicit stage-proper ;
 }
 
@@ -488,13 +411,13 @@ class top-level-target : alias-target-class
     }
 }
 
-rule declare_top_level_targets ( libraries * : headers * : modular-headers * )
+rule declare_top_level_targets ( libraries * )
 {
-    declare_install_and_stage_proper_targets $(libraries) : $(headers) : $(modular-headers) ;
+    declare_install_and_stage_proper_targets $(libraries) ;
 
     targets.create-metatarget top-level-target : [ project.current ]
         : install
-        : install-$(modular-headers)-headers install-proper
+        : install-proper
         ;
     targets.create-metatarget top-level-target : [ project.current ]
         : stage
@@ -511,9 +434,6 @@ rule declare_top_level_targets ( libraries * : headers * : modular-headers * )
         : explain stage
         ;
 }
-
-
-stage-abs = [ path.native [ path.root $(stage-locate)/lib [ path.pwd ] ] ] ;
 
 
 ################################################################################
@@ -542,7 +462,6 @@ rule pre-build ( )
 IMPORT $(__name__) : pre-build : : $(__name__).pre-build ;
 build-system.set-pre-build-hook $(__name__).pre-build ;
 
-# FIXME: Revise stage_abs.
 rule post-build ( ok ? )
 {
     if forward in [ modules.peek : top-level-targets ]
@@ -550,6 +469,8 @@ rule post-build ( ok ? )
         if $(ok)
         {
             local include-path = [ path.native $(BOOST_ROOT) ] ;
+            local stage-abs = [ path.native $(stage-locate)/lib ] ;
+
             ECHO "
 
 The Boost C++ Libraries were successfully built!
@@ -623,7 +544,7 @@ rule libraries-to-install ( existing-libs * )
     }
 }
 
-rule declare-targets ( all-libraries * : headers * : modular-headers * )
+rule declare-targets ( all-libraries * )
 {
     configure.register-components $(all-libraries) ;
 
@@ -641,7 +562,7 @@ rule declare-targets ( all-libraries * : headers * : modular-headers * )
         EXIT ;
     }
 
-    declare_top_level_targets $(libraries) : $(headers) : $(modular-headers) ;
+    declare_top_level_targets $(libraries) ;
 }
 
 # Returns the properties identifying the toolset. We'll use them
