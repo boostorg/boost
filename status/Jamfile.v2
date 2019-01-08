@@ -190,6 +190,7 @@ for local libdir in [ path.glob $(BOOST_ROOT) : libs/* ]
         }
     }
 }
+
 libs-to-test = [ SORT $(libs-to-test) ] ;
 
 run-tests libs : $(libs-to-test)/test ;
@@ -201,15 +202,16 @@ local tools-to-test = ;
 for local tooldir in bcp check_build quickbook
 {
     local jamfile = [ modules.peek project : JAMFILE ] ;
-    local jamfiles = [ path.glob [ path.join tools $(tooldir) test ] : $(jamfile) ] ;
+    local jamfiles = [ path.glob [ path.join $(BOOST_ROOT) tools $(tooldir) test ] : $(jamfile) ] ;
     if $(jamfiles)
     {
         tools-to-test += $(tooldir) ;
     }
 }
 
-run-tests tools : $(tools-to-test)/test ;
+#ECHO "tools-to-test:" $(tools-to-test) ;
 
+run-tests tools : $(tools-to-test)/test ;
 
 if $(check-libs-only-targets)
 {
