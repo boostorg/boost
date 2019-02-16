@@ -3613,6 +3613,12 @@ for more information.
             <toolset name="msvc-14.0*"/>
             <note author="Niall Douglas">Complete C++14 support is the minimum requirement.</note>
         </mark-unusable>
+        <mark-unusable>
+            <toolset name="clang-linux-4.0~c++14"/>
+            <toolset name="clang-linux-5.0~c++14"/>
+            <toolset name="clang-linux-6.0~c++17"/>
+            <note author="Niall Douglas">libstdc++ 6 is the minimum version which works.</note>
+        </mark-unusable>
         <mark-expected-failures>
             <test name="comparison"/>
             <test name="constexpr"/>
@@ -3631,6 +3637,12 @@ for more information.
             <toolset name="gcc-8~gnu2a"/>
             <toolset name="gcc-7~c++1z"/>
             <note author="Niall Douglas">GCC 8 currently ICEs with Outcome's unit tests in C++ 17 or later.</note>
+        </mark-expected-failures>
+        <mark-expected-failures>
+            <test name="experimental-core-outcome-status"/>
+            <test name="experimental-core-result-status"/>
+            <toolset name="clang-darwin-ubsan"/>
+            <note author="Niall Douglas">False positive bug in this implementation of ubsan.</note>
         </mark-expected-failures>
     </library>
 
