@@ -1,2 +1,5 @@
 # Welcome to the Boost C++ Libraries
-Super-project for modularized Boost
+
+- - - - - -  -
+
+***Boost provides free peer-reviewed portable C++ source libraries.***
