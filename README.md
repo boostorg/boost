@@ -20,3 +20,5 @@
   and will be included in the upcoming revision of the C++ Standard. More
   Boost libraries are proposed for the upcoming 
   http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1810.html  TR2.
+  
+  **Changes in this release**
