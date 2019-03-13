@@ -22,3 +22,16 @@
   http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1810.html  TR2.
   
   **Changes in this release**
+  
+Lorem ipsum dolor sit amet, choro voluptatibus ex eum. Ut nec expetendis voluptatum delicatissimi. Nisl reformidans in vim. Nisl concludaturque ea eam. In usu timeam abhorreant disputationi, vis meis iudico ubique et.
+
+His movet euismod fastidii an. Nam ne ridens euismod, probo malis senserit eam ut, vim iriure accusata id. Id nullam saperet voluptua vel. Justo dolores mel ea. Nisl iusto appareat cum ne.
+
+
+  
+  **Getting Started**
+  
+Lorem ipsum dolor sit amet, choro voluptatibus ex eum. Ut nec expetendis voluptatum delicatissimi. Nisl reformidans in vim. Nisl concludaturque ea eam. In usu timeam abhorreant disputationi, vis meis iudico ubique et.
+
+His movet euismod fastidii an. Nam ne ridens euismod, probo malis senserit eam ut, vim iriure accusata id. Id nullam saperet voluptua vel. Justo dolores mel ea. Nisl iusto appareat cum ne.
+
