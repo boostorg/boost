@@ -24,30 +24,42 @@
   Boost libraries are proposed for the upcoming 
   http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1810.html  TR2.
   
-  **Changes in this release**
+## Changes in this release
   
-Lorem ipsum dolor sit amet, choro voluptatibus ex eum. Ut nec expetendis voluptatum delicatissimi. Nisl reformidans in vim. Nisl concludaturque ea eam. In usu timeam abhorreant disputationi, vis meis iudico ubique et.
+This development snapshot Boost includes new libraries as well as update to many exsting libraries.
 
-His movet euismod fastidii an. Nam ne ridens euismod, probo malis senserit eam ut, vim iriure accusata id. Id nullam saperet voluptua vel. Justo dolores mel ea. Nisl iusto appareat cum ne.
+The release includes updates to many existing libraries. See Release History for more information.
 
 
   
-  **Getting Started**
+## Getting Started
   
-Lorem ipsum dolor sit amet, choro voluptatibus ex eum. Ut nec expetendis voluptatum delicatissimi. Nisl reformidans in vim. Nisl concludaturque ea eam. In usu timeam abhorreant disputationi, vis meis iudico ubique et.
+If Boost hasn't already been installed on your system, follow the Getting Started Guide to complete the installation. But if you've reached to this point by installing Boost from a Windows pre-build executable or a pre-built Linux and Unix distribution package, that's already been completed. 
 
-His movet euismod fastidii an. Nam ne ridens euismod, probo malis senserit eam ut, vim iriure accusata id. Id nullam saperet voluptua vel. Justo dolores mel ea. Nisl iusto appareat cum ne.
+Likewise, if you're reading this on your organization's internal web server, the installation is probably already complete..
+
+## Content
+
+The starting point for the documentation of individual libraries is the Libraries page, which gives a brief description of each library and links to its documentation.
+
+## Website
+
+Some general interest or often changing Boost information lives only on the Boost web site. The release contains links to the site, so while browsing it you'll see occasional broken links if you aren't connected to the Internet. But everything needed to use the Boost libraries is contained within the release.
+
+## Background
+
+Read the introductory material to help you understand what Boost is about and to help in educating your organization about Boost.
 
 
-# Boost C++ Libraries
+## Boost C++ Libraries
 
-The Boost project provides free peer-reviewed portable C++ source libraries.
+Boost welcomes and thrives on participation from a variety of individuals and organizations. Many avenues for participation are available in the Boost Community.
 
-We emphasize libraries that work well with the C++ Standard Library. Boost
-libraries are intended to be widely useful, and usable across a broad spectrum
-of applications. The Boost license encourages both commercial and non-commercial use
-and does not require attribution for binary use.
+Copyright © 2008 Beman Dawes, Rene Rivera
 
-The project website is www.boost.org, where you can obtain more information and
-[download](https://www.boost.org/users/download/) the current release.
+Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+This software is Open Source Initiative approved Open Source Software.
+
+Open Source Initiative Approved is a trademark of the Open Source Initiative
 
