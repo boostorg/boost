@@ -9,19 +9,18 @@
   
   We emphasize libraries that work well with the C++ Standard Library.
   Boost libraries are intended to be widely useful, and usable across a broad
-  spectrum of applications. The http://www.boost.org/users/license.html Boost 
-  license encourages both commercial and non-commercial use.
+  spectrum of applications. The [Boost license](http://www.boost.org/users/license.html) encourages both commercial 
+  and non-commercial use.
 
 
   We aim to establish "existing practice" and provide reference
   implementations so that Boost libraries are suitable for eventual
-  standardization. Ten Boost libraries are already included in the 
-  http://www.open-std.org/jtc1/sc22/wg21/ C++ Standards Committee's
-  Library Technical Report 
-  (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1745.pdf" TR1)
+  standardization. Ten Boost libraries are already included in the [C++ Standards Committee's] 
+  (http://www.open-std.org/jtc1/sc22/wg21/)
+  Library Technical Report [TR1](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1745.pdf)  
   and will be included in the upcoming revision of the C++ Standard. More
   Boost libraries are proposed for the upcoming 
-  http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1810.html  TR2.
+  [TR2](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1810.html ).
   
 ## Changes in this release
   
@@ -47,7 +46,7 @@ Some general interest or often changing Boost information lives only on the Boos
 
 ## Background
 
-Read the introductory material to help you understand what Boost is about and to help in educating your organization about Boost.
+Read the [introductory material](https://www.boost.org/users/) to help you understand what Boost is about and to help in educating your organization about Boost.
 
 
 ## Boost C++ Libraries
