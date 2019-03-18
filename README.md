@@ -15,8 +15,7 @@
 
   We aim to establish "existing practice" and provide reference
   implementations so that Boost libraries are suitable for eventual
-  standardization. Ten Boost libraries are already included in the [C++ Standards Committee's] 
-  (http://www.open-std.org/jtc1/sc22/wg21/)
+  standardization. Ten Boost libraries are already included in the [C++ Standards Committee's](http://www.open-std.org/jtc1/sc22/wg21/)
   Library Technical Report [TR1](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1745.pdf)  
   and will be included in the upcoming revision of the C++ Standard. More
   Boost libraries are proposed for the upcoming 
@@ -42,7 +41,7 @@ The starting point for the documentation of individual libraries is the Librarie
 
 ## Website
 
-Some general interest or often changing Boost information lives only on the Boost web site. The release contains links to the site, so while browsing it you'll see occasional broken links if you aren't connected to the Internet. But everything needed to use the Boost libraries is contained within the release.
+Some general interest or often changing Boost information lives only on the [Boost web site](https://www.boost.org/). The release contains links to the site, so while browsing it you'll see occasional broken links if you aren't connected to the Internet. But everything needed to use the Boost libraries is contained within the release.
 
 ## Background
 
@@ -51,13 +50,12 @@ Read the [introductory material](https://www.boost.org/users/) to help you under
 
 ## Boost C++ Libraries
 
-Boost welcomes and thrives on participation from a variety of individuals and organizations. Many avenues for participation are available in the Boost Community.
+Boost welcomes and thrives on participation from a variety of individuals and organizations. Many avenues for participation are available in the [Boost Community](https://www.boost.org/community/).
 
 Copyright © 2008 Beman Dawes, Rene Rivera
 
-Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
+Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy [here](https://www.boost.org/LICENSE_1_0.txt) )
 This software is Open Source Initiative approved Open Source Software.
 
-Open Source Initiative Approved is a trademark of the Open Source Initiative
+[Open Source Initiative](https://opensource.org/) Approved is a trademark of the Open Source Initiative
 
