@@ -4,8 +4,7 @@
 ![](boost.png)
 
 
-
-***Boost provides free peer-reviewed portable C++ source libraries.***
+## Boost provides free peer-reviewed portable C++ source libraries.
 
   
   We emphasize libraries that work well with the C++ Standard Library.
