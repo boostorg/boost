@@ -68,10 +68,14 @@ ECHO Bootstrapping is done. To build, run:
 ECHO.
 ECHO     .\b2
 ECHO.
+
+IF EXIST libs\config\include (
 ECHO.    To generate header files, run:
 ECHO.
 ECHO.    .\b2 headers
 ECHO.
+)
+
 ECHO To adjust configuration, edit 'project-config.jam'.
 ECHO Further information:
 ECHO.
