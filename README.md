@@ -31,13 +31,13 @@ The release includes updates to many existing libraries. See Release History for
   
 ## Getting Started
   
-If Boost hasn't already been installed on your system, follow the Getting Started Guide to complete the installation. But if you've reached to this point by installing Boost from a Windows pre-build executable or a pre-built Linux and Unix distribution package, that's already been completed. 
+If Boost hasn't already been installed on your system, follow the [Getting Started](more/getting_started/index.html) Guide to complete the installation. But if you've reached to this point by installing Boost from a Windows pre-build executable or a pre-built Linux and Unix distribution package, that's already been completed. 
 
 Likewise, if you're reading this on your organization's internal web server, the installation is probably already complete..
 
 ## Content
 
-The starting point for the documentation of individual libraries is the Libraries page, which gives a brief description of each library and links to its documentation.
+The starting point for the documentation of individual libraries is the [Libraries page](libs/libraries.htm), which gives a brief description of each library and links to its documentation.
 
 ## Website
 
