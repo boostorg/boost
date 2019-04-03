@@ -47,10 +47,7 @@ foreach(cmake_file IN LISTS boost_libs_with_cmake_files)
     get_filename_component(dir ${cmake_file} DIRECTORY)
     get_filename_component(lib_name ${dir} NAME)
 
-    if(lib_name IN_LIST BOOST_MAIN_IGNORE_LIBS)
-        message("Ignoring boost library: ${dir}")
-    else()
-        message("Adding boost library: ${dir}")
+    if(NOT lib_name IN_LIST BOOST_MAIN_IGNORE_LIBS)
         add_subdirectory(${dir})
     endif()
 
