@@ -15,7 +15,7 @@ project(boost LANGUAGES CXX)
 # - require some additional (internal or external) dependencies
 #
 # Those libraries can be excluded here
-set(BOOST_MAIN_IGNORE_LIBS callable_traits;compute;gil;hana;yap;safe_numerics;beast CACHE string "List of libraries that will be excluded from cmake build")
+set(BOOST_MAIN_IGNORE_LIBS callable_traits;hof;compute;gil;hana;yap;safe_numerics;beast CACHE string "List of libraries that will be excluded from cmake build")
 
 
 #~~~ options ~~~
