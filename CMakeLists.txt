@@ -32,11 +32,11 @@ message("
 ==================================================================================================
 ")
 
-message("[Boost] Excluded libs (BOOST_MAIN_IGNORE_LIBS): ${BOOST_MAIN_IGNORE_LIBS}")
+message(STATUS "[Boost] Excluded libs (BOOST_MAIN_IGNORE_LIBS): ${BOOST_MAIN_IGNORE_LIBS}")
 
 # cmake doesn't require autolinking and currently most cmake files don't produce
 # name mangled libraries anyway
-message("[Boost] Deactivating boost auto linking mechanism (-DBOOST_ALL_NO_LIB)")
+message(STATUS "[Boost] Deactivating boost auto linking mechanism (-DBOOST_ALL_NO_LIB)")
 add_definitions(-DBOOST_ALL_NO_LIB)
 
 # Detect and process all CMakeLists files that reside in the root folder of a library
