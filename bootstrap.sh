@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright 2019 Rene Rivera
 # Copyright (C) 2005, 2006 Douglas Gregor.
 # Copyright (C) 2006 The Trustees of Indiana University
 #
@@ -194,7 +195,7 @@ my_dir=$(dirname "$0")
 if test "x$TOOLSET" = x; then
   guessed_toolset=`$my_dir/tools/build/src/engine/build.sh --guess-toolset`
   case $guessed_toolset in
-    acc | darwin | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
+    acc | clang | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
     ;;
     
@@ -230,11 +231,9 @@ if test "x$BJAM" = x; then
       exit 1
   fi
   cd "$pwd"
-  arch=`cd $my_dir/tools/build/src/engine && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
-  BJAM="$my_dir/tools/build/src/engine/$arch/b2"
-  echo "tools/build/src/engine/$arch/b2"
+  BJAM="$my_dir/tools/build/src/engine/b2"
+  echo "tools/build/src/engine/b2"
   cp "$BJAM" .
-  cp "$my_dir/tools/build/src/engine/$arch/bjam" .
 
 fi
 
