@@ -50,6 +50,7 @@ IF "%1"=="vc11" SET TOOLSET=msvc : 11.0
 IF "%1"=="vc12" SET TOOLSET=msvc : 12.0
 IF "%1"=="vc14" SET TOOLSET=msvc : 14.0
 IF "%1"=="vc141" SET TOOLSET=msvc : 14.1
+IF "%1"=="vc142" SET TOOLSET=msvc : 14.2
 
 ECHO.
 ECHO Generating Boost.Build configuration in project-config.jam for %TOOLSET%...
