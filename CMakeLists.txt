@@ -38,6 +38,7 @@ message(STATUS "[Boost] Excluded libs (BOOST_MAIN_IGNORE_LIBS): ${BOOST_MAIN_IGN
 # name mangled libraries anyway
 message(STATUS "[Boost] Deactivating boost auto linking mechanism (-DBOOST_ALL_NO_LIB)")
 add_definitions(-DBOOST_ALL_NO_LIB)
+enable_testing()
 
 # Detect and process all CMakeLists files that reside in the root folder of a library
 file(GLOB boost_libs_with_cmake_files libs/*/CMakeLists.txt)
