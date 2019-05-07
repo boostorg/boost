@@ -33,7 +33,6 @@ The only Boost libraries that *must* be built separately are:
 * Boost.Regex_
 * Boost.Serialization_
 * Boost.Signals_
-* Boost.System_
 * Boost.Thread_
 * Boost.Timer_
 * Boost.Wave_
@@ -64,5 +63,9 @@ A few libraries have optional separately-compiled binaries:
   exception_ptr for 32-bit _MSC_VER==1310 and _MSC_VER==1400
   which requires a separately-compiled binary. This is enabled by
   #define BOOST_ENABLE_NON_INTRUSIVE_EXCEPTION_PTR.
+
+* Boost.System_ is header-only since Boost 1.69. A stub library is
+  still built for compatibility, but linking to it is no longer
+  necessary.
 
 __ ../../libs/graph/doc/read_graphviz.html
