@@ -140,7 +140,8 @@ import "class" : new ;
 import property-set ;
 import threadapi-feature ;
 import option ;
-import tools/boost_install/boost-install ;
+# Backslash because of `bcp --namespace`
+import tools/boost\_install/boost-install ;
 
 path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.71.0 ;
@@ -311,8 +312,8 @@ rule boost-install ( libraries * )
 # stage and install targets via boost-install, above.
 rule boost-lib ( name : sources * : requirements * : default-build * : usage-requirements * )
 {
+    autolink = <link>shared:<define>BOOST_$(name:U)_DYN_LINK=1 ;
     name = boost_$(name) ;
-    autolink = <link>shared:<define>$(name:U)_DYN_LINK=1 ;
     lib $(name)
         : $(sources)
         : $(requirements) $(autolink)
