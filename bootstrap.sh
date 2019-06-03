@@ -359,7 +359,7 @@ if test "x$flag_no_python" = x; then
 import python ;
 if ! [ python.configured ]
 {
-    using python : $PYTHON_VERSION : $PYTHON_ROOT ;
+    using python : $PYTHON_VERSION : "$PYTHON_ROOT" ;
 }
 EOF
 fi
