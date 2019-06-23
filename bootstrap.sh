@@ -230,11 +230,10 @@ if test "x$BJAM" = x; then
       exit 1
   fi
   cd "$pwd"
-  arch=`cd $my_dir/tools/build/src/engine && ./bootstrap/jam0 -d0 -f build.jam --toolset=$TOOLSET --toolset-root= --show-locate-target && cd ..`
-  BJAM="$my_dir/tools/build/src/engine/$arch/b2"
-  echo "tools/build/src/engine/$arch/b2"
+  BJAM="$my_dir/tools/build/src/engine/b2"
+  echo "tools/build/src/engine/b2"
   cp "$BJAM" .
-  cp "$my_dir/tools/build/src/engine/$arch/bjam" .
+  cp "$my_dir/tools/build/src/engine/bjam" .
 
 fi
 

@@ -8,10 +8,6 @@ REM Distributed under the Boost Software License, Version 1.0.
 REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
 ECHO Building Boost.Build engine
-if exist ".\tools\build\src\engine\bin.ntx86\b2.exe" del tools\build\src\engine\bin.ntx86\b2.exe
-if exist ".\tools\build\src\engine\bin.ntx86\bjam.exe" del tools\build\src\engine\bin.ntx86\bjam.exe
-if exist ".\tools\build\src\engine\bin.ntx86_64\b2.exe" del tools\build\src\engine\bin.ntx86_64\b2.exe
-if exist ".\tools\build\src\engine\bin.ntx86_64\bjam.exe" del tools\build\src\engine\bin.ntx86_64\bjam.exe
 pushd tools\build\src\engine
 
 call .\build.bat %* > ..\..\..\..\bootstrap.log
@@ -19,14 +15,9 @@ call .\build.bat %* > ..\..\..\..\bootstrap.log
 
 popd
 
-if exist ".\tools\build\src\engine\bin.ntx86\bjam.exe" (
-   copy .\tools\build\src\engine\bin.ntx86\b2.exe . > nul
-   copy .\tools\build\src\engine\bin.ntx86\bjam.exe . > nul
-   goto :bjam_built)
-
-if exist ".\tools\build\src\engine\bin.ntx86_64\bjam.exe" (
-   copy .\tools\build\src\engine\bin.ntx86_64\b2.exe . > nul
-   copy .\tools\build\src\engine\bin.ntx86_64\bjam.exe . > nul
+if exist ".\tools\build\src\engine\bjam.exe" (
+   copy .\tools\build\src\engine\b2.exe . > nul
+   copy .\tools\build\src\engine\bjam.exe . > nul
    goto :bjam_built)
 
 goto :bjam_failure
