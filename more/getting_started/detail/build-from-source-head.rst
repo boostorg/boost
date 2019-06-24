@@ -28,7 +28,7 @@ First, find the toolset corresponding to your compiler in the
 following table (an up-to-date list is always available `in the
 Boost.Build documentation`__).
 
-__ http://www.boost.org/build/doc/html/bbv2/reference/tools.html
+__ https://boostorg.github.io/build/manual/develop/index.html#bbv2.reference.tools
 
 .. Note:: If you previously chose a toolset for the purposes of
   `building b2`_, you should assume it won't work and instead
