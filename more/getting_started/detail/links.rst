@@ -19,7 +19,6 @@
 .. _Boost.Random: ../../libs/random/index.html
 .. _Boost.Regex: ../../libs/regex/index.html
 .. _Boost.Serialization: ../../libs/serialization/index.html
-.. _Boost.Signals: ../../libs/signals/index.html
 .. _Boost.System: ../../libs/system/index.html
 .. _Boost.Test: ../../libs/test/index.html
 .. _Boost.Thread: ../../libs/thread/index.html
