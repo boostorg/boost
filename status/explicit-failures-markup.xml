@@ -888,16 +888,20 @@
     <!-- contract -->
     <library name="contract">
         <mark-unusable>
-            <toolset name="xxgcc-6*"/>
+            <toolset name="clang-darwin-ubsan"/>
             <note author="Lorenzo Caminiti">
-                Tests fail to link on this compiler because of a bug in its STL
-                implementation (undefined references to `operator delete`, see
-                https://tracker.crystax.net/issues/1403).
+                On this compiler, Boost.Function gives a run-time error when
+                calling non-nullary lambdas as used by the tests of this library
+                to program contract failure handlers.
+                It might still be possible to use this library on this compiler
+                using default contract failure handlers or programming custom
+                contract failure handlers but without using non-nullary lambdas
+                (however, the authors did not confirm that).
             </note>
         </mark-unusable>
         <mark-unusable>
-            <toolset name="xxgcc-3.*"/>
-            <toolset name="xxgcc-4.*"/>
+            <toolset name="gcc-3.*"/>
+            <toolset name="gcc-4.*"/>
             <note author="Lorenzo Caminiti">
                 Even tests that do not use C++11 lambda functions fail on this
                 compiler because it incorrectly attempts an extra copy when
