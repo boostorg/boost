@@ -14,6 +14,30 @@ import glob
 import fnmatch
 import json
 
+# Work around Python 2 limitations to include nested ply module
+sys.path.insert(0, os.path.join( os.path.dirname( os.path.abspath(__file__) ), 'pcpp' ) )
+import pcpp
+
+class Preprocessor(pcpp.Preprocessor):
+    def __init__(self, c):
+        super(Preprocessor, self).__init__()
+        self.c = c
+        
+    def on_error(self,file,line,msg):
+        # Ignore parse errors which are common due to us not including dependent files
+        pass
+        
+    def on_include_not_found(self,is_system_include,curdir,includepath):
+        # Suppress errors about unfound system headers
+        if not is_system_include:
+            self.c.warn("include file not found", '', includepath)
+        raise pcpp.OutputDirective(pcpp.Action.IgnoreAndPassThrough)
+
+    def on_directive_unknown(self,directive,toks,ifpassthru,precedingtoks):
+        # Ignore #error from headers refusing to be included before others
+        return True
+
+
 class check_library():
     '''
     This is a collection of checks for a library to test if a library
@@ -83,6 +107,31 @@ class check_library():
                 ''',
                 'org-inc-one')
     
+    def check_organization_macros(self):
+        libdir = os.path.join(self.library_dir,'include','boost',self.library_name)
+        if os.path.isdir(libdir):
+            badmacros = {}
+            for root, dirs, files in os.walk(libdir):
+                if os.path.sep + 'detail' + os.path.sep in root or root.endswith(os.path.sep + 'detail'):
+                    continue
+                for item in files:
+                    ext = os.path.splitext(item)
+                    if ext[1] == '.hpp' or ext[1] == '.ipp' or ext[1] == '.h':
+                        p = Preprocessor(self)
+                        path = os.path.join(root, item)
+                        if self.debug:
+                            print(">>> preprocessing:", path)
+                        with open(path, 'rt') as ih:
+                            p.parse(ih)
+                        while p.token():
+                            pass
+                        for macro in p.macros:
+                            if not macro.startswith('BOOST_') and not macro.startswith('__'):
+                                badmacros[macro] = path
+            if badmacros:
+                for macro in badmacros:
+                    self.error("macro without BOOST_ prefix", macro, badmacros[macro])
+
     def check_organization_meta(self):
         parent_dir = os.path.dirname(self.library_dir)
         # If this is a sublibrary it's possible that the library information is the
