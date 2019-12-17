@@ -10,15 +10,16 @@ REM (See accompanying file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.t
 
 ECHO Building Boost.Build engine
 if exist ".\tools\build\src\engine\b2.exe" del tools\build\src\engine\b2.exe
-pushd tools\build\src\engine
+set working_dir=%cd%
+pushd %~dp0\tools\build\src\engine
 
-call .\build.bat %* > ..\..\..\..\bootstrap.log
+call .\build.bat %* > %working_dir%\bootstrap.log
 @ECHO OFF
 
 popd
 
-if exist ".\tools\build\src\engine\b2.exe" (
-   copy .\tools\build\src\engine\b2.exe . > nul
+if exist "%~dp0\tools\build\src\engine\b2.exe" (
+   copy %~dp0\tools\build\src\engine\b2.exe . > nul
    goto :bjam_built)
 
 goto :bjam_failure
