@@ -21,6 +21,7 @@ import generators ;
 import sequence ;
 import path ;
 import "class" : is-a ;
+import regex ;
 
 path-constant BOOST_DOC : . ;
 
@@ -84,6 +85,11 @@ local rule docbook-target-spec ( main-target )
     return $(spec) ;
 }
 
+local exclude-libs = [ MATCH "^--exclude-libraries=(.*)" : [ modules.peek : ARGV ] ] ;
+exclude-libs = [ regex.split-list $(exclude-libs) : "," ] ;
+
+#ECHO "=== --exclude-libraries:" $(exclude-libs) ;
+
 local lib-doc-boostdoc-refs ;
 local lib-doc-boostrelease-refs ;
 
@@ -92,25 +98,38 @@ for local lib-doc in $(lib-docs)
 {
     #ECHO === $(lib-doc) ... ;
     local doc-project = $(lib-doc:D) ;
-    local doc-module = [ project.find $(doc-project)
-        : [ project.attribute $(__name__) location ] ] ;
-    local doc-target = [ project.target $(doc-module) ] ;
-    $(doc-target).build-main-targets ;
-    local boostrelease-target = [ $(doc-target).main-target boostrelease ] ;
-    if $(boostrelease-target)
+
+    local lib-dir = $(doc-project:D) ;
+    local lib-name = $(lib-dir:BS) ;
+
+    #ECHO "=== lib-name:" $(lib-name) ... ;
+
+    if $(lib-name) in $(exclude-libs)
     {
-        local full-name = [ $(boostrelease-target).full-name ] ;
-        local target-path = [ path.relative-to $(this-path) $(full-name:D) ] ;
-        lib-doc-boostrelease-refs += $(target-path)//boostrelease ;
-        #ECHO "  ::" $(target-path)//boostrelease ;
+        ECHO "-- Excluded library" '$(lib-name)' ;
     }
-    local boostdoc-target = [ $(doc-target).main-target boostdoc ] ;
-    if $(boostdoc-target)
+    else
     {
-        local full-name = [ $(boostdoc-target).full-name ] ;
-        local target-path = [ path.relative-to $(this-path) $(full-name:D) ] ;
-        lib-doc-boostdoc-refs += $(target-path)//boostdoc ;
-        #ECHO "  ::" $(target-path)//boostdoc ;
+        local doc-module = [ project.find $(doc-project)
+            : [ project.attribute $(__name__) location ] ] ;
+        local doc-target = [ project.target $(doc-module) ] ;
+        $(doc-target).build-main-targets ;
+        local boostrelease-target = [ $(doc-target).main-target boostrelease ] ;
+        if $(boostrelease-target)
+        {
+            local full-name = [ $(boostrelease-target).full-name ] ;
+            local target-path = [ path.relative-to $(this-path) $(full-name:D) ] ;
+            lib-doc-boostrelease-refs += $(target-path)//boostrelease ;
+            #ECHO "  ::" $(target-path)//boostrelease ;
+        }
+        local boostdoc-target = [ $(doc-target).main-target boostdoc ] ;
+        if $(boostdoc-target)
+        {
+            local full-name = [ $(boostdoc-target).full-name ] ;
+            local target-path = [ path.relative-to $(this-path) $(full-name:D) ] ;
+            lib-doc-boostdoc-refs += $(target-path)//boostdoc ;
+            #ECHO "  ::" $(target-path)//boostdoc ;
+        }
     }
 }
 
