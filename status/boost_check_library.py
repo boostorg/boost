@@ -121,8 +121,8 @@ class check_library():
         if os.path.isdir(libdir):
             badmacros = {}
             for root,dirs,files in os.walk(libdir):
-                if (os.path.sep + 'detail' + os.path.sep) in root or root.endswith(os.path.sep + 'detail'):
-                    continue
+                if 'detail' in dirs:
+                    dirs.remove('detail')
                 for item in files:
                     ext = os.path.splitext(item)[1]
                     if ext == '.hpp' or ext == '.ipp' or ext == '.h':
