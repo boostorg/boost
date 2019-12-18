@@ -33,6 +33,15 @@ class Preprocessor(pcpp.Preprocessor):
             self.c.warn("include file not found", '', includepath)
         raise pcpp.OutputDirective(pcpp.Action.IgnoreAndPassThrough)
 
+    def on_directive_handle(self,directive,toks,ifpassthru,precedingtoks):
+        # Ignore preprocessor logic
+        if directive.value == 'if' or directive.value == 'elif' or directive == 'else' or directive.value == 'endif':
+            raise pcpp.OutputDirective(pcpp.Action.IgnoreAndPassThrough)
+        # Ignore undefining
+        if directive.value == 'undef':
+            raise pcpp.OutputDirective(pcpp.Action.IgnoreAndPassThrough)
+        return super(Preprocessor, self).on_directive_handle(directive,toks,ifpassthru,precedingtoks)
+        
     def on_directive_unknown(self,directive,toks,ifpassthru,precedingtoks):
         # Ignore #error from headers refusing to be included before others
         return True
