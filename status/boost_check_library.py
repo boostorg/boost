@@ -111,17 +111,17 @@ class check_library():
         libdir = os.path.join(self.library_dir,'include','boost',self.library_name)
         if os.path.isdir(libdir):
             badmacros = {}
-            for root, dirs, files in os.walk(libdir):
-                if os.path.sep + 'detail' + os.path.sep in root or root.endswith(os.path.sep + 'detail'):
+            for root,dirs,files in os.walk(libdir):
+                if (os.path.sep + 'detail' + os.path.sep) in root or root.endswith(os.path.sep + 'detail'):
                     continue
                 for item in files:
-                    ext = os.path.splitext(item)
-                    if ext[1] == '.hpp' or ext[1] == '.ipp' or ext[1] == '.h':
+                    ext = os.path.splitext(item)[1]
+                    if ext == '.hpp' or ext == '.ipp' or ext == '.h':
                         p = Preprocessor(self)
-                        path = os.path.join(root, item)
+                        path = os.path.join(root,item)
                         if self.debug:
-                            print(">>> preprocessing:", path)
-                        with open(path, 'rt') as ih:
+                            print(">>> preprocessing:",path)
+                        with open(path,'rt') as ih:
                             p.parse(ih)
                         while p.token():
                             pass
@@ -129,10 +129,9 @@ class check_library():
                             if not macro in badmacros and not macro.startswith('BOOST_') and not macro.startswith('__'):
                                 badmacros[macro] = path
                                 if p.macros[macro].source:
-                                    badmacros[macro] = "%s:%d" % (p.macros[macro].source, p.macros[macro].lineno)
-            if badmacros:
-                for macro in badmacros:
-                    self.error("macro without BOOST_ prefix", macro, badmacros[macro])
+                                    badmacros[macro] = "%s:%d" % (p.macros[macro].source,p.macros[macro].lineno)
+            for macro in badmacros:
+                self.error("macro without BOOST_ prefix",macro,badmacros[macro])
 
     def check_organization_meta(self):
         parent_dir = os.path.dirname(self.library_dir)
