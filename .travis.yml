@@ -69,6 +69,43 @@ matrix:
     - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11 RELEASE=1
       compiler: g++
 
+    # Build Boost with CMake
+    - env: CMAKE_BUILD=1
+      compiler: g++
+
+      before_script: true
+      before_install: true
+      after_success: true
+      after_failure: true
+      after_script: true
+
+      install:
+      - git submodule update --init
+
+      script:
+      - mkdir __build && cd __build
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF ..
+      - cmake --build .
+
+    # Test Boost with CMake
+    - env: CMAKE_TEST=1
+      compiler: g++
+
+      before_script: true
+      before_install: true
+      after_success: true
+      after_failure: true
+      after_script: true
+
+      install:
+      - git submodule update --init
+
+      script:
+      - mkdir __build && cd __build
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBUILD_TESTING=ON ..
+      - cmake --build .
+      - ctest --output-on-failure -R quick
+
 #    # Run tests for the library updated by this commit.
 #    - env: SCRIPT=ci_boost_test_library TOOLSET=gcc CXXSTD=11
 #      compiler: g++
