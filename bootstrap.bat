@@ -2,7 +2,7 @@
 
 SETLOCAL
 
-REM Copyright 2019 Rene Rivera
+REM Copyright 2019-2020 Rene Rivera
 REM Copyright (C) 2009 Vladimir Prus
 REM
 REM Distributed under the Boost Software License, Version 1.0.
@@ -12,7 +12,7 @@ ECHO Building Boost.Build engine
 if exist ".\tools\build\src\engine\b2.exe" del tools\build\src\engine\b2.exe
 pushd tools\build\src\engine
 
-call .\build.bat %* > ..\..\..\..\bootstrap.log
+call .\build.bat
 @ECHO OFF
 
 popd
@@ -33,6 +33,7 @@ REM properly. Default to msvc if not specified.
 SET TOOLSET=msvc
 
 IF "%1"=="gcc" SET TOOLSET=gcc
+IF "%1"=="clang" SET TOOLSET=clang
 
 IF "%1"=="vc71" SET TOOLSET=msvc : 7.1
 IF "%1"=="vc8" SET TOOLSET=msvc : 8.0
@@ -88,7 +89,6 @@ goto :end
 
 ECHO.
 ECHO Failed to build Boost.Build engine.
-ECHO Please consult bootstrap.log for further diagnostics.
 ECHO.
 
 REM Set an error code to allow `bootstrap && b2`
