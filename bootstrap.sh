@@ -20,6 +20,8 @@ LIBS=""
 PYTHON=python
 PYTHON_VERSION=
 PYTHON_ROOT=
+PYTHON_INCLUDE=
+PYTHON_LIB=
 ICU_ROOT=
 
 # Handle case where builtin shell version of echo command doesn't 
@@ -284,7 +286,15 @@ if test "x$flag_no_python" = x; then
         $ECHO -n "Detecting Python root... "
         PYTHON_ROOT=`$PYTHON -c "import sys; print(sys.prefix)"`
         echo $PYTHON_ROOT
-    fi    
+    fi
+
+    $ECHO -n "Detecting Python include path... "
+    PYTHON_INCLUDE=`$PYTHON -c "import sysconfig; print(sysconfig.get_path('include'));"`
+    echo $PYTHON_INCLUDE
+
+    $ECHO -n "Detecting Python lib path... "
+    PYTHON_LIB=`$PYTHON -c "import sysconfig; print(sysconfig.get_path('stdlib'));"`
+    echo $PYTHON_LIB
 fi
 
 # Configure ICU
@@ -358,7 +368,7 @@ if test "x$flag_no_python" = x; then
 import python ;
 if ! [ python.configured ]
 {
-    using python : $PYTHON_VERSION : "$PYTHON_ROOT" ;
+    using python : $PYTHON_VERSION : "$PYTHON_ROOT" : "$PYTHON_INCLUDE" : "$PYTHON_LIB" ;
 }
 EOF
 fi
