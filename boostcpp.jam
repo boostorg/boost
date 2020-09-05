@@ -278,9 +278,24 @@ rule declare_install_and_stage_proper_targets ( libraries * )
 #
 ################################################################################
 
+rule emit-shared-static-warning ( )
+{
+    if ! $(.shared-static-warning-emitted)
+    {
+        ECHO "" ;
+        ECHO "warning: The configuration link=shared, runtime-link=static is disabled" ;
+        ECHO "warning: by default as being too dangerous to use, and will not be built." ;
+        ECHO "warning: To enable it, use --allow-shared-static." ;
+        ECHO "" ;
+
+        .shared-static-warning-emitted = 1 ;
+    }
+}
+
 class top-level-target : alias-target-class
 {
     import modules ;
+    import boostcpp ;
 
     rule __init__ ( name : project : sources * : requirements *
         : default-build * : usage-requirements * )
@@ -374,20 +389,32 @@ class top-level-target : alias-target-class
                 : $(build-type-set) ] ;
 
             # Filter inappopriate combinations.
+
             local filtered ;
+            local skipped ;
+
+            local argv = [ modules.peek : ARGV ] ;
+
             for local p in $(expanded)
             {
                 # See comment in handle-static-runtime regarding this logic.
                 if [ $(p).get <link> ] = shared
                     && [ $(p).get <runtime-link> ] = static
                     && [ $(p).get <toolset> ] != cw
+                    && ! --allow-shared-static in $(argv)
                 {
                     # Skip this.
+                    skipped += $(p) ;
                 }
                 else
                 {
                     filtered += $(p) ;
                 }
+            }
+
+            if $(expanded) = $(skipped)
+            {
+                boostcpp.emit-shared-static-warning ;
             }
 
             return [ build-multiple $(filtered) ] ;

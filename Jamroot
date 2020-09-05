@@ -213,18 +213,15 @@ rule handle-static-runtime ( properties * )
     # dangerous on Windows. Therefore, we disallow it. This might be drastic,
     # but it was disabled for a while without anybody complaining.
 
-    # For CW, static runtime is needed so that std::locale works.
-    if <link>shared in $(properties) && <runtime-link>static in $(properties) &&
-        ! ( <toolset>cw in $(properties) )
-    {
-        if ! $(.shared-static-warning-emitted)
-        {
-            ECHO "warning: skipping configuration link=shared, runtime-link=static" ;
-            ECHO "warning: this combination is either impossible or too dangerous" ;
-            ECHO "warning: to be of any use" ;
-            .shared-static-warning-emitted = 1 ;
-        }
+    local argv = [ modules.peek : ARGV ] ;
 
+    if <link>shared in $(properties)
+        && <runtime-link>static in $(properties)
+        # For CW, static runtime is needed so that std::locale works.
+        && ! ( <toolset>cw in $(properties) )
+        && ! --allow-shared-static in $(argv)
+    {
+        boostcpp.emit-shared-static-warning ;
         return <build>no ;
     }
 }
