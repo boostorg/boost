@@ -147,6 +147,9 @@ path-constant BOOST_ROOT : . ;
 constant BOOST_VERSION : 1.75.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
+# Allow subprojects to simply `import config : requires ;` to get access to the requires rule
+modules.poke : BOOST_BUILD_PATH : $(BOOST_ROOT)/libs/config/checks [ modules.peek : BOOST_BUILD_PATH ] ;
+
 boostcpp.set-version $(BOOST_VERSION) ;
 
 use-project /boost/architecture : libs/config/checks/architecture ;
@@ -290,9 +293,6 @@ if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
 {
     use-project /boost/libs/wave/tool : libs/wave/tool/build ;
 }
-
-# Allow subprojects to simply `import config : requires ;` to get access to the requires rule
-modules.poke : BOOST_BUILD_PATH : $(BOOST_ROOT)/libs/config/checks [ modules.peek : BOOST_BUILD_PATH ] ;
 
 # Make the boost-install rule visible in subprojects
 
