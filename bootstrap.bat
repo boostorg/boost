@@ -12,7 +12,7 @@ ECHO Building Boost.Build engine
 if exist ".\tools\build\src\engine\b2.exe" del tools\build\src\engine\b2.exe
 pushd tools\build\src\engine
 
-call .\build.bat
+call .\build.bat %*
 @ECHO OFF
 
 popd
@@ -34,7 +34,7 @@ SET TOOLSET=msvc
 
 IF "%1"=="gcc" SET TOOLSET=gcc
 IF "%1"=="clang" SET TOOLSET=clang
-
+IF "%1"=="borland" SET TOOLSET=embarcadero
 IF "%1"=="vc71" SET TOOLSET=msvc : 7.1
 IF "%1"=="vc8" SET TOOLSET=msvc : 8.0
 IF "%1"=="vc9" SET TOOLSET=msvc : 9.0
