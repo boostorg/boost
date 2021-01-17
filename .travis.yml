@@ -49,27 +49,27 @@ matrix:
 
   include:
 
-    - env: SCRIPT=ci_boost_release MODE=check
+    - env: SCRIPT=ci_boost_release MODE=check CXX=
 
     # Simple integrated status tests check.
-    - env: SCRIPT=ci_boost_status
+    - env: SCRIPT=ci_boost_status CXX=
 
     # Same, but using release layout
-    - env: SCRIPT=ci_boost_status RELEASE=1
+    - env: SCRIPT=ci_boost_status RELEASE=1 CXX=
 
     # Run 'quick' tests.
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11 CXX=
       compiler: g++
 
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11 CXX=
       compiler: clang++
 
     # Build Boost
-    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11
+    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11 CXX=
       compiler: g++
 
     # Build Boost with release layout
-    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11 RELEASE=1
+    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11 RELEASE=1 CXX=
       compiler: g++
 
     # Build Boost with CMake
