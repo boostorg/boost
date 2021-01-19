@@ -193,7 +193,7 @@ my_dir=$(dirname "$0")
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" = x; then
-  guessed_toolset=`$my_dir/tools/build/src/engine/build.sh --guess-toolset`
+  guessed_toolset=`CXX= $my_dir/tools/build/src/engine/build.sh --guess-toolset`
   case $guessed_toolset in
     acc | clang | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
@@ -223,7 +223,7 @@ rm -f config.log
 if test "x$BJAM" = x; then
   $ECHO "Building B2 engine.."
   pwd=`pwd`
-  (cd "$my_dir/tools/build/src/engine" && ./build.sh)
+  (cd "$my_dir/tools/build/src/engine" && CXX= ./build.sh)
   if [ $? -ne 0 ]; then
       echo
       echo "Failed to build B2 build engine"
