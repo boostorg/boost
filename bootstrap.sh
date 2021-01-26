@@ -142,7 +142,9 @@ done
 
 if test "x$want_help" = xyes; then
   cat <<EOF
-\`./bootstrap.sh' prepares Boost for building on a few kinds of systems.
+\`./bootstrap.sh\' builds the Boost build system B2 and prepares Boost for
+building. This includes setting defaults in the project-config.jam which you
+can adjust prior to invoking B2.
 
 Usage: $0 [OPTION]... 
 
