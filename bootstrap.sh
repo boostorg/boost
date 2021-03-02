@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2019-2020 Rene Rivera
+# Copyright 2019-2021 René Ferdinand Rivera Morell
 # Copyright (C) 2005, 2006 Douglas Gregor.
 # Copyright (C) 2006 The Trustees of Indiana University
 #
@@ -142,7 +142,9 @@ done
 
 if test "x$want_help" = xyes; then
   cat <<EOF
-\`./bootstrap.sh' prepares Boost for building on a few kinds of systems.
+\`./bootstrap.sh\' builds the Boost build system B2 and prepares Boost for
+building. This includes setting defaults in the project-config.jam which you
+can adjust prior to invoking B2.
 
 Usage: $0 [OPTION]... 
 
@@ -152,7 +154,8 @@ Configuration:
   -h, --help                display this help and exit
   --with-bjam=BJAM          use existing Boost.Jam executable (bjam)
                             [automatically built]
-  --with-toolset=TOOLSET    use specific B2 toolset
+  --with-toolset=TOOLSET    use specific TOOLSET to build B2 and as default
+                            for building Boost
                             [automatically detected]
   --show-libraries          show the set of libraries that require build
                             and installation steps (i.e., those libraries
@@ -193,7 +196,7 @@ my_dir=$(dirname "$0")
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" = x; then
-  guessed_toolset=`$my_dir/tools/build/src/engine/build.sh --guess-toolset`
+  guessed_toolset=`CXX= CXXFLAGS= $my_dir/tools/build/src/engine/build.sh --guess-toolset`
   case $guessed_toolset in
     acc | clang | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
@@ -223,7 +226,7 @@ rm -f config.log
 if test "x$BJAM" = x; then
   $ECHO "Building B2 engine.."
   pwd=`pwd`
-  (cd "$my_dir/tools/build/src/engine" && ./build.sh)
+  CXX= CXXFLAGS= "$my_dir/tools/build/src/engine/build.sh" ${TOOLSET}
   if [ $? -ne 0 ]; then
       echo
       echo "Failed to build B2 build engine"
@@ -400,7 +403,10 @@ To generate header files, run:
 
     ./b2 headers
 
-To adjust configuration, edit 'project-config.jam'.
+The configuration generated uses ${TOOLSET} to build by default. If that is
+unintended either use the --with-toolset option or adjust configuration, by
+editing 'project-config.jam'.
+
 Further information:
 
    - Command line help:
