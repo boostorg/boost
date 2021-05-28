@@ -90,6 +90,26 @@ matrix:
       - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF ..
       - cmake --build .
 
+    # Install Boost with CMake
+    - env: CMAKE_INSTALL=1
+      compiler: g++
+
+      before_script: true
+      before_install: true
+      after_success: true
+      after_failure: true
+      after_script: true
+
+      install:
+      - pip install --user cmake
+      - git submodule update --init --jobs 3
+
+      script:
+      - mkdir __build && cd __build
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=~/.local ..
+      - cmake --build .
+      - cmake --build . --target install
+
     # Test Boost with CMake
     - env: CMAKE_TEST=1
       compiler: g++
