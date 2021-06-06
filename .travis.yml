@@ -124,26 +124,12 @@ matrix:
       - cmake --build . --target tests -j 3 -- -k
       - ctest --output-on-failure -j 3 -R quick
 
-#    # Run tests for the library updated by this commit.
-#    - env: SCRIPT=ci_boost_test_library TOOLSET=gcc CXXSTD=11
-#      compiler: g++
-#
-#    - env: SCRIPT=ci_boost_test_library TOOLSET=clang CXXSTD=11
-#      compiler: clang++
-#
-#    # Library requirements tests.
-#    - env: SCRIPT=ci_boost_library_check
-#
-#  allow_failures:
-#    - env: SCRIPT=ci_boost_library_check
-
 before_install:
   # Fetch the scripts to do the actual building/testing.
   - git submodule update --init --jobs 3
   - |
     wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ..
     wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/${SCRIPT}.py" -P ..
-    rvm install 2.3.3
 
 install: python "${TRAVIS_BUILD_DIR}/../${SCRIPT}.py" install
 before_script: python "${TRAVIS_BUILD_DIR}/../${SCRIPT}.py" before_script
