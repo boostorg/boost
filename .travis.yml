@@ -11,7 +11,7 @@ branches:
     - develop
     - /feature\/.*/
 
-dist: xenial
+dist: bionic
 
 language: cpp
 
@@ -19,25 +19,6 @@ compiler: gcc
 
 git:
   submodules: false
-
-addons:
-  apt:
-    packages:
-      - p7zip-full
-      - docutils-common
-      - docutils-doc
-      - python-docutils
-      - docbook
-      - docbook-xml
-      - docbook-xsl
-      - xsltproc
-      - doxygen
-      - dvipsk-ja
-      - texlive
-      - sshpass
-      - ghostscript
-      - libsaxonhe-java
-  ssh_known_hosts: frs.sourceforge.net
 
 env:
   matrix:
@@ -58,22 +39,23 @@ matrix:
     - env: SCRIPT=ci_boost_status RELEASE=1
 
     # Run 'quick' tests.
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11,14
       compiler: g++
 
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11,14
       compiler: clang++
 
     # Build Boost
-    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11
+    - env: SCRIPT=ci_boost_build TOOLSET=gcc
       compiler: g++
 
     # Build Boost with release layout
-    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11 RELEASE=1
+    - env: SCRIPT=ci_boost_build TOOLSET=gcc RELEASE=1
       compiler: g++
 
     # Build Boost with CMake
     - env: CMAKE_BUILD=1
+      dist: xenial
       compiler: g++
 
       before_script: true
@@ -81,6 +63,11 @@ matrix:
       after_success: true
       after_failure: true
       after_script: true
+
+      addons:
+        apt:
+          packages:
+            - libzstd-dev
 
       install:
       - git submodule update --init --jobs 3
@@ -99,11 +86,6 @@ matrix:
       after_success: true
       after_failure: true
       after_script: true
-
-      addons:
-        apt:
-          packages:
-            - libzstd-dev
 
       install:
       - pip install --user cmake
@@ -126,7 +108,11 @@ matrix:
       after_failure: true
       after_script: true
 
-      addons: {}
+      addons:
+        apt:
+          packages:
+            - liblzma-dev
+            - libzstd-dev
 
       install:
       - git submodule update --init --jobs 3
