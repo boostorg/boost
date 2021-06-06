@@ -87,7 +87,7 @@ matrix:
 
       script:
       - mkdir __build && cd __build
-      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF ..
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF ..
       - cmake --build .
 
     # Install Boost with CMake
@@ -106,7 +106,7 @@ matrix:
 
       script:
       - mkdir __build && cd __build
-      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=~/.local ..
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=~/.local ..
       - cmake --build .
       - cmake --build . --target install
 
@@ -125,9 +125,9 @@ matrix:
 
       script:
       - mkdir __build && cd __build
-      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBUILD_TESTING=ON ..
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBUILD_TESTING=ON ..
       - cmake --build . -j 3
-      - cmake --build . --target tests -j 3
+      - cmake --build . --target tests -j 3 -- -k
       - ctest --output-on-failure -j 3 -R quick
 
 #    # Run tests for the library updated by this commit.
