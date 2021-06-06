@@ -100,6 +100,11 @@ matrix:
       after_failure: true
       after_script: true
 
+      addons:
+        apt:
+          packages:
+            - libzstd-dev
+
       install:
       - pip install --user cmake
       - git submodule update --init --jobs 3
@@ -120,6 +125,8 @@ matrix:
       after_success: true
       after_failure: true
       after_script: true
+
+      addons: {}
 
       install:
       - git submodule update --init --jobs 3
