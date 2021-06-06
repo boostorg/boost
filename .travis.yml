@@ -126,8 +126,9 @@ matrix:
       script:
       - mkdir __build && cd __build
       - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBUILD_TESTING=ON ..
-      - cmake --build .
-      - ctest --output-on-failure -R quick
+      - cmake --build . -j 3
+      - cmake --build . --target tests -j 3
+      - ctest --output-on-failure -j 3 -R quick
 
 #    # Run tests for the library updated by this commit.
 #    - env: SCRIPT=ci_boost_test_library TOOLSET=gcc CXXSTD=11
