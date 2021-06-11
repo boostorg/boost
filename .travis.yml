@@ -11,7 +11,7 @@ branches:
     - develop
     - /feature\/.*/
 
-dist: xenial
+dist: bionic
 
 language: cpp
 
@@ -19,25 +19,6 @@ compiler: gcc
 
 git:
   submodules: false
-
-addons:
-  apt:
-    packages:
-      - p7zip-full
-      - docutils-common
-      - docutils-doc
-      - python-docutils
-      - docbook
-      - docbook-xml
-      - docbook-xsl
-      - xsltproc
-      - doxygen
-      - dvipsk-ja
-      - texlive
-      - sshpass
-      - ghostscript
-      - libsaxonhe-java
-  ssh_known_hosts: frs.sourceforge.net
 
 env:
   matrix:
@@ -50,6 +31,10 @@ matrix:
   include:
 
     - env: SCRIPT=ci_boost_release MODE=check
+      addons:
+        apt:
+          packages:
+            - xsltproc
 
     # Simple integrated status tests check.
     - env: SCRIPT=ci_boost_status
@@ -58,22 +43,23 @@ matrix:
     - env: SCRIPT=ci_boost_status RELEASE=1
 
     # Run 'quick' tests.
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=gcc CXXSTD=03,11,14
       compiler: g++
 
-    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11
+    - env: SCRIPT=ci_boost_status TARGET=quick TOOLSET=clang CXXSTD=03,11,14
       compiler: clang++
 
     # Build Boost
-    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11
+    - env: SCRIPT=ci_boost_build TOOLSET=gcc
       compiler: g++
 
     # Build Boost with release layout
-    - env: SCRIPT=ci_boost_build TOOLSET=gcc CXXSTD=11 RELEASE=1
+    - env: SCRIPT=ci_boost_build TOOLSET=gcc RELEASE=1
       compiler: g++
 
     # Build Boost with CMake
     - env: CMAKE_BUILD=1
+      dist: xenial
       compiler: g++
 
       before_script: true
@@ -82,12 +68,17 @@ matrix:
       after_failure: true
       after_script: true
 
+      addons:
+        apt:
+          packages:
+            - libzstd-dev
+
       install:
       - git submodule update --init --jobs 3
 
       script:
       - mkdir __build && cd __build
-      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF ..
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF ..
       - cmake --build .
 
     # Install Boost with CMake
@@ -106,12 +97,13 @@ matrix:
 
       script:
       - mkdir __build && cd __build
-      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=~/.local ..
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBOOST_INSTALL_LAYOUT=tagged -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=~/.local ..
       - cmake --build .
       - cmake --build . --target install
 
     # Test Boost with CMake
     - env: CMAKE_TEST=1
+      dist: bionic
       compiler: g++
 
       before_script: true
@@ -120,27 +112,21 @@ matrix:
       after_failure: true
       after_script: true
 
+      addons:
+        apt:
+          packages:
+            - liblzma-dev
+            - libzstd-dev
+
       install:
       - git submodule update --init --jobs 3
 
       script:
       - mkdir __build && cd __build
-      - cmake -DBOOST_ENABLE_CMAKE=ON -DBoost_VERBOSE=ON -DBUILD_TESTING=ON ..
-      - cmake --build .
-      - ctest --output-on-failure -R quick
-
-#    # Run tests for the library updated by this commit.
-#    - env: SCRIPT=ci_boost_test_library TOOLSET=gcc CXXSTD=11
-#      compiler: g++
-#
-#    - env: SCRIPT=ci_boost_test_library TOOLSET=clang CXXSTD=11
-#      compiler: clang++
-#
-#    # Library requirements tests.
-#    - env: SCRIPT=ci_boost_library_check
-#
-#  allow_failures:
-#    - env: SCRIPT=ci_boost_library_check
+      - cmake -DBOOST_ENABLE_CMAKE=ON -DBUILD_TESTING=ON ..
+      - cmake --build . -j 3
+      - cmake --build . --target tests -j 3 -- -k
+      - ctest --output-on-failure -j 3 -R quick
 
 before_install:
   # Fetch the scripts to do the actual building/testing.
@@ -148,7 +134,6 @@ before_install:
   - |
     wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/ci_boost_common.py" -P ..
     wget "https://raw.githubusercontent.com/boostorg/release-tools/develop/${SCRIPT}.py" -P ..
-    rvm install 2.3.3
 
 install: python "${TRAVIS_BUILD_DIR}/../${SCRIPT}.py" install
 before_script: python "${TRAVIS_BUILD_DIR}/../${SCRIPT}.py" before_script
