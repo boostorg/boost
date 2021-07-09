@@ -285,7 +285,7 @@ if test "x$flag_no_python" = x; then
 
     if test "x$PYTHON_ROOT" = x; then
         $ECHO -n "Detecting Python root... "
-        PYTHON_ROOT=`$PYTHON -c "import sys; print(sys.prefix)"`
+        PYTHON_ROOT=`$PYTHON -c "from sysconfig import get_paths as gp; print(gp()['include'])"`
         echo $PYTHON_ROOT
     fi    
 fi
