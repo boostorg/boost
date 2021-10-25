@@ -1,0 +1,51 @@
+---
+kind: pipeline
+type: docker
+name: boost-releases EOL LF
+trigger:
+  branch:
+    - master
+    - develop
+
+steps:
+  - name: build snapshot EOL LF
+    image: cppalliance/boost_superproject_build:python3-build2
+    environment:
+      ARTIFACTORY_PASS:
+        from_secret: artifactory_pass
+      GH_TOKEN:
+        from_secret: gh_token
+      GH_USER:
+        from_secret: gh_user
+    commands:
+        - wget "https://raw.githubusercontent.com/boostorg/release-tools/python3/ci_boost_common.py"
+        - wget "https://raw.githubusercontent.com/boostorg/release-tools/python3/ci_boost_release.py"
+        - python3 ci_boost_release.py checkout_post
+        # - run: python ci_boost_release.py dependencies_override
+        - EOL=LF python3 ci_boost_release.py test_override
+
+---
+kind: pipeline
+type: docker
+name: boost-releases EOL CRLF
+trigger:
+  branch:
+    - master
+    - develop
+
+steps:
+  - name: build-snapshot EOL CRLF
+    image: cppalliance/boost_superproject_build:python3-build2
+    environment:
+      ARTIFACTORY_PASS:
+        from_secret: artifactory_pass
+      GH_TOKEN:
+        from_secret: gh_token
+      GH_USER:
+        from_secret: gh_user
+    commands:
+        - wget "https://raw.githubusercontent.com/boostorg/release-tools/python3/ci_boost_common.py"
+        - wget "https://raw.githubusercontent.com/boostorg/release-tools/python3/ci_boost_release.py"
+        - python3 ci_boost_release.py checkout_post
+        # - run: python ci_boost_release.py dependencies_override
+        - EOL=CRLF python3 ci_boost_release.py test_override
