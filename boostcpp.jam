@@ -634,9 +634,9 @@ rule address-model ( )
     return <conditional>@boostcpp.deduce-address-model ;
 }
 
-local deducable-architectures = arm mips1 power riscv s390x sparc x86 combined ;
-feature.feature deduced-architecture : $(deducable-architectures) : propagated optional composite hidden ;
-for a in $(deducable-architectures)
+local deducible-architectures = arm mips1 power riscv s390x sparc x86 combined ;
+feature.feature deduced-architecture : $(deducible-architectures) : propagated optional composite hidden ;
+for a in $(deducible-architectures)
 {
     feature.compose <deduced-architecture>$(a) : <architecture>$(a) ;
 }
