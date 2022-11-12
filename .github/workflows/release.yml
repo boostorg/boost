@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - boost-*
+
+jobs:
+  make-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Create archives
+        run: |
+          cd ..
+          cp -a ${{ github.event.repository.name }} ${{ github.ref_name }}
+          rm -rf ${{ github.ref_name }}/.git
+          zip -q ${{ github.event.repository.name }}-${{ github.ref_name }}.zip -r ${{ github.ref_name }}
+          tar -czf ${{ github.event.repository.name }}-${{ github.ref_name }}.tar.gz ${{ github.ref_name }}
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ../${{ github.event.repository.name }}-${{ github.ref_name }}.zip
+            ../${{ github.event.repository.name }}-${{ github.ref_name }}.tar.gz
