@@ -1,0 +1,202 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - feature/**
+    tags:
+      - '**'
+
+jobs:
+  b2-posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+          - os: ubuntu-22.04
+          - os: macos-11
+          - os: macos-12
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup Boost
+        run: |
+          ./bootstrap.sh
+          ./b2 -d0 headers
+
+      - name: Build Boost
+        run: |
+          ./b2 -j3 stage
+
+      - name: Install Boost
+        run: |
+          ./b2 -j3 --prefix=$HOME/.local install
+
+      - name: Test Boost
+        run: |
+          cd status
+          ../b2 -j3 quick
+
+  b2-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2019
+          - os: windows-2022
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          cmd /c bootstrap
+          b2 -d0 headers
+
+      - name: Build Boost
+        run: |
+          ./b2 -j3 stage
+
+      - name: Install Boost
+        run: |
+          ./b2 -j3 install
+
+      - name: Test Boost
+        run: |
+          cd status
+          ../b2 -j3 quick
+
+  cmake-install-posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+          - os: ubuntu-22.04
+          - os: macos-11
+          - os: macos-12
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=~/.local ..
+
+      - name: Build Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3
+
+      - name: Install Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target install
+
+  cmake-install-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2019
+          - os: windows-2022
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          cmake -DBUILD_SHARED_LIBS=ON ..
+
+      - name: Build Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3
+
+      - name: Install Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target install
+
+  cmake-test-posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+          - os: ubuntu-22.04
+          - os: macos-11
+          - os: macos-12
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          cmake -DBUILD_TESTING=ON ..
+
+      - name: Build tests
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target tests
+
+      - name: Run tests
+        run: |
+          cd __build__
+          ctest --output-on-failure --no-tests=error -j 3 -R quick
+
+  cmake-test-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2019
+          - os: windows-2022
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          cmake -DBUILD_TESTING=ON -DBOOST_EXCLUDE_LIBRARIES="convert;outcome" ..
+
+      - name: Build tests
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target tests
+
+      - name: Run tests
+        run: |
+          cd __build__
+          ctest --output-on-failure --no-tests=error -j 3 -R quick -C Debug
