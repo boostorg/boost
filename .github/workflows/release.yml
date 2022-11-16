@@ -6,26 +6,55 @@ on:
       - boost-*
 
 jobs:
-  make-release:
+  release-posix:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
         with:
+          path: ${{ github.ref_name }}
           submodules: true
+
+      - name: Cleanup
+        shell: bash
+        run: |
+          find ${{ github.ref_name }} -name ".git" -prune -exec rm -rf {} +
 
       - name: Create archives
         run: |
-          cd ..
-          cp -a ${{ github.event.repository.name }} ${{ github.ref_name }}
-          rm -rf ${{ github.ref_name }}/.git
-          zip -q ${{ github.ref_name }}.zip -r ${{ github.ref_name }}
           tar -czf ${{ github.ref_name }}.tar.gz ${{ github.ref_name }}
           tar -cJf ${{ github.ref_name }}.tar.xz ${{ github.ref_name }}
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
-            ../${{ github.ref_name }}.zip
-            ../${{ github.ref_name }}.tar.gz
-            ../${{ github.ref_name }}.tar.xz
+            ${{ github.ref_name }}.tar.gz
+            ${{ github.ref_name }}.tar.xz
+
+  release-windows:
+    runs-on: windows-latest
+
+    needs: release-posix
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ github.ref_name }}
+          submodules: true
+
+      - name: Cleanup
+        shell: bash
+        run: |
+          find ${{ github.ref_name }} -name ".git" -prune -exec rm -rf {} +
+
+      - name: Create archives
+        shell: cmd
+        run: |
+          7z a ${{ github.ref_name }}.zip ${{ github.ref_name }}
+          7z a ${{ github.ref_name }}.7z ${{ github.ref_name }}
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ github.ref_name }}.zip
+            ${{ github.ref_name }}.7z
