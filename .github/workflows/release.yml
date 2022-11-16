@@ -7,7 +7,10 @@ on:
 
 jobs:
   make-release:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -21,7 +24,7 @@ jobs:
           # Remove all .git folders & files as well as .github folders and .git, .gitattribute etc. files
           find ${{ github.ref_name }} -name ".git*" -prune -exec rm -rf {} +
           # Remove CI configs
-          find ${{ github.ref_name }} \( \
+          find ${{ github.ref_name }} -type f \( \
             -name "appveyor.yml" -o \
             -name ".appveyor.yml" -o \
             -name "azure-pipelines.yml" -o \
@@ -36,18 +39,16 @@ jobs:
             -false \) -delete
             
       - name: Create Linux Archives
+        if: runner.os == 'Linux'
         run: |
           tar -czf ${{ github.ref_name }}.tar.gz ${{ github.ref_name }}
           tar -cJf ${{ github.ref_name }}.tar.xz ${{ github.ref_name }}
       - name: Create Windows archives
+        if: runner.os == 'Windows'
         run: |
-          sudo apt-get -o Acquire::Retries=5 install -y dos2unix
-          find ${{ github.ref_name }} -type f -exec unix2dos {} \;
-          zip -q ${{ github.ref_name }}.zip -r ${{ github.ref_name }}
+          7z ${{ github.ref_name }}.zip ${{ github.ref_name }}
+          7z ${{ github.ref_name }}.7z ${{ github.ref_name }}
 
       - uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ${{ github.ref_name }}.tar.gz
-            ${{ github.ref_name }}.tar.xz
-            ${{ github.ref_name }}.zip
+          files: ${{ github.ref_name }}.*
