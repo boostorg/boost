@@ -12,7 +12,7 @@ ECHO Building Boost.Build engine
 if exist ".\tools\build\src\engine\b2.exe" del tools\build\src\engine\b2.exe
 pushd tools\build\src\engine
 
-call .\build.bat
+call .\bootstrap.bat
 @ECHO OFF
 
 popd
