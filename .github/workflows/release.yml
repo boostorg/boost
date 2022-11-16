@@ -12,20 +12,42 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          path: ${{ github.ref_name }}
           submodules: true
 
-      - name: Create archives
+      - name: Cleanup
+        shell: bash
         run: |
-          cd ..
-          cp -a ${{ github.event.repository.name }} ${{ github.ref_name }}
-          rm -rf ${{ github.ref_name }}/.git
-          zip -q ${{ github.ref_name }}.zip -r ${{ github.ref_name }}
+          # Remove all .git folders & files as well as .github folders and .git, .gitattribute etc. files
+          find ${{ github.ref_name }} -name ".git*" -prune -exec rm -rf {} +
+          # Remove CI configs
+          find ${{ github.ref_name }} \( \
+            -name "appveyor.yml" -o \
+            -name ".appveyor.yml" -o \
+            -name "azure-pipelines.yml" -o \
+            -name ".azure-pipelines.yml" -o \
+            -name "circle.yml" -o \
+            -name ".cirrus.yml" -o \
+            -name "codecov.yml" -o \
+            -name ".codecov.yml" -o \
+            -name ".coveralls.yml" -o \
+            -name ".drone.star" -o \
+            -name ".travis.yml" -o \
+            -false \) -delete
+            
+      - name: Create Linux Archives
+        run: |
           tar -czf ${{ github.ref_name }}.tar.gz ${{ github.ref_name }}
           tar -cJf ${{ github.ref_name }}.tar.xz ${{ github.ref_name }}
+      - name: Create Windows archives
+        run: |
+          sudo apt-get -o Acquire::Retries=5 install -y dos2unix
+          find ${{ github.ref_name }} -type f -exec unix2dos {} \;
+          zip -q ${{ github.ref_name }}.zip -r ${{ github.ref_name }}
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
-            ../${{ github.ref_name }}.zip
-            ../${{ github.ref_name }}.tar.gz
-            ../${{ github.ref_name }}.tar.xz
+            ${{ github.ref_name }}.tar.gz
+            ${{ github.ref_name }}.tar.xz
+            ${{ github.ref_name }}.zip
