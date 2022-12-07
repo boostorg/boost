@@ -1,0 +1,67 @@
+# Copyright 2018 Cromwell D. Enage
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+    - ARGS: --toolset=gcc address-model=32
+      PATH: C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=32 linkflags=-Wl,-allow-multiple-definition
+      PATH: C:\MinGW\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=64
+      PATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=64 cxxflags=-std=gnu++1z
+      PATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ARGS: --toolset=msvc-9.0  address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ARGS: --toolset=msvc-10.0 address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ARGS: --toolset=msvc-11.0 address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ARGS: --toolset=msvc-12.0 address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ARGS: --toolset=msvc-12.0 address-model=64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ARGS: --toolset=msvc-14.0 address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ARGS: --toolset=msvc-14.0 address-model=64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ARGS: --toolset=msvc-14.0 address-model=64 cxxflags=-std:c++latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=msvc-14.1 address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=msvc-14.1 address-model=64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=msvc-14.1 address-model=64 cxxflags=-std:c++latest
+
+install:
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/boost_install
+  - git submodule update --init libs/headers
+  - git submodule update --init tools/build
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\accumulators
+  - python tools/boostdep/depinst/depinst.py accumulators
+  - bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - cd libs\accumulators\test
+  - ..\..\..\b2 -j%NUMBER_OF_PROCESSORS% --hash %ARGS%
+  - cd ..\..\..
