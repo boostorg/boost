@@ -1,0 +1,123 @@
+# Copyright 2017 Edward Diener
+# Copyright 2018 Mike Dev
+# Copyright 2019 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+configuration:
+  - boost_build_test
+  - cmake_test
+  - cmake_subdir_test
+  - cmake_install_test
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-10.0
+      ADDRMD: 32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-11.0
+      ADDRMD: 32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-12.0
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      ADDRMD: 32,64
+      CXXSTD: 14,17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      ADDRMD: 32,64
+      CXXSTD: 14,17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      ADDRMD: 32,64
+      CXXSTD: 14,17,latest
+      PREPROCESSOR: /Zc:preprocessor
+
+matrix:
+  exclude:
+    - configuration: cmake_test
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - configuration: cmake_test
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - configuration: cmake_test
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+build: off
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - git submodule update --init tools/boost_install
+  - git submodule update --init libs/headers
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\preprocessor\
+  - python tools/boostdep/depinst/depinst.py preprocessor
+
+for:
+-
+  matrix:
+    only:
+      - configuration: boost_build_test
+
+  test_script:
+    - bootstrap
+    - b2 -d0 headers
+    - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+    - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+    - if not "%PREPROCESSOR%" == "" set PREPROCESSOR=cflags="%PREPROCESSOR%"
+    - b2 libs/preprocessor/test -j3 toolset=%TOOLSET% %CXXSTD% %ADDRMD% %PREPROCESSOR% variant=debug,release
+
+-
+  matrix:
+    only:
+      - configuration: cmake_test
+
+  test_script:
+    - mkdir __build__ && cd __build__
+    - cmake -DBOOST_ENABLE_CMAKE=1 -DBoost_VERBOSE=1 -DBOOST_INCLUDE_LIBRARIES=preprocessor ..
+    - ctest --output-on-failure -R boost_preprocessor -C Debug
+
+-
+  matrix:
+    only:
+      - configuration: cmake_subdir_test
+
+  test_script:
+    - cd libs/preprocessor/test/cmake_subdir_test && mkdir __build__ && cd __build__
+    - cmake ..
+    - cmake --build .
+    - cmake --build . --target check
+
+-
+  matrix:
+    only:
+      - configuration: cmake_install_test
+
+  test_script:
+    - mkdir __build__ && cd __build__
+    - cmake -DBOOST_ENABLE_CMAKE=1 -DBoost_VERBOSE=1 -DBOOST_INCLUDE_LIBRARIES=preprocessor -DCMAKE_INSTALL_PREFIX=C:/cmake-prefix ..
+    - cmake --build . --target install
+    - cd ../libs/preprocessor/test/cmake_install_test && mkdir __build__ && cd __build__
+    - cmake -DCMAKE_INSTALL_PREFIX=C:/cmake-prefix ..
+    - cmake --build .
+    - cmake --build . --target check
