@@ -1,0 +1,75 @@
+////
+Copyright 2021 Glen Joseph Fernandes
+(glenjofe@gmail.com)
+
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
+////
+
+# Null Streams, <boost/io/nullstream.hpp>
+:toc:
+:toc-title:
+:idprefix:
+
+## Description
+
+The header `<boost/io/nullstream.hpp>` provides the class template
+`boost::io::basic_nullbuf` which is a null stream buffer and class template
+`boost::io::basic_onullstream` which is a null stream.
+
+## Example
+
+The following program passes a null stream to a function.
+
+```
+#include <boost/io/ostream_joiner.hpp>
+#include <fstream>
+
+void setup(std::ostream& log);
+
+int main(int argc, char* argv[])
+{
+    if (argc == 2) {
+        std::ofstream file(argv[1]);
+        setup(file);
+    } else {
+        boost::io::onullstream none;
+        setup(none);
+    }
+}
+```
+
+## Reference
+
+### Header Synopsis
+
+```
+namespace boost {
+namespace io {
+
+template<class CharT, class Traits = std::char_traits<Char> >
+class basic_nullbuf
+    : public std::basic_streambuf<CharT, Traits> {
+protected:
+    typename Traits::int_type overflow(typename Traits::int_type c) override;
+
+    std::streamsize xsputn(const CharT*, std::streamsize n) override;
+};
+
+template<class CharT, class Traits = std::char_traits<CharT> >
+class basic_onullstream
+    : public std::basic_ostream<CharT, Traits> {
+public:
+    basic_onullstream();
+};
+
+typedef basic_onullstream<char> onullstream;
+typedef basic_onullstream<wchar_t> wonullstream;
+
+} // io
+} // boost
+```
+
+## Acknowledgments
+
+Glen Fernandes implemented `basic_nullbuf` and `basic_onullstream`.
