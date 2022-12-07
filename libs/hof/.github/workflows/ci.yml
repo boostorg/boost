@@ -1,0 +1,484 @@
+name: GitHub Actions CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - githubactions*
+      - feature/**
+      - fix/**
+      - pr/**
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "CLANG_VERSION=3.5 ASAN=on LIBCXX=on Job 1"
+            buildtype: "boost"
+            packages: "util-linux g++-4.9 clang-3.5 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "clang-3.5"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            clang_version: "3.5"
+            asan: "on"
+            libcxx: "on"
+          - name: "CLANG_VERSION=3.5 ASAN=on LIBCXX=off Job 2"
+            buildtype: "boost"
+            packages: "util-linux g++-4.9 clang-3.5 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "clang-3.5"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            clang_version: "3.5"
+            asan: "on"
+            libcxx: "off"
+          - name: "CLANG_VERSION=3.8 ASAN=off LIBCXX=on BUILD_EX Job 3"
+            buildtype: "boost"
+            packages: "util-linux g++-4.9 clang-3.8 valgrind python"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "clang-3.8"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            clang_version: "3.8"
+            asan: "off"
+            libcxx: "on"
+            build_examples: "on"
+          - name: "CLANG_VERSION=3.8 ASAN=off LIBCXX=off BUILD_E Job 4"
+            buildtype: "boost"
+            packages: "util-linux g++-4.9 clang-3.8 valgrind python"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "clang-3.8"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            clang_version: "3.8"
+            asan: "off"
+            libcxx: "off"
+            build_examples: "on"
+          - name: "CLANG_VERSION=3.8 ASAN=off LIBCXX=off CXX11=o Job 5"
+            buildtype: "boost"
+            packages: "util-linux g++-4.9 clang-3.8 valgrind python"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "clang-3.8"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            clang_version: "3.8"
+            asan: "off"
+            libcxx: "off"
+            cxx11: "on"
+          - name: "GCC_VERSION=7 ASAN=off LIBCXX=off Job 6"
+            buildtype: "boost"
+            packages: "g++-7 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "gcc-7"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "7"
+            asan: "off"
+            libcxx: "off"
+          - name: "GCC_VERSION=6 ASAN=off LIBCXX=off Job 7"
+            buildtype: "boost"
+            packages: "g++-6 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "gcc-6"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "6"
+            asan: "off"
+            libcxx: "off"
+          - name: "GCC_VERSION=5 ASAN=off LIBCXX=off Job 8"
+            buildtype: "boost"
+            packages: "g++-5 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "gcc-5"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "5"
+            asan: "off"
+            libcxx: "off"
+          - name: "GCC_VERSION=4.9 ASAN=off LIBCXX=off Job 9"
+            buildtype: "boost"
+            packages: "g++-4.9 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "gcc-4.9"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "4.9"
+            asan: "off"
+            libcxx: "off"
+          - name: "GCC_VERSION=4.8 ASAN=off LIBCXX=off Job 10"
+            buildtype: "boost"
+            packages: "g++-4.8 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "gcc-4.8"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "4.8"
+            asan: "off"
+            libcxx: "off"
+          - name: "GCC_VERSION=4.7 ASAN=off LIBCXX=off Job 11"
+            buildtype: "boost"
+            packages: "g++-4.7 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "gcc-4.7"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "4.7"
+            asan: "off"
+            libcxx: "off"
+          - name: "GCC_VERSION=4.6 ASAN=off LIBCXX=off Job 12"
+            buildtype: "boost"
+            packages: "g++-4.6 valgrind"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "gcc-4.6"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            gcc_version: "4.6"
+            asan: "off"
+            libcxx: "off"
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Check if running in container
+        if: matrix.container != ''
+        run: echo "GHA_CONTAINER=${{ matrix.container }}" >> $GITHUB_ENV
+      - name: If running in container, upgrade packages
+        if: matrix.container != ''
+        run: |
+            sudo apt-get -o Acquire::Retries=3 update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata && apt-get -o Acquire::Retries=3 install -y sudo software-properties-common wget curl apt-transport-https make apt-file sudo unzip libssl-dev build-essential autotools-dev autoconf automake g++ libc++-helpers python python-pip ruby cpio gcc-multilib g++-multilib pkgconf python3 python3-pip ccache libpython-dev
+            sudo apt-add-repository ppa:git-core/ppa
+            sudo apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 -y install git
+            sudo python -m pip install --upgrade pip==20.3.4
+            sudo /usr/local/bin/pip install cmake
+
+      - uses: actions/checkout@v2
+
+      - name: linux
+        shell: bash
+        env:
+          CXX: ${{ matrix.cxx }}
+          SOURCES: ${{ matrix.sources }}
+          LLVM_OS: ${{ matrix.llvm_os }}
+          LLVM_VER: ${{ matrix.llvm_ver }}
+          PACKAGES: ${{ matrix.packages }}
+          PACKAGES_TO_REMOVE: ${{ matrix.packages_to_remove }}
+          JOB_BUILDTYPE: ${{ matrix.buildtype }}
+          CXXFLAGS: ${{ matrix.cxxflags }}
+          ASAN: ${{ matrix.asan }}
+          LIBCXX: ${{ matrix.libcxx }}
+          CLANG_VERSION: ${{ matrix.clang_version }}
+          BUILD_EXAMPLES: ${{ matrix.build_examples }}
+          CXX11: ${{ matrix.cxx11 }}
+          GCC_VERSION: ${{ matrix.gcc_version }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "linux"
+        run: |
+          echo '==================================> SETUP'
+          echo '==================================> PACKAGES'
+          set -e
+          if [ -n "$PACKAGES_TO_REMOVE" ]; then sudo apt-get purge -y $PACKAGES_TO_REMOVE; fi
+          echo ">>>>> APT: REPO.."
+          for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+          
+          if test -n "${LLVM_OS}" ; then
+              wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+              if test -n "${LLVM_VER}" ; then
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS}-${LLVM_VER} main"
+              else
+                  # Snapshot (i.e. trunk) build of clang
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS} main"
+              fi
+          fi
+          echo ">>>>> APT: UPDATE.."
+          sudo -E apt-get -o Acquire::Retries=3 update
+          if test -n "${SOURCES}" ; then
+              echo ">>>>> APT: INSTALL SOURCES.."
+              for SOURCE in $SOURCES; do
+                  sudo -E apt-add-repository ppa:$SOURCE
+              done
+          fi
+          echo ">>>>> APT: INSTALL ${PACKAGES}.."
+          sudo -E DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -y --no-install-suggests --no-install-recommends install ${PACKAGES}
+
+          echo '==================================> INSTALL AND COMPILE'
+          set -e
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+
+          if [ "$JOB_BUILDTYPE" == "boost" ]; then
+
+          echo '==================================> INSTALL'
+
+          export CHECKOUT_PATH=`pwd`;
+          if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+          if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+          export DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+          mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+          mkdir usr
+          export PATH=${DEPS_DIR}/usr/bin:${PATH}
+          CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.1-Linux-x86_64.tar.gz"
+          if [[ "$LIBCXX" == "on" ]]; then wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C usr; fi
+
+          $CXX --version || true
+          which $CXX || true
+          $CC --version || true
+          which $CC || true
+          which cmake || true
+          cmake --version || true
+          if [[ "$LIBCXX" == "on" ]]; then
+            if [[ "${CLANG_VERSION}" == "3.5" ]]; then LLVM_VERSION="3.5.2"; fi
+            if [[ "${CLANG_VERSION}" == "3.6" ]]; then LLVM_VERSION="3.6.2"; fi
+            if [[ "${CLANG_VERSION}" == "3.7" ]]; then LLVM_VERSION="3.7.0"; fi
+            if [[ "${CLANG_VERSION}" == "3.8" ]]; then LLVM_VERSION="3.8.1"; fi
+            LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+            LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+            LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+
+            mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
+            wget --quiet -O - ${LLVM_URL} | tar --strip-components=1 -x --xz -C llvm
+            wget --quiet -O - ${LIBCXX_URL} | tar --strip-components=1 -x --xz -C llvm/projects/libcxx
+            wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -x --xz -C llvm/projects/libcxxabi
+            (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/usr)
+            (cd llvm/build/projects/libcxx && make install -j2)
+            (cd llvm/build/projects/libcxxabi && make install -j2)
+            export LDFLAGS="-L${DEPS_DIR}/usr/lib -lc++ -lc++abi"
+            export CFLAGS="${CFLAGS} -stdlib=libc++ -I${DEPS_DIR}/usr/include/c++/v1"
+            export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -I${DEPS_DIR}/usr/include/c++/v1"
+            export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/usr/lib"
+          fi
+
+          ls -lR ${DEPS_DIR}/usr
+          export CXXFLAGS="${CXXFLAGS} -Wall -Wextra -Werror"
+          if [ -n "$CLANG_VERSION" ]; then export CXXFLAGS="${CXXFLAGS} -Wnewline-eof -Wabi -Wabstract-final-class -Waddress -Waddress-of-array-temporary -Waddress-of-temporary -Waggregate-return -Wambiguous-macro -Wambiguous-member-template -Wanonymous-pack-parens -Warray-bounds -Warray-bounds-pointer-arithmetic -Wassign-enum -Watomic-properties -Wattributes -Wavailability -Wbackslash-newline-escape -Wbad-array-new-length -Wbad-function-cast -Wbind-to-temporary-copy -Wbuiltin-macro-redefined -Wbuiltin-requires-header -Wcast-align -Wcast-qual -Wchar-align -Wcomments -Wcompare-distinct-pointer-types -Wconditional-type-mismatch -Wconditional-uninitialized -Wconfig-macros -Wconstant-logical-operand -Wconstexpr-not-const -Wconversion-null -Wcovered-switch-default -Wctor-dtor-privacy -Wdangling-field -Wdangling-initializer-list -Wdelete-incomplete -Wdeprecated -Wdivision-by-zero -Wduplicate-decl-specifier -Wduplicate-enum -Wduplicate-method-arg -Wduplicate-method-match -Wdynamic-class-memaccess -Wempty-body -Wendif-labels -Wenum-compare -Wexplicit-ownership-type -Wextern-initializer -Wfloat-equal -Wgnu-array-member-paren-init -Wheader-guard -Wheader-hygiene -Widiomatic-parentheses -Wignored-attributes -Wimplicit-conversion-floating-point-to-bool -Wimplicit-exception-spec-mismatch -Wimplicit-fallthrough -Wincompatible-library-redeclaration -Wincompatible-pointer-types -Winherited-variadic-ctor -Winit-self -Winline -Wint-conversions -Wint-to-pointer-cast -Winteger-overflow -Winvalid-constexpr -Winvalid-noreturn -Winvalid-offsetof -Winvalid-pch -Winvalid-pp-token -Winvalid-source-encoding -Winvalid-token-paste -Wloop-analysis -Wmain -Wmain-return-type -Wmalformed-warning-check -Wmethod-signatures -Wmismatched-parameter-types -Wmismatched-return-types -Wmissing-declarations -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wmissing-sysroot -Wmissing-variable-declarations -Wnarrowing -Wnested-externs -Wsign-compare -Wnon-pod-varargs -Wnon-virtual-dtor -Wnull-arithmetic -Wnull-character -Wnull-dereference -Wodr -Wold-style-definition -Wout-of-line-declaration -Wover-aligned -Woverflow -Woverriding-method-mismatch -Wpacked -Wpointer-sign -Wpointer-to-int-cast -Wpointer-type-mismatch -Wpredefined-identifier-outside-function -Wredundant-decls -Wreinterpret-base-class -Wreserved-user-defined-literal -Wreturn-stack-address -Wsection -Wsequence-point -Wserialized-diagnostics -Wshadow -Wshift-count-negative -Wshift-count-overflow -Wshift-overflow -Wshift-sign-overflow -Wsign-promo -Wsizeof-pointer-memaccess -Wstack-protector -Wstatic-float-init -Wstring-compare -Wstrlcpy-strlcat-size -Wstrncat-size -Wswitch-default -Wswitch-enum -Wsynth -Wtautological-compare -Wtentative-definition-incomplete-type -Wthread-safety -Wtype-limits -Wtype-safety -Wtypedef-redefinition -Wtypename-missing -Wundef -Wundefined-inline -Wundefined-reinterpret-cast -Wunicode -Wunicode-whitespace -Wunreachable-code -Wunused-exception-parameter -Wunused-macros -Wunused-member-function -Wunused-volatile-lvalue -Wused-but-marked-unused -Wuser-defined-literals -Wvarargs -Wvector-conversions -Wvexing-parse -Wvisibility -Wvla -Wweak-template-vtables -Wweak-vtables -Wwrite-strings"; fi
+
+          echo '==================================> SCRIPT'
+
+          export INSTALL_PREFIX_PATH="${TRAVIS_BUILD_DIR}/usr"
+          mkdir -p "$INSTALL_PREFIX_PATH"
+          export PKG_CONFIG_PATH="$INSTALL_PREFIX_PATH/lib/pkgconfig"
+          cd $CHECKOUT_PATH
+          export ASANFLAGS="-fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize=unsigned-integer-overflow"
+          if [[ "$CXX11" == "on" ]]; then export CXXFLAGS="${CXXFLAGS} -std=c++11"; fi
+          export ASANVARIANT="off"
+          if [[ "$ASAN" == "on" ]]; then export ASANVARIANT="${ASANVARIANT} on"; fi
+          for build_type in debug minsizerel release; do
+            for asan_type in $ASANVARIANT; do
+              build_dir="build-$build_type-asan-$asan_type"
+              mkdir $build_dir
+              cd $build_dir
+              if [[ "$asan_type" == "on" ]]; then 
+                CXXFLAGS="$CXXFLAGS $ASANFLAGS" cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX_PATH ..
+              else
+                cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX_PATH ..
+              fi
+              CTEST_OUTPUT_ON_FAILURE=1 CTEST_PARALLEL_LEVEL=4 make -j4 check
+              if [ $? -ne 0 ]
+              then
+                exit 1
+              fi
+              if [[ "$build_type" == "release" ]]; then make install; fi
+              cd ..
+              rm -rf $build_dir
+            done
+          done
+
+          pkg-config boost_hof --cflags
+          cd include
+          HEADERS=$(echo boost/hof.hpp boost/hof/*.hpp)
+          cd ..
+          for file in $HEADERS; do echo -e "#include <$file>\nint main() {}" | $CXX -std=gnu++0x `pkg-config boost_hof --cflags` -x c++ -S -; done
+          rm -rf "$INSTALL_PREFIX_PATH"
+
+          fi
+  osx:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "ASAN=off LIBCXX=off CXXFLAGS='-DBOOST_HOF_HAS Job 0"
+            buildtype: "boost"
+            packages: ""
+            os: "macos-10.15"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            xcode_version: 11.7
+            cxxflags: "-DBOOST_HOF_HAS_VARIABLE_TEMPLATES=0"
+            asan: "off"
+            libcxx: "off"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set DEVELOPER_DIR
+        if: matrix.xcode_version != ''
+        run: echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer" >> $GITHUB_ENV
+      - name: Test DEVELOPER_DIR
+        run: echo $DEVELOPER_DIR
+
+      - name: "osx"
+        shell: bash
+        env:
+          CXX: ${{ matrix.cxx }}
+          SOURCES: ${{ matrix.sources }}
+          LLVM_OS: ${{ matrix.llvm_os }}
+          LLVM_VER: ${{ matrix.llvm_ver }}
+          PACKAGES: ${{ matrix.packages }}
+          JOB_BUILDTYPE: ${{ matrix.buildtype }}
+          CXXFLAGS: ${{ matrix.cxxflags }}
+          ASAN: ${{ matrix.asan }}
+          LIBCXX: ${{ matrix.libcxx }}
+          CLANG_VERSION: ${{ matrix.clang_version }}
+          BUILD_EXAMPLES: ${{ matrix.build_examples }}
+          CXX11: ${{ matrix.cxx11 }}
+          GCC_VERSION: ${{ matrix.gcc_version }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "osx"
+        run: |
+          echo '==================================> SETUP'
+          set -e
+          sudo mv /Library/Developer/CommandLineTools /Library/Developer/CommandLineTools.bck
+          echo '==================================> PACKAGES'
+          echo '==================================> INSTALL AND COMPILE'
+          set -e
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+
+          if [ "$JOB_BUILDTYPE" == "boost" ]; then
+
+          echo '==================================> INSTALL'
+
+          export CHECKOUT_PATH=`pwd`;
+          if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+          if [ -n "$CLANG_VERSION" ]; then export CXX="clang++-${CLANG_VERSION}" CC="clang-${CLANG_VERSION}"; fi
+          export DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+          mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+          mkdir usr
+          export PATH=${DEPS_DIR}/usr/bin:${PATH}
+          CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.1-Linux-x86_64.tar.gz"
+          if [[ "$LIBCXX" == "on" ]]; then wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C usr; fi
+
+          $CXX --version || true
+          which $CXX || true
+          $CC --version || true
+          which $CC || true
+          which cmake || true
+          cmake --version || true
+          if [[ "$LIBCXX" == "on" ]]; then
+            if [[ "${CLANG_VERSION}" == "3.5" ]]; then LLVM_VERSION="3.5.2"; fi
+            if [[ "${CLANG_VERSION}" == "3.6" ]]; then LLVM_VERSION="3.6.2"; fi
+            if [[ "${CLANG_VERSION}" == "3.7" ]]; then LLVM_VERSION="3.7.0"; fi
+            if [[ "${CLANG_VERSION}" == "3.8" ]]; then LLVM_VERSION="3.8.1"; fi
+            LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+            LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+            LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+
+            mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
+            wget --quiet -O - ${LLVM_URL} | tar --strip-components=1 -x --xz -C llvm
+            wget --quiet -O - ${LIBCXX_URL} | tar --strip-components=1 -x --xz -C llvm/projects/libcxx
+            wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -x --xz -C llvm/projects/libcxxabi
+            (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/usr)
+            (cd llvm/build/projects/libcxx && make install -j2)
+            (cd llvm/build/projects/libcxxabi && make install -j2)
+            export LDFLAGS="-L${DEPS_DIR}/usr/lib -lc++ -lc++abi"
+            export CFLAGS="${CFLAGS} -stdlib=libc++ -I${DEPS_DIR}/usr/include/c++/v1"
+            export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -I${DEPS_DIR}/usr/include/c++/v1"
+            export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/usr/lib"
+          fi
+
+          ls -lR ${DEPS_DIR}/usr
+          export CXXFLAGS="${CXXFLAGS} -Wall -Wextra -Werror"
+          if [ -n "$CLANG_VERSION" ]; then export CXXFLAGS="${CXXFLAGS} -Wnewline-eof -Wabi -Wabstract-final-class -Waddress -Waddress-of-array-temporary -Waddress-of-temporary -Waggregate-return -Wambiguous-macro -Wambiguous-member-template -Wanonymous-pack-parens -Warray-bounds -Warray-bounds-pointer-arithmetic -Wassign-enum -Watomic-properties -Wattributes -Wavailability -Wbackslash-newline-escape -Wbad-array-new-length -Wbad-function-cast -Wbind-to-temporary-copy -Wbuiltin-macro-redefined -Wbuiltin-requires-header -Wcast-align -Wcast-qual -Wchar-align -Wcomments -Wcompare-distinct-pointer-types -Wconditional-type-mismatch -Wconditional-uninitialized -Wconfig-macros -Wconstant-logical-operand -Wconstexpr-not-const -Wconversion-null -Wcovered-switch-default -Wctor-dtor-privacy -Wdangling-field -Wdangling-initializer-list -Wdelete-incomplete -Wdeprecated -Wdivision-by-zero -Wduplicate-decl-specifier -Wduplicate-enum -Wduplicate-method-arg -Wduplicate-method-match -Wdynamic-class-memaccess -Wempty-body -Wendif-labels -Wenum-compare -Wexplicit-ownership-type -Wextern-initializer -Wfloat-equal -Wgnu-array-member-paren-init -Wheader-guard -Wheader-hygiene -Widiomatic-parentheses -Wignored-attributes -Wimplicit-conversion-floating-point-to-bool -Wimplicit-exception-spec-mismatch -Wimplicit-fallthrough -Wincompatible-library-redeclaration -Wincompatible-pointer-types -Winherited-variadic-ctor -Winit-self -Winline -Wint-conversions -Wint-to-pointer-cast -Winteger-overflow -Winvalid-constexpr -Winvalid-noreturn -Winvalid-offsetof -Winvalid-pch -Winvalid-pp-token -Winvalid-source-encoding -Winvalid-token-paste -Wloop-analysis -Wmain -Wmain-return-type -Wmalformed-warning-check -Wmethod-signatures -Wmismatched-parameter-types -Wmismatched-return-types -Wmissing-declarations -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wmissing-sysroot -Wmissing-variable-declarations -Wnarrowing -Wnested-externs -Wsign-compare -Wnon-pod-varargs -Wnon-virtual-dtor -Wnull-arithmetic -Wnull-character -Wnull-dereference -Wodr -Wold-style-definition -Wout-of-line-declaration -Wover-aligned -Woverflow -Woverriding-method-mismatch -Wpacked -Wpointer-sign -Wpointer-to-int-cast -Wpointer-type-mismatch -Wpredefined-identifier-outside-function -Wredundant-decls -Wreinterpret-base-class -Wreserved-user-defined-literal -Wreturn-stack-address -Wsection -Wsequence-point -Wserialized-diagnostics -Wshadow -Wshift-count-negative -Wshift-count-overflow -Wshift-overflow -Wshift-sign-overflow -Wsign-promo -Wsizeof-pointer-memaccess -Wstack-protector -Wstatic-float-init -Wstring-compare -Wstrlcpy-strlcat-size -Wstrncat-size -Wswitch-default -Wswitch-enum -Wsynth -Wtautological-compare -Wtentative-definition-incomplete-type -Wthread-safety -Wtype-limits -Wtype-safety -Wtypedef-redefinition -Wtypename-missing -Wundef -Wundefined-inline -Wundefined-reinterpret-cast -Wunicode -Wunicode-whitespace -Wunreachable-code -Wunused-exception-parameter -Wunused-macros -Wunused-member-function -Wunused-volatile-lvalue -Wused-but-marked-unused -Wuser-defined-literals -Wvarargs -Wvector-conversions -Wvexing-parse -Wvisibility -Wvla -Wweak-template-vtables -Wweak-vtables -Wwrite-strings"; fi
+
+          echo '==================================> SCRIPT'
+
+          export INSTALL_PREFIX_PATH="${TRAVIS_BUILD_DIR}/usr"
+          mkdir -p "$INSTALL_PREFIX_PATH"
+          export PKG_CONFIG_PATH="$INSTALL_PREFIX_PATH/lib/pkgconfig"
+          cd $CHECKOUT_PATH
+          export ASANFLAGS="-fsanitize=address,undefined,integer -fno-omit-frame-pointer -fno-sanitize=unsigned-integer-overflow"
+          if [[ "$CXX11" == "on" ]]; then export CXXFLAGS="${CXXFLAGS} -std=c++11"; fi
+          export ASANVARIANT="off"
+          if [[ "$ASAN" == "on" ]]; then export ASANVARIANT="${ASANVARIANT} on"; fi
+          for build_type in debug minsizerel release; do
+            for asan_type in $ASANVARIANT; do
+              build_dir="build-$build_type-asan-$asan_type"
+              mkdir $build_dir
+              cd $build_dir
+              if [[ "$asan_type" == "on" ]]; then 
+                CXXFLAGS="$CXXFLAGS $ASANFLAGS" cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX_PATH ..
+              else
+                cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX_PATH ..
+              fi
+              CTEST_OUTPUT_ON_FAILURE=1 CTEST_PARALLEL_LEVEL=4 make -j4 check
+              if [ $? -ne 0 ]
+              then
+                exit 1
+              fi
+              if [[ "$build_type" == "release" ]]; then make install; fi
+              cd ..
+              rm -rf $build_dir
+            done
+          done
+
+          pkg-config boost_hof --cflags
+          cd include
+          HEADERS=$(echo boost/hof.hpp boost/hof/*.hpp)
+          cd ..
+          for file in $HEADERS; do echo -e "#include <$file>\nint main() {}" | $CXX -std=gnu++0x `pkg-config boost_hof --cflags` -x c++ -S -; done
+          rm -rf "$INSTALL_PREFIX_PATH"
+
+          fi

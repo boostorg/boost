@@ -1,0 +1,44 @@
+
+
+environment:
+  matrix:
+  # - GENERATOR: "Visual Studio 14 2015 Win64"
+  #   CONFIG: Debug
+
+  # - GENERATOR: "Visual Studio 14 2015 Win64"
+  #   CONFIG: Release
+
+  - GENERATOR: "Visual Studio 14 2015"
+    CONFIG: Debug
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+  - GENERATOR: "Visual Studio 14 2015"
+    CONFIG: Release
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+  - GENERATOR: "Visual Studio 15 2017"
+    CONFIG: Debug
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+  - GENERATOR: "Visual Studio 15 2017"
+    CONFIG: Release
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+matrix:
+  fast_finish: true
+
+build_script:
+ - cmd: set PATH=C:\Program Files (x86)\CMake\bin;%PATH%
+ # - cmd: set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+ # - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\vsvars32.bat"
+ - cmd: set CTEST_OUTPUT_ON_FAILURE=1
+ - cmd: cmake --version
+ - cmd: mkdir build
+ - cmd: cd build
+ - cmd: SET CXXFLAGS=/DBOOST_HOF_HAS_GENERIC_LAMBDA=1
+ - cmd: cmake .. -G"%GENERATOR%" -DBUILD_EXAMPLES=On
+ - cmd: cmake --build . --config %CONFIG% --target check
+
+# test_script:
+#  - cmd: ctest -C Debug --output-on-failure
+#  - cmd: cd ../../
