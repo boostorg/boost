@@ -1,0 +1,83 @@
+# Copyright 2016 Peter Dimov
+# Copyright 2016 Robert Ramey
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - develop
+#    - master
+
+environment:
+  matrix:
+    - BUILD_TOOLSET: gcc
+      BUILD_LINK: static
+    - BUILD_TOOLSET: gcc
+      BUILD_LINK: shared
+    - BUILD_TOOLSET: msvc-14.0
+      BUILD_LINK: static
+    - BUILD_TOOLSET: msvc-14.0
+      BUILD_LINK: shared
+
+install:
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH%  https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init libs/align
+  - git submodule init libs/array
+  - git submodule init libs/assert
+  - git submodule init libs/bind
+  - git submodule init libs/compatibility
+  - git submodule init libs/concept_check
+  - git submodule init libs/config
+  - git submodule init libs/container
+  - git submodule init libs/container_hash
+  - git submodule init libs/core
+  - git submodule init libs/detail
+  - git submodule init libs/filesystem
+  - git submodule init libs/function
+  - git submodule init libs/functional
+  - git submodule init libs/integer
+  - git submodule init libs/intrusive
+  - git submodule init libs/io
+  - git submodule init libs/iterator
+  - git submodule init libs/lexical_cast
+  - git submodule init libs/math
+  - git submodule init libs/move
+  - git submodule init libs/mpl
+  - git submodule init libs/numeric/conversion
+  - git submodule init libs/optional
+  - git submodule init libs/predef
+  - git submodule init libs/preprocessor
+  - git submodule init libs/range
+  - git submodule init libs/smart_ptr
+  - git submodule init libs/spirit
+  - git submodule init libs/static_assert
+  - git submodule init libs/system
+  - git submodule init libs/throw_exception
+  - git submodule init libs/tuple
+  - git submodule init libs/type_index
+  - git submodule init libs/type_traits
+  - git submodule init libs/unordered
+  - git submodule init libs/utility
+  - git submodule init libs/variant
+  - git submodule init libs/winapi
+  - git submodule init tools/boost_install
+  - git submodule init libs/headers
+
+  - git submodule init tools/build
+  - git submodule update
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\serialization
+  - set PATH=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin;%CD%;%PATH%
+  - bootstrap gcc
+  - b2 headers
+
+build: off
+
+test_script:
+  - cd libs/serialization/test
+  - b2 -j2 toolset=%BUILD_TOOLSET% link=%BUILD_LINK%
