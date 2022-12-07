@@ -1,0 +1,60 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Antony Polukhin, 2016-2022.
+
+#
+# See https://svn.boost.org/trac/boost/wiki/TravisCoverals for description of this file
+# and how it can be used with Boost libraries.
+#
+# File revision #5
+
+init:
+    - set BRANCH_TO_TEST=%APPVEYOR_REPO_BRANCH%  # Change to branch you wish to test. Use %APPVEYOR_REPO_BRANCH% for current branch.
+    - set BOOST_REMOVE=stacktrace                # Remove this folder from lib from full clone of Boost. If you are testing `any` repo, write here `any`.
+
+###############################################################################################################
+# From this point and below code is same for all the Boost libs
+###############################################################################################################
+
+version: 1.64.{build}-{branch}
+ 
+# branches to build
+branches:
+  except:
+    - gh-pages
+
+skip_tags: true
+
+before_build:
+    - set PATH=%PATH%;C:\\MinGW\\bin
+    - echo "Testing %APPVEYOR_PROJECT_NAME%"
+    # Cloning Boost libraries (fast nondeep cloning)
+    - set BOOST=C:/boost-local
+    - git init %BOOST%
+    - cd %BOOST%
+    - git remote add --no-tags -t %BRANCH_TO_TEST% origin https://github.com/boostorg/boost.git
+    - git fetch --depth=1
+    - git checkout %BRANCH_TO_TEST%
+    - git submodule update --init --merge --jobs 16
+    - git remote set-branches --add origin %BRANCH_TO_TEST%
+    #- git pull --recurse-submodules        # Updaes submodules to most recent version. Not required
+    - rm -rf %BOOST%/libs/%BOOST_REMOVE%
+    - mv %APPVEYOR_BUILD_FOLDER% %BOOST%/libs/%APPVEYOR_PROJECT_NAME%
+
+build_script:
+    - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
+    - bootstrap.bat
+    - b2.exe headers
+    - cd %BOOST%/libs/%APPVEYOR_PROJECT_NAME%/test
+
+after_build:
+before_test:
+test_script:
+    - ..\..\..\b2.exe address-model=32 architecture=x86 toolset=msvc,gcc cxxflags="-DBOOST_TRAVISCI_BUILD" -sBOOST_BUILD_PATH=.
+
+after_test:
+on_success:
+on_failure:
+on_finish:
