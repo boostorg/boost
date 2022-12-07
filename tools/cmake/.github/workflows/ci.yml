@@ -1,0 +1,469 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/**
+
+env:
+  UBSAN_OPTIONS: print_stacktrace=1
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            shared: OFF
+            layout: tagged
+            python: ON
+            mpi: OFF
+          - os: ubuntu-latest
+            shared: ON
+            layout: versioned
+            python: ON
+            mpi: OFF
+          - os: ubuntu-latest
+            shared: ON
+            layout: system
+            python: ON
+            mpi: ON
+            install: libopenmpi-dev
+          - os: macos-latest
+            shared: OFF
+            layout: versioned
+            python: ON
+            mpi: OFF
+          - os: macos-latest
+            shared: ON
+            layout: tagged
+            python: ON
+            mpi: OFF
+          - os: ubuntu-18.04
+            include: assert
+            testing: ON
+            test_install: ON
+          - os: macos-latest
+            include: assert
+            testing: ON
+            test_install: ON
+          - os: ubuntu-18.04
+            include: mp11
+            testing: ON
+            test_install: ON
+          - os: macos-latest
+            include: mp11
+            testing: ON
+            test_install: ON
+          - os: ubuntu-18.04
+            include: timer
+            testing: ON
+            layout: versioned
+            shared: OFF
+            test_install: ON
+          - os: ubuntu-18.04
+            include: timer
+            testing: ON
+            layout: versioned
+            shared: ON
+            test_install: ON
+          - os: macos-latest
+            include: timer
+            testing: ON
+            layout: versioned
+            shared: OFF
+            test_install: ON
+          - os: macos-latest
+            include: timer
+            testing: ON
+            layout: versioned
+            shared: ON
+            test_install: ON
+          - os: ubuntu-18.04
+            include: iostreams
+            layout: versioned
+            shared: OFF
+            test_install: ON
+          - os: ubuntu-18.04
+            include: iostreams
+            layout: versioned
+            shared: ON
+            test_install: ON
+          - os: macos-latest
+            include: iostreams
+            layout: versioned
+            shared: OFF
+            test_install: ON
+          - os: macos-latest
+            include: iostreams
+            layout: versioned
+            shared: ON
+            test_install: ON
+          - os: ubuntu-18.04
+            include: locale
+            layout: versioned
+            shared: OFF
+            test_install: ON
+          - os: ubuntu-18.04
+            include: locale
+            layout: versioned
+            shared: ON
+            test_install: ON
+          - os: macos-latest
+            include: locale
+            layout: versioned
+            shared: OFF
+            test_install: ON
+          - os: macos-latest
+            include: locale
+            layout: versioned
+            shared: ON
+            test_install: ON
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: sudo apt install ${{matrix.install}}
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REF#refs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3
+          rm -rf tools/cmake/*
+          cp -r $GITHUB_WORKSPACE/* tools/cmake
+
+      - name: Configure Boost
+        run: |
+          cd ../boost-root
+          mkdir __build__ && cd __build__
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local -DBoost_VERBOSE=${{matrix.verbose}} -DBUILD_TESTING=${{matrix.testing}} -DBOOST_INCLUDE_LIBRARIES=${{matrix.include}} -DBOOST_EXCLUDE_LIBRARIES=${{matrix.exclude}} -DBUILD_SHARED_LIBS=${{matrix.shared}} -DBOOST_INSTALL_LAYOUT=${{matrix.layout}} -DBOOST_ENABLE_MPI=${{matrix.mpi}} -DBOOST_ENABLE_PYTHON=${{matrix.python}} ..
+
+      - name: Build Boost
+        run: |
+          cd ../boost-root/__build__
+          cmake --build .
+
+      - name: Install Boost
+        run: |
+          cd ../boost-root/__build__
+          cmake --build . --target install
+
+      - name: Test Boost
+        if: matrix.testing
+        run: |
+          cd ../boost-root/__build__
+          cmake --build . --target tests -- -j 3
+          ctest --output-on-failure --no-tests=error -j 3
+
+      - name: Test installed Boost library
+        if: matrix.test_install
+        run: |
+          cd ../boost-root/tools/cmake/test/${{matrix.include}}
+          mkdir __build__ && cd __build__
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local ..
+          cmake --build .
+          export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+          cmake --build . --target check
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2019
+            shared: OFF
+            python: ON
+            mpi: OFF
+          - os: windows-2019
+            shared: ON
+            python: ON
+            mpi: OFF
+          - os: windows-2022
+            shared: OFF
+            python: ON
+            mpi: OFF
+          - os: windows-2022
+            shared: ON
+            python: ON
+            mpi: OFF
+          - os: windows-2019
+            include: assert
+            testing: ON
+            test_install: ON
+          - os: windows-2019
+            include: mp11
+            testing: ON
+            test_install: ON
+          - os: windows-2019
+            include: timer
+            shared: OFF
+            testing: ON
+            test_install: ON
+          - os: windows-2019
+            include: timer
+            shared: ON
+            testing: ON
+            test_install: ON
+          - os: windows-2019
+            include: iostreams
+            shared: OFF
+            test_install: ON
+          - os: windows-2019
+            include: iostreams
+            shared: ON
+            test_install: ON
+
+    runs-on: ${{matrix.os}}
+
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_BASE_REF: %GITHUB_BASE_REF%
+          echo GITHUB_REF: %GITHUB_REF%
+          if "%GITHUB_BASE_REF%" == "" set GITHUB_BASE_REF=%GITHUB_REF%
+          set BOOST_BRANCH=develop
+          for /f %%i in ("%GITHUB_BASE_REF%") do if "%%~nxi" == "master" set BOOST_BRANCH=master
+          echo BOOST_BRANCH: %BOOST_BRANCH%
+          cd ..
+          git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3
+          rd /s/q tools\cmake
+          xcopy /s /e /q %GITHUB_WORKSPACE% tools\cmake\
+
+      - name: Configure Boost
+        run: |
+          cd ../boost-root
+          mkdir __build__ && cd __build__
+          cmake -DBoost_VERBOSE=${{matrix.verbose}} -DBUILD_TESTING=${{matrix.testing}} -DBOOST_INCLUDE_LIBRARIES=${{matrix.include}} -DBOOST_EXCLUDE_LIBRARIES=${{matrix.exclude}} -DBUILD_SHARED_LIBS=${{matrix.shared}} -DBOOST_ENABLE_MPI=${{matrix.mpi}} -DBOOST_ENABLE_PYTHON=${{matrix.python}} ..
+
+      - name: Build Boost (Debug)
+        run: cmake --build ../boost-root/__build__ --config Debug
+
+      - name: Build Boost (Release)
+        run: cmake --build ../boost-root/__build__ --config Release
+
+      - name: Install Boost (Debug)
+        run: cmake --build ../boost-root/__build__ --target install --config Debug
+
+      - name: Install Boost (Release)
+        run: cmake --build ../boost-root/__build__ --target install --config Release
+
+      - name: Test Boost (Debug)
+        if: matrix.testing
+        run: cd ../boost-root/__build__ && cmake --build . --target tests --config Debug && ctest --output-on-failure --no-tests=error -j 3 -C Debug
+
+      - name: Test Boost (Release)
+        if: matrix.testing
+        run: cd ../boost-root/__build__ && cmake --build . --target tests --config Release && ctest --output-on-failure --no-tests=error -j 3 -C Release
+
+      - name: Configure test project
+        if: matrix.test_install
+        run: |
+          cd ../boost-root/tools/cmake/test/${{matrix.include}}
+          mkdir __build__ && cd __build__
+          cmake -DCMAKE_PREFIX_PATH=C:/Boost ..
+
+      - name: Test installed Boost library (Debug)
+        if: matrix.test_install
+        run: |
+          cd ../boost-root/tools/cmake/test/${{matrix.include}}/__build__
+          PATH C:\Boost\bin;%PATH%
+          cmake --build . --config Debug && ctest --output-on-failure --no-tests=error -j 3 -C Debug
+
+      - name: Test installed Boost library (Release)
+        if: matrix.test_install
+        run: |
+          cd ../boost-root/tools/cmake/test/${{matrix.include}}/__build__
+          PATH C:\Boost\bin;%PATH%
+          cmake --build . --config Release && ctest --output-on-failure --no-tests=error -j 3 -C Release
+
+  BoostTest:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REF#refs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3 libs/core libs/assert libs/config libs/static_assert libs/throw_exception
+          rm -rf tools/cmake/*
+          cp -r $GITHUB_WORKSPACE/* tools/cmake
+
+      - name: Test BoostTest
+        run: |
+          cd ../boost-root/tools/cmake/test/boost_test
+          mkdir __build__ && cd __build__
+          cmake -DBoost_VERBOSE=ON ..
+          cmake --build . --target tests -j 3
+          ctest --output-on-failure --no-tests=error -j 3
+
+  BoostFetch:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test BoostFetch
+        run: |
+          cd test/boost_fetch
+          mkdir __build__ && cd __build__
+          cmake ..
+          cmake --build .
+          cmake --build . --target check
+
+  posix-subdir:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-18.04
+            shared: OFF
+          - os: ubuntu-18.04
+            shared: ON
+          - os: ubuntu-20.04
+            shared: OFF
+          - os: ubuntu-20.04
+            shared: ON
+          - os: ubuntu-22.04
+            shared: OFF
+          - os: ubuntu-22.04
+            shared: ON
+          - os: macos-10.15
+            shared: OFF
+          - os: macos-10.15
+            shared: ON
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: sudo apt install ${{matrix.install}}
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REF#refs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3
+          rm -rf tools/cmake/*
+          cp -r $GITHUB_WORKSPACE/* tools/cmake
+
+      - name: Test Boost with add_subdirectory
+        run: |
+          cd ../boost-root/tools/cmake/test/add_subdir
+          mkdir __build__ && cd __build__
+          cmake -DBoost_VERBOSE=ON -DBUILD_SHARED_LIBS=${{matrix.shared}} ..
+          cmake --build .
+          ctest --output-on-failure --no-tests=error
+
+      - name: Test Boost with add_subdirectory(EXCLUDE_FROM_ALL)
+        run: |
+          cd ../boost-root/tools/cmake/test/add_subdir_exc
+          mkdir __build__ && cd __build__
+          cmake -DBoost_VERBOSE=ON -DBUILD_SHARED_LIBS=${{matrix.shared}} ..
+          cmake --build .
+          ctest --output-on-failure --no-tests=error
+
+  posix-target-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-18.04
+            include: timer
+            shared: ON
+          - os: ubuntu-20.04
+            include: timer
+            shared: ON
+          - os: ubuntu-22.04
+            include: timer
+            shared: ON
+          - os: macos-latest
+            include: timer
+            shared: ON
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: sudo apt install ${{matrix.install}}
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REF#refs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3
+          rm -rf tools/cmake/*
+          cp -r $GITHUB_WORKSPACE/* tools/cmake
+
+      - name: Configure Boost
+        run: |
+          cd ../boost-root
+          mkdir __build__ && cd __build__
+          cmake -DBoost_VERBOSE=${{matrix.verbose}} -DBUILD_TESTING=ON -DBOOST_INCLUDE_LIBRARIES=${{matrix.include}} -DBUILD_SHARED_LIBS=${{matrix.shared}} ..
+
+      - name: Test Boost
+        run: |
+          cd ../boost-root/__build__
+          cmake --build . --target check

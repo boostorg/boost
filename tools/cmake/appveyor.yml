@@ -1,0 +1,122 @@
+# Copyright 2016-2021 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+image: Visual Studio 2019
+
+environment:
+  matrix:
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    LIB: assert
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    LIB: assert
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    LIB: assert
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    LIB: assert
+
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    LIB: timer
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    LIB: timer
+    BUILD_SHARED_LIBS: ON
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    LIB: timer
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    LIB: timer
+    BUILD_SHARED_LIBS: ON
+
+  - TEST_BOOST_TEST: 1
+    LIB: core
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: assert
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: mp11
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: atomic
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: atomic
+    BUILD_SHARED_LIBS: ON
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: atomic
+    BOOST_RUNTIME_LINK: static
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: timer
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: timer
+    BUILD_SHARED_LIBS: ON
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: timer
+    BOOST_RUNTIME_LINK: static
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: iostreams
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: iostreams
+    BUILD_SHARED_LIBS: ON
+
+  - TEST_BOOST_INSTALL: 1
+    LIB: iostreams
+    BOOST_RUNTIME_LINK: static
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init --jobs 3 tools/boostdep libs/%LIB%
+  - python tools/boostdep/depinst/depinst.py -g "--jobs 3" %LIB%
+  - rd /s/q tools\cmake
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% tools\cmake\
+
+build: off
+
+test_script:
+  - if "%BUILD_SHARED_LIBS%" == "" SET BUILD_SHARED_LIBS=0
+  - if "%BOOST_INCLUDE_LIBRARIES%" == "" SET BOOST_INCLUDE_LIBRARIES=%LIB%
+
+  - if "%TEST_BOOST_TEST%%TEST_BOOST_FETCH%" == ""  mkdir __build__ && cd __build__
+  - if "%TEST_BOOST_TEST%%TEST_BOOST_FETCH%" == ""  cmake -DBOOST_ENABLE_CMAKE=1 -DBUILD_TESTING=ON -DBoost_VERBOSE=ON -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% -DBOOST_INCLUDE_LIBRARIES=%BOOST_INCLUDE_LIBRARIES% -DBOOST_RUNTIME_LINK=%BOOST_RUNTIME_LINK% ..
+
+  - if "%TEST_BOOST_TEST%%TEST_BOOST_FETCH%%TEST_BOOST_INSTALL%" == ""  cmake --build . -j 3 --target tests --config Debug && ctest --output-on-failure -j 3 -C Debug
+  - if "%TEST_BOOST_TEST%%TEST_BOOST_FETCH%%TEST_BOOST_INSTALL%" == ""  cmake --build . -j 3 --target tests --config Release && ctest --output-on-failure -j 3 -C Release
+  - if "%TEST_BOOST_TEST%%TEST_BOOST_FETCH%%TEST_BOOST_INSTALL%" == ""  cmake --build . -j 3 --target tests --config MinSizeRel && ctest --output-on-failure -j 3 -C MinSizeRel
+  - if "%TEST_BOOST_TEST%%TEST_BOOST_FETCH%%TEST_BOOST_INSTALL%" == ""  cmake --build . -j 3 --target tests --config RelWithDebInfo && ctest --output-on-failure -j 3 -C RelWithDebInfo
+
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  cmake --build . -j 3 --target install --config Debug
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  cmake --build . -j 3 --target install --config Release
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  cd ../tools/cmake/test/%LIB%
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  mkdir __build__ && cd __build__
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  cmake -DCMAKE_PREFIX_PATH=C:/Boost -DBOOST_RUNTIME_LINK=%BOOST_RUNTIME_LINK% ..
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  PATH C:\Boost\bin;%PATH%
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  cmake --build . --config Debug && ctest --output-on-failure -C Debug
+  - if NOT "%TEST_BOOST_INSTALL%" == ""  cmake --build . --config Release && ctest --output-on-failure -C Release
+
+  - if NOT "%TEST_BOOST_TEST%" == ""  cd tools/cmake/test/boost_test
+  - if NOT "%TEST_BOOST_TEST%" == ""  mkdir __build__ && cd __build__
+  - if NOT "%TEST_BOOST_TEST%" == ""  cmake -DBoost_VERBOSE=ON ..
+  - if NOT "%TEST_BOOST_TEST%" == ""  cmake --build . -j 3 --target tests --config Debug && ctest --output-on-failure -j 3 -C Debug
+  - if NOT "%TEST_BOOST_TEST%" == ""  cmake --build . -j 3 --target tests --config Release && ctest --output-on-failure -j 3 -C Release
+  - if NOT "%TEST_BOOST_TEST%" == ""  cmake --build . -j 3 --target tests --config MinSizeRel && ctest --output-on-failure -j 3 -C MinSizeRel
+  - if NOT "%TEST_BOOST_TEST%" == ""  cmake --build . -j 3 --target tests --config RelWithDebInfo && ctest --output-on-failure -j 3 -C RelWithDebInfo
