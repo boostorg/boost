@@ -1,0 +1,172 @@
+---
+# Copyright 2015-2019 Rene Rivera.
+# Copyright 2019 Mateusz Loskot <mateusz at loskot dot net>
+# Copyright 2020-2021 Alexander Grund
+# Distributed under the Boost Software License, Version 1.0.
+# https://www.boost.org/LICENSE_1_0.txt
+
+#
+# Generic Azure Pipelines build script for boostorg repositories
+# See: https://github.com/boostorg/boost-ci/
+#
+# Instructions for customizing this script for your library:
+#
+# 1. Customize the compilers and language levels you want.
+# 2. If you have more than include/, src/, test/, example/, examples/,
+#    benchmark/ or tools/ directories, set the environment variable DEPINST.
+#    For example if your build uses code in "bench/" and "fog/" directories:
+#      - DEPINST: --include bench --include fog
+# 3. Enable pull request builds in your boostorg/<library> account.
+#
+# That's it - the script will do everything else for you.
+
+trigger:
+  branches:
+    include:
+      - develop
+      - master
+      - bugfix/*
+      - feature/*
+      - fix/*
+      - pr/*
+
+pr: [develop, master, main]
+
+variables:
+  GIT_FETCH_JOBS: 4
+  NET_RETRY_COUNT: 5
+  B2_CI_VERSION: 1
+  B2_VARIANT: release,debug
+  B2_LINK: shared,static
+
+# Dummy runtime parameter to allow creating conditional jobs
+parameters:
+  - name: jobs
+    type: object
+    default:
+      - { compiler: gcc-4.8,   cxxstd: '11',       os: ubuntu-18.04 }
+      - { compiler: gcc-4.9,   cxxstd: '11',       os: ubuntu-18.04, container: 'ubuntu:16.04' }
+      - { compiler: gcc-5,     cxxstd: '11',       os: ubuntu-18.04 }
+      - { compiler: gcc-6,     cxxstd: '11,14',    os: ubuntu-18.04 }
+      - { compiler: gcc-7,     cxxstd: '11,14,17', os: ubuntu-18.04 }
+      - { compiler: gcc-8,     cxxstd: '14,17,2a', os: ubuntu-20.04 }
+      - { compiler: gcc-9,     cxxstd: '14,17,2a', os: ubuntu-20.04 }
+      - { compiler: gcc-10,    cxxstd: '14,17,20', os: ubuntu-20.04 }
+      - { compiler: gcc-11,    cxxstd: '14,17,20', os: ubuntu-20.04 }
+      - { compiler: clang-3.5, cxxstd: '11',       os: ubuntu-18.04, container: 'ubuntu:16.04' }
+      - { compiler: clang-3.6, cxxstd: '11',       os: ubuntu-18.04, container: 'ubuntu:16.04' }
+      - { compiler: clang-3.7, cxxstd: '11',       os: ubuntu-18.04, container: 'ubuntu:16.04' }
+      - { compiler: clang-3.8, cxxstd: '11,14',    os: ubuntu-18.04, container: 'ubuntu:16.04' }
+      - { compiler: clang-3.9, cxxstd: '11,14',    os: ubuntu-18.04 }
+      - { compiler: clang-4.0, cxxstd: '11,14',    os: ubuntu-18.04 }
+      - { compiler: clang-5.0, cxxstd: '11,14,17', os: ubuntu-18.04 }
+      - { compiler: clang-6.0, cxxstd: '11,14,17', os: ubuntu-18.04, install: 'clang-6.0 libc6-dbg libc++-dev libc++abi-dev libstdc++-8-dev' }
+      - { compiler: clang-7,   cxxstd: '14,17',    os: ubuntu-18.04, install: 'clang-7 libc6-dbg libc++-dev libstdc++-8-dev' }
+      - { compiler: clang-8,   cxxstd: '14,17',    os: ubuntu-18.04, install: 'clang-8 libc6-dbg libc++-dev libstdc++-8-dev' }
+      - { compiler: clang-9,   cxxstd: '14,17,2a', os: ubuntu-20.04 }
+      - { compiler: clang-10,  cxxstd: '14,17,20', os: ubuntu-20.04 }
+      - { compiler: clang-11,  cxxstd: '14,17,20', os: ubuntu-20.04 }
+      - { compiler: clang-12,  cxxstd: '14,17,20', os: ubuntu-20.04 }
+      - { name: Linux_clang_6_libcxx,
+          compiler: clang-6.0, cxxstd: '11,14,17', os: ubuntu-18.04, install: 'clang-6.0 libc6-dbg libc++-dev libc++abi-dev libstdc++-8-dev', env: {B2_STDLIB: libc++ } }
+      # OSX
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.2.1 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.3 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.3.1 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.4.1 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.5 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.6 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 11.7 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 12.0.1 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 12.1.1 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 12.2 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 12.3 }
+      - { compiler: clang, cxxstd: '14,17,2a',    os: macOS-10.15, xcode: 12.4 }
+
+stages:
+  - stage: Test
+    jobs:
+      # Dynamically generate jobs to be able to insert containers, see https://stackoverflow.com/questions/70046143
+      - ${{ each item in parameters.jobs }}:
+        - ${{ if item.name }}:
+            job: ${{ item.name }}
+          ${{ elseif contains(item.os, 'macOS') }}:
+            job: macOS_${{ replace(item.xcode, '.', '_') }}
+          ${{ else }}:
+            job: Linux_${{ replace(replace(item.compiler, '-', '_'), '.', '_') }}
+          pool:
+            vmImage: ${{ item.os }}
+          ${{ if item.container }}:
+            container:
+              image: ${{ item.container }}
+              # Workaround for missing sudo: https://github.com/microsoft/azure-pipelines-agent/issues/2043
+              options: --name ci-container -v /usr/bin/docker:/tmp/docker:ro
+          variables:
+            B2_COMPILER: ${{ item.compiler }}
+            B2_CXXSTD: ${{ item.cxxstd }}
+            ${{ if not(contains(item.os, 'macOS')) }}:
+              B2_USE_CCACHE: 1
+              B2_CCACHE_DIR: $(Pipeline.Workspace)/.ccache
+            ${{ if item.xcode }}:
+              XCODE_APP: /Applications/Xcode_${{ item.xcode }}.app
+            ${{ if item.install }}:
+              PACKAGES: ${{ item.install }}
+            ${{ each var in item.env }}:
+              ${{var.Key}}: ${{var.Value}}
+          steps:
+            - ${{ if item.container }}:
+              - bash: |
+                  set -ex
+                  /tmp/docker exec -t -u 0 ci-container \
+                    sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::='--force-confold' -y install sudo software-properties-common"
+                  # Need (newer) git
+                  sudo add-apt-repository ppa:git-core/ppa
+                  sudo apt-get -o Acquire::Retries=$NET_RETRY_COUNT update
+                  sudo apt-get -o Acquire::Retries=$NET_RETRY_COUNT install -y g++ python libpython-dev git
+                displayName: 'Install required sw for containers'
+            - task: Cache@2
+              condition: eq(variables.B2_USE_CCACHE, '1')
+              inputs:
+                key: 'ccache|"${{ item.os }}-${{ item.container }}"|"${{ item.compiler }}"'
+                path: $(B2_CCACHE_DIR)
+              displayName: Get CCache
+            - bash: |
+                set -ex
+
+                for i in {1..$NET_RETRY_COUNT}; do
+                  git clone --depth 1 --branch master https://github.com/boostorg/boost-ci.git boost-ci-cloned && break || sleep 10
+                done
+                # Copy ci folder if not testing Boost.CI
+                [[ $(basename "$BUILD_REPOSITORY_NAME") = "boost-ci" ]] || cp -prf boost-ci-cloned/ci .
+                rm -rf boost-ci-cloned
+                source ci/azure-pipelines/install.sh
+              displayName: 'Install'
+            - bash: |
+                set -ex
+                echo "SELF=$SELF"
+                echo "BOOST_ROOT=$BOOST_ROOT"
+
+                cd $BOOST_ROOT/libs/$SELF
+                ci/azure-pipelines/build.sh
+
+      - job: Windows
+        timeoutInMinutes: 120
+        strategy:
+          matrix:
+            VS_2019:        { B2_TOOLSET: msvc-14.2, B2_CXXSTD: '14,17,20', B2_ADDRESS_MODEL: '32,64', VM_IMAGE: windows-2019 }
+            VS_2019_strict: { B2_TOOLSET: msvc-14.2, B2_CXXSTD: '14,17,20', B2_ADDRESS_MODEL: '32,64', VM_IMAGE: windows-2019, B2_CXXFLAGS: -permissive- }
+            VS_2022:        { B2_TOOLSET: msvc-14.3, B2_CXXSTD: '14,17,20', B2_ADDRESS_MODEL: '32,64', VM_IMAGE: windows-2022 }
+            VS_2022_strict: { B2_TOOLSET: msvc-14.3, B2_CXXSTD: '14,17,20', B2_ADDRESS_MODEL: '32,64', VM_IMAGE: windows-2022, B2_CXXFLAGS: -permissive- }
+
+        pool:
+          vmImage: $(VM_IMAGE)
+        steps:
+          - script: |
+              git clone --depth 1 --branch master https://github.com/boostorg/boost-ci.git boost-ci-cloned
+              REM Copy ci folder if not testing Boost.CI
+              if "%BUILD_REPOSITORY_NAME%" == "%BUILD_REPOSITORY_NAME:boost-ci=%" xcopy /s /e /q /i /y boost-ci-cloned\ci .\ci
+              rmdir /s /q boost-ci-cloned
+              ci\azure-pipelines\install.bat
+            displayName: 'Install'
+          - script: ci\build.bat
+            displayName: 'Build'

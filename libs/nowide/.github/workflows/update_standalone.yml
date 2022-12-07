@@ -1,0 +1,45 @@
+# Copyright 2019 - 2021 Alexander Grund
+# Distributed under the Boost Software License, Version 1.0.
+# https://www.boost.org/LICENSE_1_0.txt
+
+on:
+  push:
+    branches: [develop]
+
+name: Update standalone branch
+
+env:
+  STANDALONE_BRANCH_NAME: standalone
+
+jobs:
+  update:
+    name: Update standalone branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup git
+        run: |
+            git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+            git config --global user.name "$GITHUB_ACTOR"
+            git fetch
+      - name: Create standalone version
+        id: standalone
+        run: |
+          bash tools/create_standalone.sh /tmp/nowide_standalone
+          git checkout "$STANDALONE_BRANCH_NAME" -- || git checkout -b "$STANDALONE_BRANCH_NAME"
+          rm -r *
+          mv /tmp/nowide_standalone/* .
+          # Check if anything changed to avoid later failure.
+          # E.g. nothing changes if only CI files are modified which are removed by the above
+          if git diff --exit-code; then
+            echo "::set-output name=changed::false"
+          else
+            echo "::set-output name=changed::true"
+          fi
+      - name: Commit and push
+        if: steps.standalone.outputs.changed == 'true'
+        run: |
+          git add .
+          git commit -m "Include '${{github.event.head_commit.message}}'"
+          remote_repo="https://${GITHUB_ACTOR}:${{secrets.GITHUB_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git"
+          git push "$remote_repo" HEAD:$STANDALONE_BRANCH_NAME

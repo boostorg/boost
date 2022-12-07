@@ -1,0 +1,223 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2017 - 2019 James E. King III
+# Copyright 2019 - 2022 Alexander Grund
+#
+# Distributed under the Boost Software License, Version 1.0.
+# https://www.boost.org/LICENSE_1_0.txt
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /bugfix\/.*/
+    - /feature\/.*/
+    - /fix\/.*/
+    - /pr\/.*/
+
+matrix:
+  fast_finish: false
+  # Adding MAYFAIL to any matrix job allows it to fail but the build stays green:
+  allow_failures:
+    - MAYFAIL: true
+
+environment:
+  global:
+    B2_CI_VERSION: 1
+    GIT_FETCH_JOBS: 4
+    # see: https://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+    # to use the default for a given environment, comment it out; recommend you build debug and release however:
+    # on Windows it is important to exercise all the possibilities, especially shared vs static, however most
+    # libraries that care about this exercise it in their Jamfiles...
+    B2_ADDRESS_MODEL: 32,64
+    B2_LINK: shared,static
+    # B2_THREADING: threading=multi,single
+    B2_VARIANT: release,debug
+
+  matrix:
+    - FLAVOR: Visual Studio 2008, 2010, 2012
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      B2_TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0
+      B2_ADDRESS_MODEL: 32 # No 64bit support
+
+    - FLAVOR: Visual Studio 2013, 2015
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      B2_TOOLSET: msvc-12.0,msvc-14.0
+
+    - FLAVOR: Visual Studio 2017 C++14/17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      B2_CXXSTD: 14,17
+      B2_TOOLSET: msvc-14.1
+
+    - FLAVOR: Visual Studio 2017 C++2a Strict
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      B2_CXXFLAGS: -permissive-
+      B2_CXXSTD: 2a
+      B2_TOOLSET: msvc-14.1
+
+    - FLAVOR: Visual Studio 2019
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      B2_CXXFLAGS: -permissive-
+      B2_CXXSTD: 14,17,2a
+      B2_TOOLSET: msvc-14.2
+
+    - FLAVOR: Visual Studio 2022
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      B2_CXXFLAGS: -permissive-
+      B2_CXXSTD: 14,17,20
+      B2_TOOLSET: msvc-14.3
+
+    - FLAVOR: clang-cl
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      B2_ADDRESS_MODEL: 64
+      B2_CXXSTD: 11,14,17
+      B2_TOOLSET: clang-win
+
+    - FLAVOR: cygwin (32-bit)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ADDPATH: C:\cygwin\bin;
+      B2_ADDRESS_MODEL: 32
+      B2_CXXSTD: 03,11,14,1z
+      B2_TOOLSET: gcc
+
+    - FLAVOR: cygwin (64-bit)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ADDPATH: C:\cygwin64\bin;
+      B2_ADDRESS_MODEL: 64
+      B2_CXXSTD: 03,11,14,1z
+      B2_TOOLSET: gcc
+
+    # (Currently) the images up to 2017 use an older Cygwin
+    # This tests that the library works with more recent versions
+    - FLAVOR: cygwin (64-bit, latest)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      ADDPATH: C:\cygwin64\bin;
+      B2_ADDRESS_MODEL: 64
+      B2_CXXSTD: 03,11,14,1z
+      B2_TOOLSET: gcc
+
+    - FLAVOR: mingw32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      B2_ADDRESS_MODEL: 32
+      ADDPATH: C:\mingw\bin;
+      B2_CXXSTD: 03,11,14,1z
+      B2_TOOLSET: gcc
+
+    - FLAVOR: mingw64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      ADDPATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;
+      B2_ADDRESS_MODEL: 64
+      B2_CXXSTD: 03,11,14,17,2a
+      B2_TOOLSET: gcc
+
+    - FLAVOR: CodeCov (VS 2019)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      B2_CXXFLAGS: -permissive-
+      B2_CXXSTD: 14
+      B2_TOOLSET: msvc-14.2
+      B2_FLAGS: --nowide-enable-cmake
+      B2_ADDRESS_MODEL: 64
+      B2_LINK: static
+      B2_JOBS: 1
+      COVERAGE: true
+
+    # CMake builds using preinstalled Boost
+    - CMAKE: true
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      CXXSTD: 14
+      GENERATOR: Visual Studio 14 2015 Win64
+      configuration: Debug
+      BOOST_ROOT: C:\Libraries\boost_1_60_0
+    - CMAKE: true
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      CXXSTD: 17
+      # This test sometimes fails on recent images when using CMake
+      CMAKE_FLAGS: -DBOOST_NOWIDE_DISABLE_CIN_TEST=ON
+      GENERATOR: Visual Studio 17 2022
+      configuration: Debug
+      BOOST_ROOT: C:\Libraries\boost_1_77_0
+
+    # Coverity
+    - COVERITY: true
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      GENERATOR: Visual Studio 16 2019
+      configuration: Debug
+      BOOST_ROOT: C:\Libraries\boost_1_77_0
+      COVERITY_SCAN_TOKEN:
+        secure: FzhGUr+AR/VOBGUta7dDLMDruolChnvyMSvsM/zLvPY=
+      COVERITY_SCAN_NOTIFICATION_EMAIL:
+        secure: Qq4PZ3QlpYtg3HEyn9r2Og==
+
+install:
+  - git clone --depth 1 https://github.com/boostorg/boost-ci.git C:\boost-ci-cloned
+  # Copy ci folder if not testing Boost.CI
+  - if NOT "%APPVEYOR_PROJECT_NAME%" == "boost-ci" xcopy /s /e /q /i /y C:\boost-ci-cloned\ci .\ci
+  - rmdir /s /q C:\boost-ci-cloned
+  - ci\appveyor\install.bat
+
+build: off
+
+test_script: ci\build.bat
+
+for:
+  # CodeCov coverage build
+  - matrix:
+      only: [COVERAGE: true]
+    test_script: [ps: ci\codecov.ps1]
+
+  - matrix:
+      only: [CMAKE: true]
+    install: true
+    before_build:
+      - set "INSTALL_DIR=%APPVEYOR_BUILD_FOLDER%\installed"
+      - if exist %INSTALL_DIR%\ (rmdir /S /Q %INSTALL_DIR%)
+      - mkdir __build_cmake_test__
+      - cd __build_cmake_test__
+      - cmake -G "%GENERATOR%" -DCMAKE_CXX_STANDARD=%CXXSTD% %CMAKE_FLAGS% -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% ..
+    build_script: cmake --build . --config %configuration% --parallel 4
+    test_script:
+      - ctest --output-on-failure -C %configuration% --parallel 4
+      - ps: |
+            $iostream_exe = "$env:configuration/boost_nowide-test_iostream.exe"
+            # Should show "Using Nowide input/output" and run the tests
+            &$iostream_exe
+      # Build consumer example test
+      - cmake --build . --config %configuration% --target install
+      - del /F /S /Q *
+      - cmake -DBOOST_NOWIDE_INSTALL_TEST=ON -G "%GENERATOR%" -DCMAKE_CXX_STANDARD=%CXXSTD% %CMAKE_FLAGS% -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%\installed ../test/cmake_test
+      - cmake --build . --config %configuration%
+      - ctest --output-on-failure -C %configuration% --parallel 4
+
+  # Coverity build
+  - matrix:
+      only: [COVERITY: true]
+    branches:
+      only: [master, develop]
+    init:
+      - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -gt 0) {Exit-AppveyorBuild}
+    install: true
+    test_script:
+      - cd build
+      - cmake -G "%GENERATOR%" ..
+      - ps: |
+            cov-configure --msvc
+            cov-build --dir cov-int cmake --build . --config $env:configuration
+            If ($LastExitCode -ne 0) {
+              cat cov-int/build-log.txt
+              $host.SetShouldExit($LastExitCode)
+            }
+            7z a -tzip cov-int.zip cov-int
+            curl.exe --fail --silent --show-error `
+                     --form token="$env:COVERITY_SCAN_TOKEN" `
+                     --form email="$env:COVERITY_SCAN_NOTIFICATION_EMAIL" `
+                     --form file=@cov-int.zip `
+                     --form version="$env:APPVEYOR_REPO_BRANCH" `
+                     --form description="Appveyor build for $env:APPVEYOR_REPO_BRANCH" `
+                     https://scan.coverity.com/builds?project=$env:APPVEYOR_REPO_NAME
+            If ($LastExitCode -ne 0) {
+              echo "Upload failed"
+              $host.SetShouldExit($LastExitCode)
+            }

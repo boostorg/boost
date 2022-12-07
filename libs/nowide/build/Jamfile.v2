@@ -1,0 +1,42 @@
+# Copyright (c) 2002, 2006 Beman Dawes
+# Copyright (c) 2012 Artyom Beilis (Tonkikh)
+# Copyright (c) 2020-2021 Alexander Grund
+# 
+# Distributed under the Boost Software License, Version 1.0.
+# https://www.boost.org/LICENSE_1_0.txt
+#
+# See library home page at https://www.boost.org/libs/nowide
+
+import ../../config/checks/config : requires ;
+import configure ;
+import feature ;
+
+feature.feature boost.nowide.lfs : auto no : optional propagated ;
+
+local requirements =
+  <link>shared:<define>BOOST_NOWIDE_DYN_LINK=1
+  ;
+
+project boost/nowide
+  : source-location ../src
+  : requirements $(requirements)
+    [ requires
+      cxx11_defaulted_functions
+      cxx11_noexcept
+      cxx11_rvalue_references
+      cxx11_static_assert
+    ]
+    [ check-target-builds ../config//cxx11_moveable_fstreams "std::fstream is moveable and swappable" : : <build>no ]
+    [ check-target-builds ../config//lfs_support "Has Large File Support" : : <define>BOOST_NOWIDE_NO_LFS ] <boost.nowide.lfs>no:<define>BOOST_NOWIDE_NO_LFS
+    [ check-target-builds ../config//attribute_init_priority "Has attribute init_priority" : <define>BOOST_NOWIDE_HAS_INIT_PRIORITY ]
+  : usage-requirements $(requirements)
+  ;
+
+local SOURCES = console_buffer cstdio cstdlib filebuf iostream stat ;
+
+lib boost_nowide
+  : $(SOURCES).cpp
+  : <include>../src
+  ;
+
+boost-install boost_nowide ;

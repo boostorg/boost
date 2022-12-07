@@ -1,0 +1,123 @@
+# Copyright 2019 - 2020 Alexander Grund
+# Distributed under the Boost Software License, Version 1.0.
+# https://www.boost.org/LICENSE_1_0.txt
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+
+name: Create Release
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    env:
+      DEP_DIR: ${{github.workspace}}/dependencies
+      BOOST_VERSION: 1.56.0
+    steps:
+      - uses: actions/checkout@v3
+      - name: Extract tag name
+        id: get_tag
+        run: |
+          echo "Running for $GITHUB_EVENT_NAME event"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+          else
+            version=$(grep "set(_version " CMakeLists.txt | head -n1 | sed 's/^.* \([0-9]*\.[0-9]*\.[0-9]*\).*$/\1/')
+            echo "::set-output name=tag::v$version"
+          fi
+      - name: Sanity check version
+        run: |
+          version=${{steps.get_tag.outputs.tag}}
+          echo "Expecting version $version"
+          if ! grep -q "set(_version ${version#v})" CMakeLists.txt; then
+            echo "Version mismatch."
+            echo "Expected '${version#v}', found '$(grep -E 'set\(_version [0-9]' CMakeLists.txt)'"
+            exit 1
+          fi
+      - name: Create documentation
+        run: |
+          sudo apt-get install doxygen
+          doc/gendoc.sh
+          tar -czf documentation.tar.gz doc index.html
+
+      - name: Create standalone version
+        run: |
+          bash tools/create_standalone.sh nowide_standalone_${{steps.get_tag.outputs.tag}}
+          tar -czf  nowide_standalone.tar.gz nowide_standalone_${{steps.get_tag.outputs.tag}}
+      - name: Test standalone release tarball
+        run: |
+          tmp_dir=$(mktemp -d -p "$RUNNER_TEMP")
+          cd "$tmp_dir"
+          tar -xf "${{github.workspace}}/nowide_standalone.tar.gz"
+          src_dir="$PWD/nowide_standalone_${{steps.get_tag.outputs.tag}}"
+          mkdir build && cd build
+          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${{runner.workspace}}/../install "$src_dir"
+          cmake --build . --config Debug --target install
+          ctest --output-on-failure -C Debug --verbose
+
+      - name: Create Boost version
+        run: |
+            FOLDER="nowide_${{steps.get_tag.outputs.tag}}"
+            mkdir "$FOLDER"
+            cp -r build cmake config include src test CMakeLists.txt Config.cmake.in "$FOLDER"
+            tar -czf nowide.tar.gz "$FOLDER"
+      - name: Install boost
+        run: sudo apt-get install -y libboost-all-dev
+      - name: Test Boost release tarball
+        run: |
+          tmp_dir=$(mktemp -d -p "$RUNNER_TEMP")
+          cd "$tmp_dir"
+          tar -xf "${{github.workspace}}/nowide.tar.gz"
+          src_dir="$PWD/nowide_${{steps.get_tag.outputs.tag}}"
+          mkdir build && cd build
+          cmake -DBoost_DEBUG=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=${{runner.workspace}}/../install "$src_dir"
+          cmake --build . --config Debug --target install
+          ctest --output-on-failure -C Debug --verbose
+
+      - name: Create Release
+        if: github.event_name == 'push'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            UTF8-aware functions for Windows to make cross-platform easier
+          draft: false
+          prerelease: false
+      - name: Upload standalone version
+        if: github.event_name == 'push'
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./nowide_standalone.tar.gz
+          asset_name: nowide_standalone_${{steps.get_tag.outputs.tag}}.tar.gz
+          asset_content_type: application/tar.gz
+      - name: Upload Boost version
+        if: github.event_name == 'push'
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./nowide.tar.gz
+          asset_name: nowide_${{steps.get_tag.outputs.tag}}.tar.gz
+          asset_content_type: application/tar.gz
+      - name: Upload Documentation
+        if: github.event_name == 'push'
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./documentation.tar.gz
+          asset_name: nowide_docu.tar.gz
+          asset_content_type: application/tar.gz

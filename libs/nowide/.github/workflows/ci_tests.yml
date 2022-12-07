@@ -1,0 +1,172 @@
+# Copyright 2019 - 2022 Alexander Grund
+# Distributed under the Boost Software License, Version 1.0.
+# https://www.boost.org/LICENSE_1_0.txt
+
+name: CI Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - bugfix/**
+      - feature/**
+      - fix/**
+      - pr/**
+
+concurrency:
+  group: ${{format('ci_tests{0}:{1}', github.repository, github.ref)}}
+  cancel-in-progress: true
+
+env:
+  GIT_FETCH_JOBS: 8
+  NET_RETRY_COUNT: 5
+  B2_CI_VERSION: 1
+
+jobs:
+  NativeCMakeBuild:
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, windows-2019]
+        buildType: [Debug, Release]
+        standalone: [Boost, Standalone]
+        shared_lib: [ON, OFF]
+        generator: ['Visual Studio 16 2019', 'MinGW Makefiles', 'Unix Makefiles']
+        exclude:
+          - os: ubuntu-18.04
+            generator: MinGW Makefiles
+          - os: ubuntu-18.04
+            generator: Visual Studio 16 2019
+          - os: ubuntu-18.04
+            buildType: Debug
+    runs-on: ${{matrix.os}}
+    env:
+      DEP_DIR: ${{github.workspace}}/dependencies
+      BOOST_VERSION: 1.56.0
+    steps:
+    - uses: actions/checkout@v3
+    - name: Sanity check version
+      run: grep -E 'set\(_version [0-9]' CMakeLists.txt
+    - uses: actions/cache@v1
+      id: cache-boost
+      with:
+        path: ${{env.DEP_DIR}}
+        key: ${{matrix.os}}-${{matrix.generator}}-${{env.BOOST_VERSION}}
+    # Install newer CMake to be able to find Boost
+    - name: Install CMake
+      if: runner.os == 'Linux' && matrix.standalone == 'Boost'
+      run: wget -qO- https://cmake.org/files/v3.14/cmake-3.14.0-Linux-x86_64.tar.gz | sudo tar --strip-components=1 -xzC /usr/local
+    - name: Set BOOST_ROOT
+      if: matrix.standalone == 'Boost'
+      run: echo "BOOST_ROOT=${DEP_DIR//\\/\/}/boost_${BOOST_VERSION//./_}" >> $GITHUB_ENV
+    # Install Boost
+    - uses: actions/checkout@v3
+      if: matrix.standalone == 'Boost' && steps.cache-boost.outputs.cache-hit != 'true'
+      with:
+        repository: boostorg/boost
+        ref: boost-${{env.BOOST_VERSION}}
+        path: __buildBoost
+        fetch-depth: 1
+    - name: Build Boost
+      if: matrix.standalone == 'Boost' && steps.cache-boost.outputs.cache-hit != 'true'
+      run: |
+        cd __buildBoost
+        git submodule update --init --jobs 3 tools/boostdep libs/filesystem tools/inspect libs/wave # Last 2 are required for pre-1.64
+        (cd tools/boostdep && git fetch && git checkout boost-1.73.0 && git checkout boost-1.63.0 -- depinst/exceptions.txt)
+        python tools/boostdep/depinst/depinst.py --include tools --exclude test --git_args '--jobs 3' filesystem
+        [[ "${{matrix.os}}" =~ "windows" ]] && toolset=mingw || toolset=gcc
+        ./bootstrap.sh --with-toolset="$toolset" --with-libraries=system,filesystem threading=multi || (cat bootstrap.log && false)
+        sed -i 's/mingw/gcc/' project-config.jam
+        [[ "${{matrix.generator}}" =~ "Visual Studio" ]] && toolset=msvc-14.0 || toolset=gcc
+        ./b2 headers
+        ./b2 link=static toolset=$toolset address-model=64 -j$(nproc) --prefix="$BOOST_ROOT" install
+        cd ..
+        rm -r __buildBoost || true
+    - name: Create standalone
+      if: matrix.standalone == 'Standalone'
+      run: |
+        bash tools/create_standalone.sh "$PWD/../nowide_standalone"
+        rm -rf *
+        cp -r ../nowide_standalone/* .
+        mkdir build
+    - name: Configure
+      working-directory: build
+      run: |
+        extraFlags="-DBoost_DEBUG=ON -DBoost_NO_BOOST_CMAKE=ON -DCMAKE_INSTALL_PREFIX=~/.local"
+        if ! [[ "${{matrix.generator}}" =~ "Visual Studio" ]]; then
+          # Enable warning to find missing defines, especially important for the standalone version
+          extraFlags="$extraFlags -DCMAKE_CXX_FLAGS=-Wundef"
+        fi
+        cmake -DCMAKE_BUILD_TYPE=${{matrix.buildType}} -DBUILD_SHARED_LIBS=${{matrix.shared_lib}} -G "${{matrix.generator}}" $extraFlags ..
+    - name: Build & Install
+      run: cmake --build build --config ${{matrix.buildType}} --target install
+
+    # Run test with both bash and powershell and watch for "Using std::cin" on bash but not on powershell
+    - name: Test
+      working-directory: build
+      run: ctest --output-on-failure -C ${{matrix.buildType}} --verbose
+    - name: Test on PowerShell
+      working-directory: build
+      shell: powershell
+      if: runner.os == 'Windows'
+      run: ctest --output-on-failure -C ${{matrix.buildType}} --verbose
+    - name: Test consumption
+      working-directory: build
+      run: |
+        rm -r *
+        cmake -DBOOST_NOWIDE_INSTALL_TEST=ON -DBoost_ARCHITECTURE=-x64 -DCMAKE_PREFIX_PATH=~/.local -G "${{matrix.generator}}" ../test/cmake_test
+        cmake --build . --config ${{matrix.buildType}}
+        ctest --output-on-failure -C ${{matrix.buildType}}
+
+  CreateDocuTest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Create documentation
+        run: |
+            sudo apt-get install -y doxygen
+            bash doc/gendoc.sh
+
+  CreateBoostDocuTest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch Boost.CI
+        uses: actions/checkout@v3
+        with:
+          repository: boostorg/boost-ci
+          ref: master
+          path: boost-ci-cloned
+      - name: Get CI scripts folder
+        run: cp -r boost-ci-cloned/ci . && rm -rf boost-ci-cloned
+      - name: Setup Boost
+        run: source ci/github/install.sh
+      - name: Create documentation
+        run: |
+            sudo apt-get install -y doxygen
+            B2_TARGETS=libs/$SELF/doc ci/build.sh
+
+  CheckFormatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: DoozyX/clang-format-lint-action@v0.11
+        with:
+          exclude: './doc'
+          clangFormatVersion: 10
+      - name: Check line endings
+        run: |
+          if grep -r -l $'\r' --exclude-dir="\.git" --exclude-dir="html"; then
+              echo "Found files windows style line endings (CRLF). Please fix!"
+              exit 1
+          fi
+      - name: Check for tabs
+        run: |
+          if grep -r -l $'\t' --exclude-dir="\.git" --exclude-dir="html"; then
+              echo "Found files with TABs. Please fix!"
+              exit 1
+          fi
