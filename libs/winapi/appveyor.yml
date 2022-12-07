@@ -1,0 +1,194 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2020 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+# When copying this to a new library, be sure to update the name of the library
+# in two places (once each at the top of install: and test_script:)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - develop
+    - master
+
+matrix:
+  allow_failures:
+    - MAYFAIL: true
+
+environment:
+  global:
+    # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+    # to use the default for a given environment, comment it out; recommend you build debug and release however..
+    # on Windows it is important to exercise all the possibilities, especially shared vs static
+    # B2_LINK: link=shared,static
+    B2_ADDRESS_MODEL: address-model=64,32
+    B2_THREADING: threading=multi
+    B2_VARIANT: variant=debug
+
+  matrix:
+  # test UWP Windows SDK 10
+    - COMMENT: UWP _WIN32_WINNT=0x0A00 (WIN10) DESKTOP
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0A00" define="WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: UWP _WIN32_WINNT=0x0A00 (WIN10) SYSTEM
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0A00" define="WINAPI_FAMILY=WINAPI_FAMILY_SYSTEM"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: UWP _WIN32_WINNT=0x0A00 (WIN10) PHONE
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0A00" define="WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: UWP _WIN32_WINNT=0x0A00 (WIN10) APP
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0A00" define="WINAPI_FAMILY=WINAPI_FAMILY_PC_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+  # test UWP Windows SDK 8.1 (Visual Studio 2013)
+    - COMMENT: UWP _WIN32_WINNT=0x0603 (WIN8) DESKTOP
+      TOOLSET: msvc-12.0
+      DEFINES: define="_WIN32_WINNT=0x0603" define="WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: UWP _WIN32_WINNT=0x0603 (WIN8) PHONE
+      TOOLSET: msvc-12.0
+      DEFINES: define="_WIN32_WINNT=0x0603" define="WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: UWP _WIN32_WINNT=0x0603 (WIN8) APP
+      TOOLSET: msvc-12.0
+      DEFINES: define="_WIN32_WINNT=0x0603" define="WINAPI_FAMILY=WINAPI_FAMILY_PC_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # test UWP Windows SDK 8.0 (Visual Studio 2012)
+    - COMMENT: UWP _WIN32_WINNT=0x0602 (WIN8) DESKTOP
+      TOOLSET: msvc-11.0
+      B2_ADDRESS_MODEL: address-model=32 # Appveyor installation of this compiler only supports 32 bits
+      DEFINES: define="_WIN32_WINNT=0x0602" define="WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: UWP _WIN32_WINNT=0x0602 (WIN8) APP
+      TOOLSET: msvc-11.0
+      B2_ADDRESS_MODEL: address-model=32 # Appveyor installation of this compiler only supports 32 bits
+      DEFINES: define="_WIN32_WINNT=0x0602" define="WINAPI_FAMILY=WINAPI_FAMILY_APP"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # test older compilers, stock settings
+    - COMMENT: Visual Studio 2008
+      TOOLSET: msvc-9.0
+      B2_ADDRESS_MODEL: address-model=32 # Appveyor installation of this compiler only supports 32 bits
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: Visual Studio 2010
+      TOOLSET: msvc-10.0
+      B2_ADDRESS_MODEL: address-model=32 # Appveyor installation of this compiler only supports 32 bits
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: Visual Studio 2012
+      TOOLSET: msvc-11.0
+      B2_ADDRESS_MODEL: address-model=32 # Appveyor installation of this compiler only supports 32 bits
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: Visual Studio 2013
+      TOOLSET: msvc-12.0
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - COMMENT: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - COMMENT: Visual Studio 2017 (clang-cl)
+      TOOLSET: clang-win
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - COMMENT: Cygwin
+      TOOLSET: gcc
+      B2_ADDRESS_MODEL: address-model=32 # 32-bit Cygwin only supports 32 bits
+      ADDPATH: C:\cygwin\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: Cygwin 64
+      TOOLSET: gcc
+      B2_ADDRESS_MODEL: address-model=64 # Appveyor installation of 64-bit Cygwin only supports 64 bits
+      ADDPATH: C:\cygwin64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: MinGW
+      TOOLSET: gcc
+      B2_ADDRESS_MODEL: address-model=32 # Legacy MinGW only supports 32 bits
+      ADDPATH: C:\mingw\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: MinGW-w64 gcc 6 64-bit
+      TOOLSET: gcc
+      B2_ADDRESS_MODEL: address-model=64
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: MinGW-w64 gcc 6 32-bit
+      TOOLSET: gcc
+      B2_ADDRESS_MODEL: address-model=32
+      ADDPATH: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - COMMENT: MinGW-w64 gcc 7 64-bit
+      TOOLSET: gcc
+      B2_ADDRESS_MODEL: address-model=64
+      ADDPATH: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  # test platform targets
+    - COMMENT: _WIN32_WINNT=0x0400 (NT4)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0400"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0500 (2K)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0500"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0501 (XP)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0501"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0502 (WS03)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0502"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0600 (VISTA/WS08)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0600"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0601 (WIN7)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0601"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0602 (WIN8)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0602"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0603 (WIN8.1)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0603"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - COMMENT: _WIN32_WINNT=0x0A00 (WIN10)
+      TOOLSET: msvc-14.3
+      DEFINES: define="_WIN32_WINNT=0x0A00"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+
+install:
+  - set SELF=winapi
+  - set GIT_FETCH_JOBS=8
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/boostdep
+  - git submodule init tools/build
+  - git submodule init tools/boost_install
+  - git submodule init libs/headers
+  - git submodule init libs/config
+  - git submodule update --jobs %GIT_FETCH_JOBS%
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\%SELF%
+  - python tools/boostdep/depinst/depinst.py --git_args "--jobs %GIT_FETCH_JOBS%" %SELF%
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - set SELF=winapi
+  - PATH=%ADDPATH%;%PATH%
+  - echo %PATH%
+  - echo b2 -j %NUMBER_OF_PROCESSORS% libs/%SELF%/test toolset=%TOOLSET% %CXXFLAGS% %DEFINES% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT%
+  - b2 -j %NUMBER_OF_PROCESSORS% libs/%SELF%/test toolset=%TOOLSET% %CXXFLAGS% %DEFINES% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT%
