@@ -1,0 +1,100 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Antony Polukhin, 2016-2022.
+
+#
+# See https://svn.boost.org/trac/boost/wiki/TravisCoverals for description of this file
+# and how it can be used with Boost libraries.
+#
+# File revision #6
+
+init:
+    # boost-local/libs/ folder to put this library into. This may be useful, if you're for example running Travis
+    # from `Boost.DLL` repo while Boost already has `dll` and with to replace `dll` with content of`Boost.DLL`.
+    #
+    # Otherwise just leave the default value - set BOOST_LIBS_FOLDER=%APPVEYOR_PROJECT_NAME%
+    - set BOOST_LIBS_FOLDER=%APPVEYOR_PROJECT_NAME%
+
+###############################################################################################################
+# From this point and below code is same for all the Boost libs
+###############################################################################################################
+
+version: 1.74.{build}-{branch}
+
+# branches to build
+branches:
+  except:
+    - gh-pages
+
+skip_tags: true
+
+environment:
+  matrix:
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+#      TOOLSET: msvc # TODO: clang-win ???
+#      ADDRMD: 32,64
+#      CXXSTD: 17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc # clang-win has problems with structured bindings - it can not correclty use std::tuple_size
+      ADDRMD: 32,64
+      CXXSTD: 17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc # clang-win has problems with structured bindings - it can not correclty use std::tuple_size
+      ADDRMD: 32,64
+      CXXSTD: 17,latest
+      CXXFLAGS: /permissive-
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc # clang-win has problems with structured bindings - it can not correclty use std::tuple_size
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\cygwin\bin;
+      TOOLSET: gcc
+      CXXSTD: 14,1z
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\cygwin64\bin;
+      TOOLSET: gcc
+      CXXSTD: 14,1z
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#      ADDPATH: C:\mingw\bin;
+#      TOOLSET: gcc
+#      CXXSTD: 14,1z
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;
+      TOOLSET: gcc
+      CXXSTD: 14,1z
+
+before_build:
+    - set BOOST_BRANCH=develop
+    - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+    - echo "Testing %BOOST_LIBS_FOLDER%"
+    # Cloning Boost libraries (fast nondeep cloning)
+    - set BOOST=C:/boost-local
+    - git clone -b %BOOST_BRANCH% --depth 10 https://github.com/boostorg/boost.git %BOOST%
+    - cd %BOOST%
+    - git submodule update --init --depth 10 tools/build tools/boostdep
+
+    - echo "rm -rf %BOOST%/libs/%BOOST_LIBS_FOLDER%"
+    - rm -rf %BOOST%/libs/%BOOST_LIBS_FOLDER%
+    - mv %APPVEYOR_BUILD_FOLDER% %BOOST%/libs/%BOOST_LIBS_FOLDER%
+    - python tools/boostdep/depinst/depinst.py --git_args "--depth 10 --jobs 2" -I example -I examples %BOOST_LIBS_FOLDER%
+
+build_script:
+    - cmd /c bootstrap
+    - b2.exe headers
+    - cd %BOOST%/libs/%BOOST_LIBS_FOLDER%/test
+
+after_build:
+before_test:
+test_script:
+  - PATH=%ADDPATH%%PATH%
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+  - echo "Running command ..\..\..\b2 -j3 toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=debug,release"
+  - ..\..\..\b2.exe -j3 toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=debug,release cxxflags="-DBOOST_TRAVISCI_BUILD %CXXFLAGS%"
+
+after_test:
+on_success:
+on_failure:
+on_finish:
