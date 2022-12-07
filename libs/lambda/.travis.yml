@@ -1,0 +1,163 @@
+# Copyright 2016 Edward Diener
+# Copyright 2016, 2017, 2021 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+dist: xenial
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc CXXSTD=98
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc CXXSTD=03,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.8
+      env: TOOLSET=gcc CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc CXXSTD=03,11,14
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: bionic
+      compiler: g++-10
+      env: TOOLSET=gcc CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-10
+          sources:
+            - sourceline: "ppa:ubuntu-toolchain-r/test"
+
+    - os: linux
+      dist: bionic
+      compiler: g++-11
+      env: UBSAN=1 TOOLSET=gcc CXXSTD=03,11,14,17,20 UBSAN_OPTIONS=print_stacktrace=1 LINKFLAGS=-fuse-ld=gold
+      addons:
+        apt:
+          packages:
+            - g++-11
+          sources:
+            - sourceline: "ppa:ubuntu-toolchain-r/test"
+
+    - os: linux
+      compiler: clang++-11
+      env: TOOLSET=clang CXXSTD=03,11,14,17,20
+      addons:
+        apt:
+          packages:
+            - clang-11
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-11 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+
+    - os: linux
+      compiler: clang++-12
+      env: UBSAN=1 TOOLSET=clang CXXSTD=03,11,14,17,20 UBSAN_OPTIONS=print_stacktrace=1
+      addons:
+        apt:
+          packages:
+            - clang-12
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+
+    - os: linux
+      dist: bionic
+      compiler: clang++-libc++
+      env: TOOLSET=clang CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+
+    - os: osx
+      compiler: clang++
+      env: UBSAN=1 TOOLSET=clang CXXSTD=03,11,14,1z UBSAN_OPTIONS=print_stacktrace=1
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/boostdep
+  - cp -r $TRAVIS_BUILD_DIR/* libs/lambda
+  - python tools/boostdep/depinst/depinst.py lambda
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $TRAVIS_COMPILER ;" > ~/user-config.jam
+  - ./b2 -j3 libs/lambda/test toolset=$TOOLSET cxxstd=$CXXSTD variant=debug,release ${UBSAN:+cxxflags=-fsanitize=undefined cxxflags=-fno-sanitize-recover=undefined linkflags=-fsanitize=undefined define=UBSAN=1 debug-symbols=on} ${LINKFLAGS:+linkflags=$LINKFLAGS}
+
+notifications:
+  email:
+    on_success: always
