@@ -1,0 +1,171 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/**
+
+env:
+  UBSAN_OPTIONS: print_stacktrace=1
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: gcc-7
+            cxxstd: "03,11,14,17"
+            os: ubuntu-18.04
+          - toolset: gcc-9
+            cxxstd: "03,11,14,17,2a"
+            os: ubuntu-18.04
+          - toolset: gcc-10
+            cxxstd: "03,11,14,17,2a"
+            os: ubuntu-18.04
+            cxxflags: "cxxflags=--coverage -fsanitize=address,leak,undefined -fno-sanitize-recover=undefined"
+            linkflags: "linkflags=--coverage -lasan -lubsan"
+            gcov_tool: "gcov-10"
+          - toolset: clang
+            compiler: clang++-10
+            cxxstd: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            cxxflags: "cxxflags=-fsanitize=address,undefined,integer -fno-sanitize-recover=undefined"
+            linkflags: "linkflags=-fsanitize=address,undefined,integer"
+          - toolset: clang
+            cxxstd: "03,11,14,17,2a"
+            os: macos-10.15
+            cxxflags: "cxxflags=-fsanitize=address,undefined -fno-sanitize-recover=undefined"
+            linkflags: "linkflags=-fsanitize=address,undefined"
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: sudo apt install ${{matrix.install}}
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_REPOSITORY: $GITHUB_REPOSITORY
+          LIBRARY=${GITHUB_REPOSITORY#*/}
+          echo LIBRARY: $LIBRARY
+          echo "LIBRARY=$LIBRARY" >> $GITHUB_ENV
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REF#refs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 10 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --depth 10 --jobs 2 tools/boostdep tools/inspect libs/filesystem
+          python tools/boostdep/depinst/depinst.py --git_args "--depth 10 --jobs 3" filesystem
+          rm -rf libs/$LIBRARY/*
+          cp -r $GITHUB_WORKSPACE/* libs/$LIBRARY
+          python tools/boostdep/depinst/depinst.py --include benchmark --include example --include examples --include tools --git_args "--depth 10 --jobs 3" $LIBRARY
+          ./bootstrap.sh
+          ./b2 -d0 headers
+          ./b2 -j4 variant=debug tools/inspect/build
+
+      - name: Run tests
+        run: |
+          cd ../boost-root
+          ./b2 -j3 libs/$LIBRARY/test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} variant=debug,release "${{matrix.cxxflags}}" "${{matrix.linkflags}}" "${{matrix.launcher}}"
+          dist/bin/inspect libs/$LIBRARY
+
+      - name: Prepare coverage data
+        if: matrix.gcov_tool
+        run: |
+          mkdir -p $GITHUB_WORKSPACE/coveralls
+
+          echo -e "#!/bin/bash\nexec ${{matrix.gcov_tool}} \"\$@\"" > $GITHUB_WORKSPACE/coveralls/gcov_wrapper.sh
+          chmod +x $GITHUB_WORKSPACE/coveralls/gcov_wrapper.sh
+          wget https://github.com/linux-test-project/lcov/archive/v1.15.zip
+          unzip v1.15.zip
+          LCOV="`pwd`/lcov-1.15/bin/lcov --gcov-tool $GITHUB_WORKSPACE/coveralls/gcov_wrapper.sh"
+
+          echo "$LCOV --directory ../boost-root/bin.v2/libs/$LIBRARY/ --base-directory `pwd`/libs/$LIBRARY/test --capture --output-file $GITHUB_WORKSPACE/coveralls/coverage.info"
+          $LCOV --directory ../boost-root/bin.v2/libs/$LIBRARY/ --base-directory ../boost-root/ --capture --output-file $GITHUB_WORKSPACE/coveralls/coverage.info
+          $LCOV --remove $GITHUB_WORKSPACE/coveralls/coverage.info "/usr*" "*/$LIBRARY/test/*" ${{matrix.ignore_coverage}} "*/$LIBRARY/tests/*" "*/$LIBRARY/examples/*" "*/$LIBRARY/example/*" -o $GITHUB_WORKSPACE/coveralls/coverage.info
+
+          cd ../boost-root
+          OTHER_LIBS=`grep "submodule .*" .gitmodules | sed 's/\[submodule\ "\(.*\)"\]/"\*\/boost\/\1\.hpp" "\*\/boost\/\1\/\*"/g'| sed "/\"\*\/boost\/$LIBRARY\/\*\"/d" | sed ':a;N;$!ba;s/\n/ /g'`
+          echo $OTHER_LIBS
+          eval "$LCOV --remove $GITHUB_WORKSPACE/coveralls/coverage.info $OTHER_LIBS -o $GITHUB_WORKSPACE/coveralls/coverage.info"
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: matrix.gcov_tool
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coveralls/coverage.info
+          parallel: true
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: msvc-14.1
+            cxxstd: "14,17,latest"
+            addrmd: 32,64
+            os: windows-2016
+          - toolset: msvc-14.2
+            cxxstd: "14,17,latest"
+            addrmd: 32,64
+            os: windows-2019
+          - toolset: gcc
+            cxxstd: "03,11,14,17,2a"
+            addrmd: 64
+            os: windows-2019
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          echo GITHUB_REPOSITORY: %GITHUB_REPOSITORY%
+          for /f %%i in ("%GITHUB_REPOSITORY%") do set LIBRARY=%%~nxi
+          echo LIBRARY: %LIBRARY%
+          echo LIBRARY=%LIBRARY%>>%GITHUB_ENV%
+          echo GITHUB_BASE_REF: %GITHUB_BASE_REF%
+          echo GITHUB_REF: %GITHUB_REF%
+          if "%GITHUB_BASE_REF%" == "" set GITHUB_BASE_REF=%GITHUB_REF%
+          set BOOST_BRANCH=develop
+          for /f %%i in ("%GITHUB_BASE_REF%") do if "%%~nxi" == "master" set BOOST_BRANCH=master
+          echo BOOST_BRANCH: %BOOST_BRANCH%
+          cd ..
+          git clone -b %BOOST_BRANCH% --depth 10 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          xcopy /s /e /q %GITHUB_WORKSPACE% libs\%LIBRARY%\
+          git submodule update --init tools/boostdep
+          python tools/boostdep/depinst/depinst.py --include benchmark --include example --include examples --include tools --git_args "--jobs 3" %LIBRARY%
+          cmd /c bootstrap
+          b2 -d0 headers
+
+      - name: Run tests
+        shell: cmd
+        run: |
+          cd ../boost-root
+          b2 -j3 libs/%LIBRARY%/test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model=${{matrix.addrmd}} variant=debug,release
+
+  finish:
+    needs: posix
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        parallel-finished: true
