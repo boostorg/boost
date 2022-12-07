@@ -1,0 +1,129 @@
+#
+# Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+# Copyright (c) 2021 Dmitry Arkhipov (grisumbras@gmail.com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Official repository: https://github.com/cppalliance/json
+#
+
+project json/doc ;
+
+import boostbook ;
+import ../../../tools/docca/docca.jam ;
+
+
+# Produce the reference.qbk from C++ sources
+docca.reference reference.qbk
+    : xsl/custom-overrides.xsl
+      [ glob-tree-ex include/docca : *.hpp ]
+    : <doxygen:param>PROJECT_NAME=docca
+      <doxygen:param>PROJECT_NUMBER=
+      <doxygen:param>PROJECT_BRIEF="Documentation Library"
+      <doxygen:param>ABBREVIATE_BRIEF=
+      <doxygen:param>ALWAYS_DETAILED_SEC=YES
+      <doxygen:param>INLINE_INHERITED_MEMB=YES
+      <doxygen:param>FULL_PATH_NAMES=NO
+      <doxygen:param>JAVADOC_AUTOBRIEF=YES
+      <doxygen:param>MULTILINE_CPP_IS_BRIEF=YES
+      <doxygen:param>DISTRIBUTE_GROUP_DOC=YES
+      <doxygen:param>EXTRACT_ALL=YES
+      <doxygen:param>EXTRACT_PRIVATE=YES
+      <doxygen:param>EXTRACT_STATIC=YES
+      <doxygen:param>EXTRACT_LOCAL_CLASSES=NO
+      <doxygen:param>SHOW_INCLUDE_FILES=NO
+      <doxygen:param>INLINE_INFO=NO
+      <doxygen:param>SORT_MEMBER_DOCS=NO
+      <doxygen:param>SORT_MEMBERS_CTORS_1ST=YES
+      <doxygen:param>GENERATE_TODOLIST=NO
+      <doxygen:param>GENERATE_TESTLIST=NO
+      <doxygen:param>GENERATE_BUGLIST=NO
+      <doxygen:param>GENERATE_DEPRECATEDLIST=NO
+      <doxygen:param>SHOW_USED_FILES=NO
+      <doxygen:param>SHOW_FILES=NO
+      <doxygen:param>SHOW_NAMESPACES=NO
+      <doxygen:param>FILE_PATTERNS=
+      <doxygen:param>EXAMPLE_PATTERNS=
+      <doxygen:param>MACRO_EXPANSION=YES
+      <doxygen:param>EXPAND_ONLY_PREDEF=YES
+      <doxygen:param>PREDEFINED="\\
+        DOXYGEN \\
+        GENERATING_DOCS \\
+        _MSC_VER"
+      <doxygen:param>CLASS_DIAGRAMS=NO
+      #<doxygen:param>STRIP_FROM_PATH=$(EXAMPLE_DIR)/include/docca
+      #<doxygen:param>STRIP_FROM_INC_PATH=$(EXAMPLE_DIR)/include/docca
+    ;
+
+#-------------------------------------------------------------------------------
+#
+# Produce the reference.qbk file by running
+# the reference xml through the transform.
+#
+#make reference.qbk
+#    :
+#        reference.xml
+#        transform.xsl
+#    :
+#        saxonhe.saxonhe
+#    ;
+
+#-------------------------------------------------------------------------------
+#
+# Produce the Boost.Book XML from the QuickBook
+#
+
+install images
+    :
+        [ glob images/*.png ]
+    :
+        <location>html/json/images
+    ;
+
+explicit images ;
+
+xml json_doc
+    :
+        main.qbk
+    :
+        <use>reference.qbk
+        <dependency>images
+    ;
+
+explicit json_doc ;
+
+#-------------------------------------------------------------------------------
+#
+# HTML documentation for $(BOOST_ROOT)/doc/html
+#
+#-------------------------------------------------------------------------------
+
+boostbook json
+    :
+        json_doc
+    :
+        <xsl:param>boost.root=../../../..
+        <xsl:param>chapter.autolabel=1
+        <xsl:param>chunk.section.depth=8                # Depth to which sections should be chunked
+        <xsl:param>chunk.first.sections=1               # Chunk the first top-level section?
+        <xsl:param>toc.section.depth=2                  # How deep should recursive sections appear in the TOC?
+        <xsl:param>toc.max.depth=8                      # How many levels should be created for each TOC?
+        <xsl:param>generate.section.toc.level=8         # Control depth of TOC generation in sections
+        <xsl:param>generate.toc="chapter toc,title section nop reference nop"
+        <include>../../../tools/boostbook/dtd
+    :
+        <dependency>images
+    ;
+
+#-------------------------------------------------------------------------------
+#
+# These are used to inform the build system of the
+# means to build the integrated and stand-alone docs.
+#
+
+alias boostdoc ;
+explicit boostdoc ;
+
+alias boostrelease : json ;
+explicit boostrelease ;
