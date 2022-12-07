@@ -1,0 +1,182 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2018-2019 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+# AppVeyor doesn't provide 64-bit compilers for these MSVC versions
+#    - TOOLSET: msvc-9.0
+#      ADDRESS_MODEL: 64
+#      B2_ARGS: instruction-set=core2
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#    - TOOLSET: msvc-10.0
+#      ADDRESS_MODEL: 64
+#      B2_ARGS: instruction-set=core2
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#    - TOOLSET: msvc-11.0
+#      ADDRESS_MODEL: 64
+#      B2_ARGS: instruction-set=core2
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-12.0
+      ADDRESS_MODEL: 64
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.0
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,latest
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.1
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17,latest
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.2
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17,20,latest
+      B2_ARGS: instruction-set=core2 define=_WIN32_WINNT=0x0602
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: msvc-14.3
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17,20,latest
+      B2_ARGS: instruction-set=core2 define=_WIN32_WINNT=0x0602
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - TOOLSET: clang-win
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17,latest
+      B2_ARGS: instruction-set=core2 cxxflags="-mcx16"
+      ENV_SCRIPT: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,03-gnu,11-gnu
+      ADDPATH: C:\cygwin64\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14,03-gnu,11-gnu,14-gnu
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14,17,03-gnu,11-gnu,14-gnu,17-gnu
+      ADDPATH: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14,17,2a,03-gnu,11-gnu,14-gnu,17-gnu,2a-gnu
+      ADDPATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+    - TOOLSET: msvc-9.0
+      ADDRESS_MODEL: 32
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-10.0
+      ADDRESS_MODEL: 32
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-11.0
+      ADDRESS_MODEL: 32
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-12.0
+      ADDRESS_MODEL: 32
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.0
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,latest
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.1
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17,latest
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.2
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17,20,latest
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: clang-win
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17,latest
+      B2_ARGS: instruction-set=core2
+      ENV_SCRIPT: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,03-gnu,11-gnu
+      ADDPATH: C:\cygwin\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,03-gnu,11-gnu
+      ADDPATH: C:\mingw\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,14,03-gnu,11-gnu,14-gnu
+      ADDPATH: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
+      B2_ARGS: instruction-set=core2
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TEST_CMAKE: 1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+install:
+  - set GIT_FETCH_JOBS=8
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/boostdep
+  - git submodule init tools/build
+  - git submodule init tools/boost_install
+  - git submodule init libs/headers
+  - git submodule init libs/config
+  - git submodule update --jobs %GIT_FETCH_JOBS%
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\atomic
+  - python tools/boostdep/depinst/depinst.py --git_args "--jobs %GIT_FETCH_JOBS%" atomic
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - PATH=%ADDPATH%;%PATH%
+  - if not "%ENV_SCRIPT%" == "" call "%ENV_SCRIPT%"
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 -j %NUMBER_OF_PROCESSORS% libs/atomic/test variant=release toolset=%TOOLSET% address-model=%ADDRESS_MODEL% %CXXSTD% %B2_ARGS%
+
+for:
+  - matrix:
+      only: [TEST_CMAKE: 1]
+    test_script:
+      - mkdir __build_static__
+      - cd __build_static__
+      - cmake ../libs/atomic/test/test_cmake
+      - cmake --build . --target boost_atomic_cmake_self_test -j %NUMBER_OF_PROCESSORS%
+      - cd ..
+      - mkdir __build_shared__
+      - cd __build_shared__
+      - cmake -DBUILD_SHARED_LIBS=On ../libs/atomic/test/test_cmake
+      - cmake --build . --target boost_atomic_cmake_self_test -j %NUMBER_OF_PROCESSORS%

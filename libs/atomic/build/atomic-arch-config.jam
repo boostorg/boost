@@ -1,0 +1,127 @@
+#
+#             Copyright Andrey Semashev 2020.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+#
+# This jamfile contains utility rules to select architecture-specific compiler flags
+
+import common ;
+import feature ;
+import configure ;
+
+rule deduce-architecture ( properties * )
+{
+    local architecture = [ feature.get-values "architecture" : $(properties) ] ;
+    if $(architecture)
+    {
+        return $(architecture) ;
+    }
+    else
+    {
+        if [ configure.builds /boost/architecture//x86 : $(properties) : "x86" ]
+        {
+            return x86 ;
+        }
+        else if [ configure.builds /boost/architecture//arm : $(properties) : "arm" ]
+        {
+            return arm ;
+        }
+        else if [ configure.builds /boost/architecture//mips1 : $(properties) : "mips1" ]
+        {
+            return mips1 ;
+        }
+        else if [ configure.builds /boost/architecture//power : $(properties) : "power" ]
+        {
+            return power ;
+        }
+        else if [ configure.builds /boost/architecture//sparc : $(properties) : "sparc" ]
+        {
+            return sparc ;
+        }
+    }
+}
+
+rule deduce-address-model ( properties * )
+{
+    local address_model = [ feature.get-values "address-model" : $(properties) ] ;
+    if $(address_model)
+    {
+        return $(address_model) ;
+    }
+    else
+    {
+        if [ configure.builds /boost/architecture//32 : $(properties) : "32-bit" ]
+        {
+            return 32 ;
+        }
+        else if [ configure.builds /boost/architecture//64 : $(properties) : "64-bit" ]
+        {
+            return 64 ;
+        }
+    }
+}
+
+rule sse2-flags ( properties * )
+{
+    local result ;
+
+    if <toolset>intel in $(properties)
+    {
+        if <toolset-intel:platform>win in $(properties)
+        {
+            result = <cxxflags>"/QxSSE2" ;
+        }
+        else
+        {
+            result = <cxxflags>"-xSSE2" ;
+        }
+    }
+    else if <toolset>msvc in $(properties)
+    {
+        # MSVC doesn't really care about these switches, all SSE intrinsics are always available, but still...
+        # Also 64 bit MSVC doesn't have the /arch:SSE2 switch as it is the default.
+        if 32 in [ deduce-address-model $(properties) ]
+        {
+            result = <cxxflags>"/arch:SSE2" ;
+        }
+    }
+    else
+    {
+        result = <cxxflags>"-msse -msse2" ;
+    }
+
+    return $(result) ;
+}
+
+rule sse41-flags ( properties * )
+{
+    local result ;
+
+    if <toolset>intel in $(properties)
+    {
+        if <toolset-intel:platform>win in $(properties)
+        {
+            result = <cxxflags>"/QxSSE4.1" ;
+        }
+        else
+        {
+            result = <cxxflags>"-xSSE4.1" ;
+        }
+    }
+    else if <toolset>msvc in $(properties)
+    {
+        # MSVC doesn't really care about these switches, all SSE intrinsics are always available, but still...
+        # Also 64 bit MSVC doesn't have the /arch:SSE2 switch as it is the default.
+        if 32 in [ deduce-address-model $(properties) ]
+        {
+            result = <cxxflags>"/arch:SSE2" ;
+        }
+    }
+    else
+    {
+        result = <cxxflags>"-msse -msse2 -msse3 -mssse3 -msse4.1" ;
+    }
+
+    return $(result) ;
+}

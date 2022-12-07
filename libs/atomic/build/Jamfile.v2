@@ -1,0 +1,147 @@
+#  Boost.Atomic Library Jamfile
+#
+#  Copyright Helge Bahmann 2011.
+#  Copyright Andrey Semashev 2018, 2020-2021.
+#
+#  Distributed under the Boost Software License, Version 1.0.
+#  (See accompanying file LICENSE_1_0.txt or copy at
+#  http://www.boost.org/LICENSE_1_0.txt)
+
+import common ;
+import path ;
+import project ;
+import feature ;
+import configure ;
+import atomic-arch-config ;
+
+local here = [ modules.binding $(__name__) ] ;
+
+project.push-current [ project.current ] ;
+project.load [ path.join [ path.make $(here:D) ] ../../config/checks/architecture ] ;
+project.pop-current ;
+
+lib synchronization ;
+explicit synchronization ;
+
+rule check-synchronization-lib ( properties * )
+{
+    local result ;
+
+    if <target-os>windows in $(properties)
+    {
+        if [ configure.builds ../config//has_synchronization_lib : $(properties) : "has synchronization.lib" ]
+        {
+            result += <library>synchronization ;
+        }
+        else
+        {
+            result += <define>BOOST_ATOMIC_NO_SYNCHRONIZATION_LIB ;
+        }
+    }
+
+    return $(result) ;
+}
+
+project boost/atomic
+    : requirements
+      <include>../src
+      <threading>multi
+      <link>shared:<define>BOOST_ATOMIC_DYN_LINK=1
+      <link>static:<define>BOOST_ATOMIC_STATIC_LINK=1
+      <define>BOOST_ATOMIC_SOURCE
+      <target-os>windows:<define>BOOST_USE_WINDOWS_H
+      <toolset>gcc,<target-os>windows:<linkflags>"-lkernel32"
+    : usage-requirements
+      <link>shared:<define>BOOST_ATOMIC_DYN_LINK=1
+      <link>static:<define>BOOST_ATOMIC_STATIC_LINK=1
+    : source-location ../src
+    ;
+
+BOOST_ATOMIC_SOURCES_SSE2 =
+    find_address_sse2
+;
+
+BOOST_ATOMIC_SOURCES_SSE41 =
+    find_address_sse41
+;
+
+for local src in $(BOOST_ATOMIC_SOURCES_SSE2)
+{
+    obj $(src)
+        : ## sources ##
+            $(src).cpp
+        : ## requirements ##
+            <conditional>@atomic-arch-config.sse2-flags
+            <link>shared:<define>BOOST_ATOMIC_DYN_LINK=1
+            <link>static:<define>BOOST_ATOMIC_STATIC_LINK=1
+            <define>BOOST_ATOMIC_SOURCE
+        ;
+
+    explicit $(src) ;
+}
+
+for local src in $(BOOST_ATOMIC_SOURCES_SSE41)
+{
+    obj $(src)
+        : ## sources ##
+            $(src).cpp
+        : ## requirements ##
+            <conditional>@atomic-arch-config.sse41-flags
+            <link>shared:<define>BOOST_ATOMIC_DYN_LINK=1
+            <link>static:<define>BOOST_ATOMIC_STATIC_LINK=1
+            <define>BOOST_ATOMIC_SOURCE
+        ;
+
+    explicit $(src) ;
+}
+
+rule select-arch-specific-sources ( properties * )
+{
+    local result ;
+
+    if x86 in [ atomic-arch-config.deduce-architecture $(properties) ]
+    {
+        if [ configure.builds ../config//has_sse2 : $(properties) : "compiler supports SSE2" ]
+        {
+            result += <source>$(BOOST_ATOMIC_SOURCES_SSE2) ;
+            result += <define>BOOST_ATOMIC_USE_SSE2 ;
+        }
+
+        if [ configure.builds ../config//has_sse41 : $(properties) : "compiler supports SSE4.1" ]
+        {
+            result += <source>$(BOOST_ATOMIC_SOURCES_SSE41) ;
+            result += <define>BOOST_ATOMIC_USE_SSE41 ;
+        }
+    }
+
+#    ECHO "Arch sources: " $(result) ;
+
+    return $(result) ;
+}
+
+rule select-platform-specific-sources ( properties * )
+{
+    local result ;
+
+    if <target-os>windows in $(properties)
+    {
+        result += <source>wait_on_address.cpp ;
+    }
+
+#    ECHO Platform sources: $(result) ;
+
+    return $(result) ;
+}
+
+lib boost_atomic
+    : ## sources ##
+      lock_pool.cpp
+    : ## requirements ##
+      <include>../src
+      <conditional>@select-arch-specific-sources
+      <conditional>@select-platform-specific-sources
+    : usage-requirements
+      <conditional>@check-synchronization-lib
+   ;
+
+boost-install boost_atomic ;

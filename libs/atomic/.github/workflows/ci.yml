@@ -1,0 +1,613 @@
+# Copyright 2021 Andrey Semashev
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/**
+
+concurrency:
+  group: ${{format('{0}:{1}', github.repository, github.ref)}}
+  cancel-in-progress: true
+
+env:
+  GIT_FETCH_JOBS: 8
+  NET_RETRY_COUNT: 5
+  DEFAULT_BUILD_VARIANT: debug,release
+  DEFAULT_INSTRUCTION_SET: core2
+
+jobs:
+  posix:
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Note: In the matrix below, we always use a Docker container when we test 32-bit targets since the host runner
+          # does have permissions to configure dpkg/apt, which prevents adding i386 target architecture.
+          # Linux, gcc
+          - toolset: gcc-4.4
+            cxxstd64: "98,0x"
+            cxxstd32: "98,0x"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - g++-4.4
+              - g++-4.4-multilib
+              - linux-libc-dev:i386
+            sources:
+              - "ppa:ubuntu-toolchain-r/test"
+          - toolset: gcc-4.6
+            cxxstd64: "03,0x"
+            cxxstd32: "03,0x"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - g++-4.6
+              - g++-4.6-multilib
+              - linux-libc-dev:i386
+            sources:
+              - "ppa:ubuntu-toolchain-r/test"
+          - toolset: gcc-4.7
+            cxxstd64: "03,11"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - g++-4.7
+              - g++-4.7-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-4.8
+            cxxstd64: "03,11"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - g++-4.8
+              - g++-4.8-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-4.9
+            cxxstd64: "03,11"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - g++-4.9
+              - g++-4.9-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-5
+            cxxstd64: "03,11,14,1z"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - g++-5
+              - g++-5-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-6
+            cxxstd64: "03,11,14,1z"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - g++-6
+              - g++-6-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-7
+            cxxstd64: "03,11,14,17"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - g++-7
+              - g++-7-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-8
+            cxxstd64: "03,11,14,17,2a,03-gnu,11-gnu,14-gnu,17-gnu,2a-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - g++-8
+              - g++-8-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-9
+            cxxstd64: "03,11,14,17,2a,03-gnu,11-gnu,14-gnu,17-gnu,2a-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - g++-9
+              - g++-9-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-10
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - g++-10
+              - g++-10-multilib
+              - linux-libc-dev:i386
+          - toolset: gcc-11
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - g++-11
+              - g++-11-multilib
+              - linux-libc-dev:i386
+            sources:
+              - "ppa:ubuntu-toolchain-r/test"
+          - name: UBSAN
+            toolset: gcc-11
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            ubsan: 1
+            build_variant: debug
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - g++-11
+              - g++-11-multilib
+              - linux-libc-dev:i386
+            sources:
+              - "ppa:ubuntu-toolchain-r/test"
+
+          # Linux, clang
+          - toolset: clang
+            compiler: clang++-3.5
+            cxxstd64: "03,11"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - clang-3.5
+              - g++-4.9
+              - g++-4.9-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 4.9
+          - toolset: clang
+            compiler: clang++-3.6
+            cxxstd64: "03,11,14"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - clang-3.6
+              - g++-4.9
+              - g++-4.9-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 4.9
+          - toolset: clang
+            compiler: clang++-3.7
+            cxxstd64: "03,11,14"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - clang-3.7
+              - g++-4.9
+              - g++-4.9-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 4.9
+          - toolset: clang
+            compiler: clang++-3.8
+            cxxstd64: "03,11,14"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install:
+              - clang-3.8
+              - g++-4.9
+              - g++-4.9-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 4.9
+          - toolset: clang
+            compiler: clang++-3.9
+            cxxstd64: "03,11,14"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - clang-3.9
+              - g++-6
+              - g++-6-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 6
+          - toolset: clang
+            compiler: clang++-4.0
+            cxxstd64: "03,11,14"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - clang-4.0
+              - g++-6
+              - g++-6-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 6
+          # Note: clang-5 fails int128 tests on 64-bit x86 target and float128 tests on 32-bit x86 target for some unknown reason. Does not reproduce locally.
+          - toolset: clang
+            compiler: clang++-5.0
+            cxxstd64: "03,11,14,1z"
+            cxxstd32: "03,11"
+            cxxflags: -DBOOST_ATOMIC_TESTS_NO_INT128 -DBOOST_ATOMIC_TESTS_NO_FLOAT128
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - clang-5.0
+              - g++-7
+              - g++-7-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 7
+          - toolset: clang
+            compiler: clang++-6.0
+            cxxstd64: "03,11,14,17"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - clang-6.0
+              - g++-8
+              - g++-8-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 8
+          - toolset: clang
+            compiler: clang++-7
+            cxxstd64: "03,11,14,17"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - clang-7
+              - g++-8
+              - g++-8-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 8
+          # Note: clang-8 does not fully support C++20, so it is not compatible with libstdc++-8 in this mode
+          - toolset: clang
+            compiler: clang++-8
+            cxxstd64: "03,11,14,17,2a"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:18.04
+            install:
+              - clang-8
+              - g++-7
+              - g++-7-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 7
+          - toolset: clang
+            compiler: clang++-9
+            cxxstd64: "03,11,14,17,2a"
+            cxxstd32: "03,11"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - clang-9
+              - g++-9
+              - g++-9-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 9
+          - toolset: clang
+            compiler: clang++-10
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - clang-10
+              - g++-10
+              - g++-10-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 10
+          - toolset: clang
+            compiler: clang++-11
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - clang-11
+              - g++-10
+              - g++-10-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 10
+          - toolset: clang
+            compiler: clang++-12
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxstd32: "03,11,03-gnu,11-gnu"
+            os: ubuntu-20.04
+            container: ubuntu:20.04
+            install:
+              - clang-12
+              - g++-10
+              - g++-10-multilib
+              - linux-libc-dev:i386
+            gcc_toolchain: 10
+          - toolset: clang
+            compiler: clang++-12
+            cxxstd64: "03,11,14,17,20"
+            cxxflags: -stdlib=libc++
+            linkflags: -stdlib=libc++
+            os: ubuntu-20.04
+            install:
+              - clang-12
+              - libc++-12-dev
+              - libc++abi-12-dev
+          - name: UBSAN
+            toolset: clang
+            compiler: clang++-12
+            cxxstd64: "03,11,14,17,20,03-gnu,11-gnu,14-gnu,17-gnu,20-gnu"
+            cxxflags: -stdlib=libc++
+            linkflags: -stdlib=libc++
+            ubsan: 1
+            build_variant: debug
+            os: ubuntu-20.04
+            install:
+              - clang-12
+              - libc++-12-dev
+              - libc++abi-12-dev
+
+          - toolset: clang
+            cxxstd64: "03,11,14,17,2a"
+            os: macos-10.15
+
+          - toolset: clang
+            cxxstd64: "03,11,14,17,2a"
+            os: macos-11
+            macosx_version_min: 11
+
+          - name: CMake tests
+            cmake_tests: 1
+            os: ubuntu-20.04
+
+    timeout-minutes: 120
+    runs-on: ${{matrix.os}}
+    container: ${{matrix.container}}
+
+    steps:
+      - name: Setup environment
+        run: |
+            if [ -f "/etc/debian_version" ]
+            then
+                echo "DEBIAN_FRONTEND=noninteractive" >> $GITHUB_ENV
+                export DEBIAN_FRONTEND=noninteractive
+                if [ -n "${{matrix.cxxstd32}}" -a "$(dpkg --print-architecture)" = "amd64" -a -z "$(dpkg --print-foreign-architectures | fgrep i386)" ]
+                then
+                    dpkg --add-architecture i386
+                fi
+            fi
+            if [ -n "${{matrix.container}}" ]
+            then
+                echo "GHA_CONTAINER=${{matrix.container}}" >> $GITHUB_ENV
+                if [ -f "/etc/debian_version" ]
+                then
+                    apt-get -o Acquire::Retries=$NET_RETRY_COUNT update
+                    apt-get -o Acquire::Retries=$NET_RETRY_COUNT install -y sudo software-properties-common tzdata wget curl apt-transport-https ca-certificates make build-essential g++ python python3 perl git cmake
+                fi
+            fi
+            if [ -n "${{matrix.macosx_version_min}}" -a -d "/Library/Developer/CommandLineTools/SDKs" ]
+            then
+                echo "Available MacOS SDKs:"
+                ls "/Library/Developer/CommandLineTools/SDKs"
+            fi
+            git config --global pack.threads 0
+
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: |
+            declare -a SOURCE_KEYS SOURCES
+            if [ -n "${{join(matrix.source_keys, ' ')}}" ]
+            then
+                SOURCE_KEYS=("${{join(matrix.source_keys, '" "')}}")
+            fi
+            if [ -n "${{join(matrix.sources, ' ')}}" ]
+            then
+                SOURCES=("${{join(matrix.sources, '" "')}}")
+            fi
+            for key in "${SOURCE_KEYS[@]}"
+            do
+                for i in {1..$NET_RETRY_COUNT}
+                do
+                    echo "Adding key: $key"
+                    wget -O - "$key" | sudo apt-key add - && break || sleep 2
+                done
+            done
+            if [ ${#SOURCES[@]} -gt 0 ]
+            then
+                APT_ADD_REPO_COMMON_ARGS=("-y")
+                APT_ADD_REPO_SUPPORTED_ARGS="$(apt-add-repository --help | perl -ne 'if (/^\s*-n/) { print "n"; } elsif (/^\s*-P/) { print "P"; } elsif (/^\s*-S/) { print "S"; } elsif (/^\s*-U/) { print "U"; }')"
+                if [ -n "$APT_ADD_REPO_SUPPORTED_ARGS" -a -z "${APT_ADD_REPO_SUPPORTED_ARGS##*n*}" ]
+                then
+                    APT_ADD_REPO_COMMON_ARGS+=("-n")
+                fi
+                APT_ADD_REPO_HAS_SOURCE_ARGS="$([ -n "$APT_ADD_REPO_SUPPORTED_ARGS" -a -z "${APT_ADD_REPO_SUPPORTED_ARGS##*P*}" -a -z "${APT_ADD_REPO_SUPPORTED_ARGS##*S*}" -a -z "${APT_ADD_REPO_SUPPORTED_ARGS##*U*}" ] && echo 1 || echo 0)"
+                for source in "${SOURCES[@]}"
+                do
+                    for i in {1..$NET_RETRY_COUNT}
+                    do
+                        APT_ADD_REPO_ARGS=("${APT_ADD_REPO_COMMON_ARGS[@]}")
+                        if [ $APT_ADD_REPO_HAS_SOURCE_ARGS -ne 0 ]
+                        then
+                            case "$source" in
+                            "ppa:"*)
+                                APT_ADD_REPO_ARGS+=("-P")
+                                ;;
+                            "deb "*)
+                                APT_ADD_REPO_ARGS+=("-S")
+                                ;;
+                            *)
+                                APT_ADD_REPO_ARGS+=("-U")
+                                ;;
+                            esac
+                        fi
+                        APT_ADD_REPO_ARGS+=("$source")
+                        echo "apt-add-repository ${APT_ADD_REPO_ARGS[@]}"
+                        sudo -E apt-add-repository "${APT_ADD_REPO_ARGS[@]}" && break || sleep 2
+                    done
+                done
+            fi
+            sudo apt-get -o Acquire::Retries=$NET_RETRY_COUNT update
+            sudo apt-get -o Acquire::Retries=$NET_RETRY_COUNT install -y ${{join(matrix.install, ' ')}}
+
+      - name: Setup GCC Toolchain
+        if: matrix.gcc_toolchain
+        run: |
+            GCC_TOOLCHAIN_ROOT="$HOME/gcc-toolchain"
+            echo "GCC_TOOLCHAIN_ROOT=\"$GCC_TOOLCHAIN_ROOT\"" >> $GITHUB_ENV
+            MULTIARCH_TRIPLET="$(dpkg-architecture -qDEB_HOST_MULTIARCH)"
+            mkdir -p "$GCC_TOOLCHAIN_ROOT"
+            ln -s /usr/include "$GCC_TOOLCHAIN_ROOT/include"
+            ln -s /usr/bin "$GCC_TOOLCHAIN_ROOT/bin"
+            mkdir -p "$GCC_TOOLCHAIN_ROOT/lib/gcc/$MULTIARCH_TRIPLET"
+            ln -s "/usr/lib/gcc/$MULTIARCH_TRIPLET/${{matrix.gcc_toolchain}}" "$GCC_TOOLCHAIN_ROOT/lib/gcc/$MULTIARCH_TRIPLET/${{matrix.gcc_toolchain}}"
+
+      - name: Setup Boost
+        run: |
+            echo GITHUB_REPOSITORY: $GITHUB_REPOSITORY
+            LIBRARY=${GITHUB_REPOSITORY#*/}
+            echo LIBRARY: $LIBRARY
+            echo "LIBRARY=$LIBRARY" >> $GITHUB_ENV
+            echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+            echo GITHUB_REF: $GITHUB_REF
+            REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+            REF=${REF#refs/heads/}
+            echo REF: $REF
+            BOOST_BRANCH=develop && [ "$REF" = "master" ] && BOOST_BRANCH=master || true
+            echo BOOST_BRANCH: $BOOST_BRANCH
+            BUILD_JOBS=$((nproc || sysctl -n hw.ncpu) 2> /dev/null)
+            echo "BUILD_JOBS=$BUILD_JOBS" >> $GITHUB_ENV
+            echo "CMAKE_BUILD_PARALLEL_LEVEL=$BUILD_JOBS" >> $GITHUB_ENV
+            DEPINST_ARGS=()
+            GIT_VERSION="$(git --version | sed -e 's/git version //')"
+            GIT_HAS_JOBS=1
+            if [ -f "/etc/debian_version" ]
+            then
+                if $(dpkg --compare-versions "$GIT_VERSION" lt 2.8.0)
+                then
+                    GIT_HAS_JOBS=0
+                fi
+            else
+                declare -a GIT_VER=(${GIT_VERSION//./ })
+                declare -a GIT_MIN_VER=(2 8 0)
+                for ((i=0; i<${#GIT_VER[@]}; i++))
+                do
+                    if [ -z "${GIT_MIN_VER[i]}" ]
+                    then
+                        GIT_MIN_VER[i]=0
+                    fi
+                    if [ "${GIT_VER[i]}" -lt "${GIT_MIN_VER[i]}" ]
+                    then
+                        GIT_HAS_JOBS=0
+                        break
+                    fi
+                done
+            fi
+            if [ "$GIT_HAS_JOBS" -ne 0 ]
+            then
+                DEPINST_ARGS+=("--git_args" "--jobs $GIT_FETCH_JOBS")
+            fi
+            cd ..
+            git clone -b "$BOOST_BRANCH" --depth 1 "https://github.com/boostorg/boost.git" "boost-root"
+            cd boost-root
+            mkdir -p libs/$LIBRARY
+            cp -r $GITHUB_WORKSPACE/* libs/$LIBRARY
+            git submodule update --init tools/boostdep
+            DEPINST_ARGS+=("$LIBRARY")
+            python tools/boostdep/depinst/depinst.py "${DEPINST_ARGS[@]}"
+            if [ -z "${{matrix.cmake_tests}}" ]
+            then
+                ./bootstrap.sh
+                ./b2 headers
+                if [ -n "${{matrix.compiler}}" -o -n "$GCC_TOOLCHAIN_ROOT" ]
+                then
+                    echo -n "using ${{matrix.toolset}} : : ${{matrix.compiler}}" > ~/user-config.jam
+                    if [ -n "$GCC_TOOLCHAIN_ROOT" ]
+                    then
+                        echo -n " : <compileflags>\"--gcc-toolchain=$GCC_TOOLCHAIN_ROOT\" <linkflags>\"--gcc-toolchain=$GCC_TOOLCHAIN_ROOT\"" >> ~/user-config.jam
+                    fi
+                    echo " ;" >> ~/user-config.jam
+                fi
+            fi
+
+      - name: Run tests
+        if: matrix.cmake_tests == ''
+        run: |
+            cd ../boost-root
+            B2_ARGS=("-j" "$BUILD_JOBS" "toolset=${{matrix.toolset}}")
+            if [ -n "${{matrix.build_variant}}" ]
+            then
+                B2_ARGS+=("variant=${{matrix.build_variant}}")
+            else
+                B2_ARGS+=("variant=$DEFAULT_BUILD_VARIANT")
+            fi
+            if [ -n "${{matrix.ubsan}}" ]
+            then
+                export UBSAN_OPTIONS="print_stacktrace=1"
+                B2_ARGS+=("cxxflags=-fsanitize=undefined -fno-sanitize-recover=undefined" "linkflags=-fsanitize=undefined -fuse-ld=gold" "define=UBSAN=1" "debug-symbols=on" "visibility=global")
+            fi
+            if [ -n "${{matrix.cxxflags}}" ]
+            then
+                B2_ARGS+=("cxxflags=${{matrix.cxxflags}}")
+            fi
+            if [ -n "${{matrix.linkflags}}" ]
+            then
+                B2_ARGS+=("linkflags=${{matrix.linkflags}}")
+            fi
+            if [ -n "${{matrix.instruction_set}}" ]
+            then
+                B2_ARGS+=("instruction-set=${{matrix.instruction_set}}")
+            else
+                B2_ARGS+=("instruction-set=$DEFAULT_INSTRUCTION_SET")
+            fi
+            if [ -n "${{matrix.macosx_version_min}}" ]
+            then
+                export MACOSX_DEPLOYMENT_TARGET="${{matrix.macosx_version_min}}"
+            fi
+            if [ -n "${{matrix.cxxstd64}}" ]
+            then
+                echo ""
+                echo "Running 64-bit tests..."
+                echo "======================="
+                echo ""
+                ./b2 "${B2_ARGS[@]}" "address-model=64" "cxxstd=${{matrix.cxxstd64}}" "libs/$LIBRARY/test"
+            fi
+            if [ -n "${{matrix.cxxstd32}}" ]
+            then
+                echo ""
+                echo "Running 32-bit tests..."
+                echo "======================="
+                echo ""
+                ./b2 "${B2_ARGS[@]}" "address-model=32" "cxxstd=${{matrix.cxxstd32}}" "libs/$LIBRARY/test"
+            fi
+
+      - name: Run CMake tests
+        if: matrix.cmake_tests
+        run: |
+            if [ -n "${{matrix.macosx_version_min}}" ]
+            then
+                export MACOSX_DEPLOYMENT_TARGET="${{matrix.macosx_version_min}}"
+            fi
+            cd ../boost-root
+            mkdir __build_static__ && cd __build_static__
+            cmake ../libs/$LIBRARY/test/test_cmake
+            cmake --build . --target boost_${LIBRARY}_cmake_self_test -j $BUILD_JOBS
+            cd ..
+            mkdir __build_shared__ && cd __build_shared__
+            cmake -DBUILD_SHARED_LIBS=On ../libs/$LIBRARY/test/test_cmake
+            cmake --build . --target boost_${LIBRARY}_cmake_self_test -j $BUILD_JOBS
