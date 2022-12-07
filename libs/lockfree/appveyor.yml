@@ -1,0 +1,153 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Rivera 2015-2016.
+# Copyright Tim Blechmann 2018
+
+# Set up notifications so that the maintainers of the library get
+# build status messages.
+notifications:
+  - provider: Email
+    to:
+      - tim@klingt.org
+    on_build_status_changed: true
+
+# This lists all the toolsets we will test with the Boost CI
+# scripts. Predef needs to check all of them as its job is to
+# distiguish between all of them. For other libraries you would
+# want to limit the list to the toolsets that are important
+# for that.
+#
+# This also includes setting up how to create the cache. We
+# opt for slightly better compression and solid archives.
+# As we have a lot of files in the boost tree which is what
+# we are putting in the cache.
+environment:
+  APPVEYOR_CACHE_ENTRY_ZIP_ARGS: -t7z -m0=lzma2 -mx=3
+  matrix:
+  - TOOLSET: vs-2008
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2010
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2012
+    platform: 32
+  - TOOLSET: vs-2012
+    COMMENT: UWP DESKTOP
+    CXXFLAGS: /D_WIN32_WINNT=0x0602 /DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2012
+    COMMENT: UWP STORE
+    CXXFLAGS: /D_WIN32_WINNT=0x0602 /DWINAPI_FAMILY=WINAPI_FAMILY_APP
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2013
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2013
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2013
+    COMMENT: UWP DESKTOP
+    CXXFLAGS: /D_WIN32_WINNT=0x0603 /DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2013
+    COMMENT: UWP PHONE
+    CXXFLAGS: /D_WIN32_WINNT=0x0603 /DWINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2013
+    COMMENT: UWP STORE
+    CXXFLAGS: /D_WIN32_WINNT=0x0603 /DWINAPI_FAMILY=WINAPI_FAMILY_PC_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2015
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2015
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: vs-2017
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    CXXFLAGS: /std:c++14
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    CXXFLAGS: /std:c++latest
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    COMMENT: UWP DESKTOP
+    CXXFLAGS: /D_WIN32_WINNT=0x0A00 /DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    COMMENT: UWP PHONE
+    CXXFLAGS: /D_WIN32_WINNT=0x0A00 /DWINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    COMMENT: UWP STORE
+    CXXFLAGS: /D_WIN32_WINNT=0x0A00 /DWINAPI_FAMILY=WINAPI_FAMILY_PC_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    COMMENT: UWP SERVER
+    CXXFLAGS: /D_WIN32_WINNT=0x0A00 /DWINAPI_FAMILY=WINAPI_FAMILY_SERVER
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: vs-2017
+    COMMENT: UWP SYSTEM
+    CXXFLAGS: /D_WIN32_WINNT=0x0A00 /DWINAPI_FAMILY=WINAPI_FAMILY_SYSTEM
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - TOOLSET: mingw-5
+    platform: 32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: mingw64-6
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: mingw64-6
+    COMMENT: UWP DESKTOP
+    CXXFLAGS: -D_WIN32_WINNT=0x0602 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - TOOLSET: mingw64-6
+    COMMENT: UWP STORE
+    CXXFLAGS: -D_WIN32_WINNT=0x0602 -DWINAPI_FAMILY=WINAPI_FAMILY_APP
+    platform: 64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+# We can also set up configurations for testing which map to
+# the b2 build variants.
+configuration:
+  - debug
+  - release
+
+# These are the standard steps to bootstrap the Boost CI scripts
+# and to forward the actions to the scripts.
+init:
+  # Fetch the scripts to do the actual building/testing.
+  - cd %APPVEYOR_BUILD_FOLDER%/..
+  - appveyor DownloadFile "https://raw.githubusercontent.com/boostorg/regression/develop/ci/src/ci_boost_common.py"
+  - appveyor DownloadFile "https://raw.githubusercontent.com/boostorg/regression/develop/ci/src/ci_boost_library_test.py"
+  - cd %APPVEYOR_BUILD_FOLDER%
+install: python ../ci_boost_library_test.py install
+before_build: python ../ci_boost_library_test.py before_build
+build_script: python ../ci_boost_library_test.py build_script
+after_build: python ../ci_boost_library_test.py after_build
+before_test: python ../ci_boost_library_test.py before_test
+test_script: python ../ci_boost_library_test.py test_script
+after_test: python ../ci_boost_library_test.py after_test
+on_success: python ../ci_boost_library_test.py on_success
+on_failure: python ../ci_boost_library_test.py on_failure
+on_finish: python ../ci_boost_library_test.py on_finish
