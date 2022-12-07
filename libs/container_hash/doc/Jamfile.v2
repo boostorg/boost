@@ -1,0 +1,22 @@
+
+# Copyright 2005-2008 Daniel James.
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+import asciidoctor ;
+
+html hash.html : hash.adoc ;
+
+install html_ : hash.html : <location>html ;
+
+pdf hash.pdf : hash.adoc ;
+explicit hash.pdf ;
+
+install pdf_ : hash.pdf : <location>pdf ;
+explicit pdf_ ;
+
+###############################################################################
+alias boostdoc ;
+explicit boostdoc ;
+alias boostrelease : html_ ;
+explicit boostrelease ;

@@ -1,0 +1,78 @@
+# Copyright (C) 2016 Daniel James.
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# Use Trusty to get a reasonably recent version of Boost.
+sudo: required
+dist: trusty
+
+language: c++
+
+matrix:
+    include:
+      - compiler: gcc
+        env: |
+            USER_CONFIG="using gcc : : g++-4.8 ;"
+            CXXSTD=03,11
+      - compiler: g++-7
+        env: |
+            USER_CONFIG="using gcc : : g++-7 ;"
+            CXXSTD=11,14,17
+        addons:
+          apt:
+            packages:
+              - g++-7
+            sources:
+              - ubuntu-toolchain-r-test
+      - compiler: clang
+        env: |
+            USER_CONFIG="using clang : : clang++ ;"
+            CXXSTD=03,11
+      - compiler: clang
+        env: |
+            USER_CONFIG="using clang : : clang++ -D_HAS_AUTO_PTR_ETC=0 ;"
+            CXXSTD=11
+
+before_script:
+    - export BOOST_VERSION=1.67.0
+    - export BOOST_FILENAME=boost_1_67_0
+    - export BOOST_ROOT=${HOME}/boost
+    - cd ${TRAVIS_BUILD_DIR}
+    - touch Jamroot.jam
+    - cd $HOME
+    - echo $USER_CONFIG > ~/user-config.jam
+    - cat ~/user-config.jam
+    - |
+        mkdir $HOME/download
+        mkdir $HOME/extract
+        cd $HOME/download
+        if [ "$TRAVIS_EVENT_TYPE" == "cron" ]
+        then
+            if [ "$TRAVIS_BRANCH" == "master" ]
+            then
+                snapshot_branch=master
+            else
+                snapshot_branch=develop
+            fi
+            download_url=$(curl https://api.bintray.com/packages/boostorg/$snapshot_branch/snapshot/files |
+                    python -c "import os.path, sys, json; x = json.load(sys.stdin); print '\n'.join(a['path'] for a in x if os.path.splitext(a['path'])[1] == '.bz2')" |
+                    head -n 1 |
+                    sed "s/^/http:\/\/dl.bintray.com\/boostorg\/$snapshot_branch\//")
+        else
+            download_url=https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_FILENAME}.tar.bz2/download
+        fi
+        echo "Downloading ${download_url}"
+        wget -O boost.tar.bz2 $download_url
+        cd $HOME/extract
+        tar -xjf $HOME/download/boost.tar.bz2
+        mv * ${BOOST_ROOT}
+    - rm -r ${BOOST_ROOT}/boost/functional
+    - cd ${BOOST_ROOT}/tools/build
+    - mkdir ${HOME}/opt
+    - ./bootstrap.sh
+    - ./b2 install --prefix=$HOME/opt
+
+script:
+    - cd ${TRAVIS_BUILD_DIR}/test
+    - ${HOME}/opt/bin/b2 --verbose-test -j 3 cxxstd=$CXXSTD -q ${BJAM_TOOLSET} include=${BOOST_ROOT} include=${TRAVIS_BUILD_DIR}/include hash_info
+    - ${HOME}/opt/bin/b2 -j 3 cxxstd=$CXXSTD -q ${BJAM_TOOLSET} include=${BOOST_ROOT} include=${TRAVIS_BUILD_DIR}/include

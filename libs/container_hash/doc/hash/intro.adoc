@@ -1,0 +1,22 @@
+[#intro]
+= Introduction
+
+:idprefix: intro_
+
+`boost::hash` is an implementation of the https://en.wikipedia.org/wiki/Hash_function[hash function] object specified by the http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1836.pdf[Draft Technical Report on C++ Library Extensions] (TR1). It is the default hash function for link:../../../unordered/index.html[Boost.Unordered], link:../../../intrusive/index.html[Boost.Intrusive]'s unordered associative containers, and link:../../../multi_index/index.html[Boost.MultiIndex]'s hash indicies and link:../../../bimap/index.html[Boost.Bimap]'s `unordered_set_of`.
+
+As it is compliant with http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1836.pdf[TR1], it will work with:
+
+* integers
+* floats
+* pointers
+* strings
+
+It also implements the extension proposed by Peter Dimov in issue 6.18 of the http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1837.pdf[Library Extension Technical Report Issues List] (page 63), this adds support for:
+
+* arrays
+* `std::pair`
+* the standard containers.
+* extending `boost::hash` for custom types.
+
+NOTE: This hash function is designed to be used in containers based on the STL and is not suitable as a general purpose hash function. For more details see the <<rationale,rationale>>.

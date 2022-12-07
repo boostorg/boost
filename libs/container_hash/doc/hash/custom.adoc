@@ -1,0 +1,68 @@
+[#custom]
+= Extending boost::hash for a custom data type
+
+:idprefix: custom_
+
+`boost::hash` is implemented by calling the function `hash_value`. The namespace isn't specified so that it can detect overloads via argument dependant lookup. So if there is a free function `hash_value` in the same namespace as a custom type, it will get called.
+
+If you have a structure `library::book`, where each book is uniquely defined by its member `id`:
+
+[source]
+----
+namespace library
+{
+    struct book
+    {
+        int id;
+        std::string author;
+        std::string title;
+
+        // ....
+    };
+
+    bool operator==(book const& a, book const& b)
+    {
+        return a.id == b.id;
+    }
+}
+----
+
+Then all you would need to do is write the function `library::hash_value`:
+
+[source]
+----
+namespace library
+{
+    std::size_t hash_value(book const& b)
+    {
+        boost::hash<int> hasher;
+        return hasher(b.id);
+    }
+}
+----
+
+And you can now use `boost::hash` with book:
+
+[source]
+----
+library::book knife(3458, "Zane Grey", "The Hash Knife Outfit");
+library::book dandelion(1354, "Paul J. Shanley",
+    "Hash & Dandelion Greens");
+
+boost::hash<library::book> book_hasher;
+std::size_t knife_hash_value = book_hasher(knife);
+
+// If std::unordered_set is available:
+std::unordered_set<library::book, boost::hash<library::book> > books;
+books.insert(knife);
+books.insert(library::book(2443, "Lindgren, Torgny", "Hash"));
+books.insert(library::book(1953, "Snyder, Bernadette M.",
+    "Heavenly Hash: A Tasty Mix of a Mother's Meditations"));
+
+assert(books.find(knife) != books.end());
+assert(books.find(dandelion) == books.end());
+----
+
+The full example can be found in: link:../../examples/books.hpp[/libs/container_hash/examples/books.hpp] and link:../../examples/books.cpp[/libs/container_hash/examples/books.cpp].
+
+TIP: When writing a hash function, first look at how the equality function works. Objects that are equal must generate the same hash value. When objects are not equal they should generate different hash values. In this object equality was based just on the id so the hash function only hashes the id. If it was based on the object's name and author then the hash function should take them into account (how to do this is discussed in the next section).

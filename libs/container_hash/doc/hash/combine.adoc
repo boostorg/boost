@@ -1,0 +1,80 @@
+[#combine]
+= Combining hash values
+
+:idprefix: combine_
+
+Say you have a point class, representing a two dimensional location:
+
+[source]
+----
+class point
+{
+    int x;
+    int y;
+public:
+    point() : x(0), y(0) {}
+    point(int x, int y) : x(x), y(y) {}
+
+    bool operator==(point const& other) const
+    {
+        return x == other.x && y == other.y;
+    }
+};
+----
+
+and you wish to use it as the key for an unordered_map. You need to customise the hash for this structure. To do this we need to combine the hash values for x and y. The function `boost::hash_combine` is supplied for this purpose:
+
+[source]
+----
+class point
+{
+    ...
+
+    friend std::size_t hash_value(point const& p)
+    {
+        std::size_t seed = 0;
+        boost::hash_combine(seed, p.x);
+        boost::hash_combine(seed, p.y);
+
+        return seed;
+    }
+
+    ...
+};
+----
+
+Calls to `hash_combine` incrementally build the hash from the different members of `point`, it can be repeatedly called for any number of elements. It calls `hash_value` on the supplied element, and combines it with the seed.
+
+Full code for this example is at link:../../examples/point.cpp[/libs/container_hash/examples/point.cpp].
+
+[NOTE] 
+====
+When using `boost::hash_combine` the order of the calls matters.
+[source]
+----
+std::size_t seed = 0;
+boost::hash_combine(seed, 1);
+boost::hash_combine(seed, 2);
+----
+results in a different seed to:
+
+[source]
+----
+std::size_t seed = 0;
+boost::hash_combine(seed, 2);
+boost::hash_combine(seed, 1);
+----
+
+If you are calculating a hash value for data where the order of the data doesn't matter in comparisons (e.g. a set) you will have to ensure that the data is always supplied in the same order.
+
+====
+
+To calculate the hash of an iterator range you can use `boost::hash_range`:
+
+[source]
+----
+std::vector<std::string> some_strings;
+std::size_t hash = boost::hash_range(some_strings.begin(), some_strings.end());
+----
+
+Note that when writing template classes, you might not want to include the main hash header as it's quite an expensive include that brings in a lot of other headers, so instead you can include the `<boost/container_hash/hash_fwd.hpp>` header which forward declares `boost::hash`, `boost::hash_range` and `boost::hash_combine`. You'll need to include the main header before instantiating `boost::hash`. When using a container that uses `boost::hash` it should do that for you, so your type will work fine with the boost hash containers. There's an example of this in link:../../examples/template.hpp[template.hpp] and link:../../examples/template.cpp[template.cpp].

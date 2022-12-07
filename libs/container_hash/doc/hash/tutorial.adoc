@@ -1,0 +1,48 @@
+[#tutorial]
+= Tutorial
+
+:idprefix: tutorial_
+
+When using a hash index with link:../../../multi_index/index.html[Boost.MultiIndex], you don't need to do anything to use `boost::hash` as it uses it by default. To find out how to use a user-defined type, read the <<custom,section on extending boost::hash for a custom data type>>.
+
+If your standard library supplies its own implementation of the unordered associative containers and you wish to use `boost::hash`, just use an extra template parameter:
+
+[source]
+----
+std::unordered_multiset<int, boost::hash<int> >
+        set_of_ints;
+
+std::unordered_set<std::pair<int, int>, boost::hash<std::pair<int, int> > >
+        set_of_pairs;
+
+std::unordered_map<int, std::string, boost::hash<int> > map_int_to_string;
+----
+
+To use `boost::hash` directly, create an instance and call it as a function:
+
+[source]
+----
+#include <boost/container_hash/hash.hpp>
+
+int main()
+{
+    boost::hash<std::string> string_hash;
+
+    std::size_t h = string_hash("Hash me");
+}
+----
+
+For an example of generic use, here is a function to generate a vector containing the hashes of the elements of a container:
+
+[source]
+----
+template <class Container>
+std::vector<std::size_t> get_hashes(Container const& x)
+{
+    std::vector<std::size_t> hashes;
+    std::transform(x.begin(), x.end(), std::back_inserter(hashes),
+        boost::hash<typename Container::value_type>());
+
+    return hashes;
+}
+----

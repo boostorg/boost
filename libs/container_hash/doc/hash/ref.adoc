@@ -1,0 +1,386 @@
+[#ref]
+= Reference
+
+:idprefix: ref_
+
+For the full specification, see section 6.3 of the http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1836.pdf[C++ Standard Library Technical Report] and issue 6.18 of the http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1837.pdf[Library Extension Technical Report Issues List] (page 63).
+
+== Header <boost/container_hash/hash.hpp>
+
+Defines `boost::hash`, and helper functions.
+
+[source]
+----
+namespace boost {
+  template<typename T> struct hash;
+
+  template<> struct hash<bool>;
+  template<> struct hash<char>;
+  template<> struct hash<signed char>;
+  template<> struct hash<unsigned char>;
+  template<> struct hash<wchar_t>;
+  template<> struct hash<char16_t>;
+  template<> struct hash<char32_t>;
+  template<> struct hash<short>;
+  template<> struct hash<unsigned short>;
+  template<> struct hash<int>;
+  template<> struct hash<unsigned int>;
+  template<> struct hash<long>;
+  template<> struct hash<unsigned long>;
+  template<> struct hash<long long>;
+  template<> struct hash<unsigned long long>;
+  template<> struct hash<float>;
+  template<> struct hash<double>;
+  template<> struct hash<long double>;
+  template<> struct hash<std::string>;
+  template<> struct hash<std::wstring>;
+  template<> struct hash<std::u16string>;
+  template<> struct hash<std::u32string>;
+  template<> struct hash<std::type_index>;
+
+  template<typename T> struct hash<T*>;
+
+  // Support functions (Boost extension).
+  template<typename T>
+  void hash_combine(size_t &, T const&);
+
+  template<typename It>
+  std::size_t hash_range(It, It);
+
+  template<typename It>
+  void hash_range(std::size_t&, It, It);
+
+  // Overloadable hash implementation (Boost extension).
+  std::size_t hash_value(bool);
+  std::size_t hash_value(char);
+  std::size_t hash_value(signed char);
+  std::size_t hash_value(unsigned char);
+  std::size_t hash_value(wchar_t);
+  std::size_t hash_value(char16_t);
+  std::size_t hash_value(char32_t);
+  std::size_t hash_value(short);
+  std::size_t hash_value(unsigned short);
+  std::size_t hash_value(int);
+  std::size_t hash_value(unsigned int);
+  std::size_t hash_value(long);
+  std::size_t hash_value(unsigned long);
+  std::size_t hash_value(long long);
+  std::size_t hash_value(unsigned long long);
+  std::size_t hash_value(float);
+  std::size_t hash_value(double);
+  std::size_t hash_value(long double);
+
+  template<typename T>
+  std::size_t hash_value(T* const&);
+
+  template<typename T, unsigned N>
+  std::size_t hash_value(T (&val)[N]);
+
+  template<typename T, unsigned N>
+  std::size_t hash_value(const T (&val)[N]);
+
+  template<typename Ch, typename A>
+  std::size_t hash_value(std::basic_string<Ch, std::char_traits<Ch>, A> const&);
+
+  template<typename A, typename B>
+  std::size_t hash_value(std::pair<A, B> const&);
+
+  template<typename T, typename A>
+  std::size_t hash_value(std::vector<T, A> const&);
+
+  template<typename T, typename A>
+  std::size_t hash_value(std::list<T, A> const&);
+
+  template<typename T, typename A>
+  std::size_t hash_value(std::deque<T, A> const&);
+
+  template<typename K, typename C, typename A>
+  std::size_t hash_value(std::set<K, C, A> const&);
+
+  template<typename K, typename C, typename A>
+  std::size_t hash_value(std::multiset<K, C, A> const&);
+
+  template<typename K, typename T, typename C, typename A>
+  std::size_t hash_value(std::map<K, T, C, A> const&);
+
+  template<typename K, typename T, typename C, typename A>
+  std::size_t hash_value(std::multimap<K, T, C, A> const&);
+
+  template<typename T> std::size_t hash_value(std::complex<T> const&);
+  std::size_t hash_value(std::type_index);
+
+  template<typename T, std::size_t N>
+  std::size_t hash_value(std::array<T, N> const&);
+
+  template<typename... T>
+  std::size_t hash_value(std::tuple<T...>);
+}
+----
+
+== Struct template hash
+
+=== hash
+
+`boost::hash` — A http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2005/n1836.pdf[TR1] compliant hash function object.
+
+==== Synopsis
+
+[source]
+----
+// #include <boost/container_hash/hash.hpp>
+
+template<typename T> 
+struct hash : public std::unary_function<T, std::size_t> {
+  std::size_t operator()(T const&) const;
+};
+----
+
+==== Description
+
+[source]
+----
+std::size_t operator()(T const& val) const;
+----
+
+[horizontal]
+Returns:: `hash_value(val)`
+
+Notes:: The call to `hash_value` is unqualified, so that custom overloads can be found via argument dependent lookup.
++
+This is not defined when the macro `BOOST_HASH_NO_EXTENSIONS` is defined. The specializations are still defined, so only the specializations required by TR1 are defined.
++
+Forward declared in `<boost/container_hash/hash_fwd.hpp>`
++
+This hash function is not intended for general use, and isn't guaranteed to be equal during separate runs of a program - so please don't use it for any persistent storage or communication.
+
+Throws:: Only throws if `hash_value(T)` throws.
+
+== Specializations
+
+`boost::hash<T>`
+
+=== Synopsis
+
+[source]
+----
+// #include <boost/container_hash/hash.hpp>
+
+struct hash<T> {
+  std::size_t operator()(T const&) const;
+};
+----
+
+=== Description
+
+[source]
+----
+std::size_t operator()(T const val) const;
+----
+
+[horizontal]
+Returns:: Unspecified in TR1, except that equal arguments yield the same result.
++
+`hash_value(val)` in Boost.
+
+[horizontal]
+Throws:: Doesn't throw
+
+== Support functions (Boost extension).
+
+=== hash_combine
+
+[source]
+----
+template<typename T>
+void hash_combine(size_t &, T const&);
+----
+
+Called repeatedly to incrementally create a hash value from several variables.
+
+[horizontal]
+Effects:: Updates seed with a new hash value generated by combining it with the result of `hash_value(v)`. Will always produce the same result for the same combination of seed and `hash_value(v)` during the single run of a program.
+
+[horizontal]
+Notes:: `hash_value` is called without qualification, so that overloads can be found via ADL. +
++
+This is an extension to TR1 +
++
+Forward declared in `<boost/container_hash/hash_fwd.hpp>` +
++
+This hash function is not intended for general use, and isn't guaranteed to be equal during separate runs of a program - so please don't use it for any persistent storage or communication.
+
+[horizontal]
+Throws:: Only throws if `hash_value(T)` throws. Strong exception safety, as long as `hash_value(T)` also has strong exception safety.
+
+=== hash_range
+
+[source]
+----
+template<typename It>
+std::size_t hash_range(It, It);
+
+template<typename It>
+void hash_range(std::size_t&, It, It);
+----
+
+Calculate the combined hash value of the elements of an iterator range.
+
+[horizontal]
+Effects:: For the two argument overload:
++
+[source]
+----
+size_t seed = 0;
+
+for(; first != last; ++first)
+{
+    hash_combine(seed, *first);
+}
+return seed;
+----
++
+For the three arguments overload:
++
+[source]
+----
+for(; first != last; ++first)
+{
+    hash_combine(seed, *first);
+}
+----
+
+[horizontal]
+Notes:: `hash_range` is sensitive to the order of the elements so it wouldn't be appropriate to use this with an unordered container.
++
+This is an extension to TR1
++
+Forward declared in `<boost/container_hash/hash_fwd.hpp>`
++
+This hash function is not intended for general use, and isn't guaranteed to be equal during separate runs of a program - so please don't use it for any persistent storage or communication.
+
+[horizontal]
+Throws:: Only throws if `hash_value(std::iterator_traits<It>::value_type)` throws. `hash_range(std::size_t&, It, It)` has basic exception safety as long as `hash_value(std::iterator_traits<It>::value_type)` has basic exception safety.
+
+== Overloadable hash implementation (Boost extension).
+
+=== hash_value
+
+[source]
+----
+std::size_t hash_value(bool val);
+std::size_t hash_value(char val);
+std::size_t hash_value(signed char val);
+std::size_t hash_value(unsigned char val);
+std::size_t hash_value(wchar_t val);
+std::size_t hash_value(char16_t val);
+std::size_t hash_value(char32_t val);
+std::size_t hash_value(short val);
+std::size_t hash_value(unsigned short val);
+std::size_t hash_value(int val);
+std::size_t hash_value(unsigned int val);
+std::size_t hash_value(long val);
+std::size_t hash_value(unsigned long val);
+std::size_t hash_value(long long val);
+std::size_t hash_value(unsigned long long val);
+std::size_t hash_value(float val);
+std::size_t hash_value(double val);
+std::size_t hash_value(long double val);
+
+template<typename T> std::size_t hash_value(T* const& val);
+
+template<typename T, unsigned N> std::size_t hash_value(T (&val)[N]);
+template<typename T, unsigned N> std::size_t hash_value(const T (&val)[N]);
+
+template<typename Ch, typename A> 
+  std::size_t hash_value(std::basic_string<Ch, std::char_traits<Ch>, A> const& val);
+template<typename A, typename B> 
+  std::size_t hash_value(std::pair<A, B> const& val);
+template<typename T, typename A> 
+  std::size_t hash_value(std::vector<T, A> const& val);
+template<typename T, typename A> 
+  std::size_t hash_value(std::list<T, A> const& val);
+template<typename T, typename A> 
+  std::size_t hash_value(std::deque<T, A> const& val);
+template<typename K, typename C, typename A> 
+  std::size_t hash_value(std::set<K, C, A> const& val);
+template<typename K, typename C, typename A> 
+  std::size_t hash_value(std::multiset<K, C, A> const& val);
+template<typename K, typename T, typename C, typename A> 
+  std::size_t hash_value(std::map<K, T, C, A> const& val);
+template<typename K, typename T, typename C, typename A> 
+  std::size_t hash_value(std::multimap<K, T, C, A> const& val);
+template<typename T> std::size_t hash_value(std::complex<T> const& val);
+std::size_t hash_value(std::type_index val);
+template<typename T, std::size_t N> 
+  std::size_t hash_value(std::array<T, N> const& val);
+template<typename... T> 
+  std::size_t hash_value(std::tuple<T...> val);
+----
+
+Implementation of the hash function.
+
+Generally shouldn't be called directly by users, instead they should use `boost::hash`, `boost::hash_range` or `boost::hash_combine` which call `hash_value` without namespace qualification so that overloads for custom types are found via ADL.
+
+[horizontal]
+Notes:: This is an extension to TR1
++
+This hash function is not intended for general use, and isn't guaranteed to be equal during separate runs of a program - so please don't use it for any persistent storage or communication.
+
+[horizontal]
+Throws:: Only throws if a user supplied version of `hash_value` throws for an element of a container, or one of the types stored in a pair.
+
+[vertical]
+Returns::
++
+[cols="1,1", frame=all, grid=rows]
+|===
+|Types |Returns
+
+|`bool`, `char`, `signed char`, `unsigned char`, `wchar_t`, `char16_t`, `char32_t`, `short`, `unsigned short`, `int`, `unsigned int`, `long`, `unsigned long`
+|val
+
+|`long long`, `unsigned long long`
+|val when `abs(val) \<= std::numeric_limits<std::size_t>::max()`.
+
+|`float`, `double`, `long double`
+|An unspecified value, except that equal arguments shall yield the same result.
+
+|`T*`
+|An unspecified value, except that equal arguments shall yield the same result.
+
+|`T val[N]`, `const T val[N]`
+|`hash_range(val, val+N)`
+
+|`std:basic_string<Ch, std::char_traits<Ch>, A>`, `std::vector<T, A>`, `std::list<T, A>`, `std::deque<T, A>`, `std::set<K, C, A>`, `std::multiset<K, C, A>`, `std::map<K, T, C, A>`, `std::multimap<K, T, C, A>`, `std::array<T, N>`
+|`hash_range(val.begin(), val.end())`
+
+|`std::pair<A, B>`
+a|
+
+[source]
+----
+size_t seed = 0; 
+hash_combine(seed, val.first);
+hash_combine(seed, val.second);
+return seed;
+----
+
+|`std::tuple<T...>`
+a|
+
+[source]
+----
+size_t seed = 0;
+hash_combine(seed, get<0>(val));
+hash_combine(seed, get<1>(val));
+// ....
+return seed;
+----
+
+|`std::complex<T>`
+|When T is a built in type and `val.imag() == 0`, the result is equal to `hash_value(val.real())`. Otherwise an unspecified value, except that equal arguments shall yield the same result.
+
+|`std::type_index`
+|`val.hash_code()`
+
+|===
