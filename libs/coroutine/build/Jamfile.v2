@@ -1,0 +1,43 @@
+
+#          Copyright Oliver Kowalke 2009.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+
+import feature ;
+import modules ;
+import toolset ;
+
+project boost/coroutine
+    : requirements
+      <library>/boost/context//boost_context
+      <target-os>linux,<toolset>gcc,<segmented-stacks>on:<cxxflags>-fsplit-stack
+      <target-os>linux,<toolset>gcc,<segmented-stacks>on:<cxxflags>-DBOOST_USE_SEGMENTED_STACKS
+      <toolset>clang,<segmented-stacks>on:<cxxflags>-fsplit-stack
+      <toolset>clang,<segmented-stacks>on:<cxxflags>-DBOOST_USE_SEGMENTED_STACKS
+      <link>shared:<define>BOOST_COROUTINES_DYN_LINK=1
+      <define>BOOST_COROUTINES_SOURCE
+    : usage-requirements
+      <link>shared:<define>BOOST_COROUTINES_DYN_LINK=1
+    : source-location ../src
+    ;
+
+alias stack_traits_sources
+    : windows/stack_traits.cpp
+    : <target-os>windows
+    ;
+
+alias stack_traits_sources
+    : posix/stack_traits.cpp
+    ;
+
+explicit stack_traits_sources ;
+
+lib boost_coroutine
+    : detail/coroutine_context.cpp
+      exceptions.cpp
+      stack_traits_sources
+    : <link>shared:<library>../../context/build//boost_context
+    ;
+
+boost-install boost_coroutine ;
