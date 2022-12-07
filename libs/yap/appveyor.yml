@@ -1,0 +1,41 @@
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      ADDRMD: 32,64
+      CXXSTD: 14,17
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: clang-win
+      ADDRMD: 32,64
+      CXXSTD: 14,17
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% https://github.com/boostorg/boost.git boost
+  - cd boost
+  - git submodule update --init tools/boostdep
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\yap\
+  - python tools/boostdep/depinst/depinst.py yap
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - PATH=%ADDPATH%%PATH%
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 -j3 libs/yap/test toolset=%TOOLSET% %CXXSTD% variant=debug,release
