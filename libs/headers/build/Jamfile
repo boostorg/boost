@@ -1,0 +1,99 @@
+# Copyright 2018 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+import package ;
+import path ;
+import sequence ;
+import set ;
+import ../../../tools/boost_install/boost-install ;
+import ../../../tools/boost_install/boost-install-dirs ;
+
+# install-header-subdir
+
+local header-subdir = [ boost-install-dirs.header-subdir ] ;
+
+local install-header-subdir ;
+
+if $(header-subdir)
+{
+    install-header-subdir = $(header-subdir)/boost ;
+}
+else
+{
+    install-header-subdir = boost ;
+}
+
+# install-headers
+
+# first, the 'modular' headers
+
+local modular-headers = $(BOOST_MODULARLAYOUT) ;
+
+local skip-headers ;
+
+for local lib in $(modular-headers)
+{
+    local header-root = $(BOOST_ROOT)/libs/$(lib)/include/boost ;
+
+    local headers =
+        [ path.glob-tree $(header-root) : *.hpp *.ipp *.h *.inc ]
+        [ path.glob-tree $(header-root)/compatibility/cpp_c_headers : c* ] ;
+
+    skip-headers += [ sequence.transform path.relative-to [ path.make $(header-root) ] : $(headers) ] ;
+
+    package.install install-$(lib)-headers Boost
+        : <install-header-subdir>$(install-header-subdir)
+          <install-source-root>$(header-root)
+          <install-no-version-symlinks>on
+        : # No binaries
+        : # No libraries
+        : $(headers)
+    ;
+
+    explicit install-$(lib)-headers ;
+}
+
+# then, the non-modular headers in boost/, minus the modular ones
+
+local header-root = [ path.make $(BOOST_ROOT)/boost ] ;
+
+local headers =
+    [ path.glob-tree $(BOOST_ROOT)/boost : *.hpp *.ipp *.h *.inc ]
+    [ path.glob-tree $(BOOST_ROOT)/boost/compatibility/cpp_c_headers : c* ] ;
+
+headers = [ set.difference $(headers) : $(header-root)/$(skip-headers) ] ;
+
+package.install install-boost-headers Boost
+    : <install-header-subdir>$(install-header-subdir)
+      <install-source-root>$(header-root)
+      <install-no-version-symlinks>on
+    : # No binaries
+    : # No libraries
+    : $(headers)
+;
+
+explicit install-boost-headers ;
+
+#
+
+alias install-headers : install-$(modular-headers)-headers install-boost-headers ;
+explicit install-headers ;
+
+# install
+
+alias boost_headers ;
+
+boost-install.install-cmake-config boost_headers ;
+explicit install-cmake-config ;
+
+alias install : install-headers install-cmake-config ;
+explicit install ;
+
+# stage
+
+boost-install.stage-cmake-config boost_headers ;
+explicit stage-cmake-config ;
+
+alias stage : stage-cmake-config ;
+explicit stage ;
