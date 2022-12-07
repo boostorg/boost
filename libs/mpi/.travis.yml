@@ -1,0 +1,288 @@
+# Copyright 2016, 2017, 2018 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+python: "2.7"
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++
+      env: TOOLSET=gcc COMPILER=g++ CXXSTD=03
+      addons:
+        apt:
+          packages:
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: g++
+      env: TOOLSET=gcc COMPILER=g++ CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc COMPILER=g++-4.4 CXXSTD=98
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc COMPILER=g++-4.4 CXXSTD=0x
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc COMPILER=g++-4.6 CXXSTD=03
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc COMPILER=g++-4.6 CXXSTD=0x
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc COMPILER=g++-5 CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - g++-5
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc COMPILER=g++-5 CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - g++-5
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc COMPILER=g++-6 CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - g++-6
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc COMPILER=g++-6 CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - g++-6
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - g++-7
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=17
+      addons:
+        apt:
+          packages:
+            - g++-7
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc COMPILER=g++-8 CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - g++-8
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc COMPILER=g++-8 CXXSTD=17
+      addons:
+        apt:
+          packages:
+            - g++-8
+            - libopenmpi-dev
+            - openmpi-bin
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=03
+      addons:
+        apt:
+          packages:
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=1z
+      addons:
+        apt:
+          packages:
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++-libc++
+      env: TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=03
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++-libc++
+      env: TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++-libc++
+      env: TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+            - libopenmpi-dev
+            - openmpi-bin
+
+    - os: linux
+      compiler: clang++-libc++
+      env: TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=1z
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+            - libopenmpi-dev
+            - openmpi-bin
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - cp -r $TRAVIS_BUILD_DIR/* libs/mpi
+  - python tools/boostdep/depinst/depinst.py mpi
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+    echo "using mpi : mpic++.openmpi : : mpirun.openmpi ;" >> ~/user-config.jam
+    mpirun.openmpi --version
+  - ./b2 -j3 libs/mpi/test toolset=$TOOLSET cxxstd=$CXXSTD variant=release
+
+notifications:
+  email:
+    on_success: always
