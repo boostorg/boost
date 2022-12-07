@@ -1,0 +1,72 @@
+# Copyright 2016 Edward Diener
+# Copyright 2018 Mike Dev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+python: "2.7"
+
+os:
+  - linux
+  - osx
+
+branches:
+  only:
+    - master
+    - develop
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      env: TEST_CMAKE=TRUE #Only for easier identification in travis web gui
+      install:
+        - git clone --depth 1 https://github.com/boostorg/preprocessor.git ../preprocessor
+
+      script:
+        - mkdir __build__ && cd __build__
+        - cmake ../test/test_cmake
+        - cmake --build .
+
+    - os: linux
+      env: TOOLSET=gcc COMPILER=g++ CXXSTD=c++11
+
+    - os: linux
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=c++11
+
+    - os: osx
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=c++11
+
+install:
+  - cd ..
+  - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - git submodule update --init tools/boost_install
+  - git submodule update --init libs/headers
+  - cp -r $TRAVIS_BUILD_DIR/* libs/vmd
+  - python tools/boostdep/depinst/depinst.py vmd
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER : <cxxflags>-std=$CXXSTD ;" > ~/user-config.jam
+  - ./b2 libs/preprocessor/test//preprocessor_config toolset=$TOOLSET
+  - ./b2 libs/vmd/test toolset=$TOOLSET
+
+notifications:
+  email:
+    on_success: always

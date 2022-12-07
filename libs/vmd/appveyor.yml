@@ -1,0 +1,87 @@
+# Copyright 2017 Edward Diener
+# Copyright 2018 Mike Dev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+configuration:
+  - boost_test
+  - test_cmake
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-10.0
+      ADDRMD: 32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-11.0
+      ADDRMD: 32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-12.0
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      ADDRMD: 32,64
+      CXXSTD: 14,17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      ADDRMD: 32,64
+      CXXSTD: 14,17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      ADDRMD: 32,64
+      CXXSTD: 14,17,latest
+      PREPROCESSOR: /Zc:preprocessor
+
+build: off
+
+for:
+-
+  matrix:
+    only:
+      - configuration: test_cmake
+
+  install:
+    - git clone --depth 1 https://github.com/boostorg/preprocessor.git ../preprocessor
+
+  test_script:
+    - mkdir __build__
+    - cd __build__
+    - cmake ../test/test_cmake
+    - cmake --build .
+
+-
+  matrix:
+    only:
+      - configuration: boost_test
+
+  install:
+    - cd ..
+    - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+    - cd boost-root
+    - git submodule update --init tools/build
+    - git submodule update --init libs/config
+    - git submodule update --init tools/boostdep
+    - git submodule update --init tools/boost_install
+    - git submodule update --init libs/headers
+    - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\vmd
+    - python tools/boostdep/depinst/depinst.py vmd
+    - bootstrap
+    - b2 headers
+
+  test_script:
+    - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+    - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+    - if not "%PREPROCESSOR%" == "" set PREPROCESSOR=cflags="%PREPROCESSOR%"
+    - b2 libs/vmd/test -j3 toolset=%TOOLSET% %CXXSTD% %ADDRMD% %PREPROCESSOR% variant=debug,release
