@@ -1,0 +1,181 @@
+# Copyright 2016-2022 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+image: Visual Studio 2017
+
+environment:
+  matrix:
+  - LIB: filesystem
+    TOOLSET: clang-win
+    GENERATOR: Ninja
+    CMAKE_CXX_COMPILER: clang-cl
+    CMAKE_BUILD_TYPE: RelWithDebInfo
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    SETUP_SCRIPT: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+  - LIB: filesystem
+    GENERATOR: MinGW Makefiles
+    CMAKE_BUILD_TYPE: Debug
+    PATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    UBP: 1
+    TOOLSET: gcc
+  - LIB: filesystem
+    GENERATOR: MinGW Makefiles
+    CMAKE_BUILD_TYPE: RelWithDebInfo
+    PATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    UBP: 1
+    TOOLSET: gcc
+  - LIB: filesystem
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    UBP: 1
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    LAYOUT: tagged
+    TOOLSET: msvc-14.0
+  - LIB: filesystem
+    TOOLSET: msvc-14.1
+    STAGE: 1
+  - LIB: filesystem
+    UBP: 1
+    TOOLSET: msvc-14.1
+    STAGE: 1
+  - LIB: filesystem
+    UBP: 1
+    B2_LINK: shared
+    USE_STATIC_LIBS: OFF
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    UBP: 1
+    B2_LINK: static,shared
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    UBP: 1
+    B2_LINK: static,shared
+    USE_STATIC_LIBS: OFF
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    UBP: 1
+    STAGE: 1
+    B2_LINK: shared
+    USE_STATIC_LIBS: OFF
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    UBP: 1
+    STAGE: 1
+    B2_LINK: static,shared
+    TOOLSET: msvc-14.1
+  - LIB: filesystem
+    UBP: 1
+    STAGE: 1
+    B2_LINK: static,shared
+    USE_STATIC_LIBS: OFF
+    TOOLSET: msvc-14.1
+  - LIB: headers
+    TOOLSET: msvc-14.1
+  - LIB: iostreams
+    TOOLSET: msvc-14.1
+    UBP: 1
+  - LIB: iostreams
+    TOOLSET: msvc-14.1
+    UBP: 1
+    STAGE: 1
+  - LIB: log
+    TOOLSET: msvc-14.1
+  - LIB: python
+    TOOLSET: msvc-14.1
+    PYTHON: 2.7,3.6,3.7
+    USE_PYTHON_VERSION: 2.7
+  - LIB: serialization
+    UBP: 1
+    TOOLSET: msvc-14.1
+  - LIB: random
+    UBP: 1
+    TOOLSET: msvc-14.1
+  - LIB: random
+    UBP: 1
+    B2_LINK: shared
+    USE_STATIC_LIBS: OFF
+    TOOLSET: msvc-14.1
+  - LIB: random
+    UBP: 1
+    BUILD_SHARED_LIBS: ON
+    TOOLSET: msvc-14.1
+  - LIB: random
+    UBP: 1
+    B2_LINK: shared
+    USE_STATIC_LIBS: OFF
+    BUILD_SHARED_LIBS: ON
+    TOOLSET: msvc-14.1
+  - LIB: regex
+    UBP: 1
+    TOOLSET: msvc-14.1
+  - LIB: test
+    UBP: 1
+    TOOLSET: msvc-14.1
+  - LIB: thread
+    TOOLSET: msvc-14.1
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init --jobs 3 tools/boostdep libs/assert libs/config libs/core libs/%LIB%
+  - python tools/boostdep/depinst/depinst.py -X test -g "--jobs 3" %LIB%
+  - rd /s/q tools\boost_install
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% tools\boost_install\
+  - cmd /c bootstrap
+  - set USER_CONFIG=%HOMEDRIVE%%HOMEPATH%\user-config.jam
+  - |-
+    echo using python : 2.7 : C:/Python27 ; >> %USER_CONFIG%
+  - |-
+    echo using python : 3.6 : C:/Python36 ; >> %USER_CONFIG%
+  - |-
+    echo using python : 3.7 : C:/Python37 ; >> %USER_CONFIG%
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - if not "%LAYOUT%" == "" SET LAYOUT=--layout=%LAYOUT%
+  - if not "%TOOLSET%" == "" SET TOOLSET=toolset=%TOOLSET%
+  - if not "%PYTHON%" == "" SET PYTHON=python=%PYTHON%
+  - if not "%B2_LINK%" == "" SET B2_LINK=link=%B2_LINK%
+  - set ZLIB_SOURCE=%CD%\tools\boost_install\test\iostreams\zlib-1.2.11
+  - set BZIP2_SOURCE=%CD%\tools\boost_install\test\iostreams\bzip2-1.0.8
+  - if "%STAGE%" == "" set B2_INSTALL=--prefix=C:\projects\.local install
+  - if "%STAGE%" == "" b2 -j3 -d0 --with-headers %TOOLSET% %LAYOUT% %PYTHON% %B2_LINK% %B2_INSTALL%
+  - b2 -j3 --with-%LIB% %TOOLSET% %LAYOUT% %PYTHON% %B2_LINK% %B2_INSTALL%
+  - cd tools\boost_install\test\%LIB%
+  - mkdir __build__ && cd __build__
+  - if NOT "%SETUP_SCRIPT%" == "" CALL "%SETUP_SCRIPT%"
+  - if "%UBP%" == "" SET UBP=0
+  - if "%STAGE%" == "" SET CMAKE_INSTALL=-DCMAKE_INSTALL_PREFIX=C:\projects\.local
+  - if NOT "%STAGE%" == "" SET CMAKE_INSTALL=-DUSE_STAGED_BOOST=1
+  - if NOT "%USE_PYTHON_VERSION%" == "" SET USE_PYTHON_VERSION=-DUSE_PYTHON_VERSION=%USE_PYTHON_VERSION%
+  - if NOT "%USE_STATIC_LIBS%" == "" SET USE_STATIC_LIBS=-DBoost_USE_STATIC_LIBS=%USE_STATIC_LIBS%
+  - if NOT "%BUILD_SHARED_LIBS%" == "" SET BUILD_SHARED_LIBS=-DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
+  - if NOT "%GENERATOR%" == "" SET GENERATOR=-G "%GENERATOR%"
+  - if NOT "%GENERATOR_TOOLSET%" == "" SET GENERATOR_TOOLSET=-T "%GENERATOR_TOOLSET%"
+  - if NOT "%CMAKE_CXX_COMPILER%" == "" SET CMAKE_CXX_COMPILER=-DCMAKE_CXX_COMPILER="%CMAKE_CXX_COMPILER%"
+  - if NOT "%CMAKE_BUILD_TYPE%" == "" SET CMAKE_BUILD_TYPE=-DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  - PATH %PATH:C:\Program Files\Git\usr\bin;=%
+  - cmake %GENERATOR% %GENERATOR_TOOLSET% -DUSE_BOOST_PACKAGE=%UBP% -DBoost_VERBOSE=ON %USE_PYTHON_VERSION% %USE_STATIC_LIBS% %BUILD_SHARED_LIBS% %CMAKE_CXX_COMPILER% %CMAKE_BUILD_TYPE% %CMAKE_INSTALL% ..
+  - PATH %PATH%;C:\projects\.local\lib;C:\projects\boost-root\stage\lib
+  - if NOT "%CMAKE_BUILD_TYPE%" == "" cmake --build . && cmake --build . --target check
+  - if "%CMAKE_BUILD_TYPE%" == "" cmake --build . --config Debug && cmake --build . --config Debug --target check
+  - if "%CMAKE_BUILD_TYPE%" == "" cmake --build . --config Release && cmake --build . --config Release --target check
+  - if "%CMAKE_BUILD_TYPE%" == "" cmake --build . --config MinSizeRel && cmake --build . --config MinSizeRel --target check
+  - if "%CMAKE_BUILD_TYPE%" == "" cmake --build . --config RelWithDebInfo && cmake --build . --config RelWithDebInfo --target check

@@ -1,0 +1,568 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/**
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - lib: filesystem
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: install
+            os: macos-10.15
+
+          # --layout=versioned
+
+          - lib: filesystem
+            bopts: --layout=versioned install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: --layout=versioned install
+            os: macos-10.15
+
+          # --layout=tagged
+
+          - lib: filesystem
+            bopts: --layout=tagged install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: --layout=tagged install
+            os: macos-10.15
+
+          # build with clang++, use with g++
+
+          - lib: filesystem
+            bopts: toolset=clang install
+            os: ubuntu-20.04
+
+          # same, with tagged layout
+
+          - lib: filesystem
+            bopts: toolset=clang --layout=tagged install
+            os: ubuntu-20.04
+
+          # build with both gcc and clang, use with gcc
+
+          - lib: filesystem
+            bopts: toolset=gcc,clang --layout=versioned install
+            os: ubuntu-20.04
+
+          # build with clang, use with gcc (w/ toolset override)
+
+          - lib: filesystem
+            bopts: toolset=clang --layout=versioned install
+            copts: -DBoost_COMPILER=clang11
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: toolset=clang --layout=versioned install
+            copts: -DBoost_COMPILER=-clang11
+            os: ubuntu-20.04
+
+          # shared
+
+          - lib: filesystem
+            bopts: install
+            copts: -DBoost_USE_STATIC_LIBS=OFF
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: link=shared install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: link=shared install
+            copts: -DBoost_USE_STATIC_LIBS=OFF
+            os: ubuntu-20.04
+
+          # static
+
+          - lib: filesystem
+            bopts: install
+            copts: -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: link=static install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: link=static install
+            copts: -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          # threading=multi,single
+
+          - lib: filesystem
+            bopts: --layout=tagged-1.66 threading=multi,single install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: --layout=tagged-1.66 threading=multi,single install
+            copts: -DBoost_USE_MULTITHREADED=ON
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: --layout=tagged-1.66 threading=multi,single install
+            copts: -DBoost_USE_MULTITHREADED=OFF
+            os: ubuntu-20.04
+
+          # threading=single
+
+          - lib: filesystem
+            bopts: threading=single install
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: threading=single install
+            copts: -DBoost_USE_MULTITHREADED=OFF
+            os: ubuntu-20.04
+
+          # staged
+
+          - lib: filesystem
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: macos-10.15
+
+          - lib: filesystem
+            bopts: --stagedir=stage64-gcc5 stage
+            copts: -DBoost_ROOT=$GITHUB_WORKSPACE/../boost-root/stage64-gcc5
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: --stagedir=. stage
+            copts: -DBoost_ROOT=$GITHUB_WORKSPACE/../boost-root/.
+            os: ubuntu-20.04
+
+          - lib: filesystem
+            bopts: --stage-libdir=lib64-gcc5 stage
+            copts: -DBoost_ROOT=$GITHUB_WORKSPACE/../boost-root/lib64-gcc5/cmake
+            os: ubuntu-20.04
+
+          # ALL
+
+          - lib: filesystem
+            bopts: install
+            copts: -DUSE_ALL_COMPONENTS=ON
+            os: ubuntu-20.04
+
+          # Boost_INCLUDE_DIRS, old style
+
+          - lib: headers
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: headers
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: ubuntu-20.04
+
+          # other libraries
+
+          - lib: atomic
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: chrono
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: container
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: iostreams
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: iostreams
+            bopts: install
+            copts: -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: iostreams
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: ubuntu-20.04
+
+          - lib: iostreams
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: log
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: log
+            bopts: install
+            copts: -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: log
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: ubuntu-20.04
+
+          - lib: log
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: log
+            bopts: install
+            copts: -DUSE_ALL_COMPONENTS=ON
+            os: ubuntu-20.04
+
+          - lib: log
+            bopts: --layout=tagged-1.66 threading=multi,single install
+            os: ubuntu-20.04
+
+          - lib: mpi
+            bopts: install
+            os: ubuntu-20.04
+            install: libopenmpi-dev libpython2-dev
+
+          - lib: program_options
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            copts: -DUSE_PYTHON_VERSION=2.7
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            copts: -DUSE_PYTHON_VERSION=3.8
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            copts: -DUSE_PYTHON_VERSION=2.7 -DUSE_PYTHON_COMPONENT=python27
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            copts: -DUSE_PYTHON_VERSION=3.8 -DUSE_PYTHON_COMPONENT=python38
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            copts: -DUSE_PYTHON_VERSION=2.7 -DUSE_PYTHON_COMPONENT=python2
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: python
+            bopts: python=2.7,3.8 install
+            copts: -DUSE_PYTHON_VERSION=3.8 -DUSE_PYTHON_COMPONENT=python3
+            os: ubuntu-20.04
+            install: libpython2-dev libpython3-dev
+
+          - lib: random
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: random
+            bopts: install
+            copts: -DBUILD_SHARED_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: regex
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: regex
+            bopts: install
+            copts: -DBoost_USE_STATIC_LIBS=ON
+            os: ubuntu-20.04
+
+          - lib: serialization
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: system
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: test
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: thread
+            bopts: install
+            os: ubuntu-20.04
+
+          - lib: wave
+            bopts: install
+            os: ubuntu-20.04
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: sudo apt install ${{matrix.install}}
+
+      - name: Setup Boost
+        run: |
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REF#refs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3 tools/boostdep libs/assert libs/config libs/core libs/${{matrix.lib}}
+          python tools/boostdep/depinst/depinst.py -X test -g "--jobs 3" ${{matrix.lib}}
+          rm -rf tools/boost_install/*
+          cp -r $GITHUB_WORKSPACE/* tools/boost_install
+          ./bootstrap.sh
+          ./b2 -d0 headers
+
+      - name: Run tests
+        run: |
+          cd ../boost-root
+          echo "using python : 2.7 ;" >> ~/user-config.jam
+          echo "using python : 3.8 ;" >> ~/user-config.jam
+          echo "using mpi ;" >> ~/user-config.jam
+          ./b2 -d0 -j3 --prefix=$HOME/.local --with-headers ${{matrix.bopts}}
+          ./b2 -j3 --prefix=$HOME/.local --with-${{matrix.lib}} ${{matrix.bopts}}
+          cd tools/boost_install/test/${{matrix.lib}}
+          mkdir __build__ && cd __build__
+          cmake -DCMAKE_INSTALL_PREFIX=~/.local -DUSE_BOOST_PACKAGE=1 -DBoost_VERBOSE=ON ${{matrix.copts}} ..
+          VERBOSE=1 cmake --build .
+          export LD_LIBRARY_PATH=$HOME/.local/lib:$GITHUB_WORKSPACE/../boost-root/stage/lib:$LD_LIBRARY_PATH
+          cmake --build . --target check
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          # install
+
+          - lib: filesystem
+            bopts: install
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: --layout=tagged install
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=shared install
+            copts: -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=static,shared install
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=static,shared install
+            copts: -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=static,shared install
+            copts: -DBoost_USE_STATIC_LIBS=ON
+            os: windows-2019
+
+          # stage
+
+          - lib: filesystem
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=shared stage
+            copts: -DUSE_STAGED_BOOST=ON -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=static,shared stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=static,shared stage
+            copts: -DUSE_STAGED_BOOST=ON -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: link=static,shared stage
+            copts: -DUSE_STAGED_BOOST=ON -DBoost_USE_STATIC_LIBS=ON
+            os: windows-2019
+
+          # mingw
+
+          - lib: filesystem
+            bopts: toolset=gcc install
+            copts: "-G \"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Debug"
+            os: windows-2019
+
+          - lib: filesystem
+            bopts: toolset=gcc install
+            copts: "-G \"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=RelWithDebInfo"
+            os: windows-2019
+
+          # msvc-14.3
+
+          - lib: filesystem
+            bopts: install
+            os: windows-2022
+
+          # clang-cl
+          #   b2 finds clang-13, but CMake uses the one supplied with VS2022, which is 12
+
+          - lib: filesystem
+            bopts: toolset=clang-win install
+            copts: "-G \"Visual Studio 17 2022\" -T clangcl -DBoost_COMPILER=clangw13"
+            os: windows-2022
+
+          # other libraries
+
+          - lib: headers
+            bopts: install
+            os: windows-2019
+
+          - lib: iostreams
+            bopts: install
+            os: windows-2019
+
+          - lib: iostreams
+            bopts: stage
+            copts: -DUSE_STAGED_BOOST=ON
+            os: windows-2019
+
+          - lib: log
+            bopts: install
+            os: windows-2019
+
+          - lib: log
+            bopts: link=shared install
+            copts: -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: python
+            bopts: python=2.7,3.7,3.9 install
+            copts: "-DUSE_PYTHON_VERSION=\"3.7;EXACT\""
+            os: windows-2019
+
+          - lib: serialization
+            bopts: install
+            os: windows-2019
+
+          - lib: random
+            bopts: install
+            os: windows-2019
+
+          - lib: random
+            bopts: link=shared install
+            copts: -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: random
+            bopts: install
+            copts: -DBUILD_SHARED_LIBS=ON
+            os: windows-2019
+
+          - lib: random
+            bopts: link=shared install
+            copts: -DBUILD_SHARED_LIBS=ON -DBoost_USE_STATIC_LIBS=OFF
+            os: windows-2019
+
+          - lib: regex
+            bopts: install
+            os: windows-2019
+
+          - lib: test
+            bopts: install
+            os: windows-2019
+
+          - lib: thread
+            bopts: install
+            os: windows-2019
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          echo GITHUB_BASE_REF: %GITHUB_BASE_REF%
+          echo GITHUB_REF: %GITHUB_REF%
+          if "%GITHUB_BASE_REF%" == "" set GITHUB_BASE_REF=%GITHUB_REF%
+          set BOOST_BRANCH=develop
+          for /f %%i in ("%GITHUB_BASE_REF%") do if "%%~nxi" == "master" set BOOST_BRANCH=master
+          echo BOOST_BRANCH: %BOOST_BRANCH%
+          cd ..
+          git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init --jobs 3 tools/boostdep libs/assert libs/config libs/core libs/${{matrix.lib}}
+          python tools/boostdep/depinst/depinst.py -X test -g "--jobs 3" ${{matrix.lib}}
+          rd /s/q tools\boost_install
+          xcopy /s /e /q %GITHUB_WORKSPACE% tools\boost_install\
+          cmd /c bootstrap
+          set USER_CONFIG=%HOMEDRIVE%%HOMEPATH%\user-config.jam
+          echo using python : 2.7 ; >> %USER_CONFIG%
+          echo using python : 3.7 ; >> %USER_CONFIG%
+          echo using python : 3.9 ; >> %USER_CONFIG%
+          b2 -d0 headers
+
+      - name: Run tests
+        shell: cmd
+        run: |
+          echo on
+          cd ../boost-root
+          set ZLIB_SOURCE=%CD%\tools\boost_install\test\iostreams\zlib-1.2.11
+          set BZIP2_SOURCE=%CD%\tools\boost_install\test\iostreams\bzip2-1.0.8
+          b2 -d0 -j3 --prefix=%GITHUB_WORKSPACE%\..\.local --with-headers ${{matrix.bopts}}
+          b2 -j3 --prefix=%GITHUB_WORKSPACE%\..\.local --with-${{matrix.lib}} ${{matrix.bopts}}
+          cd tools\boost_install\test\${{matrix.lib}}
+          mkdir __build__ && cd __build__
+          cmake -DCMAKE_INSTALL_PREFIX=%GITHUB_WORKSPACE%\..\.local -DUSE_BOOST_PACKAGE=1 -DBoost_VERBOSE=ON ${{matrix.copts}} ..
+          PATH %PATH%;%GITHUB_WORKSPACE%\..\.local\lib;%GITHUB_WORKSPACE%\..\boost-root\stage\lib
+          cmake --build . --config Debug && cmake --build . --config Debug --target check
+          cmake --build . --config Release && cmake --build . --config Release --target check
+          cmake --build . --config MinSizeRel && cmake --build . --config MinSizeRel --target check
+          cmake --build . --config RelWithDebInfo && cmake --build . --config RelWithDebInfo --target check

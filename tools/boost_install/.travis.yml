@@ -1,0 +1,267 @@
+# Copyright 2016-2020 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+dist: xenial
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+addons:
+  apt:
+    packages:
+      - libopenmpi-dev
+
+matrix:
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+
+    # find_package(boost_filesystem)
+    - env: LIB=filesystem
+    - env: LIB=filesystem
+      os: osx
+
+    # find_package(Boost COMPONENTS filesystem)
+    - env: LIB=filesystem UBP=1
+    - env: LIB=filesystem UBP=1
+      os: osx
+
+    # --layout=versioned
+    - env: LIB=filesystem LAYOUT=versioned
+    - env: LIB=filesystem LAYOUT=versioned TOOLSET=clang
+      os: osx
+
+    # --layout=tagged
+    - env: LIB=filesystem LAYOUT=tagged
+    - env: LIB=filesystem LAYOUT=tagged
+      os: osx
+
+    # build with g++, use with clang++
+    - env: LIB=filesystem
+      compiler: clang++
+
+    # same, with tagged layout
+    - env: LIB=filesystem LAYOUT=tagged
+      compiler: clang++
+
+    # build with clang++, use with g++
+    - env: LIB=filesystem TOOLSET=clang
+
+    # same, with tagged layout
+    - env: LIB=filesystem TOOLSET=clang LAYOUT=tagged
+
+    # build with both gcc and clang, use with gcc
+    - env: LIB=filesystem LAYOUT=versioned TOOLSET=gcc,clang
+
+    # build with both gcc and clang, use with clang
+    - env: LIB=filesystem LAYOUT=versioned TOOLSET=gcc,clang
+      compiler: clang++
+
+    # build with gcc, use with clang (w/ toolset override)
+    - env: LIB=filesystem LAYOUT=versioned Boost_COMPILER=gcc5
+      compiler: clang++
+
+    # same, w/ -gcc5
+    - env: LIB=filesystem LAYOUT=versioned Boost_COMPILER=-gcc5
+      compiler: clang++
+
+    # shared
+    - env: LIB=filesystem LINK=shared
+    - env: LIB=filesystem LINK=shared Boost_USE_STATIC_LIBS=OFF
+
+    # static
+    - env: LIB=filesystem Boost_USE_STATIC_LIBS=ON
+    - env: LIB=filesystem LINK=static
+    - env: LIB=filesystem LINK=static Boost_USE_STATIC_LIBS=ON
+
+    # threading=multi,single
+    - env: LIB=filesystem LAYOUT=tagged-1.66 THREADING=multi,single
+    - env: LIB=filesystem LAYOUT=tagged-1.66 THREADING=multi,single Boost_USE_MULTITHREADED=ON
+    - env: LIB=filesystem LAYOUT=tagged-1.66 THREADING=multi,single Boost_USE_MULTITHREADED=OFF
+
+    # threading=single
+    - env: LIB=filesystem THREADING=single
+    - env: LIB=filesystem THREADING=single Boost_USE_MULTITHREADED=OFF
+
+    # staged
+    - env: LIB=filesystem STAGE=1
+    - env: LIB=filesystem STAGE=1
+      os: osx
+    - env: LIB=filesystem UBP=1 STAGE=1
+    - env: LIB=filesystem UBP=1 STAGE=1
+      os: osx
+
+    - env: LIB=filesystem UBP=1 STAGE=1 STAGEDIR=stage64-gcc5
+    - env: LIB=filesystem UBP=1 STAGE=1 STAGEDIR=.
+    - env: LIB=filesystem UBP=1 STAGE=1 STAGELIBDIR=lib64-gcc5
+
+    # ALL
+    - env: LIB=filesystem USE_ALL_COMPONENTS=1
+
+    # Boost_INCLUDE_DIRS, old style
+    - env: LIB=headers
+
+    # other libraries
+    - env: LIB=atomic
+    - env: LIB=atomic UBP=1
+    - env: LIB=chrono
+    - env: LIB=chrono UBP=1
+    - env: LIB=container
+    - env: LIB=container UBP=1
+
+    - env: LIB=iostreams
+    - env: LIB=iostreams UBP=1
+    - env: LIB=iostreams UBP=1 Boost_USE_STATIC_LIBS=ON
+    - env: LIB=iostreams STAGE=1
+    - env: LIB=iostreams UBP=1 STAGE=1
+
+    - env: LIB=log
+    - env: LIB=log UBP=1
+    - env: LIB=log UBP=1 Boost_USE_STATIC_LIBS=ON
+    - env: LIB=log USE_ALL_COMPONENTS=1
+    - env: LIB=log LAYOUT=tagged-1.66 THREADING=multi,single
+
+    - env: LIB=mpi CXXSTD=11
+    - env: LIB=mpi UBP=1 CXXSTD=11
+    - env: LIB=mpi UBP=1 STAGE=1 CXXSTD=11
+
+    - env: LIB=program_options
+    - env: LIB=program_options UBP=1
+
+    - env: LIB=python PYTHON=2.7,3.5
+    - env: LIB=python PYTHON=2.7,3.5 USE_PYTHON_VERSION=2.7
+    - env: LIB=python PYTHON=2.7,3.5 USE_PYTHON_VERSION=3.5
+
+    - env: LIB=python UBP=1 PYTHON=2.7,3.5
+    - env: LIB=python UBP=1 PYTHON=2.7,3.5 USE_PYTHON_VERSION=2.7
+    - env: LIB=python UBP=1 PYTHON=2.7,3.5 USE_PYTHON_VERSION=3.5
+
+    - env: LIB=python PYTHON=2.7,3.5 USE_PYTHON_VERSION=2.7 USE_PYTHON_COMPONENT=python27
+    - env: LIB=python PYTHON=2.7,3.5 USE_PYTHON_VERSION=3.5 USE_PYTHON_COMPONENT=python35
+
+    - env: LIB=python PYTHON=2.7,3.5 USE_PYTHON_VERSION=2.7 USE_PYTHON_COMPONENT=python2
+    - env: LIB=python PYTHON=2.7,3.5 USE_PYTHON_VERSION=3.5 USE_PYTHON_COMPONENT=python3
+
+    - env: LIB=random
+    - env: LIB=random UBP=1
+    - env: LIB=random BUILD_SHARED_LIBS=ON
+    - env: LIB=random UBP=1 BUILD_SHARED_LIBS=ON
+
+    - env: LIB=regex
+    - env: LIB=regex UBP=1
+    - env: LIB=regex UBP=1 Boost_USE_STATIC_LIBS=ON
+
+    - env: LIB=serialization
+    - env: LIB=serialization UBP=1
+    - env: LIB=system
+    - env: LIB=system UBP=1
+    - env: LIB=test
+    - env: LIB=test UBP=1
+    - env: LIB=thread
+    - env: LIB=thread UBP=1
+    - env: LIB=wave
+    - env: LIB=wave UBP=1
+
+    - env: ALL=1
+      install:
+        - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+        - cd ..
+        - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+        - cd boost-root
+        - git submodule update --init --jobs 3
+        - rm -rf tools/boost_install/*
+        - cp -r $TRAVIS_BUILD_DIR/* tools/boost_install
+        - ./bootstrap.sh
+        - ./b2 headers
+        - |-
+          echo "using python : 2.7 ;" >> ~/user-config.jam
+        - |-
+          echo "using python : 3.5 ;" >> ~/user-config.jam
+        - |-
+          echo "using mpi ;" >> ~/user-config.jam
+        - ./b2 -j3 --prefix=$HOME/.local python=2.7,3.5 install
+      script:
+        - cd tools/boost_install/test/filesystem
+        - mkdir __build__ && cd __build__
+        - if [ -z "$STAGE" ]; then export CMAKE_INSTALL="-DCMAKE_INSTALL_PREFIX=~/.local"; fi
+        - cmake -DCMAKE_INSTALL_PREFIX=~/.local -DUSE_ALL_COMPONENTS=1 -DBoost_DEBUG=ON ..
+        - cmake --build .
+        - export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+        - export DYLD_LIBRARY_PATH=$HOME/.local/lib:$DYLD_LIBRARY_PATH
+        - cmake --build . --target check
+
+    - env: ALL_CONFIG=1
+      install:
+        - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+        - cd ..
+        - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+        - cd boost-root
+        - git submodule update --init --jobs 3
+        - rm -rf tools/boost_install/*
+        - cp -r $TRAVIS_BUILD_DIR/* tools/boost_install
+        - ./bootstrap.sh
+        - ./b2 headers
+        - |-
+          echo "using python : 2.7 ;" >> ~/user-config.jam
+        - |-
+          echo "using python : 3.5 ;" >> ~/user-config.jam
+        - |-
+          echo "using mpi ;" >> ~/user-config.jam
+        - ./b2 -j3 --prefix=$HOME/.local python=2.7,3.5 install
+      script:
+        - cd tools/boost_install/test/filesystem
+        - mkdir __build__ && cd __build__
+        - if [ -z "$STAGE" ]; then export CMAKE_INSTALL="-DCMAKE_INSTALL_PREFIX=~/.local"; fi
+        - cmake -DCMAKE_INSTALL_PREFIX=~/.local -DUSE_ALL_COMPONENTS_CONFIG=1 -DBoost_DEBUG=ON ..
+        - cmake --build .
+        - export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+        - export DYLD_LIBRARY_PATH=$HOME/.local/lib:$DYLD_LIBRARY_PATH
+        - cmake --build . --target check
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init --jobs 3 tools/boostdep libs/assert libs/config libs/core libs/$LIB
+  - python tools/boostdep/depinst/depinst.py -X test -g "--jobs 3" $LIB
+  - rm -rf tools/boost_install/*
+  - cp -r $TRAVIS_BUILD_DIR/* tools/boost_install
+  - ./bootstrap.sh
+  - ./b2 headers
+  - if [ -z "$STAGE" ]; then ./b2 -j3 --prefix=$HOME/.local --with-headers ${LAYOUT:+--layout=$LAYOUT} ${TOOLSET:+toolset=$TOOLSET} install; fi
+
+script:
+  - |-
+    echo "using python : 2.7 ;" >> ~/user-config.jam
+  - |-
+    echo "using python : 3.5 ;" >> ~/user-config.jam
+  - |-
+    echo "using mpi ;" >> ~/user-config.jam
+  - if [ -z "$STAGE" ]; then export B2_INSTALL="--prefix=$HOME/.local install"; fi
+  - ./b2 -j3 --with-$LIB ${LAYOUT:+--layout=$LAYOUT} ${STAGEDIR:+--stagedir=$STAGEDIR} ${STAGELIBDIR:+--stage-libdir=$STAGELIBDIR} ${TOOLSET:+toolset=$TOOLSET} ${LINK:+link=$LINK} ${PYTHON:+python=$PYTHON} ${THREADING:+threading=$THREADING} ${CXXSTD:+cxxstd=$CXXSTD} ${B2_INSTALL}
+  - cd tools/boost_install/test/$LIB
+  - mkdir __build__ && cd __build__
+  - if [ -z "$STAGE" ]; then export CMAKE_INSTALL="-DCMAKE_INSTALL_PREFIX=~/.local"; fi
+  - cmake ${CMAKE_INSTALL} -DUSE_STAGED_BOOST=${STAGE-0} ${STAGEDIR:+-DBoost_ROOT=$TRAVIS_BUILD_DIR/../boost-root/$STAGEDIR} ${STAGELIBDIR:+-DBoost_ROOT=$TRAVIS_BUILD_DIR/../boost-root/$STAGELIBDIR/cmake} -DUSE_BOOST_PACKAGE=${UBP-0} -DUSE_ALL_COMPONENTS=${USE_ALL_COMPONENTS-0} ${USE_PYTHON_VERSION:+-DUSE_PYTHON_VERSION=$USE_PYTHON_VERSION} ${USE_PYTHON_COMPONENT:+-DUSE_PYTHON_COMPONENT=$USE_PYTHON_COMPONENT} ${BUILD_SHARED_LIBS:+-DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS} -DBoost_VERBOSE=ON ${Boost_USE_STATIC_LIBS:+-DBoost_USE_STATIC_LIBS=$Boost_USE_STATIC_LIBS} ${Boost_COMPILER:+-DBoost_COMPILER=$Boost_COMPILER} ${Boost_USE_MULTITHREADED:+-DBoost_USE_MULTITHREADED=$Boost_USE_MULTITHREADED} ..
+  - VERBOSE=1 cmake --build .
+  - export LD_LIBRARY_PATH=$HOME/.local/lib:$TRAVIS_BUILD_DIR/../boost-root/stage/lib:$LD_LIBRARY_PATH
+  - export DYLD_LIBRARY_PATH=$HOME/.local/lib:$TRAVIS_BUILD_DIR/../boost-root/stage/lib:$DYLD_LIBRARY_PATH
+  - cmake --build . --target check
+
+notifications:
+  email:
+    on_success: always
