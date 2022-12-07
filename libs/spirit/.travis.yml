@@ -1,0 +1,155 @@
+#==============================================================================
+#   Copyright (c) 2016-2021 Nikita Kniazev
+#
+#   Use, modification and distribution is subject to the Boost Software
+#   License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+#   http://www.boost.org/LICENSE_1_0.txt)
+#==============================================================================
+
+language: cpp
+
+sudo: false
+
+addon_shortcuts:
+  clang-12: &clang-12
+    apt:
+      sources:
+        - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+          key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+      packages:
+        - clang-12
+        - libc++-12-dev
+        - libc++abi-12-dev
+
+  gcc-11: &gcc-11
+    apt:
+      sources:
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+      packages:
+        - g++-11
+
+os: linux
+dist: bionic
+
+env:
+  global:
+    - PROJECT=libs/spirit
+    - BOOST_ROOT=$HOME/boost
+    - BOOST_BUILD_PATH=$HOME/build-boost
+
+matrix:
+  include:
+    ### Spirit 3
+    - { env: 'STD=14  JOB=test/x3',         compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=14  JOB=test/x3',         compiler: gcc-11, addons: *gcc-11 }
+    ### Spirit 2
+    ## Clang
+    # 11
+    - { env: 'STD=11  JOB=test/qi',         compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=11  JOB=test/karma',      compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=11  JOB=test/lex',        compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=11  JOB=test/support',    compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=11  JOB=repository/test', compiler: clang-12, addons: *clang-12 }
+    # 03
+    - { env: 'STD=03  JOB=test/qi',         compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=03  JOB=test/karma',      compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=03  JOB=test/lex',        compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=03  JOB=test/support',    compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=03  JOB=repository/test', compiler: clang-12, addons: *clang-12 }
+    ## GCC
+    # 11
+    - { env: 'STD=11  JOB=test/qi',         compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=11  JOB=test/karma',      compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=11  JOB=test/lex',        compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=11  JOB=test/support',    compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=11  JOB=repository/test', compiler: gcc-11, addons: *gcc-11 }
+    # 03
+    - { env: 'STD=03  JOB=test/qi',         compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=03  JOB=test/karma',      compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=03  JOB=test/lex',        compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=03  JOB=test/support',    compiler: gcc-11, addons: *gcc-11 }
+    - { env: 'STD=03  JOB=repository/test', compiler: gcc-11, addons: *gcc-11 }
+    ### Spirit 1
+    - { env: 'STD=03  JOB=classic/test',    compiler: clang-12, addons: *clang-12 }
+    - { env: 'STD=03  JOB=classic/test',    compiler: gcc-11, addons: *gcc-11 }
+
+cache: ccache
+
+before_install:
+  - export CACHE_NAME=$TRAVIS_OS_NAME-$TOOLSET-$STD-$JOB
+  - export PATH=$BOOST_ROOT:$PATH
+  - if [[ "$TRAVIS_COMPILER" =~ ^clang- ]]; then export STDLIB=stdlib=libc++ ; fi
+  - |
+    # Creating ~/user-config.jam file
+    sed 's/^  //' > ~/user-config.jam << 'EOF'
+
+    import feature ;
+    import os ;
+    import regex ;
+    import toolset ;
+
+
+    local TOOLSET = [ os.environ TRAVIS_COMPILER ] ;
+    local toolset-parts = [ regex.split $(TOOLSET) "-" ] ;
+    local toolset-name = $(toolset-parts[1]) ;
+    local toolset-feature = $(toolset-parts[2-]:J="-") ;
+
+    local cxx ;
+    switch $(toolset-name) {
+        case gcc   : cxx ?= [ regex.replace $(TOOLSET) "gcc" "g++" ] ;
+        case clang : cxx ?= [ regex.replace $(TOOLSET) "clang" "clang++" ] ;
+        case *     : EXIT "user-config: Unsupported toolset $(toolset-name)" ;
+    }
+
+    using $(toolset-name) : $(toolset-feature) : ccache $(cxx) ;
+
+    # Release variant with enabled asserts
+    variant sanitize : <optimization>speed <debug-symbols>off <inlining>full
+                       <runtime-debugging>off ;
+
+  - |
+    # Determining the root branch
+    if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+      export BRANCH=$TRAVIS_BRANCH
+    else
+      # It is a pull request. Retrieve the base branch from GitHub
+      GH_PR_API=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
+      export BRANCH=`curl -s $GH_PR_API | jq -r .head.ref`;
+    fi
+    if [[ ! "$BRANCH" =~ ^(master|develop)$ ]]; then
+      # Travis has been triggered not from our main branches.
+      # Find out the base branch from the git history
+      # TODO: Not implemented yet, but in most cases it will be develop branch
+      export BRANCH=develop
+    fi
+    echo Root branch is $BRANCH
+
+  # Dump environment variables
+  - env
+
+  # Sadly git's --shallow-submodules has hardcoded depth of 1 commit
+  # Patch the git binary with a little more depth to deal with boost-commitbot's lag
+  - sed 's/--depth=1/--depth=9/g' `which git` > ~/git && chmod +x ~/git
+
+  # Checkout Boost
+  - ~/git clone -j10 --branch=$BRANCH --depth=1 --quiet
+      --recurse-submodules=":(exclude)$PROJECT" --shallow-submodules
+      https://github.com/boostorg/boost.git $BOOST_ROOT
+  - pushd $BOOST_ROOT
+  # Remove the empty folder
+  - rm -rf $PROJECT
+  - ./bootstrap.sh --with-toolset=clang
+  - ./b2 headers
+
+  # Move the repository to boost/libs and make a link to previous place
+  - mv $TRAVIS_BUILD_DIR $PROJECT
+  - ln -s $PROJECT $TRAVIS_BUILD_DIR
+
+  - cd $PROJECT
+  - cd $JOB
+
+script:
+  - b2 link=shared threading=multi variant=release,sanitize
+      toolset=$TRAVIS_COMPILER cxxstd=$STD $STDLIB
+      warnings=extra warnings-as-errors=on
+      define=BOOST_SPIRIT_X3_HIDE_CXX17_WARNING

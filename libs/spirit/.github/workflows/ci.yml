@@ -1,0 +1,442 @@
+name: GitHub Actions CI
+
+on:
+  pull_request:
+  push:
+
+env:
+    PROJECT: libs/spirit
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "STD=14  JOB=test/x3 Job 0"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "14"
+            job: "test/x3"
+            travis_compiler: "clang-12"
+          - name: "STD=14  JOB=test/x3 Job 1"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "14"
+            job: "test/x3"
+            travis_compiler: "gcc-11"
+          - name: "STD=11  JOB=test/qi Job 2"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "11"
+            job: "test/qi"
+            travis_compiler: "clang-12"
+          - name: "STD=11  JOB=test/karma Job 3"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "11"
+            job: "test/karma"
+            travis_compiler: "clang-12"
+          - name: "STD=11  JOB=test/lex Job 4"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "11"
+            job: "test/lex"
+            travis_compiler: "clang-12"
+          - name: "STD=11  JOB=test/support Job 5"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "11"
+            job: "test/support"
+            travis_compiler: "clang-12"
+          - name: "STD=11  JOB=repository/test Job 6"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "11"
+            job: "repository/test"
+            travis_compiler: "clang-12"
+          - name: "STD=03  JOB=test/qi Job 7"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "03"
+            job: "test/qi"
+            travis_compiler: "clang-12"
+          - name: "STD=03  JOB=test/karma Job 8"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "03"
+            job: "test/karma"
+            travis_compiler: "clang-12"
+          - name: "STD=03  JOB=test/lex Job 9"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "03"
+            job: "test/lex"
+            travis_compiler: "clang-12"
+          - name: "STD=03  JOB=test/support Job 10"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "03"
+            job: "test/support"
+            travis_compiler: "clang-12"
+          - name: "STD=03  JOB=repository/test Job 11"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "03"
+            job: "repository/test"
+            travis_compiler: "clang-12"
+          - name: "STD=11  JOB=test/qi Job 12"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "11"
+            job: "test/qi"
+            travis_compiler: "gcc-11"
+          - name: "STD=11  JOB=test/karma Job 13"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "11"
+            job: "test/karma"
+            travis_compiler: "gcc-11"
+          - name: "STD=11  JOB=test/lex Job 14"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "11"
+            job: "test/lex"
+            travis_compiler: "gcc-11"
+          - name: "STD=11  JOB=test/support Job 15"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "11"
+            job: "test/support"
+            travis_compiler: "gcc-11"
+          - name: "STD=11  JOB=repository/test Job 16"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "11"
+            job: "repository/test"
+            travis_compiler: "gcc-11"
+          - name: "STD=03  JOB=test/qi Job 17"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "03"
+            job: "test/qi"
+            travis_compiler: "gcc-11"
+          - name: "STD=03  JOB=test/karma Job 18"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "03"
+            job: "test/karma"
+            travis_compiler: "gcc-11"
+          - name: "STD=03  JOB=test/lex Job 19"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "03"
+            job: "test/lex"
+            travis_compiler: "gcc-11"
+          - name: "STD=03  JOB=test/support Job 20"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "03"
+            job: "test/support"
+            travis_compiler: "gcc-11"
+          - name: "STD=03  JOB=repository/test Job 21"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "03"
+            job: "repository/test"
+            travis_compiler: "gcc-11"
+          - name: "STD=03  JOB=classic/test Job 22"
+            buildtype: "boost"
+            packages: "clang-12 libc++-12-dev libc++abi-12-dev libunwind-12-dev jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang-12"
+            sources: ""
+            llvm_os: "bionic"
+            llvm_ver: "12"
+            std: "03"
+            job: "classic/test"
+            travis_compiler: "clang-12"
+          - name: "STD=03  JOB=classic/test Job 23"
+            buildtype: "boost"
+            packages: "g++-11 jq ccache"
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "gcc-11"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            std: "03"
+            job: "classic/test"
+            travis_compiler: "gcc-11"
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Check if running in container
+        if: matrix.container != ''
+        run: echo "GHA_CONTAINER=${{ matrix.container }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+
+      - name: linux
+        shell: bash
+        env:
+          CXX: ${{ matrix.cxx }}
+          SOURCES: ${{ matrix.sources }}
+          LLVM_OS: ${{ matrix.llvm_os }}
+          LLVM_VER: ${{ matrix.llvm_ver }}
+          PACKAGES: ${{ matrix.packages }}
+          PACKAGES_TO_REMOVE: ${{ matrix.packages_to_remove }}
+          JOB_BUILDTYPE: ${{ matrix.buildtype }}
+          STD: ${{ matrix.std }}
+          JOB: ${{ matrix.job }}
+          TRAVIS_COMPILER: ${{ matrix.travis_compiler }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "linux"
+        run: |
+          echo '==================================> SETUP'
+          echo '==================================> PACKAGES'
+          set -e
+          if [ -n "$PACKAGES_TO_REMOVE" ]; then sudo apt-get purge -y $PACKAGES_TO_REMOVE; fi
+          echo ">>>>> APT: REPO.."
+          for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+          
+          if test -n "${LLVM_OS}" ; then
+              wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+              if test -n "${LLVM_VER}" ; then
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS}-${LLVM_VER} main"
+              else
+                  # Snapshot (i.e. trunk) build of clang
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS} main"
+              fi
+          fi
+          echo ">>>>> APT: UPDATE.."
+          sudo -E apt-get -o Acquire::Retries=3 update
+          if test -n "${SOURCES}" ; then
+              echo ">>>>> APT: INSTALL SOURCES.."
+              for SOURCE in $SOURCES; do
+                  sudo -E apt-add-repository ppa:$SOURCE
+              done
+          fi
+          echo ">>>>> APT: INSTALL ${PACKAGES}.."
+          sudo -E DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -y --no-install-suggests --no-install-recommends install ${PACKAGES}
+
+          echo '==================================> INSTALL AND COMPILE'
+          set -e
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+          export BOOST_ROOT="$HOME/boost"
+          export BOOST_BUILD_PATH="$HOME/build-boost"
+          export GITHUB_EVENT_NUMBER=${{ github.event.number }}
+          export TRAVIS_PULL_REQUEST=${GITHUB_EVENT_NUMBER:-false}
+          export TRAVIS_REPO_SLUG=$REPO_NAME
+
+
+          if [ "$JOB_BUILDTYPE" == "boost" ]; then
+
+          echo '==================================> INSTALL'
+
+          export CACHE_NAME=$TRAVIS_OS_NAME-$TOOLSET-$STD-$JOB
+          export PATH=$BOOST_ROOT:$PATH
+          if [[ "$TRAVIS_COMPILER" =~ ^clang- ]]; then export STDLIB=stdlib=libc++ ; fi
+          # Creating ~/user-config.jam file
+          sed 's/^  //' > ~/user-config.jam << 'EOF'
+
+          import feature ;
+          import os ;
+          import regex ;
+          import toolset ;
+
+
+          local TOOLSET = [ os.environ TRAVIS_COMPILER ] ;
+          local toolset-parts = [ regex.split $(TOOLSET) "-" ] ;
+          local toolset-name = $(toolset-parts[1]) ;
+          local toolset-feature = $(toolset-parts[2-]:J="-") ;
+
+          local cxx ;
+          switch $(toolset-name) {
+              case gcc   : cxx ?= [ regex.replace $(TOOLSET) "gcc" "g++" ] ;
+              case clang : cxx ?= [ regex.replace $(TOOLSET) "clang" "clang++" ] ;
+              case *     : EXIT "user-config: Unsupported toolset $(toolset-name)" ;
+          }
+
+          using $(toolset-name) : $(toolset-feature) : ccache $(cxx) ;
+
+          # Release variant with enabled asserts
+          variant sanitize : <optimization>speed <debug-symbols>off <inlining>full
+                             <runtime-debugging>off ;
+
+          EOF
+          # Determining the root branch
+          if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+            export BRANCH=$TRAVIS_BRANCH
+          else
+            # It is a pull request. Retrieve the base branch from GitHub
+            GH_PR_API=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
+            export BRANCH=`curl -s $GH_PR_API | jq -r .head.ref`;
+          fi
+          if [[ ! "$BRANCH" =~ ^(master|develop)$ ]]; then
+            # Travis has been triggered not from our main branches.
+            # Find out the base branch from the git history
+            # TODO: Not implemented yet, but in most cases it will be develop branch
+            export BRANCH=develop
+          fi
+          echo Root branch is $BRANCH
+
+          env
+          sed 's/--depth=1/--depth=9/g' `which git` > ~/git && chmod +x ~/git
+          ~/git clone -j10 --branch=$BRANCH --depth=1 --quiet --recurse-submodules=":(exclude)$PROJECT" --shallow-submodules https://github.com/boostorg/boost.git $BOOST_ROOT
+          pushd $BOOST_ROOT
+          rm -rf $PROJECT
+          ./bootstrap.sh --with-toolset=clang
+          ./b2 headers
+          cp -rp $TRAVIS_BUILD_DIR $PROJECT
+          ln -s $PROJECT $TRAVIS_BUILD_DIR
+          cd $PROJECT
+          cd $JOB
+
+          echo '==================================> SCRIPT'
+
+          b2 link=shared threading=multi variant=release,sanitize toolset=$TRAVIS_COMPILER cxxstd=$STD $STDLIB warnings=extra warnings-as-errors=on define=BOOST_SPIRIT_X3_HIDE_CXX17_WARNING
+
+          fi
