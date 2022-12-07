@@ -1,0 +1,184 @@
+# Copyright 2016-2018 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++
+      env: TOOLSET=gcc CXXSTD=03,11
+
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc CXXSTD=98,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc CXXSTD=03,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.8
+      env: TOOLSET=gcc CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: UBSAN=1 TOOLSET=gcc CXXSTD=03,11,14,17,2a UBSAN_OPTIONS=print_stacktrace=1 LINKFLAGS=-fuse-ld=gold
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang CXXSTD=03,11,14,1z
+
+    - os: linux
+      compiler: clang++
+      env: UBSAN=1 TOOLSET=clang CXXSTD=03,11,14,1z UBSAN_OPTIONS=print_stacktrace=1
+
+    - os: linux
+      dist: trusty
+      compiler: clang++-libc++
+      env: TOOLSET=clang CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+
+    - os: linux
+      dist: trusty
+      compiler: clang++-libc++
+      env: UBSAN=1 TOOLSET=clang CXXSTD=03,11,14,1z UBSAN_OPTIONS=print_stacktrace=1
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+
+    - os: osx
+      compiler: clang++
+      env: TOOLSET=clang CXXSTD=03,11,14,1z
+
+    - os: linux
+      env: CMAKE=1
+      script:
+        - mkdir __build__ && cd __build__
+        - cmake -DBUILD_TESTING=ON -DBOOST_INCLUDE_LIBRARIES=timer ..
+        - cmake --build . --target tests
+        - ctest --output-on-failure --no-tests=error
+
+    - os: linux
+      env: CMAKE=1 BUILD_SHARED_LIBS=ON
+      script:
+        - mkdir __build__ && cd __build__
+        - cmake -DBUILD_TESTING=ON -DBOOST_INCLUDE_LIBRARIES=timer -DBUILD_SHARED_LIBS=ON ..
+        - cmake --build . --target tests
+        - ctest --output-on-failure --no-tests=error
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/boostdep
+  - git submodule update --init tools/cmake
+  - cp -r $TRAVIS_BUILD_DIR/* libs/timer
+  - python tools/boostdep/depinst/depinst.py timer
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $TRAVIS_COMPILER ;" > ~/user-config.jam
+  - ./b2 -j3 -l120 --verbose-test libs/timer/test toolset=$TOOLSET cxxstd=$CXXSTD variant=debug,release ${UBSAN:+cxxflags=-fsanitize=undefined cxxflags=-fno-sanitize-recover=undefined linkflags=-fsanitize=undefined debug-symbols=on} ${LINKFLAGS:+linkflags=$LINKFLAGS}
+
+notifications:
+  email:
+    on_success: always
