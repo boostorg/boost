@@ -1,0 +1,625 @@
+name: GitHub Actions CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - githubactions*
+      - feature/**
+      - fix/**
+      - pr/**
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "CXX_VER=3.4 TOOLSET=clang STD=c++98 Job 0"
+            buildtype: "4e3fa5de4a-f44b5bccc0"
+            packages: "doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "3.4"
+            toolset: "clang"
+            std: "c++98"
+          - name: "CXX_VER=3.5.2 TOOLSET=clang STD=c++98 Job 1"
+            buildtype: "boost"
+            packages: "doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "3.5.2"
+            toolset: "clang"
+            std: "c++98"
+          - name: "CXX_VER=3.5.2 TOOLSET=clang STD=c++11 Job 2"
+            buildtype: "boost"
+            packages: "doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "3.5.2"
+            toolset: "clang"
+            std: "c++11"
+          - name: "CXX_VER=3.6.2 TOOLSET=clang STD=c++98 Job 3"
+            buildtype: "fea35f4805-f44b5bccc0"
+            packages: "doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "3.6.2"
+            toolset: "clang"
+            std: "c++98"
+          - name: "CXX_VER=3.6.2 TOOLSET=clang STD=c++11 Job 4"
+            buildtype: "fea35f4805-f44b5bccc0"
+            packages: "doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "3.6.2"
+            toolset: "clang"
+            std: "c++11"
+          - name: "CXX_VER=4.6 TOOLSET=gcc STD=c++98 Job 5"
+            buildtype: "dfd0ac5626-f44b5bccc0"
+            packages: "g++-4.6 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.6"
+            toolset: "gcc"
+            std: "c++98"
+          - name: "CXX_VER=4.7 TOOLSET=gcc STD=c++98 Job 6"
+            buildtype: "0e39902f2e-f44b5bccc0"
+            packages: "g++-4.7 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.7"
+            toolset: "gcc"
+            std: "c++98"
+          - name: "CXX_VER=4.7 TOOLSET=gcc STD=c++11 Job 7"
+            buildtype: "0e39902f2e-f44b5bccc0"
+            packages: "g++-4.7 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.7"
+            toolset: "gcc"
+            std: "c++11"
+          - name: "CXX_VER=4.8 TOOLSET=gcc STD=c++98 Job 8"
+            buildtype: "91b94bb329-f44b5bccc0"
+            packages: "g++-4.8 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.8"
+            toolset: "gcc"
+            std: "c++98"
+          - name: "CXX_VER=4.8 TOOLSET=gcc STD=c++11 Job 9"
+            buildtype: "91b94bb329-f44b5bccc0"
+            packages: "g++-4.8 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            container: "ubuntu:14.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.8"
+            toolset: "gcc"
+            std: "c++11"
+          - name: "CXX_VER=4.9 TOOLSET=gcc STD=c++98 Job 10"
+            buildtype: "bb699d113a-f44b5bccc0"
+            packages: "g++-4.9 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.9"
+            toolset: "gcc"
+            std: "c++98"
+          - name: "CXX_VER=4.9 TOOLSET=gcc STD=c++11 Job 11"
+            buildtype: "bb699d113a-f44b5bccc0"
+            packages: "g++-4.9 doxygen xsltproc"
+            packages_to_remove: ""
+            os: "ubuntu-16.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            cxx_ver: "4.9"
+            toolset: "gcc"
+            std: "c++11"
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Check if running in container
+        if: matrix.container != ''
+        run: echo "GHA_CONTAINER=${{ matrix.container }}" >> $GITHUB_ENV
+      - name: If running in container, upgrade packages
+        if: matrix.container != ''
+        run: |
+            sudo apt-get -o Acquire::Retries=3 update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata && apt-get -o Acquire::Retries=3 install -y sudo software-properties-common wget curl apt-transport-https make apt-file sudo unzip libssl-dev build-essential autotools-dev autoconf automake g++ libc++-helpers python python-pip ruby cpio gcc-multilib g++-multilib pkgconf python3 python3-pip ccache libpython-dev
+            sudo apt-add-repository ppa:git-core/ppa
+            sudo apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 -y install git
+            sudo python -m pip install --upgrade pip==20.3.4
+            sudo /usr/local/bin/pip install cmake
+
+      - uses: actions/checkout@v2
+
+      - name: linux
+        shell: bash
+        env:
+          CXX: ${{ matrix.cxx }}
+          SOURCES: ${{ matrix.sources }}
+          LLVM_OS: ${{ matrix.llvm_os }}
+          LLVM_VER: ${{ matrix.llvm_ver }}
+          PACKAGES: ${{ matrix.packages }}
+          PACKAGES_TO_REMOVE: ${{ matrix.packages_to_remove }}
+          JOB_BUILDTYPE: ${{ matrix.buildtype }}
+          CXX_VER: ${{ matrix.cxx_ver }}
+          TOOLSET: ${{ matrix.toolset }}
+          STD: ${{ matrix.std }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "linux"
+        run: |
+          echo '==================================> SETUP'
+          echo '==================================> PACKAGES'
+          set -e
+          if [ -n "$PACKAGES_TO_REMOVE" ]; then sudo apt-get purge -y $PACKAGES_TO_REMOVE; fi
+          echo ">>>>> APT: REPO.."
+          for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+          
+          if test -n "${LLVM_OS}" ; then
+              wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+              if test -n "${LLVM_VER}" ; then
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS}-${LLVM_VER} main"
+              else
+                  # Snapshot (i.e. trunk) build of clang
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS} main"
+              fi
+          fi
+          echo ">>>>> APT: UPDATE.."
+          sudo -E apt-get -o Acquire::Retries=3 update
+          if test -n "${SOURCES}" ; then
+              echo ">>>>> APT: INSTALL SOURCES.."
+              for SOURCE in $SOURCES; do
+                  sudo -E apt-add-repository ppa:$SOURCE
+              done
+          fi
+          echo ">>>>> APT: INSTALL ${PACKAGES}.."
+          sudo -E DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -y --no-install-suggests --no-install-recommends install ${PACKAGES}
+
+          echo '==================================> INSTALL AND COMPILE'
+          set -e
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+
+          if [ "$JOB_BUILDTYPE" == "4e3fa5de4a-f44b5bccc0" ]; then
+
+          echo '==================================> INSTALL'
+
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          elif [ "$JOB_BUILDTYPE" == "boost" ]; then
+
+          echo '==================================> INSTALL'
+
+          echo "using clang : 3.5 : clang++ ;" > ~/user-config.jam
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          elif [ "$JOB_BUILDTYPE" == "fea35f4805-f44b5bccc0" ]; then
+
+          echo '==================================> INSTALL'
+
+          echo "using clang : 3.6 : clang++ ;" > ~/user-config.jam
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          elif [ "$JOB_BUILDTYPE" == "dfd0ac5626-f44b5bccc0" ]; then
+
+          echo '==================================> INSTALL'
+
+          echo "using gcc : 4.6 : g++-4.6 ;" > ~/user-config.jam
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          elif [ "$JOB_BUILDTYPE" == "0e39902f2e-f44b5bccc0" ]; then
+
+          echo '==================================> INSTALL'
+
+          echo "using gcc : 4.7 : g++-4.7 ;" > ~/user-config.jam
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          elif [ "$JOB_BUILDTYPE" == "91b94bb329-f44b5bccc0" ]; then
+
+          echo '==================================> INSTALL'
+
+          echo "using gcc : 4.8 : g++-4.8 ;" > ~/user-config.jam
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          elif [ "$JOB_BUILDTYPE" == "bb699d113a-f44b5bccc0" ]; then
+
+          echo '==================================> INSTALL'
+
+          echo "using gcc : 4.9 : g++-4.9 ;" > ~/user-config.jam
+          python -m pip install --upgrade pip==20.3.4; echo "upgraded pip..."; which pip; pip --version; echo $PATH; python -m pip install --upgrade setuptools wheel; echo "installing pep8"; pip install pep8; echo "pep8 installed"; pip install pylint; echo "pylint installed"
+
+          echo '==================================> SCRIPT'
+
+          if which pep8; then pep8 tools/string_headers.py; fi
+          if which pylint; then pylint tools/string_headers.py; fi
+          if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+          export PATH="${PWD}:${PATH}"
+          if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+          echo "using doxygen ;" >> ~/user-config.jam
+          echo "using xsltproc ;" >> ~/user-config.jam
+          echo "using quickbook ;" >> ~/user-config.jam
+          tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+          cd .boost
+          cd libs
+          mkdir metaparse
+          cp -rp ../../* ../../.git ../../.travis.yml metaparse
+          cd ..
+          cd tools/boostbook
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+          wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+          wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+          ./setup_boostbook.sh
+          cd ../..
+          cat ~/user-config.jam
+          ./bootstrap.sh --with-toolset=$TOOLSET
+          ./b2 headers
+          cd libs
+          cd test/build
+          ../../../b2 -d+2
+          cd ../..
+          cd metaparse
+          echo "Checking if all automatically generated files are up to date"
+          rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+          tools/generate_all.py
+          git add -N .
+          git diff --exit-code
+          echo "Building the unit tests and the examples"
+          cd test
+          ../../../b2 -d+2 ${CXXFLAGS}
+          sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          cd example
+          ../../../b2 -d+2 ${CXXFLAGS}
+          cd ..
+          echo "Generating the documentation"
+          cd doc
+          ../../../b2 boostdoc
+
+          fi

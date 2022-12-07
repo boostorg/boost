@@ -1,0 +1,159 @@
+language: cpp
+sudo: required
+dist: trusty
+os: linux
+matrix:
+  include:
+    - compiler: clang
+      env: CXX_VER=3.4 TOOLSET=clang STD=c++98
+      addons: &doc
+        apt:
+          packages:
+            - doxygen
+            - xsltproc
+      install:
+        - "sudo pip install pep8 pylint"
+    - compiler: clang
+      env: CXX_VER=3.5.2 TOOLSET=clang STD=c++98
+      addons: &clang35
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - doxygen
+            - xsltproc
+      install: &iclang35
+        - "echo \"using clang : 3.5 : clang++ ;\" > ~/user-config.jam"
+        - "sudo pip install pep8 pylint"
+    - compiler: clang
+      env: CXX_VER=3.5.2 TOOLSET=clang STD=c++11
+      addons: *clang35
+      install: *iclang35
+    - compiler: clang
+      env: CXX_VER=3.6.2 TOOLSET=clang STD=c++98
+      addons: &clang36
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - doxygen
+            - xsltproc
+      install: &iclang36
+        - "echo \"using clang : 3.6 : clang++ ;\" > ~/user-config.jam"
+        - "sudo pip install pep8 pylint"
+    - compiler: clang
+      env: CXX_VER=3.6.2 TOOLSET=clang STD=c++11
+      addons: *clang36
+      install: *iclang36
+    - compiler: gcc
+      env: CXX_VER=4.6 TOOLSET=gcc STD=c++98
+      addons: *doc
+      addons: &gcc46
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.6
+            - doxygen
+            - xsltproc
+      install: &igcc46
+        - "echo \"using gcc : 4.6 : g++-4.6 ;\" > ~/user-config.jam"
+        - "sudo pip install pep8 pylint"
+    - compiler: gcc
+      env: CXX_VER=4.7 TOOLSET=gcc STD=c++98
+      addons: &gcc47
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.7
+            - doxygen
+            - xsltproc
+      install: &igcc47
+        - "echo \"using gcc : 4.7 : g++-4.7 ;\" > ~/user-config.jam"
+        - "sudo pip install pep8 pylint"
+    - compiler: gcc
+      env: CXX_VER=4.7 TOOLSET=gcc STD=c++11
+      addons: *gcc47
+      install: *igcc47
+    - compiler: gcc
+      env: CXX_VER=4.8 TOOLSET=gcc STD=c++98
+      addons: &gcc48
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.8
+            - doxygen
+            - xsltproc
+      install: &igcc48
+        - "echo \"using gcc : 4.8 : g++-4.8 ;\" > ~/user-config.jam"
+        - "sudo pip install pep8 pylint"
+    - compiler: gcc
+      env: CXX_VER=4.8 TOOLSET=gcc STD=c++11
+      addons: *gcc48
+      install: *igcc48
+    - compiler: gcc
+      env: CXX_VER=4.9 TOOLSET=gcc STD=c++98
+      addons: &gcc49
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - doxygen
+            - xsltproc
+      install: &igcc49
+        - "echo \"using gcc : 4.9 : g++-4.9 ;\" > ~/user-config.jam"
+        - "sudo pip install pep8 pylint"
+    - compiler: gcc
+      env: CXX_VER=4.9 TOOLSET=gcc STD=c++11
+      addons: *gcc49
+      install: *igcc49
+script:
+  - if which pep8; then pep8 tools/string_headers.py; fi
+  - if which pylint; then pylint tools/string_headers.py; fi
+  - if [ "TOOLSET" == "clang" ]; then tools/get_clang.sh ${CXX_VER}; fi
+  - export PATH="${PWD}:${PATH}"
+  - if [ "${STD}" ]; then CXXFLAGS="cxxflags=\"-std=${STD}\""; fi
+  - echo "using doxygen ;" >> ~/user-config.jam
+  - echo "using xsltproc ;" >> ~/user-config.jam
+  - echo "using quickbook ;" >> ~/user-config.jam
+  - tools/build_environment.py --dep_json tools/deps.json --action checkout --out .boost
+  - cd .boost
+  -   cd libs
+  -     mkdir metaparse
+  -     mv ../../* ../../.git ../../.travis.yml metaparse
+  -   cd ..
+  -   cd tools/boostbook
+  -      wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xml-4.2.zip
+  -      wget http://abel.web.elte.hu/boost_book_dependencies/docbook-xsl-1.75.2.tar.gz
+  -      wget http://abel.web.elte.hu/boost_book_dependencies/fop-0.94-bin-jdk1.4.tar.gz
+  -     ./setup_boostbook.sh
+  -   cd ../..
+  -   cat ~/user-config.jam
+  -   ./bootstrap.sh --with-toolset=$TOOLSET
+  -   ./b2 headers
+  -   cd libs
+  -     cd test/build
+  -       ../../../b2 -d+2
+  -     cd ../..
+  -     cd metaparse
+  -       echo "Checking if all automatically generated files are up to date"
+  -       rm doc/getting_started_*.qbk doc/before_*.qbk example/getting_started/*.hpp
+  -       tools/generate_all.py
+  -       git add -N .
+  -       git diff --exit-code
+  -       echo "Building the unit tests and the examples"
+  -       cd test
+  -         ../../../b2 -d+2 ${CXXFLAGS}
+  -         sed -i 's/#include <boost\/metaparse\/[^/]*\.hpp>/#include <boost\/metaparse.hpp>/' *.?pp
+  -         ../../../b2 -d+2 ${CXXFLAGS}
+  -       cd ..
+  -       cd example
+  -         ../../../b2 -d+2 ${CXXFLAGS}
+  -       cd ..
+  -       echo "Generating the documentation"
+  -       cd doc
+  -         ../../../b2 boostdoc
+
