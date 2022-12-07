@@ -1,0 +1,303 @@
+# Copyright 2016 Daniel James
+# Copyright 2018 Peter Dimov
+# Copyright 2019 Glen Fernandes
+# Distributed under the Boost Software License, Version 1.0.
+
+language: cpp
+
+sudo: false
+
+dist: trusty
+
+python: "2.7"
+
+branches:
+  only:
+    - master
+    - develop
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++
+      env: TOOLSET=gcc COMPILER=g++ CXXSTD=03,11
+
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc COMPILER=g++-4.4 CXXSTD=98,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc COMPILER=g++-4.6 CXXSTD=03,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.7
+      env: TOOLSET=gcc COMPILER=g++-4.7 CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.8
+      env: TOOLSET=gcc COMPILER=g++-4.8 CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.9
+      env: TOOLSET=gcc COMPILER=g++-4.9 CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc COMPILER=g++-5 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc COMPILER=g++-6 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc COMPILER=g++-8 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc COMPILER=g++-9 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=03,11
+
+    - os: linux
+      compiler: /usr/bin/clang++
+      env: TOOLSET=clang COMPILER=/usr/bin/clang++ CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - clang-3.3
+
+    - os: linux
+      compiler: /usr/bin/clang++
+      env: TOOLSET=clang COMPILER=/usr/bin/clang++ CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - clang-3.4
+
+    - os: linux
+      compiler: clang++-3.5
+      env: TOOLSET=clang COMPILER=clang++-3.5 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.5
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.5
+
+    - os: linux
+      compiler: clang++-3.6
+      env: TOOLSET=clang COMPILER=clang++-3.6 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.6
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+
+    - os: linux
+      compiler: clang++-3.7
+      env: TOOLSET=clang COMPILER=clang++-3.7 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.7
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+
+    - os: linux
+      compiler: clang++-3.8
+      env: TOOLSET=clang COMPILER=clang++-3.8 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+
+    - os: linux
+      compiler: clang++-3.9
+      env: TOOLSET=clang COMPILER=clang++-3.9 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.9
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.9
+
+    - os: linux
+      compiler: clang++-4.0
+      env: TOOLSET=clang COMPILER=clang++-4.0 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-4.0
+
+    - os: linux
+      compiler: clang++-5.0
+      env: TOOLSET=clang COMPILER=clang++-5.0 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
+
+    - os: linux
+      compiler: clang++-6.0
+      env: TOOLSET=clang COMPILER=clang++-6.0 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-6.0
+
+    - os: linux
+      compiler: clang++-7
+      env: TOOLSET=clang COMPILER=clang++-7 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-7
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
+
+    - os: linux
+      compiler: clang++-8
+      env: TOOLSET=clang COMPILER=clang++-8 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-8
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-8
+
+    - os: linux
+      compiler: clang++-libc++
+      env: TOOLSET=clang COMPILER=clang++-libc++ CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+
+    - os: osx
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=03,11,14,1z
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost
+  - cd boost
+  - git submodule update --init tools/build
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - mkdir -p libs/functional
+  - cp -r $TRAVIS_BUILD_DIR/* libs/functional
+  - python tools/boostdep/depinst/depinst.py -I forward/test -I factory/test -I overloaded_function/test functional
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+  - cd libs/functional
+  - ../../b2 -j 3 test toolset=$TOOLSET cxxstd=$CXXSTD
+  - ../../b2 -j 3 forward/test toolset=$TOOLSET cxxstd=$CXXSTD
+  - ../../b2 -j 3 factory/test toolset=$TOOLSET cxxstd=$CXXSTD
+  - ../../b2 -j 3 overloaded_function/test toolset=$TOOLSET cxxstd=$CXXSTD
+
+notifications:
+  email:
+    on_success: always

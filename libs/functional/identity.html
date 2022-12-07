@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Boost Function Object Adapter Library</title>
+</head>
+<body>
+<h1>Identity</h1>
+<p>The header <a href="../../boost/functional/identity.hpp">
+&lt;boost/functional/identity.hpp&gt;</a> provides the function object
+<code>boost::identity</code> whose <code>operator()</code> returns its
+argument. It is an implementation of C++20's <code>std::identity</code>
+that supports C++03 and above.</p>
+<h2>Example</h2>
+<p>It is commonly used as the default projection in constrained algorithms.</p>
+<pre>
+<code>template&lt;class Range, class Projection = boost::identity&gt;
+void print(Range&& range, Projection projection = {});</code>
+</pre>
+<h2>Reference</h2>
+<pre>
+<code>namespace boost {
+
+struct identity {
+    using is_transparent = <em>unspecified</em>;
+
+    template&lt;class T&gt;
+    T&amp;&amp; operator()(T&amp;&amp; value) const noexcept;
+};
+
+} // boost</code>
+</pre>
+<h3>Operators</h3>
+<dl>
+<dt><code>template&lt;class T&gt;
+T&amp;&amp; operator()(T&amp;&amp; value) const noexcept;</code></dt>
+<dd>Returns <code>std::forward&lt;T&gt;(value)</code></dd>
+</dl>
+<hr>
+<p>Copyright 2021 Glen Joseph Fernandes.</p>
+<p>Distributed under the
+<a href="http://www.boost.org/LICENSE_1_0.txt">Boost Software License,
+Version 1.0</a>.</p>
+</body>
+</html>
