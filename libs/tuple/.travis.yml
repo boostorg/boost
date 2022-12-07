@@ -1,0 +1,111 @@
+# Copyright 2016, 2017 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+python: "2.7"
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++
+      env: TOOLSET=gcc COMPILER=g++ CXXSTD=03,11
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc COMPILER=g++-5 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc COMPILER=g++-6 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=03,11
+
+    - os: linux
+      compiler: clang++-4.0
+      env: TOOLSET=clang COMPILER=clang++-4.0 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-4.0
+
+    - os: linux
+      compiler: clang++-5.0
+      env: TOOLSET=clang COMPILER=clang++-5.0 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
+
+    - os: osx
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=03,11,14,1z
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - cp -r $TRAVIS_BUILD_DIR/* libs/tuple
+  - python tools/boostdep/depinst/depinst.py tuple
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+  - ./b2 -j 3 libs/tuple/test toolset=$TOOLSET cxxstd=$CXXSTD
+
+notifications:
+  email:
+    on_success: always
