@@ -1,0 +1,130 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright (C) 2017 - 2019 James E. King III
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+#
+# Generic Appveyor build script for boostorg repositories
+# See: https://github.com/boostorg/boost-ci/
+#
+# Instructions for customizing this script for your library:
+#
+# 1. Customize the compilers and language levels you want.
+# 2. If you have more than include/, src/, test/, example/, examples/,
+#    benchmark/ or tools/ directories, set the environment variable DEPINST.
+#    For example if your build uses code in "bench/" and "fog/" directories:
+#      - DEPINST: --include bench --include fog
+# 3. Enable pull request builds in your boostorg/<library> account.
+#
+# That's it - the script will do everything else for you.
+#
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /bugfix\/.*/
+    - /feature\/.*/
+    - /fix\/.*/
+    - /pr\/.*/
+
+matrix:
+  # Adding MAYFAIL to any matrix job allows it to fail but the build stays green:
+  allow_failures:
+    - MAYFAIL: true
+
+environment:
+  global:
+    # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+    # to use the default for a given environment, comment it out; recommend you build debug and release however:
+    # on Windows it is important to exercise all the possibilities, especially shared vs static, however most
+    # libraries that care about this exercise it in their Jamfiles...
+    # B2_ADDRESS_MODEL: address-model=64,32
+    # B2_LINK: link=shared,static
+    # B2_THREADING: threading=multi,single
+    B2_VARIANT: variant=release,debug
+
+  matrix:
+    - FLAVOR: Visual Studio 2017 C++2a Strict
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      B2_ADDRESS_MODEL: address-model=64
+      B2_CXXFLAGS: cxxflags=-permissive-
+      B2_CXXSTD: latest # 2a
+      B2_TOOLSET: msvc-14.1
+
+    - FLAVOR: Visual Studio 2017 C++17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      B2_ADDRESS_MODEL: address-model=64
+      B2_CXXSTD: 17
+      B2_TOOLSET: msvc-14.1
+
+    - FLAVOR: Visual Studio 2017 C++14 (Default)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      B2_ADDRESS_MODEL: address-model=64,32
+      B2_TOOLSET: msvc-14.1
+
+    - FLAVOR: Visual Studio 2015 C++14 (Default)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      B2_ADDRESS_MODEL: address-model=64,32
+      B2_TOOLSET: msvc-14.0
+
+    - FLAVOR: Visual Studio 2010, 2012, 2013
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      B2_TOOLSET: msvc-10.0,msvc-11.0,msvc-12.0
+
+    - FLAVOR: cygwin (32-bit)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ADDPATH: C:\cygwin\bin;
+      B2_ADDRESS_MODEL: address-model=32
+      B2_CXXSTD: 03,11
+      # https://github.com/boostorg/test/issues/144
+      B2_DEFINES: define=_POSIX_C_SOURCE=200112L
+      B2_THREADING: threadapi=pthread
+      B2_TOOLSET: gcc
+
+    - FLAVOR: cygwin (64-bit)
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ADDPATH: C:\cygwin64\bin;
+      B2_ADDRESS_MODEL: address-model=64
+      B2_CXXSTD: 11,17
+      # https://github.com/boostorg/test/issues/144
+      B2_DEFINES: define=_POSIX_C_SOURCE=200112L define=__USE_ISOC99
+      B2_THREADING: threadapi=pthread
+      B2_TOOLSET: gcc
+
+    - FLAVOR: mingw32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARCH: i686
+      B2_ADDRESS_MODEL: address-model=32
+      B2_CXXSTD: 03,11
+      SCRIPT: ci\appveyor\mingw.bat
+
+    - FLAVOR: mingw64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARCH: x86_64
+      B2_ADDRESS_MODEL: address-model=64
+      B2_CXXSTD: 11,17
+      B2_DEFINES: define=__USE_ISOC99
+      SCRIPT: ci\appveyor\mingw.bat
+
+install:
+  - set SELF=%APPVEYOR_PROJECT_NAME:-=_%
+  - git clone https://github.com/boostorg/boost-ci.git C:\boost-ci
+  - xcopy /s /e /q /i C:\boost-ci\ci .\ci
+  - ci\appveyor\install.bat
+
+build: off
+
+test_script:
+  - set SELF=%APPVEYOR_PROJECT_NAME:-=_%
+  - PATH=%ADDPATH%%PATH%
+  # The definition of B2_TOOLCXX omits B2_CXXSTD= if it was not defined above
+  - IF NOT DEFINED B2_CXXSTD (SET B2_TOOLCXX=toolset=%B2_TOOLSET%) ELSE (SET B2_TOOLCXX=toolset=%B2_TOOLSET% cxxstd=%B2_CXXSTD%)
+  # Echo the complete build command to the build log
+  - IF NOT DEFINED SCRIPT                         (ECHO b2 libs/%SELF:\=/% %B2_TOOLCXX% %B2_CXXFLAGS% %B2_DEFINES% %B2_THREADING% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3)
+  # Now go build...
+  - IF DEFINED SCRIPT (call libs\%SELF%\%SCRIPT%) ELSE (b2 libs/%SELF:\=/% %B2_TOOLCXX% %B2_CXXFLAGS% %B2_DEFINES% %B2_THREADING% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3)
