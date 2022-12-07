@@ -1,0 +1,28 @@
+# Copyright 2020 René Ferdinand Rivera Morell
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.response-file]]`response-file`::
+*Allowed values:* `auto`, `file`, `contents`.
++
+Controls whether a response file is used, or not, during the build of the
+applicable target. For `file` a response file is created and the filename
+replaced in the action. For `contents` the contents (`:E=`) is replaced
+in the action and no response file is created. For `auto` either a response
+file is created, or the contents replaced, based on the length of the
+contents such that if the contents fits within the limits of the command
+execution line length limits the contents is replaced. Otherwise a
+response file is created and the filename is replaced in the actions.
++
+Supported for `clang-linux` and `msvc` toolsets.
+
+|# # end::doc[]
+
+feature.feature response-file
+    : auto file contents
+    : incidental ;

@@ -1,0 +1,106 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE.txt)
+#
+# Copyright René Ferdinand Rivera Morell 2020-2021.
+
+name: 'Multiarch Linux (QEMU)'
+
+on:
+  push:
+    branches: ["main", "release"]
+    paths-ignore:
+      [
+        ".circleci/**",
+        ".cirrus.yml",
+        ".drone.star",
+        ".semaphore/**",
+        ".travis.yml",
+        "appveyor.yml",
+        "azure-pipelines.yml",
+        ".ci/azp-*.yml",
+        ".github/workflows/installer_*.yml",
+      ]
+
+jobs:
+  qemu-multiarch-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              name: "Ubuntu 20.04 Focal (armhf)",
+              image: "multiarch/ubuntu-debootstrap:armhf-focal",
+              cxx: "g++",
+              toolset: "gcc",
+            }
+          - {
+              name: "Ubuntu 20.04 Focal (arm64)",
+              image: "multiarch/ubuntu-debootstrap:arm64-focal",
+              cxx: "g++",
+              toolset: "gcc",
+            }
+          - {
+              name: "Ubuntu 20.04 Focal (ppc64el)",
+              image: "multiarch/ubuntu-debootstrap:ppc64el-focal",
+              cxx: "g++",
+              toolset: "gcc",
+            }
+          - {
+              name: "Debian 11 Bullseye (armhf)",
+              image: "multiarch/debian-debootstrap:armhf-bullseye",
+              cxx: "g++",
+              toolset: "gcc",
+            }
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    env:
+      CXX: ${{ matrix.cxx }}
+      CXXFLAGS: ${{ matrix.cxxflags }}
+      PACKAGES: ${{ matrix.packages }}
+      LLVM_OS: ${{ matrix.llvm_os }}
+      LLVM_VER: ${{ matrix.llvm_ver }}
+      TOOLSET: ${{ matrix.toolset }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+      - name: "Install"
+        run: |
+          sudo apt-get -o Acquire::Retries=3 update
+          sudo apt-get -o Acquire::Retries=3 -y install qemu-user-static
+          docker pull "${{ matrix.image }}"
+      - name: "Setup"
+        run: |
+          env | grep -v '^#' | xargs > docker-run-action.env
+      - name: "Info"
+        run: |
+          echo ">>>>> ENV:"
+          cat docker-run-action.env
+          echo ">>>>>  WORKDIR: ${{ github.workspace }}"
+          ls -laF ${{ github.workspace }}
+      - name: "Run"
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ matrix.image }}
+          options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }} --env-file docker-run-action.env
+          run: |
+            set -e
+            uname -a
+            echo ">>>>>"
+            echo ">>>>> Install.."
+            echo ">>>>>"
+            ./.ci/linux-cxx-install.sh
+            echo ">>>>>"
+            echo ">>>>> Build.."
+            echo ">>>>>"
+            cd src/engine
+            export "PATH=${PATH};${CXX_PATH}"
+            ./build.sh ${TOOLSET}
+            ./b2 -v
+            cd ../..
+            echo ">>>>>"
+            echo ">>>>> Test.."
+            echo ">>>>>"
+            cd test
+            python3 test_all.py ${TOOLSET}
+            cd ..

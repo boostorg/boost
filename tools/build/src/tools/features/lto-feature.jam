@@ -1,0 +1,46 @@
+# Copyright 2019 Dmitry Arkhipov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.lto]]`lto`::
+*Allowed values:* `on`.
++
+Enables link time optimizations (also known as interprocedural optimizations or
+whole-program optimizations). Currently supported toolsets are <<GNU {CPP}>>,
+clang and <<Microsoft Visual {CPP}>>. The feature is optional.
+
+|# # end::doc[]
+
+feature.feature lto
+    : on
+    : optional propagated ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.lto-mode]]`lto-mode`::
+*Subfeature of* `lto`
++
+*Allowed values:* `full`, `thin`, `fat`.
++
+Specifies the type of LTO to use.
++
+`full`::: Use the monolithic LTO: on linking all input is merged into a single
+  module.
+`thin`::: Use clang's ThinLTO: each compiled file contains a summary of the
+  module, these summaries are merged into a single index. This allows to avoid
+  merging all modules together, which greatly reduces linking time.
+`fat`::: Produce gcc's fat LTO objects: compiled files contain both the
+  intermidiate language suitable for LTO and object code suitable for regular
+  linking.
+
+|# # end::doc[]
+
+feature.subfeature lto
+    : mode
+    : full thin fat
+    : propagated ;

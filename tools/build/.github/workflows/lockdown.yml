@@ -1,0 +1,32 @@
+name: 'Repo Lockdown'
+
+on:
+  issues:
+    types: opened
+  pull_request_target:
+    types: opened
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/repo-lockdown@v2
+        with:
+          log-output: true
+          skip-closed-issue-comment: true
+          issue-labels: 'transition'
+          issue-comment: >
+            Thank you for your contributions. Main development of B2 has moved to
+            https://github.com/bfgroup/b2
+            Please consider following up at https://github.com/bfgroup/b2/issues
+          skip-closed-pr-comment: true
+          pr-labels: 'transition'
+          pr-comment: >
+            Thank you for your contributions. Main development of B2 has moved to
+            https://github.com/bfgroup/b2
+            Please consider following up at https://github.com/bfgroup/b2/pulls

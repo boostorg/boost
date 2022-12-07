@@ -1,0 +1,174 @@
+// Copyright 2019-2020 Rene Rivera
+// Copyright 2003, 2006 Vladimir Prus
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+= B2 contributor guidelines
+
+B2 is an open-source project. This means that we welcome and appreciate
+all contributions -- be it ideas, bug reports, or patches. This document
+contains guidelines which helps to assure that development goes on smoothly, and
+changes are made quickly.
+
+The guidelines are not mandatory, and you can decide for yourself which one to
+follow. But note, the 10 mins that you spare writing a comment, for example,
+might lead to significantly longer delay for everyone.
+
+== Additional resources include
+
+=== The issue tracker
+
+https://github.com/bfgroup/b2/issues
+
+=== Discussion forums
+
+https://github.com/bfgroup/b2/discussions
+
+== BUGS and PATCHES
+
+Both bugs and patches can be submitted to the GitHub tracker.
+
+When reporting a bug, please try to provide the following information:
+
+* What you did.
+    * A minimal reproducible test case is very much appreciated.
+    * Shell script with some annotations is much better than verbose
+      description of the problem.
+    * A regression test is the best (see test/test_system.html).
+
+* What you got.
+
+* What you expected.
+
+* What version of B2 did you use. If possible, please try to test with the
+  main branch state.
+
+When submitting a patch, please:
+
+* Make a single patch for a single logical change
+* Follow the policies and coding conventions below
+* Send patches as pull requests to the main branch
+* Provide a good PR message together with the patch
+
+The purpose of message serves to communicate what was changed, and *why*.
+Without a good message, you might spend a lot of time later, wondering where
+a strange piece of code came from and why it was necessary.
+
+The good message mentions each changed file and each rule/method, saying
+what happened to it, and why. Consider, the following log message
+
+----
+Better direct request handling.
+
+* new/build-request.jam
+    (directly-requested-properties-adjuster): Redo.
+
+* new/targets.jam
+    (main-target.generate-really): Adjust properties here.
+
+* new/virtual-target.jam
+    (register-actual-name): New rule.
+    (virtual-target.actualize-no-scanner): Call the above, to detected bugs,
+    where two virtual target correspond to one Jam target name.
+----
+
+The messages for the last two files are good. They tell what was changed.
+The change to the first file is clearly under-commented.
+
+It's okay to use terse messages for uninteresting changes, like ones induced
+by interface changes elsewhere.
+
+== POLICIES
+
+=== Testing
+
+All serious changes must be tested. New rules must be tested by the module where
+they are declared. The test system (link:test/test_system.html[test/test_system.html])
+should be used to verify user-observable behavior.
+
+=== Documentation
+
+It turns out that it's hard to have too much comments, but it's easy to have too
+little. Please prepend each rule with a comment saying what the rule does and
+what arguments mean. Stop for a minute and consider if the comment makes sense
+for anybody else, and completely describes what the rules does. Generic phrases
+like "adjusts properties" are really not enough.
+
+When applicable, make changes to the user documentation as well.
+
+== CODING CONVENTIONS
+
+1. All names of rules and variables are lowercase with "-" to separate
+   words.
++
+----
+rule call-me-ishmael ( ) ...
+----
+
+2. Names with dots in them are "intended globals". Ordinary globals use a
+   dot prefix:
++
+----
+.foobar
+$(.foobar)
+----
+
+3. Pseudofunctions or associations are <parameter>.<property>:
++
+----
+$(argument).name = hello ;
+$($(argument).name)
+----
+
+4. Class attribute names are prefixed with "self.":
++
+----
+self.x
+$(self.x)
+----
+
+5. Builtin rules are called via their ALL_UPPERCASE_NAMES:
++
+----
+DEPENDS $(target) : $(sources) ;
+----
+
+6. Opening and closing braces go on separate lines:
++
+----
+if $(a)
+{
+    #
+}
+else
+{
+    #
+}
+----
+
+== ENGINE
+
+Developing in the `b2` engine, the C++ part, requires two steps to be
+effective: building the "stable" engine, and developing the
+"in-progress" engine.
+
+What is the "stable" engine is up to you. It only refers to a build of the
+engine you know is at a good working state. When you are at a point the
+source is stable you can run `bootstrap.sh/bat` from the root. That will
+create the `b2` executable at the root. You can then use this version to run
+regular B2 builds as needed both within the B2 tree and in other projects.
+
+The "in-progress" engine is whatever build you happen to be testing at the
+moment. There are two ways to build this be engine. You can either
+(a) run `b2 b2` at the root, or (b) run `build.sh/bat` in `src/engine`.
+
+Using (a) will place, by default, a fully debuggable `b2` in the `.build`
+directories. You can run that one from a debugger with full symbols and
+stepping features. This should be the first choice in developing in the
+engine.
+
+After using (a) to implement functionality you can use (b) to fully test
+that functionality. The engine built from (b) is fully optimized and
+is the one used, by default, by the test system when running in the `test`
+directory. Before submitting patches it's required to build this way and
+run the tests in at least one toolset version (but preferably at least two).

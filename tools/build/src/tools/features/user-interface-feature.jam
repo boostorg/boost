@@ -1,0 +1,28 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.user-interface]]`user-interface`::
+*Allowed values:* `console`, `gui`, `wince`, `native`, `auto`.
++
+Specifies the environment for the executable which affects the entry point
+symbol (or entry point function) that the linker will select. This feature is
+Windows-specific.
++
+`console`::: console application.
+`gui`::: application does not require a console (it is supposed to create its
+  own windows.
+`wince`::: application is intended to run on a device that has a version of the
+  Windows CE kernel.
+`native`::: application runs without a subsystem environment.
+`auto`::: application runs in the POSIX subsystem in Windows.
+
+|# # end::doc[]
+
+feature.feature user-interface
+    : console gui wince native auto ;

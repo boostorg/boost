@@ -1,0 +1,104 @@
+#|
+Copyright 2019 Dmitry Arkhipov
+Distributed under the Boost Software License, Version 1.0. (See
+accompanying file LICENSE.txt or copy at
+https://www.bfgroup.xyz/b2/LICENSE.txt)
+|#
+
+
+using pkg-config : : : <libdir>packages ;
+using pkg-config : debug : : <libdir>packages <path>debug-packages ;
+
+import common ;
+import pkg-config ;
+import property-set ;
+import testing ;
+import version ;
+
+
+project : requirements <variant>debug:<pkg-config>debug ;
+
+
+pkg-config.import debugged ;
+pkg-config.import foobar : requirements <version>>=0.3 ;
+pkg-config.import mangled : requirements <conditional>@mangle-name ;
+
+versioned =
+    [ pkg-config.import versioned
+    : usage-requirements <conditional>@versioned-api
+    ] ;
+
+with-var =
+    [ pkg-config.import with-var
+    : usage-requirements <conditional>@var-to-define
+    ] ;
+
+
+# test if a package is found at all
+run test1.cpp foobar ;
+
+# test if conditional requirement is applied
+run test2.cpp mangled
+    : target-name test2-1
+    : requirements <threading>single
+    : args SINGLE
+    ;
+
+run test2.cpp mangled
+    : target-name test2-2
+    : requirements <threading>multi
+    : args MULTI
+    ;
+
+# test if pkg-config configuration is properly inferred from property set
+run test3.cpp debugged
+    : target-name test3-1
+    : requirements <variant>release
+    : args RELEASE
+    ;
+
+run test3.cpp debugged
+    : target-name test3-2
+    : requirements <variant>debug
+    : args DEBUG
+    ;
+
+# test use of version method of pkg-config targets
+run test4.cpp versioned ;
+
+# test use of variable method of pkg-config targets
+run test5.cpp with-var ;
+
+
+rule mangle-name ( props * ) {
+  import feature ;
+  local name =
+      [ common.format-name
+        <base> <threading>
+      : mangled
+      : ""
+      : [ property-set.create $(props) ]
+      ] ;
+  return <name>$(name) ;
+}
+
+
+rule versioned-api ( props * ) {
+    local ps = [ property-set.create $(props) ] ;
+    local version = [ $(versioned).version $(ps) ] ;
+    if [ version.version-less $(version) : 2 ]
+    {
+        return <define>VERSIONED_API=1 ;
+    }
+    else
+    {
+        return <define>VERSIONED_API=2 ;
+    }
+}
+
+
+rule var-to-define ( props * ) {
+    local ps = [ property-set.create $(props) ] ;
+    local qwerty = [ $(with-var).variable qwerty : $(ps) ] ;
+    return <define>QWERTY=\\\"$(qwerty)\\\" ;
+}

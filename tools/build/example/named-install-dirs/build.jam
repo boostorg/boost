@@ -1,0 +1,54 @@
+# showcasing several default install directories
+install a1 : a : <location>(bindir) ;
+install a2 : a : <location>(libdir)/a2 ;
+install (sbindir)/a3 : a ;
+
+# using a custom prefix; the file will be installed into foo/bar/bin/a4
+install (bindir)/a4 : a : <install-prefix>foo/bar ;
+
+# this one deduces installed package name to be the basename of the project
+# directory, so e.g. on Linux the file will be installed installed into
+# /usr/local/share/doc/<name of project's directory>/a5
+install (docdir)/a5 : a : <install-prefix>bar/baz ;
+
+# use a custom named directory; its default on Linux is /usr/local/share/xyz/
+import stage ;
+stage.add-install-dir foodir : xyz : datadir ;
+install (foodir)/a6 : a ;
+
+
+# another custom named directory, this one appends package name like docdir;
+# so, e.g. on Linux it defaults to /usr/local/lib/named-install-dirs
+stage.add-install-dir privatedir : "" : libdir : package-suffix ;
+install (privatedir)/a7 : a ;
+
+# using stage.get-package-name
+make a8 : a : @write-dirs : <staging-prefix>p/q/r <install-bindir>/bin ;
+
+rule write-dirs ( target : sources * : properties *  )
+{
+    import property-set ;
+    import print ;
+    local ps = [ property-set.create $(properties) ] ;
+    local pn = [ stage.get-package-name $(ps) ] ;
+    print.output $(target) ;
+    print.text
+        [ stage.get-dir docdir : $(ps) : $(pn) ]
+        [ stage.get-dir docdir : $(ps) : $(pn) : staged ]
+        [ stage.get-dir docdir : $(ps) : $(pn) : relative ]
+        [ stage.get-dir docdir : $(ps) : $(pn) : relative staged ]
+        [ stage.get-dir bindir : $(ps) : $(pn) : relative ]
+      : overwrite
+      ;
+}
+
+# using staging prefix; on Linux installs into q/r/s/share/a9
+install (datarootdir)/a9 : a : <staging-prefix>q/r/s ;
+
+
+build-project x ;
+
+# Copyright 2020 Dmitry Arkhipov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)

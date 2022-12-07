@@ -1,0 +1,232 @@
+# Copyright 2019 Rene Rivera
+# Copyright 2017 Steven Watanabe
+# Copyright 2016 Vladimir Prus
+# Copyright 2017 Edward Diener
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import "class" : new ;
+import bison ;
+import errors ;
+import feature ;
+import indirect ;
+import os ;
+# import package ;
+import path ;
+import set ;
+import stage : add-install-dir ;
+import toolset ;
+import type ;
+import virtual-target ;
+
+path-constant SELF : . ;
+
+project b2
+    : build-dir .build
+    : requirements
+        <cxxstd>11
+        <toolset>msvc:<define>_CRT_SECURE_NO_WARNINGS=1
+        <toolset>msvc:<define>_CRT_NONSTDC_NO_DEPRECATE=1
+    ;
+
+#|
+Build the engine and its dependencies outside of the simple core build scripts.
+This allows us to keep the core build scripts as simple as possible. And lets
+us support more functionality for development of the engine core.
+|#
+
+#|
+Define custom yyacc tool.
+|#
+
+feature.feature yyacc : : dependency free ;
+toolset.flags yyacc TOOL <yyacc> ;
+
+exe yyacc
+    :   src/engine/yyacc.cpp
+    :   ;
+explicit yyacc ;
+
+rule yyacc-gen ( project name : property-set : sources * )
+{
+    local relevant = [ toolset.relevant $(__name__).yyacc ] ;
+    local a = [ new action $(sources[1]) : $(__name__).yyacc : [ $(property-set).add $(relevant) ] ] ;
+    local targets ;
+    for local n in $(name:S=).y $(name:S=)tab.h
+    {
+        targets += [ virtual-target.register
+            [ new file-target $(n) exact : [ type.type $(n) ]
+                : $(project) : $(a)
+                ] ] ;
+    }
+    return $(targets) ;
+}
+
+actions yyacc bind TOOL
+{
+    "$(TOOL)" "$(<)" "$(>)"
+}
+
+generate jamgram.y
+    :   src/engine/jamgram.yy
+    :   <generating-rule>@yyacc-gen
+        <location>src/engine
+        <yyacc>yyacc <dependency>yyacc
+    ;
+explicit jamgram.y ;
+
+#|
+Define grammar translation with Bison.
+|#
+
+BISON = [ os.environ BISON ] ;
+BISON ?= bison ;
+local BISON_IN_PATH = [ path.glob [ os.executable-path ] : $(BISON[1]) $(BISON[1]).* ] ;
+
+rule grammar ( target : source : properties * )
+{
+    # LOCATE on $(target) = $(source:D) ;
+    BISON on $(target) = $(BISON) ;
+}
+
+actions grammar
+{
+    "$(BISON)" --yacc --defines -o "$(<[1])" "$(>)"
+}
+
+if $(BISON_IN_PATH)
+{
+    make jamgram.cpp
+        :   src/engine/jamgram.y
+        :   @grammar
+        :   <dependency>jamgram.y
+            <location>src/engine ;
+}
+else
+{
+    errors.warning "Bison generator program '$(BISON:J= )' not found. Skipping grammar build." ;
+    alias jamgram.cpp
+        :   src/engine/jamgram.cpp ;
+}
+explicit jamgram.cpp ;
+
+#|
+Define the b2 executable. Sources are based on platform.
+TODO: Make platform specific source be no-ops when not needed.
+|#
+
+obj jamgram.obj
+    :   jamgram.cpp
+    :   <toolset>gcc:<cxxflags>-Wno-free-nonheap-object
+    ;
+explicit jamgram.obj ;
+
+local b2_src =
+    [ glob src/engine/*.cpp src/engine/modules/*.cpp :
+        src/engine/*nt.cpp src/engine/*unix.cpp src/engine/*vms.cpp
+        src/engine/yyacc.cpp src/engine/mkjambase.cpp
+        src/engine/check_*.cpp
+        src/engine/jamgram.cpp
+        ] ;
+local b2_src_nt = [ glob src/engine/*nt.cpp ] ;
+local b2_src_unix = [ glob src/engine/*unix.cpp ] ;
+local b2_src_vms = [ glob src/engine/*vms.cpp ] ;
+local unix_os = [ set.difference [ feature.values <target-os> ] : windows vms ] ;
+
+exe b2
+    :   $(b2_src)
+        jamgram.obj
+    :   <target-os>windows:<source>$(b2_src_nt)
+        <target-os>vms:<source>$(b2_src_vms)
+        <target-os>$(unix_os):<source>$(b2_src_unix)
+        <toolset>msvc:<find-static-library>kernel32
+        <toolset>msvc:<find-static-library>advapi32
+        <toolset>msvc:<find-static-library>user32
+    ;
+explicit b2 ;
+
+#|
+Installation of the engine, build, and example files.
+|#
+
+feature.feature b2-install-layout : standard portable : incidental propagated ;
+if [ os.on-windows ]
+{
+    feature.set-default b2-install-layout : portable ;
+}
+
+add-install-dir b2prefix-standard : : prefix ;
+add-install-dir b2bindir-standard : : bindir ;
+add-install-dir b2coredir-standard : b2/src : datarootdir ;
+add-install-dir b2examplesdir-standard : b2/examples : datarootdir ;
+
+add-install-dir b2prefix-portable : : prefix ;
+add-install-dir b2bindir-portable : : b2prefix-portable ;
+add-install-dir b2coredir-portable : .b2 : b2prefix-portable ;
+add-install-dir b2examplesdir-portable : .b2/examples : b2prefix-portable ;
+
+local ext = "" ;
+if [ os.on-windows ] || [ os.on-vms ]
+{
+    ext = ".exe" ;
+}
+
+install b2-engine
+    :   $(SELF)/src/engine/b2$(ext)
+    :   <b2-install-layout>standard:<location>(b2bindir-standard)
+        <b2-install-layout>portable:<location>(b2bindir-portable)
+    ;
+explicit b2-engine ;
+
+local examples ;
+for local e in [ glob-tree-ex $(SELF)/example : * : . .svn ]
+{
+    if [ CHECK_IF_FILE [ path.native $(e) ] ]
+    {
+        examples += $(e) ;
+    }
+}
+install b2-examples
+    : # What to install
+        $(examples)
+    :   # What is the root of the directory
+        <install-source-root>example
+        # Which subdir of $prefix/share
+        <b2-install-layout>standard:<location>(b2examplesdir-standard)
+        <b2-install-layout>portable:<location>(b2examplesdir-portable)
+    ;
+explicit b2-examples ;
+
+local .core-sources =
+    $(SELF)/src/build-system.jam
+    [ path.glob-tree $(SELF)/src/build : *.jam ]
+    [ path.glob-tree $(SELF)/src/contrib : *.jam ]
+    [ path.glob-tree $(SELF)/src/kernel : *.jam ]
+    [ path.glob-tree $(SELF)/src/options : *.jam ]
+    [ path.glob-tree $(SELF)/src/util : *.jam ]
+    [ path.glob-tree $(SELF)/src/tools : *.jam *.xml *.xsl *.doxyfile *.hpp doxproc.py ]
+    ;
+
+install b2-core
+    :   # What to install
+        $(.core-sources)
+    :   # What is the root of the directory
+        <install-source-root>src
+        # Which subdir of $prefix/share
+        <b2-install-layout>standard:<location>(b2coredir-standard)
+        <b2-install-layout>portable:<location>(b2coredir-portable)
+    ;
+explicit b2-core ;
+
+#|
+Only install example files when requested to avoid bloating install footprint.
+|#
+if --with-examples in [ modules.peek : ARGV ]
+{
+    alias install : b2-engine b2-core b2-examples ;
+}
+else
+{
+    alias install : b2-engine b2-core ;
+}
+explicit install ;

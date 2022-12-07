@@ -1,0 +1,136 @@
+# Copyright 2003 Dave Abrahams
+# Copyright 2003, 2005, 2006 Rene Rivera
+# Copyright 2003, 2005, 2006 Vladimir Prus
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+# First of all, check the jam version.
+if $(JAM_VERSION:J="") < 030112
+{
+    ECHO "error: Boost.Jam version 3.1.12 or later required" ;
+    EXIT ;
+}
+
+local required-rules = GLOB-RECURSIVELY HAS_NATIVE_RULE ;
+for local r in $(required-rules)
+{
+    if ! $(r) in [ RULENAMES ]
+    {
+        ECHO "error: builtin rule '$(r)' is not present" ;
+        ECHO "error: your version of bjam is likely out of date" ;
+        ECHO "error: please get a fresh version from SVN." ;
+        EXIT ;
+    }
+}
+
+local native = regex transform 2 ;
+while $(native)
+{
+    if ! [ HAS_NATIVE_RULE $(native[1]) : $(native[2]) : $(native[3]) ]
+    {
+        ECHO "error: missing native rule '$(native[1]).$(native[2])'" ;
+        ECHO "error: or interface version of that rule is too low" ;
+        ECHO "error: your version of bjam is likely out of date" ;
+        ECHO "error: please get a fresh version from SVN." ;
+        EXIT ;
+    }
+    native = $(native[4-]) ;
+}
+
+
+# Check that the builtin .ENVIRON module is present. We do not have a builtin to
+# check that a module is present, so we assume that the PATH environment
+# variable is always set and verify that the .ENVIRON module has a non-empty
+# value of that variable.
+module .ENVIRON
+{
+    local p = $(PATH) $(Path) $(path) ;
+    if ! $(p)
+    {
+        ECHO "error: no builtin module .ENVIRON is found" ;
+        ECHO "error: your version of bjam is likely out of date" ;
+        ECHO "error: please get a fresh version from SVN." ;
+        EXIT ;
+    }
+}
+
+# Check that @() functionality is present. Similarly to modules, we do not have
+# a way to test this directly. Instead we check that $(TMPNAME) functionality is
+# present which was added at roughly the same time (more precisely, it was added
+# just before).
+{
+    if ! $(TMPNAME)
+    {
+        ECHO "error: no @() functionality found" ;
+        ECHO "error: your version of b2 is likely out of date" ;
+        ECHO "error: please get a fresh version from SVN." ;
+        EXIT ;
+    }
+}
+
+# Make sure that \n escape is available.
+if "\n" = "n"
+{
+    if $(OS) = CYGWIN
+    {
+        ECHO "warning: escape sequences are not supported" ;
+        ECHO "warning: this will cause major misbehaviour on cygwin" ;
+        ECHO "warning: your version of b2 is likely out of date" ;
+        ECHO "warning: please get a fresh version from SVN." ;
+    }
+}
+
+
+# Bootstrap the module system. Then bring the import rule into the global module.
+#
+SEARCH on <module@>modules.jam = $(.bootstrap-file:D) ;
+module modules { include <module@>modules.jam ; }
+IMPORT modules : import : : import ;
+
+{
+    # Add module subdirectories to the BOOST_BUILD_PATH, which allows us to make
+    # incremental refactoring steps by moving modules to appropriate
+    # subdirectories, thereby achieving some physical separation of different
+    # layers without changing all of our code to specify subdirectories in
+    # import statements or use an extra level of qualification on imported
+    # names.
+
+    local subdirs =
+        kernel        # only the most-intrinsic modules: modules, errors
+        util          # low-level substrate: string/number handling, etc.
+        build         # essential elements of the build system architecture
+        tools         # toolsets for handling specific build jobs and targets.
+        contrib       # user contributed (unreviewed) modules
+        .             # build-system.jam lives here
+        ;
+    local whereami = [ NORMALIZE_PATH $(.bootstrap-file:DT) ] ;
+    BOOST_BUILD_PATH += $(whereami:D)/$(subdirs) ;
+
+    modules.poke .ENVIRON : BOOST_BUILD_PATH : $(BOOST_BUILD_PATH) ;
+}
+
+# Reload the modules, to clean up things. The modules module can tolerate being
+# imported twice.
+#
+import modules ;
+
+# Process option plugins first to allow them to prevent loading the rest of the
+# build system.
+#
+import option ;
+local dont-build = [ option.process ] ;
+
+# Should we skip building, i.e. loading the build system, according to the
+# options processed?
+#
+if ! $(dont-build)
+{
+    # Allow users to override the build system file from the command-line
+    # (mostly for testing).
+    local build-system = [ MATCH --build-system=(.*) : $(ARGV) ] ;
+    build-system ?= build-system ;
+
+    # Use last element in case of multiple command-line options.
+    import $(build-system[-1]) ;
+}

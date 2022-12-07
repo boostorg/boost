@@ -1,0 +1,55 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.architecture]]`architecture`::
+*Allowed values:* `x86`, `ia64`, `sparc`, `power`, `mips`, `mips1`, `mips2`,
+`mips3`, `mips4`, `mips32`, `mips32r2`, `mips64`, `parisc`, `arm`,
+`s390x`, `loongarch`.
++
+Specifies the general processor family to generate code for.
+
+|# # end::doc[]
+
+feature.feature architecture
+    :
+        # x86 and x86-64
+        x86
+
+        # ia64
+        ia64
+
+        # Sparc
+        sparc
+
+        # RS/6000 & PowerPC
+        power
+
+        # LoongArch
+        loongarch
+
+        # MIPS/SGI
+        mips mips1 mips2 mips3 mips4 mips32 mips32r2 mips64
+
+        # HP/PA-RISC
+        parisc
+
+        # Advanced RISC Machines
+        arm
+
+        # RISC-V
+        riscv
+
+        # z Systems (aka s390x)
+        s390x
+
+        # Combined architecture(s)
+        arm+x86
+    :
+        propagated optional
+    ;

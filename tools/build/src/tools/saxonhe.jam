@@ -1,0 +1,53 @@
+#
+# Copyright (c) 2018 Damian Jarek (damian dot jarek93 at gmail dot com)
+# Copyright (c) 2019 Richard Hodges (hodges dot r at gmail dot com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE.txt or copy at https://www.bfgroup.xyz/b2/LICENSE.txt)
+#
+
+import common ;
+import os ;
+
+rule init ( saxonhe_jar ? : java_exe ? )
+{
+    .java_exe = [ common.get-invocation-command saxonhe : java : $(java_exe) :  ] ;
+    if $(saxonhe_jar)
+    {
+        .saxonhe_jar = $(saxonhe_jar) ;
+    }
+    else
+    {
+        local jar = [ GLOB "/usr/share/java/saxon/" "/usr/share/java/" : Saxon-HE.jar ] ;
+        .saxonhe_jar = $(jar[1]) ;
+    }
+}
+
+#
+# execute the saxonhe jar file passing files as inputs and outputs.
+#
+actions saxonhe
+{
+    "$(.java_exe)" -jar "$(.saxonhe_jar)" -o:"$(<)" -s:"$(>[1])" -xsl:"$(>[2])"
+}
+
+#
+# execute the saxonhe jar file passing directories as inputs and outputs.
+# saxonhe requires that the output directory already exists
+#
+if [ os.on-windows ]
+{
+    actions saxonhe_dir
+    {
+        if not exist "$(<)\\" mkdir "$(<)"
+        "$(.java_exe)" -jar "$(.saxonhe_jar)" -o:"$(<)" -s:"$(>[1])" -xsl:"$(>[2])"
+    }
+}
+else
+{
+    actions saxonhe_dir
+    {
+        mkdir -p "$(<)"
+        "$(.java_exe)" -jar "$(.saxonhe_jar)" -o:"$(<)" -s:"$(>[1])" -xsl:"$(>[2])"
+    }
+}

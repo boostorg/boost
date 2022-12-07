@@ -1,0 +1,34 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.debug-symbols]]`debug-symbols`::
+*Allowed values:* `on`, `off`.
++
+Specifies if produced object files, executables, and libraries should include
+debug information. Typically, the value of this feature is implicitly set by
+the `variant` feature, but it can be explicitly specified by the user. The most
+common usage is to build release variant with debugging information.
+
+|# # end::doc[]
+
+feature.feature debug-symbols
+    : on off
+    : propagated ;
+
+#| tag::prof-doc[]
+
+[[bbv2.builtin.features.profiling]]`profiling`::
+*Allowed values:* `off`, `on`.
++
+Enables generation of extra code to write profile information.
+|# # end::prof-doc[]
+
+feature.feature profiling
+    : off on
+    : propagated ;

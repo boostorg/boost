@@ -1,0 +1,905 @@
+# Copyright 2003 Dave Abrahams
+# Copyright 2005, 2006 Rene Rivera
+# Copyright 2002, 2003, 2004, 2005, 2006 Vladimir Prus
+# Copyright 2020 Dmitry Arkhipov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+#| tag::doc[]
+
+[[bbv2.reference.modules.stage]]
+= stage
+This module defines the `install` rule, used to copy a set of targets to a
+single location.
+
+|# # end::doc[]
+
+
+import "class" : new ;
+import feature ;
+import generators ;
+import option ;
+import path ;
+import project ;
+import property ;
+import targets ;
+import type ;
+import types/register ;
+import virtual-target ;
+
+
+feature.feature <install-dependencies> : off on : incidental      ;
+feature.feature <install-type>         :        : free incidental ;
+feature.feature <install-source-root>  :        : free path       ;
+feature.feature <so-version>           :        : free incidental ;
+
+# If 'on', version symlinks for shared libraries will not be created. Affects
+# Unix builds only.
+feature.feature <install-no-version-symlinks> : on : optional incidental ;
+
+
+#| tag::features-install-package-doc[]
+
+[[bbv2.builtin.features.install-package]]`install-package`::
+Specifies the name of the package to which installed files belong.  This is
+used for default installation prefix on certain platforms.
+
+|# # end::features-install-package-doc[]
+
+feature.feature install-package : : free ;
+
+
+#| tag::doc[]
+
+[[bbv2.reference.modules.stage.add-install-dir]]
+. `rule add-install-dir ( name : suffix ? : parent ? : options * )`
++
+Defines a named installation directory.
++
+For example, `add-install-dir foo : bar : baz ;` creates feature
+<<bbv2.builtin.features.install-prefix,`<install-foo>`>> and adds support for
+named directory `(foo)` to `install` rule. The rule will try to use the value
+of `<install-foo>` property if present, otherwise will fallback to `(baz)/bar`.
++
+Arguments:
++
+* `name`: the name of the directory.
+* `suffix`: the path suffix appended to the parent named directory.
+* `parent`: the optional name of parent named directory.
+* `options`: special options that modify treatment of the directory.
+  Allowed options:
++
+** `package-suffix`: append the package name to the default value. For example:
++
+[source]
+----
+add-install-dir foo : bar : baz : package-suffix ;
+install (foo) : a : <install-package>xyz ;
+----
++
+installs `a` into `(baz)/bar/xyz`.
+
+|# # end::doc[]
+
+.dirs = ;
+rule add-install-dir ( name : suffix ? : parent ? : options * )
+{
+    suffix ?= "" ;
+    if $(name) in $(.dirs)
+    {
+        import errors ;
+        errors.error Directory name $(name) is already registered. ;
+    }
+    feature.feature install-$(name) : : free ;
+    .dirs += $(name) ;
+    .dir.$(name) = $(suffix) $(parent) ;
+    .dir.$(name).options = $(options) ;
+}
+
+
+#| tag::doc[]
+
+. `rule install-dir-names ( )`
++
+Returns names of all registered installation directories.
+
+|# # end::doc[]
+
+rule install-dir-names ( )
+{
+    return $(.dirs) ;
+}
+
+
+#| tag::features-install-prefix-doc[]
+
+[[bbv2.builtin.features.install-prefix]]`install-<name>`::
+Specifies installation prefix for <<bbv2.tasks.installing,`install`>> targets.
+These named installation prefixes are registered by default:
++
+* `prefix`: `C:\<package name>` if `<target-os>windows` is in the property set,
+  `/usr/local` otherwise
+* `exec-prefix`: `(prefix)`
+* `bindir`: `(exec-prefix)/bin`
+* `sbindir`: `(exec-prefix)/sbin`
+* `libexecdir`: `(exec-prefix)/libexec`
+* `libdir`: `(exec-prefix)/lib`
+* `datarootdir`: `(prefix)/share`
+* `datadir`: `(datarootdir)`
+* `sysconfdir`: `(prefix)/etc`
+* `sharedstatedir`: `(prefix)/com`
+* `localstatedir`: `(prefix)/var`
+* `runstatedir`: `(localstatedir)/run`
+* `includedir`: `(prefix)/include`
+* `oldincludedir`: `/usr/include`
+* `docdir`: `(datarootdir)/doc/<package name>`
+* `infodir`: `(datarootdir)/info`
+* `htmldir`: `(docdir)`
+* `dvidir` : `(docdir)`
+* `pdfdir` : `(docdir)`
+* `psdir` : `(docdir)`
+* `lispdir`: `(datarootdir)/emacs/site-lisp`
+* `localedir`: `(datarootdir)/locale`
+* `mandir`: `(datarootdir)/man`
+
+If more are necessary, they could be added with
+<<bbv2.reference.modules.stage.add-install-dir,`stage.add-install-dir`>>.
+
+|# # end::features-install-prefix-doc[]
+
+feature.feature install-prefix : : free path ;
+add-install-dir exec-prefix : "" : prefix ;
+add-install-dir bindir : bin : exec-prefix ;
+add-install-dir sbindir : sbin : exec-prefix ;
+add-install-dir libexecdir : libexec : exec-prefix ;
+add-install-dir libdir : lib : exec-prefix ;
+add-install-dir datarootdir : share : prefix ;
+add-install-dir datadir : "" : datarootdir ;
+add-install-dir sysconfdir : etc : prefix ;
+add-install-dir sharedstatedir : com : prefix ;
+add-install-dir localstatedir : var : prefix ;
+add-install-dir runstatedir : run : localstatedir ;
+add-install-dir includedir : "include" : prefix ;
+add-install-dir oldincludedir : /usr/include ;
+add-install-dir docdir : doc : datarootdir : package-suffix ;
+add-install-dir infodir : info : datarootdir ;
+add-install-dir htmldir : "" : docdir ;
+add-install-dir dvidir : "" : docdir ;
+add-install-dir pdfdir : "" : docdir ;
+add-install-dir psdir : "" : docdir ;
+add-install-dir lispdir : emacs/site-lisp : datarootdir ;
+add-install-dir localedir : locale : datarootdir ;
+add-install-dir mandir : man : datarootdir ;
+
+
+#| tag::features-staging-prefix-doc[]
+
+[[bbv2.builtin.features.staging-prefix]]`staging-prefix`::
+Specifies staging prefix for <<bbv2.tasks.installing,`install`>> targets.
+If present, it will be used instead of the path to named directory `prefix`.
+Example:
++
+[source]
+----
+project : requirements <install-prefix>x/y/z ;
+install a1 : a : <location>(bindir) ; # installs into x/y/z/bin
+install a2 : a : <location>(bindir) <staging-prefix>q ; # installs into q/bin
+----
+The feature is useful when you cannot (or don't want to) put build artfiacts
+into their intented locations during the build (such as when cross-compiling),
+but still need to communicate those intended locations to the build system,
+e.g. to generate configuration files.
+
+|# # end::features-staging-prefix-doc[]
+
+feature.feature staging-prefix : : free path ;
+
+
+class install-target-class : basic-target
+{
+    import "class" : new ;
+    import feature ;
+    import generators ;
+    import path ;
+    import project ;
+    import property ;
+    import property-set ;
+    import stage ;
+    import type ;
+
+    rule __init__ ( name-and-dir : project : sources * : requirements * :
+        default-build * : usage-requirements * )
+    {
+        # The usage-requirements specified here are ignored but are taken as a
+        # parameter to have this metatarget class have the same standard
+        # instantiation interface as all the other Boost Build metatarget
+        # classes.
+        basic-target.__init__ $(name-and-dir) : $(project) : $(sources) :
+            $(requirements) : $(default-build) ;
+    }
+
+    # If <location> is not set, sets it based on the project data.
+    # Either way, expands installation prefixes.
+    rule update-location ( property-set )
+    {
+        local location = [ $(property-set).get <location> ] ;
+        local project-location = [ $(self.project).get location ] ;
+
+        local prefix ;
+        local suffix = $(location) ;
+        if $(suffix)
+        {
+            local rel = [ path.relative $(suffix) $(project-location)
+                : no-error ] ;
+            if not-a-child != $(rel)
+            {
+                suffix = $(rel) ;
+            }
+        }
+        suffix ?= $(self.name) ;
+        local matches = [ MATCH "^\\((.+)\\)(/(.*))?$" : $(suffix) ] ;
+
+        # if location can be split into named directory and optional trailing
+        # path, do the split and expand the name into path
+        if $(matches)
+        {
+            suffix = $(matches[3]) ;
+            suffix ?= "" ;
+            local package-name = [ stage.get-package-name $(property-set)
+                : [ $(self.project).project-module ] ] ;
+            prefix = [ stage.get-dir $(matches[1]) : $(property-set)
+                : $(package-name) : staged ] ;
+        }
+        # prefix location with the project's path
+        else if ! $(location)
+        {
+            prefix = $(project-location) ;
+        }
+
+        # only modify location if it's necessary
+        if $(prefix)
+        {
+            suffix = [ path.root $(suffix) $(prefix) ] ;
+            local properties = [ $(property-set).raw ] ;
+            properties = [ property.change $(properties) : <location> ] ;
+            property-set = [ property-set.create $(properties) <location>$(suffix) ] ;
+        }
+
+        return $(property-set) ;
+    }
+
+    # Takes a target that is installed and a property set which is used when
+    # installing.
+    #
+    rule adjust-properties ( target : build-property-set )
+    {
+        local ps-raw ;
+        local a = [ $(target).action ] ;
+        if $(a)
+        {
+            local ps = [ $(a).properties ] ;
+            ps-raw = [ $(ps).raw ] ;
+
+            # Unless <hardcode-dll-paths>true is in properties, which can happen
+            # only if the user has explicitly requested it, nuke all <dll-path>
+            # properties.
+            if [ $(build-property-set).get <hardcode-dll-paths> ] != true
+            {
+                ps-raw = [ property.change $(ps-raw) : <dll-path> ] ;
+            }
+
+            # If any <dll-path> properties were specified for installing, add
+            # them.
+            local l = [ $(build-property-set).get <dll-path> ] ;
+            ps-raw += $(l:G=<dll-path>) ;
+
+            # Also copy <linkflags> feature from current build set, to be used
+            # for relinking.
+            local l = [ $(build-property-set).get <linkflags> ] ;
+            ps-raw += $(l:G=<linkflags>) ;
+
+            # Remove the <tag> feature on original targets.
+            ps-raw = [ property.change $(ps-raw) : <tag> ] ;
+
+            # And <location>. If stage target has another stage target in
+            # sources, then we shall get virtual targets with the <location>
+            # property set.
+            ps-raw = [ property.change $(ps-raw) : <location> ] ;
+        }
+
+        local d = [ $(build-property-set).get <dependency> ] ;
+        ps-raw += $(d:G=<dependency>) ;
+
+        local d = [ $(build-property-set).get <location> ] ;
+        ps-raw += $(d:G=<location>) ;
+
+        local ns = [ $(build-property-set).get <install-no-version-symlinks> ] ;
+        ps-raw += $(ns:G=<install-no-version-symlinks>) ;
+
+        local d = [ $(build-property-set).get <install-source-root> ] ;
+        # Make the path absolute: we shall use it to compute relative paths and
+        # making the path absolute will help.
+        if $(d)
+        {
+            d = [ path.root $(d) [ path.pwd ] ] ;
+            ps-raw += $(d:G=<install-source-root>) ;
+        }
+
+        if $(ps-raw)
+        {
+            return [ property-set.create $(ps-raw) ]  ;
+        }
+        else
+        {
+            return [ property-set.empty ] ;
+        }
+    }
+
+    rule construct ( name : source-targets * : property-set )
+    {
+        source-targets = [ targets-to-stage $(source-targets) :
+            $(property-set) ] ;
+
+        property-set = [ update-location $(property-set) ] ;
+
+        local ename = [ $(property-set).get <name> ] ;
+
+        if $(ename) && $(source-targets[2])
+        {
+            import errors : error : $(__name__) : errors.error ;
+            errors.error When <name> property is used "in" 'install', only one
+                source is allowed. ;
+        }
+
+        local result ;
+        for local i in $(source-targets)
+        {
+            local staged-targets ;
+
+            local new-properties = [ adjust-properties $(i) :
+                $(property-set) ] ;
+
+            # See if something special should be done when staging this type. It
+            # is indicated by the presence of a special "INSTALLED_" type.
+            local t = [ $(i).type ] ;
+            if $(t) && [ type.registered INSTALLED_$(t) ]
+            {
+                if $(ename)
+                {
+                    import errors : error : $(__name__) : errors.error ;
+                    errors.error In "'install':" <name> property specified with
+                        target that requires relinking. ;
+                }
+                else
+                {
+                    local targets = [ generators.construct $(self.project)
+                        $(name) : INSTALLED_$(t) : $(new-properties) : $(i) ] ;
+                    staged-targets += $(targets[2-]) ;
+                }
+            }
+            else
+            {
+                staged-targets = [ stage.copy-file $(self.project) $(ename) :
+                    $(i) : $(new-properties) ] ;
+            }
+
+            if ! $(staged-targets)
+            {
+                import errors : error : $(__name__) : errors.error ;
+                errors.error Unable to generate staged version of
+                    [ $(source).str ] ;
+            }
+
+            for t in $(staged-targets)
+            {
+                result += [ virtual-target.register $(t) ] ;
+            }
+        }
+
+        return [ property-set.empty ] $(result) ;
+    }
+
+    # Given the list of source targets explicitly passed to 'stage', returns the
+    # list of targets which must be staged.
+    #
+    rule targets-to-stage ( source-targets * : property-set )
+    {
+        local result ;
+
+        # Traverse the dependencies, if needed.
+        if [ $(property-set).get <install-dependencies> ] = "on"
+        {
+            source-targets = [ collect-targets $(source-targets) ] ;
+        }
+
+        # Filter the target types, if needed.
+        local included-types = [ $(property-set).get <install-type> ] ;
+        for local r in $(source-targets)
+        {
+            local ty = [ $(r).type ] ;
+            if $(ty)
+            {
+                # Do not stage searched libs.
+                if $(ty) != SEARCHED_LIB
+                {
+                    if $(included-types)
+                    {
+                        if [ include-type $(ty) : $(included-types) ]
+                        {
+                            result += $(r) ;
+                        }
+                    }
+                    else
+                    {
+                        result += $(r) ;
+                    }
+                }
+            }
+            else if ! $(included-types)
+            {
+                # Do not install typeless targets if there is an explicit list
+                # of allowed types.
+                result += $(r) ;
+            }
+        }
+
+        return $(result) ;
+    }
+
+    # CONSIDER: figure out why we can not use virtual-target.traverse here.
+    #
+    rule collect-targets ( targets * )
+    {
+        # Find subvariants
+        local s ;
+        for local t in $(targets)
+        {
+            s += [ $(t).creating-subvariant ] ;
+        }
+        s = [ sequence.unique $(s) ] ;
+
+        local result = [ new set ] ;
+        $(result).add $(targets) ;
+
+        for local i in $(s)
+        {
+            $(i).all-referenced-targets $(result) ;
+        }
+        local result2 ;
+        for local r in [ $(result).list ]
+        {
+            if $(r:G) != <use>
+            {
+                result2 += $(r:G=) ;
+            }
+        }
+        DELETE_MODULE $(result) ;
+        return [ sequence.unique $(result2) ] ;
+    }
+
+    rule skip-from-usage-requirements ( )
+    {
+    }
+
+    # Returns true iff 'type' is subtype of some element of 'types-to-include'.
+    #
+    local rule include-type ( type : types-to-include * )
+    {
+        local found ;
+        while $(types-to-include) && ! $(found)
+        {
+            if [ type.is-subtype $(type) $(types-to-include[1]) ]
+            {
+                found = true ;
+            }
+            types-to-include = $(types-to-include[2-]) ;
+        }
+
+        return $(found) ;
+    }
+}
+
+
+# Creates a copy of target 'source'. The 'properties' object should have a
+# <location> property which specifies where the target must be placed.
+#
+rule copy-file ( project name ? : source : properties )
+{
+    name ?= [ $(source).name ] ;
+    local relative ;
+
+    local new-a = [ new non-scanning-action $(source) : common.copy :
+        $(properties) ] ;
+    local source-root = [ $(properties).get <install-source-root> ] ;
+    if $(source-root)
+    {
+        # Get the real path of the target. We probably need to strip relative
+        # path from the target name at construction.
+        local path = [ $(source).path ] ;
+        path = [ path.root $(name:D) $(path) ] ;
+        # Make the path absolute. Otherwise, it would be hard to compute the
+        # relative path. The 'source-root' is already absolute, see the
+        # 'adjust-properties' method above.
+        path = [ path.root $(path) [ path.pwd ] ] ;
+
+        relative = [ path.relative-to $(source-root) $(path) ] ;
+    }
+
+    # Note: Using $(name:D=$(relative)) might be faster here, but then we would
+    # need to explicitly check that relative is not ".", otherwise we might get
+    # paths like '<prefix>/boost/.', try to create it and mkdir would obviously
+    # fail.
+    name = [ path.join $(relative) $(name:D=) ] ;
+
+    return [ new file-target $(name) exact : [ $(source).type ] : $(project) :
+        $(new-a) ] ;
+}
+
+
+rule symlink ( name : project : source : properties )
+{
+    local a = [ new action $(source) : symlink.ln : $(properties) ] ;
+    local t = [ new file-target $(name) exact : [ $(source).type ] : $(project)
+        : $(a) ] ;
+    return [ virtual-target.register $(t) ] ;
+}
+
+
+rule relink-file ( project : source : property-set  )
+{
+    local action = [ $(source).action ] ;
+    local cloned-action = [ virtual-target.clone-action $(action) : $(project) :
+        "" : $(property-set) ] ;
+    return [ $(cloned-action).targets ] ;
+}
+
+
+# Declare installed version of the EXE type. Generator for this type will cause
+# relinking to the new location.
+type.register INSTALLED_EXE : : EXE ;
+
+
+class installed-exe-generator : generator
+{
+    import type ;
+    import property-set ;
+    import modules ;
+    import stage ;
+
+    rule __init__ ( )
+    {
+        generator.__init__ install-exe : EXE : INSTALLED_EXE ;
+    }
+
+    rule run ( project name ? : property-set : source : multiple ? )
+    {
+        local stage-rule = stage.copy-file ;
+
+        if ! [ $(property-set).get <os> ] in NT CYGWIN &&
+            ! [ $(property-set).get <target-os> ] in windows cygwin
+        {
+            # If dll-path properties have been changed for the stage target,
+            # relink instead of copying.
+            local a = [ $(source).action ] ;
+            local p = [ $(a).properties ] ;
+            local original = [ $(p).get <dll-path> ] ;
+            local current = [ $(property-set).get <dll-path> ] ;
+
+            if $(current) != $(original)
+            {
+                stage-rule = stage.relink-file ;
+            }
+        }
+
+        return [ $(stage-rule) $(project) : $(source) : $(property-set) ] ;
+    }
+}
+
+
+generators.register [ new installed-exe-generator ] ;
+
+
+# Installing a shared link on Unix might cause a creation of versioned symbolic
+# links.
+type.register INSTALLED_SHARED_LIB : : SHARED_LIB ;
+
+
+class installed-shared-lib-generator : generator
+{
+    import type ;
+    import property-set ;
+    import modules ;
+    import stage ;
+
+    rule __init__ ( )
+    {
+        generator.__init__ install-shared-lib : SHARED_LIB :
+            INSTALLED_SHARED_LIB ;
+    }
+
+    rule run ( project name ? : property-set : source : multiple ? )
+    {
+        if [ $(property-set).get <os> ] in NT CYGWIN ||
+            [ $(property-set).get <target-os> ] in windows cygwin
+        {
+            local copied = [ stage.copy-file $(project) : $(source) :
+                $(property-set) ] ;
+            return [ virtual-target.register $(copied) ] ;
+        }
+        else
+        {
+            local a = [ $(source).action ] ;
+            local copied ;
+            if ! $(a)
+            {
+                # Non-derived file, just copy.
+                copied = [ stage.copy-file $(project) : $(source) :
+                    $(property-set) ] ;
+            }
+            else
+            {
+                local cp = [ $(a).properties ] ;
+                local current-dll-path = [ $(cp).get <dll-path> ] ;
+                local new-dll-path = [ $(property-set).get <dll-path> ] ;
+
+                if $(current-dll-path) != $(new-dll-path)
+                {
+                    # Rpath changed, need to relink.
+                    copied = [ stage.relink-file $(project) : $(source) :
+                        $(property-set) ] ;
+                }
+                else
+                {
+                    copied = [ stage.copy-file $(project) : $(source) :
+                        $(property-set) ] ;
+                }
+            }
+
+            copied = [ virtual-target.register $(copied) ] ;
+
+            local result = $(copied) ;
+            # If the name is in the form NNN.XXX.YYY.ZZZ, where all 'X', 'Y' and
+            # 'Z' are numbers, we need to create NNN.XXX and NNN.XXX.YYY
+            # symbolic links.
+            local m = [ MATCH
+                "(.*)\\.([0123456789]+)\\.([0123456789]+)\\.([0123456789]+)$" :
+                [ $(copied).name ] ] ;
+            if $(m)
+            {
+                # Symlink without version at all is used to make
+                # -lsome_library work.
+                result += [ stage.symlink $(m[1]) : $(project) : $(copied) :
+                    $(property-set) ] ;
+
+                # Symlinks of some libfoo.N and libfoo.N.M are used so that
+                # library can found at runtime, if libfoo.N.M.X has soname of
+                # libfoo.N. That happens when the library makes some binary
+                # compatibility guarantees. If not, it is possible to skip those
+                # symlinks.
+                local suppress = [ $(property-set).get
+                    <install-no-version-symlinks> ] ;
+
+                if $(suppress) != "on"
+                {
+                    result += [ stage.symlink $(m[1]).$(m[2]) : $(project) :
+                        $(copied) : $(property-set) ] ;
+                    result += [ stage.symlink $(m[1]).$(m[2]).$(m[3]) :
+                        $(project) : $(copied) : $(property-set) ] ;
+                }
+            }
+
+            return $(result) ;
+        }
+    }
+}
+
+generators.register [ new installed-shared-lib-generator ] ;
+
+
+#| tag::doc[]
+
+. `rule get-dir ( name : property-set : package-name : flags * )`
++
+Returns the path to a named installation directory. For a given `name=xyz` the
+rule uses the value of `<install-xyz>` property if it is present in
+`property-set`. Otherwise it tries to construct the default value of the path
+recursively getting the path to ``name``'s registered base named directory and
+relative path. For example:
++
+[source]
+----
+stage.add-install-dir foo : bar : baz ;
+
+local ps = [ property-set.create <install-foo>x/y/z ] ;
+echo [ stage.get-dir foo : $(ps) : $(__name__) ] ; # outputs x/y/z
+
+ps = [ property-set.create <install-baz>a/b/c/d ] ;
+echo [ stage.get-dir foo : $(ps) : $(__name__) ] ; # outputs a/b/c/d/bar
+----
++
+The argument `package-name` is used to construct the path for named directories
+that were registered with `package-suffix` option and also to construct
+`install-prefix` when targeting Windows.
++
+Available `flags`:
++
+* `staged`: take <<bbv2.builtin.features.staging-prefix,`staging-prefix`>> into
+  account.
+* `relative`: return the path to `name` relative to its base directory.
+
+|# # end::doc[]
+
+rule get-dir ( name : property-set : package-name : flags * )
+{
+    local result ;
+
+    # We treat the 'prefix' directory in a special way, because it's default
+    # is based on the value of <target-os> property.
+    if $(name) = prefix
+    {
+        result = [ get-install-prefix $(property-set) : $(package-name)
+            : $(flags) ] ;
+    }
+    else
+    {
+        # First, try getting the path for requested directory from properties.
+        result = [ $(property-set).get <install-$(name)> ] ;
+        local info = [ get-dir-info $(name) : $(package-name) ] ;
+        # Otherwise, use the default path. In both cases, it could be a
+        # relative path.
+        result ?= $(info[1]) ;
+        if $(result)
+        {
+            result = [ path.make $(result) ] ;
+        }
+
+        # If there is a base directory, we may need to modify result further.
+        if $(info[2])
+        {
+            local base = [ get-dir $(info[2]) : $(property-set)
+                : $(package-name) : $(flags) ] ;
+            if relative in $(flags)
+            {
+                local rel = [ path.relative $(result) $(base) : no-error ] ;
+                if not-a-child != $(rel)
+                {
+                    result = $(rel) ;
+                }
+            }
+            else
+            {
+                result = [ path.root $(result) $(base) ] ;
+            }
+        }
+    }
+
+    return $(result) ;
+}
+
+
+# For a given named directory returns its parent directory and relative path
+local rule get-dir-info ( name : package-name ) {
+    local path = $(.dir.$(name)[1]) ;
+    if ! x$(path)
+    {
+        import errors ;
+        errors.error $(name) is not an installation directory name. ;
+    }
+
+    if package-suffix in $(.dir.$(name).options)
+    {
+        path = [ path.join $(path) $(package-name) ] ;
+    }
+
+    return $(path) $(.dir.$(name)[2]) ;
+}
+
+
+local rule get-install-prefix ( property-set : package-name : flags * )
+{
+    local prefix ;
+    if staged in $(flags)
+    {
+        prefix = [ $(property-set).get <staging-prefix> ] ;
+    }
+    prefix ?= [ $(property-set).get <install-prefix> ] ;
+    prefix = $(prefix[0]) ;
+    prefix ?= [ option.get prefix ] ;
+    if ! $(prefix)
+    {
+        if windows = [ $(property-set).get <target-os> ]
+        {
+          prefix = C:\\$(package-name) ;
+        }
+        else
+        {
+            prefix = /usr/local ;
+        }
+    }
+    return [ path.make $(prefix) ] ;
+}
+
+
+#| tag::doc[]
+
+. `rule get-package-name ( property-set : project-module ? )`
++
+Returns the package name that will be used for `install` targets when
+constructing installation location. The rule uses the value of
+<<bbv2.builtin.features.install-package,`<install-package>`>> property if it's
+present in `property-set`. Otherwise it deduces the package name using
+``project-module``'s attributes. It traverses the project hierarchy up to the
+root searching for the first project with an id. If none is found, the base
+name of the root project's location is used. If `project-module` is empty, the
+caller module is used (this allows invoking just `[ get-package-name $(ps) ]`
+in project jam files).
+
+|# # end::doc[]
+
+rule get-package-name ( property-set : project-module ? )
+{
+    local package = [ $(property-set).get <install-package> ] ;
+    if ! $(package)
+    {
+        project-module ?= [ CALLER_MODULE 1 ] ;
+
+        local m = $(project-module) ;
+        package = [ project.attribute $(m) id ] ;
+        while ! $(package)
+        {
+            m = [ project.attribute $(m) parent-module ] ;
+            if ! $(m) { break ; }
+
+            package = [ project.attribute $(m) id ] ;
+        }
+
+        if ! $(package)
+        {
+            local root = [ project.attribute $(project-module) project-root ] ;
+            package = [ path.root $(root) [ path.pwd ] ] ;
+        }
+
+        package = $(package:B) ;
+    }
+    return $(package) ;
+}
+
+
+rule stage-translate-path ( feature value : properties * : project-id : project-location )
+{
+    if $(feature) = <location> && [ MATCH "^\\((.+)\\)(/(.*))?$" : $(value) ]
+    {
+        return $(value) ;
+    }
+}
+
+
+# Main target rule for 'install'.
+#
+rule install ( name : sources * : requirements * : default-build * )
+{
+    local project = [ project.current ] ;
+
+    # Unless the user has explicitly asked us to hardcode dll paths, add
+    # <hardcode-dll-paths>false in requirements, to override default value.
+    if ! <hardcode-dll-paths>true in $(requirements)
+    {
+        requirements += <hardcode-dll-paths>false ;
+    }
+
+    if <tag> in $(requirements:G)
+    {
+        import errors ;
+        errors.user-error The <tag> property is not allowed for the 'install'
+            rule. ;
+    }
+
+    targets.create-metatarget install-target-class : $(project) : $(name) :
+        $(sources) : $(requirements) <translate-path>@stage-translate-path : $(default-build) ;
+}
+
+
+IMPORT $(__name__) : install : : install ;
+IMPORT $(__name__) : install : : stage ;
+IMPORT $(__name__) : stage-translate-path : : stage-translate-path ;

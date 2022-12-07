@@ -1,0 +1,140 @@
+# Copyright (c) 2019 Damian Jarek
+#
+# Use, modification and distribution is subject to the Boost Software
+# License Version 1.0. (See accompanying file LICENSE.txt or
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+# Supports the openssl library
+#
+# After 'using openssl', the following targets are available:
+#
+# /openssl//ssl -- The SSL/TLS library
+# /openssl//crypto -- The cryptography library
+
+import project ;
+import ac ;
+import errors ;
+import feature ;
+import "class" : new ;
+import targets ;
+import path ;
+import modules ;
+import indirect ;
+import os ;
+import property ;
+import property-set ;
+
+header = openssl.h ;
+ssl_names = ssl ssleay32 ;
+crypto_names = crypto libeay32 ;
+
+library-id = 0 ;
+
+if --debug-configuration in [ modules.peek : ARGV ]
+{
+    .debug =  true ;
+}
+
+# Initializes the openssl library.
+#
+# openssl can be configured to use pre-existing binaries.
+#
+# Options for configuring a prebuilt openssl::
+#
+#   <search>
+#       The directory containing the openssl binaries.
+#   <name>
+#       Overrides the default library name.
+#   <include>
+#       The directory containing the openssl headers.
+#
+# If none of these options is specified, then the environmental
+# variables OPENSSL_LIBRARY_PATH, OPENSSL_NAME, and OPENSSL_INCLUDE will
+# be used instead.
+#
+# Examples::
+#
+#   # Find openssl in the default system location
+#   using openssl ;
+#   # Find openssl in /usr/local
+#   using openssl : 1.2.7
+#     : <include>/usr/local/include <search>/usr/local/lib ;
+#
+rule init (
+    version ?
+    # The OpenSSL version (currently ignored)
+
+    : options *
+    # A list of the options to use
+
+    : requirements *
+    # The requirements for the openssl target
+
+    : is-default ?
+    )
+{
+    local caller = [ project.current ] ;
+
+    if ! $(.initialized)
+    {
+        .initialized = true ;
+
+        project.initialize $(__name__) ;
+        .project = [ project.current ] ;
+        project openssl ;
+    }
+
+    local library-path = [ feature.get-values <search> : $(options) ] ;
+    local include-path = [ feature.get-values <include> : $(options) ] ;
+    local library-name = [ feature.get-values <name> : $(options) ] ;
+
+    if ! $(library-path) && ! $(include-path) && ! $(source-path) && ! $(library-name)
+    {
+        is-default = true ;
+    }
+
+    condition = [ property-set.create $(requirements) ] ;
+    condition = [ property-set.create [ $(condition).base ] ] ;
+
+    if $(.configured.$(condition))
+    {
+        if $(is-default)
+        {
+            if $(.debug)
+            {
+                ECHO "notice: [openssl] openssl is already configured" ;
+            }
+        }
+        else
+        {
+            errors.user-error "openssl is already configured" ;
+        }
+        return ;
+    }
+    else
+    {
+        if $(.debug)
+        {
+            ECHO "notice: [openssl] Using pre-installed library" ;
+            if $(condition)
+            {
+                ECHO "notice: [openssl] Condition" [ $(condition).raw ] ;
+            }
+        }
+
+        local ssl_lib = [ new ac-library ssl : $(.project) : $(condition) :
+            $(include-path) : $(library-path) : ssl ] ;
+        $(ssl_lib).set-header openssl/ssl.h ;
+        $(ssl_lib).set-default-names $(ssl_names) ;
+
+        local crypto_lib = [ new ac-library crypto : $(.project) : $(condition) :
+            $(include-path) : $(library-path) : crypto ] ;
+        $(crypto_lib).set-header openssl/crypto.h ;
+        $(crypto_lib).set-default-names $(crypto_names) ;
+
+        targets.main-target-alternative $(ssl_lib) ;
+        targets.main-target-alternative $(crypto_lib) ;
+    }
+    .configured.$(condition) = true ;
+}
+

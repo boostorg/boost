@@ -1,0 +1,29 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.stdlib]]`stdlib`::
+*Allowed values*: `native`, `gnu`, `gnu11`, `libc++`, `sun-stlport`, `apache`.
++
+Specifies C++ standard library to link to and in some cases the library ABI to
+use:
++
+`native`::: Use compiler's default.
+`gnu`::: Use GNU Standard Library (a.k.a. pass:[libstdc++]) with the old ABI.
+`gnu11`::: Use GNU Standard Library with the new ABI.
+`libc++`::: Use LLVM pass:[libc++].
+`sun-stlport`::: Use the STLport implementation of the standard library
+  provided with the Solaris Studio compiler.
+`apache`::: Use the Apache stdcxx version 4 C++ standard library provided with
+  the Solaris Studio compiler.
+
+|# # end::doc[]
+
+feature.feature stdlib
+    : native gnu gnu11 libc++ sun-stlport apache
+    : propagated composite ;

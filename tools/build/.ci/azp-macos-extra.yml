@@ -1,0 +1,23 @@
+steps:
+  - bash: |
+      set -e
+      uname -a
+      sudo xcode-select -switch ${XCODE_APP}
+      which clang++
+    displayName: Install
+  - bash: |
+      set -e
+      CXX_PATH=`which ${CXX}`
+      echo "using ${TEST_TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+      ./bootstrap.sh ${TOOLSET}
+      ./b2 --prefix=$HOME/temp/.b2 install ${TEST_TOOLSET}
+      rm ./b2
+      export PATH=$HOME/temp/.b2/bin:$PATH
+      cd $HOME
+      touch build.jam
+      b2 -v
+      b2 -n --debug-configuration
+    displayName: Bootstrap
+  - { bash: "./.ci/b2_example.sh example/hello", displayName: "example/hello" }
+  - { bash: "./.ci/b2_example.sh example/libraries", displayName: "example/libraries" }
+  - { bash: "./.ci/b2_example.sh example/make", displayName: "example/make" }

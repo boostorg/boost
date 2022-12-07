@@ -1,0 +1,62 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+# The following features are incidental since they have no effect on built
+# products. Not making them incidental will result in problems in corner cases,
+# e.g.:
+#
+#    unit-test a : a.cpp : <use>b ;
+#    lib b : a.cpp b ;
+#
+# Here, if <use> is not incidental, we would decide we have two targets for
+# a.obj with different properties and complain about it.
+#
+# Note that making a feature incidental does not mean it is ignored. It may be
+# ignored when creating a virtual target, but the rest of build process will use
+# them.
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.dependency]]`dependency`::
+Introduces a dependency on the target named by the value of this feature (so it
+will be brought up-to-date whenever the target being declared is). The
+dependency is not used in any other way.
+
+|# # end::doc[]
+
+feature.feature dependency
+    :
+    : free dependency incidental ;
+
+#| tag::impl-doc[]
+
+[[bbv2.builtin.features.implicit-dependency]]`implicit-dependency`::
+Indicates that the target named by the value of this feature may produce files
+that are included by the sources of the target being declared. See the section
+<<Generated headers>> for more information.
+
+|# # end::impl-doc[]
+
+feature.feature implicit-dependency
+    :
+    : free dependency incidental ;
+
+#| tag::use-doc[]
+
+[[bbv2.builtin.features.use]]`use`::
+Introduces a dependency on the target named by the value of this feature (so it
+will be brought up-to-date whenever the target being declared is), and adds its
+usage requirements to the build properties of the target being declared. The
+dependency is not used in any other way. The primary use case is when you want
+the usage requirements (such as `#include` paths) of some library to be
+applied, but do not want to link to it.
+
+|# # end::use-doc[]
+
+feature.feature use
+    :
+    : free dependency incidental ;

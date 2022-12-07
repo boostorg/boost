@@ -1,0 +1,39 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.tag]]`tag`::
+Used to customize the name of the generated files. The value should have the
+form:
++
+----
+@rulename
+----
++
+where _rulename_ should be a name of a rule with the following signature:
++
+----
+rule tag ( name : type ? : property-set )
+----
++
+The rule will be called for each target with the default name computed by
+B2, the type of the target, and property set. The rule can either
+return a string that must be used as the name of the target, or an empty
+string, in which case the default name will be used.
++
+Most typical use of the `tag` feature is to encode build properties, or library
+version in library target names. You should take care to return non-empty
+string from the tag rule only for types you care about -- otherwise, you might
+end up modifying names of object files, generated header file and other targets
+for which changing names does not make sense.
+
+|# # end::doc[]
+
+feature.feature tag
+    :
+    : free ;

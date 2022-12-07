@@ -1,0 +1,48 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE.txt)
+#
+# Copyright René Ferdinand Rivera Morell 2020-2021.
+
+freebsd_task:
+  # All the GCC's and Clang's currently supported by FreeBSD ports.
+  matrix:
+    - { name: 'FreeBSD, GCC 12', env: { TOOLSET: gcc, TEST_TOOLSET: gcc, CXX: 'g++12', PACKAGE: 'gcc12-devel' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 11', env: { TOOLSET: gcc, TEST_TOOLSET: gcc, CXX: 'g++11', PACKAGE: 'gcc11-devel' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 10', env: { TOOLSET: gcc, TEST_TOOLSET: gcc, CXX: 'g++10', PACKAGE: 'gcc10-devel' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 9', env: { TOOLSET: gcc, TEST_TOOLSET: gcc, CXX: 'g++9', PACKAGE: 'gcc9-devel' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 8', env: { TOOLSET: gcc, TEST_TOOLSET: gcc, CXX: 'g++8', PACKAGE: 'gcc8' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    # - { name: 'FreeBSD, GCC 7', env: { TOOLSET: gcc, TEST_TOOLSET: gcc, CXX: 'g++7', PACKAGE: 'gcc7' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 14', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++14', PACKAGE: 'devel/llvm14' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 13', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++13', PACKAGE: 'devel/llvm13' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 12', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++12', PACKAGE: 'devel/llvm12' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 11', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++11', PACKAGE: 'devel/llvm11' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 10', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++10', PACKAGE: 'devel/llvm10' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 9', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++90', PACKAGE: 'devel/llvm90' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 8', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++80', PACKAGE: 'devel/llvm80' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 7', env: { TOOLSET: clang, TEST_TOOLSET: clang, CXX: 'clang++70', PACKAGE: 'devel/llvm70' }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+  # To install with ports we need to initialize the package manager. To avoid
+  # confirmation prompts we need to set an env var.
+  install_script: [
+    "uname -a",
+    "env ASSUME_ALWAYS_YES=YES pkg bootstrap",
+    "env ASSUME_ALWAYS_YES=YES pkg install ${PACKAGE}",
+    "env ASSUME_ALWAYS_YES=YES pkg install python3"
+    ]
+  # Build the engine.
+  build_script: [
+    "set -e",
+    "cd src/engine",
+    "./build.sh --cxx=${CXX} ${TOOLSET}",
+    "./b2 -v",
+    "cd ../.."
+  ]
+  # Run the core tests.
+  test_script: [
+    "set -e",
+    "CXX_PATH=`which ${CXX}`",
+    "cd test",
+    "echo \"using ${TEST_TOOLSET} : : ${CXX_PATH} ;\" > ${HOME}/user-config.jam",
+    "python3 test_all.py ${TEST_TOOLSET}",
+    "cd ..",
+  ]

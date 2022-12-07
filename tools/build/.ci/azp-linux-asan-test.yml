@@ -1,0 +1,22 @@
+steps:
+- bash: |
+    set -e
+    uname -a
+    ./.ci/linux-cxx-install.sh
+  displayName: Install
+- bash: |
+    set -e
+    cd src/engine
+    set PATH=${PATH};${CXX_PATH}
+    ./build.sh ${TOOLSET}
+    ./b2 -v
+    cd ../..
+    ./src/engine/b2 -a address-sanitizer=on toolset=${TOOLSET} b2
+  displayName: Build
+- bash: |
+    set -e
+    export B2=`ls -1 ${PWD}/.build/*/debug/address-sanitizer-on/cxxstd-11-iso/b2`
+    cd test
+    python test_all.py ${TOOLSET}
+    cd ..
+  displayName: Test

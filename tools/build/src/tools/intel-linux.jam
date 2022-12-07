@@ -1,0 +1,312 @@
+#  Copyright (c) 2003 Michael Stevens
+#  Copyright (c) 2011 Bryce Lelbach
+#
+#  Use, modification and distribution is subject to the Boost Software
+#  License Version 1.0. (See accompanying file LICENSE.txt or
+#  https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import toolset ;
+import toolset : flags ;
+
+import common ;
+import errors ;
+import feature ;
+import gcc ;
+import generators ;
+import intel ;
+import numbers ;
+import os ;
+import path ;
+import regex ;
+import type ;
+
+feature.extend-subfeature toolset intel : platform : linux ;
+
+toolset.inherit-generators intel-linux
+     <toolset>intel <toolset-intel:platform>linux : gcc : gcc.mingw.link gcc.mingw.link.dll ;
+generators.override intel-linux.prebuilt : builtin.lib-generator ;
+generators.override intel-linux.prebuilt : builtin.prebuilt ;
+generators.override intel-linux.searched-lib-generator : searched-lib-generator ;
+
+# Override default do-nothing generators.
+generators.override intel-linux.compile.c.pch   : pch.default-c-pch-generator   ;
+generators.override intel-linux.compile.c++.pch : pch.default-cpp-pch-generator ;
+
+type.set-generated-target-suffix PCH : <toolset>intel <toolset-intel:platform>linux : pchi ;
+
+toolset.inherit-rules intel-linux : gcc ;
+toolset.inherit-flags intel-linux : gcc
+        : <inlining>off <inlining>on <inlining>full
+          <optimization>space <optimization>speed
+          <optimization>minimal <optimization>debug
+          <warnings>off <warnings>all <warnings>on
+          <warnings>extra <warnings>pedantic
+          <warnings-as-errors>off <warnings-as-errors>on
+        ;
+
+if [ MATCH (--debug-configuration) : [ modules.peek : ARGV ] ]
+{
+    .debug-configuration = true ;
+}
+
+.home = [ os.home-directories ] ;
+.home = $(.home[1]) ;
+
+# Intel oneAPI 2020, and onward.
+.bin(oneAPI) =
+    [ path.join $(.home) intel/oneapi/compiler/latest/linux/bin ]
+    /opt/intel/oneapi/compiler/latest/linux/bin ;
+# Intel C++ Composer XE 2011 for Linux, aka Intel C++ Compiler XE 12.0,
+# aka intel-linux-12.0.
+.bin(12.0) = /opt/intel/bin ;
+# Intel C++ Compiler 11.1.
+.bin(11.1) = /opt/intel_cce_11.1.064.x86_64/bin ;
+# Intel C++ Compiler 11.0.
+.bin(11.0) = /opt/intel_cce_11.0.074.x86_64/bin ;
+# Intel C++ Compiler 10.1.
+.bin(10.1) = /opt/intel_cce_10.1.013_x64/bin ;
+# Intel C++ Compiler 9.1.
+.bin(9.1) = /opt/intel_cc_91/bin ;
+# Intel C++ Compiler 9.0.
+.bin(9.0) = /opt/intel_cc_90/bin ;
+# Intel C++ Compiler 8.1.
+.bin(8.1) = /opt/intel_cc_81/bin ;
+# Intel C++ Compiler 8.0.
+.bin(8.0) = /opt/intel_cc_80/bin ;
+
+rule init ( version ? :  command * : options * )
+{
+    local user_version = [ MATCH "([0-9.]+)" : $(version) ] ;
+    local user_command = $(command) ;
+    if $(user_version)
+    {
+        user_version = [ regex.split $(user_version) "[.]" ] ;
+    }
+
+    local command_lib_path ;
+    local detected_version ;
+    local detected_command ;
+    local command_abs_path ;
+    if ! $(user_version) && ! $(user_command)
+    {
+        # If nothing given, try and discover the latest toolset available.
+        if ! $(detected_command)
+        {
+            local bin_paths = $(.bin(oneAPI)) ;
+            detected_command = [ common.find-tool icpx : $(bin_paths) ] ;
+            if $(detected_command)
+            {
+                command_abs_path = [ common.get-absolute-tool-path $(detected_command) ] ;
+                command_lib_path = $(command_abs_path)/../compiler/lib/intel64 ;
+            }
+        }
+        if ! $(detected_command)
+        {
+            local bin_paths = $(.bin(12.0)) $(.bin(11.1)) $(.bin(11.0)) ;
+            detected_command = [ common.find-tool icpc : $(bin_paths) ] ;
+            if $(detected_command)
+            {
+                command_abs_path = [ common.get-absolute-tool-path $(detected_command) ] ;
+                command_lib_path = $(command_abs_path)/../lib/x86_64 ;
+            }
+        }
+        if ! $(detected_command)
+        {
+            local bin_paths = $(.bin(10.1)) $(.bin(9.1)) $(.bin(9.0))
+                $(.bin(8.1)) $(.bin(8.0)) ;
+            detected_command = [ common.find-tool icpc : $(bin_paths) ] ;
+            if $(detected_command)
+            {
+                command_abs_path = [ common.get-absolute-tool-path $(detected_command) ] ;
+                command_lib_path = $(command_abs_path)/../lib ;
+            }
+        }
+        if $(detected_command)
+        {
+            local version_cmd = "LD_LIBRARY_PATH=$(command_lib_path) $(detected_command) --version" ;
+            local version_output = [ SHELL $(version_cmd) ] ;
+            detected_version = [ MATCH "([0-9.]+)" : $(version_output) ] ;
+        }
+    }
+    else if $(user_command)
+    {
+        # If only a command given, determine the version from the command.
+        # Note, we assume that the user command does everything needed to
+        # property execute the command.
+        local version_cmd = $(user_command:J=" ") ;
+        local version_output = [ SHELL "$(version_cmd) --version" ] ;
+        detected_command = $(user_command) ;
+        detected_version = [ MATCH "([0-9.]+)" : $(version_output) ] ;
+    }
+    else if $(user_version)
+    {
+        # Only version given, try and find the command in the location for the version.
+        if [ numbers.less $(user_version[1]) 2020 ]
+        {
+            local version_xy = $(user_version[1]) $(user_version[2]) ;
+            local bin_paths = $(.bin($(version_xy:J=.))) ;
+            if $(bin_paths)
+            {
+                detected_command = [ common.find-tool icpc : $(bin_paths) : path-last ] ;
+                command_abs_path = [ common.get-absolute-tool-path $(detected_command) ] ;
+            }
+            if [ numbers.less $(user_version[1]) 11 ]
+            {
+                command_lib_path = $(command_abs_path)/../lib ;
+            }
+            else
+            {
+                command_lib_path = $(command_abs_path)/../lib/x86_64 ;
+            }
+        }
+        else
+        {
+            detected_command = [ common.find-tool icpx
+                : [ regex.replace-list $(.bin(oneAPI)) : "latest" : $(user_version:J=.) ]
+                : path-last ] ;
+            command_abs_path = [ common.get-absolute-tool-path $(detected_command) ] ;
+            command_lib_path = $(command_abs_path)/../compiler/lib/intel64 ;
+        }
+        if $(detected_command)
+        {
+            local version_cmd = "LD_LIBRARY_PATH=$(command_lib_path) $(detected_command) --version" ;
+            local version_output = [ SHELL $(version_cmd) ] ;
+            detected_version = [ MATCH "([0-9.]+)" : $(version_output) ] ;
+        }
+    }
+
+    if $(.debug-configuration)
+    {
+        ECHO "notice: intel-linux command is" $(command:E=$(detected_command)) ;
+    }
+
+    version ?= $(detected_version) ;
+    local condition = [ common.check-init-parameters intel-linux : version $(version) ] ;
+
+    if $(.debug-configuration)
+    {
+        ECHO "notice: intel-linux version is" $(version) ;
+    }
+
+    command ?= $(detected_command) ;
+    common.handle-options intel-linux : $(condition) : $(command) : $(options) ;
+
+    local tool_version = $(detected_version) ;
+    if $(tool_version)
+    {
+        tool_version = [ regex.split $(tool_version) "[.]" ] ;
+    }
+    tool_version ?= $(user_version) ;
+
+    if [ numbers.less $(tool_version[1]) 10 ]
+    {
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>off : "-Ob0" ;
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>on : "-Ob1" ;
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>full : "-Ob2" ;
+        flags intel-linux.compile OPTIONS $(condition)/<optimization>space : "-O1" ;
+        flags intel-linux.compile OPTIONS $(condition)/<optimization>speed : "-O3 -ip" ;
+    }
+    else if [ numbers.less $(tool_version[1]) 11 ]
+    {
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>off : "-inline-level=0" ;
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>on : "-inline-level=1" ;
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>full : "-inline-level=2" ;
+        flags intel-linux.compile OPTIONS $(condition)/<optimization>space : "-O1" ;
+        flags intel-linux.compile OPTIONS $(condition)/<optimization>speed : "-O3 -ip" ;
+    }
+    else # newer version of intel do have -Os (at least 11+, don't know about 10)
+    {
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>off : "-inline-level=0" ;
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>on : "-inline-level=1" ;
+        flags intel-linux.compile OPTIONS $(condition)/<inlining>full : "-inline-level=2" ;
+        flags intel-linux.compile OPTIONS $(condition)/<optimization>space : "-Os" ;
+        flags intel-linux.compile OPTIONS $(condition)/<optimization>speed : "-O3 -ip" ;
+    }
+    if [ numbers.less $(tool_version[1]) 2020 ]
+    {
+        flags intel-linux.compile OPTIONS <warnings>off : -w0 ;
+        flags intel-linux.compile OPTIONS <warnings>on : -w1 ;
+        flags intel-linux.compile OPTIONS <warnings>all : -w2 ;
+        flags intel-linux.compile OPTIONS <warnings>extra : -w3 ;
+        flags intel-linux.compile OPTIONS <warnings>pedantic : -w3 -Wcheck ;
+        flags intel-linux.compile OPTIONS <warnings-as-errors>on : -Werror-all ;
+    }
+    else
+    {
+        flags intel-linux.compile OPTIONS <warnings>off : -w ;
+        flags intel-linux.compile OPTIONS <warnings>on : -Wall ;
+        flags intel-linux.compile OPTIONS <warnings>all : -Wall ;
+        flags intel-linux.compile OPTIONS <warnings>extra : -Wall ;
+        flags intel-linux.compile OPTIONS <warnings>pedantic : -Wall ;
+        flags intel-linux.compile OPTIONS <warnings-as-errors>on : -Werror-all ;
+    }
+    if $(.debug-configuration)
+    {
+        ECHO notice\: using intel libraries "::" $(condition) "::" $(command_lib_path) ;
+    }
+    flags intel-linux.compile RUN_PATH $(condition) : $(command_lib_path) ;
+    flags intel-linux.link RUN_PATH $(condition) : $(command_lib_path) ;
+}
+
+_ = " " ;
+
+rule compile.c++ ( targets * : sources * : properties * )
+{
+    DEPENDS $(<) : [ on $(<) return $(PCH_FILE) ] ;
+}
+
+actions compile.c++ bind PCH_FILE
+{
+    LD_LIBRARY_PATH="$(RUN_PATH)" "$(CONFIG_COMMAND)" -c -xc++ $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)"  -use-pch"$(PCH_FILE)" -c -o "$(<)" "$(>)"
+}
+
+rule compile.c ( targets * : sources * : properties * )
+{
+    DEPENDS $(<) : [ on $(<) return $(PCH_FILE) ] ;
+}
+
+actions compile.c bind PCH_FILE
+{
+    LD_LIBRARY_PATH="$(RUN_PATH)" "$(CONFIG_COMMAND)" -c -xc $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" -use-pch"$(PCH_FILE)" -c -o "$(<)" "$(>)"
+}
+
+#
+# Compiling a pch first deletes any existing *.pchi file, as Intel's compiler
+# won't over-write an existing pch: instead it creates filename$1.pchi, filename$2.pchi
+# etc - which appear not to do anything except take up disk space :-(
+#
+actions compile.c++.pch
+{
+    rm -f "$(<)" && LD_LIBRARY_PATH="$(RUN_PATH)" "$(CONFIG_COMMAND)" -x c++-header $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" -c -pch-create "$(<)" "$(>)"
+}
+
+actions compile.fortran
+{
+    LD_LIBRARY_PATH="$(RUN_PATH)" "ifort" -c $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" -c -o "$(<)" "$(>)"
+}
+
+actions compile.c.pch
+{
+    rm -f "$(<)" && LD_LIBRARY_PATH="$(RUN_PATH)" "$(CONFIG_COMMAND)" -x c-header $(OPTIONS) $(USER_OPTIONS) -D$(DEFINES) -I"$(INCLUDES)" -c -pch-create "$(<)" "$(>)"
+}
+
+rule link ( targets * : sources * : properties * )
+{
+    _ on $(targets) = " " ;
+}
+
+actions link bind LIBRARIES
+{
+    LD_LIBRARY_PATH="$(RUN_PATH)" "$(CONFIG_COMMAND)" -L"$(LINKPATH)" -Wl,-R$(_)-Wl,"$(RPATH)" -Wl,-rpath-link$(_)-Wl,"$(RPATH_LINK)" -o "$(<)" "$(>)" "$(LIBRARIES)" -l$(FINDLIBS-SA) -l$(FINDLIBS-ST) $(OPTIONS) $(USER_OPTIONS)
+}
+
+rule link.dll ( targets * : sources * : properties * )
+{
+    _ on $(targets) = " " ;
+}
+
+# Differ from 'link' above only by -shared.
+actions link.dll bind LIBRARIES
+{
+    LD_LIBRARY_PATH="$(RUN_PATH)" "$(CONFIG_COMMAND)" -L"$(LINKPATH)" -Wl,-R$(_)-Wl,"$(RPATH)" -o "$(<)" -Wl,-soname$(_)-Wl,$(<[1]:D=) -shared "$(>)"  "$(LIBRARIES)" -l$(FINDLIBS-SA) -l$(FINDLIBS-ST) $(OPTIONS) $(USER_OPTIONS)
+}

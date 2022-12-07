@@ -1,0 +1,41 @@
+
+import os ;
+
+local dll-suffix = so ;
+local prefix = "lib" ;
+if [ os.name ] in NT
+{
+   if [ MATCH ^(gcc) : $toolset ]
+   {
+      dll-suffix = dll.a ;
+      prefix = lib ;
+   }
+   else
+   {
+      dll-suffix = lib ;
+      prefix = "" ;
+   }
+}
+else if [ os.name ] in CYGWIN
+{
+    dll-suffix = dll ;
+}
+else if [ os.name ] in MACOSX
+{
+   dll-suffix = dylib ;
+}
+
+project ext ;
+
+lib a :
+    : <file>debug/$(prefix)a.$(dll-suffix) <variant>debug
+    :
+    : <include>debug
+    ;
+
+lib a :
+    : <file>release/$(prefix)a.$(dll-suffix) <variant>release
+    :
+    : <include>release
+    ;
+

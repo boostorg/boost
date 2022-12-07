@@ -1,0 +1,48 @@
+# Copyright 2017 Steven Watanabe
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.relevant]]`relevant`::
+*Allowed values:* the name of any feature.
++
+Indicates which other features are relevant for a given target. It is usually
+not necessary to manage it explicitly, as B2 can deduce it in most
+cases. Features which are not relevant will not affect target paths, and will
+not cause conflicts.
++
+* A feature will be considered relevant if any of the following are true
++
+** It is referenced by `toolset.flags` or `toolset.uses-features`
+** It is used by the requirements of a generator
+** It is a sub-feature of a relevant feature
+** It has a sub-feature which is relevant
+** It is a composite feature, and any composed feature is relevant
+** It affects target alternative selection for a main target
+** It is a propagated feature and is relevant for any dependency
+** It is relevant for any dependency created by the same main target
+** It is used in the condition of a conditional property and the corresponding
+  value is relevant
+** It is explicitly named as relevant
++
+* Relevant features cannot be automatically deduced in the following cases:
++
+** Indirect conditionals. Solution: return properties of the form
+`<relevant>result-feature:<relevant>condition-feature`
++
+NOTE: This isn't really a conditional, although for most purposes it functions
+like one. In particular, it does not support multiple comma-separated elements
+in the condition, and it does work correctly even in contexts where conditional
+properties are not allowed
+** Action rules that read properties. Solution: add toolset.uses-features to
+  tell B2 that the feature is actually used.
+** Generators and targets that manipulate property-sets directly. Solution:
+  set <relevant> manually.
+
+|# # end::doc[]
+
+feature.feature relevant : : incidental free ;

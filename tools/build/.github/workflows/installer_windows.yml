@@ -1,0 +1,58 @@
+# Copyright 2022 René Ferdinand Rivera Morell
+# Use, modification, and distribution are subject to the
+# Boost Software License, Version 1.0. (See accompanying file LICENSE.txt)
+
+name: "Installer: Windows"
+
+on:
+  # Allow manual runs.
+  workflow_dispatch:
+  # Run on publishing of releases.
+  release: { types: [published] }
+  # And run on pushes, for main and release branches.
+  push:
+    branches: ["main", "release"]
+    paths-ignore:
+      [
+        ".circleci/**",
+        ".cirrus.yml",
+        ".drone.star",
+        ".semaphore/**",
+        ".travis.yml",
+        "appveyor.yml",
+        "azure-pipelines.yml",
+        ".ci/azp-*.yml",
+      ]
+
+jobs:
+  wix:
+    strategy:
+      matrix:
+        include:
+          - { name: "Windows: Wix", image: "" }
+    name: ${{ matrix.name }}
+    runs-on: "windows-latest"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+        with: { path: "b2" }
+      - name: "Checkout"
+        uses: actions/checkout@master
+        with: { repository: "bfgroup/b2-pkg", path: "b2-pkg" }
+      - name: "Install"
+        run: |
+          choco install vswhere
+      - name: "Bootstrap"
+        run: |
+          cd "${env:GITHUB_WORKSPACE}/b2"
+          ./bootstrap.bat
+      - name: "Build"
+        run: |
+          cd "${env:GITHUB_WORKSPACE}/b2-pkg"
+          $env:path += ';' + "${env:GITHUB_WORKSPACE}/b2"
+          b2 --debug-configuration --b2root="${env:GITHUB_WORKSPACE}/b2" windows-wix
+      - name: "Publish"
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+        run: |
+          cd "${env:GITHUB_WORKSPACE}/b2-pkg"
+          $env:path += ';' + "${env:GITHUB_WORKSPACE}/b2"

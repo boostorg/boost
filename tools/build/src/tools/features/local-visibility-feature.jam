@@ -1,0 +1,27 @@
+# Copyright 2018 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.local-visibility]]`local-visibility`::
+*Allowed values:* `global`, `protected`, `hidden`.
++
+This feature has the same effect as the
+<<bbv2.builtin.features.visibility,`visibility`>> feature but is intended
+to be used by targets that require a particular symbol visibility. Unlike the
+`visibility` feature, `local-visibility` is not inherited by the target
+dependencies and only affects the target to which it is applied.
++
+The `local-visibility` feature supports the same values with the same meaning
+as the `visibility` feature. By default, if `local-visibility` is not specified
+for a target, the value of the `visibility` feature is used.
+
+|# # end::doc[]
+
+feature.feature local-visibility
+    : global protected hidden
+    : optional ;

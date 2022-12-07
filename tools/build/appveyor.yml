@@ -1,0 +1,70 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Ferdinand Rivera Morell 2015-2020.
+
+branches:
+  only:
+    - /main/
+    - /release/
+    - /feature\/.*/
+
+environment:
+  matrix:
+  - job_name: 'Visual Studio 2017, Test'
+    job_group: 'Test'
+    TOOLSET: vc141
+    TEST_TOOLSET: msvc-14.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  - job_name: 'Visual Studio 2015, Test'
+    job_group: 'Test'
+    TOOLSET: vc14
+    TEST_TOOLSET: msvc-14.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - job_name: 'Visual Studio 2013, Test'
+    job_group: 'Test'
+    TOOLSET: vc12
+    TEST_TOOLSET: msvc-12.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  - job_name: 'Cygwin 3.1.7 x64, Test'
+    job_group: 'TestCygwin'
+    TOOLSET: gcc
+    TEST_TOOLSET: gcc
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    B2_CXX_PATH: C:/cygwin64/bin
+
+build_script:
+  - cmd: |
+      cd src/engine
+      set PATH=%B2_CXX_PATH%;%PATH%
+  - cmd: |
+      ./build.bat %TOOLSET%
+  - cmd: |
+      cd ../..
+      src\engine\b2.exe -v
+
+for:
+  - matrix:
+      only:
+        - job_group: 'Test'
+
+    test_script:
+      - cmd: |
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TEST"
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          cd test
+          python test_all.py %TEST_TOOLSET%
+          cd ..
+      - cmd: |
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> NO WARNINGS"
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          src\engine\b2.exe --debug-configuration b2 warnings-as-errors=on variant=debug,release address-model=32,64 toolset=%TEST_TOOLSET%
+      - cmd: |
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BOOTSTRAP"
+          echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+          bootstrap.bat %TOOLSET%
+          b2.exe --debug-configuration --prefix=./.b2 install toolset=%TEST_TOOLSET%

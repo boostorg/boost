@@ -1,0 +1,226 @@
+# Copyright 2021 Nikita Kniazev
+# Copyright 2002, 2003, 2004, 2006 Vladimir Prus
+# Copyright 2008, 2012 Jurko Gospodnetic
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import numbers ;
+
+
+# Mirror engine JAM_VERSION
+.major = "4" ;
+.minor = "9" ;
+
+
+rule build ( )
+{
+    return "$(.major).$(.minor)-git" ;
+}
+
+
+rule print ( )
+{
+    if [ verify-engine-version ]
+    {
+        ECHO "B2" [ build ] ;
+    }
+}
+
+
+rule verify-engine-version ( )
+{
+    local v = [ modules.peek : JAM_VERSION ] ;
+
+    if $(v[1]) != $(.major) || $(v[2]) != $(.minor)
+    {
+        local argv = [ modules.peek : ARGV ] ;
+        local e = $(argv[1]) ;
+        local l = [ modules.binding version ] ;
+        l = $(l:D) ;
+        l = $(l:D) ;
+        ECHO "error: mismatched versions of B2 engine and core" ;
+        ECHO "error: B2 engine ($(e)) is $(v:J=.)" ;
+        ECHO "error: B2 core (at $(l)) is" [ build ] ;
+        EXIT : 1 ;
+    }
+    else
+    {
+        return true ;
+    }
+}
+
+
+# Utility rule for testing whether all elements in a sequence are equal to 0.
+#
+local rule is-all-zeroes ( sequence * )
+{
+    local result = "true" ;
+    for local e in $(sequence)
+    {
+        if $(e) != "0"
+        {
+            result = "" ;
+        }
+    }
+    return $(result) ;
+}
+
+
+# Returns "true" if the first version is less than the second one.
+#
+rule version-less ( lhs + : rhs + )
+{
+    numbers.check $(lhs) ;
+    numbers.check $(rhs) ;
+
+    local done ;
+    local result ;
+
+    while ! $(done) && $(lhs) && $(rhs)
+    {
+        if [ numbers.less $(lhs[1]) $(rhs[1]) ]
+        {
+            done = "true" ;
+            result = "true" ;
+        }
+        else if [ numbers.less $(rhs[1]) $(lhs[1])  ]
+        {
+            done = "true" ;
+        }
+        else
+        {
+            lhs = $(lhs[2-]) ;
+            rhs = $(rhs[2-]) ;
+        }
+    }
+    if ( ! $(done) && ! $(lhs) && ! [ is-all-zeroes $(rhs) ] )
+    {
+        result = "true" ;
+    }
+
+    return $(result) ;
+}
+
+# Returns "true" if the required version is compatible with the having one.
+# This uses sematic versioning where (major.x.y) is compatible with
+# (major.n.m) and (major.x.z). And is incompatible for other values.
+#
+rule version-compatible ( req + : has + )
+{
+    numbers.check $(req) ;
+    numbers.check $(has) ;
+
+    if $(req) = $(has)
+    {
+        return true ;
+    }
+
+    while $(req) && [ numbers.equal $(req[1]) $(has[1]:E=0) ]
+    {
+        req = $(req[2-]) ;
+        has = $(has[2-]) ;
+    }
+
+    if $(req)
+    {
+        return ;
+    }
+
+    return true ;
+}
+
+
+# Returns "true" if the current JAM version version is at least the given
+# version.
+#
+rule check-jam-version ( version + )
+{
+    local version-tag = $(version:J=.) ;
+    if ! $(version-tag)
+    {
+        import errors ;
+        errors.error Invalid version "specifier:" : $(version:E="(undefined)") ;
+    }
+
+    if ! $(.jam-version-check.$(version-tag))-is-defined
+    {
+        local jam-version = [ modules.peek : JAM_VERSION ] ;
+        if ! $(jam-version)
+        {
+            import errors ;
+            errors.error "Unable to deduce Boost Jam version. Your Boost Jam"
+                "installation is most likely terribly outdated." ;
+        }
+        .jam-version-check.$(version-tag) = "true" ;
+        if [ version-less [ modules.peek : JAM_VERSION ] : $(version) ]
+        {
+            .jam-version-check.$(version-tag) = "" ;
+        }
+    }
+    return $(.jam-version-check.$(version-tag)) ;
+}
+
+
+rule __test__ ( )
+{
+    import assert ;
+
+    local jam-version = [ modules.peek : JAM_VERSION ] ;
+    local future-version = $(jam-version) ;
+    future-version += "1" ;
+
+    assert.true  check-jam-version $(jam-version)    ;
+    assert.false check-jam-version $(future-version) ;
+
+    assert.true  version-less  0          :  1          ;
+    assert.false version-less  0          :  0          ;
+    assert.true  version-less  1          :  2          ;
+    assert.false version-less  1          :  1          ;
+    assert.false version-less  2          :  1          ;
+    assert.true  version-less  3 1 20     :  3 4 10     ;
+    assert.false version-less  3 1 10     :  3 1 10     ;
+    assert.false version-less  3 4 10     :  3 1 20     ;
+    assert.true  version-less  3 1 20 5 1 :  3 4 10     ;
+    assert.false version-less  3 1 10 5 1 :  3 1 10     ;
+    assert.false version-less  3 4 10 5 1 :  3 1 20     ;
+    assert.true  version-less  3 1 20     :  3 4 10 5 1 ;
+    assert.true  version-less  3 1 10     :  3 1 10 5 1 ;
+    assert.false version-less  3 4 10     :  3 1 20 5 1 ;
+    assert.false version-less  3 1 10     :  3 1 10 0 0 ;
+    assert.false version-less  3 1 10 0 0 :  3 1 10     ;
+    assert.false version-less  3 1 10 0   :  3 1 10 0 0 ;
+    assert.false version-less  3 1 10 0   : 03 1 10 0 0 ;
+    assert.false version-less 03 1 10 0   :  3 1 10 0 0 ;
+
+    # TODO: Add tests for invalid input data being sent to version-less.
+
+
+    assert.true  version-compatible 4     : 4     ;
+    assert.true  version-compatible 4     : 4 9   ;
+    assert.false version-compatible 4 9   : 4     ;
+    assert.true  version-compatible 4 9   : 4 9   ;
+    assert.false version-compatible 4 9 1 : 4 9   ;
+    assert.true  version-compatible 4 9 1 : 4 9 1 ;
+    assert.false version-compatible 4 8   : 4 9   ;
+    assert.false version-compatible 4 8 1 : 4 9   ;
+    assert.false version-compatible 4 8 1 : 4 9 1 ;
+    assert.true  version-compatible 5     : 5     ;
+    assert.false version-compatible 5     : 4     ;
+    assert.false version-compatible 5     : 4 9   ;
+    assert.false version-compatible 5 1   : 5     ;
+    assert.true  version-compatible 5 1   : 5 1   ;
+    assert.false version-compatible 5 1   : 5 2   ;
+    assert.false version-compatible 5 1 1 : 5     ;
+    assert.false version-compatible 5 1 1 : 5 1   ;
+    assert.false version-compatible 5 2   : 5     ;
+    assert.false version-compatible 5 2   : 5 1   ;
+    assert.true  version-compatible 5 2   : 5 2   ;
+    assert.true  version-compatible 4     : 4 0   ;
+    assert.true  version-compatible 4 0   : 4     ;
+    assert.true  version-compatible 04    : 4     ;
+    assert.true  version-compatible 04    : 04    ;
+    assert.true  version-compatible 04    : 4     ;
+    assert.true  version-compatible 04 00 : 04    ;
+    assert.true  version-compatible 04    : 04 00 ;
+}
+

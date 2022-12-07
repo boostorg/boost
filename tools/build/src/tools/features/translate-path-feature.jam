@@ -1,0 +1,34 @@
+# Copyright 2020 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.translate-path]]`translate-path`::
+Used to introduce custom path feature translation. The value should have the
+form:
++
+----
+@rulename
+----
++
+where _rulename_ should be a name of a rule with the following signature:
++
+----
+rule rulename ( feature value : properties * : project-id : project-location )
+----
++
+The rule is called for each target with the `feature` of a path property,
+the path property value, target properties, the target project ID, and
+the target project location. It should return the translated path value.
+Or return nothing if it doesn't do path translation. Leaving it do the
+default path translation.
+
+|# # end::doc[]
+
+feature.feature translate-path
+    :
+    : incidental free ;

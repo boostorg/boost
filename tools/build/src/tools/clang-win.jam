@@ -1,0 +1,247 @@
+# Copyright Vladimir Prus 2004.
+# Copyright Peter Dimov 2018
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt
+# or copy at https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import common ;
+import errors ;
+import feature ;
+import clang ;
+import msvc ;
+import os ;
+import toolset ;
+import generators ;
+import path ;
+import regex ;
+
+feature.extend-subfeature toolset clang : platform : win ;
+
+toolset.inherit-generators clang-win <toolset>clang <toolset-clang:platform>win : msvc ;
+toolset.inherit-flags clang-win : msvc : : YLOPTION ;
+toolset.inherit-rules clang-win : msvc ;
+
+# Override default do-nothing generators.
+generators.override clang-win.compile.rc : rc.compile.resource ;
+generators.override clang-win.compile.mc : mc.compile ;
+generators.override clang-win.compile.c.pch   : pch.default-c-pch-generator   ;
+generators.override clang-win.compile.c++.pch : pch.default-cpp-pch-generator ;
+
+
+if [ MATCH (--debug-(clang-(win-)?)?configuration) : [ modules.peek : ARGV ] ]
+{
+    local rule .notice ( messages * )
+    {
+        ECHO "notice: [clang-win]" $(messages) ;
+    }
+}
+else
+{
+    local rule .notice ( messages * )
+    {
+    }
+}
+
+# [ get-option archiver : 32 : $(options) ]
+#
+# returns <archiver-32>, or <archiver>
+
+local rule get-option ( option : addr : options * )
+{
+    local r = [ feature.get-values "<$(option)-$(addr)>" : $(options) ] ;
+    r ?= [ feature.get-values "<$(option)>" : $(options) ] ;
+    return $(r) ;
+}
+
+# init
+#
+# options:
+#
+# <assembler>ml.exe (or <assembler-32>, or <assembler-64>)
+# <archiver>lib.exe
+# <manifest-tool>mt.exe
+# <resource-compiler>rc.exe
+# <mc-compiler>mc.exe
+# <idl-compiler>midl.exe
+
+rule init ( version ? : command * : options * )
+{
+    command = [ common.get-invocation-command-nodefault clang-win : clang-cl.exe : $(command) ] ;
+
+    if ! $(command)
+    {
+        errors.error "Cannot configure toolset clang-win: no 'clang-cl.exe' command found or given" ;
+    }
+
+    local compiler = "\"$(command)\"" ;
+    compiler = "$(compiler:J= )" ;
+
+    local version-output = [ SHELL "$(compiler) -v 2>&1" ] ;
+
+    version ?= [ MATCH "version ([0-9.]+)" : $(version-output) ] ;
+    local target = [ MATCH "Target: ([A-Za-z0-9_]+)" : $(version-output) ] ;
+
+    local default-addr = 32 ;
+    if $(target) = x86_64 { default-addr = 64 ; }
+
+    .notice "using compiler '$(compiler)', version '$(version)', target '$(target)', default address-model=$(default-addr)" ;
+
+    local condition = [ common.check-init-parameters clang-win : version $(version) ] ;
+
+    common.handle-options clang-win : $(condition) : $(command) : $(options) ;
+
+    for local addr in 32 64
+    {
+        for local arch in x86 arm
+        {
+            local clang-arch ;
+            if $(arch) = x86
+            {
+                if $(addr) = 32 { clang-arch = i386 ; } else { clang-arch = x86_64 ; }
+            }
+            else if $(arch) = arm
+            {
+                if $(addr) = 32 { clang-arch = arm ; } else { clang-arch = aarch64 ; }
+            }
+
+            local config = [ SPLIT_BY_CHARACTERS [ SHELL "$(compiler) --target=$(clang-arch)-pc-windows-msvc -### foo.obj /link 2>&1" ] : "\n" ] ;
+
+            local match = 1 ;
+            local items ;
+
+            while $(match)
+            {
+                match = [ MATCH "^ *(\"[^\"]*\")(.*)" : $(config) ] ;
+
+                if $(match)
+                {
+                    items += $(match[1]) ;
+                    config = $(match[2]) ;
+                }
+            }
+
+            local asm ;
+
+            if $(items)
+            {
+                asm = [ regex.replace $(items[1]) "x64\\\\+link\\.exe" "x64\\ml64.exe" ] ;
+                asm = [ regex.replace $(asm) "x86\\\\+link\\.exe" "x86\\ml.exe" ] ;
+                asm = [ regex.replace $(asm) "arm64\\\\+link\\.exe" "arm64\\armasm64.exe" ] ;
+                asm = [ regex.replace $(asm) "arm\\\\+link\\.exe" "arm\\armasm.exe" ] ;
+
+                if ! [ MATCH "(ml\\.exe)" "(ml64\\.exe)" "(armasm64\\.exe)" "(armasm\\.exe)" : $(asm) ]
+                {
+                    asm = ;
+                }
+            }
+
+            local assembler = [ get-option "assembler" : $(addr) : $(options) ] ;
+            assembler ?= $(asm) ;
+            if $(arch) = x86
+            {
+                if $(addr) = 32 { assembler ?= ml.exe ; } else { assembler ?= ml64.exe ; }
+            }
+            else if $(arch) = arm
+            {
+                if $(addr) = 32 { assembler ?= armasm.exe ; } else { assembler ?= armasm64.exe ; }
+            }
+
+            local linker ;
+
+            if $(items)
+            {
+                linker = [ regex.replace $(items[1]) "\\\\+HostX64\\\\+x86\\\\+" "\\HostX86\\x86\\" ] ;
+            }
+
+            .notice "$(arch)-$(addr):" "using linker '$(linker)'" ;
+
+            local archiver = [ get-option "archiver" : $(addr) : $(options) ] ;
+
+            if $(linker)
+            {
+                archiver ?= "$(linker) /lib" ;
+            }
+            archiver ?= lib.exe ;
+
+            .notice "$(arch)-$(addr):" "using assembler '$(assembler)'" ;
+            .notice "$(arch)-$(addr):" "using archiver '$(archiver)'" ;
+
+            local manifest-tool = [ get-option "manifest-tool" : $(addr) : $(options) ] ;
+            local resource-compiler = [ get-option "resource-compiler" : $(addr) : $(options) ] ;
+            local mc-compiler = [ get-option "mc-compiler" : $(addr) : $(options) ] ;
+            local idl-compiler = [ get-option "idl-compiler" : $(addr) : $(options) ] ;
+
+            for local item in $(items)
+            {
+                match = [ MATCH "\"-libpath:(.*)\\\\+Lib\\\\.*\\\\um\\\\+x(.*)\"" : $(item) ] ;
+
+                if $(match)
+                {
+                    local sdk-path = "$(match[1])\\bin\\x$(match[2])" ;
+                    .notice "$(arch)-$(addr):" "using SDK path '$(sdk-path)'" ;
+
+                    manifest-tool ?= "\"$(sdk-path)\\mt.exe\"" ;
+                    resource-compiler ?= "\"$(sdk-path)\\rc.exe\"" ;
+                    mc-compiler ?= "\"$(sdk-path)\\mc.exe\"" ;
+                    idl-compiler ?= "\"$(sdk-path)\\midl.exe\"" ;
+                }
+            }
+
+            manifest-tool ?= mt.exe ;
+            resource-compiler ?= rc.exe ;
+            mc-compiler ?= mc.exe ;
+            idl-compiler ?= midl.exe ;
+
+            .notice "$(arch)-$(addr):" "using manifest-tool '$(manifest-tool)'" ;
+            .notice "$(arch)-$(addr):" "using resource-compiler '$(resource-compiler)'" ;
+            .notice "$(arch)-$(addr):" "using mc-compiler '$(mc-compiler)'" ;
+            .notice "$(arch)-$(addr):" "using idl-compiler '$(idl-compiler)'" ;
+
+            local linker-arch ;
+            if $(arch) = x86
+            {
+                if $(addr) = 32 { linker-arch = x86 ; } else { linker-arch = x64 ; }
+            }
+            else if $(arch) = arm
+            {
+                if $(addr) = 32 { linker-arch = arm ; } else { linker-arch = arm64 ; }
+            }
+
+            local cond = "$(condition)/<architecture>$(arch)/<address-model>$(addr)" ;
+            if $(addr) = $(default-addr) && $(arch) = x86
+            {
+                cond += "$(condition)/<architecture>/<address-model>" ;
+                cond += "$(condition)/<architecture>/<address-model>$(addr)" ;
+                cond += "$(condition)/<architecture>$(arch)/<address-model>" ;
+            }
+
+            toolset.flags clang-win.compile .CC $(cond) : $(compiler) --target=$(clang-arch)-pc-windows-msvc ;
+            toolset.flags clang-win.link .LD $(cond) : $(compiler) --target=$(clang-arch)-pc-windows-msvc ;
+            toolset.flags clang-win.link LINKOPT $(cond) : /link ;
+            toolset.flags clang-win.link LINKFLAGS $(cond) : "/incremental:no" "/manifest" "/machine:$(linker-arch)" ;
+            if $(arch) = x86
+            {
+                toolset.flags clang-win.compile .ASM $(cond) : $(assembler) -nologo -c -Zp4 -Cp -Cx ;
+                toolset.flags clang-win.compile .ASM_OUTPUT $(cond) : -Fo ;
+            }
+            else if $(arch) = arm
+            {
+                toolset.flags clang-win.compile .ASM $(cond) : $(assembler) -machine $(arch) ;
+                toolset.flags clang-win.compile .ASM_OUTPUT $(cond) : -o ;
+            }
+            toolset.flags clang-win.archive .LD $(cond) : $(archiver) /nologo ;
+            toolset.flags clang-win.link .MT $(cond) : $(manifest-tool) -nologo ;
+            toolset.flags clang-win.compile .MC $(cond) : $(mc-compiler) ;
+            toolset.flags clang-win.compile .RC $(cond) : $(resource-compiler) ;
+            toolset.flags clang-win.compile .IDL $(cond) : $(idl-compiler) ;
+        }
+    }
+
+    toolset.flags clang-win.link LIBRARY_OPTION <toolset>clang-win : "" : unchecked ;
+
+    # Enable response file control
+    toolset.flags clang-win RESPONSE_FILE_SUB <response-file>auto : a ;
+    toolset.flags clang-win RESPONSE_FILE_SUB <response-file>file : f ;
+    toolset.flags clang-win RESPONSE_FILE_SUB <response-file>contents : c ;
+}

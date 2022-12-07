@@ -1,0 +1,40 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.runtime-debugging]]`runtime-debugging`::
+*Allowed values:* `on`, `off`.
++
+Specifies whether produced object files, executables, and libraries should
+include behavior useful only for debugging, such as asserts. Typically, the
+value of this feature is implicitly set by the `variant` feature, but it can be
+explicitly specified by the user. The most common usage is to build release
+variant with debugging output.
+
+|# # end::doc[]
+
+feature.feature runtime-debugging
+    : on off
+    : propagated ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.runtime-link]]`runtime-link`::
+*Allowed values:* `shared`, `static`
++
+Controls if a static or shared C/{CPP} runtime should be used. There are some
+restrictions how this feature can be used, for example on some compilers an
+application using static runtime should not use shared libraries at all, and on
+some compilers, mixing static and shared runtime requires extreme care. Check
+your compiler documentation for more details.
+
+|# # end::doc[]
+
+feature.feature runtime-link
+    : shared static
+    : propagated ;

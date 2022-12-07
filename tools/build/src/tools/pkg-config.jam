@@ -1,0 +1,486 @@
+#|
+Copyright 2019 Dmitry Arkhipov
+Distributed under the Boost Software License, Version 1.0. (See
+accompanying file LICENSE.txt or copy at
+https://www.bfgroup.xyz/b2/LICENSE.txt)
+|#
+
+
+import "class" : new ;
+import common ;
+import errors ;
+import feature ;
+import os ;
+import param ;
+import project ;
+import regex ;
+import sequence ;
+import string ;
+import targets ;
+
+
+#| tag::doc[]
+
+= pkg-config
+The *pkg-config* program is used to retrieve information about installed
+libraries in the system. It retrieves information about packages from special
+metadata files. These files are named after the package, and have a `.pc`
+extension. The package name specified to *pkg-config* is defined to be the name
+of the metadata file, minus the `.pc` extension.
+
+|# # end::doc[]
+
+
+#| tag::doc[]
+
+== Feature: `pkg-config`
+
+Selects one of the initialized `pkg-config` configurations. This feature is
+`propagated` to dependencies. Its use is dicussed in
+section <<pkg-config-init>>.
+
+|# # end::doc[]
+
+feature.feature pkg-config : : propagated ;
+
+
+#| tag::doc[]
+
+== Feature: `pkg-config-define`
+
+This `free` feature adds a variable assignment to pkg-config invocation. For
+example,
+
+[source, jam]
+----
+pkg-config.import mypackage : requirements <pkg-config-define>key=value ;
+----
+
+is equivalent to invoking on the comand line
+
+[source, shell]
+----
+pkg-config --define-variable=key=value mypackage ;
+----
+
+|# # end::doc[]
+
+feature.feature pkg-config-define : : free ;
+
+
+#| tag::doc[]
+
+== Rule: `import`
+
+Main target rule that imports a *pkg-config* package. When its consumer targets
+are built, *pkg-config* command will be invoked with arguments that depend on
+current property set. The features that have an effect are:
+
+* `<pkg-config-define>`: adds a `--define-variable` argument;
+* `<link>`: adds `--static` argument when `<link>static`;
+* `<link>`: adds `--static` argument when `<link>static`;
+* `<name>`: specifies package name (target name is used instead if the property
+    is not present);
+* `<version>`: specifies package version range, can be used multiple times and
+    should be a dot-separated sequence of numbers optionally prefixed with `=`,
+    `<`, `>`, `<=` or `>=`.
+
+Example:
+
+[source, jam]
+----
+pkg-config.import my-package
+    : requirements <name>my_package <version><4 <version>>=3.1 ;
+----
+
+|# # end::doc[]
+
+
+rule import
+    ( target-name
+    : sources *
+    : requirements *
+    : default-build *
+    : usage-requirements *
+    )
+{
+    param.handle-named-params
+        sources requirements default-build usage-requirements ;
+    targets.create-metatarget pkg-config-target
+        : [ project.current ]
+        : $(target-name)
+        : $(sources)
+        : $(requirements)
+        : $(default-build)
+        : $(usage-requirements)
+        ;
+}
+
+
+#| tag::doc[]
+
+[[pkg-config-init]]
+== Initialization
+
+To use the `pkg-config` tool you need to declare it in a configuration file
+with the `using` rule:
+
+[source, jam]
+----
+using pkg-config : [config] : [command] ... : [ options ] ... ;
+----
+
+
+* `config`: the name of initialized configuration. The name can be omitted, in
+    which case the configuration will become the default one.
+* `command`: the command, with any extra arguments, to execute. If no command
+    is given, first `PKG_CONFIG` environment variable is checked, and if its
+    empty the string `pkg-config` is used.
+* `options`: options that modify `pkg-config` behavior. Allowed options are:
+    * `<path>`: sets `PKG_CONFIG_PATH` environment variable;
+        multiple occurences are allowed.
+    * `<libdir>`: sets `PKG_CONFIG_LIBDIR` environment variable;
+        multiple occurences are allowed.
+    * `<allow-system-cflags>`: sets `PKG_CONFIG_ALLOW_SYSTEM_CFLAGS`
+        environment variable; multiple occurences are allowed.
+    * `<allow-system-libs>`: sets `PKG_CONFIG_ALLOW_SYSTEM_LIBS`
+        environment variable; multiple occurences are allowed.
+    * `<sysroot>`: sets `PKG_CONFIG_SYSROOT_DIR` environment variable;
+        multiple occurences are allowed.
+    * `<variable>`: adds a variable definition argument to command invocation;
+        multiple occurences are allowed.
+
+|# # end::doc[]
+
+rule init ( config ? : command * : options * )
+{
+    config ?= [ default-config ] ;
+
+    local tool = [ os.environ PKG_CONFIG ] ;
+    tool ?= pkg-config ;
+    command =
+        [ common.get-invocation-command pkg-config : $(tool) : $(command) ] ;
+
+    configure $(config) : $(command) : $(options) ;
+    $(.configs).use $(config) ;
+}
+
+
+rule run ( config ? : args * )
+{
+    config ?= [ default-config ] ;
+
+    local command = [ $(.configs).get $(config) : command ] ;
+    command = "$(command) $(args:J= )" ;
+
+    local output = [ SHELL "$(command)" : exit-status ] ;
+    if 0 != $(output[2])
+    {
+      errors.error "pkg-config: command '$(command)' resulted in error:"
+          [ common.newline-char ] $(output[1]) ;
+    }
+
+    local ws = [ string.whitespace ] ;
+    output = [ regex.split $(output[1]) "[$(ws)]" ] ;
+    return [ sequence.filter non-empty : $(output) ] ;
+}
+
+
+#| tag::doc[]
+
+== Class `pkg-config-target`
+
+[source, jam]
+----
+class pkg-config-target : alias-target-class {
+    rule construct ( name : sources * : property-set )
+    rule version ( property-set )
+    rule variable ( name : property-set )
+}
+----
+
+The class of objects returned by `import` rule. The objects themselves could be
+useful in situations that require more complicated logic for consuming a
+package. See <<pkg-config-tips>> for examples.
+
+. `rule construct ( name : sources * : property-set )`
+  Overrides `alias-target.construct`.
+
+. `rule version ( property-set )`
+  Returns the package's version, in the context of `property-set`.
+
+. `rule variable ( name : property-set )`
+  Returns the value of variable `name` in the package, in the context of
+  `property-set`.
+
+
+|# # end::doc[]
+
+class pkg-config-target : alias-target-class
+{
+    import pkg-config ;
+    import regex ;
+
+    rule construct ( name : sources * : property-set )
+    {
+        local config = [ $(property-set).get <pkg-config> ] ;
+        local args = [ common-arguments $(name) : $(property-set) ] ;
+        return
+            [ property-set.create
+              [ compile-flags $(config) $(property-set) : $(args) ]
+              [ link-flags $(config) $(property-set) : $(args) ]
+            ] ;
+    }
+
+    rule version ( property-set )
+    {
+        local config = [ $(property-set).get <pkg-config> ] ;
+        local args = [ common-arguments [ name ] : $(property-set) ] ;
+        local version = [ pkg-config.run $(config) : --modversion $(args) ] ;
+        return [ regex.split $(version) "\\." ] ;
+    }
+
+    rule variable ( name : property-set )
+    {
+        local config = [ $(property-set).get <pkg-config> ] ;
+        local args = [ common-arguments [ name ] : $(property-set) ] ;
+        return [ pkg-config.run $(config) : --variable=$(name) $(args) ] ;
+    }
+
+    local rule common-arguments ( name : property-set )
+    {
+        local defines = [ $(property-set).get <pkg-config-define> ] ;
+        local args = --define-variable=$(defines) ;
+        if [ $(property-set).get <link> ] = static
+        {
+            args += --static ;
+        }
+        return $(args) [ get-package-request $(property-set) $(name) ] ;
+    }
+
+    local rule get-package-request ( property-set name )
+    {
+        local pkg-name = [ $(property-set).get <name> ] ;
+        pkg-name ?= $(name) ;
+        if $(pkg-name[2])
+        {
+            errors.error "multiple package names were specified for target "
+                "'$(name)': $(pkg-name)" ;
+        }
+
+        local versions ;
+        for local version in [ $(property-set).get <version> ]
+        {
+            local match = [ MATCH "^(<=)(.*)" : $(version) ] ;
+            match ?= [ MATCH "^(>=)(.*)" : $(version) ] ;
+            match ?= [ MATCH "^([><=])(.*)" : $(version) ] ;
+            if $(match)
+            {
+                version = " $(match:J= )" ;
+            }
+            else
+            {
+                version = " = $(version)" ;
+            }
+            versions += $(version) ;
+        }
+        versions ?= "" ;
+
+        return "'$(pkg-name)"$(versions)"'" ;
+    }
+
+    local rule link-flags ( config property-set : args * )
+    {
+        local flags = [ pkg-config.run $(config) : --libs $(args) ] ;
+        return <linkflags>$(flags) ;
+    }
+
+    local rule compile-flags ( config property-set : args * )
+    {
+        local flags = [ pkg-config.run $(config) : --cflags $(args) ] ;
+        return <cflags>$(flags) ;
+    }
+}
+
+
+local rule default-config ( )
+{
+    return default ;
+}
+
+
+local rule configure ( config : command + : options * )
+{
+    $(.configs).register $(config) ;
+
+    local path ;
+    local libdir ;
+    local allow-system-cflags ;
+    local allow-system-libs ;
+    local sysroot ;
+    local defines ;
+    for local opt in $(options)
+    {
+        switch $(opt:G)
+        {
+            case <path> : path += $(opt:G=) ;
+            case <libdir> : libdir += $(opt:G=) ;
+            case <allow-system-cflags> : allow-system-cflags += $(opt:G=) ;
+            case <allow-system-libs> : allow-system-libs += $(opt:G=) ;
+            case <sysroot> : sysroot += $(opt:G=) ;
+            case <variable> : defines += $(opt:G=) ;
+            case * :
+                errors.error "pkg-config: invalid property '$(opt)' was "
+                    "specified for configuration '$(config)'." ;
+        }
+    }
+
+    for local opt in allow-system-cflags allow-system-libs
+    {
+        if ! $($(opt)) in "on" off
+        {
+            errors.error "pkg-config: invalid value '$($(opt))' was specified "
+                "for option <$(opt)> of configuration '$(config)'."
+                [ common.newline-char ] "Available values are 'on' and 'off'" ;
+        }
+    }
+
+    if $(sysroot[2])
+    {
+        errors.error "pkg-config: several values were specified for option "
+            "<sysroot> of configuration '$(config)'."
+            [ common.newline-char ] "Only one value is allowed." ;
+    }
+
+    local sep = [ os.path-separator ] ;
+    path = [ envar-set-command PKG_CONFIG_PATH : $(path:J=$(sep)) ] ;
+    libdir = [ envar-set-command PKG_CONFIG_LIBDIR : $(libdir:J=$(sep)) ] ;
+    sysroot = [ envar-set-command PKG_CONFIG_SYSROOT_DIR : $(sysroot) ] ;
+    allow-cflags =
+        [ envar-set-command PKG_CONFIG_ALLOW_SYSTEM_CFLAGS
+        : $(allow-cflags)
+        : 1
+        ] ;
+    allow-libs =
+        [ envar-set-command PKG_CONFIG_ALLOW_SYSTEM_LIBS
+        : $(allow-libs)
+        : 1
+        ] ;
+
+    command += --print-errors --errors-to-stdout --define-variable=$(defines) ;
+    $(.configs).set $(config)
+        : command
+        : "$(path)$(libdir)$(sysroot)$(allow-cflags)$(allow-libs)$(command:J= )"
+        ;
+
+    feature.extend pkg-config : $(config) ;
+}
+
+
+local rule envar-set-command ( envar : value * : implied-value * )
+{
+    if $(value)
+    {
+        if $(implied-value)
+        {
+            value = $(implied-value) ;
+        }
+        return [ common.path-variable-setting-command $(envar) : $(value) ] ;
+    }
+    else
+    {
+        return "" ;
+    }
+}
+
+
+local rule non-empty ( string )
+{
+    if $(string) != "" { return true ; }
+}
+
+
+.configs = [ new configurations ] ;
+
+
+#| tag::doc[]
+
+== Tips [[pkg-config-tips]]
+
+
+=== Using several configurations
+
+Suppose, you have 2 collections of `.pc` files: one for platform A, and another
+for platform B. You can initialize 2 configurations of `pkg-config` tool each
+corresponding to specific collection:
+
+[source, jam]
+----
+using pkg-config : A : : <libdir>path/to/collection/A ;
+using pkg-config : B : : <libdir>path/to/collection/B ;
+----
+
+Then, you can specify that builds for platform A should use configuration A,
+while builds for B should use configuration B:
+
+[source, jam]
+----
+project
+    : requirements
+      <target-os>A-os,<architecture>A-arch:<pkg-config>A
+      <target-os>B-os,<architecture>B-arch:<pkg-config>B
+    ;
+----
+
+Thanks to the fact, that `project-config`, `user-config` and `site-config`
+modules are parents of jamroot module, you can put it in any of those files.o
+
+
+=== Choosing the package name based on the property set
+
+Since a file for a package should be named after the package suffixed with
+`.pc`, some projects came up with naming schemes in order to allow simultaneous
+installation of several major versions or build variants. In order to pick the
+specific name corresponding to the build request you can use `<conditional>`
+property in requirements:
+
+[source, jam]
+----
+pkg-config.import mypackage : requirements <conditional>@infer-name ;
+
+rule infer-name ( properties * )
+{
+    local name = mypackage ;
+    local variant = [ property.select <variant> : $(properties) ] ;
+    if $(variant) = debug
+    {
+      name += -d ;
+    }
+    return <name>$(name) ;
+}
+----
+
+The `common.format-name` rule can be very useful in this situation.
+
+
+=== Modify usage requirements based on package version or variable
+
+Sometimes you need to apply some logic based on package's version or a
+variable that it defines. For that you can use `<conditional>` property in
+usage requirements:
+
+----
+mypackage =
+  [ pkg-config.import mypackage : usage-requirements <conditional>@define_ns
+  ] ;
+
+rule extra-props ( properties * )
+{
+    local ps = [ property-set.create $(properties) ] ;
+    local prefix = [ $(mypackage).variable name_prefix : $(ps) ] ;
+    prefix += [ $(mypackage).version $(ps) ] ;
+    return <define>$(prefix:J=_) ;
+}
+----
+
+|# # end::doc[]

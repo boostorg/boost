@@ -1,0 +1,64 @@
+////
+Copyright 2019 Damian Jarek
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file LICENSE.txt or https://www.bfgroup.xyz/b2/LICENSE.txt)
+////
+
+= Sanitizers
+
+This example shows how to enable sanitizers when using a clang or gcc toolset
+
+.`main.cpp`
+[source,cpp]
+----
+include::../../example/sanitizers/main.cpp[tag=source]
+----
+
+Our `jamroot.jam` is minimal and only specifies one `exe` target for the
+program:
+
+.`jamroot.jam`
+[source,jam]
+----
+include::jamroot.jam[]
+----
+
+Sanitizers can be enabled by passing `on` or `norecover` to the appropriate sanitizer feature
+(e.g. `thread-sanitizer=on`). The `norecover` option causes the program to terminate after
+the first sanitizer issue is detected. The following example shows how to enable `address` and `undefined`
+sanitizers in a simple program:
+
+[source,bash]
+----
+> cd /example/sanitizers
+> b2 toolset=gcc address-sanitizer=norecover undefined-sanitizer=on
+...found 10 targets...
+...updating 7 targets...
+gcc.compile.c++ bin/gcc-7.3.0/debug/address-sanitizer-norecover/undefined-sanitizer-on/main.o
+gcc.link bin/gcc-7.3.0/debug/address-sanitizer-norecover/undefined-sanitizer-on/main
+...updated 7 targets...
+----
+
+Running the produced program may produce an output simillar to the following:
+
+[source,bash]
+----
+> ./bin/gcc-7.3.0/debug/address-sanitizer-norecover/undefined-sanitizer-on/main
+Hello sanitizers
+main.cpp:6:43: runtime error: load of null pointer of type 'char'
+ASAN:DEADLYSIGNAL
+=================================================================
+==29767==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55ba7988af1b bp 0x7ffdf3d76560 sp 0x7ffdf3d76530 T0)
+==29767==The signal is caused by a READ memory access.
+==29767==Hint: address points to the zero page.
+    #0 0x55ba7988af1a in main /home/damian/projects/boost/tools/build/example/sanitizers/main.cpp:6
+    #1 0x7f42f2ba1b96 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21b96)
+    #2 0x55ba7988adb9 in _start (/home/damian/projects/boost/tools/build/example/sanitizers/bin/gcc-7.3.0/debug/address-sanitizer-norecover/undefined-sanitizer-on/main+0xdb9)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /home/damian/projects/boost/tools/build/example/sanitizers/main.cpp:6 in main
+==29767==ABORTING
+----
+
+NOTE: The actual paths in the `bin` sub-directory will depend on your
+toolset and configuration. The presented output may vary depending on your compiler version.

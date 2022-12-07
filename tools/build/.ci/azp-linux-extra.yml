@@ -1,0 +1,20 @@
+steps:
+  - bash: |
+      set -e
+      uname -a
+      ./.ci/linux-cxx-install.sh
+    displayName: Install
+  - bash: |
+      set -e
+      ./bootstrap.sh ${TOOLSET}
+      ./b2 --prefix=$HOME/temp/.b2 install toolset=${TOOLSET}
+      rm ./b2
+      export PATH=$HOME/temp/.b2/bin:$PATH
+      cd $HOME
+      touch build.jam
+      b2 -v
+      b2 -n --debug-configuration toolset=${TOOLSET}
+    displayName: Bootstrap
+  - { bash: "./.ci/b2_example.sh example/hello", displayName: "example/hello" }
+  - { bash: "./.ci/b2_example.sh example/libraries", displayName: "example/libraries" }
+  - { bash: "./.ci/b2_example.sh example/make", displayName: "example/make" }

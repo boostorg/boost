@@ -1,0 +1,30 @@
+# Copyright 2006 Ilya Sokolov
+#
+# Distributed under the Boost Software License, Version 1.0. (See
+# accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+# pch ##########################################################################
+
+import pch ;
+
+local pchs ;
+for local hpp in [ glob-tree *.hpp ]
+{
+    cpp-pch $(hpp:B) : $(hpp) : <include>include ;
+    explicit $(hpp:B) ;
+    pchs += $(hpp:B) ;
+}
+alias headers : $(pchs) ;
+
+# exe ##########################################################################
+
+exe hello_world
+  : # sources
+    headers
+    source/hello_world.cpp
+  : # requirements
+    <include>include
+  : # default build
+  : # usage requirements
+  ;

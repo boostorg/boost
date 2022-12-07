@@ -1,0 +1,35 @@
+steps:
+- bash: |
+    set -e
+    uname -a
+    ./.ci/linux-cxx-install.sh
+  displayName: Install
+- bash: |
+    set -e
+    cd src/engine
+    set PATH=${PATH};${CXX_PATH}
+    ./build.sh ${TOOLSET}
+    ./b2 -v
+    cd ../..
+  displayName: Build
+- bash: |
+    set -e
+    cd test
+    python test_all.py ${TOOLSET}
+    cd ..
+  displayName: Test
+- bash: |
+    set -e
+    ./src/engine/b2 b2 warnings-as-errors=on variant=debug,release address-model=32,64 toolset=${TOOLSET}
+  displayName: "No Warnings"
+- bash: |
+    set -e
+    ./bootstrap.sh ${TOOLSET}
+    ./b2 --prefix=$HOME/temp/.b2 install toolset=${TOOLSET}
+    rm ./b2
+    export PATH=$HOME/temp/.b2/bin:$PATH
+    cd $HOME
+    touch build.jam
+    b2 -v
+    b2 -n --debug-configuration toolset=${TOOLSET}
+  displayName: Bootstrap

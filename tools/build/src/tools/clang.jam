@@ -1,0 +1,113 @@
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt
+# or copy at https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+# This is a generic 'clang' toolset. Depending on the current system, it
+# forwards either to 'clang-linux' or 'clang-darwin' modules.
+
+import feature ;
+import os ;
+import toolset ;
+import sequence ;
+import regex ;
+import set ;
+
+feature.extend toolset : clang ;
+feature.subfeature toolset clang : platform : : propagated link-incompatible ;
+
+rule init ( * : * )
+{
+    if $(1) = win
+    {
+        toolset.using clang-win :
+          $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ;
+    }
+    else if [ os.name ] = MACOSX
+    {
+        toolset.using clang-darwin :
+          $(1) : $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ;
+    }
+    else
+    {
+        toolset.using clang-linux :
+          $(1) : $(2) : $(3) : $(4) : $(5) : $(6) : $(7) : $(8) : $(9) ;
+    }
+}
+
+
+local rule cxxstd-flags ( toolset : condition * : options * )
+{
+    toolset.flags $(toolset).compile.c++ OPTIONS $(condition) : $(options) : unchecked ;
+    toolset.flags $(toolset).link OPTIONS $(condition) : $(options) : unchecked ;
+}
+
+local rule version-ge ( lhs : rhs )
+{
+    lhs = [ regex.split $(lhs) "[.]" ] ;
+    rhs = [ regex.split $(rhs) "[.]" ] ;
+    return [ sequence.compare $(rhs) : $(lhs) : numbers.less ] ;
+}
+
+# Version specific flags
+rule init-cxxstd-flags ( toolset : condition * : version )
+{
+    local cxxstd = [ feature.values <cxxstd> ] ;
+    local dialects = [ feature.values <cxxstd-dialect> ] ;
+    dialects = [ set.difference $(dialects) : gnu iso ] ;
+    local std ;
+    if [ version-ge $(version) : 10.0 ] { std = 20 ; }
+    else if [ version-ge $(version) : 6.0 ] { std = 2a ; }
+    else if [ version-ge $(version) : 5.0 ] { std = 17 ; }
+    else if [ version-ge $(version) : 3.5 ] { std = 1z ; }
+    else if [ version-ge $(version) : 3.4 ] { std = 14 ; }
+    else if [ version-ge $(version) : 3.3 ] { std = 11 ; }
+    else { std = 03 ; }
+    cxxstd-flags $(toolset) : $(condition)/<cxxstd>latest/<cxxstd-dialect>iso : -std=c++$(std) ;
+    cxxstd-flags $(toolset) : $(condition)/<cxxstd>latest/<cxxstd-dialect>gnu : -std=gnu++$(std) ;
+    cxxstd-flags $(toolset) : $(condition)/<cxxstd>latest/<cxxstd-dialect>$(dialects) : -std=c++$(std) ;
+}
+
+local rule init-flags-cross ( toolset : condition * : architecture + : address-model + : target-os )
+{
+    local vendor = unknown ;
+    local sys = unknown ;
+    switch $(target-os)
+    {
+        case darwin : vendor = apple ; sys = darwin ;
+        case linux : vendor = pc ; sys = linux ;
+    }
+    local vendor-sys = $(vendor)-$(sys) ;
+    for local _architecture_ in $(architecture)
+    {
+        for local _address-model_ in $(address-model)
+        {
+            local arch = unknown ;
+            switch $(_architecture_)-$(_address-model_)
+            {
+                case arm-64 : arch = arm64 ;
+                case arm-32 : arch = arm ;
+                case x86-64 : arch = x86_64 ;
+                case x86-32 : arch = i386 ;
+            }
+
+            toolset.flags $(toolset)
+                OPTIONS $(condition)/<target-os>$(target-os)/<architecture>$(_architecture_)/<address-model>$(_address-model_)
+                : "--target=$(arch)-$(vendor-sys)"
+                : unchecked ;
+        }
+    }
+}
+
+rule init-flags ( toolset : condition * : version )
+{
+    init-cxxstd-flags $(toolset) : $(condition) : $(version) ;
+
+    init-flags-cross $(toolset) : $(condition) : arm x86 : 64 : darwin ;
+    init-flags-cross $(toolset) : $(condition) : arm x86 : 64 32 : linux ;
+
+    # This is a temporary solution for doing combined architecture builds on macOS.
+    toolset.flags $(toolset)
+        OPTIONS $(condition)/<target-os>darwin/<architecture>arm+x86/<address-model>64
+        : "-arch arm64" "-arch x86_64"
+        : unchecked ;
+}

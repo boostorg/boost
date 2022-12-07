@@ -1,0 +1,39 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+import numbers ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.cpp-template-depth]]`c++-template-depth`::
+*Allowed values:* Any positive integer.
++
+Allows configuring a {CPP} compiler with the maximal template instantiation
+depth parameter. Specific toolsets may or may not provide support for this
+feature depending on whether their compilers provide a corresponding
+command-line option.
++
+NOTE: Due to some internal details in the current B2 implementation it
+is not possible to have features whose valid values are all positive integer.
+As a workaround a large set of allowed values has been defined for this feature
+and, if a different one is needed, user can easily add it by calling the
+feature.extend rule.
+
+|# # end::doc[]
+
+# TODO: This should be upgraded as soon as Boost Build adds support for custom
+# validated feature values or at least features allowing any positive integral
+# value. See related Boost Build related trac ticket #194.
+
+feature.feature c++-template-depth
+    :
+        [ numbers.range 64 1024 : 64 ]
+        [ numbers.range 20 1000 : 10 ]
+        # Maximum template instantiation depth guaranteed for ANSI/ISO C++
+        # conforming programs.
+        17
+    :
+        incidental optional propagated ;

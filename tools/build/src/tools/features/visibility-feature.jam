@@ -1,0 +1,46 @@
+# Copyright 2018 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.visibility]]`visibility`::
+*Allowed values:* `global`, `protected`, `hidden`.
++
+Specifies the default symbol visibility in compiled binaries. Not all values
+are supported on all platforms and on some platforms (for example, Windows)
+symbol visibility is not supported at all.
++
+The supported values have the following meaning:
++
+`global`::: a.k.a. "default" in gcc documentation. Global symbols are
+  considered public, they are exported from shared libraries and can be
+  redefined by another shared library or executable.
+`protected`::: a.k.a. "symbolic". Protected symbols are exported from shared
+  ibraries but cannot be redefined by another shared library or executable.
+  This mode is not supported on some platforms, for example OS X.
+`hidden`::: Hidden symbols are not exported from shared libraries and cannot
+  be redefined by a different shared library or executable loaded in a process.
+  In this mode, public symbols have to be explicitly marked in the source code
+  to be exported from shared libraries. This is the recommended mode.
++
+By default compiler default visibility mode is used (no compiler flags are
+added).
++
+NOTE: In Boost super-project Jamroot file this property is set to the default
+value of `hidden`. This means that Boost libraries are built with hidden
+visibility by default, unless the user overrides it with a different
+`visibility` or a library sets a different `local-visibility` (see below).
+
+|# # end::doc[]
+
+feature.feature visibility
+    : global protected hidden
+    : optional composite propagated ;
+
+feature.compose <visibility>global : <local-visibility>global ;
+feature.compose <visibility>protected : <local-visibility>protected ;
+feature.compose <visibility>hidden : <local-visibility>hidden ;

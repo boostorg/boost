@@ -1,0 +1,41 @@
+steps:
+- bash: |
+    set -e
+    uname -a
+    sudo xcode-select -switch ${XCODE_APP}
+    which clang++
+  displayName: Install
+- bash: |
+    set -e
+    cd src/engine
+    ./build.sh ${TOOLSET} --cxx=${CXX}
+    ./b2 -v
+    cd ../..
+  displayName: Build
+- bash: |
+    set -e
+    CXX_PATH=`which ${CXX}`
+    cd test
+    echo "using ${TEST_TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+    python test_all.py ${TEST_TOOLSET}
+    cd ..
+  displayName: Test
+- bash: |
+    set -e
+    CXX_PATH=`which ${CXX}`
+    echo "using ${TEST_TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+    ./src/engine/b2 b2 warnings-as-errors=on variant=debug,release address-model=32,64 toolset=${TEST_TOOLSET}
+  displayName: "No Warnings"
+- bash: |
+    set -e
+    CXX_PATH=`which ${CXX}`
+    echo "using ${TEST_TOOLSET} : : ${CXX_PATH} ;" > ${HOME}/user-config.jam
+    ./bootstrap.sh ${TOOLSET}
+    ./b2 --prefix=$HOME/temp/.b2 install ${TEST_TOOLSET}
+    rm ./b2
+    export PATH=$HOME/temp/.b2/bin:$PATH
+    cd $HOME
+    touch build.jam
+    b2 -v
+    b2 -n --debug-configuration
+  displayName: Bootstrap

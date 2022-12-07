@@ -1,0 +1,73 @@
+# Copyright 2017 Rene Rivera
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.txt or copy at
+# https://www.bfgroup.xyz/b2/LICENSE.txt)
+
+import feature ;
+
+#| tag::doc[]
+
+[[bbv2.builtin.features.dll-path]]`dll-path`::
+Specifies an additional directory where the system should look for shared
+libraries when the executable or shared library is run. This feature only
+affects Unix compilers. Please see
+<<Why are the `dll-path` and `hardcode-dll-paths` properties useful?>>
+in <<Frequently Asked Questions>> for details.
+
+|# # end::doc[]
+
+feature.feature dll-path
+    :
+    : free path ;
+
+#| tag::hardcode-doc[]
+
+[[bbv2.builtin.features.hardcode-dll-paths]]`hardcode-dll-paths`::
+*Allowed values:* `true`, `false`.
++
+Controls automatic generation of dll-path properties.
++
+This property is specific to Unix systems. If an executable is built with
+`<hardcode-dll-paths>true`, the generated binary will contain the list of all
+the paths to the used shared libraries. As the result, the executable can be
+run without changing system paths to shared libraries or installing the
+libraries to system paths. This is very convenient during development. Please
+see the <<bbv2.faq.dll-path,FAQ entry>> for details. Note that on Mac OSX,
+the paths are unconditionally hardcoded by the linker, and it is not possible
+to disable that behavior
+
+|# # end::hardcode-doc[]
+
+feature.feature hardcode-dll-paths
+    : true false
+    : incidental ;
+
+# An internal feature that holds the paths of all dependency shared libraries.
+# On Windows, it is needed so that we can add all those paths to PATH when
+# running applications. On Linux, it is needed to add proper -rpath-link command
+# line options.
+feature.feature xdll-path
+    :
+    : free path ;
+
+#| tag::def-doc[]
+
+[[bbv2.builtin.features.def-file]]`def-file`::
+Provides a means to specify def-file for windows DLLs.
+
+|# # end::def-doc[]
+
+feature.feature def-file
+    :
+    : free dependency ;
+
+#| tag::suppress-doc[]
+
+[[bbv2.builtin.features.suppress-import-lib]]`suppress-import-lib`::
+Suppresses creation of import library by the linker.
+
+|# # end::suppress-doc[]
+
+feature.feature suppress-import-lib
+    : false true
+    : incidental ;
