@@ -1,0 +1,97 @@
+
+# Copyright 2006-2008 Daniel James.
+# Copyright 2022 Christian Mazakas
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+import testing ;
+
+# Adding -Wundef is blocked on (at least)
+# https://github.com/boostorg/type_traits/issues/165
+
+local gcc-flags = -Wsign-promo -Wconversion -Wsign-conversion -Wfloat-equal -Wshadow -Wno-variadic-macros ;
+local clang-flags = $(gcc-flags) -Wno-c99-extensions ;
+local msvc-flags = /wd4494 ;
+
+project
+    : requirements
+
+        <warnings>pedantic
+        <toolset>intel:<warnings>on
+
+        <toolset>gcc:<cxxflags>$(gcc-flags)
+        <toolset>darwin:<cxxflags>$(gcc-flags)
+        <toolset>clang:<cxxflags>$(clang-flags)
+        <toolset>msvc:<cxxflags>$(msvc-flags)
+
+        <toolset>gcc-4.4:<cxxflags>-Wno-strict-aliasing
+        <toolset>gcc-4.4:<cxxflags>-fno-deduce-init-list
+
+        <toolset>gcc:<warnings-as-errors>on
+        <toolset>clang:<warnings-as-errors>on
+        <toolset>msvc:<warnings-as-errors>on
+    ;
+
+run unordered/prime_fmod_tests.cpp ;
+run unordered/fwd_set_test.cpp ;
+run unordered/fwd_map_test.cpp ;
+run unordered/allocator_traits.cpp ;
+run unordered/minimal_allocator.cpp ;
+run unordered/compile_set.cpp ;
+run unordered/compile_map.cpp ;
+run unordered/noexcept_tests.cpp ;
+run unordered/link_test_1.cpp unordered/link_test_2.cpp ;
+run unordered/incomplete_test.cpp ;
+run unordered/simple_tests.cpp ;
+run unordered/equivalent_keys_tests.cpp ;
+run unordered/constructor_tests.cpp ;
+run unordered/copy_tests.cpp ;
+run unordered/move_tests.cpp ;
+run unordered/assign_tests.cpp ;
+run unordered/insert_tests.cpp ;
+run unordered/insert_stable_tests.cpp ;
+run unordered/insert_hint_tests.cpp ;
+run unordered/emplace_tests.cpp ;
+run unordered/unnecessary_copy_tests.cpp ;
+run unordered/erase_tests.cpp : : : <define>BOOST_UNORDERED_SUPPRESS_DEPRECATED ;
+run unordered/erase_equiv_tests.cpp ;
+run unordered/extract_tests.cpp ;
+run unordered/node_handle_tests.cpp ;
+run unordered/merge_tests.cpp ;
+compile-fail unordered/insert_node_type_fail.cpp : <define>UNORDERED_TEST_MAP : insert_node_type_fail_map ;
+compile-fail unordered/insert_node_type_fail.cpp : <define>UNORDERED_TEST_MULTIMAP : insert_node_type_fail_multimap ;
+compile-fail unordered/insert_node_type_fail.cpp : <define>UNORDERED_TEST_SET : insert_node_type_fail_set ;
+compile-fail unordered/insert_node_type_fail.cpp : <define>UNORDERED_TEST_MULTISET : insert_node_type_fail_multiset ;
+run unordered/find_tests.cpp ;
+run unordered/at_tests.cpp ;
+run unordered/bucket_tests.cpp ;
+run unordered/load_factor_tests.cpp ;
+run unordered/rehash_tests.cpp ;
+run unordered/equality_tests.cpp ;
+run unordered/swap_tests.cpp ;
+run unordered/deduction_tests.cpp ;
+run unordered/scoped_allocator.cpp : : : <toolset>msvc-14.0:<build>no ;
+run unordered/transparent_tests.cpp ;
+run unordered/reserve_tests.cpp ;
+run unordered/contains_tests.cpp ;
+run unordered/erase_if.cpp ;
+run unordered/scary_tests.cpp ;
+
+run unordered/compile_set.cpp : : : <define>BOOST_UNORDERED_USE_MOVE : bmove_compile_set ;
+run unordered/compile_map.cpp : : : <define>BOOST_UNORDERED_USE_MOVE : bmove_compile_map ;
+run unordered/copy_tests.cpp : : : <define>BOOST_UNORDERED_USE_MOVE : bmove_copy ;
+run unordered/move_tests.cpp : : : <define>BOOST_UNORDERED_USE_MOVE : bmove_move ;
+run unordered/assign_tests.cpp : : : <define>BOOST_UNORDERED_USE_MOVE : bmove_assign ;
+
+
+run exception/constructor_exception_tests.cpp ;
+run exception/copy_exception_tests.cpp ;
+run exception/assign_exception_tests.cpp ;
+run exception/move_assign_exception_tests.cpp ;
+run exception/insert_exception_tests.cpp ;
+run exception/erase_exception_tests.cpp ;
+run exception/rehash_exception_tests.cpp ;
+run exception/swap_exception_tests.cpp : : : <define>BOOST_UNORDERED_SWAP_METHOD=2 ;
+run exception/merge_exception_tests.cpp ;
+
+run quick.cpp ;

@@ -1,0 +1,1664 @@
+[#unordered_map]
+== Class template unordered_map
+
+:idprefix: unordered_map_
+
+`boost::unordered_map` — An unordered associative container that associates unique keys with another value.
+
+=== Synopsis
+
+[listing,subs="+macros,+quotes"]
+-----
+// #include <boost/unordered_map.hpp>
+
+namespace boost {
+  template<class Key,
+           class T,
+           class Hash = boost::hash<Key>,
+           class Pred = std::equal_to<Key>,
+           class Allocator = std::allocator<std::pair<const Key, T>>>
+  class unordered_map {
+  public:
+    // types
+    using key_type             = Key;
+    using mapped_type          = T;
+    using value_type           = std::pair<const Key, T>;
+    using hasher               = Hash;
+    using key_equal            = Pred;
+    using allocator_type       = Allocator;
+    using pointer              = typename boost::allocator_traits<Allocator>::pointer;
+    using const_pointer        = typename boost::allocator_traits<Allocator>::const_pointer;
+    using reference            = value_type&;
+    using const_reference      = const value_type&;
+    using size_type            = _implementation-defined_;
+    using difference_type      = _implementation-defined_;
+
+    using iterator             = _implementation-defined_;
+    using const_iterator       = _implementation-defined_;
+    using local_iterator       = _implementation-defined_;
+    using const_local_iterator = _implementation-defined_;
+    using node_type            = _implementation-defined_;
+    using insert_return_type   = _implementation-defined_;
+
+    // construct/copy/destroy
+    xref:#unordered_map_default_constructor[unordered_map]();
+    explicit xref:#unordered_map_bucket_count_constructor[unordered_map](size_type n,
+                           const hasher& hf = hasher(),
+                           const key_equal& eql = key_equal(),
+                           const allocator_type& a = allocator_type());
+    template<class InputIterator>
+      xref:#unordered_map_iterator_range_constructor[unordered_map](InputIterator f, InputIterator l,
+                    size_type n = _implementation-defined_,
+                    const hasher& hf = hasher(),
+                    const key_equal& eql = key_equal(),
+                    const allocator_type& a = allocator_type());
+    xref:#unordered_map_copy_constructor[unordered_map](const unordered_map& other);
+    xref:#unordered_map_move_constructor[unordered_map](unordered_map&& other);
+    explicit xref:#unordered_map_allocator_constructor[unordered_map](const Allocator& a);
+    xref:#unordered_map_copy_constructor_with_allocator[unordered_map](const unordered_map& other, const Allocator& a);
+    xref:#unordered_map_move_constructor_with_allocator[unordered_map](unordered_map&& other, const Allocator& a);
+    xref:#unordered_map_initializer_list_constructor[unordered_map](std::initializer_list<value_type> il,
+                  size_type n = _implementation-defined_
+                  const hasher& hf = hasher(),
+                  const key_equal& eql = key_equal(),
+                  const allocator_type& a = allocator_type());
+    xref:#unordered_map_bucket_count_constructor_with_allocator[unordered_map](size_type n, const allocator_type& a);
+    xref:#unordered_map_bucket_count_constructor_with_hasher_and_allocator[unordered_map](size_type n, const hasher& hf, const allocator_type& a);
+    template<class InputIterator>
+      xref:#unordered_map_iterator_range_constructor_with_bucket_count_and_allocator[unordered_map](InputIterator f, InputIterator l, size_type n, const allocator_type& a);
+    template<class InputIterator>
+      xref:#unordered_map_iterator_range_constructor_with_bucket_count_and_hasher[unordered_map](InputIterator f, InputIterator l, size_type n, const hasher& hf,
+                    const allocator_type& a);
+    xref:#unordered_map_initializer_list_constructor_with_bucket_count_and_allocator[unordered_map](std::initializer_list<value_type> il, size_type n, const allocator_type& a);
+    xref:#unordered_map_initializer_list_constructor_with_bucket_count_and_hasher_and_allocator[unordered_map](std::initializer_list<value_type> il, size_type n, const hasher& hf,
+                  const allocator_type& a);
+    xref:#unordered_map_destructor[~unordered_map]();
+    unordered_map& xref:#unordered_map_copy_assignment[operator++=++](const unordered_map& other);
+    unordered_map& xref:#unordered_map_move_assignment[operator++=++](unordered_map&& other)
+      noexcept(boost::allocator_traits<Allocator>::is_always_equal::value &&
+               boost::is_nothrow_move_assignable_v<Hash> &&
+               boost::is_nothrow_move_assignable_v<Pred>);
+    unordered_map& xref:#unordered_map_initializer_list_assignment[operator++=++](std::initializer_list<value_type>);
+    allocator_type xref:#unordered_map_get_allocator[get_allocator]() const noexcept;
+
+    // iterators
+    iterator       xref:#unordered_map_begin[begin]() noexcept;
+    const_iterator xref:#unordered_map_begin[begin]() const noexcept;
+    iterator       xref:#unordered_map_end[end]() noexcept;
+    const_iterator xref:#unordered_map_end[end]() const noexcept;
+    const_iterator xref:#unordered_map_cbegin[cbegin]() const noexcept;
+    const_iterator xref:#unordered_map_cend[cend]() const noexcept;
+
+    // capacity
+    ++[[nodiscard]]++ bool xref:#unordered_map_empty[empty]() const noexcept;
+    size_type xref:#unordered_map_size[size]() const noexcept;
+    size_type xref:#unordered_map_max_size[max_size]() const noexcept;
+
+    // modifiers
+    template<class... Args> std::pair<iterator, bool> xref:#unordered_map_emplace[emplace](Args&&... args);
+    template<class... Args> iterator xref:#unordered_map_emplace_hint[emplace_hint](const_iterator position, Args&&... args);
+    std::pair<iterator, bool> xref:#unordered_map_copy_insert[insert](const value_type& obj);
+    std::pair<iterator, bool> xref:#unordered_map_move_insert[insert](value_type&& obj);
+    template<class P> std::pair<iterator, bool> xref:#unordered_map_emplace_insert[insert](P&& obj);
+    iterator       xref:#unordered_map_copy_insert_with_hint[insert](const_iterator hint, const value_type& obj);
+    iterator       xref:#unordered_map_move_insert_with_hint[insert](const_iterator hint, value_type&& obj);
+    template<class P> iterator xref:#unordered_map_emplace_insert_with_hint[insert](const_iterator hint, P&& obj);
+    template<class InputIterator> void xref:#unordered_map_insert_iterator_range[insert](InputIterator first, InputIterator last);
+    void xref:#unordered_map_insert_initializer_list[insert](std::initializer_list<value_type>);
+
+    template<class... Args>
+      std::pair<iterator, bool> xref:#unordered_map_try_emplace[try_emplace](const key_type& k, Args&&... args);
+    template<class... Args>
+      std::pair<iterator, bool> xref:#unordered_map_try_emplace[try_emplace](key_type&& k, Args&&... args);
+    template<class... Args>
+      iterator xref:#unordered_map_try_emplace_with_hint[try_emplace](const_iterator hint, const key_type& k, Args&&... args);
+    template<class... Args>
+      iterator xref:#unordered_map_try_emplace_with_hint[try_emplace](const_iterator hint, key_type&& k, Args&&... args);
+    template<class M>
+      std::pair<iterator, bool> xref:#unordered_map_insert_or_assign[insert_or_assign](const key_type& k, M&& obj);
+    template<class M>
+      std::pair<iterator, bool> xref:#unordered_map_insert_or_assign[insert_or_assign](key_type&& k, M&& obj);
+    template<class M>
+      iterator xref:#unordered_map_insert_or_assign_with_hint[insert_or_assign](const_iterator hint, const key_type& k, M&& obj);
+    template<class M>
+      iterator xref:#unordered_map_insert_or_assign_with_hint[insert_or_assign](const_iterator hint, key_type&& k, M&& obj);
+
+    node_type xref:#unordered_map_extract_by_iterator[extract](const_iterator position);
+    node_type xref:#unordered_map_extract_by_key[extract](const key_type& k);
+    template<class K> node_type xref:#unordered_map_transparent_extract_by_key[extract](K&& k);
+    insert_return_type xref:#unordered_map_insert_with_node_handle[insert](node_type&& nh);
+    iterator           xref:#unordered_map_insert_with_hint_and_node_handle[insert](const_iterator hint, node_type&& nh);
+
+    iterator  xref:#unordered_map_erase_by_position[erase](iterator position);
+    iterator  xref:#unordered_map_erase_by_position[erase](const_iterator position);
+    size_type xref:#unordered_map_erase_by_key[erase](const key_type& k);
+    template<class K> size_type xref:#unordered_map_transparent_erase_by_key[erase](K&& k);
+    iterator  xref:#unordered_map_erase_range[erase](const_iterator first, const_iterator last);
+    void      xref:#unordered_map_quick_erase[quick_erase](const_iterator position);
+    void      xref:#unordered_map_erase_return_void[erase_return_void](const_iterator position);
+    void      xref:#unordered_map_swap[swap](unordered_map& other)
+      noexcept(boost::allocator_traits<Allocator>::is_always_equal::value &&
+               boost::is_nothrow_swappable_v<Hash> &&
+               boost::is_nothrow_swappable_v<Pred>);
+    void      xref:#unordered_map_clear[clear]() noexcept;
+
+    template<class H2, class P2>
+      void xref:#unordered_map_merge[merge](unordered_map<Key, T, H2, P2, Allocator>& source);
+    template<class H2, class P2>
+      void xref:#unordered_map_merge[merge](unordered_map<Key, T, H2, P2, Allocator>&& source);
+    template<class H2, class P2>
+      void xref:#unordered_map_merge[merge](unordered_multimap<Key, T, H2, P2, Allocator>& source);
+    template<class H2, class P2>
+      void xref:#unordered_map_merge[merge](unordered_multimap<Key, T, H2, P2, Allocator>&& source);
+
+    // observers
+    hasher xref:#unordered_map_hash_function[hash_function]() const;
+    key_equal xref:#unordered_map_key_eq[key_eq]() const;
+
+    // map operations
+    iterator         xref:#unordered_map_find[find](const key_type& k);
+    const_iterator   xref:#unordered_map_find[find](const key_type& k) const;
+    template<class K>
+      iterator       xref:#unordered_map_find[find](const K& k);
+    template<class K>
+      const_iterator xref:#unordered_map_find[find](const K& k) const;
+    template<typename CompatibleKey, typename CompatibleHash, typename CompatiblePredicate>
+      iterator       xref:#unordered_map_find[find](CompatibleKey const& k, CompatibleHash const& hash,
+                          CompatiblePredicate const& eq);
+    template<typename CompatibleKey, typename CompatibleHash, typename CompatiblePredicate>
+      const_iterator xref:#unordered_map_find[find](CompatibleKey const& k, CompatibleHash const& hash,
+                          CompatiblePredicate const& eq) const;      
+    size_type        xref:#unordered_map_count[count](const key_type& k) const;
+    template<class K>
+      size_type      xref:#unordered_map_count[count](const K& k) const;
+    bool             xref:#unordered_map_contains[contains](const key_type& k) const;
+    template<class K>
+      bool           xref:#unordered_map_contains[contains](const K& k) const;
+    std::pair<iterator, iterator>               xref:#unordered_map_equal_range[equal_range](const key_type& k);
+    std::pair<const_iterator, const_iterator>   xref:#unordered_map_equal_range[equal_range](const key_type& k) const;
+    template<class K>
+      std::pair<iterator, iterator>             xref:#unordered_map_equal_range[equal_range](const K& k);
+    template<class K>
+      std::pair<const_iterator, const_iterator> xref:#unordered_map_equal_range[equal_range](const K& k) const;
+
+    // element access
+    mapped_type& xref:#unordered_map_operator[operator[+]+](const key_type& k);
+    mapped_type& xref:#unordered_map_operator[operator[+]+](key_type&& k);
+    mapped_type& xref:#unordered_map_at[at](const key_type& k);
+    const mapped_type& xref:#unordered_map_at[at](const key_type& k) const;
+
+    // bucket interface
+    size_type xref:#unordered_map_bucket_count[bucket_count]() const noexcept;
+    size_type xref:#unordered_map_max_bucket_count[max_bucket_count]() const noexcept;
+    size_type xref:#unordered_map_bucket_size[bucket_size](size_type n) const;
+    size_type xref:#unordered_map_bucket[bucket](const key_type& k) const;
+    local_iterator xref:#unordered_map_begin_2[begin](size_type n);
+    const_local_iterator xref:#unordered_map_begin_2[begin](size_type n) const;
+    local_iterator xref:#unordered_map_end_2[end](size_type n);
+    const_local_iterator xref:#unordered_map_end_2[end](size_type n) const;
+    const_local_iterator xref:#unordered_map_cbegin_2[cbegin](size_type n) const;
+    const_local_iterator xref:#unordered_map_cend_2[cend](size_type n) const;
+
+    // hash policy
+    float xref:#unordered_map_load_factor[load_factor]() const noexcept;
+    float xref:#unordered_map_max_load_factor[max_load_factor]() const noexcept;
+    void xref:#unordered_map_set_max_load_factor[max_load_factor](float z);
+    void xref:#unordered_map_rehash[rehash](size_type n);
+    void xref:#unordered_map_reserve[reserve](size_type n);
+  };
+}
+
+// Equality Comparisons
+template<class Key, class T, class Hash, class Pred, class Alloc>
+  bool xref:#unordered_map_operator_2[operator==](const unordered_map<Key, T, Hash, Pred, Alloc>& x,
+                  const unordered_map<Key, T, Hash, Pred, Alloc>& y);
+
+template<class Key, class T, class Hash, class Pred, class Alloc>
+  bool xref:#unordered_map_operator_3[operator!=](const unordered_map<Key, T, Hash, Pred, Alloc>& x,
+                  const unordered_map<Key, T, Hash, Pred, Alloc>& y);
+
+// swap
+template<class Key, class T, class Hash, class Pred, class Alloc>
+  void xref:#unordered_map_swap_2[swap](unordered_map<Key, T, Hash, Pred, Alloc>& x,
+            unordered_map<Key, T, Hash, Pred, Alloc>& y)
+    noexcept(noexcept(x.swap(y)));
+
+template<class K, class T, class H, class P, class A, class Predicate>
+  typename unordered_map<K, T, H, P, A>::size_type
+     xref:#unordered_map_erase_if[erase_if](unordered_map<K, T, H, P, A>& c, Predicate pred);
+-----
+
+---
+
+=== Description
+
+*Template Parameters*
+
+[cols="1,1"]
+|===
+
+|_Key_
+|`Key` must be https://en.cppreference.com/w/cpp/named_req/Erasable[Erasable^] from the container (i.e. `allocator_traits` can destroy it).
+
+|_T_
+|`T` must be https://en.cppreference.com/w/cpp/named_req/Erasable[Erasable^] from the container (i.e. `allocator_traits` can destroy it).
+
+|_Hash_
+|A unary function object type that acts a hash function for a `Key`. It takes a single argument of type `Key` and returns a value of type `std::size_t`.
+
+|_Pred_
+|A binary function object that implements an equivalence relation on values of type `Key`. A binary function object that induces an equivalence relation on values of type `Key`. It takes two arguments of type `Key` and returns a value of type bool.
+
+|_Allocator_
+|An allocator whose value type is the same as the container's value type.
+
+|===
+
+The elements are organized into buckets. Keys with the same hash code are stored in the same bucket.
+
+The number of buckets can be automatically increased by a call to insert, or as the result of calling rehash.
+
+---
+
+=== Typedefs
+
+[source,c++,subs=+quotes]
+----
+typedef typename allocator_type::pointer pointer;
+----
+
+`value_type*` if `allocator_type::pointer` is not defined.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef typename allocator_type::const_pointer const_pointer;
+----
+
+`boost::pointer_to_other<pointer, value_type>::type` if `allocator_type::const_pointer` is not defined.
+
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ size_type;
+----
+
+An unsigned integral type.
+
+`size_type` can represent any non-negative value of `difference_type`.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ difference_type;
+----
+
+A signed integral type.
+
+Is identical to the difference type of `iterator` and `const_iterator`.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ iterator;
+----
+
+An iterator whose value type is `value_type`.
+
+The iterator category is at least a forward iterator.
+
+Convertible to `const_iterator`.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ const_iterator;
+----
+
+A constant iterator whose value type is `value_type`.
+
+The iterator category is at least a forward iterator.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ local_iterator;
+----
+
+An iterator with the same value type, difference type and pointer and reference type as iterator.
+
+A `local_iterator` object can be used to iterate through a single bucket.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ const_local_iterator;
+----
+
+A constant iterator with the same value type, difference type and pointer and reference type as const_iterator.
+
+A const_local_iterator object can be used to iterate through a single bucket.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ node_type;
+----
+
+See node_handle_map for details.
+
+---
+
+[source,c++,subs=+quotes]
+----
+typedef _implementation-defined_ insert_return_type;
+----
+
+Structure returned by inserting node_type.
+
+---
+
+=== Constructors
+
+==== Default Constructor
+```c++
+unordered_map();
+```
+
+Constructs an empty container using `hasher()` as the hash function,
+`key_equal()` as the key equality predicate, `allocator_type()` as the allocator
+and a maximum load factor of `1.0`.
+
+[horizontal]
+Postconditions:;; `size() == 0`
+Requires:;; If the defaults are used, `hasher`, `key_equal` and `allocator_type` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Bucket Count Constructor
+```c++
+explicit unordered_map(size_type n,
+                       const hasher& hf = hasher(),
+                       const key_equal& eql = key_equal(),
+                       const allocator_type& a = allocator_type());
+```
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash
+function, `eql` as the key equality predicate, `a` as the allocator and a maximum
+load factor of `1.0`.
+
+[horizontal]
+Postconditions:;; `size() == 0`
+Requires:;; If the defaults are used, `hasher`, `key_equal` and `allocator_type` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Iterator Range Constructor
+[source,c++,subs="+quotes"]
+----
+template<class InputIterator>
+  unordered_map(InputIterator f, InputIterator l,
+                size_type n = _implementation-defined_,
+                const hasher& hf = hasher(),
+                const key_equal& eql = key_equal(),
+                const allocator_type& a = allocator_type());
+----
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash function, `eql` as the key equality predicate, `a` as the allocator and a maximum load factor of `1.0` and inserts the elements from `[f, l)` into it.
+
+[horizontal]
+Requires:;; If the defaults are used, `hasher`, `key_equal` and `allocator_type` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Copy Constructor
+```c++
+unordered_map(unordered_map const& other);
+```
+
+The copy constructor. Copies the contained elements, hash function, predicate, maximum load factor and allocator.
+
+If `Allocator::select_on_container_copy_construction` exists and has the right signature, the allocator will be constructed from its result.
+
+[horizontal]
+Requires:;; `value_type` is copy constructible
+
+---
+
+==== Move Constructor
+```c++
+unordered_map(unordered_map&& other);
+```
+
+The move constructor.
+
+[horizontal]
+Notes:;; This is implemented using Boost.Move.
+Requires:;; `value_type` is move-constructible. +
++
+On compilers without rvalue reference support the emulation does not support moving without calling `boost::move` if `value_type` is not copyable.
+So, for example, you can't return the container from a function.
+
+---
+
+==== Allocator Constructor
+```c++
+explicit unordered_map(Allocator const& a);
+```
+
+Constructs an empty container, using allocator `a`.
+
+---
+
+==== Copy Constructor with Allocator
+```c++
+unordered_map(unordered_map const& other, Allocator const& a);
+```
+
+Constructs an container, copying ``other``'s contained elements, hash function, predicate, maximum load factor, but using allocator `a`.
+
+---
+
+==== Move Constructor with Allocator
+```c++
+unordered_map(unordered_map&& other, Allocator const& a);
+```
+
+Construct a container moving ``other``'s contained elements, and having the hash function, predicate and maximum load factor, but using allocate `a`.
+
+[horizontal]
+Notes:;; This is implemented using Boost.Move.
+Requires:;; `value_type` is move insertable.
+
+---
+
+==== Initializer List Constructor
+[source,c++,subs="+quotes"]
+----
+unordered_map(std::initializer_list<value_type> il,
+              size_type n = _implementation-defined_
+              const hasher& hf = hasher(),
+              const key_equal& eql = key_equal(),
+              const allocator_type& a = allocator_type());
+----
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash function, `eql` as the key equality predicate, `a` as the allocator and a maximum load factor of `1.0` and inserts the elements from `il` into it.
+
+[horizontal]
+Requires:;; If the defaults are used, `hasher`, `key_equal` and `allocator_type` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Bucket Count Constructor with Allocator
+```c++
+unordered_map(size_type n, allocator_type const& a);
+```
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash function, the default hash function and key equality predicate, `a` as the allocator and a maximum load factor of `1.0`.
+
+[horizontal]
+Postconditions:;; `size() == 0`
+Requires:;; `hasher` and `key_equal` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Bucket Count Constructor with Hasher and Allocator
+```c++
+unordered_map(size_type n, hasher const& hf, allocator_type const& a);
+```
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash function, the default key equality predicate, `a` as the allocator and a maximum load factor of `1.0`.
+
+[horizontal]
+Postconditions:;; `size() == 0`
+Requires:;; `key_equal` needs to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Iterator Range Constructor with Bucket Count and Allocator
+[source,c++,subs="+quotes"]
+----
+template<class InputIterator>
+  unordered_map(InputIterator f, InputIterator l, size_type n, const allocator_type& a);
+----
+
+Constructs an empty container with at least `n` buckets, using `a` as the allocator, with the default hash function and key equality predicate and a maximum load factor of `1.0` and inserts the elements from `[f, l)` into it.
+
+[horizontal]
+Requires:;; `hasher`, `key_equal` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== Iterator Range Constructor with Bucket Count and Hasher
+[source,c++,subs="+quotes"]
+----
+    template<class InputIterator>
+      unordered_map(InputIterator f, InputIterator l, size_type n, const hasher& hf,
+                    const allocator_type& a);
+----
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash function, `a` as the allocator, with the default key equality predicate and a maximum load factor of `1.0` and inserts the elements from `[f, l)` into it.
+
+[horizontal]
+Requires:;; `key_equal` needs to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== initializer_list Constructor with Bucket Count and Allocator
+
+```c++
+unordered_map(std::initializer_list<value_type> il, size_type n, const allocator_type& a);
+```
+
+Constructs an empty container with at least `n` buckets, using `a` as the allocator and a maximum load factor of 1.0 and inserts the elements from `il` into it.
+
+[horizontal]
+Requires:;; `hasher` and `key_equal` need to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+==== initializer_list Constructor with Bucket Count and Hasher and Allocator
+
+```c++
+unordered_map(std::initializer_list<value_type> il, size_type n, const hasher& hf,
+              const allocator_type& a);
+```
+
+Constructs an empty container with at least `n` buckets, using `hf` as the hash function, `a` as the allocator and a maximum load factor of 1.0 and inserts the elements from `il` into it.
+
+[horizontal]
+Requires:;; `key_equal` needs to be https://en.cppreference.com/w/cpp/named_req/DefaultConstructible[DefaultConstructible^].
+
+---
+
+=== Destructor
+
+```c++
+~unordered_map();
+```
+
+[horizontal]
+Note:;; The destructor is applied to every element, and all memory is deallocated
+
+---
+
+=== Assignment
+
+==== Copy Assignment
+
+```c++
+unordered_map& operator=(unordered_map const& other);
+```
+
+The assignment operator. Copies the contained elements, hash function, predicate and maximum load factor but not the allocator.
+
+If `Alloc::propagate_on_container_copy_assignment` exists and `Alloc::propagate_on_container_copy_assignment::value` is `true`, the allocator is overwritten, if not the copied elements are created using the existing allocator.
+
+[horizontal]
+Requires:;; `value_type` is copy constructible
+
+---
+
+==== Move Assignment
+```c++
+unordered_map& operator=(unordered_map&& other)
+  noexcept(boost::allocator_traits<Allocator>::is_always_equal::value &&
+           boost::is_nothrow_move_assignable_v<Hash> &&
+           boost::is_nothrow_move_assignable_v<Pred>);
+```
+The move assignment operator.
+
+If `Alloc::propagate_on_container_move_assignment` exists and `Alloc::propagate_on_container_move_assignment::value` is `true`, the allocator is overwritten, if not the moved elements are created using the existing allocator.
+
+[horizontal]
+Notes:;; On compilers without rvalue references, this is emulated using Boost.Move. Note that on some compilers the copy assignment operator may be used in some circumstances.
+Requires:;; `value_type` is move constructible.
+
+---
+
+==== Initializer List Assignment
+```c++
+unordered_map& operator=(std::initializer_list<value_type> il);
+```
+
+Assign from values in initializer list. All existing elements are either overwritten by the new elements or destroyed.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/CopyInsertable[CopyInsertable^] into the container and https://en.cppreference.com/w/cpp/named_req/CopyAssignable[CopyAssignable^].
+
+=== Iterators
+
+==== begin
+```c++
+iterator begin() noexcept;
+const_iterator begin() const noexcept;
+```
+
+[horizontal]
+Returns:;; An iterator referring to the first element of the container, or if the container is empty the past-the-end value for the container.
+
+---
+
+==== end
+```c++
+iterator end() noexcept;
+const_iterator end() const noexcept;
+```
+
+[horizontal]
+Returns:;; An iterator which refers to the past-the-end value for the container.
+
+---
+
+==== cbegin
+```c++
+const_iterator cbegin() const noexcept;
+```
+
+[horizontal]
+Returns:;; A `const_iterator` referring to the first element of the container, or if the container is empty the past-the-end value for the container.
+
+---
+
+==== cend
+```c++
+const_iterator cend() const noexcept;
+```
+
+[horizontal]
+Returns:;; A `const_iterator` which refers to the past-the-end value for the container.
+
+---
+
+=== Size and Capacity
+
+==== empty
+
+```c++
+[[nodiscard]] bool empty() const noexcept;
+```
+
+[horizontal]
+Returns:;; `size() == 0`
+
+---
+
+==== size
+
+```c++
+size_type size() const noexcept;
+```
+
+[horizontal]
+Returns:;; `std::distance(begin(), end())`
+
+---
+
+==== max_size
+
+```c++
+size_type max_size() const noexcept;
+```
+
+[horizontal]
+Returns:;; `size()` of the largest possible container.
+
+---
+
+=== Modifiers
+
+==== emplace
+```c++
+template<class... Args> std::pair<iterator, bool> emplace(Args&&... args);
+```
+
+Inserts an object, constructed with the arguments `args`, in the container if and only if there is no element in the container with an equivalent key.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/EmplaceConstructible[EmplaceConstructible^] into `X` from `args`.
+Returns:;; The bool component of the return type is true if an insert took place. +
++
+If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated. +
++
+If the compiler doesn't support variadic template arguments or rvalue references, this is emulated for up to `10` arguments, with no support for rvalue references or move semantics. +
++
+Since existing `std::pair` implementations don't support `std::piecewise_construct` this emulates it, but using `boost::unordered::piecewise_construct`.
+
+---
+
+==== emplace_hint
+```c++
+    template<class... Args> iterator emplace_hint(const_iterator position, Args&&... args);
+```
+
+Inserts an object, constructed with the arguments `args`, in the container if and only if there is no element in the container with an equivalent key.
+
+`position` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/EmplaceConstructible[EmplaceConstructible^] into `X` from `args`.
+Returns:;; If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key. +
++
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated. +
++
+If the compiler doesn't support variadic template arguments or rvalue references, this is emulated for up to 10 arguments, with no support for rvalue references or move semantics. +
++
+Since existing `std::pair` implementations don't support `std::piecewise_construct` this emulates it, but using `boost::unordered::piecewise_construct`.
+
+---
+
+==== Copy Insert
+```c++
+std::pair<iterator, bool> insert(const value_type& obj);
+```
+
+Inserts `obj` in the container if and only if there is no element in the container with an equivalent key.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/CopyInsertable[CopyInsertable^].
+Returns:;; The bool component of the return type is true if an insert took place. +
++
+If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Move Insert
+```c++
+std::pair<iterator, bool> insert(value_type&& obj);
+```
+
+Inserts `obj` in the container if and only if there is no element in the container with an equivalent key.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/MoveInsertable[MoveInsertable^].
+Returns:;; The bool component of the return type is true if an insert took place. +
++
+If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Emplace Insert
+```c++
+template<class P> std::pair<iterator, bool> insert(P&& obj);
+```
+
+Inserts an element into the container by performing `emplace(std::forward<P>(value))`.
+
+Only participates in overload resolution if `std::is_constructible<value_type, P&&>::value` is `true`.
+
+[horizontal]
+Returns:;; The bool component of the return type is true if an insert took place. +
++
+If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+
+---
+
+==== Copy Insert with Hint
+```c++
+iterator insert(const_iterator hint, const value_type& obj);
+```
+Inserts `obj` in the container if and only if there is no element in the container with an equivalent key.
+
+`hint` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/CopyInsertable[CopyInsertable^].
+Returns:;; If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key. +
++
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Move Insert with Hint
+```c++
+iterator insert(const_iterator hint, value_type&& obj);
+```
+
+Inserts `obj` in the container if and only if there is no element in the container with an equivalent key.
+
+`hint` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/MoveInsertable[MoveInsertable^].
+Returns:;; If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key. +
++
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Emplace Insert with Hint
+
+```c++
+template<class P> iterator insert(const_iterator hint, P&& obj);
+```
+
+Inserts an element into the container by performing `emplace_hint(hint, std::forward<P>(value))`.
+
+Only participates in overload resolution if `std::is_constructible<value_type, P&&>::value` is `true`.
+
+`hint` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Returns:;; If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Notes:;; The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key. +
++
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Insert Iterator Range
+```c++
+template<class InputIterator> void insert(InputIterator first, InputIterator last);
+```
+
+Inserts a range of elements into the container. Elements are inserted if and only if there is no element in the container with an equivalent key.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/EmplaceConstructible[EmplaceConstructible^] into `X` from `*first`.
+Throws:;; When inserting a single element, if an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Insert Initializer List
+```c++
+void insert(std::initializer_list<value_type>);
+```
+
+Inserts a range of elements into the container. Elements are inserted if and only if there is no element in the container with an equivalent key.
+
+[horizontal]
+Requires:;; `value_type` is https://en.cppreference.com/w/cpp/named_req/EmplaceConstructible[EmplaceConstructible^] into `X` from `*first`.
+Throws:;; When inserting a single element, if an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== try_emplace
+```c++
+template<class... Args>
+  std::pair<iterator, bool> try_emplace(const key_type& k, Args&&... args);
+template<class... Args>
+  std::pair<iterator, bool> try_emplace(key_type&& k, Args&&... args);
+```
+
+Inserts a new node into the container if there is no existing element with key `k` contained within it.
+
+If there is an existing element with key `k` this function does nothing.
+
+[horizontal]
+Returns:;; The bool component of the return type is true if an insert took place. +
++
+If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; This function is similiar to xref:#unordered_map_emplace[emplace] except the `value_type` is constructed using: +
++
+--
+```c++
+value_type(std::piecewise_construct,
+           std::forward_as_tuple(boost::forward<Key>(k)),
+           std::forward_as_tuple(boost::forward<Args>(args)...))
+```
+
+instead of xref:#unordered_map_emplace[emplace] which simply forwards all arguments to ``value_type``'s constructor.
+
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor.
+
+Pointers and references to elements are never invalidated.
+
+If the compiler doesn't support variadic template arguments or rvalue references, this is emulated for up to `10` arguments, with no support for rvalue references or move semantics.
+
+Since existing `std::pair` implementations don't support `std::piecewise_construct` this emulates it, but using `boost::unordered::piecewise_construct`.
+--
+
+---
+
+==== try_emplace with Hint
+```c++
+template<class... Args>
+  iterator try_emplace(const_iterator hint, const key_type& k, Args&&... args);
+template<class... Args>
+  iterator try_emplace(const_iterator hint, key_type&& k, Args&&... args);
+```
+
+Inserts a new node into the container if there is no existing element with key `k` contained within it.
+
+If there is an existing element with key `k` this function does nothing.
+
+`hint` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Returns:;; If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; This function is similiar to xref:#unordered_map_emplace_hint[emplace_hint] except the `value_type` is constructed using: +
++
+--
+```c++
+value_type(std::piecewise_construct,
+           std::forward_as_tuple(boost::forward<Key>(k)),
+           std::forward_as_tuple(boost::forward<Args>(args)...))
+```
+
+instead of xref:#unordered_map_emplace_hint[emplace_hint] which simply forwards all arguments to ``value_type``'s constructor.
+
+The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key.
+
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor.
+
+Pointers and references to elements are never invalidated.
+
+If the compiler doesn't support variadic template arguments or rvalue references, this is emulated for up to `10` arguments, with no support for rvalue references or move semantics.
+
+Since existing `std::pair` implementations don't support `std::piecewise_construct` this emulates it, but using `boost::unordered::piecewise_construct`.
+--
+
+---
+
+==== insert_or_assign
+```c++
+template<class M>
+  std::pair<iterator, bool> insert_or_assign(const key_type& k, M&& obj);
+template<class M>
+  std::pair<iterator, bool> insert_or_assign(key_type&& k, M&& obj);
+```
+
+Inserts a new element into the container or updates an existing one by assigning to the contained value.
+
+If there is an element with key `k`, then it is updated by assigning `boost::forward<M>(obj)`.
+
+If there is no such element, it is added to the container as:
+```c++
+value_type(std::piecewise_construct,
+           std::forward_as_tuple(boost::forward<Key>(k)),
+           std::forward_as_tuple(boost::forward<M>(obj)))
+```
+
+[horizontal]
+Returns:;; The bool component of the return type is true if an insert took place. +
++
+If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== insert_or_assign with Hint
+```c++
+template<class M>
+  iterator insert_or_assign(const_iterator hint, const key_type& k, M&& obj);
+template<class M>
+  iterator insert_or_assign(const_iterator hint, key_type&& k, M&& obj);
+```
+
+Inserts a new element into the container or updates an existing one by assigning to the contained value.
+
+If there is an element with key `k`, then it is updated by assigning `boost::forward<M>(obj)`.
+
+If there is no such element, it is added to the container as:
+```c++
+value_type(std::piecewise_construct,
+           std::forward_as_tuple(boost::forward<Key>(k)),
+           std::forward_as_tuple(boost::forward<M>(obj)))
+```
+
+`hint` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Returns:;; If an insert took place, then the iterator points to the newly inserted element. Otherwise, it points to the element with equivalent key.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key. +
++
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== Extract by Iterator
+```c++
+node_type extract(const_iterator position);
+```
+
+Removes the element pointed to by `position`.
+
+[horizontal]
+Returns:;; A `node_type` owning the element.
+Notes:;; A node extracted using this method can be inserted into a compatible `unordered_multimap`.
+
+---
+
+==== Extract by Key
+```c++
+node_type extract(const key_type& k);
+```
+
+Removes an element with key equivalent to `k`.
+
+[horizontal]
+Returns:;; A `node_type` owning the element if found, otherwise an empty `node_type`.
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`.
+Notes:;; A node extracted using this method can be inserted into a compatible `unordered_multimap`.
+
+---
+
+==== Transparent Extract by Key
+```c++
+template<class K> node_type extract(K&& k);
+```
+
+Removes an element with key equivalent to `k`.
+
+This overload only participates in overload resolution if `Hash::is_transparent` and `Pred::is_transparent` are valid member typedefs and neither `iterator` nor `const_iterator` are implicitly convertible from `K`. The library assumes that `Hash` is callable with both `K` and `Key` and that `Pred` is transparent. This enables heterogeneous lookup which avoids the cost of instantiating an instance of the `Key` type.
+
+[horizontal]
+Returns:;; A `node_type` owning the element if found, otherwise an empty `node_type`.
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`.
+Notes:;; A node extracted using this method can be inserted into a compatible `unordered_multimap`.
+
+---
+
+==== Insert with `node_handle`
+```c++
+insert_return_type insert(node_type&& nh);
+```
+
+If `nh` is empty, has no effect.
+
+Otherwise inserts the element owned by `nh` if and only if there is no element in the container with an equivalent key.
+
+[horizontal]
+Requires:;; `nh` is empty or `nh.get_allocator()` is equal to the container's allocator.
+Returns:;; If `nh` was empty, returns an `insert_return_type` with: `inserted` equal to `false`, `position` equal to `end()` and `node` empty. +
++
+Otherwise if there was already an element with an equivalent key, returns an `insert_return_type` with: `inserted` equal to `false`, `position` pointing to a matching element and `node` contains the node from `nh`. +
++
+Otherwise if the insertion succeeded, returns an `insert_return_type` with: `inserted` equal to `true`, `position` pointing to the newly inserted element and `node` empty.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated. +
++
+This can be used to insert a node extracted from a compatible `unordered_multimap`.
+
+---
+
+==== Insert with Hint and `node_handle`
+```c++
+iterator insert(const_iterator hint, node_type&& nh);
+```
+
+If `nh` is empty, has no effect.
+
+Otherwise inserts the element owned by `nh` if and only if there is no element in the container with an equivalent key.
+
+If there is already an element in the container with an equivalent key has no effect on `nh` (i.e. `nh` still contains the node.)
+
+`hint` is a suggestion to where the element should be inserted.
+
+[horizontal]
+Requires:;; `nh` is empty or `nh.get_allocator()` is equal to the container's allocator.
+Returns:;; If `nh` was empty returns `end()`. +
++
+If there was already an element in the container with an equivalent key returns an iterator pointing to that. +
++
+Otherwise returns an iterator pointing to the newly inserted element.
+Throws:;; If an exception is thrown by an operation other than a call to hasher the function has no effect.
+Notes:;; The standard is fairly vague on the meaning of the hint. But the only practical way to use it, and the only way that Boost.Unordered supports is to point to an existing element with the same key. +
++
+Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated. +
++
+This can be used to insert a node extracted from a compatible `unordered_multimap`.
+
+---
+
+==== Erase by Position
+
+```c++
+iterator erase(iterator position);
+iterator erase(const_iterator position);
+```
+
+Erase the element pointed to by `position`.
+
+[horizontal]
+Returns:;; The iterator following `position` before the erasure.
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`.
+Notes:;; In older versions this could be inefficient because it had to search through several buckets to find the position of the returned iterator. The data structure has been changed so that this is no longer the case, and the alternative erase methods have been deprecated.
+
+---
+
+==== Erase by Key
+```c++
+size_type erase(const key_type& k);
+```
+
+Erase all elements with key equivalent to `k`.
+
+[horizontal]
+Returns:;; The number of elements erased.
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`.
+
+---
+
+==== Transparent Erase by Key
+```c++
+template<class K> size_type erase(K&& k);
+```
+
+Erase all elements with key equivalent to `k`.
+
+This overload only participates in overload resolution if `Hash::is_transparent` and `Pred::is_transparent` are valid member typedefs and neither `iterator` nor `const_iterator` are implicitly convertible from `K`. The library assumes that `Hash` is callable with both `K` and `Key` and that `Pred` is transparent. This enables heterogeneous lookup which avoids the cost of instantiating an instance of the `Key` type.
+
+[horizontal]
+Returns:;; The number of elements erased.
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`.
+
+---
+
+==== Erase Range
+
+```c++
+iterator erase(const_iterator first, const_iterator last);
+```
+
+Erases the elements in the range from `first` to `last`.
+
+[horizontal]
+Returns:;; The iterator following the erased elements - i.e. `last`.
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`. +
++
+In this implementation, this overload doesn't call either function object's methods so it is no throw, but this might not be true in other implementations.
+
+---
+
+==== quick_erase
+```c++
+void quick_erase(const_iterator position);
+```
+
+Erase the element pointed to by `position`.
+
+[horizontal]
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`. +
++
+In this implementation, this overload doesn't call either function object's methods so it is no throw, but this might not be true in other implementations.
+Notes:;; This method was implemented because returning an iterator to the next element from erase was expensive, but the container has been redesigned so that is no longer the case. So this method is now deprecated.
+
+---
+
+==== erase_return_void
+```c++
+void erase_return_void(const_iterator position);
+```
+
+Erase the element pointed to by `position`.
+
+[horizontal]
+Throws:;; Only throws an exception if it is thrown by `hasher` or `key_equal`. +
++
+In this implementation, this overload doesn't call either function object's methods so it is no throw, but this might not be true in other implementations.
+Notes:;; This method was implemented because returning an iterator to the next element from erase was expensive, but the container has been redesigned so that is no longer the case. So this method is now deprecated.
+
+---
+
+==== swap
+```c++
+void swap(unordered_map& other)
+  noexcept(boost::allocator_traits<Allocator>::is_always_equal::value &&
+           boost::is_nothrow_swappable_v<Hash> &&
+           boost::is_nothrow_swappable_v<Pred>);
+```
+
+Swaps the contents of the container with the parameter.
+
+If `Allocator::propagate_on_container_swap` is declared and `Allocator::propagate_on_container_swap::value` is `true` then the containers' allocators are swapped. Otherwise, swapping with unequal allocators results in undefined behavior.
+
+[horizontal]
+Throws:;; Doesn't throw an exception unless it is thrown by the copy constructor or copy assignment operator of `key_equal` or `hasher`.
+Notes:;; The exception specifications aren't quite the same as the C++11 standard, as the equality predicate and hash function are swapped using their copy constructors.
+
+---
+
+==== clear
+```c++
+void clear();
+```
+
+Erases all elements in the container.
+
+[horizontal]
+Postconditions:;; `size() == 0`
+Throws:;; Never throws an exception.
+
+---
+
+==== merge
+```c++
+template<class H2, class P2>
+  void merge(unordered_map<Key, T, H2, P2, Allocator>& source);
+template<class H2, class P2>
+  void merge(unordered_map<Key, T, H2, P2, Allocator>&& source);
+template<class H2, class P2>
+  void merge(unordered_multimap<Key, T, H2, P2, Allocator>& source);
+template<class H2, class P2>
+  void merge(unordered_multimap<Key, T, H2, P2, Allocator>&& source);
+```
+
+Attempt to "merge" two containers by iterating `source` and extracting any node in `source` that is not contained
+in `*this` and then inserting it into `*this`.
+
+Because `source` can have a different hash function and key equality predicate, the key of each node in
+`source` is rehashed using `this\->hash_function()` and then, if required, compared using `this\->key_eq()`.
+
+The behavior of this function is undefined if `this\->get_allocator() != source.get_allocator()`.
+
+This function does not copy or move any elements and instead simply relocates the nodes from `source`
+into `*this`.
+
+[horizontal]
+Notes:;;
++
+--
+* Pointers and references to transferred elements remain valid.
+* Invalidates iterators to transferred elements.
+* Invalidates iterators belonging to `*this`.
+* Iterators to non-transferred elements in `source` remain valid.
+--
+
+---
+
+=== Observers
+
+==== get_allocator
+```
+allocator_type get_allocator() const;
+```
+
+---
+
+==== hash_function
+```
+hasher hash_function() const;
+```
+
+[horizontal]
+Returns:;; The container's hash function.
+
+---
+
+==== key_eq
+```
+key_equal key_eq() const;
+```
+
+[horizontal]
+Returns:;; The container's key equality predicate
+
+---
+
+=== Lookup
+
+==== find
+```c++
+iterator         find(const key_type& k);
+const_iterator   find(const key_type& k) const;
+template<class K>
+  iterator       find(const K& k);
+template<class K>
+  const_iterator find(const K& k) const;
+template<typename CompatibleKey, typename CompatibleHash, typename CompatiblePredicate>
+  iterator       find(CompatibleKey const& k, CompatibleHash const& hash,
+                      CompatiblePredicate const& eq);
+template<typename CompatibleKey, typename CompatibleHash, typename CompatiblePredicate>
+  const_iterator find(CompatibleKey const& k, CompatibleHash const& hash,
+                      CompatiblePredicate const& eq) const;
+
+```
+
+[horizontal]
+Returns:;; An iterator pointing to an element with key equivalent to `k`, or `b.end()` if no such element exists.
+Notes:;; The templated overloads containing `CompatibleKey`, `CompatibleHash` and `CompatiblePredicate` are non-standard extensions which allow you to use a compatible hash function and equality predicate for a key of a different type in order to avoid an expensive type cast. In general, its use is not encouraged and instead the `K` member function templates should be used. +
++
+The `template <typename K>` overloads only participate in overload resolution if `Hash::is_transparent` and `Pred::is_transparent` are valid member typedefs. The library assumes that `Hash` is callable with both `K` and `Key` and that `Pred` is transparent. This enables heterogeneous lookup which avoids the cost of instantiating an instance of the `Key` type.
+
+---
+
+==== count
+```c++
+size_type        count(const key_type& k) const;
+template<class K>
+  size_type      count(const K& k) const;
+```
+
+[horizontal]
+Returns:;; The number of elements with key equivalent to `k`.
+Notes:;; The `template <typename K>` overload only participates in overload resolution if `Hash::is_transparent` and `Pred::is_transparent` are valid member typedefs. The library assumes that `Hash` is callable with both `K` and `Key` and that `Pred` is transparent. This enables heterogeneous lookup which avoids the cost of instantiating an instance of the `Key` type.
+
+---
+
+==== contains
+```c++
+bool             contains(const key_type& k) const;
+template<class K>
+  bool           contains(const K& k) const;
+```
+
+[horizontal]
+Returns:;; A boolean indicating whether or not there is an element with key equal to `key` in the container
+Notes:;; The `template <typename K>` overload only participates in overload resolution if `Hash::is_transparent` and `Pred::is_transparent` are valid member typedefs. The library assumes that `Hash` is callable with both `K` and `Key` and that `Pred` is transparent. This enables heterogeneous lookup which avoids the cost of instantiating an instance of the `Key` type.
+
+---
+
+==== equal_range
+```c++
+std::pair<iterator, iterator>               equal_range(const key_type& k);
+std::pair<const_iterator, const_iterator>   equal_range(const key_type& k) const;
+template<class K>
+  std::pair<iterator, iterator>             equal_range(const K& k);
+template<class K>
+  std::pair<const_iterator, const_iterator> equal_range(const K& k) const;
+```
+
+[horizontal]
+Returns:;; A range containing all elements with key equivalent to `k`. If the container doesn't contain any such elements, returns `std::make_pair(b.end(), b.end())`.
+Notes:;; The `template <typename K>` overloads only participate in overload resolution if `Hash::is_transparent` and `Pred::is_transparent` are valid member typedefs. The library assumes that `Hash` is callable with both `K` and `Key` and that `Pred` is transparent. This enables heterogeneous lookup which avoids the cost of instantiating an instance of the `Key` type.
+
+---
+
+==== operator++[++++]++
+```c++
+mapped_type& operator[](const key_type& k);
+mapped_type& operator[](key_type&& k);
+```
+
+[horizontal]
+Effects:;; If the container does not already contain an elements with a key equivalent to `k`, inserts the value `std::pair<key_type const, mapped_type>(k, mapped_type())`.
+Returns:;; A reference to `x.second` where `x` is the element already in the container, or the newly inserted element with a key equivalent to `k`.
+Throws:;; If an exception is thrown by an operation other than a call to `hasher` the function has no effect.
+Notes:;; Can invalidate iterators, but only if the insert causes the load factor to be greater to or equal to the maximum load factor. +
++
+Pointers and references to elements are never invalidated.
+
+---
+
+==== at
+```c++
+mapped_type& at(const key_type& k);
+const mapped_type& at(const key_type& k) const;
+```
+
+[horizontal]
+Returns:;; A reference to `x.second` where `x` is the (unique) element whose key is equivalent to `k`.
+Throws:;; An exception object of type `std::out_of_range` if no such element is present.
+
+---
+
+=== Bucket Interface
+
+==== bucket_count
+```c++
+size_type bucket_count() const noexcept;
+```
+
+[horizontal]
+Returns:;; The number of buckets.
+
+---
+
+==== max_bucket_count
+```c++
+size_type max_bucket_count() const noexcept;
+```
+
+[horizontal]
+Returns:;; An upper bound on the number of buckets.
+
+---
+
+==== bucket_size
+```c++
+size_type bucket_size(size_type n) const;
+```
+
+[horizontal]
+Requires:;; `n < bucket_count()`
+Returns:;; The number of elements in bucket `n`.
+
+---
+
+==== bucket
+```c++
+size_type bucket(const key_type& k) const;
+```
+
+[horizontal]
+Returns:;; The index of the bucket which would contain an element with key `k`.
+Postconditions:;; The return value is less than `bucket_count()`.
+
+---
+
+==== begin
+
+```c++
+local_iterator begin(size_type n);
+const_local_iterator begin(size_type n) const;
+```
+
+[horizontal]
+Requires:;; `n` shall be in the range `[0, bucket_count())`.
+Returns:;; A local iterator pointing the first element in the bucket with index `n`.
+
+---
+
+==== end
+```c++
+local_iterator end(size_type n);
+const_local_iterator end(size_type n) const;
+```
+
+[horizontal]
+Requires:;; `n` shall be in the range `[0, bucket_count())`.
+Returns:;; A local iterator pointing the 'one past the end' element in the bucket with index `n`.
+
+---
+
+==== cbegin
+```c++
+const_local_iterator cbegin(size_type n) const;
+```
+
+[horizontal]
+Requires:;; `n` shall be in the range `[0, bucket_count())`.
+Returns:;; A constant local iterator pointing the first element in the bucket with index `n`.
+
+---
+
+==== cend
+```c++
+const_local_iterator cend(size_type n) const;
+```
+
+[horizontal]
+Requires:;; `n` shall be in the range `[0, bucket_count())`.
+Returns:;; A constant local iterator pointing the 'one past the end' element in the bucket with index `n`.
+
+---
+
+=== Hash Policy
+
+==== load_factor
+```c++
+float load_factor() const noexcept;
+```
+
+[horizontal]
+Returns:;; The average number of elements per bucket.
+
+---
+
+==== max_load_factor
+
+```c++
+float max_load_factor() const noexcept;
+```
+
+[horizontal]
+Returns:;; Returns the current maximum load factor.
+
+---
+
+==== Set max_load_factor
+```c++
+void max_load_factor(float z);
+```
+
+[horizontal]
+Effects:;; Changes the container's maximum load factor, using `z` as a hint.
+
+---
+
+
+==== rehash
+```c++
+void rehash(size_type n);
+```
+
+Changes the number of buckets so that there at least `n` buckets, and so that the load factor is less than the maximum load factor.
+
+Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.
+
+[horizontal]
+Throws:;; The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.
+
+---
+
+==== reserve
+```c++
+void reserve(size_type n);
+```
+
+Invalidates iterators, and changes the order of elements. Pointers and references to elements are not invalidated.
+
+[horizontal]
+Throws:;; The function has no effect if an exception is thrown, unless it is thrown by the container's hash function or comparison function.
+
+=== Equality Comparisons
+
+==== operator==
+```c++
+template<class Key, class T, class Hash, class Pred, class Alloc>
+  bool operator==(const unordered_map<Key, T, Hash, Pred, Alloc>& x,
+                  const unordered_map<Key, T, Hash, Pred, Alloc>& y);
+```
+
+Return `true` if `x.size() == y.size()` and for every element in `x`, there is an element in `y` with the same key, with an equal value (using `operator==` to compare the value types).
+
+[horizontal]
+Notes:;; The behavior of this function was changed to match the C++11 standard in Boost 1.48. +
++
+Behavior is undefined if the two containers don't have equivalent equality predicates.
+
+---
+
+==== operator!=
+```c++
+template<class Key, class T, class Hash, class Pred, class Alloc>
+  bool operator!=(const unordered_map<Key, T, Hash, Pred, Alloc>& x,
+                  const unordered_map<Key, T, Hash, Pred, Alloc>& y);
+```
+
+Return `false` if `x.size() == y.size()` and for every element in `x`, there is an element in `y` with the same key, with an equal value (using `operator==` to compare the value types).
+
+[horizontal]
+Notes:;; The behavior of this function was changed to match the C++11 standard in Boost 1.48. +
++
+Behavior is undefined if the two containers don't have equivalent equality predicates.
+
+=== Swap
+```c++
+template<class Key, class T, class Hash, class Pred, class Alloc>
+  void swap(unordered_map<Key, T, Hash, Pred, Alloc>& x,
+            unordered_map<Key, T, Hash, Pred, Alloc>& y)
+    noexcept(noexcept(x.swap(y)));
+```
+
+Swaps the contents of `x` and `y`.
+
+If `Allocator::propagate_on_container_swap` is declared and `Allocator::propagate_on_container_swap::value` is `true` then the containers' allocators are swapped. Otherwise, swapping with unequal allocators results in undefined behavior.
+
+[horizontal]
+Effects:;; `x.swap(y)`
+Throws:;; Doesn't throw an exception unless it is thrown by the copy constructor or copy assignment operator of `key_equal` or `hasher`.
+Notes:;; The exception specifications aren't quite the same as the C++11 standard, as the equality predicate and hash function are swapped using their copy constructors.
+
+---
+
+=== erase_if
+```c++
+template<class K, class T, class H, class P, class A, class Predicate>
+  typename unordered_map<K, T, H, P, A>::size_type
+    erase_if(unordered_map<K, T, H, P, A>& c, Predicate pred);
+```
+
+Traverses the container `c` and removes all elements for which the supplied predicate returns `true`.
+
+[horizontal]
+Returns:;; The number of erased elements.
+Notes:;; Equivalent to: +
++
+```c++
+auto original_size = c.size();
+for (auto i = c.begin(), last = c.end(); i != last; ) {
+  if (pred(*i)) {
+    i = c.erase(i);
+  } else {
+    ++i;
+  }
+}
+return original_size - c.size();
+```
+
+---

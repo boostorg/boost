@@ -1,0 +1,21 @@
+# Copyright 2005 Daniel James.
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+import asciidoctor ;
+
+html unordered.html : unordered.adoc ;
+
+install html_ : unordered.html : <location>html ;
+
+pdf unordered.pdf : unordered.adoc ;
+explicit unordered.pdf ;
+
+install pdf_ : unordered.pdf : <location>pdf ;
+explicit pdf_ ;
+
+###############################################################################
+alias boostdoc ;
+explicit boostdoc ;
+alias boostrelease : html_ ;
+explicit boostrelease ;

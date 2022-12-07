@@ -1,0 +1,72 @@
+[#rationale]
+
+:idprefix: rationale_
+
+= Implementation Rationale
+
+The intent of this library is to implement the unordered
+containers in the standard, so the interface was fixed. But there are
+still some implementation decisions to make. The priorities are
+conformance to the standard and portability.
+
+The http://en.wikipedia.org/wiki/Hash_table[Wikipedia article on hash tables^]
+has a good summary of the implementation issues for hash tables in general.
+
+== Data Structure
+
+By specifying an interface for accessing the buckets of the container the
+standard pretty much requires that the hash table uses chained addressing.
+
+It would be conceivable to write a hash table that uses another method. For
+example, it could use open addressing, and use the lookup chain to act as a
+bucket but there are some serious problems with this:
+
+* The standard requires that pointers to elements aren't invalidated, so
+  the elements can't be stored in one array, but will need a layer of
+  indirection instead - losing the efficiency and most of the memory gain,
+  the main advantages of open addressing.
+* Local iterators would be very inefficient and may not be able to
+  meet the complexity requirements.
+* There are also the restrictions on when iterators can be invalidated. Since
+  open addressing degrades badly when there are a high number of collisions the
+  restrictions could prevent a rehash when it's really needed. The maximum load
+  factor could be set to a fairly low value to work around this - but the
+  standard requires that it is initially set to 1.0.
+* And since the standard is written with a eye towards chained
+  addressing, users will be surprised if the performance doesn't reflect that.
+
+So chained addressing is used.
+
+== Number of Buckets
+
+There are two popular methods for choosing the number of buckets in a hash
+table. One is to have a prime number of buckets, another is to use a power
+of 2.
+
+Using a prime number of buckets, and choosing a bucket by using the modulus
+of the hash function's result will usually give a good result. The downside
+is that the required modulus operation is fairly expensive. This is what the
+containers used to do in most cases.
+
+Using a power of 2 allows for much quicker selection of the bucket to use,
+but at the expense of losing the upper bits of the hash value. For some
+specially designed hash functions it is possible to do this and still get a
+good result but as the containers can take arbitrary hash functions this can't
+be relied on.
+
+To avoid this a transformation could be applied to the hash function, for an
+example see
+http://web.archive.org/web/20121102023700/http://www.concentric.net/~Ttwang/tech/inthash.htm[Thomas Wang's article on integer hash functions^].
+Unfortunately, a transformation like Wang's requires knowledge of the number
+of bits in the hash value, so it was only used when `size_t` was 64 bit.
+
+Since release 1.79.0, https://en.wikipedia.org/wiki/Hash_function#Fibonacci_hashing[Fibonacci hashing]
+is used instead. With this implementation, the bucket number is determined
+by using `(h * m) >> (w - k)`, where `h` is the hash value, `m` is the golden
+ratio multiplied by `2^w`, `w` is the word size (32 or 64), and `2^k` is the
+number of buckets. This provides a good compromise between speed and
+distribution.
+
+Since release 1.80.0, prime numbers are chosen for the number of buckets in
+tandem with sophisticated modulo arithmetic. This removes the need for "mixing"
+the result of the user's hash function as was used for release 1.79.0.

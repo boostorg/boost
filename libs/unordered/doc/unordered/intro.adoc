@@ -1,0 +1,116 @@
+[#intro]
+= Introduction
+
+:idprefix: intro_
+:cpp: C++
+
+For accessing data based on key lookup, the {cpp} standard library offers `std::set`,
+`std::map`, `std::multiset` and `std::multimap`. These are generally
+implemented using balanced binary trees so that lookup time has
+logarithmic complexity. That is generally okay, but in many cases a
+link:https://en.wikipedia.org/wiki/Hash_table[hash table^] can perform better, as accessing data has constant complexity,
+on average. The worst case complexity is linear, but that occurs rarely and
+with some care, can be avoided.
+
+Also, the existing containers require a 'less than' comparison object
+to order their elements. For some data types this is impossible to implement
+or isn't practical. In contrast, a hash table only needs an equality function
+and a hash function for the key.
+
+With this in mind, unordered associative containers were added to the {cpp}
+standard. This is an implementation of the containers described in {cpp}11,
+with some <<compliance,deviations from the standard>> in
+order to work with non-{cpp}11 compilers and libraries.
+
+`unordered_set` and `unordered_multiset` are defined in the header
+`<boost/unordered_set.hpp>`
+[source,c++]
+----  
+namespace boost {
+    template <
+        class Key,
+        class Hash = boost::hash<Key>,
+        class Pred = std::equal_to<Key>,
+        class Alloc = std::allocator<Key> >
+    class unordered_set;
+
+    template<
+        class Key,
+        class Hash = boost::hash<Key>, 
+        class Pred = std::equal_to<Key>, 
+        class Alloc = std::allocator<Key> > 
+    class unordered_multiset;
+}
+----
+
+`unordered_map` and `unordered_multimap` are defined in the header
+`<boost/unordered_map.hpp>`
+
+[source,c++]
+----
+namespace boost {
+    template <
+        class Key, class Mapped,
+        class Hash = boost::hash<Key>,
+        class Pred = std::equal_to<Key>,
+        class Alloc = std::allocator<std::pair<Key const, Mapped> > >
+    class unordered_map;
+
+    template<
+        class Key, class Mapped,
+        class Hash = boost::hash<Key>,
+        class Pred = std::equal_to<Key>,
+        class Alloc = std::allocator<std::pair<Key const, Mapped> > >
+    class unordered_multimap;
+}
+----
+
+When using Boost.TR1, these classes are included from `<unordered_set>` and
+`<unordered_map>`, with the classes added to the `std::tr1` namespace.
+
+The containers are used in a similar manner to the normal associative
+containers:
+
+[source,cpp]
+----
+typedef boost::unordered_map<std::string, int> map;
+map x;
+x["one"] = 1;
+x["two"] = 2;
+x["three"] = 3;
+
+assert(x.at("one") == 1);
+assert(x.find("missing") == x.end());
+----
+
+But since the elements aren't ordered, the output of:
+
+[source,c++]
+----
+BOOST_FOREACH(map::value_type i, x) {
+    std::cout<<i.first<<","<<i.second<<"\n";
+}
+----
+
+can be in any order. For example, it might be:
+
+[source]
+----
+two,2
+one,1
+three,3
+----
+
+To store an object in an unordered associative container requires both a
+key equality function and a hash function. The default function objects in
+the standard containers support a few basic types including integer types,
+floating point types, pointer types, and the standard strings. Since
+Boost.Unordered uses link:../../../container_hash/index.html[boost::hash^] it also supports some other types,
+including standard containers. To use any types not supported by these methods
+you have to extend Boost.Hash to support the type or use
+your own custom equality predicates and hash functions. See the
+<<hash_equality,Equality Predicates and Hash Functions>> section
+for more details.
+
+There are other differences, which are listed in the
+<<comparison,Comparison with Associative Containers>> section.

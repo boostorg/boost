@@ -1,0 +1,149 @@
+[#hash_equality]
+
+:idprefix: hash_equality_
+
+= Equality Predicates and Hash Functions
+
+While the associative containers use an ordering relation to specify how the
+elements are stored, the unordered associative containers use an equality
+predicate and a hash function. For example, <<unordered_map,boost::unordered_map>>
+is declared as:
+
+```
+template <
+    class Key, class Mapped,
+    class Hash = boost::hash<Key>,
+    class Pred = std::equal_to<Key>,
+    class Alloc = std::allocator<std::pair<Key const, Mapped> > >
+class unordered_map;
+```
+
+The hash function comes first as you might want to change the hash function
+but not the equality predicate. For example, if you wanted to use the
+http://www.isthe.com/chongo/tech/comp/fnv/[FNV-1 hash^] you could write:
+
+```
+boost::unordered_map<std::string, int, hash::fnv_1>
+    dictionary;
+```
+
+There is an link:../../examples/fnv1.hpp[implementation of FNV-1^] in the examples directory.
+
+If you wish to use a different equality function, you will also need to use a matching hash function. For example, to implement a case insensitive dictionary you need to define a case insensitive equality predicate and hash function:
+
+```
+struct iequal_to
+{
+    bool operator()(std::string const& x,
+        std::string const& y) const
+    {
+        return boost::algorithm::iequals(x, y, std::locale());
+    }
+};
+
+struct ihash
+{
+    std::size_t operator()(std::string const& x) const
+    {
+        std::size_t seed = 0;
+        std::locale locale;
+
+        for(std::string::const_iterator it = x.begin();
+            it != x.end(); ++it)
+        {
+            boost::hash_combine(seed, std::toupper(*it, locale));
+        }
+
+        return seed;
+    }
+};
+```
+
+Which you can then use in a case insensitive dictionary:
+```
+boost::unordered_map<std::string, int, ihash, iequal_to>
+    idictionary;
+```
+
+This is a simplified version of the example at
+link:../../examples/case_insensitive.hpp[/libs/unordered/examples/case_insensitive.hpp^] which supports other locales and string types.
+
+CAUTION: Be careful when using the equality (`==`) operator with custom equality
+predicates, especially if you're using a function pointer. If you compare two
+containers with different equality predicates then the result is undefined.
+For most stateless function objects this is impossible - since you can only
+compare objects with the same equality predicate you know the equality
+predicates must be equal. But if you're using function pointers or a stateful
+equality predicate (e.g. `boost::function`) then you can get into trouble.
+
+== Custom Types
+
+Similarly, a custom hash function can be used for custom types:
+
+```
+struct point {
+    int x;
+    int y;
+};
+
+bool operator==(point const& p1, point const& p2)
+{
+    return p1.x == p2.x && p1.y == p2.y;
+}
+
+struct point_hash
+{
+    std::size_t operator()(point const& p) const
+    {
+        std::size_t seed = 0;
+        boost::hash_combine(seed, p.x);
+        boost::hash_combine(seed, p.y);
+        return seed;
+    }
+};
+
+boost::unordered_multiset<point, point_hash> points;
+```
+
+Since the default hash function is link:../../../container_hash/index.html[Boost.Hash^],
+we can extend it to support the type so that the hash function doesn't need to be explicitly given:
+
+```
+struct point {
+    int x;
+    int y;
+};
+
+bool operator==(point const& p1, point const& p2)
+{
+    return p1.x == p2.x && p1.y == p2.y;
+}
+
+std::size_t hash_value(point const& p) {
+    std::size_t seed = 0;
+    boost::hash_combine(seed, p.x);
+    boost::hash_combine(seed, p.y);
+    return seed;
+}
+
+// Now the default function objects work.
+boost::unordered_multiset<point> points;
+```
+
+See the link:../../../container_hash/index.html[Boost.Hash documentation^] for more detail on how to
+do this. Remember that it relies on extensions to the standard - so it
+won't work for other implementations of the unordered associative containers,
+you'll need to explicitly use Boost.Hash.
+
+[caption=, title='Table {counter:table-counter} Methods for accessing the hash and equality functions']
+[cols="1,.^1", frame=all, grid=rows]
+|===
+|Method |Description
+
+|`hasher hash_function() const` 
+|Returns the container's hash function.
+
+|`key_equal key_eq() const` 
+|Returns the container's key equality function..
+
+|===
