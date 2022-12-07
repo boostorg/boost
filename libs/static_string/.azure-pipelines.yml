@@ -1,0 +1,276 @@
+# Copyright 2015-2019 Rene Rivera.
+# Copyright 2019 Mateusz Loskot <mateusz at loskot dot net>
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+#
+# Generic Azure Pipelines build script for boostorg repositories
+# See: https://github.com/boostorg/boost-ci/
+#
+# Instructions for customizing this script for your library:
+#
+# 1. Customize the compilers and language levels you want.
+# 2. If you have more than include/, src/, test/, example/, examples/,
+#    benchmark/ or tools/ directories, set the environment variable DEPINST.
+#    For example if your build uses code in "bench/" and "fog/" directories:
+#      - DEPINST: --include bench --include fog
+# 3. Enable pull request builds in your boostorg/<library> account.
+#
+# That's it - the script will do everything else for you.
+
+trigger:
+  branches:
+    include:
+    - develop
+    - master
+    - bugfix/*
+    - feature/*
+    - fix/*
+    - pr/*
+
+pr:
+  branches:
+    include:
+    - develop
+
+variables:
+  - name: B2_VARIANT
+    value: variant=release,debug
+
+stages:
+
+- stage: Test
+  jobs:
+
+  - job: 'Linux'
+    pool:
+      vmImage: 'ubuntu-16.04'
+    strategy:
+      matrix:
+        GCC 8:
+          B2_TOOLSET: gcc
+          B2_CXXSTD: 14,17
+          CXX: g++-8
+          PACKAGES: g++-8
+        GCC 7:
+          B2_TOOLSET: gcc
+          B2_CXXSTD: 11,14,17
+          CXX: g++-7
+          PACKAGES: g++-7
+        GCC 6:
+          B2_TOOLSET: gcc
+          B2_CXXSTD: 11,14
+          CXX: g++-6
+          PACKAGES: g++-6
+        GCC 5:
+          B2_TOOLSET: gcc
+          B2_CXXSTD: 11
+          CXX: g++-5
+          PACKAGES: g++-5
+        GCC 4.9:
+          B2_TOOLSET: gcc
+          B2_CXXSTD: 11
+          CXX: g++-4.9
+          PACKAGES: g++-4.9
+        GCC 4.8:
+          B2_TOOLSET: gcc
+          B2_CXXSTD: 11
+          CXX: g++-4.8
+          PACKAGES: g++-4.8
+        Clang 8:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17
+          CXX: clang++-8
+          PACKAGES: clang-8
+          LLVM_REPO: llvm-toolchain-xenial-8
+        Clang 7:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17
+          CXX: clang++-7
+          PACKAGES: clang-7
+          LLVM_REPO: llvm-toolchain-xenial-7
+        Clang 6:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17
+          CXX: clang++-6.0
+          PACKAGES: clang-6.0
+          LLVM_REPO: llvm-toolchain-xenial-6.0
+        Clang 5:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17
+          PACKAGES: clang-5.0
+          CXX: clang++-5.0
+          LLVM_REPO: llvm-toolchain-xenial-5.0
+        Clang 4:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17
+          CXX: clang++-4.0
+          PACKAGES: clang-4.0
+          LLVM_REPO: llvm-toolchain-xenial-4.0
+        Clang 3.9:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14
+          CXX: clang++-3.9
+          PACKAGES: clang-3.9
+        Clang 3.8:
+          B2_TOOLSET: clang
+          CXX: clang++-3.8
+          B2_CXXSTD: 11,14
+          PACKAGES: clang-3.8
+        Clang 3.7:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11
+          CXX: clang++-3.7
+          PACKAGES: clang-3.7
+        Clang 3.6:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11
+          CXX: clang++-3.6
+          PACKAGES: clang-3.6
+        Clang 3.5:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11
+          CXX: clang++-3.5
+          PACKAGES: clang-3.5
+    steps:
+    - bash: |
+        set -e
+        uname -a
+        sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+        if test -n "${LLVM_REPO}" ; then
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo -E apt-add-repository "deb http://apt.llvm.org/xenial/ ${LLVM_REPO} main"
+        fi
+        sudo -E apt-get update
+        sudo -E apt-get -yq --no-install-suggests --no-install-recommends install ${PACKAGES}
+
+        git clone --branch master https://github.com/boostorg/boost-ci.git boost-ci
+        cp -pr boost-ci/ci boost-ci/.codecov.yml .
+        rm -rf boost-ci
+        source ci/azure-pipelines/install.sh
+
+        # AzP requires to run special task in order to export
+        # SELF and BOOST_ROOT as job-scoped variable from a script.
+        # NOTE: Disable set -x is necessary, see the troubleshooting guide
+        # on "Variables having ' (single quote) appended":
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/troubleshooting
+        set +x
+        echo "##vso[task.setvariable variable=SELF]"$SELF
+        echo "##vso[task.setvariable variable=BOOST_ROOT]"$BOOST_ROOT
+        set -x
+      displayName: 'Install'
+    - bash: |
+        set -e
+        echo "SELF=$SELF"
+        echo "BOOST_ROOT=$BOOST_ROOT"
+
+        cd $BOOST_ROOT/libs/$SELF
+        ci/azure-pipelines/build.sh --debug-configuration
+      displayName: 'Build'
+
+  - job: 'Windows'
+    strategy:
+      matrix:
+        VS 2019 C++17 Strict:
+          B2_TOOLSET: msvc-14.2
+          B2_CXXSTD: 17
+          B2_CXXFLAGS: cxxflags=-permissive-
+          B2_ADDRESS_MODEL: address-model=64
+          VM_IMAGE: 'windows-2019'
+        VS 2017 C++17 Strict:
+          B2_TOOLSET: msvc-14.1
+          B2_CXXSTD: 17
+          B2_CXXFLAGS: cxxflags=-permissive-
+          B2_ADDRESS_MODEL: address-model=64
+          VM_IMAGE: 'vs2017-win2016'
+        VS 2017 C++17:
+          B2_TOOLSET: msvc-14.1
+          B2_CXXSTD: 17
+          B2_ADDRESS_MODEL: address-model=64,32
+          VM_IMAGE: 'vs2017-win2016'
+        VS 2017 C++14:
+          B2_TOOLSET: msvc-14.1
+          #B2_CXXSTD: 14 # default
+          B2_ADDRESS_MODEL: address-model=64,32
+          VM_IMAGE: 'vs2017-win2016'
+
+    pool:
+      vmImage: $(VM_IMAGE)
+    steps:
+    - script: |
+        set SELF=%BUILD_REPOSITORY_NAME:-=_%
+        for /f "tokens=2 delims=/" %%a in ("%SELF%") do set SELF=%%a
+        set BOOST_ROOT=%BUILD_SOURCESDIRECTORY%\boost-root
+
+        git clone --branch master https://github.com/boostorg/boost-ci.git boost-ci
+        xcopy /s /e /q /i boost-ci\ci .\ci
+        cmd /k ci\azure-pipelines\install.bat
+
+        echo ##vso[task.setvariable variable=SELF]%SELF%
+        echo ##vso[task.setvariable variable=BOOST_ROOT]%BOOST_ROOT%
+      displayName: 'Install'
+    - script: |
+        PATH=%ADDPATH%%PATH%
+        REM The definition of B2_TOOLCXX omits B2_CXXSTD= if it was not defined above
+        IF NOT DEFINED B2_CXXSTD (SET B2_TOOLCXX=toolset=%B2_TOOLSET%) ELSE (SET B2_TOOLCXX=toolset=%B2_TOOLSET% cxxstd=%B2_CXXSTD%)
+        cd %BOOST_ROOT%
+        ECHO b2 libs/%SELF:\=/% %B2_TOOLCXX% %B2_CXXFLAGS% %B2_DEFINES% %B2_THREADING% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3
+        b2 libs/%SELF:\=/% %B2_TOOLCXX% %B2_CXXFLAGS% %B2_DEFINES% %B2_THREADING% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3
+      displayName: 'Build'
+
+  - job: 'macOS'
+    pool:
+      vmImage: 'macOS-10.14'
+    strategy:
+      matrix:
+        Xcode_11_3_1:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17,2a
+          XCODE_APP: /Applications/Xcode_11.3.1.app
+        Xcode_11_2_1:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17,2a
+          XCODE_APP: /Applications/Xcode_11.2.1.app
+        Xcode_11_2:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17,2a
+          XCODE_APP: /Applications/Xcode_11.2.app
+        Xcode_11_1:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 14,17,2a
+          XCODE_APP: /Applications/Xcode_11.1.app
+        Xcode_10_3:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17,2a
+          XCODE_APP: /Applications/Xcode_10.3.app
+        Xcode_10_2_1:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17,2a
+          XCODE_APP: /Applications/Xcode_10.2.1.app
+        Xcode_10_2:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17,2a
+          XCODE_APP: /Applications/Xcode_10.2.app
+        Xcode_10_1:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17,2a
+          XCODE_APP: /Applications/Xcode_10.1.app
+        Xcode_10_0:
+          B2_TOOLSET: clang
+          B2_CXXSTD: 11,14,17,2a
+          XCODE_APP: /Applications/Xcode_10.app
+    steps:
+    - bash: |
+        set -e
+        git clone --branch master https://github.com/boostorg/boost-ci.git boost-ci-cloned
+        cp -prf boost-ci-cloned/ci .
+        rm -rf boost-ci-cloned
+        source ci/azure-pipelines/install.sh
+      displayName: Install
+    - bash: |
+        set -e
+        echo "SELF=$SELF"
+        echo "BOOST_ROOT=$BOOST_ROOT"
+        cd $BOOST_ROOT/libs/$SELF
+        ci/azure-pipelines/build.sh
+      displayName: 'Build'
