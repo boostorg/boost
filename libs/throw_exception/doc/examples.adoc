@@ -1,0 +1,218 @@
+﻿////
+Copyright 2019, 2022 Peter Dimov
+Distributed under the Boost Software License, Version 1.0.
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+[#examples]
+# Examples
+:toc:
+:toc-title:
+:idprefix:
+
+## Using BOOST_THROW_EXCEPTION
+
+Demonstrates the use of `BOOST_THROW_EXCEPTION`.
+
+[source,c++,linenums,highlight=8]
+----
+#include <boost/throw_exception.hpp>
+#include <boost/exception/diagnostic_information.hpp>
+#include <stdexcept>
+#include <iostream>
+
+void f()
+{
+    BOOST_THROW_EXCEPTION( std::runtime_error( "Unspecified runtime error" ) );
+}
+
+int main()
+{
+    try
+    {
+        f();
+    }
+    catch( std::exception const & x )
+    {
+        std::cerr << boost::diagnostic_information( x ) << std::endl;
+    }
+}
+----
+
+Sample output:
+
+```none
+example.cpp(8): Throw in function void f()
+Dynamic exception type: boost::wrapexcept<std::runtime_error>
+std::exception::what: Unspecified runtime error
+```
+
+## Using boost::throw_exception with a source location
+
+Demonstrates moving the call to `boost::throw_exception` to a common
+helper function that can be marked `BOOST_NOINLINE` to avoid
+unnecessary code duplication. The source location is passed
+explicitly to the helper function so that it can still record the
+logical throw point, instead of always pointing into the helper.
+
+[source,c++,linenums,highlight=31]
+----
+#include <boost/throw_exception.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/core/verbose_terminate_handler.hpp>
+#include <stdexcept>
+#include <cstddef>
+#include <iostream>
+
+BOOST_NORETURN BOOST_NOINLINE
+void throw_index_error( std::size_t i, std::size_t n,
+  boost::source_location const & loc )
+{
+    std::string msg = "Index out of range: "
+      + boost::lexical_cast<std::string>( i ) + " >= "
+      + boost::lexical_cast<std::string>( n );
+
+    boost::throw_exception( std::out_of_range( msg ), loc );
+}
+
+void f1( std::size_t i, std::size_t n )
+{
+    if( i >= n )
+    {
+        throw_index_error( i, n, BOOST_CURRENT_LOCATION );
+    }
+}
+
+void f2( std::size_t i, std::size_t n )
+{
+    if( i >= n )
+    {
+        throw_index_error( i, n, BOOST_CURRENT_LOCATION );
+    }
+}
+
+int main()
+{
+    std::set_terminate( boost::core::verbose_terminate_handler );
+
+    f1( 0, 3 );
+    f2( 4, 3 );
+}
+----
+
+Sample output:
+
+```none
+std::terminate called after throwing an exception:
+
+      type: boost::wrapexcept<std::out_of_range>
+    what(): Index out of range: 4 >= 3
+  location: <source>:31:34 in function 'f2'
+```
+
+## Using boost::throw_with_location
+
+This example demonstrates a trivial use of `boost::throw_with_location`. Since
+a source location is not supplied, the location of the call to
+`boost::throw_with_location` is implicitly captured.
+
+[source,c++,linenums,highlight=9]
+----
+#include <boost/throw_exception.hpp>
+#include <boost/core/verbose_terminate_handler.hpp>
+#include <stdexcept>
+
+int f1( int x )
+{
+    if( x < 0 )
+    {
+        boost::throw_with_location(
+            std::invalid_argument( "f1: x cannot be negative" ) );
+    }
+
+    return x;
+}
+
+int main()
+{
+    std::set_terminate( boost::core::verbose_terminate_handler );
+
+    return f1( -4 );
+}
+----
+
+Sample output:
+
+```none
+std::terminate called after throwing an exception:
+
+      type: boost::detail::with_throw_location<std::invalid_argument>
+    what(): f1: x cannot be negative
+  location: <source>:9:9 in function 'f1'
+```
+
+## Using boost::throw_with_location with an explicit source location
+
+In this example, the call to `boost::throw_with_location` is moved into
+a common helper function. Note how the "API" functions `f1` and `f2`
+take a source location argument that defaults to `BOOST_CURRENT_LOCATION`.
+This allows the source location attached to the exception to point at
+the location of the call to `f2`, rather than inside of `f2`.
+
+Since functions such as `f2` are typically called from more than one place
+in the program, this is usually what we want, because it enables us to
+identify the throwing call, rather than merely to know that it was `f2`
+that threw.
+
+[source,c++,linenums,highlight=38]
+----
+#include <boost/throw_exception.hpp>
+#include <boost/core/verbose_terminate_handler.hpp>
+#include <stdexcept>
+
+BOOST_NORETURN BOOST_NOINLINE
+void throw_invalid_argument( char const * msg,
+    boost::source_location const & loc )
+{
+    boost::throw_with_location( std::invalid_argument( msg ), loc );
+}
+
+int f1( int x,
+    boost::source_location const & loc = BOOST_CURRENT_LOCATION )
+{
+    if( x < 0 )
+    {
+        throw_invalid_argument( "f1: x cannot be negative", loc );
+    }
+
+    return x;
+}
+
+int f2( int x,
+    boost::source_location const & loc = BOOST_CURRENT_LOCATION )
+{
+    if( x < 0 )
+    {
+        throw_invalid_argument( "f2: x cannot be negative", loc );
+    }
+
+    return x;
+}
+
+int main()
+{
+    std::set_terminate( boost::core::verbose_terminate_handler );
+
+    return f1( 3 ) + f2( -11 );
+}
+----
+
+Sample output:
+
+```none
+std::terminate called after throwing an exception:
+
+      type: boost::detail::with_throw_location<std::invalid_argument>
+    what(): f2: x cannot be negative
+  location: <source>:38:22 in function 'main'
+```

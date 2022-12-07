@@ -1,0 +1,50 @@
+﻿////
+Copyright 2019, 2022 Peter Dimov
+Distributed under the Boost Software License, Version 1.0.
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+[#description]
+# Description
+:toc:
+:toc-title:
+:idprefix:
+
+The header `<boost/throw_exception.hpp>` provides a common Boost infrastructure
+for throwing exceptions, in the form of a function `boost::throw_exception`
+and a macro `BOOST_THROW_EXCEPTION`.
+
+`boost::throw_exception(x);` is a replacement for `throw x;` that both
+degrades gracefully when exception handling support is not available, and
+integrates the thrown exception into facilities provided by
+link:../../../exception/index.html[Boost.Exception], such as automatically
+providing a base class of type `boost::exception` and support for
+`boost::exception_ptr`.
+
+When exception handling is not available, the function is only declared, but
+not defined. This allows users to provide their own definition.
+
+An overload for `boost::throw_exception` that takes a
+link:../../../assert/doc/html/assert.html#source_location_support[`boost::source_location`]
+is provided. It records the supplied source location into the `boost::exception`
+base class, from where it can later be retrieved when the exception is caught.
+link:../../../exception/doc/diagnostic_information.html[`boost::diagnostic_information`]
+automatically displays the stored source location.
+
+The macro `BOOST_THROW_EXCEPTION(x)` expands to
+`::boost::throw_exception(x, BOOST_CURRENT_LOCATION)`, passing the current source
+location.
+
+When integration with Boost.Exception and `boost::exception_ptr` is not needed,
+the function `boost::throw_with_location` can be used instead. It also throws
+a user-provided exception, associating it with a supplied or inferred source
+location, but does not supply the `boost::exception` base class and does not
+enable `boost::exception_ptr` support.
+
+The source location of the exception thrown by `boost::throw_with_location`
+can be retrieved, after `catch(std::exception const & x)`, by using
+`boost::get_throw_location(x)`.
+
+`boost::get_throw_location` also works for exceptions thrown by the two argument
+overload of `boost::throw_exception`, or by `BOOST_THROW_EXCEPTION`; in this case
+it returns the source location stored in the `boost::exception` base class.
