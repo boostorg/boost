@@ -1,0 +1,101 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE.txt)
+#
+# Copyright René Ferdinand Rivera Morell 2020-2021.
+
+branches:
+  only:
+    - /master.*/
+    - /develop.*/
+    - /feature.*/
+
+skip_commits:
+  files:
+    - .circleci/*
+    - .cirrus.yml
+    - .drone.star
+    - .github/workflows/*
+    - .semaphore/*
+    - .travis.yml
+    - azure-pipelines.yml
+
+environment:
+  matrix:
+  # All the Visual Studio installs available on Appveyor
+  # - { job_name: 'VS 2019', TOOLSET: "msvc", TOOLSET_VERSION: '14.2', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2019' }
+  - { job_name: 'VS 2017', TOOLSET: "msvc", TOOLSET_VERSION: '14.1', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2017' }
+  - { job_name: 'VS 2015', TOOLSET: "msvc", TOOLSET_VERSION: '14.0', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  - { job_name: 'VS 2013', TOOLSET: "msvc", TOOLSET_VERSION: '12.0', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  # - { job_name: 'VS 2012', TOOLSET: "msvc", TOOLSET_VERSION: '11.0', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  # - { job_name: 'VS 2010', TOOLSET: "msvc", TOOLSET_VERSION: '10.0', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  # The "recent" MinGW installs available on Appveyor.
+  - { job_name: 'MinGW-w64 8.1', TOOLSET: "gcc", CXXPATH: 'C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  - { job_name: 'MinGW-w64 7.3', TOOLSET: "gcc", CXXPATH: 'C:/mingw-w64/x86_64-7.3.0-posix-seh-rt_v5-rev0/mingw64/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  - { job_name: 'MinGW-w64 6.3', TOOLSET: "gcc", CXXPATH: 'C:/mingw-w64/x86_64-6.3.0-posix-seh-rt_v5-rev1/mingw64/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2015' }
+  # Cygwin versions available.
+  # - { job_name: 'Cygwin32 3.1.7', TOOLSET: 'gcc', CXXPATH: 'C:/cygwin/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2019' }
+  # - { job_name: 'Cygwin64 3.1.7', TOOLSET: 'gcc', CXXPATH: 'C:/cygwin64/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2019' }
+  - { job_name: 'Cygwin32 3.0.7', TOOLSET: 'gcc', CXXPATH: 'C:/cygwin/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2017' }
+  - { job_name: 'Cygwin64 3.0.7', TOOLSET: 'gcc', CXXPATH: 'C:/cygwin64/bin/g++.exe', APPVEYOR_BUILD_WORKER_IMAGE: 'Visual Studio 2017' }
+
+platform:
+  - x86
+  - x64
+
+matrix:
+  exclude:
+    # - { platform: x64, job_name: 'VS 2012' }
+    # - { platform: x64, job_name: 'VS 2010' }
+    - { platform: x64, job_name: 'Cygwin32 3.1.7' }
+    - { platform: x86, job_name: 'Cygwin64 3.1.7' }
+    - { platform: x64, job_name: 'Cygwin32 3.0.7' }
+    - { platform: x86, job_name: 'Cygwin64 3.0.7' }
+
+for:
+# msvc job steps.
+- matrix:
+    only:
+      - TOOLSET: 'msvc'
+  install:
+    - cmd: |
+        echo ">>>>> INSTALL .."
+        choco install vswhere
+        echo ">>>>> INSTALL B2 .."
+        cd %APPVEYOR_BUILD_FOLDER%/..
+        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        7z x b2.zip -r
+        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^: %CXXPATH% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+        cd %APPVEYOR_BUILD_FOLDER%/../build-develop
+        cmd.exe /c bootstrap.bat
+  build_script:
+    - cmd: |
+        echo ">>>>>"
+        echo ">>>>> TEST .."
+        echo ">>>>>"
+        set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
+        cd %APPVEYOR_BUILD_FOLDER%/test
+        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --verbose-test -a toolset=%TOOLSET% %B2_ARGS% predef-info
+        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration -a toolset=%TOOLSET% %B2_ARGS% predef predef-headers
+# Windows MinGW & Cygwin job steps.
+- matrix:
+    only:
+      - TOOLSET: 'gcc'
+  install:
+    - cmd: |
+        echo ">>>>> INSTALL B2 .."
+        cd %APPVEYOR_BUILD_FOLDER%/..
+        curl "https://github.com/boostorg/build/archive/develop.zip" -L -o b2.zip
+        7z x b2.zip -r
+        echo using %TOOLSET% ^: %TOOLSET_VERSION% ^: %CXXPATH% ^; > %HOMEDRIVE%%HOMEPATH%/user-config.jam
+        cd %APPVEYOR_BUILD_FOLDER%/../build-develop
+        cmd.exe /c bootstrap.bat
+  build_script:
+    # The build itself just calls the compiler directly.
+    - cmd: |
+        echo ">>>>> TEST .."
+        set PATH=%CXXPATH%\..\;%PATH%
+        set BOOST_BUILD_PATH=%APPVEYOR_BUILD_FOLDER%/../build-develop
+        cd %APPVEYOR_BUILD_FOLDER%/test
+        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --verbose-test -a toolset=%TOOLSET% %B2_ARGS% predef-info
+        %APPVEYOR_BUILD_FOLDER%/../build-develop/b2.exe --debug-configuration -a toolset=%TOOLSET% %B2_ARGS% predef predef-headers

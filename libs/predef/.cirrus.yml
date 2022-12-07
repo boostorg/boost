@@ -1,0 +1,49 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE.txt)
+#
+# Copyright René Ferdinand Rivera Morell 2020-2021.
+
+freebsd_task:
+  # All the GCC's and Clang's currently supported by FreeBSD ports.
+  matrix:
+    - { name: 'FreeBSD, GCC 11', env: { CXX: 'g++11', PACKAGE: 'gcc11-devel', TOOLSET: gcc }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 10', env: { CXX: 'g++10', PACKAGE: 'gcc10-devel', TOOLSET: gcc }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 9', env: { CXX: 'g++9', PACKAGE: 'gcc9-devel', TOOLSET: gcc }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, GCC 8', env: { CXX: 'g++8', PACKAGE: 'gcc8', TOOLSET: gcc }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    # - { name: 'FreeBSD, GCC 7', env: { CXX: 'g++7', PACKAGE: 'gcc7', TOOLSET: gcc }, freebsd_instance: { image_family: 'freebsd-12-2' } }
+    - { name: 'FreeBSD, Clang 12', env: { CXX: 'clang++12', PACKAGE: 'devel/llvm12', TOOLSET: clang }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 11', env: { CXX: 'clang++11', PACKAGE: 'devel/llvm11', TOOLSET: clang }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 10', env: { CXX: 'clang++10', PACKAGE: 'devel/llvm10', TOOLSET: clang }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 9', env: { CXX: 'clang++90', PACKAGE: 'devel/llvm90', TOOLSET: clang }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 8', env: { CXX: 'clang++80', PACKAGE: 'devel/llvm80' , TOOLSET: clang}, freebsd_instance: { image_family: 'freebsd-13-0' } }
+    - { name: 'FreeBSD, Clang 7', env: { CXX: 'clang++70', PACKAGE: 'devel/llvm70', TOOLSET: clang }, freebsd_instance: { image_family: 'freebsd-13-0' } }
+  # To install with ports we need to initialize the package manager. To avoid
+  # confirmation prompts we need to set an env var.
+  install_script: [
+    "uname -a",
+    "env ASSUME_ALWAYS_YES=YES pkg bootstrap",
+    "env ASSUME_ALWAYS_YES=YES pkg install wget",
+    "env ASSUME_ALWAYS_YES=YES pkg install ncurses",
+    "env ASSUME_ALWAYS_YES=YES pkg install ${PACKAGE}"
+    ]
+  # Install B2.
+  install_b2_script: [
+    "set -e",
+    "export \"PCD=${PWD}\" ; cd ${HOME}",
+    "wget -nv https://github.com/bfgroup/b2/archive/release.tar.gz",
+    "tar -zxf release.tar.gz",
+    "cd b2-release",
+    "CXX= ./bootstrap.sh",
+    "sudo ./b2 install toolset=clang",
+    "cd \"${PCD}\""
+    ]
+  # Test.
+  test_script: [
+    "set -e",
+    "CXX_PATH=`which ${CXX}`",
+    "echo \"using ${TOOLSET} : : ${CXX_PATH} ;\" > ${HOME}/user-config.jam",
+    "cd test",
+    "b2 --verbose-test -a toolset=${TOOLSET} ${B2_ARGS} predef-info",
+    "b2 --debug-configuration -a toolset=${TOOLSET} ${B2_ARGS} predef predef-headers"
+    ]
