@@ -1,0 +1,124 @@
+[section:quickstart Quickstrat]
+
+A process needs four things to be launched:
+
+* an asio execution_context / executor 
+* a path to an executable
+* a list of arguments
+* a variadic set of initializers
+
+```
+     // process(asio::any_io_executor, filesystem::path, range<string> args, AdditionalInitializers...)
+    asio::io_context ctx;
+    process proc(ctx, "/usr/bin/cp", {"source.txt", "target.txt"});
+```
+ 
+
+The started process can then be awaited or terminated.
+
+[section:lifetime Lifetime]
+
+If the process handle goes out of scope, it will terminate the subprocess.
+You can prevent this, by calling `proc.detach()`; do however note that this 
+can lead to zombie processes.
+
+A process that completed will deliver an exit-code, 
+which can be obtained by calling `.exit_code` on the exited process and which is
+also returned from `.wait()`.
+
+```
+ process proc("/bin/ls", {});
+ assert(proc.wait() == 0);
+```
+
+The normal exit-code is what the subprocess returned from `main`;
+posix will however add addtional information about the process. 
+This is called the `native_exit_code`.
+
+
+The `.running()` function can be used to detect if the process is still active.
+
+[endsect]
+
+[section:signal Signalling the subprocess]
+
+The parent process can signal the subprocess demaning certain actions.
+
+`.terminate` will cause the subprocess to exit immediately (`SIGKILL` on posix).
+This is the only reliable & portable way to end a subprocess.
+
+```
+    process proc("/bin/totally-not-a-virus", {});
+    proc.terminate();
+```
+
+`.request_exit` will ask the subprocess to shutdown (`SIGTERM` on posix),
+which the subprocess might ignore.
+
+```
+    process proc("/bin/bash", {});
+    proc.request_exit();
+    proc.wait();
+```
+
+`.interrupt` will send an SIGINT to the subprocess, which a subprocess might 
+interpret as a signal to shutdown.
+
+[warning interrupt requires the initializer `windows::create_new_process_group` to be set]
+
+```
+    process proc("/usr/bin/addr2line", {});
+    proc.request_exit();
+    proc.wait();
+```
+
+[endsect]
+
+[section:execute Execute functions]
+
+Process v2 provides  `execute` and `async_execute` functons that can be used for managed executions.
+
+```
+ assert(execute(process("/bin/ls", {}) == 0));
+```
+
+The async version supports cancellation and will forward cancellation types as follows:
+
+- asio::cancellation_type::total    -> interrupt
+- asio::cancellation_type::partial  -> request_exit
+- asio::cancellation_type::terminal -> terminate
+
+```
+    asio::io_context ctx;
+    asio::steady_timer timout{ctx, std::chrono::seconds(10)};
+
+    asio::cancellation_signal sig;
+    async_execute(process("/usr/bin/g++", {"hello_world.cpp"}), 
+                 asio::bind_cancellation_slot(sig.slot(), 
+                                              [&](error_code ec, int exit_code)
+                                              {
+                                                  timeout.cancel(); // we're done earlier
+                                              }));
+
+    timeout.async_wait(
+        [&](error_code ec) 
+        {
+            if (ec) // we were cancelled, do nothing
+                return ;
+            sig.emit(asio::cancellation_type::partial); 
+            // request exit first, but terminate after another 10 sec
+            timeout.expires_after(std::chrono::seconds(10));
+            timeout.async_wait(
+                [&](error_code ec)
+                {
+                    if (!ec)
+                        sig.emit(asio::cancellation_type::terminal); 
+                });
+            );
+        });
+
+```
+
+[endsect]
+
+[endsect]

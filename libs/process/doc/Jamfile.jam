@@ -1,0 +1,103 @@
+# Copyright (c) 2006, 2007 Julio M. Merino Vidal
+# Copyright (c) 2008 Ilya Sokolov, Boris Schaeling
+# Copyright (c) 2009 Boris Schaeling
+# Copyright (c) 2010 Felipe Tanus, Boris Schaeling
+# Copyright (c) 2011, 2012 Jeff Flinn, Boris Schaeling
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+using boostbook ;
+using quickbook ;
+using doxygen ;
+
+
+local images = [ glob images/*.svg ] ;
+install images      : $(images) : <location>html/boost_process ;
+install images_glob : $(images) : <location>$(BOOST_ROOT)/doc/html/boost_process ;         
+
+import type ;
+type.register XMLPROCESSWORKAROUND : : XML ;
+import generators ;
+generators.register-standard common.copy : XML : XMLPROCESSWORKAROUND ; 
+
+xmlprocessworkaround posix_pseudocode   : posix_pseudocode.xml   ; 
+xmlprocessworkaround windows_pseudocode : windows_pseudocode.xml ;
+
+path-constant INCLUDES : ../../.. ;
+
+doxygen autodoc
+:
+  $(INCLUDES)/boost/process.hpp
+  [ glob $(INCLUDES)/boost/process/*.hpp ]
+  :
+  <doxygen:param>EXCLUDE_SYMBOLS=BOOST_ASIO_INITFN_RESULT_TYPE
+  <doxygen:param>PREDEFINED=BOOST_PROCESS_DOXYGEN
+  <doxygen:param>HIDE_UNDOC_CLASSES=YES
+  <doxygen:param>HIDE_UNDOC_MEMBERS=YES
+  <doxygen:param>EXAMPLE_PATH=.
+  <dependency>posix_pseudocode
+  <dependency>windows_pseudocode
+  <xsl:path>.
+;
+
+
+
+doxygen reference_v2
+:
+  $(INCLUDES)/boost/process/v2.hpp
+  [ glob $(INCLUDES)/boost/process/v2/*.hpp ]
+  :
+  <doxygen:param>EXCLUDE_SYMBOLS=BOOST_ASIO_INITFN_RESULT_TYPE
+  <doxygen:param>PROJECT_NAME="Process V2"
+  <doxygen:param>PROJECT_BRIEF="The process library"
+  <doxygen:param>MACRO_EXPANSION=YES
+  <doxygen:param>EXPAND_ONLY_PREDEF=YES
+  <doxygen:param>"PREDEFINED=\\
+    GENERATING_DOCUMENTATION=1 \\
+    BOOST_PROCESS_V2_ASIO_NAMESPACE=boost::asio \\
+    \"BOOST_PROCESS_V2_BEGIN_NAMESPACE=namespace boost { namespace process { namespace v2 { \" \\
+    \"BOOST_PROCESS_V2_END_NAMESPACE= } } }\" \\
+    BOOST_PROCESS_V2_NAMESPACE=boost::process::v2 \\
+    BOOST_PROCESS_V2_DECL \\
+    BOOST_PROCESS_V2_SOURCE \\
+    BOOST_PROCESS_V2_INITFN_AUTO_RESULT_TYPE(x,y)=deduced \\
+    BOOST_PROCESS_V2_COMPLETION_TOKEN_FOR(X)=Token \\
+    BOOST_PROCESS_V2_DEFAULT_COMPLETION_TOKEN_TYPE(E)=DEFAULT_TYPE \\
+    BOOST_ASIO_DEFAULT_COMPLETION_TOKEN=DEFAULT \\ 
+    BOOST_CONSTEXPR=constexpr \\
+    BOOST_CXX14_CONSTEXPR=constexpr \\
+    BOOST_ATTRIBUTE_NODISCARD=[[nodiscard]]
+    "
+  <doxygen.doxproc.id>reference_v2
+  <doxygen:param>SHOW_USED_FILES=NO
+  <doxygen:param>SHOW_FILES=NO
+  <doxygen:param>SHOW_NAMESPACES=YES
+  <doxygen:param>CLASS_DIAGRAMS=NO
+  <doxygen:param>SORT_MEMBERS_CTORS_1ST=YES
+  <doxygen:param>HIDE_UNDOC_CLASSES=NO
+  <xsl:path>.
+;
+
+
+boostbook standalone
+:
+  process.qbk
+:
+  <dependency>autodoc
+  <dependency>reference_v2
+  <dependency>images
+  <dependency>images_glob
+  <xsl:param>boost.root=../../../..
+  <xsl:param>html.stylesheet=../../../../doc/src/boostbook.css
+;
+
+###############################################################################
+alias boostdoc
+    : standalone/<format>docbook
+    : 
+    : <dependency>images_glob
+    : ;
+explicit boostdoc ;
+alias boostrelease ;
+explicit boostrelease ;

@@ -1,0 +1,89 @@
+[section:stdio stdio]
+
+When using io with a subprocess, all three standard streams (stdin, stdout, stderr) get set for the child-process.
+The default setting is to inherit the parent process.
+
+This feature meant to be flexible, which is why there is little checking on the arguments assigned to one of those streams. 
+
+[section:pipe Pipe]
+
+asio pipes can be used for io. When using in process_stdio they will get 
+automatically connected and the other side will get assigned to the child process:
+
+```
+    asio::io_context ctx;
+    asio::readable_pipe rp;
+
+    process proc(ctx, "/usr/bin/g++", {"--version"}, process_stdio{{ /* in to default */}, rp, { /* err to default */ }});
+    std::string output;
+
+    system::error_code ec;
+    rp.read(asio::dynamic_buffer(output), ec);
+    assert(ec == asio::eof);
+    proc.wait();
+```
+
+readable pipes can be assigned to `out` an `err``, while writable_pipes can be assigned to `in`.
+
+[endsect]
+
+[section:file `FILE*`]
+
+`FILE*` can also be used for either side; this allows the `stdin`, `stderr`, `stdout` macros to be used:
+
+```
+    asio::io_context ctx;
+    // forward both stderr & stdout to stdout of the parent process
+    process proc(ctx, "/usr/bin/g++", {"--version"}, process_stdio{{ /* in to default */}, stdout, stdout});
+    proc.wait();
+```
+
+[endsect]
+
+[section:null `nullptr`]
+
+`nullptr` may be used to set a given stream to be opened on the null-device (`/dev/null` on posix, `NUL` on windows). 
+This is used to ignore output or give only EOF as input.
+
+```
+    asio::io_context ctx;
+    // ignore stderr
+    process proc(ctx, "/usr/bin/g++", {"--version"}, process_stdio{{ /* in to default */}, {}, nullptr});
+    proc.wait();
+```
+
+[endsect]
+
+
+[section:native_handle `native_handle`]
+
+A native handle can be used as well, which means an `int` on posix or a `HANDLE` on windows. 
+Furthermore, any object that has a `native_handle` returning that native handle type is valid, too.
+
+
+```
+    asio::io_context ctx;
+    // ignore stderr
+    asio::ip::tcp::socket sock{ctx};
+    connect_my_socket(sock);
+    process proc(ctx, "~/not-a-virus", {}, process_stdio{sock, sock, nullptr});
+    proc.wait();
+```
+
+[endsect]
+
+[section:popen popen]
+
+Additionally, process v2 provides a `popen` class. 
+It starts a process and connects pipes for stdin and stdout, so that the popen object can be used as a stream.
+
+```
+   popen proc(executor, "/usr/bin/addr2line, {argv[0]});
+   asio::write(proc, asio::buffer("main\n"));
+   std::string line;
+   asio::read_until(proc, asio::dynamic_buffer(line), '\n');
+```
+
+[endsect]
+
+[endsect]

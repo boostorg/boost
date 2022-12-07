@@ -1,0 +1,136 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Antony Polukhin 2014-2016.
+
+#
+# See https://svn.boost.org/trac/boost/wiki/TravisCoverals for description of this file
+# and how it can be used with Boost libraries.
+#
+# File revision #6
+
+
+###############################################################################################################
+# From this point and below code is same for all the Boost libs
+###############################################################################################################
+sudo: false
+language: cpp
+compiler:
+  - gcc
+
+os:
+  - linux
+  - osx
+
+env:
+  matrix:
+    - BADGE=linux
+    - BADGE=osx
+  global:
+    # Autodetect Boost branch by using the following code: - BRANCH_TO_TEST=$TRAVIS_BRANCH
+    # or just directly specify it
+    - BRANCH_TO_TEST=$TRAVIS_BRANCH
+
+    # Files, which coverage results must be ignored (files from other projects).
+    # Example: - IGNORE_COVERAGE='*/boost/progress.hpp */filesystem/src/*'
+    - IGNORE_COVERAGE=''
+
+    # Explicitly remove the following library from Boost. This may be usefull, if you're for example running Travis
+    # from `Boost.DLL` repo, while Boost already has `dll`.
+    #
+    # By default is eaual to - BOOST_REMOVE=`basename $TRAVIS_BUILD_DIR`
+    # This will force to use local repo content, instead of the Boost's default
+    # not needed because process is not yet in boost.
+    - BOOST_REMOVE=process
+    - CXX_STANDARD=gnu++11
+
+matrix:
+  exclude:
+    - os: linux
+      env: BADGE=osx
+    - os: osx
+      env: BADGE=linux
+
+
+
+# Installing additional tools
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - valgrind
+      - python-yaml
+      - gcc-5
+      - g++-5
+      #    - lcov
+      - clang
+
+before_install:
+  # Set this to the name of the library
+  - PROJECT_TO_TEST=`basename $TRAVIS_BUILD_DIR`
+  - echo "Testing $PROJECT_TO_TEST"
+  - if [ $TRAVIS_OS_NAME = "osx" ]; then brew install gcc5; brew install valgrind; brew install llvm; TOOLSET=clang; BOOST_TEST_CATCH_SYSTEM_ERRORS=no; MULTITHREAD=-j8; else TOOLSET=gcc-5; REPORT_CI=--boost-process-report-ci USE_VALGRIND="testing.launcher=valgrind valgrind=on"; fi
+  # Cloning Boost libraries (fast nondeep cloning)
+  - BOOST=$HOME/boost-local
+  - git init $BOOST
+  - cd $BOOST
+  - echo Branch to test  $BRANCH_TO_TEST
+  - if [ $BRANCH_TO_TEST = "master" ]; then
+    BOOST_BRANCH=master;
+    else BOOST_BRANCH=develop; fi
+  - git remote add --no-tags -t $BOOST_BRANCH origin https://github.com/boostorg/boost.git
+  - git fetch --depth=1
+  - git checkout $BOOST_BRANCH
+  - git submodule update --init --merge
+  - git remote set-branches --add origin $BOOST_BRANCH
+  - git pull --recurse-submodules || true
+  - git submodule update --init
+  - git checkout $BOOST_BRANCH
+  - git submodule foreach "git reset --quiet --hard; git clean -fxd"
+  - git reset --hard; git clean -fxd
+  - git status
+  - echo "Removing $BOOST/libs/$BOOST_REMOVE"
+  - rm -rf $BOOST/libs/$BOOST_REMOVE
+  - mv $TRAVIS_BUILD_DIR/../$PROJECT_TO_TEST/ $BOOST/libs/$PROJECT_TO_TEST
+  - TRAVIS_BUILD_DIR=$BOOST/libs/$PROJECT_TO_TEST
+  - ./bootstrap.sh
+  - ./b2 headers
+  - cd $BOOST/libs/$PROJECT_TO_TEST/test
+  - echo BOOST_TEST_CATCH_SYSTEM_ERRORS $BOOST_TEST_CATCH_SYSTEM_ERRORS
+script:
+  # `--coverage` flags required to generate coverage info for Coveralls
+  - ../../../b2 $MULTITHREAD with-valgrind address-model=64 architecture=x86 $USE_VALGRIND toolset=$TOOLSET cxxflags="--coverage -DBOOST_TRAVISCI_BUILD -std=$CXX_STANDARD" linkflags="--coverage" -sBOOST_BUILD_PATH=. $REPORT_CI
+  - ../../../b2 $MULTITHREAD without-valgrind address-model=64 architecture=x86 toolset=$TOOLSET cxxflags="--coverage -DBOOST_TRAVISCI_BUILD -std=$CXX_STANDARD" linkflags="--coverage" -sBOOST_BUILD_PATH=. $REPORT_CI
+after_success:
+  # Copying Coveralls data to a separate folder
+  - mkdir -p $TRAVIS_BUILD_DIR/coverals
+  - find ../../../bin.v2/ -name "*.gcda" -exec cp "{}" $TRAVIS_BUILD_DIR/coverals/ \;
+  - find ../../../bin.v2/ -name "*.gcno" -exec cp "{}" $TRAVIS_BUILD_DIR/coverals/ \;
+
+  # Preparing Coveralls data by changind data format to a readable one
+  - git clone https://github.com/linux-test-project/lcov.git lcov_dir
+  - GCOV_VERSION=""
+  - if [[ "$TOOLSET" == *"-"* ]]; then GCOV_VERSION="--gcov-tool gcov-${TOOLSET#*-}"; fi
+  - LCOV="$BOOST/libs/$PROJECT_TO_TEST/test/lcov_dir/bin/lcov $GCOV_VERSION"
+  - $LCOV --directory $TRAVIS_BUILD_DIR/coverals --base-directory ./ --capture --output-file $TRAVIS_BUILD_DIR/coverals/coverage.info
+
+  # ... erasing /test/ /example/ folder data
+  - cd $BOOST
+  - $LCOV --remove $TRAVIS_BUILD_DIR/coverals/coverage.info "*.cpp" "/usr*" "*/$PROJECT_TO_TEST/test/*" $IGNORE_COVERAGE "*/$PROJECT_TO_TEST/tests/*" "*/$PROJECT_TO_TEST/examples/*" "*/$PROJECT_TO_TEST/example/*" -o $TRAVIS_BUILD_DIR/coverals/coverage.info
+
+  # ... erasing data that is not related to this project directly
+  - OTHER_LIBS=`grep "submodule .*" .gitmodules | sed 's/\[submodule\ "\(.*\)"\]/"\*\/boost\/\1\.hpp" "\*\/boost\/\1\/\*"/g'| sed "/\"\*\/boost\/process\/\*\"/d" | sed ':a;N;$!ba;s/\n/ /g'`
+  - echo $OTHER_LIBS
+  - eval "$LCOV --remove $TRAVIS_BUILD_DIR/coverals/coverage.info $OTHER_LIBS -o $TRAVIS_BUILD_DIR/coverals/coverage.info" > /dev/null
+
+  # Sending data to Coveralls
+  - cd $TRAVIS_BUILD_DIR
+  - gem install coveralls-lcov
+  - coveralls-lcov coverals/coverage.info
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
+  - cd $BOOST/libs/$PROJECT_TO_TEST/test
+  - curl -s https://report.ci/report.py | python - --name="$BADGE test run"

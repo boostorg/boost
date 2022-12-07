@@ -1,0 +1,62 @@
+# Copyright (c) 2022 Klemens D. Morgenstern
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+
+import os ;
+
+if [ os.name ] = NT
+{
+  lib ws2_32 ;
+  lib shell32 ;
+  lib Advapi32 ;
+  lib Ntdll ;
+  lib user32 ;
+}
+
+project : requirements
+  <define>BOOST_ASIO_NO_DEPRECATED
+  <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+  <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+  <toolset>msvc:<cxxflags>/bigobj
+  <target-os>windows:<define>WIN32_LEAN_AND_MEAN
+  <target-os>linux:<linkflags>-lpthread
+  <os>NT,<toolset>cw:<library>ws2_32
+  <os>NT,<toolset>gcc:<library>ws2_32
+  <define>BOOST_PROCESS_V2_SEPARATE_COMPILATION=1
+;
+
+import testing ;
+
+alias filesystem   : /boost//filesystem : <link>static ;
+
+exe target : target.cpp :
+    <warnings>off <target-os>windows:<source>shell32
+                  <target-os>windows:<source>Ntdll
+    ;
+
+
+lib header_test : header_1.cpp header_2.cpp :
+        <define>BOOST_PROCESS_V2_HEADER_ONLY=1 ;
+
+lib test_impl : test_impl.cpp filesystem :
+        <define>BOOST_PROCESS_V2_SEPARATE_COMPILATION=1
+        <define>BOOST_TEST_IGNORE_SIGCHLD=1
+        <link>static
+        <target-os>windows:<source>shell32
+        <target-os>windows:<source>user32
+        ;
+
+test-suite standalone :
+    [ run utf8.cpp test_impl ]
+    [ run cstring_ref.cpp test_impl ]
+    [ run environment.cpp test_impl ]
+    [ run pid.cpp test_impl ]
+    ;
+
+test-suite with_target :
+    [ run process.cpp test_impl : --log_level=all --catch_system_errors=no -- : target ]
+    [ run windows.cpp test_impl : --log_level=all --catch_system_errors=no -- : target : <build>no <target-os>windows:<build>yes <target-os>windows:<source>Advapi32 ]
+    ;
+

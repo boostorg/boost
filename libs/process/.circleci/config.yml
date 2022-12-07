@@ -1,0 +1,75 @@
+version: 2
+
+jobs:
+  build:
+    environment:
+      - BOOST_LIBRARY=process
+      - CXX_STANDARD=gnu++11
+    docker:
+      - image: gcc:7
+    steps:
+      - checkout
+      - run:
+          name: Setting up Environment
+          command: |
+            echo 'export BOOST="$HOME/boost-local"' >> $BASH_ENV
+            if [ $CIRCLE_BRANCH = "master" ]; then
+                echo 'export BOOST_BRANCH="master"' >> $BASH_ENV;
+            else
+                echo 'export BOOST_BRANCH="develop"' >> $BASH_ENV;
+            fi
+            echo 'export BOOST_REMOVE="$BOOST/libs/$BOOST_LIBRARY"' >> $BASH_ENV
+            HOME_SED_=$(echo $HOME | sed -e 's/\//\\\//g')
+            echo 'export HOME_SED=$HOME_SED_' >> $BASH_ENV
+      - run:
+          name: install pre dependencies
+          command: |
+            apt-get update -yqq
+            apt-get install git curl valgrind -y
+      - run:
+          name: Initializing git repo for boost
+          command: |
+            git init $BOOST
+            cd $BOOST
+            echo Testing $BRANCH_TO_TEST
+            git remote add --no-tags -t $BOOST_BRANCH origin https://github.com/boostorg/boost.git
+            git fetch --depth=1
+            git checkout $BOOST_BRANCH
+            git submodule update --init --merge
+            git remote set-branches --add origin $BOOST_BRANCH
+            git pull --recurse-submodules
+            git submodule update --init
+            git checkout $BOOST_BRANCH
+            git submodule foreach "git reset --quiet --hard; git clean -fxd"
+            git reset --hard; git clean -fxd
+            git status
+            rm -rf $BOOST_REMOVE
+            mv $HOME/project $BOOST_REMOVE
+      - run:
+          name: Bootstrapping boost-build
+          command: |
+            cd $BOOST
+            ./bootstrap.sh
+            ./b2 headers
+      - run:
+          name: Building examples
+          command: |
+            cd $BOOST_REMOVE/example
+            ../../../b2 -j2 address-model=64 architecture=x86 toolset=gcc cxxflags="-std=gnu++14" -sBOOST_BUILD_PATH=. | tee example.log || FAILED=1
+            sed -i -e "s/^..\/..\/..\/boost\/process\//\/root\/project\/include\/boost\/process\//gm" example.log
+            python <(curl -s https://report.ci/annotate.py) --tool gcc --name "Circle CI Gcc Build" --input example.log
+            exit $FAILED
+      - run:
+          name: Running Unit tests
+          command: |
+            cd $BOOST_REMOVE/test
+            ../../../b2 -j2 with-valgrind address-model=64 architecture=x86 testing.launcher=valgrind valgrind=on toolset=gcc cxxflags="--coverage -std=$CXX_STANDARD" linkflags="--coverage" -sBOOST_BUILD_PATH=. | tee test.log || FAILED=1
+            ../../../b2 -j2 without-valgrind address-model=64 architecture=x86 toolset=gcc cxxflags="--coverage -std=$CXX_STANDARD" linkflags="--coverage" -sBOOST_BUILD_PATH=. | tee no-valgrind.log || FAILED=1
+            sed -i -e "s/^..\/..\/..\/boost\/process\//\/root\/project\/include\/boost\/process\//gm" test.log
+            sed -i -e "s/^..\/..\/..\/boost\/process\//\/root\/project\/include\/boost\/process\//gm" no-valgrind.log
+
+            python <(curl -s https://report.ci/annotate.py) --tool gcc --input test.log
+            python <(curl -s https://report.ci/annotate.py) --tool gcc --input no-valgrind.log
+            bash <(curl -s https://codecov.io/bash) -x gcov > /dev/null || true
+            echo "BUILD_RESULT: $FAILED"
+            exit $FAILED

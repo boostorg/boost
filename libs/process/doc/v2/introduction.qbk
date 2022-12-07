@@ -1,0 +1,94 @@
+[section:introduction Introduction]
+
+Boost.process V2 is an redesign of boost.process, based on previous 
+design mistakes & improved system APIs.
+
+The major changes are
+
+* Simplified interface
+* Reliance on pidfd_open on linux
+* Full asio integration
+* Removed unreliable functionality
+* UTF8 Support
+* separate compilation
+* fd safe by default
+
+[section:simplified Simplified Interface]
+
+In process v1 one can define partial settings in the constructor of the process, 
+which has lead to a small DSL.
+
+ child c{exe="test", args+="--help", std_in < null(), env["FOO"] += "BAR"};
+
+While this looks fancy at first, it really does not scale well with more parameters.
+For process v2, the interfaces is simple: 
+
+ extern std::unordered_map<std::string, std::string> my_env;
+ extern asio::io_context ctx;
+ process proc(ctx, "./test", {"--help"}, process_io{nullptr, {}, {}}, process_environment(my_env));
+
+Every initializer adresses one logical compoent (e.g. stdio) instead of multiple ones accumulating.
+Furthermore, every process has a path and arguments, instead of a confusing mixture of cmd-style and 
+exe-args that can be randomly spread out.
+
+[endsect]
+
+[section:pidfd_open pidfd_open]
+
+Since process v1 came out, linux has moved along and added pidfd_open which allows users to get a 
+file descriptor for a process. This is much more reliable since it is not as easy to miss as a `SIGCHLD`.
+FreeBSD has a similar feature with `pdfork` which is also supported, while windows has provided `HANDLE`s 
+for processes all along.
+Unless the OS doesn't support it, process v2 will use file descriptors and handles to implement waiting 
+for processes.
+
+[endsect]
+
+[section:asio Full asio integration]
+
+Process v1 aimed to make asio optional, but synchronous IO with subprocesses usually means one is begging 
+for deadlocks.
+Since asio added pipes in boost 1.78, boost process V2 is fully asio based and uses it's pipes and 
+file-handles for the subprocess.
+
+[endsect]
+
+[section:unreliable Unreliable functionality]
+
+Certain parts of boost.process were not as reliable as they should've been. 
+
+This concerns especially the `wait_for`` and `wait_until` functions on the process.
+The latter are easy to do on windows, but posix does not provide an API for this. 
+Thus the wait_for used signals or fork, which was all but safe. 
+Since process v2 is based on asio and thus supports cancellation, 
+a wait_for can not safely be implemented with an async_wait + timeout.
+
+[endsect]
+
+[section:utf8 UTF-8]
+
+["UTF-8 or GTFO]--Vinnie Falco
+
+Instead of using ascii-APIs on windows, process V2 just assumes UTF-8 everywhere.
+
+[endsect]
+
+[section:src Separate compilation]
+
+Boost.process v2 supports separate compilation similar to other boost libraries. 
+It can be achieved by defining `BOOST_PROCESS_V2_SEPARATE_COMPILATION` and including 
+`<process/v2/src.hpp>` in a single compile unit.
+
+[endsect]
+
+[section:limit_fd Fd safe by default]
+
+While not a problem on windows (since HANDLEs get manually enabled for inheritance),
+posix systems create a problem with inheriting file handles by default.
+
+Process V2 will automatically close all non-whitelisted descriptors, 
+without needing any option to enable it.
+
+[endsect]
+
+[endsect]

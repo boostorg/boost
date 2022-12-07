@@ -1,0 +1,16 @@
+[section:start_dir process_start_dir]
+
+The easier initializer to use is `process_start_dir`:
+
+```
+    asio::io_context ctx;
+    process ls(ctx, "/ls", {}, process_start_dir("/home"));
+    ls.wait();
+```
+
+This will run `ls` in the folder `/home` instead of the current folder.
+
+[warning If your path is relative, it may fail on posix, because the directory is changed before a call to execve.]
+
+
+[endsect]
