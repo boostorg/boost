@@ -1,0 +1,105 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Configure Meson build directories",
+			"type": "shell",
+			"command": "cd ${workspaceRoot} && meson bld/debug && meson -D qvm_header_mode='single' bld/debug_qvm_hpp && meson -D qvm_header_mode='single_lite' bld/debug_qvm_lite_hpp && meson bld/release --buildtype release && meson -D qvm_header_mode='single' bld/release_qvm_hpp --buildtype release && meson -D qvm_header_mode='single_lite' bld/release_qvm_lite_hpp --buildtype release",
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate specializations",
+			"type": "shell",
+			"command": "cd ${workspaceRoot}/gen && ../../../b2",
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate headers",
+			"type": "shell",
+			"command": "cd ${workspaceRoot} && python gen/generate_single_header.py -i include/boost/qvm.hpp -p ${workspaceRoot}/include -o ${workspaceRoot}/test/qvm.hpp boost/qvm && python gen/generate_single_header.py -i include/boost/qvm_lite.hpp -p ${workspaceRoot}/include -o ${workspaceRoot}/test/qvm_lite.hpp boost/qvm",
+			"problemMatcher": []
+		},
+		{
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "Build all unit tests and examples (debug)",
+			"type": "shell",
+			"command": "cd ${workspaceRoot}/bld/debug && ninja && cd ${workspaceRoot}/bld/debug_qvm_hpp && ninja && cd ${workspaceRoot}/bld/debug_qvm_lite_hpp && ninja",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/bld/debug"
+				]
+			}
+		},
+		{
+			"group": "test",
+			"label": "Run all unit tests (debug)",
+			"type": "shell",
+			"dependsOn": [
+				"Generate headers"
+			],
+			"command": "cd ${workspaceRoot}/bld/debug && ninja && meson test && cd ${workspaceRoot}/bld/debug_qvm_hpp && ninja && meson test && cd ${workspaceRoot}/bld/debug_qvm_lite_hpp && ninja && meson test",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/bld/debug"
+				]
+			}
+		},
+		{
+			"group": "test",
+			"label": "Run all unit tests (release)",
+			"type": "shell",
+			"dependsOn": [
+				"Generate headers"
+			],
+			"command": "cd ${workspaceRoot}/bld/release && ninja && meson test && cd ${workspaceRoot}/bld/release_qvm_hpp && ninja && meson test && cd ${workspaceRoot}/bld/release_qvm_lite_hpp && ninja && meson test",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/bld/release"
+				]
+			}
+		},
+		{
+			"group": "test",
+			"label": "Run all unit tests (b2, all configurations)",
+			"type": "shell",
+			"dependsOn": [
+				"Generate headers"
+			],
+			"command": "../../b2 test cxxstd=03,0x,11,1y,14,1z,17,2a variant=debug,release,debug_qvm_hpp,release_qvm_hpp,debug_qvm_lite_hpp,release_qvm_lite_hpp",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/bld/release"
+				]
+			}
+		},
+		{
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"label": "Test current editor file",
+			"type": "shell",
+            "command": "cd ${workspaceRoot}/bld/debug && ninja && { meson test ${fileBasenameNoExtension} || cat ./meson-logs/testlog.txt }",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": [
+					"relative",
+					"${workspaceRoot}/bld/debug"
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,51 @@
+name: documentation
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        run: |
+          sudo gem install asciidoctor asciidoctor-pdf rouge
+
+      - name: Setup Boost
+        run: |
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          cp -r $GITHUB_WORKSPACE/* libs/qvm
+          git submodule update --init tools/build
+          git submodule update --init libs/config
+          ./bootstrap.sh
+
+      - name: Create user-config.jam
+        run: |
+          echo "using asciidoctor ;" > ~/user-config.jam
+
+      - name: Build documentation
+        run: |
+          cd ../boost-root/libs/qvm/doc
+          ../../../b2
+
+      - name: Generate single header
+        run: |
+          REF=$(git show-ref $GITHUB_REF --hash)
+          cd ../boost-root/libs/qvm
+          python gen/generate_single_header.py -i include/boost/qvm.hpp -p include -o doc/html/qvm.hpp boost/qvm --hash "$REF"
+          python gen/generate_single_header.py -i include/boost/qvm_lite.hpp -p include -o doc/html/qvm_lite.hpp boost/qvm --hash "$REF"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ../boost-root/libs/qvm/doc/html
