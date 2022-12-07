@@ -1,0 +1,312 @@
+# Copyright 2016, 2017 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+os: linux
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc CXXSTD=98,0x HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc CXXSTD=98,0x HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.7
+      env: TOOLSET=gcc CXXSTD=03,11 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-4.7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.8
+      env: TOOLSET=gcc CXXSTD=03,11 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.9
+      env: TOOLSET=gcc CXXSTD=03,11 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-4.9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc CXXSTD=03
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc CXXSTD=14,1z HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc CXXSTD=14,17 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc CXXSTD=14,17 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc CXXSTD=17
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: trusty
+      compiler: clang++-3.5
+      env: TOOLSET=clang CXXSTD=03,11 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-3.5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.6
+      env: TOOLSET=clang CXXSTD=03,11,14 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-3.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.7
+      env: TOOLSET=clang CXXSTD=03,11,14 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-3.7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.8
+      env: TOOLSET=clang CXXSTD=03,11,14 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.9
+      env: TOOLSET=clang CXXSTD=03,11,14,1z HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-3.9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-4.0
+      env: TOOLSET=clang CXXSTD=03,11,14,1z HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-5.0
+      env: TOOLSET=clang CXXSTD=03,11,14,1z HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-6.0
+      env: TOOLSET=clang CXXSTD=14,17 HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-7
+      env: TOOLSET=clang CXXSTD=14,17,2a HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-7
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-7
+
+    - os: linux
+      compiler: clang++-8
+      env: TOOLSET=clang CXXSTD=14,17,2a HEADERS_ONLY=1
+      addons:
+        apt:
+          packages:
+            - clang-8
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-xenial-8
+
+    - os: linux
+      compiler: clang++-9
+      env: TOOLSET=clang CXXSTD=14
+      addons:
+        apt:
+          packages:
+            - clang-9
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+
+    - os: linux
+      compiler: clang++-9
+      env: TOOLSET=clang CXXSTD=17
+      addons:
+        apt:
+          packages:
+            - clang-9
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+
+    - os: osx
+      compiler: clang++
+      env: TOOLSET=clang CXXSTD=98
+
+#    - os: osx
+#      compiler: clang++
+#      env: TOOLSET=clang CXXSTD=11
+
+#    - os: osx
+#      compiler: clang++
+#      env: TOOLSET=clang CXXSTD=14
+
+    - os: osx
+      compiler: clang++
+      env: TOOLSET=clang CXXSTD=1z
+
+install:
+  - GIT_FETCH_JOBS=8
+  - BOOST_BRANCH=develop
+  - if [ "$TRAVIS_BRANCH" = "master" ]; then BOOST_BRANCH=master; fi
+  - cd ..
+  - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/build
+  - git submodule init libs/config
+  - git submodule init tools/boostdep
+  - git submodule update --jobs $GIT_FETCH_JOBS
+  - mkdir -p libs/thread
+  - cp -r $TRAVIS_BUILD_DIR/* libs/thread
+  - python tools/boostdep/depinst/depinst.py --git_args "--jobs $GIT_FETCH_JOBS" thread
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $TRAVIS_COMPILER ;" > ~/user-config.jam
+  - ./b2 -j3 -l60 libs/thread/test${HEADERS_ONLY:+//test_self_contained_headers} toolset=$TOOLSET cxxstd=$CXXSTD
+
+notifications:
+  email:
+    on_success: always

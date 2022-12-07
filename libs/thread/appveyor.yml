@@ -1,0 +1,89 @@
+# Copyright 2016-2018 Peter Dimov
+# Copyright 2018 Vicente Botet
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+image: Visual Studio 2015
+
+environment:
+  matrix:
+
+    - TOOLSET: msvc-12.0
+      VARIANT: release
+
+    - TOOLSET: msvc-14.0
+      ADDRMD: 32
+      VARIANT: debug
+
+    - TOOLSET: msvc-14.1
+      ADDRMD: 64
+      VARIANT: release
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+    - TOOLSET: msvc-14.2
+      CXXSTD: 17
+      ADDRMD: 32
+      VARIANT: debug
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+    - TOOLSET: msvc-14.2
+      ADDRMD: 64
+      VARIANT: release
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+    - ADDPATH: C:\cygwin\bin;
+      TOOLSET: gcc
+      VARIANT: release
+
+    - ADDPATH: C:\mingw\bin;
+      TOOLSET: gcc
+      VARIANT: debug
+
+# The following configurations fail with
+# ./boost/thread/detail/invoke.hpp:101:43: internal compiler error: in gimplify_expr, at gimplify.c:12039
+# https://sourceforge.net/p/mingw-w64/bugs/694/
+#
+#    - ADDPATH: C:\cygwin64\bin;
+#      TOOLSET: gcc
+#      VARIANT: debug
+#    - ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;
+#      TOOLSET: gcc
+#      VARIANT: debug
+#    - ADDPATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;
+#      TOOLSET: gcc
+#      VARIANT: debug,release
+
+install:
+  - set GIT_FETCH_JOBS=8
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/build
+  - git submodule init libs/config
+  - git submodule init tools/boostdep
+  - git submodule update --jobs %GIT_FETCH_JOBS%
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\thread
+  - python tools/boostdep/depinst/depinst.py --git_args "--jobs %GIT_FETCH_JOBS%" thread
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - PATH=%ADDPATH%%PATH%
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+  - if not "%VARIANT%" == "" set VARIANT=variant=%VARIANT%
+  - b2 -j2 --abbreviate-paths libs/thread/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% %VARIANT%
