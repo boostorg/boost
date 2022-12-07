@@ -1,0 +1,193 @@
+# Copyright 2016 - 2018 Peter Dimov
+# Copyright 2018 T. Zachary Laine
+# Copyright 2017 - 2019 James E. King III
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+#
+# Generic Travis CI build script for boostorg repositories
+# See: https://github.com/boostorg/boost-ci
+#
+# Instructions for customizing this script for your library:
+#
+# 1. Customize the compilers and language levels you want in the 'jobs'.
+# 2. If you have more than include/, src/, test/, example/, examples/, or
+#    tools/ directories, modify your Travis CI project and add the environment
+#    variable DEPINST.  For example if your build uses code in "bench/" and
+#    "fog/" directories, then set DEPINST to the following:
+#        --include bench --include fog
+# 3. If you want to enable Coverity Scan, you need to provide the environment
+#    variables COVERITY_SCAN_TOKEN and COVERITY_SCAN_NOTIFICATION_EMAIL in
+#    your github settings.
+# 4. Enable pull request builds in your boostorg/<library> account.
+#
+# That's it - the scripts will do everything else for you.
+
+dist: xenial
+language: cpp
+
+env:
+  global:
+  # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+  # to use the default for a given environment, comment it out; recommend you build debug and release however..
+  # - B2_ADDRESS_MODEL=address-model=64,32
+  # - B2_LINK=link=shared,static
+  # - B2_THREADING=threading=multi,single
+    - B2_VARIANT=variant=release,debug
+
+install:
+  - git clone https://github.com/boostorg/boost-ci.git boost-ci
+  - cp -pr boost-ci/ci boost-ci/.codecov.yml .
+  - source ci/travis/install.sh
+
+addons:
+  apt:
+    packages:
+      - binutils-gold
+      - gdb
+      - libc6-dbg
+
+branches:
+  only:
+    - master
+    - develop
+    - bugfix/*
+    - feature/*
+    - fix/*
+    - pr/*
+
+script:
+  - cd $BOOST_ROOT/libs/$SELF
+  - ci/travis/build.sh
+
+#
+# Default toolsets in Ubuntu
+#
+#       trusty xenial bionic
+#        14.04  16.04  18.04
+#       ------ ------ ------
+# clang    3.4    3.8    6.0
+#   gcc  4.8.2  5.3.1  7.3.0
+#
+
+anchors:
+  clang-38: &clang-38 { apt: { packages: [ "clang-3.8",
+                                           "libstdc++-6-dev" ], sources: [ "llvm-toolchain-xenial-3.8",
+                                                                           "ubuntu-toolchain-r-test"   ] } }
+  clang-4:  &clang-4  { apt: { packages: [ "clang-4.0",
+                                           "libstdc++-6-dev" ], sources: [ "llvm-toolchain-xenial-4.0",
+                                                                           "ubuntu-toolchain-r-test"   ] } }
+  clang-5:  &clang-5  { apt: { packages: [ "clang-5.0",
+                                           "libstdc++-7-dev" ], sources: [ "llvm-toolchain-xenial-5.0",
+                                                                           "ubuntu-toolchain-r-test"   ] } }
+  clang-6:  &clang-6  { apt: { packages: [ "clang-6.0",
+                                           "libc6-dbg",
+                                           "libc++-dev",
+                                           "libstdc++-8-dev" ], sources: [ "llvm-toolchain-xenial-6.0",
+                                                                           "ubuntu-toolchain-r-test"   ] } }
+  clang-7:  &clang-7  { apt: { packages: [ "clang-7",
+                                           "libc6-dbg",
+                                           "libc++-dev",
+                                           "libstdc++-8-dev" ], sources: [ "llvm-toolchain-xenial-7",
+                                                                           "ubuntu-toolchain-r-test"   ] } }
+  clang-8:  &clang-8  { apt: { packages: [ "clang-8",
+                                           "libc6-dbg",
+                                           "libc++-dev",
+                                           "libstdc++-8-dev" ], sources: [ "llvm-toolchain-xenial-8",
+                                                                           "ubuntu-toolchain-r-test"   ] } }
+  gcc-48:   &gcc-48   { apt: { packages: [ "g++-4.8"         ]                                           } }
+  gcc-49:   &gcc-49   { apt: { packages: [ "g++-4.9"         ]                                           } }
+  gcc-5:    &gcc-5    { apt: { packages: [ "g++-5"           ]                                           } }
+  gcc-6:    &gcc-6    { apt: { packages: [ "g++-6"           ], sources: [ "ubuntu-toolchain-r-test"   ] } }
+  gcc-7:    &gcc-7    { apt: { packages: [ "g++-7"           ], sources: [ "ubuntu-toolchain-r-test"   ] } }
+  gcc-8:    &gcc-8    { apt: { packages: [ "g++-8"           ], sources: [ "ubuntu-toolchain-r-test"   ] } }
+
+jobs:
+  allow_failures:
+    - env:
+      - COPY="all the environment settings from your job"
+
+  include:
+    # libstdc++
+    - { os: "linux", env: [ "B2_TOOLSET=gcc-4.8",     "B2_CXXSTD=03,11"    ], addons: *gcc-48    }
+    - { os: "linux", env: [ "B2_TOOLSET=gcc-4.9",     "B2_CXXSTD=03,11"    ], addons: *gcc-49    }
+    - { os: "linux", env: [ "B2_TOOLSET=gcc-5",       "B2_CXXSTD=11"       ], addons: *gcc-5     }
+    - { os: "linux", env: [ "B2_TOOLSET=gcc-6",       "B2_CXXSTD=11,14"    ], addons: *gcc-6     }
+    - { os: "linux", env: [ "B2_TOOLSET=gcc-7",       "B2_CXXSTD=11,14,17" ], addons: *gcc-7     }
+    - { os: "linux", env: [ "B2_TOOLSET=gcc-8",       "B2_CXXSTD=14,17,2a" ], addons: *gcc-8     }
+    - { os: "linux", env: [ "B2_TOOLSET=clang-3.8",   "B2_CXXSTD=03,11,14" ], addons: *clang-38  }
+    - { os: "linux", env: [ "B2_TOOLSET=clang-4.0",   "B2_CXXSTD=11,14"    ], addons: *clang-4   }
+    - { os: "linux", env: [ "B2_TOOLSET=clang-5.0",   "B2_CXXSTD=11,14,17" ], addons: *clang-5   }
+    - { os: "linux", env: [ "B2_TOOLSET=clang-6.0",   "B2_CXXSTD=14,17,2a" ], addons: *clang-6   }
+    - { os: "linux", env: [ "B2_TOOLSET=clang-7",     "B2_CXXSTD=14,17,2a" ], addons: *clang-7   }
+    - { os: "linux", env: [ "B2_TOOLSET=clang-8",     "B2_CXXSTD=14,17,2a" ], addons: *clang-8   }
+
+    # libc++
+    - { os: "linux", env: [ "B2_TOOLSET=clang-6.0",   "B2_CXXSTD=03,11,14,17,2a",
+                            "B2_CXXFLAGS=-stdlib=libc++"                   ], addons: *clang-6   }
+    - { os: "osx"  , env: [ "B2_TOOLSET=clang",       "B2_CXXSTD=03,11,17" ]                     }
+
+    # to enable Intel ICC define INTEL_ICC_SERIAL_NUMBER and the following:
+    # - { os: "linux", env: [ "B2_TOOLSET=intel-linux", "B2_CXXSTD=11,14,17" ], addons: *gcc-7,
+    #     script: cd $BOOST_ROOT/libs/$SELF && ci/travis/intelicc.sh                               }
+
+    - os: linux
+      env:
+        - COMMENT=codecov.io
+        - B2_TOOLSET=03,11,14
+        - B2_TOOLSET=gcc-8
+        - B2_DEFINES="define=BOOST_NO_STRESS_TEST=1"
+      addons: *gcc-8
+      script:
+        - pushd /tmp && git clone https://github.com/linux-test-project/lcov.git && export PATH=/tmp/lcov/bin:$PATH && which lcov && lcov --version && popd
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/codecov.sh
+
+    - os: linux
+      env:
+        - COMMENT=cppcheck
+      script:
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/cppcheck.sh
+
+    - os: linux
+      env:
+        - COMMENT=ubsan
+        - B2_VARIANT=variant=debug
+        - B2_TOOLSET=gcc-8
+        - B2_CXXSTD=03,11,14,17,2a
+        - B2_DEFINES="define=BOOST_NO_STRESS_TEST=1"
+        - B2_CXXFLAGS="cxxflags=-fno-omit-frame-pointer cxxflags=-fsanitize=undefined cxxflags=-fno-sanitize-recover=all"
+        - B2_LINKFLAGS="linkflags=-fsanitize=undefined linkflags=-fno-sanitize-recover=all linkflags=-fuse-ld=gold"
+        - UBSAN_OPTIONS=print_stacktrace=1
+      addons: *gcc-8
+
+    - os: linux
+      env:
+        - COMMENT=valgrind
+        - B2_TOOLSET=clang-6.0
+        - B2_CXXSTD=03,11,14,17,2a
+        - B2_DEFINES="define=BOOST_NO_STRESS_TEST=1"
+        - B2_VARIANT=variant=debug
+        - B2_TESTFLAGS=testing.launcher=valgrind
+        - VALGRIND_OPTS=--error-exitcode=1
+      addons: *clang-6
+      script:
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/valgrind.sh
+
+    #################### Jobs to run on pushes to master, develop ###################
+
+    # Coverity Scan
+    - os: linux
+      if: (env(COVERITY_SCAN_NOTIFICATION_EMAIL) IS present) AND (branch IN (develop, master)) AND (type IN (cron, push))
+      env:
+        - COMMENT="Coverity Scan"
+        - B2_TOOLSET=clang
+      script:
+        - cd $BOOST_ROOT/libs/$SELF
+        - ci/travis/coverity.sh
+
+notifications:
+  email:
+    false
