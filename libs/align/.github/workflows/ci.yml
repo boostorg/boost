@@ -1,0 +1,185 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: gcc-4.8
+            standard: "03,11"
+            os: ubuntu-18.04
+            install: g++-4.8
+          - toolset: gcc-5
+            standard: "03,11,14,1z"
+            os: ubuntu-18.04
+            install: g++-5
+          - toolset: gcc-6
+            standard: "03,11,14,1z"
+            os: ubuntu-18.04
+            install: g++-6
+          - toolset: gcc-7
+            standard: "03,11,14,17"
+            os: ubuntu-18.04
+          - toolset: gcc-8
+            standard: "03,11,14,17,2a"
+            os: ubuntu-18.04
+            install: g++-8
+          - toolset: gcc-9
+            standard: "03,11,14,17,2a"
+            os: ubuntu-18.04
+          - toolset: gcc-10
+            standard: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            install: g++-10
+          - toolset: gcc-11
+            standard: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            install: g++-11
+          - toolset: clang
+            compiler: clang++-3.9
+            standard: "03,11,14"
+            os: ubuntu-18.04
+            install: clang-3.9
+          - toolset: clang
+            compiler: clang++-4.0
+            standard: "03,11,14"
+            os: ubuntu-18.04
+            install: clang-4.0
+          - toolset: clang
+            compiler: clang++-5.0
+            standard: "03,11,14,1z"
+            os: ubuntu-18.04
+            install: clang-5.0
+          - toolset: clang
+            compiler: clang++-6.0
+            standard: "03,11,14,17"
+            os: ubuntu-18.04
+            install: clang-6.0
+          - toolset: clang
+            compiler: clang++-7
+            standard: "03,11,14,17"
+            os: ubuntu-18.04
+            install: clang-7
+          - toolset: clang
+            compiler: clang++-8
+            standard: "03,11,14,17"
+            os: ubuntu-20.04
+            install: clang-8
+          - toolset: clang
+            compiler: clang++-9
+            standard: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            install: clang-9
+          - toolset: clang
+            compiler: clang++-10
+            standard: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            install: clang-10
+          - toolset: clang
+            compiler: clang++-11
+            cxxstd: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            install: clang-11
+          - toolset: clang
+            compiler: clang++-12
+            cxxstd: "03,11,14,17,2a"
+            os: ubuntu-20.04
+            install: clang-12
+          - toolset: clang
+            standard: "03,11,14,17,2a"
+            os: macos-10.15
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: sudo apt install ${{matrix.install}}
+
+      - name: Setup Boost
+        run: |
+          cd ..
+          git clone --depth 1 https://github.com/boostorg/boost
+          cd boost
+          cp -r $GITHUB_WORKSPACE/* libs/align
+          git submodule init libs/assert
+          git submodule init libs/config
+          git submodule init libs/core
+          git submodule init libs/static_assert
+          git submodule init libs/headers
+          git submodule init tools/build
+          git submodule init tools/boost_install
+          git submodule update
+          ./bootstrap.sh
+          ./b2 -d0 headers
+
+      - name: Create user-config.jam
+        if: matrix.compiler
+        run: |
+          echo "using ${{matrix.toolset}} : : ${{matrix.compiler}} ;" > ~/user-config.jam
+
+      - name: Run tests
+        run: |
+          cd ../boost
+          ./b2 -j3 libs/align/test toolset=${{matrix.toolset}} cxxstd=${{matrix.standard}} variant=debug,release
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: msvc-14.1
+            standard: "14,17,latest"
+            target: 32,64
+            os: windows-2016
+          - toolset: msvc-14.2
+            standard: "14,17,latest"
+            target: 32,64
+            os: windows-2019
+          - toolset: msvc-14.3
+            cxxstd: "14,17,latest"
+            addrmd: 32,64
+            os: windows-2022
+          - toolset: gcc
+            standard: "03,11,14,17,2a"
+            target: 64
+            os: windows-2019
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          cd ..
+          git clone --depth 1 https://github.com/boostorg/boost boost
+          cd boost
+          xcopy /s /e /q %GITHUB_WORKSPACE% libs\align\
+          git submodule init libs/assert
+          git submodule init libs/config
+          git submodule init libs/core
+          git submodule init libs/static_assert
+          git submodule init libs/headers
+          git submodule init tools/build
+          git submodule init tools/boost_install
+          git submodule update
+          cmd /c bootstrap
+          b2 -d0 headers
+
+      - name: Run tests
+        shell: cmd
+        run: |
+          cd ../boost
+          b2 -j3 libs/align/test toolset=${{matrix.toolset}} cxxstd=${{matrix.standard}} address-model=${{matrix.target}} variant=debug,release
