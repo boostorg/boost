@@ -1,0 +1,116 @@
+[/
+Copyright 2021 Glen Joseph Fernandes
+(glenjofe@gmail.com)
+
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
+]
+
+[section:allocator_traits allocator_traits]
+
+[simplesect Authors]
+
+* Glen Fernandes
+
+[endsimplesect]
+
+[section Overview]
+
+This header <boost/core/allocator_traits.hpp> provides an implementation of the
+C++ standard library class template `allocator_traits` based on the facilities
+in [link core.allocator_access Allocator Access]. Users should still prefer the
+individual traits, but this utility exists to simplify migration.
+
+[endsect]
+
+[section Reference]
+
+```
+namespace boost {
+
+template<class A>
+struct allocator_traits {
+    using allocator_type = A;
+
+    using value_type = allocator_value_type_t<A>;
+
+    using pointer = allocator_pointer_t<A>;
+
+    using const_pointer = allocator_const_pointer_t<A>;
+
+    using void_pointer = allocator_void_pointer_t<A>;
+
+    using const_pointer = allocator_const_void_pointer_t<A>;
+
+    using difference_type = allocator_difference_type_t<A>;
+
+    using size_type = allocator_size_type_t<A>;
+
+    using propagate_on_container_copy_assignment =
+        allocator_propagate_on_container_copy_assignment_t<A>;
+
+    using propagate_on_container_move_assignment =
+        allocator_propagate_on_container_move_assignment_t<A>;
+
+    using propagate_on_container_swap =
+        allocator_propagate_on_container_swap_t<A>;
+
+    using is_always_equal = allocator_is_always_equal_t<A>;
+
+    template<class T>
+    using rebind_traits = allocator_traits<allocator_rebind_t<A, T> >;
+
+    static pointer allocate(A& a, size_type n);
+
+    static pointer allocate(A& a, size_type n, const_void_pointer h);
+
+    static void deallocate(A& a, pointer p, size_type n);
+
+    template<class T, class... Args>
+    static void construct(A& a, T* p, Args&&... args);
+
+    static void destroy(A& a, T* p);
+
+    static size_type max_size(const A& a) noexcept;
+
+    static A select_on_container_copy_construction(const A& a);
+};
+
+} /* boost */
+```
+
+[section Static member functions]
+
+[variablelist
+[[`static pointer allocate(A& a, size_type n);`]
+[Equivalent to: `return boost::allocator_allocate(a, n);`]]
+[[`static pointer allocate(A& a, size_type n, const_void_pointer h);`]
+[Equivalent to: `return boost::allocator_allocate(a, n, h);`]]
+[[`static void deallocate(A& a, pointer p, size_type n);`]
+[Equivalent to: `boost::allocator_deallocate(a, n, h);`]]
+[[`template<class T, class... Args>
+static void construct(A& a, T* p, Args&&... args);`]
+[Equivalent to:
+`boost::allocator_construct(a, p, std::forward<Args>(args)...);`]]
+[[`static void destroy(A& a, T* p);`]
+[Equivalent to: `boost::allocator_destroy(a, p);`]]
+[[`static size_type max_size(const A& a) noexcept;`]
+[Equivalent to: `return boost::allocator_max_size(a);`]]
+[[`static A select_on_container_copy_construction(const A& a);`]
+[Equivalent to:
+`return boost::allocator_select_on_container_copy_construction(a);`]]]
+
+[endsect]
+
+[endsect]
+
+[section Notes]
+
+# The member `rebind_alloc` is not provided for parity with C++03 where it is
+unimplementable. Instead of `allocator_traits<A>::rebind_alloc<U>` you can
+express the same with `allocator_traits<A>::rebind_traits<U>::allocator_type`
+or more simply with `allocator_rebind_t<A, U>`.
+
+[endsect]
+
+[endsect]

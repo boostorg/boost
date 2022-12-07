@@ -1,0 +1,70 @@
+[/
+  Copyright 2022 Peter Dimov
+  Distributed under the Boost Software License, Version 1.0.
+  https://boost.org/LICENSE_1_0.txt
+]
+
+[section:verbose_terminate_handler verbose_terminate_handler]
+
+[simplesect Authors]
+
+* Peter Dimov
+
+[endsimplesect]
+
+[section Header <boost/core/verbose_terminate_handler.hpp>]
+
+The header `<boost/core/verbose_terminate_handler.hpp>` defines
+the function `void boost::core::verbose_terminate_handler()`. Its
+purpose is to be set as a terminate handler as in
+```
+    std::set_terminate( boost::core::verbose_terminate_handler );
+```
+
+When invoked, the function prints information about the current
+uncaught exception to `stderr` and then calls `std::abort`.
+
+[section Synopsis]
+
+``
+namespace boost
+{
+namespace core
+{
+
+[[noreturn]] void verbose_terminate_handler();
+
+} // namespace core
+} // namespace boost
+``
+
+[endsect]
+
+[section Example]
+
+```
+#include <boost/core/verbose_terminate_handler.hpp>
+#include <boost/throw_exception.hpp>
+#include <exception>
+
+int main()
+{
+    std::set_terminate( boost::core::verbose_terminate_handler );
+    boost::throw_with_location( std::exception() );
+}
+```
+
+Sample output:
+```
+std::terminate called after throwing an exception:
+
+      type: class boost::detail::with_throw_location<class std::exception>
+    what(): Unknown exception
+  location: example.cpp:8:12 in function 'main'
+```
+
+[endsect]
+
+[endsect]
+
+[endsect]

@@ -1,0 +1,90 @@
+# Copyright 2016-2021 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0
+      ADDRMD: 32
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-12.0,msvc-14.0
+      ADDRMD: 32,64
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      ADDRMD: 32,64
+      CXXSTD: 14,17
+
+    # clang-win 32 bit fails to link with "unable to load mspdbcore.dll (error code: 126)"
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: clang-win
+      ADDRMD: 64
+      CXXSTD: 14,17,latest
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\cygwin\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\cygwin64\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\mingw\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init libs/headers
+  - git submodule init libs/assert
+  - git submodule init libs/config
+  - git submodule init libs/predef
+  - git submodule init libs/static_assert
+  - git submodule init libs/throw_exception
+  - git submodule init libs/type_traits
+  - git submodule init libs/utility
+  - git submodule init libs/io
+  - git submodule init tools/build
+  - git submodule init tools/boost_install
+  - git submodule update --jobs 4
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\core\
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - PATH=%ADDPATH%%PATH%
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+  - b2 -j %NUMBER_OF_PROCESSORS% libs/core/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=debug,release embed-manifest-via=linker
