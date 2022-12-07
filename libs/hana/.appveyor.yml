@@ -1,0 +1,48 @@
+# Copyright Louis Dionne 2013-2018
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+shallow_clone: true
+
+os:
+  - Visual Studio 2017
+
+build:
+  verbosity: detailed
+
+configuration:
+  - Debug
+
+branches:
+  except:
+    - /pr\/.+/
+
+install:
+  ############################################################################
+  # All external dependencies are installed in C:\projects\deps
+  ############################################################################
+  - mkdir C:\projects\deps
+  - cd C:\projects\deps
+
+  ############################################################################
+  # Install Ninja
+  ############################################################################
+  - set NINJA_URL="https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-win.zip"
+  - appveyor DownloadFile %NINJA_URL% -FileName ninja.zip
+  - 7z x ninja.zip -oC:\projects\deps\ninja > nul
+  - set PATH=C:\projects\deps\ninja;%PATH%
+  - ninja --version
+
+
+before_build:
+  # Required by -Gninja
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+  - cd C:\projects\hana
+
+
+build_script:
+  - mkdir build
+  - cd build
+  #- cmake .. -GNinja -DCMAKE_CXX_COMPILER=clang-cl -DBOOST_ROOT=C:\Libraries\boost_1_67_0
+  - cmake .. -GNinja -DBOOST_ROOT=C:\Libraries\boost_1_67_0
+  - cmake --build . --target check
