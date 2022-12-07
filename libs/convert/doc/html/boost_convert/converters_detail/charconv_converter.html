@@ -1,0 +1,107 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>boost::cnv::charconv Converter</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Convert 2.0">
+<link rel="up" href="../converters_detail.html" title="Converters in Detail">
+<link rel="prev" href="strtol_converter/supported_string_types/custom_string_types.html" title="Custom String Types">
+<link rel="next" href="charconv_converter/formatting_support.html" title="Formatting Support">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="spirit-nav">
+<a accesskey="p" href="strtol_converter/supported_string_types/custom_string_types.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../converters_detail.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="charconv_converter/formatting_support.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_convert.converters_detail.charconv_converter"></a><a class="link" href="charconv_converter.html" title="boost::cnv::charconv Converter"><span class="emphasis"><em>boost::cnv::charconv</em></span>
+      Converter</a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="charconv_converter.html#boost_convert.converters_detail.charconv_converter.basic_deployment">Basic
+        Deployment</a></span></dt>
+<dt><span class="section"><a href="charconv_converter/formatting_support.html">Formatting
+        Support</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="charconv_converter/formatting_support.html#boost_convert.converters_detail.charconv_converter.formatting_support.numeric_base__bin__oct__dec__hex_">Numeric
+          Base (bin, oct, dec, hex)</a></span></dt>
+<dt><span class="section"><a href="charconv_converter/formatting_support/field_width__fill_character_and_adjustment.html">Field
+          Width, Fill Character and Adjustment</a></span></dt>
+<dt><span class="section"><a href="charconv_converter/formatting_support/leading_whitespace_characters.html">Leading
+          Whitespace Characters</a></span></dt>
+<dt><span class="section"><a href="charconv_converter/formatting_support/floating_point_precision.html">Floating-Point
+          Precision</a></span></dt>
+<dt><span class="section"><a href="charconv_converter/formatting_support/floating_point_notation.html">Floating-Point
+          Notation</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="charconv_converter/supported_string_types.html">Supported
+        String Types</a></span></dt>
+<dd><dl><dt><span class="section"><a href="charconv_converter/supported_string_types.html#boost_convert.converters_detail.charconv_converter.supported_string_types.custom_string_types">Custom
+          String Types</a></span></dt></dl></dd>
+</dl></div>
+<div class="important"><table border="0" summary="Important">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Important]" src="../../images/important.png"></td>
+<th align="left">Important</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+          Requires C++17 and up.
+        </p></td></tr>
+</table></div>
+<p>
+        The converter is a wrapper around <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">to_chars</span></code>
+        and <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">from_chars</span></code> and offers great performance
+        with some formatting support. The converter only supports <code class="computeroutput"><span class="keyword">char</span></code>-based
+        strings. Written by Dvir Yitzchaki.
+      </p>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_convert.converters_detail.charconv_converter.basic_deployment"></a><a class="link" href="charconv_converter.html#boost_convert.converters_detail.charconv_converter.basic_deployment" title="Basic Deployment">Basic
+        Deployment</a>
+</h4></div></div></div>
+<p>
+</p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">convert</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">convert</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">using</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">convert</span><span class="special">;</span>
+
+<span class="keyword">namespace</span> <span class="identifier">cnv</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">;</span>
+<span class="keyword">namespace</span> <span class="identifier">arg</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">parameter</span><span class="special">;</span>
+
+<span class="keyword">struct</span> <span class="identifier">cnv</span><span class="special">::</span><span class="identifier">by_default</span> <span class="special">:</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">charconv</span> <span class="special">{};</span>
+</pre>
+<p>
+        </p>
+<p>
+</p>
+<pre class="programlisting"><span class="identifier">string</span> <span class="keyword">const</span>     <span class="identifier">bad_str</span> <span class="special">=</span> <span class="string">"not an int"</span><span class="special">;</span>
+<span class="identifier">string</span> <span class="keyword">const</span>     <span class="identifier">std_str</span> <span class="special">=</span> <span class="string">"-11"</span><span class="special">;</span>
+<span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="keyword">const</span>  <span class="identifier">c_str</span> <span class="special">=</span> <span class="string">"-12"</span><span class="special">;</span>
+<span class="identifier">boost</span><span class="special">::</span><span class="identifier">string_view</span> <span class="identifier">v_str</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">string_view</span><span class="special">(</span><span class="identifier">c_str</span><span class="special">,</span> <span class="number">2</span><span class="special">);</span>
+
+<span class="identifier">BOOST_TEST</span><span class="special">(</span> <span class="special">-</span><span class="number">1</span> <span class="special">==</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">bad_str</span><span class="special">).</span><span class="identifier">value_or</span><span class="special">(-</span><span class="number">1</span><span class="special">));</span>
+<span class="identifier">BOOST_TEST</span><span class="special">(-</span><span class="number">11</span> <span class="special">==</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">std_str</span><span class="special">).</span><span class="identifier">value</span><span class="special">());</span>
+<span class="identifier">BOOST_TEST</span><span class="special">(-</span><span class="number">12</span> <span class="special">==</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span>  <span class="identifier">c_str</span><span class="special">).</span><span class="identifier">value</span><span class="special">());</span>
+<span class="identifier">BOOST_TEST</span><span class="special">(</span> <span class="special">-</span><span class="number">1</span> <span class="special">==</span> <span class="identifier">convert</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span>  <span class="identifier">v_str</span><span class="special">).</span><span class="identifier">value_or</span><span class="special">(</span><span class="number">0</span><span class="special">));</span>
+</pre>
+<p>
+        </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2022 Vladimir
+      Batov<p>
+        Distributed under the Boost Software License, Version 1.0. See copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>.
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="strtol_converter/supported_string_types/custom_string_types.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../converters_detail.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="charconv_converter/formatting_support.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

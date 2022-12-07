@@ -1,0 +1,135 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Performance</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Convert 2.0">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Convert 2.0">
+<link rel="prev" href="algorithms.html" title="Boost.Convert with Standard Algorithms">
+<link rel="next" href="performance/boost_convert_overhead.html" title="Boost.Convert Overhead">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="spirit-nav">
+<a accesskey="p" href="algorithms.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="performance/boost_convert_overhead.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="boost_convert.performance"></a><a class="link" href="performance.html" title="Performance">Performance</a>
+</h2></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="performance.html#boost_convert.performance.converters_compared">Converters
+      Compared</a></span></dt>
+<dt><span class="section"><a href="performance/boost_convert_overhead.html">Boost.Convert
+      Overhead</a></span></dt>
+<dt><span class="section"><a href="performance/the_bigger_picture.html">The Bigger
+      Picture</a></span></dt>
+</dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_convert.performance.converters_compared"></a><a class="link" href="performance.html#boost_convert.performance.converters_compared" title="Converters Compared">Converters
+      Compared</a>
+</h3></div></div></div>
+<p>
+        The performance of <span class="emphasis"><em>Boost.Convert</em></span> depends entirely on
+        the performance of the converter deployed. A few converters have been tested
+        for string conversions to basic types and to a user-defined type.
+      </p>
+<p>
+        In turn, the performance of every particular converter depends on the platform,
+        the compiler used and the particular implementation of the underlying conversion
+        components (small-string optimization, <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">stream</span></code>,
+        <code class="computeroutput"><span class="identifier">printf</span></code>, <span class="emphasis"><em>Boost.Spirit</em></span>,
+        etc.). Consequently, the results below are only an approximate indication
+        of <span class="emphasis"><em>relative</em></span> performance of the mentioned converters
+        on the tested platforms.
+      </p>
+<p>
+        When compiled with gcc-11.2.0 on 64-bit Ubuntu 22.04, tests produced the
+        following results:
+      </p>
+<pre class="programlisting"><span class="identifier">str</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="keyword">int</span><span class="special">:</span> <span class="identifier">spirit</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">lcast</span><span class="special">/</span><span class="identifier">scanf</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span> <span class="number">0.15</span><span class="special">/</span><span class="number">0.13</span><span class="special">/</span><span class="number">1.99</span><span class="special">/</span><span class="number">0.86</span><span class="special">/</span><span class="number">0.67</span><span class="special">/</span><span class="number">0.16</span> <span class="identifier">seconds</span><span class="special">.</span>
+<span class="identifier">str</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">lng</span><span class="special">:</span> <span class="identifier">spirit</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">lcast</span><span class="special">/</span><span class="identifier">scanf</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span> <span class="number">0.12</span><span class="special">/</span><span class="number">0.15</span><span class="special">/</span><span class="number">2.04</span><span class="special">/</span><span class="number">0.88</span><span class="special">/</span><span class="number">0.66</span><span class="special">/</span><span class="number">0.12</span> <span class="identifier">seconds</span><span class="special">.</span>
+<span class="identifier">str</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">dbl</span><span class="special">:</span> <span class="identifier">spirit</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">lcast</span><span class="special">/</span><span class="identifier">scanf</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span> <span class="number">0.15</span><span class="special">/</span><span class="number">0.53</span><span class="special">/</span><span class="number">5.12</span><span class="special">/</span><span class="number">1.06</span><span class="special">/</span><span class="number">1.68</span><span class="special">/</span><span class="number">0.19</span> <span class="identifier">seconds</span><span class="special">.</span>
+<span class="keyword">int</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">str</span><span class="special">:</span> <span class="identifier">spirit</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">lcast</span><span class="special">/</span><span class="identifier">prntf</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span> <span class="number">0.39</span><span class="special">/</span><span class="number">0.29</span><span class="special">/</span><span class="number">0.43</span><span class="special">/</span><span class="number">1.09</span><span class="special">/</span><span class="number">0.68</span><span class="special">/</span><span class="number">0.29</span> <span class="identifier">seconds</span><span class="special">.</span>
+<span class="identifier">lng</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">str</span><span class="special">:</span> <span class="identifier">spirit</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">lcast</span><span class="special">/</span><span class="identifier">prntf</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span> <span class="number">0.39</span><span class="special">/</span><span class="number">0.29</span><span class="special">/</span><span class="number">0.45</span><span class="special">/</span><span class="number">1.11</span><span class="special">/</span><span class="number">0.68</span><span class="special">/</span><span class="number">0.31</span> <span class="identifier">seconds</span><span class="special">.</span>
+<span class="identifier">dbl</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">str</span><span class="special">:</span> <span class="identifier">spirit</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">lcast</span><span class="special">/</span><span class="identifier">prntf</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span> <span class="number">1.12</span><span class="special">/</span><span class="number">1.17</span><span class="special">/</span><span class="number">7.34</span><span class="special">/</span><span class="number">5.05</span><span class="special">/</span><span class="number">4.65</span><span class="special">/</span><span class="number">1.07</span> <span class="identifier">seconds</span><span class="special">.</span>
+</pre>
+<p>
+        Based on the above, all things considered, I tend to conclude that:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            the <span class="emphasis"><em>Spirit.Qi</em></span>-based, <code class="computeroutput"><span class="identifier">strtol</span></code>-inspired
+            and <code class="computeroutput"><span class="identifier">charconv</span></code>-based converters
+            were the fastest for string to basic (<code class="computeroutput"><span class="keyword">int</span></code>,
+            <code class="computeroutput"><span class="keyword">double</span></code>) conversions. So,
+            they might be good candidates for the tasks doing that kind of conversions
+            (with <span class="emphasis"><em>Spirit.Qi</em></span> conversion-related limitations in
+            mind);
+          </li>
+<li class="listitem">
+            the <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">iostream</span></code>-based converter was comparatively
+            slow. Still, given its maturity, availability and formatting support,
+            it might be an option to consider if conversion performance is not your
+            primary concern;
+          </li>
+<li class="listitem">
+            the <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span></code>-based converter was consistently
+            and noticeably the slowest (due to its underlying design);
+          </li>
+<li class="listitem">
+            the <code class="computeroutput"><span class="identifier">charconv</span></code>-based and
+            the <code class="computeroutput"><span class="identifier">strtol</span></code>-inspired converters
+            were overall the fastest and with formatting support might be attractive
+            all-rounders.
+          </li>
+</ul></div>
+<p>
+        For user-defined types converters were tested with the following results:
+      </p>
+<pre class="programlisting"><span class="identifier">str</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">user</span><span class="special">-</span><span class="identifier">type</span><span class="special">:</span> <span class="identifier">lcast</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span><span class="number">0.13</span><span class="special">/</span><span class="number">0.05</span><span class="special">/</span><span class="number">0.01</span><span class="special">/</span><span class="number">0.02</span> <span class="identifier">seconds</span><span class="special">.</span>
+<span class="identifier">user</span><span class="special">-</span><span class="identifier">type</span><span class="special">-</span><span class="identifier">to</span><span class="special">-</span><span class="identifier">str</span><span class="special">:</span> <span class="identifier">lcast</span><span class="special">/</span><span class="identifier">stream</span><span class="special">/</span><span class="identifier">strtol</span><span class="special">/</span><span class="identifier">charconv</span><span class="special">=</span><span class="number">0.11</span><span class="special">/</span><span class="number">0.03</span><span class="special">/</span><span class="number">0.01</span><span class="special">/</span><span class="number">0.01</span> <span class="identifier">seconds</span><span class="special">.</span>
+</pre>
+<p>
+        To provide <span class="emphasis"><em>string-to-user-type</em></span> and <span class="emphasis"><em>user-type-to-string</em></span>
+        conversions the first two deploy the same standard <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">iostream</span></code>
+        library. Still, <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">cstream</span></code>
+        considerably outperforms <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span></code>
+        in these tests. That reflects different underlying designs. Namely, the standard
+        <span class="emphasis"><em>Boost.Convert</em></span> deployment pattern is to create a converter
+        or converters <span class="emphasis"><em>once</em></span> and then re-use them. <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span></code>, on the other hand, creates
+        and then destroys a <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">stream</span></code> instance every time the function
+        is called and the <a href="http://www.boost.org/doc/libs/1_55_0/doc/html/boost_lexical_cast/performance.html" target="_top"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">lexical_cast</span></code> performance</a> table
+        indicates that the "std::stringstream <span class="emphasis"><em>with construction</em></span>"
+        operation is considerably more expensive compared to "std::stringstream
+        <span class="emphasis"><em>without construction</em></span>".
+      </p>
+<p>
+        <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">strtol</span></code>
+        and <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">charconv</span></code>
+        support for user types has been implemented similarly but without the <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">stream</span></code>-related
+        overhead. That resulted in considerably better performance results.
+      </p>
+<p>
+        Based on the performance data, I tend to conclude that, given type-safety
+        and benefits provided by the <span class="emphasis"><em>Boost.Convert</em></span> framework,
+        it (with appropriate converters) should probably be the first choice for
+        conversion-related tasks.
+      </p>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2022 Vladimir
+      Batov<p>
+        Distributed under the Boost Software License, Version 1.0. See copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>.
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="algorithms.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="performance/boost_convert_overhead.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

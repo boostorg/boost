@@ -1,0 +1,68 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Struct charconv</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Convert 2.0">
+<link rel="up" href="../../header/boost/convert/charconv_hpp.html" title="Header &lt;boost/convert/charconv.hpp&gt;">
+<link rel="prev" href="../../header/boost/convert/charconv_hpp.html" title="Header &lt;boost/convert/charconv.hpp&gt;">
+<link rel="next" href="../../header/boost/convert/lexical_cast_hpp.html" title="Header &lt;boost/convert/lexical_cast.hpp&gt;">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="spirit-nav">
+<a accesskey="p" href="../../header/boost/convert/charconv_hpp.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../../header/boost/convert/charconv_hpp.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../header/boost/convert/lexical_cast_hpp.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="refentry">
+<a name="boost.cnv.charconv"></a><div class="titlepage"></div>
+<div class="refnamediv">
+<h2><span class="refentrytitle">Struct charconv</span></h2>
+<p>boost::cnv::charconv — std::to/from_chars-based extended converter </p>
+</div>
+<h2 xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv-title">Synopsis</h2>
+<div xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" class="refsynopsisdiv"><pre class="synopsis"><span class="comment">// In header: &lt;<a class="link" href="../../header/boost/convert/charconv_hpp.html" title="Header &lt;boost/convert/charconv.hpp&gt;">boost/convert/charconv.hpp</a>&gt;
+
+</span>
+<span class="keyword">struct</span> <a class="link" href="charconv.html" title="Struct charconv">charconv</a> <span class="special">:</span> <span class="keyword">public</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">cnvbase</span><span class="special">&lt;</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">charconv</span> <span class="special">&gt;</span> <span class="special">{</span>
+  <span class="comment">// types</span>
+  <span class="keyword">typedef</span> <a class="link" href="charconv.html" title="Struct charconv">boost::cnv::charconv</a>             <a name="boost.cnv.charconv.this_type"></a><span class="identifier">this_type</span><span class="special">;</span>
+  <span class="keyword">typedef</span> <a class="link" href="cnvbase.html" title="Struct template cnvbase">boost::cnv::cnvbase</a><span class="special">&lt;</span> <a class="link" href="charconv.html#boost.cnv.charconv.this_type">this_type</a> <span class="special">&gt;</span> <a name="boost.cnv.charconv.base_type"></a><span class="identifier">base_type</span><span class="special">;</span>
+
+  <span class="comment">// <a class="link" href="charconv.html#idm12105-bb">private member functions</a></span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> in_type<span class="special">&gt;</span> 
+    <span class="identifier">cnv</span><span class="special">::</span><span class="identifier">range</span><span class="special">&lt;</span> <span class="keyword">char</span> <span class="special">*</span> <span class="special">&gt;</span> <a class="link" href="charconv.html#idm12106-bb"><span class="identifier">to_str</span></a><span class="special">(</span><span class="identifier">in_type</span><span class="special">,</span> <span class="keyword">char</span> <span class="special">*</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> string_type<span class="special">,</span> <span class="keyword">typename</span> out_type<span class="special">&gt;</span> 
+    <span class="keyword">void</span> <a class="link" href="charconv.html#idm12114-bb"><span class="identifier">str_to</span></a><span class="special">(</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">range</span><span class="special">&lt;</span> <span class="identifier">string_type</span> <span class="special">&gt;</span><span class="special">,</span> <span class="identifier">optional</span><span class="special">&lt;</span> <span class="identifier">out_type</span> <span class="special">&gt;</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="identifier">std</span><span class="special">::</span><span class="identifier">chars_format</span> <a class="link" href="charconv.html#idm12123-bb"><span class="identifier">chars_format</span></a><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="special">}</span><span class="special">;</span></pre></div>
+<div class="refsect1">
+<a name="idm13965"></a><h2>Description</h2>
+<p>The converter offers good overall performance and moderate formatting facilities. </p>
+<div class="refsect2">
+<a name="idm13968"></a><h3>
+<a name="idm12105-bb"></a><code class="computeroutput">charconv</code> private member functions</h3>
+<div class="orderedlist"><ol class="orderedlist" type="1">
+<li class="listitem"><pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> in_type<span class="special">&gt;</span> 
+  <span class="identifier">cnv</span><span class="special">::</span><span class="identifier">range</span><span class="special">&lt;</span> <span class="keyword">char</span> <span class="special">*</span> <span class="special">&gt;</span> <a name="idm12106-bb"></a><span class="identifier">to_str</span><span class="special">(</span><span class="identifier">in_type</span> value_in<span class="special">,</span> <span class="keyword">char</span> <span class="special">*</span> buf<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> string_type<span class="special">,</span> <span class="keyword">typename</span> out_type<span class="special">&gt;</span> 
+  <span class="keyword">void</span> <a name="idm12114-bb"></a><span class="identifier">str_to</span><span class="special">(</span><span class="identifier">cnv</span><span class="special">::</span><span class="identifier">range</span><span class="special">&lt;</span> <span class="identifier">string_type</span> <span class="special">&gt;</span> range<span class="special">,</span> 
+              <span class="identifier">optional</span><span class="special">&lt;</span> <span class="identifier">out_type</span> <span class="special">&gt;</span> <span class="special">&amp;</span> result_out<span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+<li class="listitem"><pre class="literallayout"><span class="identifier">std</span><span class="special">::</span><span class="identifier">chars_format</span> <a name="idm12123-bb"></a><span class="identifier">chars_format</span><span class="special">(</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre></li>
+</ol></div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2009-2022 Vladimir
+      Batov<p>
+        Distributed under the Boost Software License, Version 1.0. See copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>.
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../../header/boost/convert/charconv_hpp.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../../header/boost/convert/charconv_hpp.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../../header/boost/convert/lexical_cast_hpp.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
