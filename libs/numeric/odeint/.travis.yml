@@ -1,0 +1,46 @@
+sudo: false
+language: cpp
+os: 
+ - linux
+ - osx
+compiler:
+ - gcc
+ - clang
+install:
+ - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+addons:
+  apt:
+    sources:
+     - ubuntu-toolchain-r-test
+    packages:
+     - gcc-4.8
+     - g++-4.8
+     - clang
+
+env:
+ - CXXSTD=""
+ - CXXSTD="-std=c++0x"
+
+# For now disable gcc on osx as g++4.8 is not yet available
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+
+before_install:
+# 1.58: http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.bz2\?r\=\&ts\=1435589970\&use_mirror\=garr
+# 1.63: https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2/download?use_mirror=superb-dca2
+ - wget https://sourceforge.net/projects/boost/files/boost/1.63.0/boost_1_63_0.tar.bz2/download?use_mirror=superb-dca2 -O /tmp/boost.tar.bz2
+ - tar jxf /tmp/boost.tar.bz2
+ - mv boost_1_63_0 $PWD/boost-trunk
+ - export BOOST_ROOT="$PWD/boost-trunk"
+
+ - cd $BOOST_ROOT
+ - ./bootstrap.sh
+ - cd $TRAVIS_BUILD_DIR
+ - if [ "$TRAVIS_OS_NAME" = "osx" ] && [ "$CC" = "gcc" ]; then export CC=gcc-4.8; fi
+ - echo $CC
+ - $CC --version
+
+script:
+ - $BOOST_ROOT/b2 toolset=$CC cxxflags='$CXXSTD' -j2
