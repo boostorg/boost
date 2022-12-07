@@ -1,0 +1,193 @@
+# Copyright 2016-2018 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      compiler: g++
+      env: TOOLSET=gcc CXXSTD=03,11
+
+    - os: linux
+      compiler: g++-4.4
+      env: TOOLSET=gcc CXXSTD=98,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.6
+      env: TOOLSET=gcc CXXSTD=03,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.8
+      env: TOOLSET=gcc CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang CXXSTD=03,11,14,1z
+
+    - os: linux
+      dist: trusty
+      compiler: clang++-libc++
+      env: TOOLSET=clang CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - libc++-dev
+
+    - os: osx
+      compiler: clang++
+      env: TOOLSET=clang CXXSTD=03,11,14,1z
+
+    - os: linux
+      compiler: g++
+      env: PYTHON3=1
+      install:
+        - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+        - cd ..
+        - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+        - cd boost-root
+        - git submodule update --init tools/build
+        - cp -r $TRAVIS_BUILD_DIR/* tools/boostdep
+        - ./bootstrap.sh
+      script:
+        - python3 tools/boostdep/depinst/depinst.py ../tools/boostdep
+        - ./b2 tools/boostdep/build
+
+    - os: linux
+      compiler: g++
+      env: CMAKE=1
+      addons:
+        apt:
+          packages:
+            - libboost-filesystem-dev
+      install: true
+      script:
+        - mkdir __build__ && cd __build__
+        - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~ ..
+        - cmake --build . --target install
+
+    - os: linux
+      compiler: g++
+      env: CHECK_EXCEPTIONS=1
+      install:
+        - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+        - cd ..
+        - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+        - cd boost-root
+        - git submodule update --init
+        - cp -r $TRAVIS_BUILD_DIR/* tools/boostdep
+        - python tools/boostdep/depinst/depinst.py ../tools/boostdep
+        - ./bootstrap.sh
+        - ./b2 tools/boostdep/build
+      script:
+        - dist/bin/boostdep --list-exceptions | diff -u tools/boostdep/depinst/exceptions.txt -
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init libs/config
+  - git submodule update --init libs/assert
+  - git submodule update --init libs/bind
+  - git submodule update --init libs/core
+  - cp -r $TRAVIS_BUILD_DIR/* tools/boostdep
+  - pushd tools/boostdep/test && { cmake -E tar xf utf8-test.zip; popd; }
+  - ls -l tools/boostdep/test
+  - python tools/boostdep/depinst/depinst.py ../tools/boostdep
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - |-
+    echo "using $TOOLSET : : $TRAVIS_COMPILER ;" > ~/user-config.jam
+  - ./b2 -j3 tools/boostdep/test toolset=$TOOLSET cxxstd=$CXXSTD
+
+notifications:
+  email:
+    on_success: always

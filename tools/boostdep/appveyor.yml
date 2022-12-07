@@ -1,0 +1,54 @@
+# Copyright 2016-2019 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0
+      ADDRMD: 32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-12.0,msvc-14.0
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: 14,17
+      ADDRMD: 32,64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      CXXSTD: 14,17,latest
+      ADDRMD: 32,64
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init libs/config
+  - git submodule update --init libs/assert
+  - git submodule update --init libs/bind
+  - git submodule update --init libs/core
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% tools\boostdep\
+  - pushd tools\boostdep\test && cmake -E tar xf utf8-test.zip & popd
+  - dir tools\boostdep\test
+  - python tools/boostdep/depinst/depinst.py ../tools/boostdep
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+  - b2 -j3 tools/boostdep/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=debug,release
