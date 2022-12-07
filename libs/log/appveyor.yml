@@ -1,0 +1,161 @@
+# Copyright 2019 - 2022 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+# AppVeyor doesn't provide 64-bit compilers for these MSVC versions
+#    - TOOLSET: msvc-9.0
+#      ADDRESS_MODEL: 64
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#    - TOOLSET: msvc-10.0
+#      ADDRESS_MODEL: 64
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#    - TOOLSET: msvc-11.0
+#      ADDRESS_MODEL: 64
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-12.0
+      ADDRESS_MODEL: 64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.0
+      ADDRESS_MODEL: 64
+      EXTRA_TESTS: 1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.1
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.2
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17,20
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: msvc-14.3
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17,20
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11
+      ADDPATH: C:\cygwin64\bin
+      EXTRA_TESTS: 1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
+      EXTRA_TESTS: 1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14,17
+      ADDPATH: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: clang-win
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17
+      ENV_SCRIPT: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+    - TOOLSET: msvc-9.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-10.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-11.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-12.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.1
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.2
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17,20
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11
+      ADDPATH: C:\cygwin\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11
+      ADDPATH: C:\mingw\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,14
+      ADDPATH: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: clang-win
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17
+      ENV_SCRIPT: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+    - TEST_CMAKE: 1
+      ENV_SCRIPT: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+install:
+  - set GIT_FETCH_JOBS=8
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/boostdep
+  - git submodule init tools/build
+  - git submodule init tools/boost_install
+  - git submodule init libs/headers
+  - git submodule init libs/config
+  - git submodule update --jobs %GIT_FETCH_JOBS%
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\log
+  - if not "%EXTRA_TESTS%" == "" set DEPINST_ARG_INCLUDE_EXAMPLES="--include=example"
+  - python tools/boostdep/depinst/depinst.py %DEPINST_ARG_INCLUDE_EXAMPLES% --git_args "--jobs %GIT_FETCH_JOBS%" log
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - PATH=%ADDPATH%;%PATH%
+  - if not "%ENV_SCRIPT%" == "" call "%ENV_SCRIPT%"
+  - if "%EXTRA_TESTS%" == "" set BOOST_LOG_TEST_WITHOUT_SELF_CONTAINED_HEADER_TESTS=1 & set BOOST_LOG_TEST_WITHOUT_EXAMPLES=1
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 -j %NUMBER_OF_PROCESSORS% libs/log/test variant=release toolset=%TOOLSET% address-model=%ADDRESS_MODEL% %CXXSTD% %B2_ARGS%
+
+for:
+  - matrix:
+      only: [TEST_CMAKE: 1]
+    test_script:
+      - PATH=%ADDPATH%;%PATH%
+      - if not "%ENV_SCRIPT%" == "" call "%ENV_SCRIPT%"
+      - mkdir __build_static__
+      - cd __build_static__
+      - cmake ../libs/log/test/test_cmake
+      - cmake --build . --target boost_log_cmake_self_test -j %NUMBER_OF_PROCESSORS%
+      - cmake --build . --target boost_log_setup_cmake_self_test -j %NUMBER_OF_PROCESSORS%
+      - cd ..
+      - mkdir __build_shared__
+      - cd __build_shared__
+      - cmake -DBUILD_SHARED_LIBS=On ../libs/log/test/test_cmake
+      - cmake --build . --target boost_log_cmake_self_test -j %NUMBER_OF_PROCESSORS%
+      - cmake --build . --target boost_log_setup_cmake_self_test -j %NUMBER_OF_PROCESSORS%

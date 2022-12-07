@@ -1,0 +1,156 @@
+# log-arch-config.jam
+#
+# Copyright 2012 Steven Watanabe
+# Copyright 2013, 2020 Andrey Semashev
+#
+# Distributed under the Boost Software License Version 1.0. (See
+# accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import configure ;
+import project ;
+import path ;
+import property ;
+import feature ;
+
+local here = [ modules.binding $(__name__) ] ;
+
+project.push-current [ project.current ] ;
+project.load [ path.join [ path.make $(here:D) ] ../../config/checks/architecture ] ;
+project.pop-current ;
+
+rule deduce-address-model ( properties * )
+{
+    local address_model = [ feature.get-values "address-model" : $(properties) ] ;
+    if $(address_model)
+    {
+        return $(address_model) ;
+    }
+    else
+    {
+        if [ configure.builds /boost/architecture//32 : $(properties) : 32-bit ]
+        {
+            return 32 ;
+        }
+        else if [ configure.builds /boost/architecture//64 : $(properties) : 64-bit ]
+        {
+            return 64 ;
+        }
+    }
+}
+
+rule deduce-architecture ( properties * )
+{
+    local architecture = [ feature.get-values "architecture" : $(properties) ] ;
+    if $(architecture)
+    {
+        return $(architecture) ;
+    }
+    else
+    {
+        if [ configure.builds /boost/architecture//x86 : $(properties) : x86 ]
+        {
+            return x86 ;
+        }
+        else if [ configure.builds /boost/architecture//arm : $(properties) : arm ]
+        {
+            return arm ;
+        }
+        else if [ configure.builds /boost/architecture//mips : $(properties) : mips ]
+        {
+            return mips ;
+        }
+        else if [ configure.builds /boost/architecture//power : $(properties) : power ]
+        {
+            return power ;
+        }
+        else if [ configure.builds /boost/architecture//sparc : $(properties) : sparc ]
+        {
+            return sparc ;
+        }
+    }
+}
+
+rule deduce-instruction-set ( properties * )
+{
+    local result ;
+    local instruction_set = [ feature.get-values "instruction-set" : $(properties) ] ;
+
+    if $(instruction_set)
+    {
+        result = $(instruction_set) ;
+    }
+    else
+    {
+        if x86 in [ deduce-architecture $(properties) ] && 32 in [ deduce-address-model $(properties) ]
+        {
+            # We build for Pentium Pro and later CPUs by default. This is used as the target in many Linux distributions, and Windows and OS X also seem to not support older CPUs.
+            result = i686 ;
+        }
+    }
+
+    return $(result) ;
+}
+
+rule ssse3-flags ( properties * )
+{
+    local result ;
+
+    if <toolset>intel in $(properties)
+    {
+        if <toolset-intel:platform>win in $(properties)
+        {
+            result = <cxxflags>"/QxSSSE3" ;
+        }
+        else
+        {
+            result = <cxxflags>"-xSSSE3" ;
+        }
+    }
+    else if <toolset>msvc in $(properties)
+    {
+        # MSVC doesn't really care about these switches, all SSE intrinsics are always available, but still...
+        # Also 64 bit MSVC doesn't have the /arch:SSE2 switch as it is the default.
+        if 32 in [ deduce-address-model $(properties) ]
+        {
+            result = <cxxflags>"/arch:SSE2" ;
+        }
+    }
+    else
+    {
+        result = <cxxflags>"-msse -msse2 -msse3 -mssse3" ;
+    }
+
+    return $(result) ;
+}
+
+rule avx2-flags ( properties * )
+{
+    local result ;
+
+    if <toolset>intel in $(properties)
+    {
+        if <toolset-intel:platform>win in $(properties)
+        {
+            result = <cxxflags>"/arch:CORE-AVX2" ;
+        }
+        else
+        {
+            result = <cxxflags>"-xCORE-AVX2 -fabi-version=0" ;
+        }
+    }
+    else if <toolset>msvc in $(properties)
+    {
+        result = <cxxflags>"/arch:AVX" ;
+    }
+    else if <toolset>clang in $(properties)
+    {
+        result = <cxxflags>"-mavx -mavx2" ;
+    }
+    else
+    {
+        result = <cxxflags>"-mavx -mavx2 -fabi-version=0" ;
+    }
+
+    return $(result) ;
+}

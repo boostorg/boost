@@ -1,0 +1,69 @@
+# log-platform-config.jam
+#
+# Copyright 2017 Andrey Semashev
+#
+# Distributed under the Boost Software License Version 1.0. (See
+# accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import configure ;
+import project ;
+import path ;
+import property ;
+import feature ;
+
+local here = [ modules.binding $(__name__) ] ;
+
+project.push-current [ project.current ] ;
+project.load [ path.join [ path.make $(here:D) ] ../config/xopen-source-600 ] ;
+project.pop-current ;
+
+rule set-platform-defines ( properties * )
+{
+    local result ;
+
+    if <target-os>windows in $(properties)
+    {
+        # Disable warnings about using 'insecure' standard C functions.
+        # These affect MSVC C/C++ library headers, which are used by various compilers. Define them universally on Windows to avoid
+        # duplicating them for every compiler in every jamfile.
+        result += <define>_SCL_SECURE_NO_WARNINGS ;
+        result += <define>_SCL_SECURE_NO_DEPRECATE ;
+        result += <define>_CRT_SECURE_NO_WARNINGS ;
+        result += <define>_CRT_SECURE_NO_DEPRECATE ;
+    }
+
+    if ( <target-os>windows in $(properties) ) || ( <target-os>cygwin in $(properties) )
+    {
+        result += <define>NOMINMAX ;
+        result += <define>WIN32_LEAN_AND_MEAN ;
+        result += <define>SECURITY_WIN32 ;
+
+        if <target-os>cygwin in $(properties)
+        {
+            result += <define>__USE_W32_SOCKETS ;
+            result += <define>_XOPEN_SOURCE=600 ;
+        }
+    }
+    else if <target-os>solaris in $(properties)
+    {
+        # Solaris headers are broken and cannot be included in C++03 when _XOPEN_SOURCE=600. At the same time, they cannot be included with _XOPEN_SOURCE=500 in C++11 and later.
+        # This is because the system headers check the C language version and error out if the version does not match. We have to test if we can request _XOPEN_SOURCE=600.
+        if [ configure.builds /boost/log/xopen-source-600//xopen_source_600 : $(properties) : xopen-source-600-supported ]
+        {
+            result += <define>_XOPEN_SOURCE=600 ;
+        }
+        else
+        {
+            result += <define>_XOPEN_SOURCE=500 ;
+        }
+
+        result += <define>__EXTENSIONS__ ;
+    }
+    else if ( <target-os>linux in $(properties) ) || ( <target-os>hpux in $(properties) )
+    {
+        result += <define>_XOPEN_SOURCE=600 ;
+    }
+
+    return $(result) ;
+}
