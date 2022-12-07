@@ -1,0 +1,157 @@
+# Use, modification, and distribution are
+# subject to the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Copyright Rene Rivera 2015-2016.
+
+sudo: false
+dist: trusty
+language: cpp
+
+branches:
+  only:
+    - master
+    - develop
+
+env:
+  global:
+    # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+    # to use the default for a given environment, comment it out; recommend you build debug and release however..
+    # - B2_ADDRESS_MODEL=address-model=64,32
+    # - B2_LINK=link=shared,static
+    # - B2_THREADING=threading=multi,single
+    - B2_VARIANT=variant=release,debug
+
+install:
+  - export SELF=`basename $TRAVIS_BUILD_DIR`
+  - cd ..
+  - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/boostdep
+  - git submodule update --init tools/build
+  - git submodule update --init tools/inspect
+  - cp -r $TRAVIS_BUILD_DIR/* libs/$SELF
+  - export BOOST_ROOT="`pwd`"
+  - export PATH="`pwd`":$PATH
+  - python tools/boostdep/depinst/depinst.py $SELF
+  - ./bootstrap.sh
+  - ./b2 headers
+
+addons:
+  apt:
+    packages:
+      - binutils-gold
+      - gdb
+      - libc6-dbg
+
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER : <cxxflags>-std=$CXXSTD ;" > ~/user-config.jam
+  - ./b2 libs/$SELF/test toolset=$TOOLSET $B2_CXXFLAGS $B2_LINKFLAGS $B2_ADDRESS_MODEL $B2_LINK $B2_THREADING $B2_VARIANT -j3
+
+
+jobs:
+  include:
+    # C++03 using stock compilers
+    - os: linux
+      env:
+        - TOOLSET=gcc
+        - CXXSTD=c++03
+    - os: linux
+      env:
+        - TOOLSET=clang
+        - CXXSTD=c++03
+
+    # C++17 using the latest compilers
+    - os: linux
+      env:
+        - TOOLSET=gcc
+        - COMPILER=g++-7
+        - CXXSTD=c++17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+    - os: linux
+      env:
+        - TOOLSET=clang
+        - COMPILER=clang++-5.0
+        - CXXSTD=c++17
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+            - g++-7
+          sources:
+            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+
+    - os: osx
+      env:
+        - TOOLSET=clang
+        - CXXSTD=c++03
+
+    - os: osx
+      osx_image: xcode9.1
+      env:
+        - TOOLSET=clang
+        - CXXSTD=c++03
+
+    # Coverity Scan - runs on pull requests into master
+    - os: linux
+      if: branch = master or branch = develop
+      script:
+        - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+        - libs/$SELF/covscan.sh
+      env:
+        - COMMENT="Coverity Scan"
+
+    # UBSAN build
+    - os: linux
+      env:
+        - COMMENT="UBSAN"
+        - B2_VARIANT=variant=debug
+        - TOOLSET=clang
+        - COMPILER=clang++-5.0
+        - CXXSTD=c++03
+        - B2_CXXFLAGS="cxxflags=-fno-omit-frame-pointer cxxflags=-fsanitize=undefined cxxflags=-fsanitize=integer"
+        - B2_LINKFLAGS="linkflags=-fsanitize=undefined"
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+            - g++-7
+          sources:
+            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+
+after_success:
+  # If this is not a profiling build skip the rest...
+  - if [[ "$COVERALL" -ne "1" ]]; then exit 0; fi
+
+  # Copying Coveralls data to a separate folder
+  - wget https://github.com/linux-test-project/lcov/archive/v1.13.zip
+  - unzip v1.13.zip
+  - LCOV="`pwd`/lcov-1.13/bin/lcov --gcov-tool gcov-6"
+
+  # Preparing Coveralls data
+  - mkdir -p $TRAVIS_BUILD_DIR/coverals
+  - $LCOV --directory bin.v2/libs/$SELF --base-directory libs/$SELF --capture --output-file $TRAVIS_BUILD_DIR/coverals/coverage.info --no-external
+  - $LCOV --remove $TRAVIS_BUILD_DIR/coverals/coverage.info "*/$SELF/test/*" --output-file $TRAVIS_BUILD_DIR/coverals/coverage-filtered.info
+
+  # Sending data to Coveralls
+  - cd $TRAVIS_BUILD_DIR
+  - gem install coveralls-lcov
+  - coveralls-lcov coverals/coverage-filtered.info
+
+notifications:
+  email:
+    recipients:
+      - jhunold@gmx.eu
+
+
+cache:
+  directories:
+    - $HOME/boost-root

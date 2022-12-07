@@ -1,0 +1,92 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright (C) 2017 James E. King III
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+# When copying this to a new library, be sure to update the name of the library
+# in two places (once each at the top of install: and test_script:)
+
+version: 1.0.{build}-{branch}
+
+notifications:
+  - provider: Email
+    to:
+      - jhunold@gmx.eu
+    on_build_status_changed: true
+
+shallow_clone: true
+
+branches:
+  only:
+    - develop
+    - master
+
+matrix:
+  allow_failures:
+    - MAYFAIL: true
+
+environment:
+  global:
+    # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+    # to use the default for a given environment, comment it out; recommend you build debug and release however..
+    # on Windows it is important to exercise all the possibilities, especially shared vs static
+    B2_ADDRESS_MODEL: address-model=64,32
+    # B2_LINK: link=shared,static
+    # B2_THREADING: threading=multi,single
+    B2_VARIANT: variant=release,debug
+
+  matrix:
+    - COMMENT: Visual Studio Releases
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0,msvc-12.0
+    - COMMENT: Visual Studio 2015
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      CXXFLAGS: cxxstd=14,17
+    - COMMENT: Visual Studio 2017
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXFLAGS: cxxstd=14,17
+    - COMMENT: mingw-w64 32-bit
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ADDPATH: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw64\bin;
+      B2_ADDRESS_MODEL: address-model=32
+      TOOLSET: gcc
+      CXXFLAGS: cxxstd=03,11
+  #   MAYFAIL: true
+    - COMMENT: mingw-w64 64-bit
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;
+      B2_ADDRESS_MODEL: address-model=64
+      TOOLSET: gcc
+      CXXFLAGS: cxxstd=03,11
+
+### other builds for reference..
+  # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+  #   TOOLSET: msvc-11.0
+  #   COMMENT: Visual Studio 2012
+  # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+  #   TOOLSET: msvc-12.0
+  #   COMMENT: Visual Studio 2013
+  # - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+  #   TOOLSET: msvc-14.0
+
+install:
+  - set SELF=units
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update -q --init tools/boostdep
+  - git submodule update -q --init tools/build
+  - git submodule update -q --init tools/inspect
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\%SELF%
+  - python tools/boostdep/depinst/depinst.py --include example %SELF%
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - set SELF=units
+  - PATH=%ADDPATH%%PATH%
+  - b2 libs/%SELF%/test toolset=%TOOLSET% %CXXFLAGS% %CXXSTD% %DEFINES% %B2_ADDRESS_MODEL% %B2_LINK% %B2_THREADING% %B2_VARIANT% -j3
