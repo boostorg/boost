@@ -1,0 +1,165 @@
+# copyright John Maddock 2003
+# Distributed under the Boost Software License, Version 1.0. 
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http://www.boost.org/LICENSE_1_0.txt.
+
+import modules ;
+import testing ;
+import errors ;
+
+project : requirements
+   # default to all warnings on:
+   <warnings>all
+   ;
+
+local disable-icu = [ MATCH (--disable-icu) : [ modules.peek : ARGV ] ] ;
+
+rule path_options ( properties * )
+{
+    local result ;
+    if <address-model>64 in $(properties) && <toolset>msvc in $(properties) 
+    {
+    	result = <search>$(ICU_PATH)/bin64 <search>$(ICU_PATH)/lib64 ;
+    }
+    else
+    {
+    	result = <search>$(ICU_PATH)/bin <search>$(ICU_PATH)/lib ;
+    }
+    return $(result) ;
+}
+
+#
+# ICU configuration:
+#
+if ! $(disable-icu)
+{
+   if [ modules.peek : ICU_LINK ]
+   {    
+       errors.user-error : "The ICU_LINK option is no longer supported by the Boost.Regex build - please refer to the documentation for equivalent options" ;
+   }
+
+   if [ modules.peek : ICU_PATH ]
+   {    
+       ICU_PATH =  [ modules.peek : ICU_PATH ] ;
+   }
+   if [ modules.peek : ICU_ICUUC_NAME ]
+   {    
+       ICU_ICUUC_NAME =  [ modules.peek : ICU_ICUUC_NAME ] ;
+   }
+   if [ modules.peek : ICU_ICUDT_NAME ]
+   {    
+       ICU_ICUDT_NAME =  [ modules.peek : ICU_ICUDT_NAME ] ;
+   }
+   if [ modules.peek : ICU_ICUIN_NAME ]
+   {    
+       ICU_ICUIN_NAME =  [ modules.peek : ICU_ICUIN_NAME ] ;
+   }
+
+   if $(ICU_ICUUC_NAME)
+   {
+      lib icuuc : : <name>$(ICU_ICUUC_NAME) <conditional>@path_options ;
+   }
+   else
+   {
+      lib icuuc : :                                                               <runtime-link>shared <conditional>@path_options ;
+      lib icuuc : : <toolset>msvc                     <variant>debug <name>icuucd <runtime-link>shared <conditional>@path_options ;
+      lib icuuc : : <toolset>intel <target-os>windows <variant>debug <name>icuucd <runtime-link>shared <conditional>@path_options ;
+      lib icuuc : :                                                  <name>sicuuc <runtime-link>static <conditional>@path_options ;
+      lib icuuc : : <toolset>msvc                     <variant>debug <name>sicuucd <runtime-link>static <conditional>@path_options ;
+      lib icuuc : : <toolset>intel <target-os>windows <variant>debug <name>sicuucd <runtime-link>static <conditional>@path_options ;
+      lib icuuc : : <name>this_is_an_invalid_library_name ;
+   }
+   if $(ICU_ICUDT_NAME)
+   {
+      lib icudt : : <name>$(ICU_ICUDT_NAME) <conditional>@path_options ;
+   }
+   else
+   {
+      lib icudt : : <name>icudata                                   <runtime-link>shared <conditional>@path_options ;
+      lib icudt : : <name>icudt   <toolset>msvc                     <runtime-link>shared <conditional>@path_options ;
+      lib icudt : : <name>icudt   <toolset>intel <target-os>windows <runtime-link>shared <conditional>@path_options ;
+      lib icudt : : <name>sicudata                                   <runtime-link>static <conditional>@path_options ;
+      lib icudt : : <name>sicudt   <toolset>msvc                     <runtime-link>static <conditional>@path_options ;
+      lib icudt : : <name>sicudt   <toolset>intel <target-os>windows <runtime-link>static <conditional>@path_options ;
+      lib icudt : : <name>this_is_an_invalid_library_name ;
+   }
+   if $(ICU_ICUIN_NAME)
+   {
+      lib icuin : : <name>$(ICU_ICUIN_NAME) <conditional>@path_options ;
+   }
+   else
+   {
+      lib icuin : :                                                    <name>icui18n <runtime-link>shared <conditional>@path_options ;
+      lib icuin : : <toolset>msvc                     <variant>debug   <name>icuind  <runtime-link>shared <conditional>@path_options ;
+      lib icuin : : <toolset>msvc                                      <name>icuin   <runtime-link>shared <conditional>@path_options ;
+      lib icuin : : <toolset>intel <target-os>windows <variant>debug   <name>icuind  <runtime-link>shared <conditional>@path_options ;
+      lib icuin : : <toolset>intel <target-os>windows                  <name>icuin   <runtime-link>shared <conditional>@path_options ;
+      lib icuin : :                                                    <name>sicui18n <runtime-link>static <conditional>@path_options ;
+      lib icuin : : <toolset>msvc                     <variant>debug   <name>sicuind  <runtime-link>static <conditional>@path_options ;
+      lib icuin : : <toolset>msvc                                      <name>sicuin   <runtime-link>static <conditional>@path_options ;
+      lib icuin : : <toolset>intel <target-os>windows <variant>debug   <name>sicuind  <runtime-link>static <conditional>@path_options ;
+      lib icuin : : <toolset>intel <target-os>windows                  <name>sicuin   <runtime-link>static <conditional>@path_options ;
+      lib icuin : : <name>this_is_an_invalid_library_name ;
+   }
+
+   ICU_OPTS = 
+      <include>$(ICU_PATH)/include 
+      <runtime-link>shared:<library>icuuc/<link>shared
+      <runtime-link>shared:<library>icudt/<link>shared
+      <runtime-link>shared:<library>icuin/<link>shared
+      <runtime-link>static:<library>icuuc
+      <runtime-link>static:<library>icudt
+      <runtime-link>static:<library>icuin
+      <target-os>windows,<toolset>clang:<linkflags>"advapi32.lib"
+      <define>BOOST_HAS_ICU=1 
+      <runtime-link>static:<define>U_STATIC_IMPLEMENTATION=1
+      ;
+
+   if [ modules.peek : ICU_DATA_DIR ]
+   {
+       rule data-dir-options ( properties * )
+       {
+          local result ;
+          local data_dir = [ modules.peek : ICU_DATA_DIR ] ;
+          if <toolset>emscripten in $(properties)
+          {
+             result = <define>ICU_DATA_DIR=\\\"/$(data_dir:BS)\\\"
+                      "<linkflags>--embed-file $(data_dir)@/$(data_dir:BS)"
+                      ;
+          }
+          else
+          {
+             result = <define>ICU_DATA_DIR=\\\"$(data_dir)\\\" ;
+          }
+          return $(result) ;
+       }
+
+       ICU_OPTS += <conditional>@data-dir-options ;
+   }
+
+}
+
+exe has_icu : has_icu_test.cpp : $(ICU_OPTS) ;
+explicit has_icu ;
+
+obj is_legacy_03 : is_legacy_03.cpp ;
+explicit is_legacy_03 ;
+
+alias icu_options : : : : [ check-target-builds has_icu : $(ICU_OPTS) : ] ;
+
+SOURCES = 
+   posix_api.cpp
+   regex.cpp
+   regex_debug.cpp
+   static_mutex.cpp
+   wide_posix_api.cpp
+;
+
+lib boost_regex : ../src/$(SOURCES) icu_options
+    :         
+	     <link>shared:<define>BOOST_REGEX_DYN_LINK=1
+	     <toolset>gcc-cygwin:<link>static
+    ;
+
+boost-install boost_regex ;
+

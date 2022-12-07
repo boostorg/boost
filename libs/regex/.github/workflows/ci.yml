@@ -1,0 +1,424 @@
+# Copyright 2020 Evan Miller
+# Copyright 2020 Matt Borland
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+name: CI
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+  release:
+    types: [published, created, edited]
+jobs:
+  ubuntu-focal:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [ g++-9, g++-10, clang++-9, clang++-10 ]
+        standard: [ c++11, c++14, c++17, c++2a ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[windows];[Windows];[WINDOWS];[apple];[Apple];[APPLE]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Set TOOLSET
+        run: echo ${{ matrix.compiler }} | awk '/^g/ { print "TOOLSET=gcc" } /^clang/ { print "TOOLSET=clang" }' >> $GITHUB_ENV
+      - name: Add repository
+        run: sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+      - name: Install packages
+        run: sudo apt install g++-9 g++-10 clang-9 clang-10  libicu-dev
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: cp -r $GITHUB_WORKSPACE/* libs/regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: ./bootstrap.sh
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: ./b2 headers
+        working-directory: ../boost-root
+      - name: Generate user config
+        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} : <cxxflags>-std=${{ matrix.standard }} ;" > ~/user-config.jam'
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ../../../b2 config_info_travis_install toolset=$TOOLSET
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: ./config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ../../../b2 toolset=$TOOLSET
+        working-directory: ../boost-root/libs/regex/test
+  ubuntu-bionic:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [ g++-7, g++-8, clang++-7, clang++-8 ]
+        standard: [ c++11, c++14, c++17 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[windows];[Windows];[WINDOWS];[apple];[Apple];[APPLE]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Set TOOLSET
+        run: echo ${{ matrix.compiler }} | awk '/^g/ { print "TOOLSET=gcc" } /^clang/ { print "TOOLSET=clang" }' >> $GITHUB_ENV
+      - name: Add repository
+        run: sudo apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+      - name: Install packages
+        run: sudo apt install g++-7 g++-8 clang-7 clang-8 libicu-dev
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: cp -r $GITHUB_WORKSPACE/* libs/regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: ./bootstrap.sh
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: ./b2 headers
+        working-directory: ../boost-root
+      - name: Generate user config
+        run: 'echo "using $TOOLSET : : ${{ matrix.compiler }} : <cxxflags>-std=${{ matrix.standard }} ;" > ~/user-config.jam'
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ../../../b2 config_info_travis_install toolset=$TOOLSET
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: ./config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ../../../b2 toolset=$TOOLSET define=CI_SUPPRESS_KNOWN_ISSUES define=SLOW_COMPILER
+        working-directory: ../boost-root/libs/regex/test
+  macos:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: [ clang ]
+        standard: [ 11, 14, 17, 2a ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[windows];[Windows];[WINDOWS];[linux];[Linux];[LINUX]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: cp -r $GITHUB_WORKSPACE/* libs/regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: ./bootstrap.sh
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: ./b2 headers
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ../../../b2 config_info_travis_install toolset=${{ matrix.toolset }} cxxstd=${{ matrix.standard }}
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: ./config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ../../../b2 toolset=${{ matrix.toolset }} cxxstd=${{ matrix.standard }}
+        working-directory: ../boost-root/libs/regex/test
+  windows_gcc:
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    env:
+      ARGS: toolset=${{ matrix.toolset }} address-model=64 cxxstd=${{ matrix.standard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: [ gcc ]
+        standard: [ 11, 14, 17, 2a ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[apple];[Apple];[APPLE];[linux];[Linux];[LINUX]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: bootstrap
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: b2 headers
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ..\..\..\b2 config_info_travis_install %ARGS%
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ..\..\..\b2 --hash %ARGS%
+        working-directory: ../boost-root/libs/regex/test
+  windows_msvc_14_0:
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    env:
+      ARGS: toolset=${{ matrix.toolset }} address-model=64 cxxstd=${{ matrix.standard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: [ msvc-14.0 ]
+        standard: [ 14, 17 ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[apple];[Apple];[APPLE];[linux];[Linux];[LINUX]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: bootstrap
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: b2 headers
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ..\..\..\b2 config_info_travis_install %ARGS%
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ..\..\..\b2 --hash %ARGS%
+        working-directory: ../boost-root/libs/regex/test
+  windows_msvc_14_2:
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    env:
+      ARGS: toolset=${{ matrix.toolset }} address-model=64 cxxstd=${{ matrix.standard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: [ msvc-14.2 ]
+        standard: [ 14, 17, latest ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[apple];[Apple];[APPLE];[linux];[Linux];[LINUX]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: bootstrap
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: b2 headers
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ..\..\..\b2 config_info_travis_install %ARGS%
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ..\..\..\b2 --hash %ARGS%
+        working-directory: ../boost-root/libs/regex/test
+  windows_msvc_14_3:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: cmd
+    env:
+      ARGS: toolset=${{ matrix.toolset }} address-model=64 cxxstd=${{ matrix.standard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolset: [ msvc-14.3 ]
+        standard: [ 14, 17, 20, latest ]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - uses: mstachniuk/ci-skip@v1
+        with:
+          commit-filter: '[skip ci];[ci skip];[CI SKIP];[SKIP CI];***CI SKIP***;***SKIP CI***;[apple];[Apple];[APPLE];[linux];[Linux];[LINUX]'
+          commit-filter-separator: ';'
+          fail-fast: true
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: xcopy /s /e /q %GITHUB_WORKSPACE% libs\regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: bootstrap
+        working-directory: ../boost-root
+      - name: Generate headers
+        run: b2 headers
+        working-directory: ../boost-root
+      - name: Config info install
+        run: ..\..\..\b2 config_info_travis_install %ARGS%
+        working-directory: ../boost-root/libs/config/test
+      - name: Config info
+        run: config_info_travis
+        working-directory: ../boost-root/libs/config/test
+      - name: Test
+        run: ..\..\..\b2 --hash %ARGS%
+        working-directory: ../boost-root/libs/regex/test
+  ubuntu-cmake-install:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: cp -r $GITHUB_WORKSPACE/* libs/regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: ./bootstrap.sh
+        working-directory: ../boost-root
+      - name: CMake Test
+        working-directory: ../boost-root
+        run: | 
+         mkdir __build__ && cd __build__
+         cmake -DBOOST_ENABLE_CMAKE=1 -DBoost_VERBOSE=1 -DBOOST_INCLUDE_LIBRARIES="regex;core" -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=~/.local ..
+         cmake --build . --target install
+         cd ../libs/regex/test/cmake_install_test && mkdir __build__ && cd __build__
+         cmake -DCMAKE_INSTALL_PREFIX=~/.local ..
+         cmake --build .
+         cmake --build . --target check
+  ubuntu-cmake-check:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Install packages
+        run: sudo apt install libicu-dev
+      - name: Checkout main boost
+        run: git clone -b develop --depth 1 https://github.com/boostorg/boost.git ../boost-root
+      - name: Update tools/boostdep
+        run: git submodule update --init tools/boostdep
+        working-directory: ../boost-root
+      - name: Copy files
+        run: cp -r $GITHUB_WORKSPACE/* libs/regex
+        working-directory: ../boost-root
+      - name: Install deps
+        run: python tools/boostdep/depinst/depinst.py -I example -g "--jobs 3" regex
+        working-directory: ../boost-root
+      - name: Bootstrap
+        run: ./bootstrap.sh
+        working-directory: ../boost-root
+      - name: CMake Test
+        working-directory: ../boost-root/libs/regex/test
+        run: | 
+          cd cmake_subdir_test && mkdir __build__ && cd __build__
+          cmake ..
+          cmake --build .
+          cmake --build . --target check
+          rm -rf *
+          echo Standalone configuration
+          cmake -DBOOST_REGEX_STANDALONE=on ..
+          cmake --build .
+          cmake --build . --target check
+          cd ../../cmake_subdir_test_icu && mkdir __build__ && cd __build__
+          cmake ..
+          cmake --build .
+          cmake --build . --target check
+          rm -rf *
+          echo Standalone configuration
+          cmake -DBOOST_REGEX_STANDALONE=on ..
+          cmake --build .
+          cmake --build . --target check
