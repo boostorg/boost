@@ -1,0 +1,24 @@
+# Copyright (c) 2002-2005 CrystalClear Software, Inc.
+# Use, modification and distribution is subject to the 
+# Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+#
+# date_time is now header only -- this file provides a stub for backward compatibility
+#
+
+
+project boost/date_time
+    : requirements
+        <define>DATE_TIME_INLINE
+	<link>shared:<define>BOOST_ALL_DYN_LINK=1
+    : usage-requirements
+        <define>DATE_TIME_INLINE
+        <link>shared:<define>BOOST_DATE_TIME_DYN_LINK=1
+    : source-location ../src
+    ;
+
+# greg_month.cpp is now just a stub so that there is
+# still a boost_date_time library to link for backward compatibility
+lib boost_date_time : gregorian/greg_month.cpp ;
+
+boost-install boost_date_time ;
