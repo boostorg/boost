@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Future ABI stability guarantees - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="./css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="./images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="./motivation/narrow_contract.html"><img src="./images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="./index.html"><img src="./images/up.png" alt="Up"></a>
+    <a accesskey="h" href="./index.html"><img src="./images/home.png" alt="Home"></a><a accesskey="n" href="./tutorial.html"><img src="./images/next.png" alt="Next"></a></div><div id="content">
+
+  <div class="titlepage"><div><div><h1 style="clear: both">Future ABI stability guarantees</h1></div></div></div>
+
+
+<p>At the end of December 2021, <a href="./history.html">as had been intended and signposted from the beginning of development</a>, standalone Outcome v2.2.3 locked its ABI such that any code built with this Outcome release shall link, without recompilation, with any code built with any future Outcome release. This means that going forth, you are guaranteed that if your library returns an <code>outcome::</code><a href="./reference/aliases/result.html" class="api-reference"><code>result&lt;T, E = varies, NoValuePolicy = policy::default_policy&lt;T, E, void&gt;&gt;</code></a>
+ or <code>outcome::</code><a href="./reference/aliases/outcome.html" class="api-reference"><code>outcome&lt;T, EC = varies, EP = varies, NoValuePolicy = policy::default_policy&lt;T, EC, EP&gt;&gt;</code></a>
+ from a public API, consumers of your library are guaranteed 100% compatibility with unrecompiled library binaries when using any future version of Outcome in consuming code.</p>
+
+<p>This is a critical use case for many large scale production use cases in industry, and to my knowledge, no other Outcome-like alternative implements this guarantee at the time of writing<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>. Note also that Boost.Outcome comes with no ABI guarantees, as the dependencies within Boost that Boost.Outcome uses do not have a stable ABI guarantee.</p>
+
+<p>To ensure this guarantee going forth, a per commit CI step has been added which tests Outcome against the v2.2.3 ABI using these tools:</p>
+
+<ul>
+<li><a href="https://lvc.github.io/abi-compliance-checker/">The ABI compliance checker</a> (using its <code>abi-dumper</code> mode, not its translation unit parsing mode which is too brittle).</li>
+<li><a href="https://sourceware.org/libabigail/manual/libabigail-tools.html">Sourceware&rsquo;s libabigail tooling</a>.</li>
+</ul>
+
+<p>Both tools are independent of one another, and whilst they test using the same mechanism (DWARF debug info extracted from an unoptimised shared library object), they have different implementations.</p>
+
+<h4 id="abi-testing-implementation-notes">ABI testing implementation notes</h4>
+
+<p>Outcome is a header only library, so to turn Outcome into a shared library suitable as input for these tools, we compile a dummy shared library which exports APIs which use Outcome. The coverage of that dummy shared library of Outcome is therefore what is actually ABI tested, rather than of Outcome itself. The dummy library locks the ABI for:</p>
+
+<ul>
+<li><code>basic_result&lt;trivial type, std::error_code, all policies&gt;</code> (i.e. union storage layout)</li>
+<li><code>basic_outcome&lt;trivial type, std::error_code, trivial type, all policies&gt;</code></li>
+<li><code>basic_result&lt;non-trivial type, std::error_code, all policies&gt;</code> (i.e. struct storage layout)</li>
+<li><code>basic_outcome&lt;non-trivial type, std::error_code, std::exception_ptr, all policies&gt;</code></li>
+<li><code>bad_result_access_with&lt;std::error_code&gt;</code></li>
+<li><code>bad_outcome_access</code></li>
+<li><code>atomic_eager&lt;int&gt;</code></li>
+<li><code>atomic_eager&lt;basic_result&lt;trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>atomic_eager&lt;basic_result&lt;non-trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>atomic_lazy&lt;int&gt;</code></li>
+<li><code>atomic_lazy&lt;basic_result&lt;trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>atomic_lazy&lt;basic_result&lt;non-trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>eager&lt;int&gt;</code></li>
+<li><code>eager&lt;basic_result&lt;trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>eager&lt;basic_result&lt;non-trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>lazy&lt;int&gt;</code></li>
+<li><code>lazy&lt;basic_result&lt;trivial type, std::error_code, all policies&gt;&gt;</code></li>
+<li><code>lazy&lt;basic_result&lt;non-trivial type, std::error_code, all policies&gt;&gt;</code></li>
+</ul>
+
+<p>Obviously anything which any of these types touch in their implementation also gets locked in ABI, in so far as the ABI tool can deduce dependent types. If you examine the source code for the dummy shared library, you will see that we go out of our way to encode explicit lists of dependent types in template parameters, to ensure that the ABI tool definitely discovers everything.</p>
+
+<div class="notices note" style="background: url('images/note.png') top left no-repeat padding-box padding-box;">
+<div class="notices heading">note</div>
+<div class="notices message"><p>Outcome.Experimental has no ABI guarantees, as WG21 LEWG is actively modifying its design as it approaches the C++ standard.</p>
+</div>
+</div>
+
+
+<p>The following targets are tested for ABI stability:</p>
+
+<ol>
+<li><p>GCC 7.5 with libstdc++ configured with the C++ 14 standard and x64 architecture.</p></li>
+
+<li><p>GCC 9.3 with libstdc++ configured with the C++ 17 standard and x64 architecture.</p></li>
+</ol>
+
+<p>At the time of writing, no POSIX implementation has guaranteed stability on its C++ 20 standard library ABI, so we do not test that.</p>
+
+<p>There is currently no CI coverage of MSVC ABI stability. The ABI compliance checker can test MSVC binaries for ABI stability, however raising the ABI compliance checker on a Github Actions Windows test runner is quite a lot of work. Donations of sufficient test scripting would be welcome. Note that because the Windows and POSIX implementation is almost the same, ABI stability on POSIX will have strong impact on MSVC ABI stability i.e. MSVC ABI is unlikely to break, albeit without CI testing there are no guarantees.</p>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">libstdc++ implements a strong ABI stability guarantee and thus any future <code>std::expected&lt;T, E&gt;</code> implementation it provides will be ABI stable. However Expected offers only a small subset of the functionality which <code>outcome::result&lt;T, E&gt;</code> provides.
+ <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+
+
+        </div><p><small>Last revised: December 15, 2021 at 11:47:12 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="./motivation/narrow_contract.html"><img src="./images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="./index.html"><img src="./images/up.png" alt="Up"></a>
+    <a accesskey="h" href="./index.html"><img src="./images/home.png" alt="Home"></a><a accesskey="n" href="./tutorial.html"><img src="./images/next.png" alt="Next"></a></div></body>
+</html>

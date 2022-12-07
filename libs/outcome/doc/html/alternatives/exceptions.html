@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>std exception throws - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="../css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="../images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="../alternatives.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/error_code.html"><img src="../images/next.png" alt="Next"></a></div><div id="content">
+  <div class="titlepage"><div><div><h1 style="clear: both">std exception throws</h1></div></div></div>
+  
+
+<p>(Note that we assume a table-based EH implementation here, a SJLJ EH implementaton would have even happy and sad path runtime overhead. Table-based EH implementations are almost universal on x64, ARM and AArch64 targets).</p>
+
+<p>C++ exception throws came in the original C++ 98 standard &ndash; at that time, not all the major compilers implemented them yet, and several of those who did did not have efficient implementations, plus in the original days some compiler vendors still patented things like EH implementation techniques to try and maintain a competitive advantage over rival compilers. Unlike other C++ features, enabling C++ exceptions on a code base not written with them in mind is not safe, so this led to the C++ ecosystem becoming bifurcated into exceptions-enabled and exceptions-disabled camps.</p>
+
+<h4 id="pros">Pros:</h4>
+
+<ul>
+<li><p>Zero runtime overhead on the happy path.</p></li>
+
+<li><p>Success-orientated syntax declutters code of failure control flow paths.</p></li>
+
+<li><p>As a built-in language feature, probably has the least impact on optimisation of any failure handling mechanism here.</p></li>
+
+<li><p>Ships with every standard toolchain (though may not work in some, and cannot be safely enabled for many codebases).</p></li>
+</ul>
+
+<h4 id="cons">Cons:</h4>
+
+<ul>
+<li><p>Unpredictable runtime overhead on the sad path.</p></li>
+
+<li><p>Unacceptable runtime overhead on the sad path for real time applications.</p></li>
+
+<li><p>Adds considerable bloat to produced binaries, which can be unacceptable for some use cases (embedded).</p></li>
+
+<li><p>Requires RTTI to be enabled or non-standard behaviour results (which is further binary bloat).</p></li>
+
+<li><p>Not available by tradition or convention in several major parts of the C++ ecosystem (embedded, games, audio, to a lesser extent financial).</p></li>
+
+<li><p>Not available in many niche architectures such as HPC, GPUs, DSPs and microcontrollers.</p></li>
+
+<li><p>Most codebases do not invest in adequate correctness testing of the silent proliferation of failure control flow paths which result in C++ exception throwing code (exception throws silently generate multitudes of slight variations of sad path control flows).</p></li>
+</ul>
+
+
+        </div><p><small>Last revised: January 10, 2022 at 14:29:13 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../alternatives.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/error_code.html"><img src="../images/next.png" alt="Next"></a></div></body>
+</html>

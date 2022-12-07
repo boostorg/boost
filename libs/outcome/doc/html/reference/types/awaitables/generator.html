@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>generator&lt;T, Executor = void&gt; - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="../../../css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="../../../images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="../../../reference/types/failure_type.html"><img src="../../../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../../../reference/types.html"><img src="../../../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="../../../reference/types/in_place_type_t.html"><img src="../../../images/next.png" alt="Next"></a></div><div id="content">
+  <div class="titlepage"><div><div><h1 style="clear: both"><code>generator&lt;T, Executor = void&gt;</code></h1></div></div></div>
+  <p>This is a classic coroutine generator whereby the coroutine is resumed to calculate
+the next value, and is suspended upon yielding that value. If the value being
+yielded is an Outcome type, special semantics are used if the coroutine throws
+an exception (see below).</p>
+
+<p>The <code>Executor</code> template parameter is purely for compatibility with third party software
+such as <a href="https://think-async.com/Asio/">ASIO</a>, and this awaitable can be directly used
+by ASIO.</p>
+
+<p>Example of use:</p>
+<div class="highlight"><pre class="chroma"><code class="language-c++" data-lang="c++"><span class="n">generator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">func</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">while</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">co_yield</span> <span class="n">x</span><span class="o">--</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="c1">// Creates the coroutine, immediately suspending it.
+</span><span class="c1"></span><span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="c1">// If the coroutine has another value to yield ...
+</span><span class="c1"></span><span class="k">while</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// Get the next value from the coroutine
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="p">();</span>
+  <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>generator&lt;T&gt;</code> has special semantics if <code>T</code> is a type capable of constructing from
+an <code>exception_ptr</code> or <code>error_code</code> &ndash; any exceptions thrown during the function&rsquo;s body
+are sent via <code>T</code>, preferably via the error code route if <a href="../../../reference/functions/error_from_exception.html" class="api-reference"><code>error_from_exception(</code></a>
+<code>)</code>
+successfully matches the exception throw. This means that a
+<a href="../../../reference/types/basic_result.html" class="api-reference"><code>basic_result&lt;T, E, NoValuePolicy&gt;</code></a>
+ or <a href="../../../reference/types/basic_outcome.html" class="api-reference"><code>basic_outcome&lt;T, EC, EP, NoValuePolicy&gt;</code></a>
+ where one of its types is
+is compatible will have its <code>.error()</code> or <code>.exception()</code> set.</p>
+
+<p>Note that <code>generator&lt;T&gt;</code> does not otherwise transport exception throws, and rethrows
+any exceptions thrown within the coroutine body through the coroutine machinery.
+This does not produce reliable consequences in current C++ compilers. You should
+therefore wrap the coroutine body in a <code>try...catch</code> if <code>T</code> is not able to transport
+exceptions on its own.</p>
+
+<p><em>Requires</em>: C++ coroutines to be available in your compiler.</p>
+
+<p><em>Namespace</em>: <code>BOOST_OUTCOME_V2_NAMESPACE::awaitables</code></p>
+
+<p><em>Header</em>: <code>&lt;boost/outcome/coroutine_support.hpp&gt;</code></p>
+
+
+        </div><p><small>Last revised: March 18, 2022 at 14:45:32 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../../../reference/types/failure_type.html"><img src="../../../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../../../reference/types.html"><img src="../../../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="../../../reference/types/in_place_type_t.html"><img src="../../../images/next.png" alt="Next"></a></div></body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>std expected - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="../css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="../images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="../alternatives/error_code.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/outcome.html"><img src="../images/next.png" alt="Next"></a></div><div id="content">
+  <div class="titlepage"><div><div><h1 style="clear: both">std expected</h1></div></div></div>
+  
+
+<p><code>std::expected&lt;T, E&gt;</code> came originally from an experimental monadic and generic programming library outside of Boost written by Boost and WG21 developers around 2013. Before Outcome v1, I deployed the then Expected into a large codebase and I was dismayed with the results, especially on build times. <a href="../history.html">You can read here how those experiences led me to develop Outcome v1</a>.</p>
+
+<p><code>std::expected&lt;T, E&gt;</code> is a constrained variant type with a strong preference for the successful type <code>T</code> which it models like a <code>std::optional&lt;T&gt;</code>. If, however, there is no <code>T</code> value then it supplies an &lsquo;unexpected&rsquo; <code>E</code> value instead. <code>std::expected&lt;T, E&gt;</code> was standardised in the C++ 23 standard.</p>
+
+<p>Outcome&rsquo;s Result type <a href="../faq.html#how-far-away-from-the-proposed-std-expected-t-e-is-outcome-s-checked-t-e">can be configured to act just like Expected if you want that</a>, however ultimately <a href="../faq.html#why-doesn-t-outcome-duplicate-std-expected-t-e-s-design">Outcome&rsquo;s Result doesn&rsquo;t solve the same problem as Expected</a>, plus Outcome models <code>std::variant&lt;T, E&gt;</code> rather than <code>std::optional&lt;T&gt;</code> which we think much superior for many use cases, which to summarise:</p>
+
+<ul>
+<li><p>If you are parsing input which may rarely contain unexpected values, Expected is the right choice here.</p></li>
+
+<li><p>If you want an alternative to C++ exception handling i.e. a generalised whole-program error handling framework, Expected is an inferior choice to alternatives.</p></li>
+</ul>
+
+<p>Outcome recognises Expected-like types and will construct from them, which aids interoperability.</p>
+
+<h4 id="pros">Pros:</h4>
+
+<ul>
+<li><p>Predictable runtime overhead on the happy path.</p></li>
+
+<li><p>Predictable runtime overhead on the sad path.</p></li>
+
+<li><p>Very little codegen bloat added to binaries (though there is a fixed absolute overhead for support libraries).</p></li>
+
+<li><p>Variant storage means storage overhead is minimal, except when either <code>T</code> or <code>E</code> has a throwing move constructor which typically causes storage blowup.</p></li>
+
+<li><p>Works well in all configurations of C++, including C++ exceptions and RTTI globally disabled.</p></li>
+
+<li><p>Works well on all niche architectures, such as HPC, GPUs, DSPs and microcontrollers.</p></li>
+
+<li><p>Ships with every standard library since C++ 23.</p></li>
+</ul>
+
+<h4 id="cons">Cons:</h4>
+
+<ul>
+<li><p>Success-orientated syntax makes doing anything with the <code>E</code> type is awkward and clunky.</p></li>
+
+<li><p>Results in branchy code, which is slow &ndash; though predictably so &ndash; for embedded controller CPUs.</p></li>
+
+<li><p>Failure to examine an Expected generates a compiler diagnostic, but failure to handle both failure and success does not. This can mean failures or successes get accidentally dropped.</p></li>
+
+<li><p>Lack of a <code>try</code> operator makes use tedious and verbose.</p></li>
+
+<li><p>Variant storage does have an outsize impact on build times in the same way widespread use of <code>std::variant</code> has. This is because implementing exception guarantees during copies and moves of non-trivially-copyable types in union storage involves a lot of work for the compiler on every use of copy and move.</p></li>
+</ul>
+
+
+        </div><p><small>Last revised: January 10, 2022 at 14:29:13 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../alternatives/error_code.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/outcome.html"><img src="../images/next.png" alt="Next"></a></div></body>
+</html>

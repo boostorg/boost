@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>LEAF - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="../css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="../images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="../alternatives/outcome.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../motivation.html"><img src="../images/next.png" alt="Next"></a></div><div id="content">
+  <div class="titlepage"><div><div><h1 style="clear: both">LEAF</h1></div></div></div>
+  
+
+<p>As much as Outcome originated in a negative reaction to the then originally proposed <code>std::expected&lt;T, E&gt;</code>, <a href="https://boostorg.github.io/leaf/">LEAF</a> originated in a negative reaction to Outcome. Some of the perceived issues with Outcome were (<a href="https://boostorg.github.io/leaf/#rationale">LEAF&rsquo;s own rendition of this can be viewed here</a>):</p>
+
+<ul>
+<li><p>Outcome based code is visually cluttered, as both happy and sad paths appear in code.</p></li>
+
+<li><p>Outcome based code generates branchy code at runtime, which impacts low end CPUs and first time code execution.</p></li>
+
+<li><p>Outcome&rsquo;s Result type encodes the type of the error in the function signature, which could be considered as more brittle and problematic for large scale code refactoring<sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>.</p></li>
+
+<li><p>Outcome is more strongly opinionated about being the ultimate error handling framework in a program (i.e. all third party custom error handling is assumed to flow into Outcome via customisation point adapters), whereas LEAF is less strongly opinionated, and yet provides equivalent functionality.</p></li>
+</ul>
+
+<p>LEAF therefore looks more like standard C++ exception handling, but without the non-deterministic sad path at the cost of a slight impact on happy path runtime performance. LEAF&rsquo;s current design was completed in 2020.</p>
+
+<p>If you need an error handling framework which has predictable sad path overhead unlike C++ exceptions, but you otherwise want similar syntax and use experience to C++ exceptions, LEAF is a very solid choice.</p>
+
+<h4 id="pros">Pros:</h4>
+
+<ul>
+<li><p>Very low runtime overhead on the happy path.</p></li>
+
+<li><p>Very low runtime overhead on the sad path.</p></li>
+
+<li><p>Does not cause branchy code to the same extent as Outcome, and the sad path is deterministic unlike with C++ exceptions.</p></li>
+
+<li><p>Very little codegen bloat added to binaries (though there is a fixed absolute overhead for support libraries, most of which can be compiled out using a macro if desired).</p></li>
+
+<li><p>Unlike with any of the preceding options, failures nor successes cannot get unintentionally dropped. This is the same strength of guarantee as with C++ exceptions.</p></li>
+
+<li><p>Works well in most configurations of C++, including C++ exceptions and RTTI globally disabled. Does not dynamically allocate memory.</p></li>
+</ul>
+
+<h4 id="cons">Cons:</h4>
+
+<ul>
+<li><p>Requires out of band storage for state e.g. thread local storage, or a global synchronised ring buffer<sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>.</p>
+
+<ul>
+<li><p>If thread local storage is chosen as the out of band storage, transporting LEAF state across threads requires manual intervention.</p></li>
+
+<li><p>If a global ring buffer is chosen as the out of band storage, thread synchronisation with global state is required and the ring buffer can wrap which drops state.</p></li>
+</ul></li>
+
+<li><p>Thread local storage can be problematic or even a showstopper in many niche architectures such as HPC, GPUs, DSPs and microcontrollers. Global synchronised state can introduce an unacceptable performance impact on those architectures.</p></li>
+
+<li><p>Current compilers at the time of writing do not react well to use of thread local storage, it would seem that elision of code generation is inhibited if thread local state gets touched due to pessimistic assumptions about escape analysis. Given that this impacts all of C and C++ due to the same problem with <code>errno</code>, it is hoped that future compilers will improve this. Until then, any code which touches thread local storage or magic statics<sup class="footnote-ref" id="fnref:3"><a href="#fn:3">3</a></sup> will not optimise as well as code which does neither.</p></li>
+</ul>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:1">In Outcome, it is strongly recommended that one chooses a single universal error type for all public APIs such as <code>std::error_code</code> or <code>error</code> from Experimental.Outcome, so if the programmer is disciplined then the function signature does not expose internal error types. Such single universal error types type erase the original error object, but still allow the original error object to be inspected. This avoids &lsquo;exception specifications&rsquo; which are widely known to not scale well.
+ <a class="footnote-return" href="#fnref:1"><sup>[return]</sup></a></li>
+<li id="fn:2">A global synchronised ring buffer implementation does not ship with LEAF, however LEAF exposes customisation points for a bespoke thread local storage implementation which makes implementing one very straightforward.
+ <a class="footnote-return" href="#fnref:2"><sup>[return]</sup></a></li>
+<li id="fn:3"><code>std::error_code</code> construction touches a magic static or calls an extern function, and therefore Outcome when combined with <code>std::error_code</code> also sees a codegen pessimisation. Experimental Outcome&rsquo;s <code>error</code> fixes this historical oversight.
+ <a class="footnote-return" href="#fnref:3"><sup>[return]</sup></a></li>
+</ol>
+</div>
+
+
+        </div><p><small>Last revised: January 10, 2022 at 14:29:13 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../alternatives/outcome.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../motivation.html"><img src="../images/next.png" alt="Next"></a></div></body>
+</html>

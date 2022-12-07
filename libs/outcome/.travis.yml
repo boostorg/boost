@@ -1,0 +1,62 @@
+dist: trusty
+language: cpp
+compiler:
+ - g++-6
+sudo: false
+os:
+ - linux
+branches:
+  only:
+    - master
+notifications:
+  email:
+    recipients:
+      - nialldouglas14@gmail.com
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-6
+
+env:
+ - __="link=shared" FLAGS="link=shared"
+ - __="link=static" FLAGS="link=static"
+ 
+ 
+cache:
+  apt: true
+  directories:
+    - boost
+    
+before_install:
+ - if [ ! -f "boost/bootstrap.sh" ]; then
+     wget -O boost.tar.bz2 https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.bz2;
+     tar xf boost.tar.bz2 -C boost;
+     mv boost/boost_1_71_0 .;
+     rm -rf boost;
+     mv boost_1_71_0 boost;
+     ls -l;
+     ls -l boost;
+     cd boost;
+     ./bootstrap.sh;
+     cd ..;
+   fi;
+ - rm -rf bin.v2/libs/outcome
+ - rm -rf boost/boost/outcome
+ - rm -rf boost/libs/outcome
+ - ln -s ../.. boost/libs/outcome
+ - ls -l boost/libs/outcome/
+
+script:
+ - if [ "$CXX" = "g++" ]; then FLAGS="$FLAGS toolset=gcc-6"; fi;
+ - if [ "$CXX" = "clang++" ]; then FLAGS="$FLAGS toolset=clang-5.0 cxxflags=--std=c++14"; fi;
+ - cd boost
+ - ./b2 headers
+ - ./b2 libs/outcome/test $FLAGS
+ - rm -rf bin.v2/libs/outcome
+ - rm -rf boost/libs/outcome
+
+after_success:
+after_failure:

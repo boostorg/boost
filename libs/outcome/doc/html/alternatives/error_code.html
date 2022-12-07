@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>std error codes - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="../css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="../images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="../alternatives/exceptions.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/expected.html"><img src="../images/next.png" alt="Next"></a></div><div id="content">
+  <div class="titlepage"><div><div><h1 style="clear: both">std error codes</h1></div></div></div>
+  
+
+<p><code>std::error_code</code> came originally from <code>boost::error_code</code> which was designed around 2008 as part of implementing Filesystem and Networking. They are a simple trivially copyable type offering improved type safety and functionality over C enumerations. <a href="../motivation/std_error_code.html">You can read more about how <code>std::error_code</code> works here</a>. They were standardised in the C++ 11 standard, and have been available in Boost since 2008.</p>
+
+<h4 id="pros">Pros:</h4>
+
+<ul>
+<li><p>Predictable runtime overhead on the happy path.</p></li>
+
+<li><p>Predictable runtime overhead on the sad path.</p></li>
+
+<li><p>Unbiased syntax equal for both success and failure requiring explicit code written to handle both.</p></li>
+
+<li><p>Very little codegen bloat added to binaries (though there is a fixed absolute overhead for support libraries).</p></li>
+
+<li><p>Once constructed, passing around <code>std::error_code</code> instances optimises well, often being passed in CPU registers.</p></li>
+
+<li><p>Works well in all configurations of C++, including C++ exceptions and RTTI globally disabled.</p></li>
+
+<li><p>Works well on all niche architectures, such as HPC, GPUs, DSPs and microcontrollers.</p></li>
+
+<li><p>Ships with every standard library since C++ 11.</p></li>
+</ul>
+
+<h4 id="cons">Cons:</h4>
+
+<ul>
+<li><p>Failure to write handling code for failure means failures get silently dropped. This is disturbingly easy to do.</p></li>
+
+<li><p>Results in branchy code, which is slow &ndash; though predictably so &ndash; for embedded controller CPUs.</p></li>
+
+<li><p>Because the <code>std::error_category</code> instance used in construction comes from a magic static, the compiler inserts an atomic operation around every <code>std::error_code</code> construction (e.g. <a href="https://godbolt.org/z/oGaf4qe8a">https://godbolt.org/z/oGaf4qe8a</a>). This can impact optimisation on compilers with poor optimisation of atomics.</p></li>
+
+<li><p>The payload of type <code>int</code> is incredibly constraining sometimes, especially on 64-bit platforms. It would have been much better if it were <code>intptr_t</code> instead of <code>int</code>.</p></li>
+
+<li><p>The payload value of all bits zero has silent hard coded semantics which is incompatible with many C enumerations, which start from value zero. This can cause silent dropping of failures in a very hard to debug way.</p></li>
+
+<li><p>How comparisons between disparate code categories (i.e. mapping) is supposed to work is non-obvious, and even standard library maintainers and many members of WG21 have been confused by it in the past.</p></li>
+</ul>
+
+<p>(Note that this long list of design caveats is what led to the proposed superseding of <code>std::error_code</code> with <code>std::error</code>, which you can use today in Outcome.Experimental. See <a href="../experimental.html">this page for more information</a>).</p>
+
+
+        </div><p><small>Last revised: January 10, 2022 at 14:29:13 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../alternatives/exceptions.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/expected.html"><img src="../images/next.png" alt="Next"></a></div></body>
+</html>

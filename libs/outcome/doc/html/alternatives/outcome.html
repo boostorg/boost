@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Outcome (proposed std result) - Boost.Outcome documentation</title>
+<link rel="stylesheet" href="../css/boost.css" type="text/css">
+<meta name="generator" content="Hugo 0.52 with Boostdoc theme">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+
+<link rel="icon" href="../images/favicon.ico" type="image/ico"/>
+<body><div class="spirit-nav">
+<a accesskey="p" href="../alternatives/expected.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/leaf.html"><img src="../images/next.png" alt="Next"></a></div><div id="content">
+  <div class="titlepage"><div><div><h1 style="clear: both">Outcome (proposed std result)</h1></div></div></div>
+  <div class="toc"><dl class="toc">
+<dt>
+<dd><dl>
+<dt>
+<dd><dl>
+<dt>
+<dd><dl>
+<dt><a href="#pros">Pros:</a></dt>
+<dt><a href="#cons">Cons:</a></dt>
+</dl></dd></dt>
+</dl></dd></dt>
+</dl></dd></dt>
+</dl>
+  </div>
+  
+
+<p>Outcome (the library described by this documentation) originated in a negative reaction to then originally proposed <code>std::expected&lt;T, E&gt;</code>, though what got eventually standardised as <code>std::expected&lt;T, E&gt;</code> looks much more like Outcome&rsquo;s <code>result&lt;T, E&gt;</code> than the original Expected. <a href="../history.html">You can read here how those experiences led me to develop Outcome v1</a>. Outcome comes in both standalone and Boost editions, and its current design was completed in 2018.</p>
+
+<p>Outcome&rsquo;s core is two workhorse types and a macro:</p>
+
+<ul>
+<li><a href="../reference/types/basic_result.html" class="api-reference"><code>basic_result&lt;T, E, NoValuePolicy&gt;</code></a>
+</li>
+
+<li><a href="../reference/types/basic_outcome.html" class="api-reference"><code>basic_outcome&lt;T, EC, EP, NoValuePolicy&gt;</code></a>
+</li>
+
+<li><a href="../reference/macros/try.html" class="api-reference"><code>BOOST_OUTCOME_TRY(var, expr)</code></a>
+</li>
+</ul>
+
+<p>These three core items are then mixed into a veritable cornucopia of <a href="../reference/aliases.html">convenience typedefs</a> and variations to support a wide range of use cases, including <a href="../tutorial/essential/coroutines.html">in C++ coroutines</a>, plus there is extensive plumbing and customisation points for deciding how incompatible types ought to interact, or being notified of lifecycle events (e.g. capture a stack backtrace if a <code>result&lt;T, E&gt;</code> is constructed with an error).</p>
+
+<p>Outcome perfectly propagates constexpr, triviality and <code>noexcept</code>-ness of each individual operation of the types you configure it with. It never touches dynamic memory allocation, and it has been carefully written so the compiler will optimise it out of codegen entirely wherever that is possible. It is capable of &lsquo;true moves&rsquo; for types which declare themselves &lsquo;move bitcopying compatible&rsquo; i.e. destructor calls on moved-from values are elided. &lsquo;True moves&rsquo; can have a game changing performance gain on types with virtual destructors.</p>
+
+<p>Outcome takes a lot of care to have the least possible impact on build times, and it guarantees that a binary built with it will have stable ABI so it is safe to use in <em>really</em> large C++ codebases (standalone edition only). For interoperation with other languages, it guarantees that C code can work with Outcome data types, and it provides a C macro API header file to help with that.</p>
+
+<p>Outcome recognises Expected-like types and will construct from them, which aids interoperability. <a href="https://wg21.link/P1028">A simplified Result type is proposed for standardisation as <code>std::result&lt;T&gt;</code></a> where the <code>E</code> type is hard coded to a proposed <code>std::error</code>. This proposed standardisation has been deployed on billions of devices at the time of writing, and <a href="../experimental.html">you can use it today via Experimental.Outcome</a>, the reference implementation.</p>
+
+<h4 id="pros">Pros:</h4>
+
+<ul>
+<li><p>Predictable runtime overhead on the happy path.</p></li>
+
+<li><p>Predictable runtime overhead on the sad path.</p></li>
+
+<li><p>Very little codegen bloat added to binaries (though there is a fixed absolute overhead for support libraries if you use Outcome&rsquo;s bundled error types).</p></li>
+
+<li><p>Neither success nor failure is prioritised during use &ndash; types will implicitly construct from both <code>T</code> and <code>E</code> if it is unambiguous, so no clunky added markup needed to return an <code>E</code>.</p></li>
+
+<li><p>Sad path control flow is required to be explicitly specified in every situation. This significantly reduces the number of sad control flow paths in a code base, making it much easier to test all of them. It also means that sad paths get audited and checked during code reviews.</p></li>
+
+<li><p>Macro <code>TRY</code> operator feels a bit unnatural to use, but is a god send to saving visual code clutter when all you want to say is &lsquo;handle this failure by asking my caller to handle it&rsquo;. It also works with non-Outcome types, and has its own suite of customisation points for third party extension.</p></li>
+
+<li><p>Works well in all configurations of C++, including C++ exceptions and RTTI globally disabled.</p></li>
+
+<li><p>Works well on all niche architectures, such as HPC, GPUs, DSPs and microcontrollers, and does not dynamically allocate memory.</p></li>
+</ul>
+
+<h4 id="cons">Cons:</h4>
+
+<ul>
+<li><p>Sad path control flow is required to be explicitly specified in every situation. For code where failure is extremely unlikely, or is not important because it always results in aborting the current operation, the added visual code clutter is unhelpful.</p></li>
+
+<li><p>Results in branchy code, which is slow &ndash; though predictably so &ndash; for embedded controller CPUs.</p></li>
+
+<li><p>Failure to examine an Outcome type generates a compiler diagnostic, but failure to handle both failure and success does not. This can mean failures or successes get accidentally dropped.</p></li>
+
+<li><p>To prevent variant storage having an outsize impact on build times in the same way widespread use of <code>std::variant</code> has, Outcome only implements union storage when both <code>T</code> and <code>E</code> are trivially copyable or move bitcopying. Otherwise struct storage is used, which means Outcome&rsquo;s types are larger than Expected&rsquo;s. This is because implementing exception guarantees during copies and moves of non-trivially-copyable types in union storage involves a lot of work for the compiler on every use of copy and move, so by using struct storage Outcome reduces build time impact from copies and moves significantly.</p>
+
+<p>Note that one of the major uses of Outcome types is as the return type from a function, in which case copy elision would happen in C++ 14 and is guaranteed from C++ 17 onwards. This means that the larger footprint of struct storage typically has much less impact in optimised code than might be the case if you store these types inside other types.</p></li>
+</ul>
+
+
+        </div><p><small>Last revised: January 10, 2022 at 14:29:13 UTC</small></p>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../alternatives/expected.html"><img src="../images/prev.png" alt="Prev"></a>
+    <a accesskey="u" href="../alternatives.html"><img src="../images/up.png" alt="Up"></a>
+    <a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="../alternatives/leaf.html"><img src="../images/next.png" alt="Next"></a></div></body>
+</html>
