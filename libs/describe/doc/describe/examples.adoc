@@ -1,0 +1,494 @@
+////
+Copyright 2020 Peter Dimov
+Distributed under the Boost Software License, Version 1.0.
+https://www.boost.org/LICENSE_1_0.txt
+////
+
+[#examples]
+# Usage Examples
+:idprefix: example_
+
+[#example_printing_enums_ct]
+## Printing Enumerators with a Compile Time Loop
+
+A simple example that just iterates over the enumerator
+descriptors using `mp11::mp_for_each` and prints them.
+
+[source]
+----
+include::../../example/printing_enums_ct.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+v1: 11
+v2: 12
+v3: 5
+----
+
+[#example_printing_enums_rt]
+## Printing Enumerators with a Run Time Loop
+
+This is similar to the previous example, but it first builds a
+`std::array` with the values, and then iterates over it using
+an ordinary `for` loop, instead of `mp_for_each`.
+
+[source]
+----
+include::../../example/printing_enums_rt.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+v1: 0
+v2: 1
+v3: 2
+v4: 3
+v5: 4
+v6: 5
+----
+
+[#example_enum_to_string]
+## enum_to_string
+
+This example shows a function that, given an enumerator
+value, returns its name. If the value does not correspond
+to a named value, the function returns `"(unnamed)"`.
+
+[source]
+----
+include::../../example/enum_to_string.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+E(3): v1
+E(0): (unnamed)
+----
+
+Since release 1.78.0, the library provides `enum_to_string`.
+It differs from the one in the example by having a second
+parameter that determines what should be returned when the
+value doesn't correspond to a named enumerator.
+
+[#example_string_to_enum]
+## string_to_enum
+
+The opposite of the previous example; returns an enumerator
+value when given the enumerator name. When the string passed
+does not correspond to any enumerator name, throws an exception.
+
+[source]
+----
+include::../../example/string_to_enum.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+v1: 0
+v2: 1
+v3: 2
+v4: Invalid enumerator name 'v4' for enum type 'enum E'
+----
+
+Since release 1.78.0, the library provides `enum_from_string`.
+It differs from the function in the example by signaling failure
+by a `bool` return value instead of using exceptions. The
+enumerator value is assigned to the output argument.
+
+[#example_print_function]
+## Defining a Universal Print Function
+
+This example defines a universal `operator<<` that works on
+any class or struct type that has been described with
+`BOOST_DESCRIBE_STRUCT` or `BOOST_DESCRIBE_CLASS`.
+
+It first prints the base classes, recursively, then prints
+all the members.
+
+(A C cast is used to access private base classes. This is
+not as bad as it first appears, because we're only inspecting
+the base class by printing its members, and doing so should not
+change its state and hence cannot violate its invariant.)
+
+[source]
+----
+include::../../example/print_function.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+{{.m1 = 1}, {.m2 = 2}, .m1 = 3, .m2 = 4}
+----
+
+Since release 1.78.0, this universal `operator<<` is supplied
+by the library, in the `boost::describe::operators` namespace.
+It's enabled by means of a using declaration in the namespace
+containing the described application types, like in the example
+below:
+```
+namespace app
+{
+
+struct X
+{
+    int a = 1;
+};
+
+BOOST_DESCRIBE_STRUCT(X, (), (a))
+
+using boost::describe::operators::operator<<;
+
+}
+```
+
+[#example_hash_value]
+## Implementing hash_value
+
+This example defines a universal `hash_value` overload that
+computes the hash value of an annotated struct or class. It
+does so by iterating over the described bases and members and
+calling `boost::hash_combine` on each.
+
+The overload is defined in namespace `app` in order to apply
+to all annotated classes also defined in `app`.
+
+[source]
+----
+include::../../example/hash_value.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+12526671134390370097
+----
+
+[#example_equality]
+## Implementing operator==
+
+This example defines a universal `operator==` overload that
+iterates over the described bases and members and compares
+them for equality using `==`.
+
+The overload is defined in namespace `app` in order to apply
+to all annotated classes also defined in `app`.
+
+[source]
+----
+include::../../example/equality.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+true false
+----
+
+Since release 1.78.0, this universal `operator==` is supplied
+by the library, in the `boost::describe::operators` namespace.
+It's enabled by means of a using declaration in the namespace
+containing the described application types, like in the example
+below:
+```
+namespace app
+{
+
+struct X
+{
+    int a = 1;
+};
+
+BOOST_DESCRIBE_STRUCT(X, (), (a))
+
+using boost::describe::operators::operator==;
+
+}
+```
+
+The rest of the relational operators are also provided and can
+be enabled similarly.
+
+[#example_struct_to_tuple]
+## struct_to_tuple
+
+This example defines a function `struct_to_tuple` that takes
+a described class type as an argument and returns a tuple of
+all its public members.
+
+[source]
+----
+include::../../example/struct_to_tuple.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+std::tuple<int, float>: 1, 3.14
+----
+
+[#example_to_json]
+## Automatic Conversion to JSON
+
+This example defines a universal `tag_invoke` overload that
+automatically converts an annotated struct to a
+http://boost.org/libs/json[Boost.JSON] value by iterating
+over the described public members and adding them to the return
+`boost::json::object`.
+
+The overload is defined in namespace `app` in order to apply
+to all annotated classes also defined in `app`.
+
+The presence of private members is taken as an indication that
+a universal conversion is not suitable, so the overload is
+disabled in this case using `std::enable_if_t`.
+
+[source]
+----
+include::../../example/to_json.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+{"v":[{"x":1,"y":2},{"x":3,"y":4}],"m":{"k1":{"x":5,"y":6},"k2":{"x":7,"y":8}}}
+----
+
+[#example_from_json]
+## Automatic Conversion from JSON
+
+Like the previous example, but in the other direction. Defines
+a `tag_invoke` overload that converts a `boost::json::value` to
+an annotated struct.
+
+[source]
+----
+include::../../example/from_json.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+jv: {"x":1,"y":2}
+a: { 1, 2 }
+----
+
+[#example_serialization]
+## Automatic Serialization
+
+This example defines a universal `serialize` function that
+automatically adds https://boost.org/libs/serialization[Boost.Serialization]
+support to annotated classes.
+
+[source]
+----
+include::../../example/serialization.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="19">
+<c1 class_id="0" tracking_level="0" version="0">
+        <v class_id="1" tracking_level="0" version="0">
+                <count>3</count>
+                <item_version>0</item_version>
+                <item class_id="2" tracking_level="0" version="0">
+                        <base.1 class_id="3" tracking_level="0" version="0">
+                                <x>1</x>
+                        </base.1>
+                        <base.2 class_id="4" tracking_level="0" version="0">
+                                <y>2</y>
+                        </base.2>
+                </item>
+                <item>
+                        <base.1>
+                                <x>3</x>
+                        </base.1>
+                        <base.2>
+                                <y>4</y>
+                        </base.2>
+                </item>
+                <item>
+                        <base.1>
+                                <x>5</x>
+                        </base.1>
+                        <base.2>
+                                <y>6</y>
+                        </base.2>
+                </item>
+        </v>
+</c1>
+</boost_serialization>
+
+
+22 serialization::archive 19 0 0 0 0 3 0 0 0 0 0 1 0 0 2 3 4 5 6
+----
+
+[#example_json_rpc]
+## Automatic JSON RPC
+
+This example defines a generic `call` function that can be used to
+invoke a member function by name, with the arguments passed in a
+http://boost.org/libs/json[Boost.JSON] array. The result is returned
+in a `boost::json::value`.
+
+[source]
+----
+include::../../example/json_rpc.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+"Hello, world!"
+3
+----
+
+[#example_console]
+## Interactive Variable Console
+
+This example implements an interactive console that allows printing
+and modifying variables. It uses http://boost.org/libs/json[Boost.JSON]
+for converting the variables to and from a string form.
+
+[source]
+----
+include::../../example/console.cpp[lines=9..-1]
+----
+
+Sample output:
+
+[listing]
+----
+
+> help
+"Enter a variable name ('x', 'y', 'v', or 'm') to print its value; enter variable=value to assign a new value to a variable. Values are in JSON format."
+
+> x
+1
+
+> y
+3.14E0
+
+> v
+[1,2,3]
+
+> m
+{"BTC":4.489868E4,"ETH":1.38657E3}
+
+> x="hello"
+Error: not a number [boost.json:15]
+
+> x=3.14
+Error: not exact [boost.json:16]
+
+> x=4
+
+> x
+4
+
+> y=6.28
+
+> y
+6.28E0
+
+> v=["hello", "world"]
+Error: not a number [boost.json:15]
+
+> v=[1.2, 3.4]
+Error: not exact [boost.json:16]
+
+> v=[11, 27]
+
+> c
+Error: 'c': no such variable
+
+> v
+[11,27]
+
+> m={"BTC": 42139.07, "ETH": 2912.00}
+
+> m
+{"BTC":4.213907E4,"ETH":2.912E3}
+----
+
+[#example_fmtlib_class_formatter]
+## `fmtlib` Class Formatter
+
+This example defines a universal https://github.com/fmtlib/fmt[`fmtlib`]
+formatter that works on any class or struct type that has been described
+with `BOOST_DESCRIBE_STRUCT` or `BOOST_DESCRIBE_CLASS`. It's similar to
+<<example_print_function,the universal print function shown above>>.
+
+[source]
+----
+include::../../example/fmtlib_class_formatter.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+{ { .r=255, .g=192, .b=16 }, .first={ .x=1, .y=2 }, .last={ .x=3, .y=4 } }
+----
+
+[#example_fmtlib_enum_formatter]
+## `fmtlib` Enum Formatter
+
+This example defines a https://github.com/fmtlib/fmt[`fmtlib`] formatter
+for described enums.
+
+[source]
+----
+include::../../example/fmtlib_enum_formatter.cpp[lines=5..-1]
+----
+
+Sample output:
+
+[listing]
+----
+____v1____
+____7_____
+----
+
+[#example_pm_to_string]
+## Printing Pointers to Members
+
+This example defines an `operator<<` overload for pointers to members.
+
+[source]
+----
+include::../../example/pm_to_string.cpp[lines=9..-1]
+----
+
+Sample output:
+
+[listing]
+----
+&X::m [int]
+&X::f [int() const]
+&Y::m [int]
+&X::f [int() const]
+&Y::g [int() const]
+&Z::(unknown) [void()]
+----
