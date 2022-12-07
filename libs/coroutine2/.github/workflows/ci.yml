@@ -1,0 +1,309 @@
+name: GitHub Actions CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - githubactions*
+      - feature/**
+      - fix/**
+      - pr/**
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "TOOLSET=gcc COMPILER=g++ CXXSTD=11 Job 0"
+            buildtype: "boost"
+            packages: ""
+            packages_to_remove: ""
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            cxx: "g++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++"
+            cxxstd: "11"
+          - name: "TOOLSET=gcc COMPILER=g++-5 CXXSTD=11,14,1z Job 1"
+            buildtype: "boost"
+            packages: "g++-5"
+            packages_to_remove: ""
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            cxx: "g++-5"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-5"
+            cxxstd: "11,14,1z"
+          - name: "TOOLSET=gcc COMPILER=g++-6 CXXSTD=11,14,1z Job 2"
+            buildtype: "boost"
+            packages: "g++-6"
+            packages_to_remove: ""
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            cxx: "g++-6"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-6"
+            cxxstd: "11,14,1z"
+          - name: "TOOLSET=gcc COMPILER=g++-7 CXXSTD=11,14,17 Job 3"
+            buildtype: "boost"
+            packages: "g++-7"
+            packages_to_remove: ""
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            cxx: "g++-7"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-7"
+            cxxstd: "11,14,17"
+          - name: "TOOLSET=clang COMPILER=clang++ CXXSTD=11 Job 4"
+            buildtype: "boost"
+            packages: ""
+            packages_to_remove: ""
+            os: "ubuntu-18.04"
+            cxx: "clang++"
+            sources: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "clang"
+            compiler: "clang++"
+            cxxstd: "11"
+          - name: "TOOLSET=clang COMPILER=clang++-4.0 CXXSTD=11, Job 5"
+            buildtype: "boost"
+            packages: "clang-4.0 libstdc++-6-dev"
+            packages_to_remove: ""
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            cxx: "clang++-4.0"
+            sources: ""
+            llvm_os: "xenial"
+            llvm_ver: "4.0"
+            toolset: "clang"
+            compiler: "clang++-4.0"
+            cxxstd: "11,14"
+          - name: "TOOLSET=clang COMPILER=clang++-5.0 CXXSTD=11, Job 6"
+            buildtype: "boost"
+            packages: "clang-5.0 libstdc++-7-dev"
+            packages_to_remove: ""
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            cxx: "clang++-5.0"
+            sources: ""
+            llvm_os: "xenial"
+            llvm_ver: "5.0"
+            toolset: "clang"
+            compiler: "clang++-5.0"
+            cxxstd: "11,14,1z"
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Check if running in container
+        if: matrix.container != ''
+        run: echo "GHA_CONTAINER=${{ matrix.container }}" >> $GITHUB_ENV
+      - name: If running in container, upgrade packages
+        if: matrix.container != ''
+        run: |
+            apt-get -o Acquire::Retries=3 update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata && apt-get -o Acquire::Retries=3 install -y sudo software-properties-common wget curl apt-transport-https make apt-file sudo unzip libssl-dev build-essential autotools-dev autoconf automake g++ libc++-helpers python ruby cpio gcc-multilib g++-multilib pkgconf python3 ccache libpython-dev
+            sudo apt-add-repository ppa:git-core/ppa
+            sudo apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 -y install git
+            python_version=$(python3 -c 'import sys; print("{0.major}.{0.minor}".format(sys.version_info))')
+            sudo wget https://bootstrap.pypa.io/pip/$python_version/get-pip.py
+            sudo python3 get-pip.py
+            sudo /usr/local/bin/pip install cmake
+
+      - uses: actions/checkout@v2
+
+      - name: linux
+        shell: bash
+        env:
+          CXX: ${{ matrix.cxx }}
+          SOURCES: ${{ matrix.sources }}
+          LLVM_OS: ${{ matrix.llvm_os }}
+          LLVM_VER: ${{ matrix.llvm_ver }}
+          PACKAGES: ${{ matrix.packages }}
+          PACKAGES_TO_REMOVE: ${{ matrix.packages_to_remove }}
+          JOB_BUILDTYPE: ${{ matrix.buildtype }}
+          TOOLSET: ${{ matrix.toolset }}
+          COMPILER: ${{ matrix.compiler }}
+          CXXSTD: ${{ matrix.cxxstd }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "linux"
+        run: |
+          echo '==================================> SETUP'
+          echo '==================================> PACKAGES'
+          set -e
+          if [ -n "$PACKAGES_TO_REMOVE" ]; then sudo apt-get purge -y $PACKAGES_TO_REMOVE; fi
+          echo ">>>>> APT: REPO.."
+          for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+          
+          if test -n "${LLVM_OS}" ; then
+              wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+              if test -n "${LLVM_VER}" ; then
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS}-${LLVM_VER} main"
+              else
+                  # Snapshot (i.e. trunk) build of clang
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS} main"
+              fi
+          fi
+          echo ">>>>> APT: UPDATE.."
+          sudo -E apt-get -o Acquire::Retries=3 update
+          if test -n "${SOURCES}" ; then
+              echo ">>>>> APT: INSTALL SOURCES.."
+              for SOURCE in $SOURCES; do
+                  sudo -E apt-add-repository ppa:$SOURCE
+              done
+          fi
+          echo ">>>>> APT: INSTALL ${PACKAGES}.."
+          sudo -E DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -y --no-install-suggests --no-install-recommends install ${PACKAGES}
+
+          echo '==================================> INSTALL AND COMPILE'
+          set -e
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+
+          if [ "$JOB_BUILDTYPE" == "boost" ]; then
+
+          echo '==================================> INSTALL'
+
+          BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+          cd ..
+          git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init tools/build
+          git submodule update --init libs/config
+          git submodule update --init tools/boostdep
+          cp -r $TRAVIS_BUILD_DIR/* libs/coroutine2
+          python tools/boostdep/depinst/depinst.py coroutine2
+          ./bootstrap.sh
+          ./b2 headers
+
+          echo '==================================> SCRIPT'
+
+          echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+          ./b2 -j 3 libs/coroutine2/test toolset=$TOOLSET cxxstd=$CXXSTD
+
+          fi
+# 
+#   osx:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         include:
+#
+# Github Actions only supports certain Xcode versions
+# Change (or delete) the Xcode version for this job.
+# 
+#           - name: "TOOLSET=clang COMPILER=clang++ CXXSTD=11,14,1 Job 7"
+#             buildtype: "boost"
+#             packages: ""
+#             os: "macos-10.15"
+#             cxx: "clang++"
+#             sources: ""
+#             llvm_os: ""
+#             llvm_ver: ""
+#             xcode_version: "8.3"
+#             toolset: "clang"
+#             compiler: "clang++"
+#             cxxstd: "11,14,1z"
+#
+# Github Actions only supports certain Xcode versions
+# Change (or delete) the Xcode version for this job.
+# 
+#           - name: "TOOLSET=clang COMPILER=clang++ CXXSTD=11,14,1 Job 8"
+#             buildtype: "boost"
+#             packages: ""
+#             os: "macos-10.15"
+#             cxx: "clang++"
+#             sources: ""
+#             llvm_os: ""
+#             llvm_ver: ""
+#             xcode_version: "9.1"
+#             toolset: "clang"
+#             compiler: "clang++"
+#             cxxstd: "11,14,1z"
+# 
+# 
+#     runs-on: ${{ matrix.os }}
+# 
+#     steps:
+#       - uses: actions/checkout@v2
+# 
+#       - name: Set DEVELOPER_DIR
+#         if: matrix.xcode_version != ''
+#         run: echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer" >> $GITHUB_ENV
+#       - name: Test DEVELOPER_DIR
+#         run: echo $DEVELOPER_DIR
+# 
+#       - name: "osx"
+#         shell: bash
+#         env:
+#           CXX: ${{ matrix.cxx }}
+#           SOURCES: ${{ matrix.sources }}
+#           LLVM_OS: ${{ matrix.llvm_os }}
+#           LLVM_VER: ${{ matrix.llvm_ver }}
+#           PACKAGES: ${{ matrix.packages }}
+#           JOB_BUILDTYPE: ${{ matrix.buildtype }}
+#           TOOLSET: ${{ matrix.toolset }}
+#           COMPILER: ${{ matrix.compiler }}
+#           CXXSTD: ${{ matrix.cxxstd }}
+#           TRAVIS_BRANCH: ${{ github.base_ref }}
+#           TRAVIS_OS_NAME: "osx"
+#         run: |
+#           echo '==================================> SETUP'
+#           set -e
+#           sudo mv /Library/Developer/CommandLineTools /Library/Developer/CommandLineTools.bck
+#           echo '==================================> PACKAGES'
+#           echo '==================================> INSTALL AND COMPILE'
+#           set -e
+#           export TRAVIS_BUILD_DIR=$(pwd)
+#           export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+#           export VCS_COMMIT_ID=$GITHUB_SHA
+#           export GIT_COMMIT=$GITHUB_SHA
+#           export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+#           export USER=$(whoami)
+#           export CC=${CC:-gcc}
+#           export PATH=~/.local/bin:/usr/local/bin:$PATH
+# 
+#           if [ "$JOB_BUILDTYPE" == "boost" ]; then
+# 
+#           echo '==================================> INSTALL'
+# 
+#           BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+#           cd ..
+#           git clone -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+#           cd boost-root
+#           git submodule update --init tools/build
+#           git submodule update --init libs/config
+#           git submodule update --init tools/boostdep
+#           cp -r $TRAVIS_BUILD_DIR/* libs/coroutine2
+#           python tools/boostdep/depinst/depinst.py coroutine2
+#           ./bootstrap.sh
+#           ./b2 headers
+# 
+#           echo '==================================> SCRIPT'
+# 
+#           echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+#           ./b2 -j 3 libs/coroutine2/test toolset=$TOOLSET cxxstd=$CXXSTD
+# 
+#           fi
