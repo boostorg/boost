@@ -1,0 +1,73 @@
+# Copyright 2016 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+
+platform:
+  - x64
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=msvc-14.1 address-model=64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=msvc-14.1 address-model=32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=msvc-14.1 address-model=64 cxxflags=-std:c++latest cxxflags=-permissive-
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=clang-win address-model=64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      ARGS: --toolset=clang-win address-model=32
+    - ARGS: --toolset=msvc-9.0  address-model=32
+    - ARGS: --toolset=msvc-10.0 address-model=32
+    - ARGS: --toolset=msvc-11.0 address-model=32
+    - ARGS: --toolset=msvc-12.0 address-model=32
+    - ARGS: --toolset=msvc-14.0 address-model=32
+    - ARGS: --toolset=msvc-12.0 address-model=64
+    - ARGS: --toolset=msvc-14.0 address-model=64
+    - ARGS: --toolset=msvc-14.0 address-model=64 cxxflags=-std:c++latest
+    - ARGS: --toolset=gcc address-model=64 
+      CXXSTD: 03,11,14,1z
+      PATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=64
+      CXXSTD: 03,11,14,1z
+      PATH: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=32 linkflags=-Wl,-allow-multiple-definition
+      CXXSTD: 03,11,14,1z
+      PATH: C:\MinGW\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=64
+      CXXSTD: 03,11,14,1z
+      PATH: C:\cygwin64\bin;%PATH%
+    - ARGS: --toolset=gcc address-model=32
+      CXXSTD: 03,11,14,1z
+      PATH: C:\cygwin\bin;%PATH%
+
+install:
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\config
+  - git submodule update --init tools/build
+  - git submodule update --init tools/boost_install
+  - git submodule update --init libs/headers
+  - git submodule update --init libs/detail
+  - git submodule update --init libs/core
+  - git submodule update --init libs/assert
+  - git submodule update --init libs/type_traits
+  - bootstrap
+  - b2 headers
+  
+build: off
+
+test_script:
+  - cd libs\config\test
+  - ..\..\..\b2 print_config_info %ARGS% cxxstd=%CXXSTD%
+  - ..\..\..\b2 -j3 %ARGS% cxxstd=%CXXSTD%
