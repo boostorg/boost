@@ -1,0 +1,140 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2017-2019 Kohei Takahashi
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-9.0
+      ADDRMDL: 32
+      CXXSTD: latest # fake
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-10.0
+      ADDRMDL: 32
+      CXXSTD: latest # fake
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-11.0
+      ADDRMDL: 32
+      CXXSTD: latest # fake
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-12.0
+      CXXSTD: latest # fake
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      CXXSTD: 14
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      CXXSTD: latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: 14
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: 17
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: clang-win
+      CXXSTD: 14
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: clang-win
+      CXXSTD: 17
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone --depth 1 -b %BOOST_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+
+  - git submodule init libs/algorithm
+  - git submodule init libs/any
+  - git submodule init libs/array
+  - git submodule init libs/assert
+  - git submodule init libs/assign
+  - git submodule init libs/atomic
+  - git submodule init libs/bind
+  - git submodule init libs/chrono
+  - git submodule init libs/circular_buffer
+  - git submodule init libs/concept_check
+  - git submodule init libs/config
+  - git submodule init libs/container
+  - git submodule init libs/container_hash
+  - git submodule init libs/conversion
+  - git submodule init libs/core
+  - git submodule init libs/date_time
+  - git submodule init libs/detail
+  - git submodule init libs/endian
+  - git submodule init libs/exception
+  - git submodule init libs/filesystem
+  - git submodule init libs/foreach
+  - git submodule init libs/format
+  - git submodule init libs/function
+  - git submodule init libs/function_types
+  - git submodule init libs/functional
+  - git submodule init libs/fusion
+  - git submodule init libs/integer
+  - git submodule init libs/intrusive
+  - git submodule init libs/io
+  - git submodule init libs/iostreams
+  - git submodule init libs/iterator
+  - git submodule init libs/lambda
+  - git submodule init libs/lexical_cast
+  - git submodule init libs/locale
+  - git submodule init libs/log
+  - git submodule init libs/math
+  - git submodule init libs/move
+  - git submodule init libs/mp11
+  - git submodule init libs/mpl
+  - git submodule init libs/multi_index
+  - git submodule init libs/numeric/conversion
+  - git submodule init libs/optional
+  - git submodule init libs/parameter
+  - git submodule init libs/pool
+  - git submodule init libs/predef
+  - git submodule init libs/preprocessor
+  - git submodule init libs/property_tree
+  - git submodule init libs/proto
+  - git submodule init libs/ptr_container
+  - git submodule init libs/python
+  - git submodule init libs/random
+  - git submodule init libs/range
+  - git submodule init libs/ratio
+  - git submodule init libs/rational
+  - git submodule init libs/regex
+  - git submodule init libs/serialization
+  - git submodule init libs/signals2
+  - git submodule init libs/smart_ptr
+  - git submodule init libs/spirit
+  - git submodule init libs/static_assert
+  - git submodule init libs/system
+  - git submodule init libs/thread
+  - git submodule init libs/throw_exception
+  - git submodule init libs/tokenizer
+  - git submodule init libs/tti
+  - git submodule init libs/tuple
+  - git submodule init libs/type_index
+  - git submodule init libs/type_traits
+  - git submodule init libs/typeof
+  - git submodule init libs/unordered
+  - git submodule init libs/utility
+  - git submodule init libs/variant
+  - git submodule init libs/winapi
+  - git submodule init libs/xpressive
+
+  - git submodule init libs/headers tools/boost_install tools/build
+  - git submodule update --jobs 8
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\phoenix
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - b2 --hash libs/phoenix/test toolset=%TOOLSET% cxxstd=%CXXSTD% address-model=%ADDRMDL%
