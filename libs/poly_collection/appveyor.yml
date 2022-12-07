@@ -1,0 +1,37 @@
+# Copyright 2018 Joaquín M López Muñoz.
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+#
+# See http://www.boost.org/libs/poly_collection for library home page.
+
+version: 1.0.{build}-{branch}
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: 14,17
+
+install:
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init
+  - git rm --ignore-unmatch libs/poly_collection/
+  - bootstrap
+  - b2 headers
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\poly_collection\
+
+build: off
+
+test_script:
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 libs/poly_collection/test toolset=%TOOLSET% %CXXSTD%
