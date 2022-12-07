@@ -1,0 +1,81 @@
+# Copyright 2018 Stefan Seefeld
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+
+language: cpp
+
+sudo: required
+
+branches:
+  only:
+    - master
+    - develop
+    - doc
+    - ci
+
+# env: specifies additional global variables to define per row in build matrix
+env:
+  global:
+    - CLBLAS_PREFIX=${TRAVIS_BUILD_DIR}/CLBLAS/
+    - PATH=${CLBLAS_PREFIX}/bin:$PATH
+    - LD_LIBRARY_PATH=${CLBLAS_PREFIX}/lib:$LD_LIBRARY_PATH
+
+matrix:
+  include:
+    - os: linux
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=11
+    - os: linux
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=17    
+      
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-7
+    - libopenblas-base
+    - rpm2cpio
+    - cpio
+    - clinfo
+    - opencl-headers
+    - ocl-icd-opencl-dev
+
+before_install:
+  - if [ ${TRAVIS_OS_NAME} == "linux" ]; then .ci/install-ocl-ubuntu.sh; fi
+  - .ci/install-clblas.sh
+  - cmake --version;
+  - ${CC} --version;
+  - ${CXX} --version;
+
+install:
+  - cd ..
+  - git clone -b master --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init --jobs 8 tools/build
+  - git submodule update --init --jobs 8 libs/config
+  - git submodule update --init --jobs 8 tools/boostdep
+  - mkdir -p libs/numeric/
+  - cp -r $TRAVIS_BUILD_DIR/* libs/numeric/ublas
+  - python tools/boostdep/depinst/depinst.py -I benchmarks numeric/ublas
+  - ./bootstrap.sh
+  - ./b2 -j 8 headers 
+
+# Use before_script: to run configure steps
+before_script:
+
+
+# use script: to execute build steps
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER ;" >> ~/user-config.jam;
+    echo "using clblas : : <include>${CLBLAS_PREFIX}/include <search>${CLBLAS_PREFIX}/lib ;" >> ~/user-config.jam;
+    cp $TRAVIS_BUILD_DIR/opencl.jam ~/
+    cp $TRAVIS_BUILD_DIR/clblas.jam ~/
+  - ./b2 -j 8 libs/numeric/ublas/test toolset=$TOOLSET cxxstd=$CXXSTD
+  - ./b2 -j 8 libs/numeric/ublas/benchmarks toolset=$TOOLSET cxxstd=$CXXSTD
+  - ./b2 -j 8 libs/numeric/ublas/examples/tensor toolset=$TOOLSET cxxstd=$CXXSTD
+
+notifications:
+  email:
+    on_success: always
