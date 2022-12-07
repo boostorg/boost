@@ -1,0 +1,63 @@
+name: Coverage
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - 'doc/**'
+      - 'examples/**'
+      - '*.md'
+
+env:
+  B2_OPTS: -q -j2 warnings-as-errors=on
+  GCC_VERSION: 11
+
+jobs:
+  cov:
+    runs-on: macos-10.15
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch Boost superproject
+      run: |
+        cd ..
+        git clone -b $GITHUB_BASE_REF --depth 5 https://github.com/boostorg/boost.git
+        cd boost
+        mv -f $GITHUB_WORKSPACE/* libs/histogram
+        git submodule update --init --depth 5 tools/build tools/boostdep
+        python tools/boostdep/depinst/depinst.py --git_args "--depth 5 --jobs 3" histogram
+        mv -f * $GITHUB_WORKSPACE
+
+        # # use hdembinski/serialization due to frequent errors in boostorg/serialization
+        # pushd libs/serialization
+        # git remote add patch https://github.com/HDembinski/serialization.git
+        # git fetch patch
+        # git checkout patch/boost_histogram
+        # popd
+
+    - name: Prepare b2
+      run: |
+        ./bootstrap.sh
+        ./b2 headers
+
+        # simulate bundled boost by moving the headers instead of symlinking
+        rm -rf boost/histogram*
+        mv -f libs/histogram/include/boost/* boost
+
+    - name: Test cxxstd=latest coverage=on
+      run: |
+        cd libs/histogram
+
+        # don't compile examples in coverage build, coverage must come from tests alone
+        ../../b2 $B2_OPTS toolset=gcc-${GCC_VERSION} cxxstd=latest coverage=on test//all
+
+    - name: Process coverage data
+      run: |
+        cd libs/histogram
+        GCOV=gcov-${GCC_VERSION} tools/cov.py
+
+    - uses: coverallsapp/github-action@v1.1.2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: libs/histogram/coverage.info

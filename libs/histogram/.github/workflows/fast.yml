@@ -1,0 +1,40 @@
+name: Fast
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - 'doc/**'
+      - 'examples/**'
+      - 'tools/**'
+      - '*.md'
+  push:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - 'doc/**'
+      - 'examples/**'
+      - 'tools/**'
+      - '*.md'
+
+jobs:
+  cmake:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: true
+    steps:
+    - uses: actions/checkout@v2
+    - name: prepare build
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - name: test
+      run: |
+        cd build
+        cmake --build . --target check -j3

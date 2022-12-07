@@ -1,0 +1,133 @@
+name: Slow
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    paths-ignore:
+      - 'doc/**'
+      - 'tools/**'
+      - '*.md'
+
+env:
+  B2_OPTS: -q -j2 warnings-as-errors=on
+  UBSAN_OPTIONS: print_stacktrace=1
+  LSAN_OPTIONS: verbosity=1:log_threads=1
+  ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1
+  COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+
+jobs:
+  superproject_cmake:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch Boost superproject
+      run: |
+        cd ..
+        git clone -b $GITHUB_BASE_REF --depth 5 https://github.com/boostorg/boost.git
+        cd boost
+        git submodule update --init --depth 5
+        rm -rf libs/histogram/*
+        mv -f $GITHUB_WORKSPACE/* libs/histogram
+        mv -f * $GITHUB_WORKSPACE
+    - name: CMake from superproject
+      run: |
+        cd ..
+        cmake -DBoost_VERBOSE=1 $GITHUB_WORKSPACE
+        cmake --build . --target all -j3 -- -k
+
+  appleclang:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch Boost superproject
+      run: |
+        cd ..
+        git clone -b $GITHUB_BASE_REF --depth 5 https://github.com/boostorg/boost.git
+        cd boost
+        mv -f $GITHUB_WORKSPACE/* libs/histogram
+        git submodule update --init --depth 5 tools/build tools/boostdep
+        python tools/boostdep/depinst/depinst.py --git_args "--depth 5 --jobs 3" histogram
+        mv -f * $GITHUB_WORKSPACE
+    - name: Prepare b2
+      run: |
+        ./bootstrap.sh
+        ./b2 headers
+    - name: Test cxxstd=14 exception-handling=off rtti=off
+      run: |
+        cd libs/histogram
+        ../../b2 $B2_OPTS cxxstd=14 exception-handling=off rtti=off test//minimal
+    - name: Test cxxstd=17
+      run: |
+        cd libs/histogram
+        ../../b2 $B2_OPTS cxxstd=17 test//all
+
+  gcc5:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: egor-tensin/setup-gcc@v1
+      with:
+        version: 5
+    - name: Fetch Boost superproject
+      run: |
+        cd ..
+        git clone -b $GITHUB_BASE_REF --depth 5 https://github.com/boostorg/boost.git
+        cd boost
+        mv -f $GITHUB_WORKSPACE/* libs/histogram
+        git submodule update --init --depth 5 tools/build tools/boostdep
+        python tools/boostdep/depinst/depinst.py --git_args "--depth 5 --jobs 3" histogram
+        mv -f * $GITHUB_WORKSPACE
+    - name: Prepare b2
+      run: |
+        ./bootstrap.sh
+        ./b2 headers
+    - name: Test cxxstd=14 (warnings ignored)
+      run: |
+        cd libs/histogram
+        ../../b2 -q -j2 toolset=gcc-5 cxxstd=14 test//all examples
+
+  gcc10:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch Boost superproject
+      run: |
+        cd ..
+        git clone -b $GITHUB_BASE_REF --depth 5 https://github.com/boostorg/boost.git
+        cd boost
+        mv -f $GITHUB_WORKSPACE/* libs/histogram
+        git submodule update --init --depth 5 tools/build tools/boostdep
+        python tools/boostdep/depinst/depinst.py --git_args "--depth 5 --jobs 3" histogram
+        mv -f * $GITHUB_WORKSPACE
+    - name: Prepare b2
+      run: |
+        ./bootstrap.sh
+        ./b2 headers
+    - name: Test cxxstd=20 -O3 -funsafe-math-optimizations
+      run: |
+        cd libs/histogram
+        ../../b2 $B2_OPTS toolset=gcc-10 cxxstd=20 cxxflags="-O3 -funsafe-math-optimizations" test//all examples
+
+  clang10:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Fetch Boost superproject
+      run: |
+        cd ..
+        git clone -b $GITHUB_BASE_REF --depth 5 https://github.com/boostorg/boost.git
+        cd boost
+        mv -f $GITHUB_WORKSPACE/* libs/histogram
+        git submodule update --init --depth 5 tools/build tools/boostdep
+        python tools/boostdep/depinst/depinst.py --git_args "--depth 5 --jobs 3" histogram
+        mv -f * $GITHUB_WORKSPACE
+    - name: Prepare b2
+      run: |
+        ./bootstrap.sh
+        ./b2 headers
+    - name: Test cxxstd=17 ubsan asan
+      run: |
+        cd libs/histogram
+        ../../b2 $B2_OPTS toolset=clang-10 cxxstd=17 variant=histogram_ubasan test//all

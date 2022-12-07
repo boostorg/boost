@@ -1,0 +1,50 @@
+# Copyright 2017-2019 Hans Dembinski
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+shallow_clone: true
+max_jobs: 2
+
+image:
+  - Visual Studio 2017
+  # - Visual Studio 2022 has failing test algorithm_project_test
+
+branches:
+  only:
+    - master
+    - develop
+
+build: off
+
+environment:
+  B2_OPTS: -j2 -q warnings-as-errors=on
+
+install:
+  # clone minimal set of Boost libraries
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 5 https://github.com/boostorg/boost.git
+  - cd boost
+  - git submodule update --init --depth 5 tools/build tools/boostdep
+
+  # replace Boost library with this project and install dependencies
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\histogram\
+  - python tools\boostdep\depinst\depinst.py -N units -N range -N accumulators --git_args "--depth 5 --jobs 2" histogram
+
+  ## use hdembinski/serialization due to errors in boostorg/serialization
+  # - cd libs/serialization
+  # - git remote add patch https://github.com/HDembinski/serialization.git
+  # - git fetch patch
+  # - git checkout patch/boost_histogram
+  # - cd ../..
+
+  # prepare Boost build
+  - cmd /c bootstrap & b2 headers & cd libs\histogram
+
+test_script:
+  # on windows
+  - ..\..\b2 %B2_OPTS% cxxstd=latest test//minimal test//serialization
+
+## Uncomment the following to stop VM and enable interactive login.
+## Instructions how to log into the Appveyor VM are automatically printed.
+# on_failure:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
