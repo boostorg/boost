@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Performance Comparison</title>
+<link rel="stylesheet" href="../multiprecision.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../index.html" title="Chapter 1. Boost.Multiprecision">
+<link rel="up" href="../index.html" title="Chapter 1. Boost.Multiprecision">
+<link rel="prev" href="ref/headers.html" title="Header File Structure">
+<link rel="next" href="perf/overhead.html" title="The Overhead in the Number Class Wrapper">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="ref/headers.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="perf/overhead.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="boost_multiprecision.perf"></a><a class="link" href="perf.html" title="Performance Comparison">Performance Comparison</a>
+</h2></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="perf/overhead.html">The Overhead in the
+      Number Class Wrapper</a></span></dt>
+<dt><span class="section"><a href="perf/realworld.html">Floating-Point Real
+      World Tests</a></span></dt>
+<dt><span class="section"><a href="perf/int_real_world.html">Integer Real
+      World Tests</a></span></dt>
+<dt><span class="section"><a href="perf/rational_real_world.html">Rational
+      Real World Tests</a></span></dt>
+<dt><span class="section"><a href="perf/float_performance.html">Float Algorithm
+      Performance</a></span></dt>
+<dt><span class="section"><a href="perf/integer_performance.html">Integer
+      Algorithm Performance</a></span></dt>
+<dt><span class="section"><a href="perf/rational_performance.html">Rational
+      Type Performance</a></span></dt>
+</dl></div>
+<p>
+      In the beginning of the project and throughout, many performance analyses,
+      counts of multiprecision-operations-per-second and the like have been performed.
+      Some of these are already listed in the ensuing sections.
+    </p>
+<p>
+      We will now provide some general notes on performance, valid for all of the
+      multiprecision backends, before the detailed benchmarks of the following sections.
+    </p>
+<p>
+      The header-only, library-independent Boost-licenses integer and floating-point
+      backends including <a class="link" href="tut/ints/cpp_int.html" title="cpp_int">cpp_int</a>
+      for multiprecision integers, <a class="link" href="tut/floats/cpp_bin_float.html" title="cpp_bin_float">cpp_bin_float</a>
+      and <a class="link" href="tut/floats/cpp_dec_float.html" title="cpp_dec_float">cpp_dec_float</a>
+      for multiprecision floating-point types are significantly slower than the world's
+      fastest implementations generally agreed to be found in GMP/MPIR, MPFR and
+      MPC (which are based on GMP). Complex types <a class="link" href="tut/complex/cpp_complex.html" title="cpp_complex">cpp_complex</a>
+      that are synthesized from these types share similar relative performances.
+    </p>
+<p>
+      The backends which effectively wrap GMP/MPIR and MPFR retain the superior performance
+      of the low-level big-number engines. When these are used (in association with
+      at least some level of optmization) they achieve and retain the expected low-level
+      performances.
+    </p>
+<p>
+      At low digit counts, however, it is noted that the performances of <a class="link" href="tut/ints/cpp_int.html" title="cpp_int">cpp_int</a>,
+      <a class="link" href="tut/floats/cpp_bin_float.html" title="cpp_bin_float">cpp_bin_float</a>
+      and <a class="link" href="tut/floats/cpp_dec_float.html" title="cpp_dec_float">cpp_dec_float</a>
+      can actually meet or exceed those encountered for GMP/MPIR, MPFR, etc. The
+      reason for this is because stack allocation and/or the use of fast container
+      storage can actually out-perform the allocation mechanisms in GMP/MPIR, which
+      dominate run-time costs at low digit counts.
+    </p>
+<p>
+      As digit counts rise above about 50 or so, however, GMP/MPIR performance steadily
+      increases, and simultaneously increases beyond (in relation to) the performances
+      of the Boost-licensed, self-written backends. At around a few hundred to several
+      thousands of digits, factors of about two through five are observed, whereby
+      GMP/MPIR-based calculations are (performance-wise) supreior ones.
+    </p>
+<p>
+      At a few thousand decimal digits, the upper end of the Boost backends is reached.
+      At the moment, advanced big-number multiplication schemes in the Boost-licensed,
+      self-written backends is limited to school multiplication and Karatsuba multiplication.
+      Higher-orders of Toom-Cook and FFT-based multiplication are not (yet) implemented.
+      So it is not yet feasible to perform mega-digit calculations with the Boost-licensed,
+      self-written backends, whereas these are readily possible with the GMP/MPIR
+      and MPRF based backends.
+    </p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2020 John
+      Maddock and Christopher Kormanyos<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="ref/headers.html"><img src="../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="perf/overhead.html"><img src="../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+[/
+  Copyright 2011 - 2020 John Maddock.
+  Copyright 2013 - 2019 Paul A. Bristow.
+  Copyright 2013 Christopher Kormanyos.
+
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
+
+[section:perf Performance Comparison]
+
+In the beginning of the project and throughout,
+many performance analyses, counts of multiprecision-operations-per-second
+and the like have been performed.
+Some of these are already listed in the ensuing sections.
+
+We will now provide some general notes on performance, valid
+for all of the multiprecision backends, before the detailed
+benchmarks of the following sections.
+
+The header-only, library-independent Boost-licenses integer
+and floating-point backends including
+__cpp_int for multiprecision integers,
+__cpp_bin_float and __cpp_dec_float for multiprecision floating-point types
+are significantly slower than the world's fastest implementations
+generally agreed to be found in GMP/MPIR, MPFR and MPC (which are based on GMP).
+Complex types __cpp_complex that are synthesized from these types
+share similar relative performances.
+
+The backends which effectively wrap GMP/MPIR and MPFR
+retain the superior performance of the low-level big-number engines.
+When these are used (in association with at least some level of optmization)
+they achieve and retain the expected low-level performances.
+
+At low digit counts, however, it is noted that the performances of __cpp_int,
+__cpp_bin_float and __cpp_dec_float can actually meet or exceed
+those encountered for GMP/MPIR, MPFR, etc. The reason for this
+is because stack allocation and/or the use of fast container
+storage can actually out-perform the allocation mechanisms in
+GMP/MPIR, which dominate run-time costs at low digit counts.
+
+As digit counts rise above about 50 or so, however,
+GMP/MPIR performance steadily increases,
+and simultaneously increases beyond (in relation to)
+the performances of the Boost-licensed, self-written backends.
+At around a few hundred to several thousands of digits,
+factors of about two through five are observed,
+whereby GMP/MPIR-based calculations are (performance-wise)
+supreior ones.
+
+At a few thousand decimal digits, the upper end of
+the Boost backends is reached. At the moment,
+advanced big-number multiplication schemes in the
+Boost-licensed, self-written backends is limited
+to school multiplication and Karatsuba multiplication.
+Higher-orders of Toom-Cook and FFT-based multiplication
+are not (yet) implemented. So it is not yet
+feasible to perform mega-digit calculations
+with the Boost-licensed, self-written backends,
+whereas these are readily possible with
+the GMP/MPIR and MPRF based backends.
+
+[include performance_overhead.qbk]
+[include performance_real_world.qbk]
+[include performance_integer_real_world.qbk]
+[include performance_rational_real_world.qbk]
+[include performance_float.qbk]
+[include performance_integer.qbk]
+[include performance_rational.qbk]
+
+[endsect]

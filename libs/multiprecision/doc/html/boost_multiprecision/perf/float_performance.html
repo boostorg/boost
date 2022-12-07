@@ -1,0 +1,2595 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Float Algorithm Performance</title>
+<link rel="stylesheet" href="../../multiprecision.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Multiprecision">
+<link rel="up" href="../perf.html" title="Performance Comparison">
+<link rel="prev" href="rational_real_world.html" title="Rational Real World Tests">
+<link rel="next" href="integer_performance.html" title="Integer Algorithm Performance">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="rational_real_world.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../perf.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="integer_performance.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_multiprecision.perf.float_performance"></a><a class="link" href="float_performance.html" title="Float Algorithm Performance">Float Algorithm
+      Performance</a>
+</h3></div></div></div>
+<p>
+        Note that these tests are carefully designed to test performance of the underlying
+        algorithms and not memory allocation or variable copying. As usual, performance
+        results should be taken with a healthy dose of scepticism, and real-world
+        performance may vary widely depending upon the specifics of the program.
+        In each table relative times are given first, with the best performer given
+        a score of 1. Total actual times are given in brackets, measured in seconds
+        for 500000 operations.
+      </p>
+<div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator"></a><p class="title"><b>Table 1.22. Operator *</b></p>
+<div class="table-contents"><table class="table" summary="Operator *">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  4.45465 (0.0720574s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.33995 (0.111688s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.90491 (0.850904s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.82572 (0.061884s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.06288 (0.130292s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.77019 (1.6902s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.28958 (0.02086s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0257348s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.292919s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0161758s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.57159 (0.0661794s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.09888 (0.321884s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_int"></a><p class="title"><b>Table 1.23. Operator *(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  7.78457 (0.0399504s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.32801 (0.0464923s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.78369 (0.12206s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  12.2836 (0.0630393s)
+                </p>
+              </td>
+<td>
+                <p>
+                  22.4215 (0.125171s)
+                </p>
+              </td>
+<td>
+                <p>
+                  115.745 (2.44271s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00513201s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00558264s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0211042s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  6.55686 (0.0336498s)
+                </p>
+              </td>
+<td>
+                <p>
+                  6.08531 (0.0339721s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.75579 (0.0792629s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long"></a><p class="title"><b>Table 1.24. Operator *(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.96061 (0.0508387s)
+                </p>
+              </td>
+<td>
+                <p>
+                  9.0225 (0.0540758s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.84877 (0.0843974s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.80905 (0.0745654s)
+                </p>
+              </td>
+<td>
+                <p>
+                  24.6321 (0.147631s)
+                </p>
+              </td>
+<td>
+                <p>
+                  122.419 (2.68446s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0128361s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00599344s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0219284s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.15124 (0.0276134s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.61073 (0.0276341s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.31056 (0.0506668s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long0"></a><p class="title"><b>Table 1.25. Operator *=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  6.54027 (0.0500366s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.58857 (0.0547429s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.33593 (0.0987612s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  9.23894 (0.0706828s)
+                </p>
+              </td>
+<td>
+                <p>
+                  17.6238 (0.172634s)
+                </p>
+              </td>
+<td>
+                <p>
+                  81.1437 (2.40228s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00765054s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00979552s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0296053s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.99517 (0.0229147s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.55395 (0.0348128s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.42098 (0.0716736s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator0"></a><p class="title"><b>Table 1.26. Operator +</b></p>
+<div class="table-contents"><table class="table" summary="Operator +">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.61482 (0.0479759s)
+                </p>
+              </td>
+<td>
+                <p>
+                  6.91285 (0.0901201s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.04302 (0.219881s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.08384 (0.0198859s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.6631 (0.0216812s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.59843 (0.207727s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.00042 (0.0183555s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0130366s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0273382s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0183477s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.4588 (0.0190178s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.22935 (0.0609463s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_int0"></a><p class="title"><b>Table 1.27. Operator +(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  11.8195 (0.0524679s)
+                </p>
+              </td>
+<td>
+                <p>
+                  13.9144 (0.0871804s)
+                </p>
+              </td>
+<td>
+                <p>
+                  13.6745 (0.165014s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.22445 (0.0143136s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.703 (0.0169356s)
+                </p>
+              </td>
+<td>
+                <p>
+                  12.5227 (0.151114s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00443909s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00626549s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0120673s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.78563 (0.0256829s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.78942 (0.0300081s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.21353 (0.062913s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long1"></a><p class="title"><b>Table 1.28. Operator +(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  21.4259 (0.109321s)
+                </p>
+              </td>
+<td>
+                <p>
+                  16.4546 (0.128103s)
+                </p>
+              </td>
+<td>
+                <p>
+                  14.7256 (0.16427s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  4.53931 (0.0231609s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.75913 (0.0292658s)
+                </p>
+              </td>
+<td>
+                <p>
+                  13.3516 (0.148942s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0051023s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00778526s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0111554s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.11905 (0.0261189s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.73777 (0.0290995s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.52758 (0.0616622s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long2"></a><p class="title"><b>Table 1.29. Operator +=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  6.6778 (0.109847s)
+                </p>
+              </td>
+<td>
+                <p>
+                  6.84045 (0.0942496s)
+                </p>
+              </td>
+<td>
+                <p>
+                  9.09759 (0.157162s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.06799 (0.017568s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.71962 (0.0236933s)
+                </p>
+              </td>
+<td>
+                <p>
+                  10.7777 (0.186187s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0164496s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0137783s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0172751s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.47654 (0.0571878s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.64857 (0.0502709s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.56004 (0.0787754s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator1"></a><p class="title"><b>Table 1.30. Operator -</b></p>
+<div class="table-contents"><table class="table" summary="Operator -">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.04597 (0.0688937s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.65775 (0.0896788s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.55005 (0.196627s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.42357 (0.0194363s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.62766 (0.0313385s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.16298 (0.21259s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0136532s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0192537s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0260432s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.76726 (0.0241287s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.05663 (0.0395976s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.48295 (0.0646638s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_int1"></a><p class="title"><b>Table 1.31. Operator -(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  6.31633 (0.0848243s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.07646 (0.084402s)
+                </p>
+              </td>
+<td>
+                <p>
+                  6.65523 (0.181209s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.6139 (0.0216737s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.20945 (0.0263524s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.27802 (0.14371s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0134294s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0119272s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0272281s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.1551 (0.0692297s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.48391 (0.0654074s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.6116 (0.0711089s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long3"></a><p class="title"><b>Table 1.32. Operator -(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  9.08373 (0.102878s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.54284 (0.0883961s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.01771 (0.185162s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.19345 (0.0248419s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.47898 (0.0287785s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.71248 (0.150724s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0113255s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0194584s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.026385s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.35926 (0.0606961s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.92255 (0.056868s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.43277 (0.0905736s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long4"></a><p class="title"><b>Table 1.33. Operator -=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  8.73347 (0.129938s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.58762 (0.101449s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.43827 (0.163157s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.67927 (0.0249846s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.79526 (0.0396995s)
+                </p>
+              </td>
+<td>
+                <p>
+                  6.63379 (0.199025s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0148782s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0221136s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0300017s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.96488 (0.0589902s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.30899 (0.0731736s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.51566 (0.105476s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator2"></a><p class="title"><b>Table 1.34. Operator /</b></p>
+<div class="table-contents"><table class="table" summary="Operator /">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.40221 (0.549759s)
+                </p>
+              </td>
+<td>
+                <p>
+                  10.0182 (1.39191s)
+                </p>
+              </td>
+<td>
+                <p>
+                  12.3684 (5.32129s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  8.16505 (0.83092s)
+                </p>
+              </td>
+<td>
+                <p>
+                  12.483 (1.73437s)
+                </p>
+              </td>
+<td>
+                <p>
+                  52.8644 (22.744s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.101766s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.138938s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.430233s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.6699 (0.169939s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.16251 (0.300455s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.82683 (1.2162s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_int2"></a><p class="title"><b>Table 1.35. Operator /(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  5.81464 (0.141651s)
+                </p>
+              </td>
+<td>
+                <p>
+                  12.2991 (0.271491s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.20246 (0.643802s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  16.4865 (0.40163s)
+                </p>
+              </td>
+<td>
+                <p>
+                  39.0331 (0.861622s)
+                </p>
+              </td>
+<td>
+                <p>
+                  164 (12.8722s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0243611s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0220741s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0784889s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.25501 (0.0549347s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.6832 (0.0592293s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.60852 (0.126251s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long5"></a><p class="title"><b>Table 1.36. Operator /(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  10.879 (0.19558s)
+                </p>
+              </td>
+<td>
+                <p>
+                  10.4845 (0.244599s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.82445 (0.621615s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  22.028 (0.396014s)
+                </p>
+              </td>
+<td>
+                <p>
+                  42.4784 (0.991001s)
+                </p>
+              </td>
+<td>
+                <p>
+                  201.351 (14.1836s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0179778s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0233296s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0704423s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.89723 (0.0520857s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.6935 (0.0628383s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.67233 (0.117803s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_unsigned_long_long6"></a><p class="title"><b>Table 1.37. Operator /=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  11.0264 (0.215322s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.78235 (0.256093s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.31638 (0.638041s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  20.9412 (0.408938s)
+                </p>
+              </td>
+<td>
+                <p>
+                  38.8146 (1.27727s)
+                </p>
+              </td>
+<td>
+                <p>
+                  142.377 (10.9233s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0195279s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.032907s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.076721s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.67894 (0.0523141s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.16678 (0.071302s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.5964 (0.122477s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_construct"></a><p class="title"><b>Table 1.38. Operator construct</b></p>
+<div class="table-contents"><table class="table" summary="Operator construct">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0030982s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.37355 (0.00608929s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0152335s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.23911 (0.00383901s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00443324s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.6806 (0.0256013s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  7.50258 (0.0232445s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.47554 (0.0242744s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.81062 (0.0885159s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  24.9598 (0.0773304s)
+                </p>
+              </td>
+<td>
+                <p>
+                  19.5526 (0.0866815s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.00378 (0.0762248s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_construct_unsigned_long"></a><p class="title"><b>Table 1.39. Operator construct(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator construct(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.08541 (0.0175206s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.12821 (0.0267453s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.32687 (0.0570308s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00840151s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00854971s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0429815s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.08163 (0.0258903s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.44895 (0.0209379s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.12806 (0.0914671s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  10.6814 (0.08974s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.42482 (0.0720298s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.8282 (0.0785786s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_construct_unsigned"></a><p class="title"><b>Table 1.40. Operator construct(unsigned)</b></p>
+<div class="table-contents"><table class="table" summary="Operator construct(unsigned)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  1.04974 (0.00808983s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.38823 (0.0120486s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.16321 (0.0530205s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00770653s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00867913s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0455813s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  3.88496 (0.0299395s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.90503 (0.0252132s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.82072 (0.0829907s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  13.3088 (0.102564s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.41333 (0.0730204s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.78408 (0.0813206s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.operator_str"></a><p class="title"><b>Table 1.41. Operator str</b></p>
+<div class="table-contents"><table class="table" summary="Operator str">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  50 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  100 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  500 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_bin_float
+                </p>
+              </td>
+<td>
+                <p>
+                  6.09659 (0.00301165s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.71882 (0.0051705s)
+                </p>
+              </td>
+<td>
+                <p>
+                  12.4899 (0.043165s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  cpp_dec_float
+                </p>
+              </td>
+<td>
+                <p>
+                  2.94087 (0.00145276s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.64843 (0.00180621s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.16004 (0.0109211s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  gmp_float
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.000493989s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00109572s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00345598s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpfr_float
+                </p>
+              </td>
+<td>
+                <p>
+                  4.60349 (0.00227407s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.21213 (0.00132816s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.41569 (0.0048926s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.float_performance.platform"></a><p class="title"><b>Table 1.42. Platform Details</b></p>
+<div class="table-contents"><table class="table" summary="Platform Details">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+              </th>
+<th>
+                <p>
+                  Version
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  Compiler
+                </p>
+              </td>
+<td>
+                <p>
+                  GNU C++ version 10.3.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  GMP
+                </p>
+              </td>
+<td>
+                <p>
+                  6.2.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  MPFR
+                </p>
+              </td>
+<td>
+                <p>
+                  262146
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Boost
+                </p>
+              </td>
+<td>
+                <p>
+                  107800
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Run date
+                </p>
+              </td>
+<td>
+                <p>
+                  Sep 30 2021
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break">
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2020 John
+      Maddock and Christopher Kormanyos<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="rational_real_world.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../perf.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="integer_performance.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

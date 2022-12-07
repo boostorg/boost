@@ -1,0 +1,270 @@
+# copyright John Maddock 2012
+# Distributed under the Boost Software License, Version 1.0. 
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http://www.boost.org/LICENSE_1_0.txt.
+
+import modules ;
+import path ;
+import ../../config/checks/config : requires ;
+
+local ntl-path = [ modules.peek : NTL_PATH ] ;
+local gmp_path = [ modules.peek : GMP_PATH ] ;
+local mpfr_path = [ modules.peek : MPFR_PATH ] ;
+local tommath_path = [ modules.peek : TOMMATH_PATH ] ;
+
+project : requirements 
+   <target-os>freebsd:<linkflags>"-lrt" 
+   <target-os>linux:<linkflags>"-lrt" 
+   <toolset>pgi:<linkflags>"-lrt" 
+   <include>$(gmp_path) 
+   <include>$(gmp_path)/mpfr 
+   <include>$(gmp_path)/gmpfrxx 
+   <include>$(mpfr_path)
+   <include>$(tommath_path)
+   <include>../../.. 
+   <search>$(gmp_path) 
+   <search>$(mpfr_path) 
+   <search>$(mpfr_path)/build.vc10/lib/Win32/Debug
+   <search>$(tommath_path) 
+   # We set these to make it easier to set up and test GMP and MPFR under Win32:
+   <toolset>msvc:<runtime-link>static
+   <toolset>msvc:<link>static
+   <toolset>intel-win:<runtime-link>static
+   <toolset>intel-win:<link>static
+   <define>BOOST_ALL_NO_LIB
+   <debug-symbols>off
+   <define>NDEBUG=1
+   ;
+
+
+lib gmp ;
+lib mpfr ;
+lib quadmath ;
+lib f2c ;
+
+if $(tommath_path)
+{
+   TOMMATH = [ GLOB $(tommath_path) : *.c ] ;
+}
+else
+{
+   lib tommath ;
+   TOMMATH = tommath ;
+}
+
+test-suite performance :
+
+[ exe performance_test : performance_test.cpp 
+            performance_test_files/test01.cpp  performance_test_files/test18.cpp  performance_test_files/test35.cpp
+            performance_test_files/test02.cpp  performance_test_files/test19.cpp  performance_test_files/test36.cpp
+            performance_test_files/test03.cpp  performance_test_files/test20.cpp  performance_test_files/test37.cpp
+            performance_test_files/test04.cpp  performance_test_files/test21.cpp  performance_test_files/test38.cpp
+            performance_test_files/test05.cpp  performance_test_files/test22.cpp  performance_test_files/test39.cpp
+            performance_test_files/test06.cpp  performance_test_files/test23.cpp  performance_test_files/test40.cpp
+            performance_test_files/test07.cpp  performance_test_files/test24.cpp  performance_test_files/test41.cpp
+            performance_test_files/test08.cpp  performance_test_files/test25.cpp  performance_test_files/test42.cpp
+            performance_test_files/test09.cpp  performance_test_files/test26.cpp  performance_test_files/test43.cpp
+            performance_test_files/test10.cpp  performance_test_files/test27.cpp  performance_test_files/test44.cpp
+            performance_test_files/test11.cpp  performance_test_files/test28.cpp  performance_test_files/test45.cpp
+            performance_test_files/test12.cpp  performance_test_files/test29.cpp  performance_test_files/test46.cpp
+            performance_test_files/test13.cpp  performance_test_files/test30.cpp  performance_test_files/test47.cpp
+            performance_test_files/test14.cpp  performance_test_files/test31.cpp  performance_test_files/test48.cpp
+            performance_test_files/test15.cpp  performance_test_files/test32.cpp  performance_test_files/test49.cpp
+            performance_test_files/test16.cpp  performance_test_files/test33.cpp  performance_test_files/test50.cpp
+            performance_test_files/test17.cpp  performance_test_files/test34.cpp  performance_test_files/test51.cpp            
+            /boost/system//boost_system
+          : release
+          [ check-target-builds ../config//has_gmp : <define>TEST_MPF <define>TEST_MPZ <define>TEST_MPQ <source>gmp : ]
+          [ check-target-builds ../config//has_mpfr : <define>TEST_MPFR <source>mpfr : ]
+          [ check-target-builds ../config//has_tommath : <define>TEST_TOMMATH <source>$(TOMMATH) : ]
+          <define>TEST_CPP_DEC_FLOAT
+          <define>TEST_CPP_BIN_FLOAT
+          <define>TEST_CPP_INT
+          <define>TEST_CPP_INT_RATIONAL
+          [ requires cxx11_auto_declarations cxx11_allocator ]
+          ]
+
+[ exe miller_rabin_performance : miller_rabin_performance.cpp 
+            miller_rabin_performance_files/test01.cpp  miller_rabin_performance_files/test07.cpp
+            miller_rabin_performance_files/test02.cpp  miller_rabin_performance_files/test08.cpp
+            miller_rabin_performance_files/test03.cpp  miller_rabin_performance_files/test09.cpp
+            miller_rabin_performance_files/test04.cpp  miller_rabin_performance_files/test10.cpp
+            miller_rabin_performance_files/test05.cpp  miller_rabin_performance_files/test11.cpp
+            miller_rabin_performance_files/test06.cpp  miller_rabin_performance_files/test12.cpp
+            /boost/system//boost_system /boost/chrono//boost_chrono 
+          : release
+          [ check-target-builds ../config//has_gmp : <define>TEST_MPF <define>TEST_MPZ <source>gmp : ]
+          [ check-target-builds ../config//has_mpfr : <define>TEST_MPFR <source>mpfr : ]
+          [ check-target-builds ../config//has_tommath : <define>TEST_TOMMATH <source>$(TOMMATH) : ]
+          <define>TEST_CPP_DEC_FLOAT
+          <define>TEST_CPP_INT
+          ]
+
+[ exe sf_performance : sf_performance.cpp sf_performance_basic.cpp sf_performance_bessel.cpp 
+                     sf_performance_nct.cpp sf_performance_poly.cpp
+                     sf_performance_files/sf_performance_basic_1.cpp    sf_performance_files/sf_performance_nct_06.cpp
+                     sf_performance_files/sf_performance_basic_2.cpp    sf_performance_files/sf_performance_nct_07.cpp
+                     sf_performance_files/sf_performance_basic_3.cpp    sf_performance_files/sf_performance_nct_08.cpp
+                     sf_performance_files/sf_performance_basic_4.cpp    sf_performance_files/sf_performance_nct_09.cpp
+                     sf_performance_files/sf_performance_basic_5.cpp    sf_performance_files/sf_performance_nct_10.cpp
+                     sf_performance_files/sf_performance_basic_6.cpp    sf_performance_files/sf_performance_nct_11.cpp
+                     sf_performance_files/sf_performance_basic_7.cpp    sf_performance_files/sf_performance_nct_12.cpp
+                     sf_performance_files/sf_performance_basic_8.cpp    sf_performance_files/sf_performance_nct_13.cpp
+                     sf_performance_files/sf_performance_basic_9.cpp    sf_performance_files/sf_performance_nct_14.cpp
+                     sf_performance_files/sf_performance_bessel_01.cpp  sf_performance_files/sf_performance_nct_15.cpp
+                     sf_performance_files/sf_performance_bessel_02.cpp  sf_performance_files/sf_performance_nct_16.cpp
+                     sf_performance_files/sf_performance_bessel_03.cpp  sf_performance_files/sf_performance_nct_17.cpp
+                     sf_performance_files/sf_performance_bessel_04.cpp  sf_performance_files/sf_performance_nct_18.cpp
+                     sf_performance_files/sf_performance_bessel_05.cpp  sf_performance_files/sf_performance_nct_19.cpp
+                     sf_performance_files/sf_performance_bessel_06.cpp  sf_performance_files/sf_performance_nct_20.cpp
+                     sf_performance_files/sf_performance_bessel_07.cpp  sf_performance_files/sf_performance_poly_01.cpp
+                     sf_performance_files/sf_performance_bessel_08.cpp  sf_performance_files/sf_performance_poly_02.cpp
+                     sf_performance_files/sf_performance_bessel_09.cpp  sf_performance_files/sf_performance_poly_03.cpp
+                     sf_performance_files/sf_performance_bessel_10.cpp  sf_performance_files/sf_performance_poly_04.cpp
+                     sf_performance_files/sf_performance_bessel_11.cpp  sf_performance_files/sf_performance_poly_05.cpp
+                     sf_performance_files/sf_performance_bessel_12.cpp  sf_performance_files/sf_performance_poly_06.cpp
+                     sf_performance_files/sf_performance_bessel_13.cpp  sf_performance_files/sf_performance_poly_07.cpp
+                     sf_performance_files/sf_performance_bessel_14.cpp  sf_performance_files/sf_performance_poly_08.cpp
+                     sf_performance_files/sf_performance_bessel_15.cpp  sf_performance_files/sf_performance_poly_09.cpp
+                     sf_performance_files/sf_performance_bessel_16.cpp  sf_performance_files/sf_performance_poly_10.cpp
+                     sf_performance_files/sf_performance_bessel_17.cpp  sf_performance_files/sf_performance_poly_11.cpp
+                     sf_performance_files/sf_performance_bessel_18.cpp  sf_performance_files/sf_performance_poly_12.cpp
+                     sf_performance_files/sf_performance_bessel_19.cpp  sf_performance_files/sf_performance_poly_13.cpp
+                     sf_performance_files/sf_performance_nct_01.cpp     sf_performance_files/sf_performance_poly_14.cpp
+                     sf_performance_files/sf_performance_nct_02.cpp     sf_performance_files/sf_performance_poly_15.cpp
+                     sf_performance_files/sf_performance_nct_03.cpp     sf_performance_files/sf_performance_poly_16.cpp
+                     sf_performance_files/sf_performance_nct_04.cpp     sf_performance_files/sf_performance_poly_17.cpp
+                     sf_performance_files/sf_performance_nct_05.cpp     sf_performance_files/sf_performance_poly_18.cpp
+                     /boost/system//boost_system /boost/chrono//boost_chrono /boost/thread//boost_thread
+          : release
+          [ check-target-builds ../config//has_gmp : <define>TEST_MPF <define>TEST_MPZ <source>gmp : ]
+          [ check-target-builds ../config//has_mpfr : <define>TEST_MPFR <source>mpfr : ]
+          [ check-target-builds ../config//has_float128 : <source>quadmath : ]
+          <define>TEST_CPP_DEC_FLOAT
+          <define>TEST_CPP_BIN_FLOAT
+          <define>TEST_FLOAT
+          <toolset>msvc:<cxxflags>-bigobj
+          [ requires cxx11_auto_declarations cxx11_allocator ]
+          ]
+          
+[ exe delaunay_test : delaunay_test.cpp /boost/system//boost_system /boost/chrono//boost_chrono ]
+
+[ exe voronoi_performance : voronoi_performance.cpp /boost/system//boost_system /boost/chrono//boost_chrono
+   : release
+          [ check-target-builds ../config//has_gmp : <define>TEST_GMP <source>gmp : ]
+          [ check-target-builds ../config//has_tommath : <define>TEST_TOMMATH <source>$(TOMMATH) : ]
+   ]
+
+[ obj obj_linpack_benchmark_mpfr : linpack-benchmark.cpp
+          : release
+          [ check-target-builds ../config//has_mpfr : : <build>no ]
+          <define>TEST_MPFR_50
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_mpf : linpack-benchmark.cpp 
+          : release
+          [ check-target-builds ../config//has_gmp : : <build>no ]
+          <define>TEST_MPF_50
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_cpp_float : linpack-benchmark.cpp
+          : release
+          <define>TEST_CPP_DEC_FLOAT
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_double : linpack-benchmark.cpp
+          : release
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_native_float128 : linpack-benchmark.cpp
+          : release
+          <define>NATIVE_FLOAT128
+          [ check-target-builds ../config//has_float128 : : <build>no ]
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_float128 : linpack-benchmark.cpp
+          : release
+          <define>TEST_FLOAT128
+          [ check-target-builds ../config//has_float128 : : <build>no ]
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_cpp_quad_float : linpack-benchmark.cpp
+          : release
+          <define>TEST_CPP_BIN_FLOAT_QUAD
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ obj obj_linpack_benchmark_cpp_oct_float : linpack-benchmark.cpp
+          : release
+          <define>TEST_CPP_BIN_FLOAT_OCT
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_mpfr : obj_linpack_benchmark_mpfr mpfr f2c gmp
+          : release
+          [ check-target-builds ../config//has_mpfr : : <build>no ]
+          <define>TEST_MPFR_50
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_mpf : obj_linpack_benchmark_mpf gmp  f2c
+          : release
+          [ check-target-builds ../config//has_gmp : : <build>no ]
+          <define>TEST_MPF_50
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_cpp_float : obj_linpack_benchmark_cpp_float  f2c
+          : release
+          <define>TEST_CPP_DEC_FLOAT
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_double : obj_linpack_benchmark_double  f2c
+          : release
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_native_float128 : obj_linpack_benchmark_native_float128  f2c quadmath
+          : release
+          [ check-target-builds ../config//has_float128 : : <build>no ]
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_float128 : obj_linpack_benchmark_float128  f2c quadmath
+          : release
+          [ check-target-builds ../config//has_float128 : : <build>no ]
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_cpp_quad_float : obj_linpack_benchmark_cpp_quad_float  f2c
+          : release
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+[ exe linpack_benchmark_cpp_oct_float : obj_linpack_benchmark_cpp_oct_float  f2c
+          : release
+          [ check-target-builds ../config//has_f2c : : <build>no ]
+          ]
+
+;
+#
+# These cause conflicting targets for the build system when building
+# with multiple compilers, so they are not part of the regular CI tests:
+#
+test-suite performance_install :
+
+[ install miller_rabin_install : miller_rabin_performance : <location>. ]
+[ install performance_test_install : performance_test  : <location>. ]
+[ install sf_performance_install : sf_performance   : <location>. ]
+[ install . : linpack_benchmark_double linpack_benchmark_cpp_float linpack_benchmark_mpf linpack_benchmark_mpfr linpack_benchmark_native_float128 linpack_benchmark_float128 linpack_benchmark_cpp_quad_float linpack_benchmark_cpp_oct_float ]
+[ install delaunay_install : delaunay_test : <location>. ]
+[ install voronoi_install : voronoi_performance : <location>. ]
+
+;

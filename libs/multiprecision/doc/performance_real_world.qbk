@@ -1,0 +1,59 @@
+[/
+  Copyright 2011 - 2020 John Maddock.
+  Copyright 2013 - 2019 Paul A. Bristow.
+  Copyright 2013 Christopher Kormanyos.
+
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
+
+[section:realworld Floating-Point Real World Tests]
+
+These tests test the total time taken to execute all of Boost.Math's test cases for these functions.
+In each case the best performing library gets a relative score of 1, with the total execution time
+given in brackets.  Times are shown for both single threaded runs and concurrent execution - the latter
+increases contension inside new/delete.
+
+[table Bessel Functions (50 digit precision)
+[[Type][Time][# Allocations]]
+[[cpp_bin_float_50][2.24409 (0.207745s)][399]]
+[[cpp_bin_float_50 (3 concurrent threads)][2.87977 (0.266594s)][463]]
+[[cpp_dec_float_50][4.56157 (0.422285s)][381]]
+[[cpp_dec_float_50 (3 concurrent threads)][5.66114 (0.524077s)][424]]
+[[mpf_float_50][1.03648 (0.0959515s)][640961]]
+[[mpf_float_50 (3 concurrent threads)][1.50439 (0.139268s)][2563517]]
+[[mpf_float_50 (no expression templates][1 (0.0925745s)][1019039]]
+[[mpf_float_50 (no expression templates (3 concurrent threads)][1.52451 (0.141131s)][4075842]]
+[[mpfr_float_50][1.2513 (0.115838s)][583054]]
+[[mpfr_float_50 (3 concurrent threads)][1.61301 (0.149324s)][2330876]]
+[[mpfr_float_50 (no expression templates][1.42667 (0.132073s)][999594]]
+[[mpfr_float_50 (no expression templates (3 concurrent threads)][2.00203 (0.185337s)][4000039]]
+[[static_mpfr_float_50][1.18358 (0.10957s)][22930]]
+[[static_mpfr_float_50 (3 concurrent threads)][1.38802 (0.128496s)][93140]]
+[[static_mpfr_float_50 (no expression templates)][1.14598 (0.106089s)][46861]]
+[[static_mpfr_float_50 (no expression templates) (3 concurrent threads)][1.24535 (0.115288s)][189227]]
+]
+
+[table Non-central T Distribution (50 digit precision)
+[[Type][Time][# Allocations]]
+[[cpp_bin_float_50][2.38959 (38.5842s)][0]]
+[[cpp_bin_float_50 (3 concurrent threads)][3.50535 (56.6s)][28]]
+[[cpp_dec_float_50][4.82763 (77.9505s)][0]]
+[[mpf_float_50][1.06817 (17.2475s)][123749688]]
+[[mpf_float_50 (no expression templates][1 (16.1468s)][152610085]]
+[[mpfr_float_50][1.18754 (19.1749s)][118401290]]
+[[mpfr_float_50 (no expression templates][1.36782 (22.0858s)][152816346]]
+[[static_mpfr_float_50][1.04471 (16.8686s)][113395]]
+]
+
+[table:platform Platform Details
+[[][Version]]
+[[Compiler][GNU C++ version 10.3.0]]
+[[GMP][6.2.0]]
+[[MPFR][262146]]
+[[Boost][107800]]
+[[Run date][Sep 30 2021]]
+]
+
+[endsect]

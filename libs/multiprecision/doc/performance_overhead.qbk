@@ -1,0 +1,53 @@
+[/
+  Copyright 2011 - 2020 John Maddock.
+  Copyright 2013 - 2019 Paul A. Bristow.
+  Copyright 2013 Christopher Kormanyos.
+
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
+
+[section:overhead The Overhead in the Number Class Wrapper]
+
+Using a simple [@../../performance/arithmetic_backend.hpp backend class] that wraps any __fundamental arithmetic type
+we can measure the overhead involved in wrapping a type inside the `number` frontend, and the effect that turning
+on expression templates has.  The following table compares the performance between `double` and a `double` wrapped
+inside class `number`:
+
+[table Bessel Functions (16 digit precision)
+[[Type][Time]]
+[[arithmetic_backend<double>][2.09301 (0.00133409s)]]
+[[arithmetic_backend<double> - no expression templates][1 (0.000637403s)]]
+[[double][1.07956 (0.000688113s)]]
+]
+
+As you can see whether or not there is an overhead, and how large it is depends on the actual situation,
+but the overhead is in any cases small.  Expression templates generally add a greater overhead the
+more complex the expression becomes due to the logic of figuring out how to best unpack and evaluate
+the expression, but of course this is also the situation where you save more temporaries.  For a
+"trivial" backend like this, saving temporaries has no benefit, but for larger types it becomes
+a bigger win.
+
+The following table compares arithmetic using either `long long` or `number<arithmetic_backend<long long> >`
+for the [@../../performance/voronoi_performance.cpp voronoi-diagram builder test]:
+
+[table
+[[Type][Relative time]]
+[[`int64_t`][[*1.0](0.0128646s)]]
+[[`number<arithmetic_backend<int64_t>, et_off>`][1.005 (0.0129255s)]]
+]
+
+This test involves mainly creating a lot of temporaries and performing a small amount of arithmetic on them,
+with very little difference in performance between the native and "wrapped" types.
+
+[table:platform Platform Details
+[[][Version]]
+[[Compiler][GNU C++ version 10.3.0]]
+[[GMP][6.2.0]]
+[[MPFR][262146]]
+[[Boost][107800]]
+[[Run date][Sep 30 2021]]
+]
+
+[endsect]

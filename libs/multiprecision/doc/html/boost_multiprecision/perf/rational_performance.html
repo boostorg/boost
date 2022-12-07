@@ -1,0 +1,2795 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Rational Type Performance</title>
+<link rel="stylesheet" href="../../multiprecision.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Multiprecision">
+<link rel="up" href="../perf.html" title="Performance Comparison">
+<link rel="prev" href="integer_performance.html" title="Integer Algorithm Performance">
+<link rel="next" href="../map.html" title="Roadmap">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="integer_performance.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../perf.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="../map.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_multiprecision.perf.rational_performance"></a><a class="link" href="rational_performance.html" title="Rational Type Performance">Rational
+      Type Performance</a>
+</h3></div></div></div>
+<p>
+        Note that these tests are carefully designed to test performance of the underlying
+        algorithms and not memory allocation or variable copying. As usual, performance
+        results should be taken with a healthy dose of scepticism, and real-world
+        performance may vary widely depending upon the specifics of the program.
+        In each table relative times are given first, with the best performer given
+        a score of 1. Total actual times are given in brackets, measured in seconds
+        for 500000 operations.
+      </p>
+<div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator"></a><p class="title"><b>Table 1.76. Operator *</b></p>
+<div class="table-contents"><table class="table" summary="Operator *">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.00025 (0.797425s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.97726 (2.96998s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.86844 (6.73224s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.96608 (14.4259s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.398662s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (1.50207s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (3.60314s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (7.3374s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_int"></a><p class="title"><b>Table 1.77. Operator *(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.88073 (0.0637195s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.93184 (0.0917847s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.15609 (0.118274s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.4236 (0.218283s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0338803s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0475114s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0548556s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0900656s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long"></a><p class="title"><b>Table 1.78. Operator *(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.60877 (0.161844s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.33429 (0.240069s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.8835 (0.298935s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.70338 (0.448194s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.100601s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.102844s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.158713s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.16579s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type"></a><p class="title"><b>Table 1.79. Operator *(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.97503 (0.408791s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.42069 (0.600225s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.65138 (0.803009s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.65673 (1.54645s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.20698s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.247956s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.302865s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.332089s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long0"></a><p class="title"><b>Table 1.80. Operator *=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.97207 (0.211848s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.18482 (0.226179s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.43682 (0.319695s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.69933 (0.485819s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.107424s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.103523s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.131194s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.179978s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type0"></a><p class="title"><b>Table 1.81. Operator *=(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator *=(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.95211 (0.40255s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.60942 (0.629302s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.83854 (0.8029s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.34054 (1.37083s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.206213s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.241165s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.282857s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.31582s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator0"></a><p class="title"><b>Table 1.82. Operator +</b></p>
+<div class="table-contents"><table class="table" summary="Operator +">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.20364 (0.415006s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.97574 (1.53458s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.75945 (3.41194s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.11634 (8.04044s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.188327s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.776716s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (1.93921s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (3.79923s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_int0"></a><p class="title"><b>Table 1.83. Operator +(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.06836 (0.0177811s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.80334 (0.0183744s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.38442 (0.020452s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.81894 (0.0449351s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00859669s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0101891s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.014773s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.024704s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long1"></a><p class="title"><b>Table 1.84. Operator +(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.07187 (0.0177151s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.3005 (0.0241089s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.81397 (0.0297836s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.72202 (0.046594s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0085503s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0104799s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.016419s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0270577s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type1"></a><p class="title"><b>Table 1.85. Operator +(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.2805 (0.0265647s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.59353 (0.0391054s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.26613 (0.044067s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.95307 (0.105801s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0207456s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0245401s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0348044s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0541719s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long2"></a><p class="title"><b>Table 1.86. Operator +=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  7.29749 (0.0565983s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.77253 (0.0371419s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.72128 (0.0556987s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.01495 (0.0662456s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00775585s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00984535s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0204678s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.032877s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type2"></a><p class="title"><b>Table 1.87. Operator +=(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator +=(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.92025 (0.0335896s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.08321 (0.0422867s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.587 (0.0564267s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.85357 (0.0840696s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0174923s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0202988s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0355556s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0453556s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator1"></a><p class="title"><b>Table 1.88. Operator -</b></p>
+<div class="table-contents"><table class="table" summary="Operator -">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.38126 (0.471759s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.92631 (1.52484s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.76181 (3.49648s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.03462 (7.71926s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.198113s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.791584s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (1.98459s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (3.79396s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_int1"></a><p class="title"><b>Table 1.89. Operator -(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.44447 (0.0292894s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.54602 (0.0346718s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.4869 (0.035503s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.95344 (0.0577029s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0119819s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.013618s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0238773s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0295391s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long3"></a><p class="title"><b>Table 1.90. Operator -(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.93654 (0.0296698s)
+                </p>
+              </td>
+<td>
+                <p>
+                  4.23087 (0.0496956s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.68041 (0.0461985s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.4455 (0.0581714s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0101037s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0117459s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0274924s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.040243s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type3"></a><p class="title"><b>Table 1.91. Operator -(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.69242 (0.0408789s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.5205 (0.0467416s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.31525 (0.0548939s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.16115 (0.103471s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0241541s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.030741s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0417365s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0478777s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long4"></a><p class="title"><b>Table 1.92. Operator -=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  3.69509 (0.0366534s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.7306 (0.0439181s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.8352 (0.0491612s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.86662 (0.071761s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00991947s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0117724s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0267879s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0384444s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type4"></a><p class="title"><b>Table 1.93. Operator -=(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator -=(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.76299 (0.0421283s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.03803 (0.0490152s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.84864 (0.053198s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.10533 (0.0881228s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.023896s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0240502s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0287769s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.041857s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator2"></a><p class="title"><b>Table 1.94. Operator /</b></p>
+<div class="table-contents"><table class="table" summary="Operator /">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  2.03433 (2.28881s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.24309 (6.34454s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.1203 (13.2036s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.36142 (29.3236s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (1.12509s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (2.82848s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (6.22726s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (12.4178s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_int2"></a><p class="title"><b>Table 1.95. Operator /(int)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /(int)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.035134s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.08556 (0.0774619s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.08797 (0.104628s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.29134 (0.207067s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.85049 (0.0650149s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0713565s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0961679s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.16035s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long5"></a><p class="title"><b>Table 1.96. Operator /(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.31397 (0.170727s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.63747 (0.216019s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.68581 (0.292536s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.76695 (0.435259s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.129932s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.131923s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.173528s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.246334s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type5"></a><p class="title"><b>Table 1.97. Operator /(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.82473 (0.431612s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.20261 (0.596248s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.45848 (0.809662s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.88675 (1.38001s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.236534s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.270701s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.329335s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.355055s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_unsigned_long_long6"></a><p class="title"><b>Table 1.98. Operator /=(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /=(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.58868 (0.216252s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.71288 (0.235781s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.78218 (0.314161s)
+                </p>
+              </td>
+<td>
+                <p>
+                  1.98715 (0.460033s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.136121s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.137652s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.176279s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.231505s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_value_type6"></a><p class="title"><b>Table 1.99. Operator /=(value_type)</b></p>
+<div class="table-contents"><table class="table" summary="Operator /=(value_type)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.72896 (0.40369s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.55949 (0.689514s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.4929 (0.832288s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.51238 (1.37478s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.233487s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.269395s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.333863s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.391409s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_construct"></a><p class="title"><b>Table 1.100. Operator construct</b></p>
+<div class="table-contents"><table class="table" summary="Operator construct">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0135822s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00935293s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0083784s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00962697s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  1.44264 (0.0195942s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.18249 (0.0204126s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.64725 (0.0221797s)
+                </p>
+              </td>
+<td>
+                <p>
+                  2.87767 (0.0277033s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_construct_unsigned_long"></a><p class="title"><b>Table 1.101. Operator construct(unsigned long long)</b></p>
+<div class="table-contents"><table class="table" summary="Operator construct(unsigned long long)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00806026s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00960336s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00769898s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0176689s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  4.87225 (0.0392716s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.91987 (0.0568506s)
+                </p>
+              </td>
+<td>
+                <p>
+                  9.03811 (0.0695842s)
+                </p>
+              </td>
+<td>
+                <p>
+                  3.68339 (0.0650815s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_construct_unsigned"></a><p class="title"><b>Table 1.102. Operator construct(unsigned)</b></p>
+<div class="table-contents"><table class="table" summary="Operator construct(unsigned)">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00672081s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.0064826s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00618635s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00923644s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  6.47138 (0.0434929s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.48645 (0.0485316s)
+                </p>
+              </td>
+<td>
+                <p>
+                  8.2942 (0.0513108s)
+                </p>
+              </td>
+<td>
+                <p>
+                  5.77363 (0.0533278s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.operator_str"></a><p class="title"><b>Table 1.103. Operator str</b></p>
+<div class="table-contents"><table class="table" summary="Operator str">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Backend
+                </p>
+              </th>
+<th>
+                <p>
+                  128 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  256 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  512 Bits
+                </p>
+              </th>
+<th>
+                <p>
+                  1024 Bits
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  cpp_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  6.17439 (0.00168424s)
+                </p>
+              </td>
+<td>
+                <p>
+                  7.6748 (0.0033367s)
+                </p>
+              </td>
+<td>
+                <p>
+                  6.38435 (0.00662873s)
+                </p>
+              </td>
+<td>
+                <p>
+                  9.07696 (0.0174979s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  mpq_rational
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.000272779s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.000434761s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00103828s)
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1</strong></span> (0.00192772s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="table">
+<a name="boost_multiprecision.perf.rational_performance.platform"></a><p class="title"><b>Table 1.104. Platform Details</b></p>
+<div class="table-contents"><table class="table" summary="Platform Details">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+              </th>
+<th>
+                <p>
+                  Version
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  Compiler
+                </p>
+              </td>
+<td>
+                <p>
+                  GNU C++ version 10.3.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  GMP
+                </p>
+              </td>
+<td>
+                <p>
+                  6.2.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  MPFR
+                </p>
+              </td>
+<td>
+                <p>
+                  262146
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Boost
+                </p>
+              </td>
+<td>
+                <p>
+                  107800
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Run date
+                </p>
+              </td>
+<td>
+                <p>
+                  Sep 30 2021
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break">
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2020 John
+      Maddock and Christopher Kormanyos<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="integer_performance.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../perf.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="../map.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

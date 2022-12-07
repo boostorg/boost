@@ -1,0 +1,170 @@
+[/
+  Copyright 2011 - 2020 John Maddock.
+  Copyright 2013 - 2019 Paul A. Bristow.
+  Copyright 2013 Christopher Kormanyos.
+
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
+
+[section:float_performance Float Algorithm Performance]
+
+Note that these tests are carefully designed to test performance of the underlying algorithms
+and not memory allocation or variable copying.  As usual, performance results should be taken
+with a healthy dose of scepticism, and real-world performance may vary widely depending upon the
+specifics of the program.  In each table relative times are given first, with the best performer
+given a score of 1.  Total actual times are given in brackets, measured in seconds for 500000
+operations.
+
+[table Operator *
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][4.45465 (0.0720574s)][4.33995 (0.111688s)][2.90491 (0.850904s)]]
+[[cpp_dec_float][3.82572 (0.061884s)][5.06288 (0.130292s)][5.77019 (1.6902s)]]
+[[gmp_float][1.28958 (0.02086s)][[*1] (0.0257348s)][[*1] (0.292919s)]]
+[[mpfr_float][[*1] (0.0161758s)][2.57159 (0.0661794s)][1.09888 (0.321884s)]]
+]
+[table Operator *(int)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][7.78457 (0.0399504s)][8.32801 (0.0464923s)][5.78369 (0.12206s)]]
+[[cpp_dec_float][12.2836 (0.0630393s)][22.4215 (0.125171s)][115.745 (2.44271s)]]
+[[gmp_float][[*1] (0.00513201s)][[*1] (0.00558264s)][[*1] (0.0211042s)]]
+[[mpfr_float][6.55686 (0.0336498s)][6.08531 (0.0339721s)][3.75579 (0.0792629s)]]
+]
+[table Operator *(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][3.96061 (0.0508387s)][9.0225 (0.0540758s)][3.84877 (0.0843974s)]]
+[[cpp_dec_float][5.80905 (0.0745654s)][24.6321 (0.147631s)][122.419 (2.68446s)]]
+[[gmp_float][[*1] (0.0128361s)][[*1] (0.00599344s)][[*1] (0.0219284s)]]
+[[mpfr_float][2.15124 (0.0276134s)][4.61073 (0.0276341s)][2.31056 (0.0506668s)]]
+]
+[table Operator *=(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][6.54027 (0.0500366s)][5.58857 (0.0547429s)][3.33593 (0.0987612s)]]
+[[cpp_dec_float][9.23894 (0.0706828s)][17.6238 (0.172634s)][81.1437 (2.40228s)]]
+[[gmp_float][[*1] (0.00765054s)][[*1] (0.00979552s)][[*1] (0.0296053s)]]
+[[mpfr_float][2.99517 (0.0229147s)][3.55395 (0.0348128s)][2.42098 (0.0716736s)]]
+]
+[table Operator +
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][2.61482 (0.0479759s)][6.91285 (0.0901201s)][8.04302 (0.219881s)]]
+[[cpp_dec_float][1.08384 (0.0198859s)][1.6631 (0.0216812s)][7.59843 (0.207727s)]]
+[[gmp_float][1.00042 (0.0183555s)][[*1] (0.0130366s)][[*1] (0.0273382s)]]
+[[mpfr_float][[*1] (0.0183477s)][1.4588 (0.0190178s)][2.22935 (0.0609463s)]]
+]
+[table Operator +(int)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][11.8195 (0.0524679s)][13.9144 (0.0871804s)][13.6745 (0.165014s)]]
+[[cpp_dec_float][3.22445 (0.0143136s)][2.703 (0.0169356s)][12.5227 (0.151114s)]]
+[[gmp_float][[*1] (0.00443909s)][[*1] (0.00626549s)][[*1] (0.0120673s)]]
+[[mpfr_float][5.78563 (0.0256829s)][4.78942 (0.0300081s)][5.21353 (0.062913s)]]
+]
+[table Operator +(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][21.4259 (0.109321s)][16.4546 (0.128103s)][14.7256 (0.16427s)]]
+[[cpp_dec_float][4.53931 (0.0231609s)][3.75913 (0.0292658s)][13.3516 (0.148942s)]]
+[[gmp_float][[*1] (0.0051023s)][[*1] (0.00778526s)][[*1] (0.0111554s)]]
+[[mpfr_float][5.11905 (0.0261189s)][3.73777 (0.0290995s)][5.52758 (0.0616622s)]]
+]
+[table Operator +=(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][6.6778 (0.109847s)][6.84045 (0.0942496s)][9.09759 (0.157162s)]]
+[[cpp_dec_float][1.06799 (0.017568s)][1.71962 (0.0236933s)][10.7777 (0.186187s)]]
+[[gmp_float][[*1] (0.0164496s)][[*1] (0.0137783s)][[*1] (0.0172751s)]]
+[[mpfr_float][3.47654 (0.0571878s)][3.64857 (0.0502709s)][4.56004 (0.0787754s)]]
+]
+[table Operator -
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][5.04597 (0.0688937s)][4.65775 (0.0896788s)][7.55005 (0.196627s)]]
+[[cpp_dec_float][1.42357 (0.0194363s)][1.62766 (0.0313385s)][8.16298 (0.21259s)]]
+[[gmp_float][[*1] (0.0136532s)][[*1] (0.0192537s)][[*1] (0.0260432s)]]
+[[mpfr_float][1.76726 (0.0241287s)][2.05663 (0.0395976s)][2.48295 (0.0646638s)]]
+]
+[table Operator -(int)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][6.31633 (0.0848243s)][7.07646 (0.084402s)][6.65523 (0.181209s)]]
+[[cpp_dec_float][1.6139 (0.0216737s)][2.20945 (0.0263524s)][5.27802 (0.14371s)]]
+[[gmp_float][[*1] (0.0134294s)][[*1] (0.0119272s)][[*1] (0.0272281s)]]
+[[mpfr_float][5.1551 (0.0692297s)][5.48391 (0.0654074s)][2.6116 (0.0711089s)]]
+]
+[table Operator -(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][9.08373 (0.102878s)][4.54284 (0.0883961s)][7.01771 (0.185162s)]]
+[[cpp_dec_float][2.19345 (0.0248419s)][1.47898 (0.0287785s)][5.71248 (0.150724s)]]
+[[gmp_float][[*1] (0.0113255s)][[*1] (0.0194584s)][[*1] (0.026385s)]]
+[[mpfr_float][5.35926 (0.0606961s)][2.92255 (0.056868s)][3.43277 (0.0905736s)]]
+]
+[table Operator -=(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][8.73347 (0.129938s)][4.58762 (0.101449s)][5.43827 (0.163157s)]]
+[[cpp_dec_float][1.67927 (0.0249846s)][1.79526 (0.0396995s)][6.63379 (0.199025s)]]
+[[gmp_float][[*1] (0.0148782s)][[*1] (0.0221136s)][[*1] (0.0300017s)]]
+[[mpfr_float][3.96488 (0.0589902s)][3.30899 (0.0731736s)][3.51566 (0.105476s)]]
+]
+[table Operator /
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][5.40221 (0.549759s)][10.0182 (1.39191s)][12.3684 (5.32129s)]]
+[[cpp_dec_float][8.16505 (0.83092s)][12.483 (1.73437s)][52.8644 (22.744s)]]
+[[gmp_float][[*1] (0.101766s)][[*1] (0.138938s)][[*1] (0.430233s)]]
+[[mpfr_float][1.6699 (0.169939s)][2.16251 (0.300455s)][2.82683 (1.2162s)]]
+]
+[table Operator /(int)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][5.81464 (0.141651s)][12.2991 (0.271491s)][8.20246 (0.643802s)]]
+[[cpp_dec_float][16.4865 (0.40163s)][39.0331 (0.861622s)][164 (12.8722s)]]
+[[gmp_float][[*1] (0.0243611s)][[*1] (0.0220741s)][[*1] (0.0784889s)]]
+[[mpfr_float][2.25501 (0.0549347s)][2.6832 (0.0592293s)][1.60852 (0.126251s)]]
+]
+[table Operator /(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][10.879 (0.19558s)][10.4845 (0.244599s)][8.82445 (0.621615s)]]
+[[cpp_dec_float][22.028 (0.396014s)][42.4784 (0.991001s)][201.351 (14.1836s)]]
+[[gmp_float][[*1] (0.0179778s)][[*1] (0.0233296s)][[*1] (0.0704423s)]]
+[[mpfr_float][2.89723 (0.0520857s)][2.6935 (0.0628383s)][1.67233 (0.117803s)]]
+]
+[table Operator /=(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][11.0264 (0.215322s)][7.78235 (0.256093s)][8.31638 (0.638041s)]]
+[[cpp_dec_float][20.9412 (0.408938s)][38.8146 (1.27727s)][142.377 (10.9233s)]]
+[[gmp_float][[*1] (0.0195279s)][[*1] (0.032907s)][[*1] (0.076721s)]]
+[[mpfr_float][2.67894 (0.0523141s)][2.16678 (0.071302s)][1.5964 (0.122477s)]]
+]
+[table Operator construct
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][[*1] (0.0030982s)][1.37355 (0.00608929s)][[*1] (0.0152335s)]]
+[[cpp_dec_float][1.23911 (0.00383901s)][[*1] (0.00443324s)][1.6806 (0.0256013s)]]
+[[gmp_float][7.50258 (0.0232445s)][5.47554 (0.0242744s)][5.81062 (0.0885159s)]]
+[[mpfr_float][24.9598 (0.0773304s)][19.5526 (0.0866815s)][5.00378 (0.0762248s)]]
+]
+[table Operator construct(unsigned long long)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][2.08541 (0.0175206s)][3.12821 (0.0267453s)][1.32687 (0.0570308s)]]
+[[cpp_dec_float][[*1] (0.00840151s)][[*1] (0.00854971s)][[*1] (0.0429815s)]]
+[[gmp_float][3.08163 (0.0258903s)][2.44895 (0.0209379s)][2.12806 (0.0914671s)]]
+[[mpfr_float][10.6814 (0.08974s)][8.42482 (0.0720298s)][1.8282 (0.0785786s)]]
+]
+[table Operator construct(unsigned)
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][1.04974 (0.00808983s)][1.38823 (0.0120486s)][1.16321 (0.0530205s)]]
+[[cpp_dec_float][[*1] (0.00770653s)][[*1] (0.00867913s)][[*1] (0.0455813s)]]
+[[gmp_float][3.88496 (0.0299395s)][2.90503 (0.0252132s)][1.82072 (0.0829907s)]]
+[[mpfr_float][13.3088 (0.102564s)][8.41333 (0.0730204s)][1.78408 (0.0813206s)]]
+]
+[table Operator str
+[[Backend][50 Bits][100 Bits][500 Bits]]
+[[cpp_bin_float][6.09659 (0.00301165s)][4.71882 (0.0051705s)][12.4899 (0.043165s)]]
+[[cpp_dec_float][2.94087 (0.00145276s)][1.64843 (0.00180621s)][3.16004 (0.0109211s)]]
+[[gmp_float][[*1] (0.000493989s)][[*1] (0.00109572s)][[*1] (0.00345598s)]]
+[[mpfr_float][4.60349 (0.00227407s)][1.21213 (0.00132816s)][1.41569 (0.0048926s)]]
+]
+
+[table:platform Platform Details
+[[][Version]]
+[[Compiler][GNU C++ version 10.3.0]]
+[[GMP][6.2.0]]
+[[MPFR][262146]]
+[[Boost][107800]]
+[[Run date][Sep 30 2021]]
+]
+
+[endsect]

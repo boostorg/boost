@@ -1,0 +1,259 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The Overhead in the Number Class Wrapper</title>
+<link rel="stylesheet" href="../../multiprecision.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="../../index.html" title="Chapter 1. Boost.Multiprecision">
+<link rel="up" href="../perf.html" title="Performance Comparison">
+<link rel="prev" href="../perf.html" title="Performance Comparison">
+<link rel="next" href="realworld.html" title="Floating-Point Real World Tests">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../perf.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../perf.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="realworld.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_multiprecision.perf.overhead"></a><a class="link" href="overhead.html" title="The Overhead in the Number Class Wrapper">The Overhead in the
+      Number Class Wrapper</a>
+</h3></div></div></div>
+<p>
+        Using a simple <a href="http://www.boost.org/doc/libs/release/libs/multiprecision/doc/html/../../performance/arithmetic_backend.hpp" target="_top">backend
+        class</a> that wraps any <a href="https://en.cppreference.com/w/cpp/language/types" target="_top">fundamental
+        (built-in)</a> arithmetic type we can measure the overhead involved in
+        wrapping a type inside the <code class="computeroutput"><span class="identifier">number</span></code>
+        frontend, and the effect that turning on expression templates has. The following
+        table compares the performance between <code class="computeroutput"><span class="keyword">double</span></code>
+        and a <code class="computeroutput"><span class="keyword">double</span></code> wrapped inside
+        class <code class="computeroutput"><span class="identifier">number</span></code>:
+      </p>
+<div class="table">
+<a name="boost_multiprecision.perf.overhead.bessel_functions_16_digit_precis"></a><p class="title"><b>Table 1.12. Bessel Functions (16 digit precision)</b></p>
+<div class="table-contents"><table class="table" summary="Bessel Functions (16 digit precision)">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Type
+                </p>
+              </th>
+<th>
+                <p>
+                  Time
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  arithmetic_backend&lt;double&gt;
+                </p>
+              </td>
+<td>
+                <p>
+                  2.09301 (0.00133409s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  arithmetic_backend&lt;double&gt; - no expression templates
+                </p>
+              </td>
+<td>
+                <p>
+                  1 (0.000637403s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  double
+                </p>
+              </td>
+<td>
+                <p>
+                  1.07956 (0.000688113s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><p>
+        As you can see whether or not there is an overhead, and how large it is depends
+        on the actual situation, but the overhead is in any cases small. Expression
+        templates generally add a greater overhead the more complex the expression
+        becomes due to the logic of figuring out how to best unpack and evaluate
+        the expression, but of course this is also the situation where you save more
+        temporaries. For a "trivial" backend like this, saving temporaries
+        has no benefit, but for larger types it becomes a bigger win.
+      </p>
+<p>
+        The following table compares arithmetic using either <code class="computeroutput"><span class="keyword">long</span>
+        <span class="keyword">long</span></code> or <code class="computeroutput"><span class="identifier">number</span><span class="special">&lt;</span><span class="identifier">arithmetic_backend</span><span class="special">&lt;</span><span class="keyword">long</span> <span class="keyword">long</span><span class="special">&gt;</span> <span class="special">&gt;</span></code> for the <a href="http://www.boost.org/doc/libs/release/libs/multiprecision/doc/html/../../performance/voronoi_performance.cpp" target="_top">voronoi-diagram
+        builder test</a>:
+      </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Type
+                </p>
+              </th>
+<th>
+                <p>
+                  Relative time
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">int64_t</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>1.0</strong></span>(0.0128646s)
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">number</span><span class="special">&lt;</span><span class="identifier">arithmetic_backend</span><span class="special">&lt;</span><span class="identifier">int64_t</span><span class="special">&gt;,</span>
+                  <span class="identifier">et_off</span><span class="special">&gt;</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  1.005 (0.0129255s)
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+<p>
+        This test involves mainly creating a lot of temporaries and performing a
+        small amount of arithmetic on them, with very little difference in performance
+        between the native and "wrapped" types.
+      </p>
+<div class="table">
+<a name="boost_multiprecision.perf.overhead.platform"></a><p class="title"><b>Table 1.13. Platform Details</b></p>
+<div class="table-contents"><table class="table" summary="Platform Details">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+              </th>
+<th>
+                <p>
+                  Version
+                </p>
+              </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                <p>
+                  Compiler
+                </p>
+              </td>
+<td>
+                <p>
+                  GNU C++ version 10.3.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  GMP
+                </p>
+              </td>
+<td>
+                <p>
+                  6.2.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  MPFR
+                </p>
+              </td>
+<td>
+                <p>
+                  262146
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Boost
+                </p>
+              </td>
+<td>
+                <p>
+                  107800
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  Run date
+                </p>
+              </td>
+<td>
+                <p>
+                  Sep 30 2021
+                </p>
+              </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break">
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright © 2002-2020 John
+      Maddock and Christopher Kormanyos<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../perf.html"><img src="../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../perf.html"><img src="../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="realworld.html"><img src="../../../../../../doc/src/images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>
