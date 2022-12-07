@@ -1,0 +1,57 @@
+name: Windows
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - feature/**
+
+env:
+  LIBRARY: safe_numerics
+
+jobs:
+  CI:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: msvc-14.1
+            cxxstd: "14,17,latest"
+            addrmd: 32,64
+            os: windows-2016
+          - toolset: msvc-14.2
+            cxxstd: "14,17,latest"
+            addrmd: 32,64
+            os: windows-2019
+          - toolset: gcc
+            cxxstd: "14,17,2a"
+            addrmd: 64
+            os: windows-2019
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          if "%GITHUB_BASE_REF%" == "" set GITHUB_BASE_REF=%GITHUB_REF%
+          set BOOST_BRANCH=develop
+          if "%GITHUB_BASE_REF%" == "master" set BOOST_BRANCH=master
+          cd ..
+          git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          xcopy /s /e /q %GITHUB_WORKSPACE% libs\%LIBRARY%\
+          git submodule update --init tools/boostdep
+          python tools/boostdep/depinst/depinst.py --git_args "--jobs 3" %LIBRARY%
+          cmd /c bootstrap
+          b2 -d0 headers
+
+      - name: Run tests
+        shell: cmd
+        run: |
+          cd ../boost-root
+          b2 -j3 libs/%LIBRARY%/test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model=${{matrix.addrmd}} variant=debug,release
