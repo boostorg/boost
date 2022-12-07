@@ -1,0 +1,54 @@
+# clone directory
+clone_folder: C:\boost.compute
+
+# do not build on tags
+skip_tags: true
+
+# clone only the top level commit
+shallow_clone: true
+
+# branches to build
+branches:
+  # blacklist
+  except:
+    - gh-pages
+
+# environment variables
+environment:
+  global:
+    BOOST_COMPUTE_DEFAULT_PLATFORM: Intel(R) OpenCL
+    # OpenCL version used in tests (2.0)
+    OPENCL_VERSION: 200
+    CXXFLAGS: -DBOOST_COMPUTE_MAX_CL_VERSION=%OPENCL_VERSION%
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      CMAKE_GENERATOR: Visual Studio 15 2017 Win64
+      BOOST_ROOT: C:\Libraries\boost_1_67_0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      CMAKE_GENERATOR: Visual Studio 14 2015 Win64
+      BOOST_ROOT: C:\Libraries\boost_1_63_0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      CMAKE_GENERATOR: Visual Studio 12 2013 Win64
+      BOOST_ROOT: C:\Libraries\boost_1_58_0
+
+before_build:
+  # Install OpenCL headers and libraries
+  - set NUGETDIR=C:\NUGET
+  - nuget install opencl-nug -Version 0.777.77 -OutputDirectory %NUGETDIR%
+  - dir %NUGETDIR%\opencl-nug.0.777.77\build\native\
+  - set OCL_ROOT=%NUGETDIR%\opencl-nug.0.777.77\build\native
+  # Install OpenCL Runtime
+  - choco install opencl-intel-cpu-runtime
+  # Check if it's working
+  - ps: appveyor DownloadFile "https://ci.appveyor.com/api/projects/oblomov/clinfo/artifacts/clinfo.exe?job=platform:+x64" -FileName clinfo.exe
+  - .\clinfo.exe
+
+build_script:
+  - mkdir build && cd build
+  - cmake -G"%CMAKE_GENERATOR%" -DBOOST_COMPUTE_BUILD_TESTS=ON -DBOOST_COMPUTE_BUILD_EXAMPLES=ON ..
+  - cmake --build . --config Debug
+
+test_script:
+  - .\example\Debug\list_devices.exe
+  - .\example\Debug\hello_world.exe
+  - ctest --output-on-failure --repeat-until-fail 2

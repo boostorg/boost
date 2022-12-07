@@ -1,0 +1,463 @@
+language: cpp
+
+env:
+  global:
+    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+    # CMake
+    - CMAKE_URL=https://github.com/Kitware/CMake/releases/download/v3.13.2/cmake-3.13.2-Linux-x86_64.tar.gz
+    # OpenCL
+    - OPENCL_LIB=default
+    # Khronos OpenCL ICD
+    - OPENCL_REGISTRY=https://www.khronos.org/registry/OpenCL/
+    - OPENCL_ROOT=${DEPS_DIR}/opencl
+    - OPENCL_ICD_LIB=${OPENCL_ROOT}/icd/build/lib/libOpenCL.so
+    # POCL
+    - POCL_BRANCH=release_1_2 # branch/tag
+    - POCL_LLVM_VERSION=7.0.0
+    - POCL_ROOT=${OPENCL_ROOT}/pocl-${POCL_BRANCH}/
+    - POCL_LLVM_CONFIG=${DEPS_DIR}/llvm-${POCL_LLVM_VERSION}/bin/llvm-config
+    - POCL_CXX_COMPILER=${DEPS_DIR}/llvm-${POCL_LLVM_VERSION}/bin/clang++
+    - POCL_C_COMPILER=${DEPS_DIR}/llvm-${POCL_LLVM_VERSION}/bin/clang
+    - POCL_OPENCL_LIB=${POCL_ROOT}/lib/libOpenCL.so
+    # Global build options and C++ flags
+    - GCC_VERSION=5
+    - CMAKE_OPTIONS="-DBOOST_COMPUTE_BUILD_TESTS=ON -DBOOST_COMPUTE_BUILD_EXAMPLES=ON -DBOOST_COMPUTE_BUILD_BENCHMARKS=ON -DBOOST_COMPUTE_USE_OFFLINE_CACHE=ON -DBOOST_COMPUTE_HAVE_OPENCV=ON -DBOOST_COMPUTE_THREAD_SAFE=ON"
+    - CXX_FLAGS="-Wall -pedantic -Werror -Wno-variadic-macros -Wno-long-long -Wno-shadow -DCI_BUILD"
+    # Boost
+    - BOOST_VERSION=default
+    # Misc
+    - RUN_TESTS=true
+    - COVERAGE=false
+
+matrix:
+  include:
+    ############################################################################
+    # POCL builds (OpenCL 1.0, 1.1, 1.2)
+    ############################################################################
+
+    # Xenial, OpenCL 1.0
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages: &xenial_pocl_packages
+            - g++-5
+            # POCL
+            - libltdl-dev
+            - libhwloc-dev
+            - pkg-config
+            - libedit-dev
+            # Boost
+            - libboost-chrono1.58-dev
+            - libboost-date-time1.58-dev
+            - libboost-test1.58-dev
+            - libboost-system1.58-dev
+            - libboost-filesystem1.58-dev
+            - libboost-timer1.58-dev
+            - libboost-program-options1.58-dev
+            - libboost-thread1.58-dev
+            # Misc
+            - python-yaml
+            - lcov
+            - libopencv-dev
+          sources: &xenial_pocl_sources
+            - ubuntu-toolchain-r-test
+      env:
+       - OPENCL_LIB=pocl
+       - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=100"
+       - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${POCL_OPENCL_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages: *xenial_pocl_packages
+          sources: *xenial_pocl_sources
+      env:
+       - OPENCL_LIB=pocl
+       - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=100"
+       - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${POCL_OPENCL_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # Xenial, OpenCL 1.1
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages: *xenial_pocl_packages
+          sources: *xenial_pocl_sources
+      env:
+       - OPENCL_LIB=pocl
+       - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=101"
+       - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${POCL_OPENCL_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages: *xenial_pocl_packages
+          sources: *xenial_pocl_sources
+      env:
+       - OPENCL_LIB=pocl
+       - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=101"
+       - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${POCL_OPENCL_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # Xenial, OpenCL 1.2
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages: *xenial_pocl_packages
+          sources: *xenial_pocl_sources
+      env:
+       - OPENCL_LIB=pocl
+       - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=102"
+       - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${POCL_OPENCL_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages: *xenial_pocl_packages
+          sources: *xenial_pocl_sources
+      env:
+       - OPENCL_LIB=pocl
+       - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=102"
+       - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${POCL_OPENCL_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include -DBOOST_COMPUTE_ENABLE_COVERAGE=ON"
+
+    ############################################################################
+    # Intel OpenCL Runtime builds (1.2, 2.0, 2.1)
+    ############################################################################
+
+    # Linux, Intel OpenCL 1.2
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages: &xenial_intel_packages
+            - g++-5
+            # Boost
+            - libboost-chrono1.58-dev
+            - libboost-date-time1.58-dev
+            - libboost-test1.58-dev
+            - libboost-system1.58-dev
+            - libboost-filesystem1.58-dev
+            - libboost-timer1.58-dev
+            - libboost-program-options1.58-dev
+            - libboost-thread1.58-dev
+            # Misc
+            - python-yaml
+            - lcov
+            - libopencv-dev
+          sources: &xenial_intel_sources
+            - ubuntu-toolchain-r-test
+      env:
+        - OPENCL_LIB=intel
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=102"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages: *xenial_intel_packages
+          sources: *xenial_intel_sources
+      env:
+        - OPENCL_LIB=intel
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=102"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # Linux, Intel OpenCL 2.0
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+        apt:
+          packages: *xenial_intel_packages
+          sources: *xenial_intel_sources
+      env:
+        - OPENCL_LIB=intel
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=200"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages: *xenial_intel_packages
+          sources: *xenial_intel_sources
+      env:
+        - OPENCL_LIB=intel
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=200"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include"
+    # Linux, Intel OpenCL 2.1, New Boost Libs, C++11, Coverage
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      cache:
+        ccache: true
+        directories:
+          - ${DEPS_DIR}/boost
+      addons:
+       apt:
+         packages: &xenial_intel_latest_boost_packages
+            - g++-5
+            # Misc
+            - python-yaml
+            - lcov
+            - libopencv-dev
+         sources: &xenial_intel_latest_boost_sources
+           - ubuntu-toolchain-r-test
+      env:
+        - OPENCL_LIB=intel
+        - BOOST_VERSION="1_67_0"
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=201"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include -DBOOST_COMPUTE_USE_CPP11=ON"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      cache:
+        ccache: true
+        directories:
+          - ${DEPS_DIR}/boost
+      addons:
+        apt:
+          packages: *xenial_intel_latest_boost_packages
+          sources: *xenial_intel_latest_boost_sources
+      env:
+        - OPENCL_LIB=intel
+        - BOOST_VERSION="1_67_0"
+        - COVERAGE=true
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=201"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include -DBOOST_COMPUTE_ENABLE_COVERAGE=ON -DBOOST_COMPUTE_USE_CPP11=ON"
+        - COVERAGE=true
+
+    ############################################################################
+    # OpenCL 2.2 Only Build
+    ############################################################################
+
+    # Linux, OpenCL 2.2, Tests not run, C++11
+    # CLANG
+    - os: linux
+      dist: xenial
+      compiler: clang
+      addons:
+       apt:
+         packages: &xenial_packages
+            - g++-5
+            # Boost
+            - libboost-chrono1.58-dev
+            - libboost-date-time1.58-dev
+            - libboost-test1.58-dev
+            - libboost-system1.58-dev
+            - libboost-filesystem1.58-dev
+            - libboost-timer1.58-dev
+            - libboost-program-options1.58-dev
+            - libboost-thread1.58-dev
+            # Misc
+            - libopencv-dev
+         sources: &xenial_sources
+           - ubuntu-toolchain-r-test
+      env:
+        - OPENCL_LIB=khronos-icd
+        - RUN_TESTS=false
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=202"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${OPENCL_ICD_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include -DBOOST_COMPUTE_USE_CPP11=ON"
+    # GCC
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      addons:
+        apt:
+          packages: *xenial_packages
+          sources: *xenial_sources
+      env:
+        - OPENCL_LIB=khronos-icd
+        - RUN_TESTS=false
+        - ENV_CXX_FLAGS="-Wno-unused-local-typedef -DBOOST_COMPUTE_MAX_CL_VERSION=202"
+        - ENV_CMAKE_OPTIONS="-DOpenCL_LIBRARY=${OPENCL_ICD_LIB} -DOpenCL_INCLUDE_DIR=${OPENCL_ROOT}/include -DBOOST_COMPUTE_USE_CPP11=ON"
+
+    ############################################################################
+    # OSX
+    ############################################################################
+
+    # OSX build
+    - os: osx
+      compiler: clang
+      env:
+        - ENV_CXX_FLAGS="-Wno-c99-extensions"
+        - ENV_CMAKE_OPTIONS="-DBOOST_COMPUTE_HAVE_OPENCV=OFF"
+
+cache:
+  directories:
+    - ${DEPS_DIR}/llvm-${POCL_LLVM_VERSION}
+    - ${POCL_ROOT}
+
+before_install:
+    # Install dependencies
+    - |
+      # POCL dependencies for Xenial
+      if [[ ${TRAVIS_OS_NAME} == "linux" && ${OPENCL_LIB} == "pocl" ]]; then
+        if [ -z "$(ls -A ${DEPS_DIR}/llvm-${POCL_LLVM_VERSION})" ]; then
+          POCL_LLVM_URL=http://llvm.org/releases/${POCL_LLVM_VERSION}/clang+llvm-${POCL_LLVM_VERSION}-x86_64-linux-gnu-ubuntu-16.04.tar.xz
+          mkdir -p ${DEPS_DIR}/llvm-${POCL_LLVM_VERSION}
+          travis_retry wget --no-check-certificate --quiet -O llvm-${POCL_LLVM_VERSION}.tar.xz ${POCL_LLVM_URL}
+          tar xf llvm-${POCL_LLVM_VERSION}.tar.xz -C ${DEPS_DIR}/llvm-${POCL_LLVM_VERSION} --strip-components 1
+        else
+          echo 'Using cached LLVM.'
+        fi
+      # OSX
+      elif [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+        brew update
+        /usr/bin/yes | pip uninstall numpy
+        brew outdated boost || brew upgrade boost
+        brew outdated cmake || brew upgrade cmake
+        brew install lcov # homebrew/science/opencv
+      fi
+    - gem install coveralls-lcov
+    - ${CXX} --version
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+    - ${CXX} --version
+
+    # Combine global build options with OS/compiler-dependent options
+    - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
+    - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+
+install:
+    ############################################################################
+    # Download and install recent CMake
+    ############################################################################
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+        CMAKE_URL=${CMAKE_URL}
+        mkdir -p ${DEPS_DIR}/cmake
+        travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
+        export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      fi
+
+    ############################################################################
+    # Download and install Boost
+    ############################################################################
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" && ${BOOST_VERSION} != "default" ]]; then
+        if [ ! -f "${DEPS_DIR}/boost/${BOOST_VERSION}_cached" ]; then
+          # Create dirs for source and install
+          mkdir -p ${DEPS_DIR}/boost${BOOST_VERSION}
+          mkdir -p ${DEPS_DIR}/boost
+          rm -rf ${DEPS_DIR}/boost/*
+          # Download
+          BOOST_BASENAME=$(echo ${BOOST_VERSION} | awk -F '_' '{print $1 "." $2 "." $3 }')
+          BOOST_URL="https://dl.bintray.com/boostorg/release/${BOOST_BASENAME}/source/boost_${BOOST_VERSION}.tar.gz"
+          travis_retry wget --no-check-certificate --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/boost${BOOST_VERSION}
+          pushd ${DEPS_DIR}/boost${BOOST_VERSION}
+          # Configure and install
+          if [ "$CXX" = "g++-${GCC_VERSION}" ]; then echo "using gcc : ${GCC_VERSION} : g++-${GCC_VERSION} ;" > $HOME/user-config.jam; fi
+          ./bootstrap.sh --prefix=${DEPS_DIR}/boost/ --with-libraries=program_options,filesystem,system,thread,test,timer,chrono
+          ./b2 -d0 install
+          popd
+          rm -rf ${DEPS_DIR}/boost/include/boost/{compute,compute.hpp}
+          touch ${DEPS_DIR}/boost/${BOOST_VERSION}_cached
+        else
+          echo 'Using cached Boost ${BOOST_VERSION} libraries.'
+        fi
+        export CMAKE_OPTIONS=${CMAKE_OPTIONS}" -DBOOST_ROOT=${DEPS_DIR}/boost"
+      fi
+
+    ############################################################################
+    # Download OpenCL headers (and cl.hpp)
+    ############################################################################
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+        mkdir -p ${OPENCL_ROOT}/include/CL
+        pushd ${OPENCL_ROOT}/include/CL
+        travis_retry git clone --depth 1 https://github.com/KhronosGroup/OpenCL-Headers.git
+        mv ./OpenCL-Headers/CL/* .
+        travis_retry wget -w 1 -np -nd -nv -A h,hpp --no-check-certificate ${OPENCL_REGISTRY}/api/2.1/cl.hpp;
+        popd
+      fi
+
+    ############################################################################
+    # Only ICD
+    ############################################################################
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" && ${OPENCL_LIB} == "khronos-icd" ]]; then
+        mkdir -p ${OPENCL_ROOT}
+        pushd ${OPENCL_ROOT}
+        travis_retry git clone --depth 1 https://github.com/KhronosGroup/OpenCL-ICD-Loader.git icd
+        pushd icd
+        mkdir -p inc/CL
+        cp ${OPENCL_ROOT}/include/CL/* ./inc/CL/
+        make -j2
+        popd
+        popd
+      fi
+
+    ############################################################################
+    # Build and install POCL https://github.com/pocl/pocl
+    ############################################################################
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" && ${OPENCL_LIB} == "pocl" ]]; then
+        if [ -z "$(ls -A ${POCL_ROOT}/)" ]; then
+          travis_retry git clone --depth 1 https://github.com/pocl/pocl.git -b ${POCL_BRANCH}
+          cd pocl
+          mkdir build
+          cd build
+          cmake -DDIRECT_LINKAGE=ON -DENABLE_ICD=OFF -DCMAKE_C_COMPILER=${POCL_C_COMPILER} -DCMAKE_CXX_COMPILER=${POCL_CXX_COMPILER} -DWITH_LLVM_CONFIG=${POCL_LLVM_CONFIG} -DCMAKE_INSTALL_PREFIX=${POCL_ROOT}/ ..
+          make -j2 install
+          cd ../..
+        else
+          echo 'Using cached POCL lib.'
+        fi
+      fi
+
+    ############################################################################
+    # Install Intel OpenCL Runtime
+    ############################################################################
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" && ${OPENCL_LIB} == "intel" ]]; then
+        # https://software.intel.com/en-us/articles/opencl-drivers#cpu-section
+        PACKAGE_URL=http://registrationcenter-download.intel.com/akdlm/irc_nas/vcp/13793/l_opencl_p_18.1.0.013.tgz
+        PACKAGE_NAME=l_opencl_p_18.1.0.013
+        wget -q ${PACKAGE_URL} -O /tmp/opencl_runtime.tgz
+        tar -xzf /tmp/opencl_runtime.tgz -C /tmp
+        sed 's/decline/accept/g' -i /tmp/${PACKAGE_NAME}/silent.cfg
+        sudo /tmp/${PACKAGE_NAME}/install.sh -s /tmp/${PACKAGE_NAME}/silent.cfg
+      fi
+
+script:
+    ############################################################################
+    # Build Boost.Compute tests, benchmarks and examples
+    ############################################################################
+    - mkdir -p build
+    - cd build
+    - echo ${CMAKE_OPTIONS}
+    - echo ${CXX_FLAGS}
+    - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS="${CXX_FLAGS}" ..
+    - make -j4
+    - |
+      if [[ ${RUN_TESTS} == "true" ]]; then
+        # Print OpenCL devices
+        ./example/list_devices
+        # Run tests and examples
+        ctest --output-on-failure --repeat-until-fail 2
+      fi
+
+after_success:
+    - |
+      if [[ ${COVERAGE} == "true" ]]; then
+        lcov --directory test --base-directory ../include/boost/compute/ --capture --output-file coverage.info
+        lcov --remove coverage.info '/usr*' '*/test/*' '*/deps/*' -o coverage.info
+        cd .. && coveralls-lcov build/coverage.info
+      fi
