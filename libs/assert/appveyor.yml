@@ -1,0 +1,111 @@
+# Copyright 2016, 2018, 2019 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0
+      ADDRMD: 32
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-12.0,msvc-14.0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1,clang-win
+      CXXSTD: 14,17,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+      __CXXFLAGS__: /ZI /FS
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: 14,17,latest
+      __CXXFLAGS__: /ZI /FS
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      CXXSTD: 14,17,20,latest
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\cygwin\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\cygwin64\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\mingw\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;
+      TOOLSET: gcc
+      CXXSTD: 03,11,14,1z
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      CMAKE: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      CMAKE: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      CMAKE: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      CMAKE_SUBDIR: 1
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      CMAKE_INSTALL: 1
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init tools/boost_install
+  - git submodule update --init tools/cmake
+  - git submodule update --init libs/headers
+  - git submodule update --init libs/config
+  - git submodule update --init libs/core
+  - git submodule update --init libs/static_assert
+  - git submodule update --init libs/throw_exception
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\assert\
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+
+  - PATH=%ADDPATH%%PATH%
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
+  - if not "%__CXXFLAGS__%" == "" set __CXXFLAGS__=cxxflags="%__CXXFLAGS__%"
+  - if "%CMAKE%%CMAKE_SUBDIR%%CMAKE_INSTALL%" == ""  b2 -j 1 libs/assert/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% %__CXXFLAGS__% variant=debug,release
+
+  - if not "%CMAKE%" == ""  mkdir __build__ && cd __build__
+  - if not "%CMAKE%" == ""  cmake -DBUILD_TESTING=ON -DBOOST_INCLUDE_LIBRARIES=assert ..
+  - if not "%CMAKE%" == ""  cmake --build . --target tests --config Debug & ctest --output-on-failure -C Debug
+  - if not "%CMAKE%" == ""  cmake --build . --target tests --config Release & ctest --output-on-failure -C Release
+  - if not "%CMAKE%" == ""  cmake --build . --target tests --config MinSizeRel & ctest --output-on-failure -C MinSizeRel
+  - if not "%CMAKE%" == ""  cmake --build . --target tests --config RelWithDebInfo & ctest --output-on-failure -C RelWithDebInfo
+
+  - if not "%CMAKE_SUBDIR%" == ""  cd libs/assert/test/cmake_subdir_test && mkdir __build__ && cd __build__
+  - if not "%CMAKE_SUBDIR%" == ""  cmake ..
+  - if not "%CMAKE_SUBDIR%" == ""  cmake --build . --config Debug && cmake --build . --target check --config Debug
+  - if not "%CMAKE_SUBDIR%" == ""  cmake --build . --config Release && cmake --build . --target check --config Release
+  - if not "%CMAKE_SUBDIR%" == ""  cmake --build . --config MinSizeRel && cmake --build . --target check --config MinSizeRel
+  - if not "%CMAKE_SUBDIR%" == ""  cmake --build . --config RelWithDebInfo && cmake --build . --target check --config RelWithDebInfo
+
+  - if not "%CMAKE_INSTALL%" == ""  mkdir __build__ && cd __build__
+  - if not "%CMAKE_INSTALL%" == ""  cmake -DBOOST_INCLUDE_LIBRARIES=assert -DCMAKE_INSTALL_PREFIX=C:/cmake-prefix ..
+  - if not "%CMAKE_INSTALL%" == ""  cmake --build . --target install --config Debug
+  - if not "%CMAKE_INSTALL%" == ""  cmake --build . --target install --config Release
+  - if not "%CMAKE_INSTALL%" == ""  cd ../libs/assert/test/cmake_install_test && mkdir __build__ && cd __build__
+  - if not "%CMAKE_INSTALL%" == ""  cmake -DCMAKE_INSTALL_PREFIX=C:/cmake-prefix ..
+  - if not "%CMAKE_INSTALL%" == ""  cmake --build . --config Debug && cmake --build . --target check --config Debug
+  - if not "%CMAKE_INSTALL%" == ""  cmake --build . --config Release && cmake --build . --target check --config Release

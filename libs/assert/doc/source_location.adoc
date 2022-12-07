@@ -1,0 +1,182 @@
+////
+Copyright 2019, 2021, 2022 Peter Dimov
+Distributed under the Boost Software License, Version 1.0.
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+[#source_location_support]
+# Source Location Support, <boost/assert/source_location.hpp>
+:toc:
+:toc-title:
+:idprefix:
+
+## Description
+
+The header `<boost/assert/source_location.hpp>` defines `source_location`,
+a class representing a source location and containing file, line, function
+and column information. It's similar to `std::source_location` from {cpp}20,
+but only requires {cpp}03.
+
+The macro `BOOST_CURRENT_LOCATION` creates a `source_location` object
+containing information about the current source location. It can be used
+roughly in the same way `std::source_location::current()` can be used,
+such as in the declaration of a function default argument:
+
+```
+#include <boost/assert/source_location.hpp>
+#include <iostream>
+
+void f( boost::source_location const& loc = BOOST_CURRENT_LOCATION )
+{
+    std::cout << "f() called from: " << loc << std::endl;
+}
+
+int main()
+{
+    f();
+}
+```
+
+The output of this example varies by compiler and C++ standard level, but
+it's generally one of
+
+```none
+f() called from: example.cpp:11:6 in function 'int main()'
+```
+```none
+f() called from: example.cpp:11:5 in function 'main'
+```
+```none
+f() called from: example.cpp:11 in function 'main'
+```
+```none
+f() called from: example.cpp:4
+```
+
+This is useful if, for example, you want to declare a function that throws
+an exception, such that the source location of the caller is attached to
+the thrown exception:
+
+```
+BOOST_NORETURN BOOST_NOINLINE void throw_invalid_argument(
+    char const* message,
+    boost::source_location const& loc = BOOST_CURRENT_LOCATION )
+{
+    boost::throw_exception( std::invalid_argument( message ), loc );
+}
+```
+
+Now you could use this helper function in, say, the implementation of
+`at` to signal an index that is out of range:
+
+```
+T& my_class::at( size_t i )
+{
+    if( i >= size() ) throw_invalid_argument( "index out of range" );
+    return data()[ i ];
+}
+```
+
+This would attach the source location of the line in `at` that calls
+`throw_invalid_argument` to the thrown exception.
+
+Note that if instead you use `BOOST_THROW_EXCEPTION` in
+`throw_invalid_argument`, the location will be that of
+`throw_invalid_argument` and not of its caller.
+
+## Synopsis
+
+```
+namespace boost
+{
+
+struct source_location
+{
+    constexpr source_location() noexcept;
+    constexpr source_location( char const* file, uint_least32_t line,
+      char const* function, uint_least32_t column = 0 ) noexcept;
+    constexpr source_location( std::source_location const& loc ) noexcept;
+
+    constexpr char const* file_name() const noexcept;
+    constexpr char const* function_name() const noexcept;
+    constexpr uint_least32_t line() const noexcept;
+    constexpr uint_least32_t column() const noexcept;
+
+    std::string to_string() const;
+};
+
+template<class E, class T>
+  std::basic_ostream<E, T> &
+    operator<<( std::basic_ostream<E, T> & os, source_location const & loc );
+
+} // namespace boost
+
+#define BOOST_CURRENT_LOCATION /* see below */
+```
+
+## source_location
+
+```
+constexpr source_location() noexcept;
+```
+
+Effects: :: Constructs a `source_location` object for which `file_name()`
+and `function_name()` return `""`, and `line()` and `column()` return `0`.
+
+```
+constexpr source_location( char const* file, uint_least32_t line,
+  char const* function, uint_least32_t column = 0 ) noexcept;
+```
+
+Effects: :: Constructs a `source_location` object for which `file_name()`
+returns `file`, `function_name()` returns `function`, `line()` returns the
+`line` argument and `column()` returns the `column` argument.
+
+```
+constexpr source_location( std::source_location const& loc ) noexcept;
+```
+
+Effects: :: Constructs a `source_location` object for which `file_name()`
+returns `loc.file_name()`, `function_name()` returns `loc.function_name()`,
+`line()` returns `loc.line()` and `column()` returns `loc.column()`.
+
+## to_string
+
+```
+std::string to_string() const;
+```
+
+Returns: ::
+  a string representation of `*this`.
+
+## operator<<
+
+```
+template<class E, class T>
+  std::basic_ostream<E, T> &
+    operator<<( std::basic_ostream<E, T> & os, source_location const & loc );
+```
+
+Effects: :: `os << loc.to_string()`.
+Returns: ::
+  `os`.
+
+## BOOST_CURRENT_LOCATION
+
+When `BOOST_DISABLE_CURRENT_LOCATION` is defined, the definition of
+`BOOST_CURRENT_LOCATION` is:
+
+```
+#define BOOST_CURRENT_LOCATION ::boost::source_location()
+```
+
+This allows producing executables that contain no identifying information,
+for security reasons.
+
+Otherwise, `BOOST_CURRENT_LOCATION` is defined as the approximate equivalent
+of
+
+```
+#define BOOST_CURRENT_LOCATION \
+    ::boost::source_location(::std::source_location::current())
+```
