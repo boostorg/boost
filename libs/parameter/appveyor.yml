@@ -1,0 +1,72 @@
+# Copyright 2017 Edward Diener
+# Copyright 2017 Cromwell D. Enage
+# Copyright 2021-2022 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+environment:
+  matrix:
+    - ARGS: toolset=msvc-9.0,msvc-10.0,msvc-11.0,msvc-12.0 address-model=32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=msvc-14.0 address-model=32,64 cxxstd=14,latest
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=msvc-14.1 address-model=32,64 cxxstd=14,17,latest
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - ARGS: toolset=msvc-14.2 address-model=32,64 cxxstd=14,17,20,latest
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - ARGS: toolset=msvc-14.3 address-model=32,64 cxxstd=14,17,20,latest
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+    - ARGS: toolset=clang-win address-model=32,64 cxxstd=14,17,latest
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - ARGS: toolset=gcc address-model=32 cxxstd=03,11,14,1z
+      PATH: C:\cygwin\bin;%PATH%
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=gcc address-model=64 cxxstd=03,11,14,1z
+      PATH: C:\cygwin64\bin;%PATH%
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=gcc address-model=32 cxxstd=03,11 linkflags=-Wl,-allow-multiple-definition
+      PATH: C:\MinGW\bin;%PATH%
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=gcc address-model=32 cxxstd=03,11,14
+      PATH: C:\mingw-w64\i686-5.3.0-posix-dwarf-rt_v4-rev0\mingw32\bin;%PATH%
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=gcc address-model=64 cxxstd=03,11,14,1z
+      PATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;%PATH%
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - ARGS: toolset=gcc address-model=64 cxxstd=03,11,14,1z
+      PATH: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin;%PATH%
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+install:
+  - set GIT_FETCH_JOBS=8
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/build
+  - git submodule init tools/boostdep
+  - git submodule init tools/boost_install
+  - git submodule init libs/headers
+  - git submodule init libs/config
+  - git submodule update --jobs %GIT_FETCH_JOBS%
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\parameter
+  - python tools/boostdep/depinst/depinst.py --git_args "--jobs %GIT_FETCH_JOBS%" parameter
+  - cmd /c bootstrap
+  - b2 -d0 headers
+
+build: off
+
+test_script:
+  - b2 -j %NUMBER_OF_PROCESSORS% libs/parameter/test %ARGS%
