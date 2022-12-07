@@ -1,0 +1,396 @@
+name: GitHub Actions CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - githubactions*
+      - feature/**
+      - fix/**
+      - pr/**
+
+jobs:
+  posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "gcc 4.7"
+            buildtype: "boost"
+            packages: "g++-4.7"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-4.7"
+            cxxstd: "11"
+          - name: "gcc 4.8"
+            packages: "g++-4.8"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-4.8"
+            cxxstd: "11"
+          - name: "gcc 4.9"
+            packages: "g++-4.9"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-4.9"
+            cxxstd: "11"
+          - name: "gcc 5"
+            packages: "g++-5"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-5"
+            cxxstd: "11,14,1z"
+          - name: "gcc 6"
+            packages: "g++-6"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-6"
+            cxxstd: "11,14,1z"
+          - name: "gcc 7"
+            packages: "g++-7"
+            os: "ubuntu-20.04"
+            container: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-7"
+            cxxstd: "11,14,1z,17"
+          - name: "gcc 8"
+            packages: "g++-8"
+            os: "ubuntu-20.04"
+            container: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-8"
+            cxxstd: "11,14,1z,17,2a"
+          - name: "gcc 9"
+            packages: "g++-9"
+            os: "ubuntu-20.04"
+            container: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-9"
+            cxxstd: "11,14,17,2a"
+          - name: "gcc 10"
+            packages: "g++-10"
+            os: "ubuntu-20.04"
+            container: ""
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "gcc"
+            compiler: "g++-10"
+            cxxstd: "11,14,17,20"
+          - name: "clang 3.5"
+            packages: "clang-3.5"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "precise"
+            llvm_ver: "3.5"
+            toolset: "clang"
+            compiler: "clang++-3.5"
+            cxxstd: "11"
+          - name: "clang 3.6"
+            packages: "clang-3.6"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "precise"
+            llvm_ver: "3.6"
+            toolset: "clang"
+            compiler: "clang++-3.6"
+            cxxstd: "11"
+          - name: "clang 3.7"
+            packages: "clang-3.7"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "precise"
+            llvm_ver: "3.7"
+            toolset: "clang"
+            compiler: "clang++-3.7"
+            cxxstd: "11"
+          - name: "clang 3.8"
+            packages: "clang-3.8 libstdc++-4.9-dev"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "precise"
+            llvm_ver: "3.8"
+            toolset: "clang"
+            compiler: "clang++-3.8"
+            cxxstd: "11,14"
+          - name: "clang 3.9"
+            packages: "clang-3.9 libstdc++-4.9-dev"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "precise"
+            llvm_ver: "3.9"
+            toolset: "clang"
+            compiler: "clang++-3.9"
+            cxxstd: "11,14"
+          - name: "clang 4.0"
+            packages: "clang-4.0"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "xenial"
+            llvm_ver: "4.0"
+            toolset: "clang"
+            compiler: "clang++-4.0"
+            cxxstd: "11,14"
+          - name: "clang 5.0"
+            packages: "clang-5.0"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "clang"
+            compiler: "clang++-5.0"
+            cxxstd: "11,14,1z,17"
+          - name: "clang 6.0"
+            packages: "clang-6.0"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: ""
+            llvm_ver: ""
+            toolset: "clang"
+            compiler: "clang++-6.0"
+            cxxstd: "11,14,1z,17,2a"
+          - name: "clang 7"
+            packages: "clang-7"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "xenial"
+            llvm_ver: "7"
+            toolset: "clang"
+            compiler: "clang++-7"
+            cxxstd: "11,14,1z,17,2a"
+          - name: "clang 8"
+            packages: "clang-8"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            llvm_os: "xenial"
+            llvm_ver: "8"
+            toolset: "clang"
+            compiler: "clang++-8"
+            cxxstd: "11,14,17,2a"
+          - name: "clang 9"
+            packages: "clang-9"
+            os: "ubuntu-20.04"
+            container: ""
+            llvm_os: "focal"
+            llvm_ver: "9"
+            toolset: "clang"
+            compiler: "clang++-9"
+            cxxstd: "11,14,17,2a"
+          - name: "clang 10"
+            packages: "clang-10"
+            os: "ubuntu-20.04"
+            container: ""
+            llvm_os: "focal"
+            llvm_ver: "10"
+            toolset: "clang"
+            compiler: "clang++-10"
+            cxxstd: "11,14,17,20"
+          - name: "clang 11"
+            packages: "clang-11"
+            os: "ubuntu-20.04"
+            container: ""
+            sources: ""
+            llvm_os: "focal"
+            llvm_ver: "11"
+            toolset: "clang"
+            compiler: "clang++-11"
+            cxxstd: "11,14,17,20,latest"
+          - name: "clang 12"
+            packages: "clang-12"
+            os: "ubuntu-20.04"
+            container: ""
+            sources: ""
+            llvm_os: "focal"
+            llvm_ver: "12"
+            toolset: "clang"
+            compiler: "clang++-12"
+            cxxstd: "11,14,17,20,latest"
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Check if running in container
+        if: matrix.container != ''
+        run: echo "GHA_CONTAINER=${{ matrix.container }}" >> $GITHUB_ENV
+      - name: If running in container, upgrade packages
+        if: matrix.container != ''
+        run: |
+            apt-get -o Acquire::Retries=3 update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata && apt-get -o Acquire::Retries=3 install -y sudo software-properties-common wget apt-transport-https make apt-file sudo unzip libssl-dev build-essential g++ git
+
+      - uses: actions/checkout@v2
+
+      - name: linux
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+          SOURCES: ${{ matrix.sources }}
+          LLVM_OS: ${{ matrix.llvm_os }}
+          LLVM_VER: ${{ matrix.llvm_ver }}
+          PACKAGES: ${{ matrix.packages }}
+          TOOLSET: ${{ matrix.toolset }}
+          CXXSTD: ${{ matrix.cxxstd }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "linux"
+        run: |
+          set -e
+          for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+          if test -n "${LLVM_OS}" ; then
+              wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+              if test -n "${LLVM_VER}" ; then
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS}-${LLVM_VER} main"
+              else
+                  # Snapshot (i.e. trunk) build of clang
+                  sudo -E apt-add-repository "deb http://apt.llvm.org/${LLVM_OS}/ llvm-toolchain-${LLVM_OS} main"
+              fi
+          fi
+          sudo -E apt-get -o Acquire::Retries=3 update
+          sudo -E DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -y --no-install-suggests --no-install-recommends install ${PACKAGES}
+
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+
+          BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init tools/build
+          git submodule update --init tools/boost_install
+          git submodule update --init libs/config
+          git submodule update --init libs/headers
+          mkdir -p libs/callable_traits
+          cp -r $TRAVIS_BUILD_DIR/* libs/callable_traits
+          ./bootstrap.sh
+          ./b2 headers
+          echo "using $TOOLSET : : $CXX : ;" > ~/user-config.jam
+          ./b2 libs/callable_traits/test toolset=$TOOLSET cxxstd=${CXXSTD} && ./b2 libs/callable_traits/example toolset=$TOOLSET cxxstd=${CXXSTD}
+  osx:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "xcode 11.7"
+            os: "macos-10.15"
+            cxx: "clang++"
+            xcode_version: 11.7
+            toolset: "clang"
+            compiler: "clang++"
+            cxxstd: "11,14,17"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set DEVELOPER_DIR
+        if: matrix.xcode_version != ''
+        run: echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer" >> $GITHUB_ENV
+      - name: Test DEVELOPER_DIR
+        run: echo $DEVELOPER_DIR
+
+      - name: "osx"
+        shell: bash
+        env:
+          CXX: ${{ matrix.compiler }}
+          TOOLSET: ${{ matrix.toolset }}
+          CXXSTD: ${{ matrix.cxxstd }}
+          TRAVIS_BRANCH: ${{ github.base_ref }}
+          TRAVIS_OS_NAME: "osx"
+        run: |
+          set -e
+          sudo mv /Library/Developer/CommandLineTools /Library/Developer/CommandLineTools.bck
+          export TRAVIS_BUILD_DIR=$(pwd)
+          export TRAVIS_BRANCH=${TRAVIS_BRANCH:-$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')}
+          export VCS_COMMIT_ID=$GITHUB_SHA
+          export GIT_COMMIT=$GITHUB_SHA
+          export REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          export USER=$(whoami)
+          export CC=${CC:-gcc}
+          export PATH=~/.local/bin:/usr/local/bin:$PATH
+
+          BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          git submodule update --init tools/build
+          git submodule update --init tools/boost_install
+          git submodule update --init libs/config
+          git submodule update --init libs/headers
+          mkdir -p libs/callable_traits
+          cp -r $TRAVIS_BUILD_DIR/* libs/callable_traits
+          ./bootstrap.sh
+          ./b2 headers
+
+          echo "using $TOOLSET : : $CXX : ;" > ~/user-config.jam
+          ./b2 libs/callable_traits/test toolset=$TOOLSET cxxstd=${CXXSTD} && ./b2 libs/callable_traits/example toolset=$TOOLSET cxxstd=${CXXSTD}
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: msvc-14.1
+            cxxstd: "11,14,17"
+            arch: 32
+            os: windows-2016
+          - toolset: msvc-14.2
+            cxxstd: "11,14,17,latest"
+            os: windows-2019
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "windows"
+        shell: cmd
+        run: |
+          echo GITHUB_REPOSITORY: %GITHUB_REPOSITORY%
+          for /f %%i in ("%GITHUB_REPOSITORY%") do set LIBRARY=%%~nxi
+          echo LIBRARY: %LIBRARY%
+          echo LIBRARY=%LIBRARY%>>%GITHUB_ENV%
+          echo GITHUB_BASE_REF: %GITHUB_BASE_REF%
+          echo GITHUB_REF: %GITHUB_REF%
+          if "%GITHUB_BASE_REF%" == "" set GITHUB_BASE_REF=%GITHUB_REF%
+          set BOOST_BRANCH=develop
+          for /f %%i in ("%GITHUB_BASE_REF%") do if "%%~nxi" == "master" set BOOST_BRANCH=master
+          echo BOOST_BRANCH: %BOOST_BRANCH%
+          cd ..
+          git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          xcopy /s /e /q %GITHUB_WORKSPACE% libs\%LIBRARY%\
+          git submodule update --init tools/build
+          git submodule update --init tools/boost_install
+          git submodule update --init libs/config
+          git submodule update --init libs/headers
+          cmd /c bootstrap
+          b2 libs\callable_traits\test toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model="32,64" && b2 libs\callable_traits\example toolset=${{matrix.toolset}} cxxstd=${{matrix.cxxstd}} address-model="32,64"
+
