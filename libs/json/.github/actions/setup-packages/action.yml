@@ -1,0 +1,58 @@
+name: Set up packages
+description: Install and remove necessary packages
+inputs:
+  install:
+    description: Packages to install
+    required: false
+    default: ''
+  remove:
+    description: Packages to remove
+    required: false
+    default: ''
+  sources:
+    description: Extra package repositories to use
+    required: false
+    default: ''
+  toolset:
+    description: B2 toolset module to target
+    required: false
+    default: ''
+  version:
+    description: B2 toolset module version to target
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - if: runner.os == 'Linux'
+      shell: bash
+      env:
+        LLVM_OS: ${{ inputs.os }}
+        LLVM_VER: ${{ inputs.version }}
+        PACKAGES: ${{ inputs.install }}
+        PACKAGES_TO_REMOVE: ${{ inputs.remove }}
+      run: |
+        set -e
+        if [ -n "$PACKAGES_TO_REMOVE" ]; then sudo apt-get purge -y $PACKAGES_TO_REMOVE; fi
+        echo ">>>>> APT: REPO.."
+        for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+
+        if [ clang = "${{ inputs.toolset }}" ]; then
+            . /etc/lsb-release
+            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+            LLVM_DISTRIB=llvm-toolchain-${DISTRIB_CODENAME}
+            if test -n "${{ inputs.version }}" ; then
+                LLVM_DISTRIB=${LLVM_DISTRIB}-${{ inputs.version }}
+            fi
+            sudo -E apt-add-repository "deb http://apt.llvm.org/${DISTRIB_CODENAME}/ ${LLVM_DISTRIB} main"
+        fi
+        echo ">>>>> APT: UPDATE.."
+        sudo -E apt-get -o Acquire::Retries=3 update
+        if test -n "${SOURCES}" ; then
+            echo ">>>>> APT: INSTALL SOURCES.."
+            for SOURCE in $SOURCES; do
+                sudo -E apt-add-repository ppa:$SOURCE
+            done
+        fi
+        echo ">>>>> APT: INSTALL ${PACKAGES}.."
+        sudo -E DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -y --no-install-suggests --no-install-recommends install ${PACKAGES}

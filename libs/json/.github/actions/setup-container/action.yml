@@ -1,0 +1,21 @@
+name: Set up container
+description: If running in container, upgrade packages
+inputs:
+  container:
+    description: 'Id of the container being used'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - if: inputs.container != ''
+      shell: bash
+      run: |
+        echo "GHA_CONTAINER=${{ inputs.container }}" >> $GITHUB_ENV
+        apt-get -o Acquire::Retries=3 update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata && apt-get -o Acquire::Retries=3 install -y sudo software-properties-common wget curl apt-transport-https make apt-file sudo unzip libssl-dev build-essential autotools-dev autoconf automake g++ libc++-helpers python ruby cpio gcc-multilib g++-multilib pkgconf python3 ccache libpython-dev
+        sudo apt-add-repository ppa:git-core/ppa
+        sudo apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 -y install git
+        python_version=$(python3 -c 'import sys; print("{0.major}.{0.minor}".format(sys.version_info))')
+        sudo wget https://bootstrap.pypa.io/pip/$python_version/get-pip.py
+        sudo python3 get-pip.py
+        sudo /usr/local/bin/pip install cmake

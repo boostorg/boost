@@ -1,0 +1,51 @@
+name: fuzz
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "25 */12 * * *"
+  workflow_dispatch:
+
+jobs:
+  fuzz:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Fetch head
+      uses: actions/checkout@v2
+      with:
+        path: 'head'
+    - uses: actions/cache@v2
+      id: cache-corpus
+      with:
+        path: head/fuzzing/corpus.tar
+        key: corpus-${{ github.run_id }}
+        restore-keys: corpus-
+    - uses: ./head/.github/actions/build
+      with:
+        buildtype: 'boost'
+        path: 'head'
+        toolset: clang
+        targets: libs/json/fuzzing//run
+    - name: Pack the corpus
+      working-directory: boost-root/libs/json/fuzzing/
+      run: |
+        tar cf - cmin > corpus.tar.tmp && mv corpus.tar.tmp "${GITHUB_WORKSPACE}"/head/fuzzing
+    - name: Save the corpus as a github artifact
+      uses: actions/upload-artifact@v2
+      if: success()
+      with:
+        name: corpus
+        path: head/fuzzing/corpus.tar
+    - name: Archive any crashes as an artifact
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: crashes
+        path: |
+          boost-root/crash-*
+          boost-root/leak-*
+          boost-root/timeout-*
+        if-no-files-found: ignore

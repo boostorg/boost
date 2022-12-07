@@ -1,0 +1,108 @@
+name: Run and build
+description: Build the project
+
+inputs:
+  toolset:
+    description: B2 toolset module to use
+    required: true
+  version:
+    description: B2 toolset version to use
+    required: false
+    default: ''
+  comment:
+    description: Human-readable job description
+    required: false
+    default: ''
+  path:
+    description: Path to project root
+    required: false
+    default: ''
+  buildtype:
+    description: Build type
+    required: false
+    default: ''
+  cxxstd:
+    description: C++ standard versions to use (separated by commas)
+    required: false
+    default: ''
+  defines:
+    description: Macro definitions to use (separated by commas)
+    required: false
+    default: ''
+  variant:
+    description: B2 build variant to use
+    required: false
+    default: release
+  testflags:
+    description: B2 test properties to set
+    required: false
+    default: ''
+  targets:
+    description: B2 targets to build (separated by spaces)
+    required: false
+    default: ''
+  b2_flags:
+    description: Extra B2 flags to use
+    required: false
+    default: 'warnings=extra warnings-as-errors=on'
+  valgrind_options:
+    description: Valgrind options to use
+    required: false
+    default: ''
+  asan:
+    description: Use '1' to enable address sanitizer
+    required: false
+    default: ''
+  ubsan:
+    description: Use '1' to enable UB sanitizer
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Setup environment variables
+      shell: bash
+      run: |
+        B2_TOOLSET=${{ inputs.toolset }}
+        case $B2_TOOLSET in
+          gcc)   CXX=g++ ;;
+          clang) CXX=clang++ ;;
+          *)     CXX=$B2_TOOLSET ;;
+        esac
+        if [ -n "${{ inputs.version }}" ]; then
+          B2_TOOLSET=$B2_TOOLSET-${{ inputs.version }}
+          CXX=$CXX-${{ inputs.version }}
+        fi
+
+        echo "CXX=$CXX" >> $GITHUB_ENV
+        echo "COMMENT=${{ inputs.comment }}" >> $GITHUB_ENV
+        echo "LCOV_BRANCH_COVERAGE=$LCOV_BRANCH_COVERAGE" >> $GITHUB_ENV
+        echo "B2_CI_VERSION=1" >> $GITHUB_ENV
+        echo "B2_CXXSTD=${{ inputs.cxxstd }}" >> $GITHUB_ENV
+        echo "B2_TOOLSET=$B2_TOOLSET" >> $GITHUB_ENV
+        echo "B2_DEFINES=${{ inputs.defines }}" >> $GITHUB_ENV
+        echo "B2_VARIANT=${{ inputs.variant }}" >> $GITHUB_ENV
+        echo "B2_TESTFLAGS=${{ inputs.testflags }}" >> $GITHUB_ENV
+        echo "VALGRIND_OPTS=${{ inputs.valgrind_opts }}" >> $GITHUB_ENV
+        echo "B2_ASAN=${{ inputs.asan }}" >> $GITHUB_ENV
+        echo "B2_UBSAN=${{ inputs.ubsan }}" >> $GITHUB_ENV
+        echo "B2_TARGETS=${{ inputs.targets }}" >> $GITHUB_ENV
+        echo "B2_FLAGS=${{ inputs.b2_flags }}" >> $GITHUB_ENV
+        echo "DRONE_BUILD_EVENT=${{ github.event_name }}" >> $GITHUB_ENV
+        echo "DRONE_JOB_BUILDTYPE=${{ inputs.buildtype }}" >> $GITHUB_ENV
+        echo "DRONE_COMMIT=${{ github.sha }}" >> $GITHUB_ENV
+        echo "DRONE_BRANCH=${{ github.base_ref }}" >> $GITHUB_ENV
+        echo "DRONE_REPO=${{ github.repository }}" >> $GITHUB_ENV
+
+    - name: linux
+      if: runner.os == 'Linux'
+      shell: bash
+      run: . .drone/drone.sh
+      working-directory: ${{ inputs.path }}
+
+    - name: windows
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: call .drone/drone.bat
+      working-directory: ${{ inputs.path }}

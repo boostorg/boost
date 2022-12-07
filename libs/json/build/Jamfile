@@ -1,0 +1,92 @@
+#
+# Copyright (c) 2019 Vinnie Falco (vinnie dot falco at gmail dot com)
+# Copyright (c) 2021 Dmitry Arkhipov (grisumbras@gmail.com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Official repository: https://github.com/boostorg/json
+#
+
+import modules ;
+import ../../config/checks/config ;
+
+# These make sure we only build on compatible C++11 or later toolchains.
+obj cxx11_basic_alignas : ../check/basic_alignas.cpp ;
+explicit cxx11_basic_alignas ;
+
+rule requires ( tests + )
+{
+    local result ;
+    for test in $(tests)
+    {
+        local name = $(test:D=) ;
+        local m = $(test:D) ;
+        if $(m)
+        {
+            m = [ modules.binding $(m) ] ;
+            m = $(m:D)// ;
+        }
+        m ?= "" ;
+
+        result += [ check-target-builds $(m)$(name) $(name)
+            : : <build>no <conditional>@warn-if-requested
+        ] ;
+    }
+    return $(result) ;
+}
+
+.warned = ;
+rule warn-if-requested ( properties * )
+{
+    if ! $(.warned)
+    {
+        .warned = true ;
+        local args = [ modules.peek : ARGV ] ;
+        local var = [ modules.peek project-config : libraries ] ;
+        if json in [ MATCH ^--with-(json) : $(args) $(var) ]
+        {
+            echo "warning:" Boost.Json was explicitly requested, but will not
+                be built, because it requires C++11. ;
+            echo "note:" To enable C++11 support, use the 'cxxstd=11' command line
+                argument. ;
+        }
+    }
+}
+
+project boost/json
+    : requirements
+      [ requires
+        config/cxx11_constexpr
+        config/cxx11_decltype
+        config/cxx11_hdr_tuple
+        config/cxx11_template_aliases
+        config/cxx11_variadic_templates
+        # We only require limited alignas support,
+        # so we have to use a custom check
+        cxx11_basic_alignas
+      ]
+      <link>shared:<define>BOOST_JSON_DYN_LINK=1
+      <link>static:<define>BOOST_JSON_STATIC_LINK=1
+      <define>BOOST_JSON_SOURCE
+    : usage-requirements
+      <link>shared:<define>BOOST_JSON_DYN_LINK=1
+      <link>static:<define>BOOST_JSON_STATIC_LINK=1
+    : source-location ../src
+    ;
+
+alias json_sources
+   : src.cpp
+   : usage-requirements
+     <library>/boost//container/<warnings-as-errors>off
+   ;
+
+explicit json_sources ;
+
+lib boost_json
+   : json_sources
+   : usage-requirements
+     <library>/boost//container/<warnings-as-errors>off
+   ;
+
+boost-install boost_json ;

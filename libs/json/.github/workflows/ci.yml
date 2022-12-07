@@ -1,0 +1,242 @@
+name: GitHub Actions CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+      - githubactions*
+      - feature/**
+      - fix/**
+      - pr/**
+
+jobs:
+  ci:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "COMMENT=docs Job 0"
+            buildtype: "docs"
+            packages: "docbook docbook-xml docbook-xsl xsltproc libsaxonhe-java default-jre-headless flex bison rsync"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            comment: "docs"
+          - name: "COMMENT=valgrind B2_TOOLSET=clang-6.0 B2_CXXS Job 2"
+            buildtype: "valgrind"
+            packages: "clang-6.0 libc6-dbg libstdc++-8-dev"
+            os: "ubuntu-18.04"
+            toolset: "clang"
+            toolset_version: "6.0"
+            comment: "valgrind"
+            b2_cxxstd: "11,14"
+            b2_defines: "BOOST_NO_STRESS_TEST=1"
+            b2_variant: "debug"
+            b2_testflags: "testing.launcher=valgrind"
+            valgrind_opts: "--error-exitcode=1"
+          - name: "COMMENT=asan B2_VARIANT=debug B2_TOOLSET=clan Job 3"
+            buildtype: "boost"
+            packages: "clang-11 libstdc++-9-dev"
+            os: "ubuntu-18.04"
+            toolset: "clang"
+            toolset_version: "11"
+            comment: "asan"
+            b2_variant: "debug"
+            b2_cxxstd: "17"
+            b2_asan: "1"
+            b2_defines: "BOOST_NO_STRESS_TEST=1"
+          - name: "COMMENT=ubsan B2_VARIANT=debug B2_TOOLSET=cla Job 4"
+            buildtype: "boost"
+            packages: "clang-11 libstdc++-9-dev"
+            os: "ubuntu-18.04"
+            toolset: "clang"
+            toolset_version: "11"
+            comment: "ubsan"
+            b2_variant: "debug"
+            b2_cxxstd: "17"
+            b2_ubsan: "1"
+            b2_defines: "BOOST_NO_STRESS_TEST=1"
+          - name: "B2_TOOLSET=gcc-4.8 B2_CXXSTD=11 Job 9"
+            buildtype: "boost"
+            packages: "g++-4.8"
+            os: "ubuntu-20.04"
+            container: "ubuntu:14.04"
+            toolset: "gcc"
+            toolset_version: "4.8"
+            b2_cxxstd: "11"
+          - name: "B2_TOOLSET=gcc-4.9 B2_CXXSTD=11 Job 10"
+            buildtype: "boost"
+            packages: "g++-4.9"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            toolset_version: "4.9"
+            b2_cxxstd: "11"
+          - name: "B2_TOOLSET=gcc-5 B2_CXXSTD=11 Job 11"
+            buildtype: "boost"
+            packages: "g++-5"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            toolset_version: "5"
+            b2_cxxstd: "11"
+          - name: "B2_TOOLSET=gcc-6 B2_CXXSTD=11,14 Job 12"
+            buildtype: "boost"
+            packages: "g++-6"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            toolset_version: "6"
+            b2_cxxstd: "11,14"
+          - name: "B2_TOOLSET=gcc-7 B2_CXXSTD=14,17 Job 13"
+            buildtype: "boost"
+            packages: "g++-7"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            toolset_version: "7"
+            b2_cxxstd: "14,17"
+          - name: "B2_TOOLSET=gcc-8 B2_CXXSTD=17,2a Job 14"
+            buildtype: "boost"
+            packages: "g++-8"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            toolset_version: "8"
+            b2_cxxstd: "17,2a"
+          - name: "B2_TOOLSET=gcc-9 B2_CXXSTD=17,2a Job 15"
+            buildtype: "boost"
+            packages: "g++-9"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "gcc"
+            toolset_version: "9"
+            b2_cxxstd: "17,2a"
+          - name: "B2_TOOLSET=gcc-10 B2_CXXSTD=17,2a Job 17"
+            buildtype: "boost"
+            packages: "g++-10"
+            os: "ubuntu-20.04"
+            toolset: "gcc"
+            toolset_version: "10"
+            b2_cxxstd: "17,2a"
+          - name: "B2_TOOLSET=clang-3.8 B2_CXXSTD=11 Job 19"
+            buildtype: "boost"
+            packages: "clang-3.8"
+            os: "ubuntu-20.04"
+            container: "ubuntu:14.04"
+            toolset: "clang"
+            toolset_version: "3.8"
+            b2_cxxstd: "11"
+          - name: "B2_TOOLSET=clang-4.0 B2_CXXSTD=11,14 Job 20"
+            buildtype: "boost"
+            packages: "clang-4.0 libstdc++-6-dev"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            toolset_version: "4.0"
+            b2_cxxstd: "11,14"
+          - name: "B2_TOOLSET=clang-5.0 B2_CXXSTD=11,14 Job 21"
+            buildtype: "boost"
+            packages: "clang-5.0 libstdc++-7-dev"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            toolset_version: "5.0"
+            b2_cxxstd: "11,14"
+          - name: "B2_TOOLSET=clang-6.0 B2_CXXSTD=14,17 Job 22"
+            buildtype: "boost"
+            packages: "clang-6.0 libc6-dbg libstdc++-8-dev"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            toolset_version: "6.0"
+            b2_cxxstd: "14,17"
+          - name: "B2_TOOLSET=clang-7 B2_CXXSTD=17 Job 23"
+            buildtype: "boost"
+            packages: "clang-7"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            toolset_version: "7"
+            b2_cxxstd: "17"
+          - name: "B2_TOOLSET=clang-8 B2_CXXSTD=17 Job 24"
+            buildtype: "boost"
+            packages: "clang-8"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            toolset_version: "8"
+            b2_cxxstd: "17"
+          - name: "B2_TOOLSET=clang-9 B2_CXXSTD=17,2a Job 25"
+            buildtype: "boost"
+            packages: "clang-9 libstdc++-9-dev"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            toolset_version: "9"
+            b2_cxxstd: "17,2a"
+          - name: "B2_TOOLSET=clang-10 B2_CXXSTD=17,2a Job 27"
+            buildtype: "boost"
+            packages: "clang-10 libstdc++-9-dev"
+            os: "ubuntu-18.04"
+            toolset: "clang"
+            toolset_version: "10"
+            b2_cxxstd: "17,2a"
+          - name: "B2_TOOLSET=clang-11 B2_CXXSTD=17,2a Job 29"
+            buildtype: "boost"
+            packages: "clang-11 libstdc++-9-dev"
+            os: "ubuntu-18.04"
+            toolset: "clang"
+            toolset_version: "11"
+            b2_cxxstd: "17,2a"
+          - name: "COMMENT=Coverity Scan B2_TOOLSET=clang Job 31"
+            buildtype: "coverity"
+            packages: "clang"
+            os: "ubuntu-20.04"
+            container: "ubuntu:16.04"
+            toolset: "clang"
+            comment: "Coverity Scan"
+          - name: "msvc-14.2"
+            buildtype: "boost"
+            os: "windows-2019"
+            toolset: "msvc"
+            toolset_version: "14.2"
+            b2_cxxstd: "17,20"
+          - name: "msvc-14.3"
+            buildtype: "boost"
+            os: "windows-2022"
+            toolset: "msvc"
+            toolset_version: "14.3"
+            b2_cxxstd: "17,20"
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: ./.github/actions/setup-container
+        with:
+          container: ${{ matrix.container }}
+
+      - uses: ./.github/actions/setup-packages
+        with:
+          install: ${{ matrix.packages }}
+          toolset: ${{ matrix.toolset }}
+          version: ${{ matrix.toolset_version }}
+
+      - uses: ./.github/actions/build
+        with:
+          toolset: ${{ matrix.toolset }}
+          version: ${{ matrix.toolset_version }}
+          comment: ${{ matrix.comment }}
+          buildtype: ${{ matrix.buildtype }}
+          cxxstd: ${{ matrix.b2_cxxstd }}
+          defines: ${{ matrix.b2_defines }}
+          variant: ${{ matrix.b2_variant }}
+          testflags: ${{ matrix.b2_testflags }}
+          valgrind_options: ${{ matrix.valgrind_opts }}
+          asan: ${{ matrix.b2_asan }}
+          ubsan: ${{ matrix.b2_ubsan }}

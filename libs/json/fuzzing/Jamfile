@@ -1,0 +1,188 @@
+#
+# Copyright (c) 2019 Vinnie Falco (vinnie.falco@gmail.com)
+# Copyright (c) 2019 Paul Dreik
+# Copyright (c) 2021 Dmitry Arkhipov (grisumbras@gmail.com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Official repository: https://github.com/boostorg/json
+#
+
+
+import common ;
+import link ;
+import os ;
+import path ;
+import property ;
+import sequence ;
+
+
+# set the maximum size of the input, to avoid
+# big inputs which blow up the corpus size
+.MAXLEN = [ os.environ MAXLEN ] ;
+.MAXLEN ?= -max_len=4000 ;
+
+# set a timelimit (you may want to adjust this if you run locally)
+.MAXTIME = [ os.environ MAXTIME  ] ;
+.MAXTIME ?= -max_total_time=30 ;
+
+# If doing fuzzing locally (not in CI), adjust this to utilize more
+# of your cpu.
+#JOBS="-jobs=32"
+.JOBS = [ os.environ JOBS ] ;
+
+# make sure ubsan stops in case anything is found
+.UBSAN_OPTIONS = [
+    common.variable-setting-command UBSAN_OPTIONS : halt_on_error=1
+] ;
+
+local corpus.tar = [ glob-ex . : corpus.tar ] ;
+if $(corpus.tar)
+{
+    # if an old corpus exists, use it
+    # get it with curl -O --location -J https://bintray.com/pauldreik/boost.json/download_file?file_path=corpus%2Fcorpus.tar
+    make old-corpus
+        : $(corpus.tar)
+        : @untar-corpus
+        : <location>oldcorpus
+        ;
+}
+else
+{
+    alias old-corpus ;
+}
+explicit old-corpus ;
+
+
+local initial-corpus = [ glob-tree-ex ../test : *.json ] ;
+
+
+local variants = basic_parser parse parser ;
+for local variant in basic_parser parse parser
+{
+    local $(variant)-runs ;
+    local fuzzer = fuzzer_$(variant) ;
+    lib $(fuzzer) : fuzz_$(variant).cpp /boost/json//boost_json ;
+    exe $(fuzzer)
+        : fuzz_$(variant).cpp /boost/json//json_sources
+        : requirements
+          <toolset>clang
+          <conditional>@fuzzer-props
+        ;
+
+    # make sure the old crashes pass without problems
+    local old-runs = [ glob-tree-ex old_crashes/$(variant) : * ] ;
+    if $(old-runs)
+    {
+        run $(fuzzer)
+            : target-name $(variant)-run-crashes
+            : input-files [ SORT $(old-runs) ]
+            ;
+        $(variant)-runs += $(variant)-run-crashes ;
+    }
+
+    make oldcorpus/$(variant)
+        : old-corpus
+        : common.MkDir
+        : <location>.
+        ;
+    explicit oldcorpus/$(variant) ;
+
+    # make an initial corpus from the test data already in the repo
+    local seed-corpus ;
+    for file in $(initial-corpus)
+    {
+        local copied = $(variant)/$(file:D=) ;
+        make $(copied) : $(file) : common.copy : <location>seedcorpus ;
+        explicit $(copied) ;
+        seed-corpus += $(copied) ;
+    }
+    make seedcorpus/$(variant)
+        : $(seed-corpus)
+        : common.MkDir
+        : <location>.
+        ;
+    explicit seedcorpus/$(variant) ;
+
+    # run the fuzzer for a short while
+    make out/$(variant)
+        : $(fuzzer)
+          oldcorpus/$(variant)
+          seedcorpus/$(variant)
+        : @run-fuzzer
+        : <location>.
+          <flags>$(.MAXTIME)
+          <flags>$(.MAXLEN)
+          <flags>$(.JOBS)
+        ;
+    $(variant)-runs += out/$(variant) ;
+
+    # minimize the corpus
+    make cmin/$(variant)
+        : $(fuzzer)
+          oldcorpus/$(variant)
+          out/$(variant)
+        : @run-fuzzer
+        : <location>.
+          <flags>-merge=1
+          <flags>$(.MAXLEN)
+        ;
+    $(variant)-runs += cmin/$(variant) ;
+
+    alias $(variant)-run : $($(variant)-runs) ;
+    explicit $($(variant)-runs) ;
+}
+
+alias run : $(variants)-run ;
+explicit run $(variants)-run ;
+
+
+rule fuzzer-props ( props * )
+{
+    local toolset = [ property.select toolset : $(props) ] ;
+    if clang = $(toolset:G=)
+    {
+        return
+          <debug-symbols>on
+          <optimization>speed
+          <address-sanitizer>on
+          <undefined-sanitizer>norecover
+          <cxxflags>-fsanitize=fuzzer
+          <linkflags>-fsanitize=fuzzer
+          # explicitly set BOOST_JSON_STACK_BUFFER_SIZE small so interesting
+          # code paths are taken also for small inputs
+          # (see https://github.com/CPPAlliance/json/issues/333)
+          <define>BOOST_JSON_STACK_BUFFER_SIZE=64
+          ;
+    }
+    else
+    {
+        return <build>no ;
+    }
+}
+
+
+rule run-fuzzer ( target : sources * : props * )
+{
+    local flags = [ property.select flags : $(props) ] ;
+    FLAGS on $(target) = $(flags:G=) ;
+
+    local dir = [ path.make [ on $(target) return $(LOCATE) ] ] ;
+    dir = $(dir)/$(target:G=) ;
+    common.MkDir $(dir) ;
+    DEPENDS $(target) : $(dir) ;
+}
+
+actions run-fuzzer
+{
+    $(.UBSAN_OPTIONS)
+    $(>[1]) $(<) $(>[2]) $(>[3]) $(FLAGS)
+}
+
+.TOUCH_FILE = [ common.file-touch-command ] ;
+actions untar-corpus
+{
+    tar xf $(>) -C $(<:D)
+    $(.TOUCH_FILE) $(<)
+}

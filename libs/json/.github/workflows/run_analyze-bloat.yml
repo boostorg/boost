@@ -1,0 +1,53 @@
+name: analyze-bloat
+
+on: [push, pull_request]
+
+env:
+    CMAKE_SHARED_LIBS: '0'
+    CMAKE_OPTIONS: >
+      -DBOOST_JSON_BUILD_TESTS=OFF
+      -DBOOST_JSON_BUILD_FUZZERS=OFF
+      -DBOOST_JSON_BUILD_BENCHMARKS=OFF
+      -DCMAKE_BUILD_TYPE=Release
+      -DVISIBILITY_INLINES_HIDDEN=TRUE
+      -DCMAKE_CXX_VISIBILITY_PRESET=hidden
+
+jobs:
+  analyze-bloat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch head
+        uses: actions/checkout@v2
+        with:
+          path: 'head_ref/root'
+      - name: Compile static lib for head ref
+        uses: ./head_ref/root/.github/actions/build
+        with:
+          buildtype: 'cmake-superproject'
+          toolset: gcc
+          path: 'head_ref/root'
+      - name: Bloat analysis - absolute values
+        uses: djarek/bloaty-analyze@v1.0.0
+        with:
+          file: head_ref/boost-root/__build_static/stage/lib/libboost_json.a
+          rows: 0 # 0 indicates unlimited number of rows
+      - name: Fetch base
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.base_ref }}
+          path: 'base_ref/root'
+      - name: Compile static lib for base ref
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: ./head_ref/root/.github/actions/build
+        with:
+          buildtype: 'cmake-superproject'
+          toolset: gcc
+          path: 'base_ref/root'
+      - name: Bloat analysis - diff
+        uses: djarek/bloaty-analyze@v1.0.0
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          file: head_ref/boost-root/__build_static/stage/lib/libboost_json.a
+          base-file: base_ref/boost-root/__build_static/stage/lib/libboost_json.a
+          rows: 0 # 0 indicates unlimited number of rows
