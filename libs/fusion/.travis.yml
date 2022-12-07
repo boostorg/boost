@@ -1,0 +1,251 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2017-2018 Kohei Takahashi
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+os:
+  - linux
+  - osx
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-4.4 CXXSTD=98,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.4
+          sources:
+            - ubuntu-toolchain-r-test
+
+    #- os: linux
+    #  dist: xenial
+    #  env: TOOLSET=gcc-4.5 CXXSTD=03,0x
+    #  addons:
+    #    apt:
+    #      packages:
+    #        - g++-4.5
+    #      sources:
+    #        - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-4.6 CXXSTD=03,0x
+      addons:
+        apt:
+          packages:
+            - g++-4.6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-4.7 CXXSTD=03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-4.8 CXXSTD=03,11,1y
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-4.9 CXXSTD=03,11,14
+      addons:
+        apt:
+          packages:
+            - g++-4.9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-5 CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-6 CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-7 CXXSTD=03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=gcc-8 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-3.5 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.5
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-3.6 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.6
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-3.7 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.7
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-3.8 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-3.9 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.9
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-4.0 CXXSTD=03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-5.0 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+          sources:
+            - llvm-toolchain-xenial-5.0
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-6.0 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+          sources:
+            - llvm-toolchain-xenial-6.0
+
+    - os: linux
+      dist: xenial
+      env: TOOLSET=clang-7.0 CXXSTD=03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-7
+          sources:
+            - llvm-toolchain-xenial-7
+
+    - os: osx
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=03,11,14,1z
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone --depth 1 -b $BOOST_BRANCH https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+
+  - git submodule init libs/array
+  - git submodule init libs/assert
+  - git submodule init libs/bind
+  - git submodule init libs/concept_check
+  - git submodule init libs/config
+  - git submodule init libs/container_hash
+  - git submodule init libs/conversion
+  - git submodule init libs/core
+  - git submodule init libs/detail
+  - git submodule init libs/function
+  - git submodule init libs/function_types
+  - git submodule init libs/functional
+  - git submodule init libs/integer
+  - git submodule init libs/iterator
+  - git submodule init libs/lambda
+  - git submodule init libs/move
+  - git submodule init libs/mpl
+  - git submodule init libs/optional
+  - git submodule init libs/predef
+  - git submodule init libs/preprocessor
+  - git submodule init libs/smart_ptr
+  - git submodule init libs/static_assert
+  - git submodule init libs/throw_exception
+  - git submodule init libs/tuple
+  - git submodule init libs/type_index
+  - git submodule init libs/type_traits
+  - git submodule init libs/typeof
+  - git submodule init libs/utility
+
+  - git submodule init libs/headers tools/boost_install tools/build
+  - git submodule update
+
+  - rm -rf libs/fusion
+  - mv $TRAVIS_BUILD_DIR libs/fusion
+  - ln -s $(pwd)/libs/fusion $TRAVIS_BUILD_DIR
+
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - ./b2 -j`(nproc || sysctl -n hw.ncpu) 2> /dev/null` libs/fusion/test toolset=$TOOLSET cxxstd=$CXXSTD
