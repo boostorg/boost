@@ -1,0 +1,399 @@
+# Copyright 2016-2018 Peter Dimov
+# Copyright 2018-2019 Emil Dotchevski
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+dist: trusty
+
+python: "2.7"
+
+os:
+  - linux
+  - osx
+
+branches:
+  only:
+    - master
+    - develop
+    - /^feature.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+addons:
+  apt:
+    packages:
+      - g++-4.9
+      - g++-5
+      - g++-6
+      - clang-3.6
+      - clang-3.7
+      - clang-3.8
+      - ruby-full
+#      - python-3.6
+      - ninja-build
+
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise
+      - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise-3.8
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+
+    - os: osx
+      osx_image: xcode11.2
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode11.1
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode11
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode10.3
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode10.2
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode10.1
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode10
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode9.4
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode9.3
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode9.2
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode9
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      osx_image: xcode8
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z
+
+    - os: osx
+      compiler: clang++
+      env: UBSAN=1 TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11,14,1z UBSAN_OPTIONS=print_stacktrace=1
+
+    - os: linux
+      compiler: g++-4.7
+      env: TOOLSET=gcc COMPILER=g++-4.7 CXXSTD=98,03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.8
+      env: TOOLSET=gcc COMPILER=g++-4.8 CXXSTD=98,03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-4.9
+      env: TOOLSET=gcc COMPILER=g++-4.9 CXXSTD=98,03,11
+      addons:
+        apt:
+          packages:
+            - g++-4.9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-5
+      env: TOOLSET=gcc COMPILER=g++-5 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-6
+      env: TOOLSET=gcc COMPILER=g++-6 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - g++-6
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-7
+      env: TOOLSET=gcc COMPILER=g++-7 CXXSTD=98,03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-8
+      env: TOOLSET=gcc COMPILER=g++-8 CXXSTD=98,03,11,14,17
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: TOOLSET=gcc COMPILER=g++-9 CXXSTD=98,03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: g++-9
+      env: UBSAN=1 TOOLSET=gcc COMPILER=g++-9 CXXSTD=98,03,11,14,17,2a UBSAN_OPTIONS=print_stacktrace=1 LINKFLAGS=-fuse-ld=gold
+      addons:
+        apt:
+          packages:
+            - g++-9
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: /usr/bin/clang++
+      env: TOOLSET=clang COMPILER=/usr/bin/clang++ CXXSTD=98,03,11
+      addons:
+        apt:
+          packages:
+            - clang-3.3
+
+    - os: linux
+      compiler: /usr/bin/clang++
+      env: TOOLSET=clang COMPILER=/usr/bin/clang++ CXXSTD=98,03,11
+      addons:
+        apt:
+          packages:
+            - clang-3.4
+
+    - os: linux
+      compiler: clang++
+      env: TOOLSET=clang COMPILER=clang++ CXXSTD=98,03,11
+
+    - os: linux
+      compiler: clang++-3.5
+      env: TOOLSET=clang COMPILER=clang++-3.5 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.5
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.6
+      env: TOOLSET=clang COMPILER=clang++-3.6 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.6
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.7
+      env: TOOLSET=clang COMPILER=clang++-3.7 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.7
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+
+    - os: linux
+      compiler: clang++-3.8
+      env: TOOLSET=clang COMPILER=clang++-3.8 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-3.9
+      env: TOOLSET=clang COMPILER=clang++-3.9 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-3.9
+            - libstdc++-4.9-dev
+          sources:
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      compiler: clang++-4.0
+      env: TOOLSET=clang COMPILER=clang++-4.0 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-4.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-4.0
+
+    - os: linux
+      compiler: clang++-5.0
+      env: TOOLSET=clang COMPILER=clang++-5.0 CXXSTD=98,03,11,14,1z
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
+
+    - os: linux
+      compiler: clang++-6.0
+      env: TOOLSET=clang COMPILER=clang++-6.0 CXXSTD=98,03,11,14,17
+      addons:
+        apt:
+          packages:
+            - clang-6.0
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-6.0
+
+    - os: linux
+      compiler: clang++-7
+      env: TOOLSET=clang COMPILER=clang++-7 CXXSTD=98,03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-7
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-7
+
+    - os: linux
+      compiler: clang++-8
+      env: TOOLSET=clang COMPILER=clang++-8 CXXSTD=98,03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-8
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-8
+
+    - os: linux
+      dist: xenial
+      compiler: clang++-9
+      env: TOOLSET=clang COMPILER=clang++-9 CXXSTD=98,03,11,14,17,2a
+      addons:
+        apt:
+          packages:
+            - clang-9
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+
+    - os: linux
+      compiler: clang++-8
+      env: UBSAN=1 TOOLSET=clang COMPILER=clang++-8 CXXSTD=98,03,11,14,17,2a UBSAN_OPTIONS=print_stacktrace=1
+      addons:
+        apt:
+          packages:
+            - clang-8
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-8
+
+install:
+  - gem install asciidoctor
+  - gem install coderay
+  - cd ..
+  - git clone -b master --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init tools/inspect
+  - git submodule update --init libs/config
+  - git submodule update --init tools/boostdep
+  - rm -rf libs/exception
+  - mkdir libs/exception
+  - cp -r $TRAVIS_BUILD_DIR/* libs/exception
+  - python tools/boostdep/depinst/depinst.py exception
+  - ./bootstrap.sh
+  - ./b2 headers
+  - cd libs/exception
+
+script:
+  - |-
+    echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+  - ../../b2 test toolset=$TOOLSET cxxstd=$CXXSTD variant=debug,release ${UBSAN:+cxxflags=-fsanitize=address,undefined cxxflags=-fno-sanitize-recover=address,undefined linkflags=-fsanitize=address,undefined debug-symbols=on} ${LINKFLAGS:+linkflags=$LINKFLAGS}
+  - ../../b2 exception-handling=off rtti=off test toolset=$TOOLSET cxxstd=$CXXSTD variant=debug,release ${UBSAN:+cxxflags=-fsanitize=address,undefined cxxflags=-fno-sanitize-recover=address,undefined linkflags=-fsanitize=address,undefined debug-symbols=on} ${LINKFLAGS:+linkflags=$LINKFLAGS}
+
+notifications:
+  email:
+    on_success: always
