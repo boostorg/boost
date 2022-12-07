@@ -1,0 +1,1505 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<style>
+p {text-align:justify}
+li {text-align:justify}
+blockquote.note
+{
+    background-color:#E0E0E0;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+ins {background-color:#FFFFA0}
+del {background-color:#FFFFA0}
+
+cpp_comment {color:#007F33}
+
+pre {color:#000066}
+code{color:#000066}
+
+</style>
+
+<head>
+<title>Applying classic memory allocation strategies to C++ containers (v0.1)</title>
+</head>
+
+<h1>Applying classic memory allocation strategies to C++ containers (v0.1)</h1>
+
+<body>
+<p>
+Ion Gazta&ntilde;aga &lt;<a href="mailto:igaztanaga@gmail.com">igaztanaga@gmail.com</a>&gt;<br>
+</p>
+
+<h1>Table of Contents</h1>
+
+<ul>
+<li><a href="#Introduction">Introduction</a></li>
+<li><a href="#Chapter1">Chapter 1: In-place expansion for <code>vector</code></a></li>
+   <ul>
+   <li><a href="#WhatWeTried">What we tried: Existing proposals for in-place expansion</a></li>
+   <li><a href="#NewFunctionsForExpansion">New functions for expansion capabilities</a></li>
+   <li><a href="#AConfigurableAllocator">A configurable allocator for testing</a></li>
+   <li><a href="#TestingForward">Testing forward expansion in <code>vector</code></a></li>
+   <li><a href="#TestingBackwards">Testing backwards expansion in <code>vector</code></a></li>
+   <li><a href="#TestingShrinkToFit">Testing shrink to fit in <code>vector</code></a></li>
+   </ul>
+<li><a href="#Chapter2">Chapter 2: Burst allocation for node containers</a></li>
+   <ul>
+   <li><a href="#BurstAllocationIntro">Burst allocation introduction</a></li>
+   <li><a href="#BurstAllocationInfrastructure">Burst allocation infrastructure</a></li>
+   <li><a href="#BurstInterfaceForAllocators">Burst allocation interface for allocators</a></li>
+   <li><a href="#TestingBurstAllocation">Testing burst allocation</a></li>
+   </ul>
+<li><a href="#Chapter3">Chapter 3: Adaptive pools for node containers</a></li>
+   <ul>
+   <li><a href="#SimpleSegregatedStorage">Simple segregated storage: advantages and problems</a></li>
+   <li><a href="#AdaptivePoolsExplained">Adaptive pools explained</a></li>
+   <li><a href="#PresentingAdaptivePool">Presenting <code>adaptive_pool</code></a></li>
+   <li><a href="#TestingAdaptivePool">Testing <code>adaptive_pool</code></a></li>
+   </ul>
+</ul>
+
+<h1><a name="Introduction"></a>Introduction</h1>
+<p>
+I'm sure that many C++ programmers have ever wondered where does good old realloc 
+fit in C++. And that's a good question. Could we improve <code>std::vector</code> performance 
+using memory expansion mechanisms to avoid too many copies? But <code>std::vector</code> 
+is not the only container that could benefit from some classic strategies memory allocation: What if we 
+could take advantage of the insertion of multiple elements in <code>std::list</code> using 
+a burst allocation mechanism that could amortize costs (mutex locks, searches...) that 
+can't be amortized when using single node allocation strategies? Some space-saving 
+strategies also come to mind with node containers: Can we find a mechanism to build a 
+memory allocator that offers the size-saving benefits of a simple segregated storage 
+strategy (see <a href="http://www.boost.org/libs/pool">Boost.Pool</a>) without suffering
+too big node pools when most of nodes have been deallocated?
+</p>
+<p>
+This article will explain how some classic improvement strategies have been applied to 
+C++ allocators. Many of these mechanism are being used for shared-memory allocators and 
+containers (see <a href="http://www.boost.org/libs/interprocess">Boost.Interprocess</a>) 
+where size restrictions are tighter than with heap allocators and other strategies (e.g. 
+per-thread-pthread pools) are not applicable. So we'll be using <a href="http://www.boost.org/libs/interprocess">
+Boost.Interprocess</a> containers to measure the speed up that we can obtain when using 
+those classic strategies in C++.
+</p>
+<p>
+Obviously, these C++ allocators need some underlying general purpose allocator, since 
+new and delete don't offer expansion and burst capabilities. In this article we'll 
+use a modified <a href="http://g.oswego.edu/dl/html/malloc.html">Doug Lea Malloc, aka 
+DLmalloc</a> memory allocator with new basic functions that will offer the necessary 
+underlying machinery to implement all these classic strategies. <b>DLmalloc</b> is known to be 
+very size and speed efficient, and this allocator is used as the basis of many malloc 
+implementations, including multithreaded allocators built above <b>DLmalloc</b>
+(See <a href="http://directory.fsf.org/project/ptmalloc2/">ptmalloc2</a>, 
+<a href="http://www.malloc.de/en/">ptmalloc3</a> or
+<a href="http://www.nedprod.com/programs/portable/nedmalloc/index.html">nedmalloc</a>
+). So 
+improvements obtained by the classic strategies applied to C++ will measure real-world 
+speedups, even when the allocator is very efficient.
+</p>
+<p>
+I've developed some additional classes, like STL allocators, pools and tests, I've put 
+all this code under Boost Software license, and I've respected Boost guidelines so that 
+the developed code can be considered integrated in the Boost Container.</a>.
+</p>
+
+<h1><a name="Chapter1"></a>Chapter 1: In-place expansion for <code>vector</code></h1>
+
+<h2><a name="WhatWeTried"></a>What we tried: Existing proposals for in-place expansion</h2>
+
+<p>
+There've been a couple of C++ proposal to add in-place expansion mechanisms to standard 
+allocators (<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n1953.html">N1953: 
+Upgrading the Interface of Allocators using API Versioning</a> written by Howard Hinnant 
+and <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2045.html">N2045: 
+Improving STL allocators</a> written by me based on Hinnant's proposal). Unfortunately 
+they didn't receive much interest in the committee but there is hope that we could get 
+some of this functionality for C++1x if the C++ community shows some interest. Let's 
+review a bit what these proposals said:
+</p>
+<p>Hinnant's proposal adds some new functionalities to C++ allocators:
+<ol>
+<li>
+The ability to know the size of a memory buffer allocated with the allocator.
+<li>
+The ability to expand a previously obtained memory buffer (similar to realloc but with no 
+memory copy)
+<li>
+The ability to shrink a previously obtained memory buffer (similar to realloc but with no 
+memory copy)
+<li>
+Three size concepts when allocating memory: <b>preferred size</b>, <b>limit size</b> and <b>received size</b>.</li>
+</ol>
+<P></P>
+<p>
+The first functionality is interesting to avoid wasting some precious bytes the memory 
+allocator adds in the end of the buffer due to alignment reasons or because its own 
+memory allocation algorithm. As an example, <b>DLmalloc</b> on 32 bit systems will need a 
+minimum of 16 bytes for every allocation (4 bytes are payload and 12 bytes are available 
+for the user): If we try to initialize <code>std::string</code> with a 4 character 
+narrow string (<code>"abcd"</code>) we will waste 8 bytes, because we have no way to know
+that there is room in our newly allocated buffer that could be used for longer strings
+without going again through the allocator. Other allocators waste even 
+more memory. In 64 bit systems the minimum size (and thus, the waste) is bigger:
+32 bytes (24 bytes available for the user) for <b>DLmalloc</b>.
+</p>
+<p>
+The second functionality is the classical use case of realloc in C: instead of 
+allocating a new buffer, the programmer tries to expand the current one. If the 
+expansion succeeds, there is no need to copy data to the new buffer (in C++, that means 
+avoiding potentially costly copy-constructors). The third one is exactly the inverse: a 
+vector that has grown considerably has now a few elements, <code>vector.capacity()</code> is
+much bigger than <code>vector.size()</code> and we'd like to return memory 
+to the system. Many programmers use the <a href="http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Shrink-to-fit">
+shrink-to-fit trick</a> to return memory to the system, but this trick needs
+a possibly throwing copy, whereas a shrink to fit operation implemented
+by the allocator would not need any copying at all.
+</p>
+<p>
+The last functionality is really interesting because a vector increases its capacity 
+usually using a growth factor (usually 1.5f or 2.0f) to avoid too many reallocations. That is, when we insert 
+new objects in a vector and <code>vector.capacity() == vector.size()</code>, then the 
+vector allocates much more memory than the size needed to insert a new object. When 
+allocating new memory to insert a new object, <b>limit size</b> is <code>size() + 1</code>,
+<b>preferred size</b> is <code>size()*growth_factor</code> and <b>received size</b> is the real
+size of the buffer. When inserting a new element in a vector, is usually better to 
+expand the memory to hold the new element than to allocate a new bigger buffer.
+</p>
+<p>
+<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2045.html">N2045</a>
+makes some additions:
+<ol>
+<li>
+The ability to expand the current buffer not only forward, but also backwards (forward 
+expansion, backwards expansion or both).
+<li>
+Offers the possibility to allocate or expand the buffer in a single call to avoid excessive 
+locking.
+<li>
+Separates array allocation and node allocation, similarly to <code>operator new</code> and <code>operator 
+new[]</code>.
+<li>
+Centralizes all the expansion, shrinking and allocation functionality in a single function.
+<li>
+Pushes <b>limit size</b> and <b>preferred size</b> concepts also to new allocations and shrink to 
+fit operations.</li>
+</ol>
+<P></P>
+<p>
+The first addition is useful for embedded systems and other size-limited memories, like 
+fixed-size shared memory. If a vector can only be expanded forward, then it can't reuse 
+preceding free memory if that preceding memory is not big enough (that is, 1.5 or 2.0 times bigger than
+the current buffer). With backwards expansion, this limitation disappears and
+backwards expansion can be combined with forward expansion to optimize memory usage. 
+</p>
+<p>
+The vector has to copy elements backwards so backwards expansion needs exactly the
+same number of copies as a new allocation. Many times backwards expansion can be implemented
+very efficiently in some memory algorithms that have fast access to previous and next memory buffers.
+Backwards expansion also has some downsides:
+<ol>
+<li>
+The code handling data copy for a backwards expanded buffer is not trivial (the new buffer 
+has both already constructed objects and raw memory)
+<li>
+In order to maintain old objects aligned (and thus reusable for being move assigned) the 
+underlying C function implementing backwards expansion must guarantee 
+that the distance between the new beginning of the backwards expanded buffer and the old 
+beginning must be multiple of the size of the objects already constructed in the buffer (and of course, 
+multiple of the alignment required by the memory allocation algorithm). A buffer 
+holding a type with <code>sizeof(Type)</code> == 12 can't be expanded backwards 16 bytes, because the 
+distance between the old beginning and the new beginning is not multiple of 12, and thus, the 
+old object will be partially overwritten and it can't be safely move-assigned.</li>
+</ol>
+<P></P>
+<p>
+The second addition tries to compact in a single call several tries to expand or 
+allocate memory because usually a vector will first try to expand memory and if this fails,
+it will try to allocate a new buffer. Since checking for expansion 
+capabilities is quite fast comparing to mutex locking and other checks performed by the 
+allocator, both functions can be combined in a single call.
+</p>
+<p>
+The third addition (separating node and array allocation) is based on the fact that with 
+the addition of expansion functions, node allocators based classic segregated storage 
+pools won't be able to be allocators with expansion capabilities. This might not sound 
+like a big problem for pure-node containers like <code>std::list</code> but some hybrid 
+containers like <code>std::unordered_map</code> wouldn't be able to use both segregated 
+storage (for nodes) and expansion features (for the bucket array).
+</p>
+<p>
+Furthermore, some allocators (see <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2008/n2554.pdf">
+N2554 The Scoped Allocator Model (Rev 2)</a>) can be propagated through containers, so 
+having an allocator that can use in-place expansion capabilities and node-pooling 
+capabilities is very interesting. And this can only be achieved if the allocator uses
+different functions for single element and array operations.
+</p>
+<p>
+The last two 
+additions are just optimizations to reduce locking and to minimize the number of allocation 
+calls.
+</p>
+<p>
+Hinnant's proposal was implemented in the Freescale (then Metrowerks) standard library 
+(MSL) with great success. My approach was implemented in <a href="http://www.boost.org/libs/interprocess">
+Boost.Interprocess</a>. This article is an evolution of my last proposal but applying 
+these techniques in a widely used heap allocator.
+</p>
+
+<h2><a name="NewFunctionsForExpansion">New functions for expansion capabilities</h2>
+
+As mentioned, <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2045.html">
+N2045</a> proposed an advanced new function for allocators that offers the 
+possibility to request buffer expansion (combined or not with allocation if the 
+expansion fails), and shrinking called <code>allocation_command</code>. This is the 
+explanation of the function:
+<pre>
+   enum allocation_type
+   {
+      <cpp_comment>//Bitwise OR (|) combinable values</cpp_comment>
+      allocate_new        = ...,
+      expand_fwd          = ...,
+      expand_bwd          = ...,
+      shrink_in_place     = ...,
+      try_shrink_in_place = ...,
+      nothrow_allocation  = ...
+   };
+
+
+   template&lt;class T&gt;
+   std::pair&lt;T *, bool&gt; allocation_command
+      ( allocation_type command,    std::size_t limit_size
+      , std::size_t preferred_size, std::size_t &amp;received_size, T *reuse_ptr = 0);
+
+</pre>
+<p>
+<b>Preconditions for this function</b>:
+</p>
+<p>
+<ul>
+<li>
+The parameter <code>command</code> must contain at least of these values: <code>shrink_in_place</code>,
+<code>try_shrink_in_place</code>, <code>try_shrink_in_place</code>, <code>expand_fwd</code>, <code>expand_bwd</code> or <code>allocate_new</code>.
+</li>
+<li>
+If the parameter <code>command</code> contains the value <code>shrink_in_place</code> it can't 
+contain any of these values: <code>expand_fwd</code>, <code>expand_bwd</code>,
+<code>allocate_new</code>, <code>try_shrink_in_place</code>.
+</li>
+<li>
+If the parameter <code>command</code> contains the value <code>try_shrink_in_place</code> it can't 
+contain any of these values: <code>expand_fwd</code>, <code>expand_bwd</code>,
+<code>allocate_new</code>, <code>shrink_in_place</code>.
+</li>
+<li>
+If the parameter <code>command</code> contains <code>expand_fwd</code> or <code>expand_bwd</code>, the 
+parameter <code>reuse_ptr</code>
+must be non-null and returned by a previous allocation function.
+<li>
+If the parameter <code>command</code> contains the value <code>shrink_in_place</code>,
+the parameter <code>limit_size</code>
+must be equal or greater than the parameter <code>preferred_size</code>.
+<li>
+If the parameter <code>command</code> contains any of these values: <code>expand_fwd</code> or <code>
+expand_bwd</code>, the parameter <code>limit_size</code> must be equal or less than the 
+parameter <code>preferred_size</code>.</li>
+</ul>
+<P></P>
+<p>
+<b>Which are the effects of this function</b>:
+</p>
+<p>
+<ul>
+<li>
+If the parameter <code>command</code> contains the value <code>shrink_in_place</code>,
+(with optional additional <code>nothrow_allocation</code>) the function will 
+try to reduce the size of the memory block referenced by pointer <code>reuse_ptr</code> to the 
+value <code>preferred_size</code> moving only the end of the block. If it's not possible, it 
+will try to reduce the size of the memory block as much as possible as long as this results in <code>
+size(p) &lt;= limit_size</code>. Success is reported only if this results in <code>preferred_size 
+&lt;= size(p)</code> and <code>size(p) &lt;= limit_size</code>.
+</li>
+<li>
+If the parameter <code>command</code> contains the value <code>try_shrink_in_place</code>,
+(with optional additional <code>nothrow_allocation</code>) the function will act as if
+a <code>shrink_in_place</code> was demaned but it won't shrink the buffer. This function
+is useful to know if a shrink operation will have success with the given parameters and
+obtain in the parameter <code>received_size</code> a value that is guaranteed to succeed
+as <code>limit_size</code> on a subsequent shrink in place operation. This function is 
+useful to know exactly how many objects a caller should destroy with the given
+<code>limit_size</code> and <code>preferred_size</code>.
+</li>
+<li>
+If the parameter <code>command</code> only contains the value <code>expand_fwd</code> (with 
+optional additional <code>nothrow_allocation</code>), the allocator will try to increase the 
+size of the memory block referenced by pointer reuse moving only the end of the block to the 
+value <code>preferred_size</code>. If it's not possible, it will try to increase the size of 
+the memory block as much as possible as long as this results in <code>size(p) &gt;= limit_size</code>. 
+Success is reported only if this results in <code>limit_size &lt;= size(p)</code>.
+<li>
+If the parameter <code>command</code> only contains the value <code>expand_bwd</code> (with 
+optional additional <code>nothrow_allocation</code>), the allocator will try to increase the 
+size of the memory block referenced by pointer <code>reuse_ptr</code> only moving the start of 
+the block to a returned new position <code>new_ptr</code>. If it's not possible, it will try 
+to move the start of the block as much as possible as long as this results in <code>size(new_ptr) 
+&gt;= limit_size</code>. Success is reported only if this results in <code>limit_size &lt;= 
+size(new_ptr)</code>.
+<li>
+If the parameter <code>command</code> only contains the value <code>allocate_new</code> (with 
+optional additional <code>nothrow_allocation</code>), the allocator will try to allocate 
+memory for <code>preferred_size</code> objects. If it's not possible it will try to allocate 
+memory for at least <code>limit_size</code>
+objects.
+<li>
+If the parameter <code>command</code> only contains a combination of <code>expand_fwd</code> and
+<code>allocate_new</code>, (with optional additional <code>nothrow_allocation</code>) the 
+allocator will try first the forward expansion. If this fails, it would try a new 
+allocation.
+<li>
+If the parameter <code>command</code> only contains a combination of <code>expand_bwd</code> and
+<code>allocate_new</code> (with optional additional <code>nothrow_allocation</code>), the 
+allocator will try first to obtain <code>preferred_size</code> objects using both methods if 
+necessary. If this fails, it will try to obtain <code>limit_size</code>
+objects using both methods if necessary.
+<li>
+If the parameter <code>command</code> only contains a combination of <code>expand_fwd</code> and
+<code>expand_bwd</code> (with optional additional <code>nothrow_allocation</code>), the 
+allocator will try first forward expansion. If this fails it will try to obtain preferred_size 
+objects using backwards expansion or a combination of forward and backwards expansion. If this 
+fails, it will try to obtain <code>limit_size</code>
+objects using both methods if necessary.
+<li>
+If the parameter <code>command</code> only contains a combination of allocation_new, <code>expand_fwd</code>
+and <code>expand_bwd</code>, (with optional additional <code>nothrow_allocation</code>) the 
+allocator will try first forward expansion. If this fails it will try to obtain preferred_size 
+objects using new allocation, backwards expansion or a combination of forward and backwards 
+expansion. If this fails, it will try to obtain <code>limit_size</code>
+objects using the same methods.
+<li>
+The allocator always writes the size or the expanded/allocated/shrunk memory block in <code>received_size</code>. 
+On failure the allocator writes in <code>received_size</code> a possibly successful <code>limit_size</code>
+parameter for a new call.</li>
+</ul>
+<P></P>
+<p>
+<b>Throws an exception if two conditions are met</b>:
+<ul>
+<li>
+The allocator is unable to allocate/expand/shrink the memory or there is an error in 
+preconditions
+<li>
+The parameter command does not contain <code>nothrow_allocation</code>.</li>
+</ul>
+<P></P>
+<p>
+<b>This function returns</b>:
+<ul>
+<li>
+The address of the allocated memory or the new address of the expanded memory as the first 
+member of the pair. If the parameter command contains <code>nothrow_allocation</code>
+the first member will be 0 if the allocation/expansion fails or there is an error in 
+preconditions.
+<li>
+The second member of the pair will be false if the memory has been allocated, true if the 
+memory has been expanded. If the first member is 0, the second member has an undefined value.</li>
+</ul>
+<P></P>
+<p>
+<b>Notes</b>:
+<ul>
+<li>
+If the user chooses <code>char</code>
+as template argument the returned buffer will be suitably aligned to hold any type.
+<li>
+If the user chooses <code>char</code> as template argument and a backwards expansion is 
+performed, although properly aligned, the returned buffer might not be suitable because the 
+distance between the new beginning and the old beginning might not multiple of the type the 
+user wants to construct, since due to internal restrictions the expansion can be slightly 
+bigger than the requested bytes. <b>When performing backwards expansion, if you have already 
+constructed objects in the old buffer, it's important to correctly specify the type</b>.</li>
+</ul>
+</p>
+
+<p>
+Obviously, we need an underlying C function that offers these possibilities.
+I've added the following function to the modified dlmalloc library:
+
+<pre>
+
+typedef struct boost_cont_command_ret_impl
+{
+   void *first;
+   int   second;
+}boost_cont_command_ret_t;
+
+boost_cont_command_ret_t boost_cont_allocation_command
+   ( allocation_type command   , size_t sizeof_object
+   , size_t limit_objects      , size_t preferred_objects
+   , size_t *received_objects  , void *reuse_ptr );
+</pre>
+
+<p>
+This function does the same job as <code>allocation_command</code>, so it takes the
+same options and an additional parameter indicating the size of the object (specially
+important for backwards expansion). This function does not throw exceptions because C
+has no exceptions but other than these two issues, its use is exactly the same
+as <code>allocation_command</code>.
+
+</p>
+</p>
+
+<h2><a name="AConfigurableAllocator"></a>A configurable allocator for testing</h2>
+
+<p>
+To compare apples to apples, we just can't compare the standard allocator versus an 
+allocator based on <b>DLmalloc</b> with expansion capabilities. For this purpose we develop an 
+allocator (called, surprisingly, <code>ba::allocator</code>). Here's the declaration:
+</p>
+<pre>
+
+namespace boost {
+namespace container {
+
+template&lt;class T, unsigned Version = 2, unsigned int AllocationDisableMask = 0&gt;
+class allocator;
+
+} <cpp_comment>//namespace container {</cpp_comment>
+} <cpp_comment>//namespace boost {</cpp_comment>
+
+</pre>
+<p>
+The first template parameter is the type of the objects to be allocated. The second is 
+the version of the allocator (see <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n1953.html">
+N1953</a>) for details. If Version is 1, then the allocator is a standard conforming 
+classic allocator around <code>dlmalloc</code> and <code>dlfree </code>with no 
+additional features. If Version is 2, then the allocator has expansion capabilities and 
+other features like specifying limit and preferred sizes and obtaining the real size of 
+an allocated memory, separated node and array allocations, etc...
+</p>
+<p>
+The third parameter is a mask that can be used to disable some capabilities. For 
+example, specifying <code>expand_bwd | expand_fwd</code> will disable forward 
+and backwards expansion and the allocator will only provide new buffer allocations.
+</p>
+
+<h2><a name="TestingForward"></a>Testing forward expansion in <code>vector</code></h2>
+
+<p>
+Let's first present the class that will be used in our performance tests. It's a simple 
+wrapper over an <code>int</code>, with a copy constructor that realizes a job that will 
+be equivalent to most move-constructors in C++0x. Of course performance gains will be 
+bigger in copyable but non-moveable heavy objects, but I think this class is fair 
+enough.
+</p>
+<pre>
+
+class MyInt
+{
+   int int_;
+
+   public:
+   MyInt(int i = 0) : int_(i){}
+
+   MyInt(const MyInt &amp;other)
+      :  int_(other.int_)
+   {}
+
+   MyInt &amp; operator=(const MyInt &amp;other)
+   {
+      int_ = other.int_;
+      return *this;
+   }
+};
+
+</pre>
+<p>
+Now we'll push back an element one by one in a vector, and measure the time using 
+<a href="http://www.boost.org/libs/date_time">Boost.DateTime</a>:
+</p>
+<pre>
+   unsigned int numalloc = 0, numexpand = 0, capacity = 0;
+
+   ptime tini = microsec_clock::universal_time();
+
+   for(unsigned int r = 0; r != num_iterations; ++r){
+      bi::vector&lt;MyInt, IntAllocator&gt; v;
+      v.reset_alloc_stats();   <cpp_comment>//Reset allocation statistics</cpp_comment>
+      for(unsigned int e = 0; e != num_elements; ++e)
+         v.push_back(e);
+      numalloc  += v.num_alloc;   numexpand += v.num_expand_fwd;
+      capacity = static_cast&lt;unsigned int&gt;(v.capacity());
+   }
+
+   ptime tend = microsec_clock::universal_time();
+   <cpp_comment>//...</cpp_comment>
+</pre>
+<p>
+We'll test 4 different allocators:
+<ol>
+   <li><b>StdAllocator</b>: equivalent to <code>std::allocator&lt;int&gt;</code>, the standard 
+      allocator that comes with the C++ compiler</li>
+   <li><b>AllocatorPlusV1</b>: equivalent to <code>ba::allocator&lt;int, 1&gt;</code>, a STL 
+      conformant allocator around <code>dlmalloc</code> and <code>dlfree</code>.</li>
+   <li><b>AllocatorPlusV2Mask</b>: equivalent to <code>ba::allocator&lt;int, 2, expand_bwd | 
+      expand_fwd&gt;</code>, an allocator with capabilities to specify a limit size the 
+      preferred size and real size of a buffer, but with expansion capabilities disabled.</li>
+   <li><b>AllocatorPlusV2</b>: equivalent to <code>ba::allocator&lt;int, 2&gt;</code>, a fully 
+      equipped improved allocator. (Note: There is no need to disable backwards expansions because
+      forward expansion has always preference over new allocations and backwards expansion).</li>
+</ol>
+</p>
+<p>
+and we'll use several <code>[num_iterations, num_elements]</code> combinations: <code>[10000, 
+10000], [100000, 1000], [1000000, 100] and [10000000, 10]</code>
+</p>
+<p>
+For each allocator we'll show the following information:
+<ul>
+   <li><code>push_back</code> speed (normalized to AllocatorPlusV1)</li>
+   <li>The number of calls to the allocator per iteration</li>
+   <li>The number of new allocations per iteration</li>
+   <li>The number of expansion per iteration</li>
+   <li>The final capacity of the vector</li>
+</ul>
+Now let's see the results of the test in a Windows XP machine (AMD 1.47 
+Ghz) using Visual C++ 2003:
+</p>
+<img src="fwd_expansion_msvc-7.1_1.jpg"></img>
+<img src="fwd_expansion_msvc-7.1_2.jpg"></img>
+<img src="fwd_expansion_msvc-7.1_3.jpg"></img>
+<p>
+As we see in the picture, <b>DLmalloc</b> is faster than the standard allocator 
+provided by MSVC 7.1 (StdAllocator vs. AllocatorPlus). We also see that
+V2 allocators call less times to allocator functions (for size=10, 4 times vs. 6 times),
+because using the <i>received_size</i> parameter of <code>allocation_command</code> the
+container can take advantage of the real size of the newly allocated small buffer.
+</p>
+
+<p>
+For big sizes (size=10000), due to the expansion capabilities of AllocatorPlusV2,
+this is twice as fast as AllocatorPlusV2Mask and 2.5 times faster than the standard
+conforming, <b>DLmalloc</b> based AllocatorPlusV1. As we can see in the third graph, only
+AllocatorPlusV2 performs expand in place, whereas the rest only allocate new buffers.
+</p>
+
+<p>
+Now we'll execute the same test in a Linux (Suse 10.1) virtual machine (VMWare 6) using gcc-4.1 compiler
+and will check <code>push_back</code> times:
+</p>
+
+<img src="fwd_expansion_linux-gcc-4.1.jpg"></img>
+
+<p>
+We see that the standard allocator is faster than our V1 (a standard conforming <b>DLmalloc</b> wrapper)
+by a small margin for some sizes and slightly slower for bigger sizes.
+That's because gblic malloc is based on ptmalloc2, which is actually
+based on <b>DLmalloc</b>, but uses per-thread-pools, so minimizes mutex locks.
+</p>
+
+<p>
+Like in Windows, expand-in-place capable allocator is twice as fast as the V1 allocator,
+confirming that forward expansion offers a considerable speed up. This speed up will be
+noticeable in initialization phases when vectors are filled with many back insertions. The
+speed-up will be more noticeable if vector elements are elements with no move constructors
+(e.g. third-party classes than can't be updated with move semantics).
+</p>
+
+<h2><a name="TestingBackwards"></a>Testing backwards expansion in <code>vector</code></h2>
+
+<p>
+Historically backwards expansion has not been very used for allocation strategies, basically
+because it does not offer the speed improvements offered by forward expansion for
+usual vector implementations. Similarly to new allocation, we need to move old objects
+(an implementation might avoid data-moving if it manages uninitialized data in the beginning of
+the memory buffer, but that's not usual). Backwards expansion has the ability to reduce the peak
+memory used by the vector (while allocating new memory, the vector has to maintain the old 
+buffer until copies data to the new one) effectively reusing free memory placed just before the
+buffer to be expanded.
+</p>
+
+<p>
+As we've said before, the backwards expansion algorithm has to calculate the LCM (least common multiple)
+of the memory allocation alignment (8 bytes in <b>DLmalloc</b>) and the size of the object. 
+For very efficient algorithms like <b>DLmalloc</b>, I've found that calculating the LCM using the
+traditional <a href="http://en.wikipedia.org/wiki/Euclidean_algorithm">Euclidean</a> algorithm was a big
+overhead that made backwards expansion considerably slower than new
+allocation. It's necessary to take advantage of the power of 2 memory alignment and implement
+optimizations for object sizes also power of 2 or multiple of 2, 4, or 8 bytes, and use
+optimized versions to calculate the LCM. Fortunately,
+these optimizations made backwards expansion slightly faster than a new allocation, making
+backwards expansion better than new allocation in every aspect.
+</p>
+
+<p>
+To test backwards expansion we'll execute the same <code>push_back</code> test
+using the following 4 allocators:
+
+<ol>
+<li>
+<b>StdAllocator</b>: equivalent to <code>std::allocator&lt;int&gt;</code>, the standard 
+allocator that comes with the C++ compiler
+<li>
+<b>AllocatorPlusV1</b>: equivalent to <code>ba::allocator&lt;int, 1&gt;</code>, a STL 
+conformant allocator around <code>dlmalloc</code> and <code>dlfree</code>.
+<li>
+<b>AllocatorPlusV2Mask</b>: equivalent to <code>ba::allocator&lt;int, 2, expand_bwd | 
+expand_fwd&gt;</code>, an allocator with capabilities to specify a limit size the 
+preferred size and real size of a buffer, but with expansion capabilities disabled.
+<li>
+<b>AllocatorPlusV2</b>: equivalent to <code>ba::allocator&lt;int, 2, expand_fwd&gt;</code>,
+a fully equipped improved allocator, that avoids forward expansion (forward expansion
+has priority over backwards expansion, so we need to disable it to only measure backwards
+expansion).</li>
+</ol>
+
+Now let's see the results of the test in a Windows XP machine (AMD 1.47 
+Ghz) using Visual C++ 2003:
+</p>
+
+<img src="bwd_expansion_msvc-7.1.jpg"></img>
+
+<p>
+And now in a Linux (Suse 10.1) virtual machine (VMWare 6) using gcc-4.1 compiler:
+</p>
+
+<img src="bwd_expansion_linux-gcc-4.1.jpg"></img>
+
+<p>
+We see that for most cases backwards expansion (AllocatorPlusV2) is slightly faster than new
+allocation (AllocatorPlusV1) and new allocation with <code>received_size</code> capabilities
+(AllocatorPlusV2Mask).
+</p>
+
+<h2><a name="TestingShrinkToFit"></a>Testing shrink to fit in <code>vector</code></h2>
+
+<p>
+The <a href="http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Shrink-to-fit">
+Shrink-to-fit</a> is a widely used idiom that can be improved with the <code>shrink_in_place"</code>
+option provided by <code>allocation_command</code> method. To test this function we'll use the following test:
+</p>
+
+<pre>
+   const std::size_t Step = 5;
+
+   ptime tini = microsec_clock::universal_time();
+
+   typedef boost::interprocess::detail::integral_constant
+      &lt;unsigned, boost::interprocess::detail::version&lt;Allocator&gt;::value&gt; alloc_version;
+
+   for(unsigned int r = 0; r != num_iterations; ++r){
+      <cpp_comment>//Create a vector with num_elements size</cpp_comment>
+      bi::vector&lt;MyInt, IntAllocator&gt; v(num_elements);
+      v.reset_alloc_stats();
+      <cpp_comment>//Empty the vector erasing the last Step elements and calling shrink_to_fit()</cpp_comment>
+      for(unsigned int e = num_elements; e != 0; e -= Step){
+         v.erase(v.end() - Step, v.end());
+         v.shrink_to_fit();
+      }
+   }
+
+   ptime tend = microsec_clock::universal_time();
+</pre>
+
+<p>
+That is, we'll initialize the vector with an initial size and will erase the last Step elements (5 in this case),
+and shrink to fit the capacity of the vector. We'll repeat this operation for different
+<code>[num_iterations, num_elements]</code> combinations: <code>[100, 
+10000], [1000, 200] and [10000, 500]</code>
+</p>
+
+<p>
+To test shrink to fit we'll execute the test using the following 3 allocators:
+
+<ol>
+<li>
+<b>StdAllocator</b>: equivalent to <code>std::allocator&lt;int&gt;</code>, the standard 
+allocator that comes with the C++ compiler
+<li>
+<b>AllocatorPlusV1</b>: equivalent to <code>ba::allocator&lt;int, 1&gt;</code>, a STL 
+conformant allocator around <code>dlmalloc</code> and <code>dlfree</code>.
+<li>
+<b>AllocatorPlusV2</b>: equivalent to <code>ba::allocator&lt;int, 2, expand_fwd&gt;</code>,
+a fully equipped improved allocator with shrink to fit capacity.</li>
+</ol>
+
+Now let's see the results of the test in a Windows XP machine (AMD 1.47 
+Ghz) using Visual C++ 2003:
+</p>
+
+
+<img src="shrink_to_fit_msvc-7.1_1.jpg"></img>
+<img src="shrink_to_fit_msvc-7.1_2.jpg"></img>
+
+<p>
+As the initial vector size grows, <code>AllocatorPlusV2</code> shines (up to 90 times faster!)
+because a shrink to fit operation is a <b>no-throw</b>
+operation that can have <b>amortized constant-time</b> complexity due to the fact that an allocator usually implements
+shrink to fit with a deallocation: the allocator divides the old buffer in two independent buffers and
+deallocates the second buffer. On the other hand, vectors with allocators with no shrink to fit functionality
+need to allocate a new buffer, move elements to the new one (moving elements is a linear operation
+with the size of the vector) and deallocate the old buffer.
+</p>
+<p>
+Now we'll execute the same test in a Linux (Suse 10.1) virtual machine (VMWare 6) using gcc-4.1 compiler
+and will check <code>push_back</code> times:
+</p>
+
+<img src="shrink_to_fit_linux-gcc-4.1_1.jpg"></img>
+
+<p>
+Result are similar to Windows results, with <code>AllocatorPlusV2</code> shinning more and more when initial vector
+size grows.
+</p>
+
+<h1><a name="Chapter2"></a>Chapter 2: Burst allocation for node containers</h1>
+
+<h2><a name="BurstAllocationIntro"></a>Burst allocation and deallocation introduction</h2>
+
+<p>
+Many times, operations can be performed faster if they are packed in groups, because some
+costs are not related to the number of operations, but to the number of groups. An example
+of this operations is the <code>template<class Iterator> iterator insert(Iterator begin, Iterator end)</code>
+operation in vectors. If <code>Iterator</code> is a forward iterator, most implementations
+calculate the distance between <code>begin</code> and <code>end</code> so that they know
+the size of the buffer needed to hold all those elements. With this information, they only
+perform one allocation to insert all the range.
+</p>
+
+<p>
+Other containers can't take advantage of this possibility because they are <b>node</b>
+containers, meaning that each element is obtained with a call to the allocator that
+allocates a single element. Since each element has its own independent memory, these
+containers offer stronger iterator validity guarantees and pointers and references
+to inserted objects are not easily invalidated. On the other hand, inserting N elements in
+those containers, require N calls to the allocator.
+</p>
+
+<p>
+To solve this, the idea is to have a function that could allocate a lot of objects in a single
+call, guaranteeing that <b>each object can be individually deallocatable</b>. Some memory management
+algorithms offer this possibility, even with the possibility to specify a different buffer size
+for each operation in a group. For example, <b>DLmalloc</b> offers the following two functions:
+
+<pre>
+void** independent_calloc(size_t n_elements, size_t element_size, void*chunks[]);
+</pre>
+
+<p>
+<b>Explanation</b>: <code>independent_calloc</code> is similar to calloc, but instead of returning a
+single cleared space, it returns an array of pointers to n_elements
+independent elements that can hold contents of size elem_size, each
+of which starts out cleared, and can be independently freed,
+realloc'ed etc. The elements are guaranteed to be adjacently
+allocated (this is not guaranteed to occur with multiple callocs or
+mallocs), which may also improve cache locality in some
+applications. [...]
+</p>
+
+<pre>
+void** independent_comalloc(size_t n_elements, size_t sizes[], void* chunks[]);
+</pre>
+
+<p>
+<b>Explanation</b>: <code>independent_comalloc</code> allocates, all at once, a set of n_elements
+chunks with sizes indicated in the "sizes" array. It returns an array of pointers to these elements,
+each of which can be independently freed, realloc'ed etc. The elements are guaranteed to be
+adjacently allocated (this is not guaranteed to occur with multiple callocs or mallocs),
+which may also improve cache locality in some applications. [...]
+</p>
+
+<p>
+For these two functions each element must be individually freed when it is no longer
+needed and objects are guaranteed to be contiguously allocated (to help cache locality).
+Also, the "chunks" argument is optional (i.e., may be null, which is
+probably the most typical usage). If it is null, the returned array
+is itself dynamically allocated and should also be freed when it is
+no longer needed. Otherwise, the chunks array must be of at least
+n_elements in length. It is filled in with the pointers to the
+chunks.
+</p>
+
+<p>
+According to <b>DLmalloc</b> documentation <code>independent_calloc</code>
+simplifies and speeds up implementations of many
+kinds of pools.  It may also be useful when constructing large data
+structures that initially have a fixed number of fixed-sized nodes,
+but the number is not known at compile time, and some of the nodes
+may later need to be freed:
+</p>
+
+<pre>
+  struct Node { int item; struct Node* next; };
+
+  struct Node* build_list() {
+    struct Node** pool;
+    int n = read_number_of_nodes_needed();
+    if (n &lt;= 0) return 0;
+    pool = (struct Node**)(independent_calloc(n, sizeof(struct Node), 0);
+    if (pool == 0) die();
+    <cpp_comment>// organize into a linked list...</cpp_comment>
+    struct Node* first = pool[0];
+    for (i = 0; i &lt; n-1; ++i)
+      pool[i]-&gt;next = pool[i+1];
+    free(pool);     <cpp_comment>// Can now free the array (or not, if it is needed later)</cpp_comment>
+    return first;
+  }
+</pre>
+
+</p>
+
+<p>
+According to <b>DLmalloc</b> documentation <code>independent_comalloc</code>
+can be used to speed up allocation in cases where several structs or
+objects must always be allocated at the same time:
+
+<pre>
+  struct Head { ... }
+  struct Foot { ... }
+
+  void send_message(char* msg) {
+    int msglen = strlen(msg);
+    size_t sizes[3] = { sizeof(struct Head), msglen, sizeof(struct Foot) };
+    void* chunks[3];
+    if (independent_comalloc(3, sizes, chunks) == 0)
+      die();
+    struct Head* head = (struct Head*)(chunks[0]);
+    char*        body = (char*)(chunks[1]);
+    struct Foot* foot = (struct Foot*)(chunks[2]);
+    <cpp_comment>// ...</cpp_comment>
+  }
+</pre>
+
+</p>
+
+<p>
+Unfortunately, these two functions have some downsides when working with some containers:
+
+<ul>
+<li>Addresses of allocated nodes are passed in an array that is externally
+provided or allocated by the function (so it must be deallocated after pointers to those
+chunks have been used). This is quite rigid (a <code>list</code> is forced to allocate an
+array to hold pointers to these nodes) and imposes an unnecessary overhead to node containers.</li>
+<li>The guarantee that the memory will be contiguous is not necessary (although it might help)
+for node containers and can require the allocation of quite big memory blocks. It's desirable to allocate
+several contiguous chunks (say, a memory page) but not to force that all elements are
+contiguous on memory.</li>
+</ul>
+</p>
+
+<h2><a name="BurstAllocationInfrastructure"></a>Burst allocation infrastructure</h2>
+
+<p>
+The first issue (the required external or internally allocated array) can be avoided if every memory node is linked
+with an intrusive singly linked list and offering an iterator-like interface. The intrusive list is built in the first bytes
+reserved for the user data because the minimum node size guarantees 12 bytes for 32 bits systems and 24 bytes for 64 bit systems.
+Obviously, once the user has overwritten that memory, there is no way to iterate to the next node so the programmer must be careful. Let's
+present these new functions:
+
+<pre>
+<cpp_comment>/* Iterator functions */</cpp_comment>
+typedef /**/ multialloc_it_t;                      <cpp_comment>/* Iterator type */</cpp_comment>
+BOOST_CONTAINER_INIT_END_IT(IT)                    <cpp_comment>/* Postcondition: BOOST_CONTAINER_IS_END_IT(IT) != 0 */</cpp_comment>
+BOOST_CONTAINER_IS_END_IT(IT)                      <cpp_comment>/* Is an end iterator? */</cpp_comment>
+BOOST_CONTAINER_NEXT_IT(IT)                        <cpp_comment>/* operator ++ emulation */</cpp_comment>
+BOOST_CONTAINER_ADDR_IT(IT)                        <cpp_comment>/* operator* emulation, returns the address of the memory */</cpp_comment>
+</pre>
+
+These functions offer an emulation of a C++ input iterator.
+
+<pre>
+<cpp_comment>/* Multiallocation chain functions */</cpp_comment>
+typedef /**/ multialloc_it_chain_t;                <cpp_comment>/* Chain type */</cpp_comment>
+BOOST_CONTAINER_IT_CHAIN_INIT(CHAIN)               <cpp_comment>/* Postcondition: BOOST_CONTAINER_IT_CHAIN_IT(IT_CHAIN) is end it */</cpp_comment>
+BOOST_CONTAINER_IT_CHAIN_PUSH_BACK(CHAIN, MEM)     <cpp_comment>/* Push back the node MEM in the intrusive linked list chain */</cpp_comment>
+BOOST_CONTAINER_IT_CHAIN_PUSH_FRONT(CHAIN, MEM)    <cpp_comment>/* Push front the node MEM in the intrusive linked list chain */</cpp_comment>
+BOOST_CONTAINER_IT_CHAIN_SPLICE_BACK(CHAIN, CHAIN2)<cpp_comment>/* Splice chain2 in the end of the first chain */</cpp_comment>
+BOOST_CONTAINER_IT_CHAIN_IT(IT_CHAIN)              <cpp_comment>/* Return an input iterator that traverse the chain */</cpp_comment>
+BOOST_CONTAINER_IT_CHAIN_SIZE(IT_CHAIN)            <cpp_comment>/* Returns the size of the chain */</cpp_comment>
+</pre>
+
+These functions offer the possibility of building an intrusive chain (list) of nodes previously allocated by <b>DLmalloc</b>
+and obtain an iterator that can traverse them. These functions are used to build a range that can be deleted
+in a single call using with <code>boost_cont_multidealloc()</code> (See below).
+
+<pre>
+<cpp_comment>/* Some defines for "contiguous_elements" parameters */</cpp_comment>
+DL_MULTIALLOC_ALL_CONTIGUOUS                       <cpp_comment>/* Allocate all elements contiguous on memory */</cpp_comment>
+DL_MULTIALLOC_DEFAULT_CONTIGUOUS                   <cpp_comment>/* The implementation chooses the maximum contiguous elements</cpp_comment>
+<cpp_comment>
+/* Burst allocation: 
+   Allocates "n_elements nodes" of size "elem_size" with a maximum (if possible) of "contiguous_elements".
+   On success returns an input iterator. On failure returns an "end" iterator.*/</cpp_comment>
+multialloc_it_t boost_cont_multialloc_nodes (size_t n_elements, size_t elem_size, size_t contiguous_elements);
+<cpp_comment>
+/* Burst allocation: 
+   Allocates "n_arrays" of elements, whose size is "sizeof_element" and whose lengths are specified in the "sizes"
+   parameter. Contiguous memory won't be (if possible) bigger than "contiguous_elements"*sizeof_element.
+   On success returns an input iterator. On failure returns an "end" iterator.*/</cpp_comment>
+multialloc_it_t boost_cont_multialloc_arrays (size_t n_arrays, const size_t *lengths, size_t sizeof_element, size_t contiguous_elements);
+<cpp_comment>
+/* Burst deallocation: deallocates all the range specified by the iterator */</cpp_comment>
+void boost_cont_multidealloc(multialloc_it_t it);
+</pre>
+</p>
+<p>
+<code>boost_cont_multialloc_nodes</code> is a function that allocates multiple nodes of the same size in the same call returning
+an iterator to the range. </code> is a function that allocates multiple arrays in the same call returning
+an iterator to the range. The user can specify the (suggested) contiguous number of elements in both functions.
+<code>boost_cont_multidealloc</code> deallocates a range of arrays or nodes that have been allocated
+by <code>boost_cont_multialloc_nodes</code>, <code>boost_cont_multialloc_arrays</code> or allocated by other <b>DLmalloc</b> functions and
+chained using <code>BOOST_CONTAINER_IT_CHAIN_XXX</code> functions.
+</p>
+
+<h2><a name="BurstInterfaceForAllocators"></a>Burst interface for allocators</h2>
+
+<p>
+Now that we have a low-level swiss knife we can define a C++ interface for burst allocation:
+
+<pre>
+template&lt;class T&gt;
+class allocator
+{
+   <cpp_comment>//...</cpp_comment>
+   typedef /**/ multiallocation_iterator; <cpp_comment>//wrapper over multialloc_it_t</cpp_comment>
+   typedef /**/ multiallocation_chain;    <cpp_comment>//wrapper over multialloc_chain_t</cpp_comment>
+<cpp_comment>
+   //------------------------------------------------------------------
+   // Functions for array allocation (expandable memory)
+   //------------------------------------------------------------------
+
+   //Allocates many elements of size elem_size in a contiguous block
+   //of memory. Elements must be individually deallocated with deallocate()</cpp_comment>
+   multiallocation_iterator allocate_many(size_type elem_size, size_type n_elements);
+<cpp_comment>
+   //Allocates n_elements elements, each one of size elem_sizes[i] 
+   //Elements must be individually deallocated with deallocate()</cpp_comment>
+   multiallocation_iterator allocate_many(const size_type *elem_sizes, size_type n_elements);
+<cpp_comment>
+   //Deallocates the memory arrays pointed by the iterator range starting at it</cpp_comment>
+   void deallocate_many(multiallocation_iterator it);
+<cpp_comment>
+   //------------------------------------------------------------------
+   //Functions for node (size == 1, non-expandable memory) allocation 
+   //------------------------------------------------------------------
+
+   //Allocates many elements of size == 1.
+   //Elements must be individually deallocated with deallocate_one()</cpp_comment>
+   multiallocation_iterator allocate_individual(size_type num_elements);
+<cpp_comment>
+   //Deallocates the memory nodes pointed by the iterator range starting at it</cpp_comment>
+   void deallocate_individual(multiallocation_iterator it);
+};
+</pre>
+
+Burst allocation also follows the separation between node (size == 1) and array allocation functions
+so that node allocation can use segregated storage mechanisms, whereas array allocation can use
+another approach that can be used with expansion functions (<code>allocation_command</code>).
+</p>
+
+<p>
+We have all that we need to implement burst allocation and deallocation for STL containers. Now, let's measure
+if this leads to any speed improvement.
+</p>
+
+<h2><a name="TestingBurstAllocation"></a>Testing burst allocation</h2>
+
+<p>
+A good place to take advantage of burst allocation is range insertion. Other operations(range assignment,
+copy construction) are also good places to implement burst allocation. So let's try this code with several
+allocators to test insertion time:
+</p>
+
+<pre>
+   tini = microsec_clock::universal_time();
+
+   bi::list&lt;MyInt, IntAllocator&gt; l;
+   for(unsigned int r = 0; r != num_iterations; ++r){
+      l.insert(l.end(), num_elements, MyInt(r));
+   }
+
+   tend = microsec_clock::universal_time();
+</pre>
+
+
+<p>
+That is, we'll try insertions of different range sizes (<code>num_elements</code>) and different
+iterations (<code>num_iterations</code>). We'll end up with the same number of elements in the
+list, so we can compare results easier. To measure burst deallocation we'll preprocess several
+iterator ranges and measure the time to completely empty the list: 
+</p>
+
+<pre>
+      <cpp_comment>//Now preprocess ranges to erase</cpp_comment>
+      std::vector &lt;typename bi::list&lt;MyInt, IntAllocator&gt;::iterator&gt; ranges_to_erase;
+      ranges_to_erase.push_back(l.begin());
+
+      for(unsigned int r = 0; r != num_iterations; ++r){
+         typename bi::list&lt;MyInt, IntAllocator&gt;::iterator next_pos(ranges_to_erase[r]);
+         std::size_t n = num_elements;
+         while(n--){ ++next_pos; }
+         ranges_to_erase.push_back(next_pos);
+      }
+
+      <cpp_comment>//Measure range erasure function</cpp_comment>
+      tini = microsec_clock::universal_time();
+
+      for(unsigned int r = 0; r != num_iterations; ++r){
+         l.erase(ranges_to_erase[r], ranges_to_erase[r+1]);
+      }
+
+      tend = microsec_clock::universal_time();
+</pre>
+
+<p>
+As shown, a good place to take advantage of burst allocation is range erasure along with <code>clear()</code> and destructors.
+</p>
+
+
+<p>
+We'll test 3 different allocators:
+<ol>
+   <li><b>StdAllocator</b>: equivalent to <code>std::allocator&lt;int&gt;</code>, the standard 
+      allocator that comes with the C++ compiler</li>
+   <li><b>AllocatorPlusV1</b>: equivalent to <code>ba::allocator&lt;int, 1&gt;</code>, a STL 
+      conformant allocator around <code>dlmalloc</code> and <code>dlfree</code> (no burst allocation).</li>
+   <li><b>AllocatorPlusV2</b>: equivalent to <code>ba::allocator&lt;int, 2&gt;</code>, burst-allocation capable
+      allocator.</li>
+</ol>
+and we'll use these test values for <code>[num_iterations, num_elements]</code> combinations: <code>[200, 
+10000], [2000, 1000], [20000, 100] and [200000, 10]</code>
+</p>
+
+<p>
+For each allocator we'll show the following information:
+<ul>
+   <li>Insertion speed per element (normalized to AllocatorPlusV1 speed)</li>
+   <li>Erasure speed per element (normalized to AllocatorPlusV1 speed)</li>
+</ul>
+Now let's see the results of the test in a Windows XP machine (AMD 1.47 
+Ghz) using Visual C++ 2003:
+</p>
+<img src="burst_allocation_msvc-7.1_1.jpg"></img>
+
+<p>
+The graph shows that allocation speed per element is constant for AllocatorPlusV1 (surprisingly, not so constant for
+Visual's standard allocator) and this is pretty logical since each element needs an allocation. AllocatorPlusV2 is
+using <code>DL_MULTIALLOC_DEFAULT_CONTIGUOUS</code> which allocates contiguous nodes up to 4096 bytes. That's why
+AllocatorPlusV2 performance stabilizes for big ranges reaching to a 3x speedup.
+</p>
+
+<img src="burst_allocation_msvc-7.1_2.jpg"></img>
+
+<p>
+Burst deallocation improvements are more modest, why?
+
+<ul>
+   <li>Each burst-allocated node is individually
+   deallocatable and <code>list</code> must construct a node chain (iterating through all nodes) before calling
+   <code>deallocate_individual</code>. That is, we must traverse nodes twice (once to construct the chain and
+   another one internally in the internal C function)</li>
+   <li>Burst allocation takes advantage of locality allocating big blocks of memory (in a single heap memory search)
+   and creating chunks from this block. Burst deallocation must be able to deallocate nodes that can be far apart, so
+   there is no chance to replace N allocations with a single, big deallocation.</li>
+</ul>
+</p>
+
+<p>
+This means that burst deallocation is just a loop of plain deallocations, amortizing costs like mutex locks, checks,
+function calls and returns and other common operations. Nevertheless, the test shows a 30% speedup when comparing to
+node to node deallocation with quite big ranges (>1000) and still noticeable speedups (20%) with small ranges (>=10).
+</p>
+
+<p>
+Now we'll execute the same test in a Linux (Suse 10.1) virtual machine (VMWare 6) using gcc-4.1:
+</p>
+
+<img src="burst_allocation_linux-gcc-4.1_1.jpg"></img>
+
+<img src="burst_allocation_linux-gcc-4.1_2.jpg"></img>
+
+<p>
+In Linux, the standard allocator (ptmalloc2, based on DLmalloc) performs very well, and the lock reduction
+achieved by its per-thread-pool approach offers a similar performance than burst allocation (AllocatorPlusV2)
+for small ranges. With bigger ranges (>=100) AllocatorPlusV2 maintains (more or less) its performance while
+StdAllocator can't keep up. Like in WinXP Visual 7.1 tests, AllocatorPlusV2 is faster (up to 2x in some cases)
+than AllocatorPlusV1 for big ranges.
+</p>
+
+<p>
+Burst deallocation is not faster than the standard allocator in Linux, surely because ptmalloc2 reduces
+mutex locks just like burst deallocation, but burst deallocation needs to traverse the range to be
+erased twice as explained before. When comparing to AllocatorPlusV1, that is, a wrapper around
+<code>dlmalloc</code> and <code>dlfree</code> burst deallocation (AllocatorPlusV2) is 30% faster for
+big ranges.
+</p>
+
+<h1><a name="Chapter3"></a>Chapter 3: Adaptive pools for node containers</h1>
+
+<h2><a name="SimpleSegregatedStorage"></a>Simple segregated storage: advantages and problems</h2>
+
+<p>
+When developing allocators to improve node containers performance, one of the widely used approaches
+is using simple segregated storage (e.g. <a href="http://www.boost.org/libs/pool">Boost.Pool</a>).
+The idea behind simple segregated storage is to divide a big memory portion ("block") allocated through a
+general purpose memory manager into fixed-size "nodes".
+A memory manager ("pool") holds a list of "blocks" and a singly linked list of free nodes.
+Since all nodes are the same size, Simple Segregated Storage can't serve nodes of different sizes.
+To solve this, an application creates a different pool for each size and usually different types with the same size
+share the same pool.
+</p>
+
+<p>
+The free node list is intrusive (since the node is free, the list pointer is built in the node),
+so that <b>there is no size overhead</b> for each node. Simple Segregated Storage is very fast:
+<ul>
+   <li>Allocation: take the first free node of the free list.
+      If there are no free nodes, a new block is allocated and partitioned. Complexity: amortized O(1)</li>
+   <li>Deallocation: put the node in the front of the free list. Complexity: O(1)</li>
+</ul>
+</p>
+
+<p>
+Now the question is: when does the pool return fully free "blocks" (allocated each time the free node list was empty) to the
+general purpose memory manager so that they can be reused by other pools or non-pool allocators? The common answer is: <b>usually never</b>.
+Why? Simple Segregated Storage erases all bookeeping data from the node and this makes "block" deallocation very expensive: the pool
+needs to traverse the free nodes list (nodes are <b>not</b> ordered by their original block) and check the address of each node
+against the address of each "block" just to check if all the nodes of a "block" are free and the block can be safely deallocated. If
+we have B blocks and N nodes, this is a O(N*B) operation. Usually N (and B) can be quite high and this operation can take <b>minutes</b>
+if the application has allocated several tens of thousands of nodes. That's why the option to trim the memory is provided only as
+an <b>optional</b> and <b>explicit</b> operation.
+</p>
+
+<p>
+A manual operation makes allocator changes non-portable (How is that manual trimming activated? How long does it take?) so many
+applications just ignore this operation. This also has a drawback: if an application allocates a big amount of nodes in a container
+and then destroys the container, the pool will hold a big list of free nodes but that memory won't be reused by any other container
+not using a pool with the same node size, leading to excessive memory waste.
+</p>
+
+<h2><a name="AdaptivePoolsExplained"></a>Adaptive pools explained</h2>
+
+<h3>Adaptive pool and memory alignment</h3>
+
+<p>
+Can we obtain the small size overhead of simple segregated storage and a fast, continuous, memory trimming operation?
+The idea behind adaptive pools is simple: when deallocating a node, an efficient self-trimming node pool needs
+a fast access to the "block" containing the node. If so, the pool can check how many free nodes are in that "block"
+(the "block" has a header storing the number of free blocks) and if all nodes are free, the pool can return
+that block to the general purpose memory manager.
+</p>
+
+<p>
+The problem is that storing bookeeping data (a pointer to the block containing that node) in a node has
+a size overhead. But there is an extremely fast way to obtain a pointer to the block containing the node with zero
+size overhead per-node: <b>memory alignment</b>.
+</p>
+
+<p>
+Suppose a 4KB "block" also aligned to 4KB: a node just needs a mask operation to obtain the address of the block.
+Once we have it, we can check the number of free nodes and deallocate the block if all the nodes are free. And once we
+have fast access to the "block" we can develop a more complicated trimming scheme that favors the creation of free "blocks"
+and improves trimming probabilities.
+</p>
+
+<h3>Alignment can lead to excessive memory waste</h3>
+
+<p>
+Allocators usually have a payload that store bookeeping information for deallocation. If an adaptive pool allocates 4KB
+bytes aligned to 4KB, it will really allocate 4KB + payload bytes where the start of the non-payload section is aligned
+to 4KB. This means that the memory adjacent to this aligned block won't be suitable for a new 4KB aligned allocation leading
+to excessive memory waste (a 4KB allocation would waste next 4KB - payload bytes of memory).
+</p>
+
+</p>
+There is a simple solution: allocate (4KB - payload bytes) bytes aligned to 4KB. This simple
+solution make contiguous memory usable for a future 4KB aligned allocation leading to optimal memory usage. That's why
+knowing the size of the payload is important for aligned memory allocations where the size of the allocation is not fixed.
+</p>
+
+
+<h3>Managing blocks</h3>
+
+<p>
+Once we have access from a node to its block, we can implement different policies for them.
+Once a block is completely free we can just deallocate it but the allocation pattern
+could lead to several half-used blocks, increasing in practice the memory usage
+we'll trying to minimize.
+</p>
+
+<p>
+Alternatively, we can implement a strategy in order to minimize the number of in-use
+blocks. We can try to allocate nodes always from blocks with less free nodes,
+leading, at least in theory, to more fully used blocks and more fully free blocks that
+could be deallocated faster. Obviously, this block management must be very fast: searching for the
+most used  block can ruin performance, specially when comparing with the efficient
+simple segregated storage. The same happens when deallocating a node: if block
+management needs too many operations deallocation can have very bad performance.
+</p>
+
+<h3>Minimizing alignment requirements</h3>
+
+<p>
+Adaptive pools can require excessive alignment requirements when many nodes are allocated in a chunk.
+If a block is configured to hold at least 256 nodes and the size of a node is 24 bytes, the required size
+for the block is (block payload + 20*256) > 4096 -> 8196 bytes, which also needs 8196 bytes alignment. This
+means that increasing the number of nodes a block can hold also increases the required alignment.
+</p>
+
+<p>
+We can improve the excessive alignment if we divide each block in sub-blocks. The first sub-block contains the
+payload
+of the block and the rest of sub-blocks just store a pointer to the first sub-block. This leads to an
+additional degree of freedom: block overhead. The overhead per block (number of nodes * node size)/ (block size)
+determines the size (and the alignment) of a sub-block, whereas the number of nodes per block determines the
+number of sub-blocks per block. This trick maintains the alignment requirement <b>lower</b>
+than the approach that does not use sub-blocks and <b>constant</b> with the number of nodes per block.
+On the other hand, deallocation requires an additional indirection (from node to subblock and from subblock
+to the block header) and a bit more complicated block initialization.
+</p>
+
+<h2><a name="PresentingAdaptivePool"></a>Presenting <code>adaptive_pool</code></h2>
+
+<p>
+<code>adaptive_pool</code> is built above the aligned memory allocation function
+from our modified <b>DLmalloc</b> library. Alignment must be power of two:
+
+<pre>
+void* boost_cont_memalign(size_t bytes, size_t alignment);
+</pre>
+</p>
+
+<p>
+<code>adaptive_pool</code> is implemented as follows:
+
+<ul>
+<li>Each block stores an intrusive free node singly linked list.</li>
+<li>The pool stores an intrusive red-black tree of blocks with free nodes, ordered by free node count.</li>
+<li>The pool deallocates all fully free blocks except a number of previously configured
+number of blocks.</li>
+<li>The user can configure the overhead per block so that alignment requirements can be minimized.</li>
+</ul>
+</p>
+
+<p>This is the declaration of <code>adaptive_pool</code>:
+<pre>
+const std::size_t ADP_nodes_per_block    = unspecified;
+const std::size_t ADP_max_free_blocks    = unspecified
+const std::size_t ADP_overhead_percent   = unspecified;
+const std::size_t ADP_only_alignment     = unspecified;
+
+template &lt; class T
+         , unsigned Version            = 2
+         , std::size_t NodesPerBlock   = ADP_nodes_per_block
+         , std::size_t MaxFreeBlocks   = ADP_max_free_blocks
+         , std::size_t OverheadPercent = ADP_overhead_percent
+         &gt;
+class adaptive_pool;
+</pre>
+</p>
+
+<p>
+Description of the template parameters:
+<ol>
+<li>The type of the objects to be allocated</li>
+<li>The version of the allocator. Similarly to other allocators presented in previous chapters,
+   Version 2 allocator offers burst-allocation.</li>
+<li><i>NodesPerBlock</i> is the minimum number of nodes per block we want
+   to allocate.</li>
+<li><i>MaxFreeBlocks</i> is the maximum number of fully free blocks that the pool will hold
+   in the intrusive red-black tree (the rest of fully free blocks will be deallocated).</li>
+<li><i>OverheadPercent</i> is a parameter that will configure the maximum memory overhead that each
+   block will have (and thus, the number of sub-blocks).
+   If this parameter is equal to <code>ADP_only_alignment</code>, then no sub-blocks will be used
+   and <i>NodesPerBlock</i> will determine the alignment required by blocks.</li>
+</ol>
+</p>
+
+<p>
+To allocate a new node <code>adaptive_pool</code> needs to:
+<ul>
+<li>See if there are free blocks in the tree. If not, it should allocate a new one.</li>
+<li>Take the first node of the first block</li>
+<li>Decrease the count of fully free blocks if the block was fully free.</li>
+<li>Erase the block from the tree if the block has no free nodes.</li>
+</ul>
+</p>
+
+<p>
+To deallocate a new node <code>adaptive_pool</code> needs to:
+<ul>
+<li>Obtain the block from the node.</li>
+<li>Put the node in the free list of the block.</li>
+<li>Reorder the block tree according to the free node count.</li>
+<li>Increase the count of fully free blocks if the block is now fully free.</li>
+<li>Insert the block in the tree if the free node count has passed from 0 to 1.</li>
+<li>Deallocate remaining fully free nodes if the fully free block count is higher than the configured limit.</li>
+</ul>
+</p>
+
+<h2><a name="TestingAdaptivePool"></a>Testing <code>adaptive_pool</code></h2>
+
+<p>
+In this test we'll measure 8 allocators:
+
+<ol>
+   <li><b>AllocatorPlusV1</b>: equivalent to <code>ba::allocator&lt;int, 1&gt;</code>, a STL 
+      conformant allocator around <code>dlmalloc</code> and <code>dlfree</code> (no burst allocation).</li>
+   <li><b>AllocatorPlusV2</b>: equivalent to <code>ba::allocator&lt;int, 2&gt;</code>, burst-allocation capable
+      allocator.</li>
+   <li><b>AdPoolAlignOnlyV1</b>: an adaptive pool with no sub-blocks and no burst allocation.</li>
+   <li><b>AdPoolAlignOnlyV2</b>: an adaptive pool with no sub-blocks but with burst allocation.</li>
+   <li><b>AdPool2PercentV1</b>: an adaptive pool with sub-blocks (configured with 2% overhead per block) and no burst allocation.</li>  
+   <li><b>AdPool2PercentV2</b>: an adaptive pool with sub-blocks (configured with 2% overhead per block) but with burst allocation.</li>  
+   <li><b>SimpleSegregatedStorageV1</b>: a classical simple segregated storage allocator with no burst allocation.</li>  
+   <li><b>SimpleSegregatedStorageV2</b>: a classical simple segregated storage allocator with burst allocation.</li>  
+</ol>
+</p>
+
+<p>
+All pool allocators (allocators 3-8) are configured with a minimum of 256 nodes per block.
+For a int list, in 32 bit systems, the required alignment
+is 4096 bytes for 3 and 4 allocators (adaptive pools with no sub-blocks) and 2048 bytes for 5 and 6 allocators
+(adaptive pools with sub-blocks).
+</p>
+
+<p>
+For each allocator we'll show the following information:
+<ul>
+   <li><b>Insertion speed</b> per element (normalized to AllocatorPlusV1 speed)</li>
+   <li><b>Erasure speed</b> per element (normalized to AllocatorPlusV1 speed)</li>
+   <li><b>System bytes after insertion</b>: the amount of system bytes (memory cached by dlmalloc 
+      from the operating system) reported by dlmalloc after inserting all elements</code></li>
+   <li><b>Memory overhead</b>: The amount (in percentage) of payload memory per node</code></li>
+   <li><b>In use bytes after erasure</b>: the amount of bytes privately hold by allocators
+      after erasing all elements</code></li>
+   <li><b>System bytes after erasure</b>: the amount of system bytes (memory cached by dlmalloc 
+      from the operating system) reported by dlmalloc after erasing all elements</code></li>
+   </li>
+</ul>
+</p>
+
+<p>The test will be the same as the used in the section <a href="#TestingBurstAllocation">Testing burst allocation</a>.
+Now let's see the results of the test in a Windows XP machine (AMD 1.47 Ghz) using Visual C++ 2003:
+</p>
+
+<img src="adaptive_pool_msvc-7.1_1.jpg"></img>
+
+<p>
+In general, insertion speeds are better for pool allocators than for <b>DLmalloc</b>. Analyzing only V1 allocators
+(no burst allocation) we can see that <code>SimpleSegregatedStorageV1</code> performs best, followed by
+<code>AdPoolAlignOnlyV1</code> and <code>AllocPool2PercentV1</code>. This is quite logical: simple
+segregated storage minimizes all block operations because it does
+not deallocate free blocks on the fly. <code>AdPoolAlignOnlyV1</code> and <code>AllocPool2PercentV1</code>
+perform quite similarly.
+</p>
+
+<p>
+When comparing V2 allocators (burst-allocation enabled) we see that performance of all pool allocators is very
+similar. The reason for this is that the slightly higher costs of adaptive pools are practically minimized when the pool
+allocates several nodes in a row: all needed blocks are preallocated in a single call, error handling in loops can be
+simplified leading to tighter loops... Curiously, the performance of a burst-enabled <b>DLmalloc</b>
+(<code>AllocatorPlusV2</code>) is on par with pools with burst allocation. This is not a surprise: <b>DLmalloc</b> burst
+allocation uses exactly the same mechanism as pools: allocating big block and create nodes from them. The difference, though,
+is in the overhead per node.
+</p>
+
+<img src="adaptive_pool_msvc-7.1_2.jpg"></img>
+
+<p>
+When analyzing deallocations, results for V1 allocators are pretty similar, with <code>SimpleSegregatedStorageV1</code>
+leading the test. We must remember that <code>SimpleSegregatedStorageV1</code> does not perform any block managing
+and deallocation, so this is the expected behavior. Adaptive pool deallocation times are exactly between <b>DLmalloc</b>
+(<code>AllocatorPlusV1</code>) and segregated storage times. Adaptive pools perform a quite complicated block management
+ordering free blocks by free node count and deallocating completely free blocks if the number of them is superior to 
+a configure value (2 blocks in this test). As expected <code>AdPoolAlignOnlyV2</code> performs marginally better than
+<code>AllocPool2PercentV2</code> because deallocating a node allocated with <code>AllocPool2PercentV2</code> (adaptive
+pool with sub-blocks) needs an additional indirection to obtain the block header from the node (first we reach the
+header of the sub-block and this header stores the address of the block header).
+</p>
+
+<p>
+When analyzing burst-enabled allocators, however, the picture changes so that adaptive pools perform similarly to
+than <code>SimpleSegregatedStorageV2</code>. Again, burst-allocation allows the elimination of some redundant checks
+and management operations that yield to better performance and amortization of block managing costs. 
+</p>
+
+<p>
+For big ranges, V2 (burst) adaptive pools are even better than simple segregated storage by a small margin.
+</p>
+
+<img src="adaptive_pool_msvc-7.1_3.jpg"></img>
+
+<p>
+Now let's see the amount of memory allocated from the operating system by <b>DLmalloc</b> with each allocator
+(V1 and V2 practically allocate the same amount of memory so we only represent V2 allocators). <b>DLmalloc</b>
+wrapper (<code>AllocatorPlusV2</code>) allocates more memory than the rest of allocators. Allocated nodes are
+12 byte in 32 bit systems so <b>DLmalloc</b> needs 12 byte + overhead (4 bytes) = 16 bytes per node. With 2000000
+nodes this yields to aproximately 32 MB. For pools, since overhead is practically inexistent the total memory 
+is around 24MB (12 bytes per node).
+</p>
+
+<img src="adaptive_pool_msvc-7.1_4.jpg"></img>
+<p>
+In the previous graph we can see the overhead (in percentage) for each allocator. As expected, <b>DLmalloc</b>
+offers a 33% overhead (4 bytes per each 12 byte node) whereas pools offer less than 2% overhead (remember that
+we've configured <code>AllocPool2PercentVX</code> with a maximum of 2 percent overhead). As expected,
+<code>SimpleSegregatedStorageVX</code> offers the minimum overhead but adaptive pools (with their additional
+headers for block management) are also very size-efficient.
+</p>
+
+<img src="adaptive_pool_msvc-7.1_5.jpg"></img>
+<p>
+The previous picture shows how much in-use memory <b>DLmalloc</b> reports after deallocating all the nodes.
+Note that this does not count the OS memory <b>DLmalloc</b> still caches, but memory that have been allocated
+through <b>DLmalloc</b> and has not been deallocated yet through <b>DLmalloc</b>. In other words, memory still
+hold by pools.
+</p>
+
+<p>
+As expected <b>DLmalloc</b> wrappers (<code>AllocatorPlusVX</code>) have deallocated all their memory (no leaks!).
+Also, simple segregated storage allocators have not deallocated a single block so they still hold all the memory.
+Adaptive pools (<code>AdPoolAlignOnlyVX</code> and <code>AllocPool2PercentVX</code>) only hold the number of blocks
+we've configured: 2 blocks x 4096 bytes per block = 8192 bytes. So we clearly show that adaptive pools
+not only offer a low memory overhead and fast allocation times, but they also return memory to the underlying
+memory allocator!
+</p>
+
+<p>
+Once allocators return memory to <b>DLmalloc</b>, <b>DLmalloc</b> can trim its cached OS memory and return
+that memory to the OS. The following graph shows the amount of memory <b>DLmalloc</b> caches after all
+nodes have been deallocated:
+</p>
+
+<img src="adaptive_pool_msvc-7.1_6.jpg"></img>
+
+<p>
+Cached memory usually depends on the number of contiguous free pages that <b>DLmalloc</b> holds
+internally so numbers are not important. The only thing that this graph shows is that adaptive pools,
+after returning memory to <b>DLmalloc</b>, encourage also memory trimming so that <b>DLmalloc</b> can
+return memory to the operating system.
+</p>
+
+<p>
+Now we'll execute the same test in a Linux (Suse 10.1) virtual machine (VMWare 6) using gcc-4.1:
+</p>
+
+<img src="adaptive_pool_linux-gcc-4.1_1.jpg"></img>
+
+<p>
+Insertion speeds for V1 allocators are more or less the expected with segregated storage leading the group
+and non-pool <b>DLmalloc</b> wrapper being the slowest one. V2 (burst) allocators are faster with similar
+performance between adaptive pools and simple segregated storage as the number of the insertion range grows.
+</p>
+
+<img src="adaptive_pool_linux-gcc-4.1_2.jpg"></img>
+
+<p>
+Erasure speeds are similar to Windows, with <code>SimpleSegregatedStorageVX</code> leading the test, 
+and adaptive pools come next.
+</p>
+
+</body>
+</html>
