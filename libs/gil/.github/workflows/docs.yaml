@@ -1,0 +1,22 @@
+name: Docs-Build
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/docs-prerequisites
+      - uses: ./.github/actions/setup-boost
+      - uses: ./.github/actions/generate-doc
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ../boost-root/libs/gil/temp-doc
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'

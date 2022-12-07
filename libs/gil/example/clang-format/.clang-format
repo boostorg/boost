@@ -1,0 +1,263 @@
+# Annotated clang-format configuration for Boost.GIL
+#
+# Based in clang-format 5.0 options:
+# http://releases.llvm.org/5.0.0/tools/clang/docs/ClangFormatStyleOptions.html
+#
+---
+Language: Cpp
+
+# The style used for all options not specifically set in the configuration.
+# NOTE: Strive to specify all options, so it is unnecessary to inherit any defaults.
+#BasedOnStyle: WebKit+Chromium
+
+# Use no space offset for class access modifiers, eg. public.
+AccessModifierOffset: -4
+
+# How to horizontally align arguments after an open bracket (angle and square too).
+AlignAfterOpenBracket: AlwaysBreak
+
+# Align the assignment operators of consecutive lines.
+AlignConsecutiveAssignments: true
+
+# Align the declaration names of consecutive lines.
+AlignConsecutiveDeclarations: false
+
+# How to align backslashes in escaped newlines, i.e. preprocessor macro continuation.
+AlignEscapedNewlines: Right
+
+# Horizontally align operands of binary and ternary expressions.
+AlignOperands: true
+
+# Align trailing comments in consecutive lines
+AlignTrailingComments: true
+
+# If the function declaration doesn't fit on a line, allow putting all parameters
+# of a function declaration onto the next line even if BinPackParameters is false.
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# Allows contracting simple braced statements to a single line.
+AllowShortBlocksOnASingleLine: false
+
+# Allows contracting short case labels to a single line.
+AllowShortCaseLabelsOnASingleLine: true
+
+# Dependent on the value, int f() { return 0; } can be put on a single line.
+AllowShortFunctionsOnASingleLine: None
+
+# Dependent on the value, if (a) return; can be put on a single line.
+AllowShortIfStatementsOnASingleLine: false
+
+# Dependent on the value, while (true) continue; can be put on a single line.
+AllowShortLoopsOnASingleLine: false
+
+# This option is deprecated and is retained for backwards compatibility.
+#AlwaysBreakAfterDefinitionReturnType: AllDefinitions
+
+# Always break before multiline string literals.
+AlwaysBreakBeforeMultilineStrings: true
+
+# Always break after the template<...> of a template declaration.
+AlwaysBreakTemplateDeclarations: true
+
+# Place function call arguments on the same or separate lines.
+# See also AllowAllParametersOfDeclarationOnNextLine.
+BinPackParameters: false
+
+# Custom control of individual brace wrapping cases
+# See BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass:      true
+  AfterControlStatement: true
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  false
+  AfterObjCDeclaration: true
+  AfterStruct:     true
+  AfterUnion:      true
+  BeforeCatch:     true
+  BeforeElse:      true
+  IndentBraces:    false
+
+BreakBeforeBinaryOperators: None
+
+# Custom, then BraceWrapping applies
+BreakBeforeBraces: Custom
+
+# In the class inheritance break before : and , if there is multiple inheritance.
+BreakBeforeInheritanceComma: true
+
+# Place ternary operators after line breaks, so ? and : lead lines with operands.
+BreakBeforeTernaryOperators: true
+
+# Break constructor initializers before the colon and commas,
+# and align the commas with the colon.
+BreakConstructorInitializers: BeforeComma
+
+# Allow breaking string literals when formatting.
+BreakStringLiterals: true
+
+# Keep lines under 100 characters/columns long.
+ColumnLimit:     100
+
+# Regular expression for comments with special meaning, which should not be changed.
+CommentPragmas:  '^!<'
+
+# Consecutive namespace declarations will be on the same line wrapping
+# any overflowing namespace.
+CompactNamespaces: true
+
+# If constructor initializers don't fit on a line, put each initializer on its own line.
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+# Number of characters to use for indentation of constructor initializer lists.
+ConstructorInitializerIndentWidth: 4
+
+# Indent width for line continuations.
+ContinuationIndentWidth: 4
+
+# Format braced lists as best suited for C++11 braced lists.
+Cpp11BracedListStyle: true
+
+# Whether to analyze formatted file for the most common alignment of & and *.
+# If true, thenPointerAlignment is then used only as fallback.
+DerivePointerAlignment: false
+
+# Disables formatting completely.
+DisableFormat: false
+
+# Whether clang-format should detect function calls and definitions formatting
+# with one parameter per line. EXPERIMENTAL
+ExperimentalAutoDetectBinPacking: false
+
+# Add missing namespace end comments and fix invalid existing ones.
+FixNamespaceComments: true
+
+# Expect no for-each MACROS, for sake!
+ForEachMacros: []
+
+# Regular expressions for categories used for ordering #includes
+# TODO: Refine
+# Regex: '^<(c?(assert|complex|ctype|errno|fenv|float|inttypes|iso646|limits|locale|math|setjmp|signal|stdalign|stdarg|stdbool|stddef|stdint|stdio|stdlib|string|tgmath|time|uchar|wchar|wctype)(.h)?|(experimental/)?(algorithm|any|chrono|deque|filesystem|forward_list|functional|future|list|map|memory|memory_resource|numeric|optional|ratio|regex|set|string|string_view|system_error|tuple|type_traits|unordered_map|unordered_set|utility|vector)|array|atomic|bitset|charconv|codecvt|compare|complex|condition_variable|cstdatomic|exception|exception_list|execution|execution_policy|fstream|initializer_list|iomanip|ios|iosfwd|iostream|istream|iterator|limits|locale|mutex|new|ostream|queue|random|scoped_allocator|shared_mutex|sstream|stack|stdexcept|streambuf|strstream|syncstream|thread|typeindex|typeinfo|valarray|variant)>'
+IncludeCategories:
+  - Regex:           '^<boost/gil'
+    Priority:        1
+  - Regex:           '^<boost/'
+    Priority:        2
+  - Regex:           '^<[a-z\/]+>'
+    Priority:        3
+  - Regex:           '.*'
+    Priority:        4
+
+# Regular expression to help file-to-main-include mapping.
+# Boost.GIL is header-only, no mapping necessary.
+#IncludeIsMainRegex: ''
+
+# Indent case labels one level from the switch statement.
+IndentCaseLabels: false
+
+# For backward compatibility, see IndentWrappedFunctionNames
+#IndentFunctionDeclarationAfterType: false
+
+# Indent 4 spaces at a time.
+IndentWidth:     4
+
+# Indent if a function definition or declaration is wrapped after the type.
+IndentWrappedFunctionNames: true
+
+# Do not keep empty line at the start of blocks.
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Boost.GIL does not use preprocessor macro blocks.
+#MacroBlockBegin: ""
+#MacroBlockEnd: ""
+
+# Maximum number of consecutive empty lines to keep
+MaxEmptyLinesToKeep: 2
+
+# Do not indent inside namespaces
+NamespaceIndentation: None
+
+#
+# Penalties is a complex machinery, see https://stackoverflow.com/a/46749925/151641
+# TODO: Refine
+
+# Penalty for breaking around an assignment operator.
+PenaltyBreakAssignment: 10
+
+# Penalty for breaking a function call after call(.
+PenaltyBreakBeforeFirstCallParameter: 30
+
+# Penalty for each line break introduced inside a comment.
+PenaltyBreakComment: 10
+
+# Penalty for breaking before the first <<
+PenaltyBreakFirstLessLess: 120
+
+# Penalty for each line break introduced inside a string literal.
+PenaltyBreakString: 10
+
+# Penalty for each character outside of the column limit.
+PenaltyExcessCharacter: 100
+
+# Penalty for putting the return type of a function onto its own line.
+# HINT: Use auto and trailing return type
+PenaltyReturnTypeOnItsOwnLine: 100
+
+# Pointer and reference alignment style.
+PointerAlignment: Left
+
+# Prevent clang-format to attempt to re-flow comments.
+# TODO: If we allow, any chance it will break Doxygen comments?
+ReflowComments: false
+
+# Sort #include-s
+SortIncludes: true
+
+# Sort using declarations.
+# TODO: Let's see how it works, if terribly then switch off
+SortUsingDeclarations: true
+
+# No space inserted after C style casts.
+SpaceAfterCStyleCast: false
+
+# Insert after the 'template' keyword.
+SpaceAfterTemplateKeyword: true
+
+# Fix space around assignment operators.
+SpaceBeforeAssignmentOperators: true
+
+# Do not insert space before a C++11 braced list used to initialize an object
+SpaceBeforeCpp11BracedList: false
+
+# Put space before opening parentheses only after control keywords (for/if/while...).
+SpaceBeforeParens: ControlStatements
+
+# No space may be inserted into ().
+SpaceInEmptyParentheses: false
+
+# Number of spaces before trailing line comments (//)
+SpacesBeforeTrailingComments: 2
+
+# No spaces after < and before > in template argument lists.
+SpacesInAngles:  false
+
+# No spaces are inserted inside container literals.
+SpacesInContainerLiterals: false
+
+# No spaces inserted into C style casts.
+SpacesInCStyleCastParentheses: false
+
+# No spaces will be inserted after ( and before ).
+SpacesInParentheses: false
+
+# No spaces will be inserted after [ and before ].
+SpacesInSquareBrackets: false
+
+# Allow double brackets such as std::vector<std::vector<T>>.
+Standard: Cpp11
+
+# Boost.GIL uses spaces ONLY
+TabWidth: 4
+
+UseTab:          Never
+...

@@ -1,0 +1,13 @@
+name: 'Generate Doc'
+description: 'Runs b2 on lib/gil/doc to generate documentation'
+runs:
+  using: composite
+  steps:
+    - run: |
+        echo "using doxygen ;" > ~/user-config.jam
+        cd ../boost-root/libs
+        ../b2 gil/doc
+        cd gil
+        chmod +x $GITHUB_WORKSPACE/.github/actions/generate-doc/docs-config.sh
+        $GITHUB_WORKSPACE/.github/actions/generate-doc/docs-config.sh
+      shell: bash

@@ -1,0 +1,71 @@
+# Azure Pipelines for Boost.GIL
+#
+# Copyright 2018-2019 Mateusz Loskot <mateusz at loskot dot net>
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+#
+variables:
+  #system.debug: true
+  configuration: release
+
+trigger:
+  - master
+  - develop
+  - azure-pipelines
+  - ml/*
+
+jobs:
+  - job: 'ubuntu1804_gcc6_cxx14_cmake'
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: .ci/azure-pipelines/steps-install-gcc.yml
+        parameters:
+          major_version: '6'
+      - script: which g++ && g++ --version
+        displayName: 'Check GCC'
+      - template: .ci/azure-pipelines/steps-check-cmake.yml
+      - script: |
+          sudo -E apt-get update
+          sudo -E apt-get -yq --no-install-suggests --no-install-recommends install libpng-dev libjpeg-dev libtiff5-dev libraw-dev
+        displayName: 'Install dependencies'
+      - template: .ci/azure-pipelines/steps-install-boost.yml
+      - template: .ci/azure-pipelines/steps-cmake-build-and-test.yml
+        parameters:
+          cxxver: '14'
+
+  - job: 'ubuntu1804_gcc8_cxx14_cmake'
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: .ci/azure-pipelines/steps-install-gcc.yml
+        parameters:
+          major_version: '8'
+      - script: which g++ && g++ --version
+        displayName: 'Check GCC'
+      - template: .ci/azure-pipelines/steps-check-cmake.yml
+      - script: |
+          sudo -E apt-get update
+          sudo -E apt-get -yq --no-install-suggests --no-install-recommends install libpng-dev libjpeg-dev libtiff5-dev libraw-dev
+        displayName: 'Install dependencies'
+      - template: .ci/azure-pipelines/steps-install-boost.yml
+      - template: .ci/azure-pipelines/steps-cmake-build-and-test.yml
+        parameters:
+          cxxver: '14'
+
+  - job: 'macos1015_xcode11_cmake'
+    pool:
+      vmImage: 'macOS-10.15'
+    steps:
+      - script: which clang++ && clang++ --version
+        displayName: 'Check clang'
+      - template: .ci/azure-pipelines/steps-check-cmake.yml
+      - template: .ci/azure-pipelines/steps-install-conan.yml
+        parameters:
+          python: python3
+      - template: .ci/azure-pipelines/steps-install-boost.yml
+        parameters:
+          toolset: darwin
+      - template: .ci/azure-pipelines/steps-cmake-build-and-test.yml
+        parameters:
+          use_conan: 'ON'

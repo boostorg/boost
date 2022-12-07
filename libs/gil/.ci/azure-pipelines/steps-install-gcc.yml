@@ -1,0 +1,18 @@
+# Azure Pipelines for Boost.GIL
+#
+# Copyright 2019 Mateusz Loskot <mateusz at loskot dot net>
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+#
+parameters:
+  # defaults, if not specified
+  major_version: 8
+
+steps:
+  - bash: |
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      sudo apt-get update -qq
+      sudo apt-get install g++-${{ parameters.major_version }}
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ parameters.major_version }} 90
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${{ parameters.major_version }} 90
+    displayName: 'Install GCC'

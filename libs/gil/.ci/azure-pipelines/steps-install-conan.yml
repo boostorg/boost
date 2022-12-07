@@ -1,0 +1,17 @@
+# Azure Pipelines for Boost.GIL
+#
+# Copyright 2018-2019 Mateusz Loskot <mateusz at loskot dot net>
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+#
+parameters:
+  python: 'python' # default, if not specified
+
+steps:
+  - script: |
+      ${{ parameters.python }} --version
+      ${{ parameters.python }} -m ensurepip
+      ${{ parameters.python }} -m pip install --upgrade pip
+      ${{ parameters.python }} -m pip install --upgrade conan
+      conan --version
+    displayName: 'Install Conan'

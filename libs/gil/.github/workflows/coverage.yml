@@ -1,0 +1,55 @@
+name: Code Coverage
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+
+env:
+  LIBRARY: gil
+  UBSAN_OPTIONS: print_stacktrace=1
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: install packages
+        run: |
+          sudo apt update
+          sudo apt install g++ libpng-dev libjpeg-dev libtiff5-dev libraw-dev lcov python -y
+
+      - name: Setup Boost
+        run: |
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          cp -r $GITHUB_WORKSPACE/* libs/$LIBRARY
+          git submodule update --init tools/boostdep
+          python tools/boostdep/depinst/depinst.py --git_args "--jobs 3" $LIBRARY
+          ./bootstrap.sh
+          ./b2 -d0 headers
+
+      - name: Create user-config.jam
+        run: |
+          echo "using gcc : : g++ ;" > ~/user-config.jam
+        
+      - name: Run tests
+        run: |
+          cd ../boost-root
+          ./b2 -j3 libs/$LIBRARY/test coverage=on toolset=gcc cxxstd=14 variant=debug
+          lcov --directory bin.v2 --capture --no-external --directory $(pwd) --output-file coverage.info > /dev/null 2>&1
+          lcov --extract coverage.info $(pwd)'/boost/gil/*' --output-file coverage.info > /dev/null
+          lcov --list coverage.info
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v1.2.1
+        with:
+          files: ../boost-root/coverage.info
+      

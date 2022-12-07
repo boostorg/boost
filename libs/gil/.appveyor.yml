@@ -1,0 +1,109 @@
+# AppVeyor for Boost.GIL
+#
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2018 Mateusz Loskot <mateusz at loskot dot net>
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+#
+version: 1.0.{build}-{branch}
+
+# Current Boost.GIL develop branch requires C++14
+# Since VS2017, MSVC default is /std:c++14, so no explicit switch is required.
+image: Visual Studio 2017
+
+platform: x64
+
+shallow_clone: true
+
+environment:
+  matrix:
+    - TOOLSET: msvc-14.1
+      ARCH: x86_64
+      VARIANT: debug
+      CXXSTD: 14
+      TEST_HEADERS: 1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.1
+      ARCH: x86_64
+      VARIANT: release
+      CXXSTD: 14
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.1
+      ARCH: x86
+      VARIANT: debug
+      CXXSTD: 14
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.1
+      ARCH: x86
+      VARIANT: release
+      CXXSTD: 14
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.1
+      ARCH: x86_64
+      VARIANT: debug
+      CXXSTD: 17
+      TEST_HEADERS: 1
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.1
+      ARCH: x86_64
+      VARIANT: release
+      CXXSTD: 17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    # - TOOLSET: msvc-14.1
+    #   ARCH: x86_64
+    #   VARIANT: debug
+    #   CXXSTD: 14
+    #   GENERATOR: "Visual Studio 15 2017 Win64"
+    #   CMAKE_CONFIG: Debug
+    #   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+
+matrix:
+  fast_finish: true
+
+cache:
+  - c:\tools\vcpkg\installed\
+
+install:
+  # FIXME: To be removed https://help.appveyor.com/discussions/problems/13000-cmake_toolchain_filevcpkgcmake-conflicts-with-cmake-native-findboostcmake"
+  - ps: 'Write-Host "Installing latest vcpkg.cmake module" -ForegroundColor Magenta'
+  - appveyor DownloadFile https://raw.githubusercontent.com/Microsoft/vcpkg/master/scripts/buildsystems/vcpkg.cmake -FileName "c:\tools\vcpkg\scripts\buildsystems\vcpkg.cmake"
+  - if %ARCH% == x86 ( set "TRIPLET=x86-windows" ) else ( set "TRIPLET=x64-windows" )
+  - if %ARCH% == x86 ( set AM=32 ) else ( set AM=64 )
+  - vcpkg --triplet %TRIPLET% install libjpeg-turbo libpng tiff
+  - if NOT DEFINED GENERATOR set PATH=c:\Tools\vcpkg\installed\%TRIPLET%\bin;%PATH%
+  - if NOT DEFINED GENERATOR set VCPKG_I=C:\Tools\vcpkg\installed\%TRIPLET%\include
+  - if NOT DEFINED GENERATOR set VCPKG_L=C:\Tools\vcpkg\installed\%TRIPLET%\lib
+  - if NOT DEFINED GENERATOR set LIBPNG_NAME=libpng16
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+
+before_build:
+  - cd ..
+  - bash -c '$APPVEYOR_BUILD_FOLDER/.ci/get-boost.sh $APPVEYOR_REPO_BRANCH $APPVEYOR_BUILD_FOLDER'
+  - cd boost-root
+  - cmd /c bootstrap
+  - .\b2 headers > NUL
+  - if DEFINED GENERATOR .\b2 address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% --with-filesystem stage
+
+build: off
+
+build_script:
+  - if NOT DEFINED GENERATOR b2 --abbreviate-paths address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% libs/gil/test/core
+  - if NOT DEFINED GENERATOR b2 --abbreviate-paths address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% libs/gil/test/legacy
+  - if NOT DEFINED GENERATOR b2 --abbreviate-paths address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% libs/gil/test/extension/dynamic_image
+  - if NOT DEFINED GENERATOR b2 --abbreviate-paths address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% libs/gil/test/extension/numeric
+  - if NOT DEFINED GENERATOR b2 --abbreviate-paths address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% libs/gil/test/extension/toolbox
+  - if NOT DEFINED GENERATOR b2 --abbreviate-paths address-model=%AM% toolset=%TOOLSET% variant=%VARIANT% cxxstd=%CXXSTD% include=%VCPKG_I% library-path=%VCPKG_L% libs/gil/test/extension/io//simple
+  - if DEFINED GENERATOR cd libs\gil && md build && cd build
+  - if DEFINED GENERATOR cmake -G "%GENERATOR%" -DCMAKE_CXX_STANDARD=%CXXSTD% -DBoost_DETAILED_FAILURE_MSG=ON -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake ..
+  - if DEFINED GENERATOR cmake --build . --config %CMAKE_CONFIG %
+
+test_script:
+  - if DEFINED GENERATOR ctest -V --output-on-failure -C %VARIANT%
+
+notifications:
+  - provider: Webhook
+    url: https://webhooks.gitter.im/e/e9e4892cdeb7cbff2e5a
+    on_build_success: false
+    on_build_failure: true
+    on_build_status_changed: true

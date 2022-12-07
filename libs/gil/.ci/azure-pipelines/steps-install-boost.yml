@@ -1,0 +1,41 @@
+# Azure Pipelines for Boost.GIL
+#
+# Copyright 2018-2019 Mateusz Loskot <mateusz at loskot dot net>
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+#
+parameters:
+  # defaults, if not specified
+  variant: 'release'
+  toolset: 'gcc'
+
+steps:
+  # The $BSD_DIR is the same path as $(Build.SourcesDirectory)
+  # but guaranteed in Unix format /a/b/c on every OS.
+  - bash: |
+      export BSD_DIR=$PWD
+      cd ..
+      export GIL_DIR=$PWD/gil
+      echo "Copying $BSD_DIR to $GIL_DIR"
+      cp -a $BSD_DIR $GIL_DIR
+      cd $BSD_DIR
+      $GIL_DIR/.ci/get-boost.sh $(Build.SourceBranchName) $GIL_DIR
+    displayName: 'Download Boost'
+
+  - script: |
+      cd boost-root
+      ./bootstrap.sh
+      sudo ./b2 headers
+      sudo ./b2 -j4 toolset=${{ parameters.toolset }} variant=${{ parameters.variant }} --with-filesystem stage
+      ls stage/lib
+    displayName: 'Install Boost on Unix'
+    condition: ne(variables['Agent.OS'], 'Windows_NT')
+
+  - script: |
+      cd boost-root
+      call .\bootstrap.bat
+      .\b2 headers
+      .\b2 -j4 address-model=32 variant=${{ parameters.variant }} --layout=system --with-filesystem stage
+      dir stage\lib
+    displayName: 'Install Boost on Windows'
+    condition: eq(variables['Agent.OS'], 'Windows_NT')
