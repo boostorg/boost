@@ -57,6 +57,8 @@ if(CMAKE_SOURCE_DIR STREQUAL Boost_SOURCE_DIR)
 
   # link=static|shared
   option(BUILD_SHARED_LIBS "Build shared libraries")
+  set(BUILD_SHARED_LIBS OFF CACHE BOOL "link static" FORCE)
+
 
   # --stagedir
   set(BOOST_STAGEDIR "${CMAKE_CURRENT_BINARY_DIR}/stage" CACHE STRING "Build output directory")
