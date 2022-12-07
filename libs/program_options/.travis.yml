@@ -1,0 +1,146 @@
+# Copyright 2016 Peter Dimov
+# Copyright 2017, 2018 James E. King III
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+#
+# Generic Travis CI build script for boostorg repositories
+#
+# Instructions for customizing this script for your library:
+# 
+# 1. Copy the ci/ directory from the same source into your project:
+#    ci/build.sh runs the build
+#    ci/codecov.sh is used to run a profiling build and upload results to codecov.io
+#    ci/coverity.sh is used to run a coverity build and upload results coverity scan
+# 2. Customize the compilers and language levels you want.  Default is C++03.
+# 3. Update the global B2 environment settings to your liking.
+# 4. If you have more than include/, src/, and test/ directories then
+#    add them to the depinst.py line as "--include tools" for tools/ (you
+#    can put multiple --include on the command line).
+# 5. If you want to enable Coverity Scan, you need to provide the environment
+#    variables COVERITY_SCAN_TOKEN and COVERITY_SCAN_NOTIFICATION_EMAIL in
+#    your github settings.
+# 6. Enable pull request builds in your boostorg/<library> account.
+# 7. Change the default C++ version in ci/*.sh (search for CXXSTD)
+#
+# That's it - the scripts will do everything else for you.
+
+sudo: false
+dist: trusty
+language: cpp
+
+env:
+  global:
+  # see: http://www.boost.org/build/doc/html/bbv2/overview/invocation.html#bbv2.overview.invocation.properties
+  # to use the default for a given environment, comment it out; recommend you build debug and release however..
+  # - B2_ADDRESS_MODEL=address-model=64,32
+  # - B2_LINK=link=shared,static
+  # - B2_THREADING=threading=multi,single
+    - B2_VARIANT=variant=release,debug
+
+install:
+  - export SELF=`basename $TRAVIS_BUILD_DIR`
+  - cd ..
+  - git clone -b $TRAVIS_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update -q --init tools/boostdep
+  - git submodule update -q --init tools/build
+  - git submodule update -q --init tools/inspect
+  - cp -r $TRAVIS_BUILD_DIR/* libs/$SELF
+  - export BOOST_ROOT="`pwd`"
+  - export PATH="`pwd`":$PATH 
+  - python tools/boostdep/depinst/depinst.py $SELF --include example
+  - ./bootstrap.sh
+  - ./b2 headers
+
+addons:
+  apt:
+    packages:
+      - binutils-gold
+      - gdb
+      - libc6-dbg
+        
+branches:
+  only:
+    - develop
+    - master
+    
+script:
+  - cd libs/$SELF
+  - ci/build.sh
+
+jobs:
+  include:
+    - os: linux
+      env: 
+        - COMMENT="C++03"
+        - TOOLSET=gcc,gcc-7
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+    - os: linux
+      env: 
+        - COMMENT="C++11"
+        - TOOLSET=clang
+        - CXXSTD=11
+      addons:
+        apt:
+          packages:
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+    - os: linux
+      env: 
+        - COMMENT=valgrind
+        - TOOLSET=clang 
+        - B2_VARIANT=variant=debug
+        - TESTFLAGS=testing.launcher=valgrind
+      addons:
+        apt:
+          packages:
+            - clang-5.0
+            - libstdc++-7-dev
+            - valgrind
+          sources:
+            - llvm-toolchain-trusty-5.0
+            - ubuntu-toolchain-r-test
+
+    - os: linux
+      env:
+        - COMMENT=cppcheck
+      script:
+        - libs/$SELF/ci/cppcheck.sh
+
+    - os: linux
+      env: 
+        - COMMENT=CodeCov
+        - TOOLSET=gcc-7
+      addons:
+        apt:
+          packages:
+            - gcc-7
+            - g++-7
+          sources:
+            - ubuntu-toolchain-r-test
+      script:
+        - pushd /tmp && git clone https://github.com/linux-test-project/lcov.git && cd lcov && sudo make install && which lcov && lcov --version && popd
+        - cd libs/$SELF
+        - ci/codecov.sh
+
+    #################### Jobs to run on every pull request ####################
+  # osx was disabled because it is very slow to start (can delay builds by 30 minutes)
+  # - os: osx
+  #   osx_image: xcode9
+  #   env:
+  #     - TOOLSET=clang
+  #     - CXXSTD=03,11
+
+    #################### Jobs to run on pushes to master, develop ###################
+
+notifications:
+  email:
+    false
+
