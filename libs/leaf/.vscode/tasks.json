@@ -1,0 +1,108 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Configure Meson build directories",
+            "type": "shell",
+            "command": "cd ${workspaceRoot} && meson -D leaf_boost_examples=true -D leaf_lua_examples=true bld/debug && meson -D leaf_boost_examples=true -D leaf_lua_examples=true -D leaf_hpp=true bld/debug_leaf_hpp && meson -D leaf_boost_examples=true -D leaf_lua_examples=true bld/release --buildtype release && meson -D leaf_boost_examples=true -D leaf_lua_examples=true -D leaf_hpp=true bld/release_leaf_hpp --buildtype release && meson -D leaf_diagnostics=0 -D cpp_eh=none -D b_ndebug=true -D b_lto=true -D leaf_enable_benchmarks=true bld/benchmark --buildtype release",
+            "problemMatcher": []
+        },
+        {
+            "label": "Configure Meson build directories (no Boost)",
+            "type": "shell",
+            "command": "cd ${workspaceRoot} && meson -D leaf_lua_examples=true bld/debug && meson -D leaf_lua_examples=true -D leaf_hpp=true bld/debug_leaf_hpp && meson -D leaf_lua_examples=true bld/release --buildtype release && meson -D leaf_lua_examples=true -D leaf_hpp=true bld/release_leaf_hpp --buildtype release",
+            "problemMatcher": []
+        },
+        {
+            "label": "Generate leaf.hpp",
+            "type": "shell",
+            "command": "cd ${workspaceRoot} && python gen/generate_single_header.py -i include/boost/leaf/detail/all.hpp -p ${workspaceRoot}/include -o ${workspaceRoot}/test/leaf.hpp boost/leaf",
+            "problemMatcher": []
+        },
+        {
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "Build all unit tests and examples (debug)",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}/bld/debug && ninja",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/bld/debug"
+                ]
+            }
+        },
+        {
+            "group": "test",
+            "label": "Run all unit tests (debug)",
+            "type": "shell",
+            "dependsOn": [
+                "Generate leaf.hpp"
+            ],
+            "command": "cd ${workspaceRoot}/bld/debug_leaf_hpp && ninja && meson test && cd ${workspaceRoot}/bld/debug && ninja && meson test",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/bld/debug"
+                ]
+            }
+        },
+        {
+            "group": "test",
+            "label": "Run all unit tests (release)",
+            "type": "shell",
+            "dependsOn": [
+                "Generate leaf.hpp"
+            ],
+            "command": "cd ${workspaceRoot}/bld/release && ninja && meson test && cd ${workspaceRoot}/bld/release_leaf_hpp && ninja && meson test",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/bld/release"
+                ]
+            }
+        },
+        {
+            "group": "test",
+            "label": "Run all unit tests (b2, all configurations)",
+            "type": "shell",
+            "dependsOn": [
+                "Generate leaf.hpp"
+            ],
+            "command": "../../b2 test link=shared,static variant=debug,release,leaf_debug_diag0,leaf_release_diag0,leaf_debug_leaf_hpp,leaf_release_leaf_hpp exception-handling=on,off cxxstd=11,14,1z,17 && ../../b2 test link=shared,static variant=debug,release,leaf_debug_diag0,leaf_release_diag0,leaf_debug_leaf_hpp,leaf_release_leaf_hpp,leaf_debug_embedded,leaf_release_embedded exception-handling=off rtti=off cxxstd=11,14,1z,17",
+            "windows": {
+                "command": "..\\..\\b2 test link=shared,static variant=debug,release,leaf_debug_diag0,leaf_release_diag0,leaf_debug_leaf_hpp,leaf_release_leaf_hpp exception-handling=on,off cxxstd=14,17,latest && ..\\..\\b2 test link=shared,static variant=debug,release,leaf_debug_diag0,leaf_release_diag0,leaf_debug_leaf_hpp,leaf_release_leaf_hpp,leaf_debug_embedded,leaf_release_embedded exception-handling=off rtti=off cxxstd=14,17,latest",
+            },
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/bld/release"
+                ]
+            }
+        },
+        {
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "label": "Test current editor file",
+            "type": "shell",
+            "command": "cd ${workspaceRoot}/bld/debug && ninja && { meson test ${fileBasenameNoExtension} || cat ./meson-logs/testlog.txt }",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}/bld/debug"
+                ]
+            }
+        }
+    ]
+}

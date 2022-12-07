@@ -1,0 +1,44 @@
+# Copyright 2016, 2017 Peter Dimov
+# Copyright 2018-2022 Emil Dotchevski and Reverge Studios, Inc.
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1,clang-win
+      CXXSTD: 14,17
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      TOOLSET: msvc-14.2
+      CXXSTD: 14,17
+
+install:
+  - set BOOST_BRANCH=develop
+  - if "%APPVEYOR_REPO_BRANCH%" == "master" set BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init tools/build
+  - git submodule update --init tools/boost_install
+  - git submodule update --init libs/config
+  - git submodule update --init libs/headers
+  - git submodule update --init tools/boostdep
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\leaf\
+  - python tools/boostdep/depinst/depinst.py leaf
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 -j3 libs/leaf/test toolset=%TOOLSET% exception-handling=on,off variant=debug,release,leaf_debug_diag0,leaf_release_diag0 define=_CRT_SECURE_NO_WARNINGS %CXXSTD%
