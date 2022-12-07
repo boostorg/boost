@@ -1,0 +1,291 @@
+##############################################################################
+# GitHub Actions Workflow for Boost.Geometry to build minimal tests with Clang
+#
+# Copyright (c) 2020 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (c) 2020-2021 Adam Wulkiewicz, Lodz, Poland
+#
+# Use, modification and distribution is subject to the Boost Software License,
+# Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+##############################################################################
+name: minimal
+
+on: [push, pull_request]
+
+jobs:
+  ##############################################################################
+  clang:
+    name: ${{ matrix.b2_toolset }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        b2_toolset: [
+          clang-3.9,
+          clang-4.0,
+          clang-5.0,
+          clang-6.0,
+          clang-7,
+          clang-8,
+          clang-9,
+          clang-10
+        ]
+
+        include:
+          - b2_toolset: clang-3.9
+            b2_cxxstd: 14
+            version: "3.9"
+          - b2_toolset: clang-4.0
+            b2_cxxstd: 14
+            version: "4.0"
+          - b2_toolset: clang-5.0
+            b2_cxxstd: 14
+            version: "5.0"
+          - b2_toolset: clang-6.0
+            b2_cxxstd: 14
+            version: "6.0"
+          - b2_toolset: clang-7
+            b2_cxxstd: 14,17
+            version: "7"
+          - b2_toolset: clang-8
+            b2_cxxstd: 14,17
+            version: "8"
+          - b2_toolset: clang-9
+            # At some point compilation started to fail with 2a from unknown reason
+            # It may have something to do with the std library
+            #b2_cxxstd: 14,17,2a
+            b2_cxxstd: 14,17
+            version: "9"
+          - b2_toolset: clang-10
+            b2_cxxstd: 14,17,2a
+            version: "10"
+
+    steps:
+      - name: Set up environment
+        id: setenv
+        run: |
+          if [[ "$GITHUB_REF" == *master ]]; then
+            echo "BOOST_BRANCH=master" >> $GITHUB_ENV
+          else
+            echo "BOOST_BRANCH=develop" >> $GITHUB_ENV
+          fi
+          echo "BOOST_SELF=$(basename $GITHUB_WORKSPACE)" >> $GITHUB_ENV
+          echo "BOOST_ROOT=$GITHUB_WORKSPACE/boost-root" >> $GITHUB_ENV
+          echo "::set-output name=boost_self::$(basename $GITHUB_WORKSPACE)"
+          echo "::set-output name=boost_root::$GITHUB_WORKSPACE/boost-root"
+
+      - name: Clone boostorg/boost
+        run: |
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git $BOOST_ROOT
+          cd $BOOST_ROOT
+          git submodule update -q --init libs/headers
+          git submodule update -q --init tools/boost_install
+          git submodule update -q --init tools/boostdep
+          git submodule update -q --init tools/build
+          mkdir -p libs/$BOOST_SELF
+
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ steps.setenv.outputs.boost_root }}/libs/${{ steps.setenv.outputs.boost_self }}
+
+      - name: Run tools/boostdep/depinst/depinst.py
+        run: |
+          cd $BOOST_ROOT
+          python tools/boostdep/depinst/depinst.py --include benchmark --include example --include examples --include tools $BOOST_SELF
+
+      - name: Install
+        run: |
+          # Required for compilers not available in ubuntu latest
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ bionic main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ bionic universe"
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt -q -y update
+          sudo apt -q -y install clang-${{ matrix.version }} g++-multilib
+
+      - name: Bootstrap boostorg/boost
+        run: |
+          gcc --version
+          cd $BOOST_ROOT
+          ./bootstrap.sh --with-toolset=gcc
+          ./b2 headers
+          test -f /usr/local/bin/b2 && rm -rf /usr/local/bin/b2
+          test -f /usr/local/bin/bjam && rm -rf /usr/local/bin/bjam
+          sudo cp $BOOST_ROOT/b2 /usr/local/bin/
+          ls -l /usr/local/bin/b2
+          b2 -v
+
+      - name: Set up clang toolset in ~/user-config.jam
+        run: |
+          export CXX_NAME=clang++-${{ matrix.version }}
+          echo ${CXX_NAME}
+          echo "# $HOME/user-config.jam" > $HOME/user-config.jam
+          echo "using clang : : $(which clang++-${{ matrix.version }}) ;" > ${HOME}/user-config.jam
+          test -f $HOME/user-config.jam && cat $HOME/user-config.jam
+
+      - name: Build libs/geometry/test//minimal
+        run: |
+          cd $BOOST_ROOT
+          $BOOST_ROOT/b2 toolset=clang cxxstd=${{ matrix.b2_cxxstd }} variant=debug,release address-model=32,64 libs/geometry/test//minimal
+
+  ##############################################################################
+  gcc:
+    name: ${{ matrix.b2_toolset }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        b2_toolset: [
+          gcc-5,
+          gcc-6,
+          gcc-7,
+          gcc-8,
+          gcc-9
+        ]
+
+        include:
+          - b2_toolset: gcc-5
+            b2_cxxstd: 14
+            version: "5"
+          - b2_toolset: gcc-6
+            b2_cxxstd: 14
+            version: "6"
+          - b2_toolset: gcc-7
+            b2_cxxstd: 14,17
+            version: "7"
+          - b2_toolset: gcc-8
+            b2_cxxstd: 14,17
+            version: "8"
+          - b2_toolset: gcc-9
+            b2_cxxstd: 14,17,2a
+            version: "9"
+
+    steps:
+      - name: Set up environment
+        id: setenv
+        run: |
+          if [[ "$GITHUB_REF" == *master ]]; then
+            echo "BOOST_BRANCH=master" >> $GITHUB_ENV
+          else
+            echo "BOOST_BRANCH=develop" >> $GITHUB_ENV
+          fi
+          echo "BOOST_SELF=$(basename $GITHUB_WORKSPACE)" >> $GITHUB_ENV
+          echo "BOOST_ROOT=$GITHUB_WORKSPACE/boost-root" >> $GITHUB_ENV
+          echo "::set-output name=boost_self::$(basename $GITHUB_WORKSPACE)"
+          echo "::set-output name=boost_root::$GITHUB_WORKSPACE/boost-root"
+
+      - name: Clone boostorg/boost
+        run: |
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git $BOOST_ROOT
+          cd $BOOST_ROOT
+          git submodule update -q --init libs/headers
+          git submodule update -q --init tools/boost_install
+          git submodule update -q --init tools/boostdep
+          git submodule update -q --init tools/build
+          mkdir -p libs/$BOOST_SELF
+
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ steps.setenv.outputs.boost_root }}/libs/${{ steps.setenv.outputs.boost_self }}
+
+      - name: Run tools/boostdep/depinst/depinst.py
+        run: |
+          cd $BOOST_ROOT
+          python tools/boostdep/depinst/depinst.py --include benchmark --include example --include examples --include tools $BOOST_SELF
+
+      - name: Install
+        run: |
+          # Required for compilers not available in ubuntu latest
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ bionic main"
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ bionic universe"
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt -q -y update
+          sudo apt -q -y install g++-${{ matrix.version }} g++-${{ matrix.version }}-multilib
+
+      - name: Bootstrap boostorg/boost
+        run: |
+          gcc --version
+          cd $BOOST_ROOT
+          ./bootstrap.sh --with-toolset=gcc
+          ./b2 headers
+          test -f /usr/local/bin/b2 && rm -rf /usr/local/bin/b2
+          test -f /usr/local/bin/bjam && rm -rf /usr/local/bin/bjam
+          sudo cp $BOOST_ROOT/b2 /usr/local/bin/
+          ls -l /usr/local/bin/b2
+          b2 -v
+
+      - name: Build libs/geometry/test//minimal
+        run: |
+          cd $BOOST_ROOT
+          $BOOST_ROOT/b2 toolset=${{ matrix.b2_toolset }} cxxstd=${{ matrix.b2_cxxstd }} variant=debug,release address-model=32,64 libs/geometry/test//minimal
+
+  ##############################################################################
+  msvc:
+    name: ${{ matrix.b2_toolset }}
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        b2_toolset: [
+          msvc-14.3
+        ]
+
+        include:
+          - b2_toolset: msvc-14.3
+            b2_cxxstd: 14,17,2a
+
+    steps:
+      - name: Set up environment
+        id: setenv
+        shell: pwsh
+        run: |
+          if ("$env:GITHUB_REF" -contains "master") {
+            echo "BOOST_BRANCH=master" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          } else {
+            echo "BOOST_BRANCH=develop" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+          echo "BOOST_SELF=$((Get-Item $env:GITHUB_WORKSPACE).BaseName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "BOOST_ROOT=$env:GITHUB_WORKSPACE\boost-root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "::set-output name=boost_self::$((Get-Item $env:GITHUB_WORKSPACE).BaseName)"
+          echo "::set-output name=boost_root::$env:GITHUB_WORKSPACE\boost-root"
+
+      - name: Clone boostorg/boost
+        shell: pwsh
+        run: |
+          git clone -b $env:BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git $env:BOOST_ROOT
+          cd $env:BOOST_ROOT
+          git submodule update -q --init libs/headers
+          git submodule update -q --init tools/boost_install
+          git submodule update -q --init tools/boostdep
+          git submodule update -q --init tools/build
+          New-Item -Path libs\$env:BOOST_SELF -ItemType Directory -ErrorAction SilentlyContinue
+
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ steps.setenv.outputs.boost_root }}/libs/${{ steps.setenv.outputs.boost_self }}
+
+      - name: Run tools/boostdep/depinst/depinst.py
+        shell: pwsh
+        run: |
+          cd $env:BOOST_ROOT
+          python tools/boostdep/depinst/depinst.py --include benchmark --include example --include examples --include tools $env:BOOST_SELF
+
+      - name: Bootstrap boostorg/boost
+        shell: pwsh
+        run: |
+          cd $env:BOOST_ROOT
+          .\bootstrap.bat --with-toolset=msvc
+          .\b2 headers
+          .\b2 -v
+
+      - name: Build libs/geometry/test//minimal
+        shell: pwsh
+        run: |
+          cd $env:BOOST_ROOT
+          .\b2 toolset=${{ matrix.b2_toolset }} cxxstd=${{ matrix.b2_cxxstd }} variant=debug,release address-model=32,64 libs/geometry/test//minimal

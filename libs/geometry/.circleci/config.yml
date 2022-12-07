@@ -1,0 +1,647 @@
+##############################################################################
+# CircleCI 2.0 for Boost.Geometry
+#
+# Copyright (c) 2018 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (c) 2018-2021 Adam Wulkiewicz, Lodz, Poland
+#
+# Use, modification and distribution is subject to the Boost Software License,
+# Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+##############################################################################
+version: 2
+
+# Environment variables
+environment: &environment
+  environment:
+    BOOST_DIR: shared-boost
+    COVERAGE_DIR: shared-coverage
+
+# Docker image
+docker: &docker
+  docker:
+      # gcc-6.0, ruby-2.3, sudo, curl
+    - image: circleci/ruby:2.3
+
+# Build configuration
+config: &config
+  <<: *docker
+  <<: *environment
+
+# Workspace
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: ~/project
+
+persist_boost_coverage: &persist_boost_coverage
+  persist_to_workspace:
+    root: ~/project
+    paths:
+      - shared-boost
+      - shared-coverage
+
+#persist_coverage: &persist_coverage
+#  persist_to_workspace:
+#    root: ~/project
+#    paths:
+#      - shared-coverage
+
+jobs:
+  bootstrap:
+    <<: *config
+    steps:
+      - checkout
+      - run:
+          name: Checkout Boost
+          command: |
+            git clone -b `[[ "$CIRCLE_BRANCH" = "master" ]] && echo master || echo develop` --depth 1 https://github.com/boostorg/boost.git $BOOST_DIR
+            rm -rf $BOOST_DIR/libs/geometry/*
+            mv -t $BOOST_DIR/libs/geometry/ `ls -A | grep -v $BOOST_DIR`
+            cd $BOOST_DIR
+            git submodule update --init tools/build
+            git submodule update --init libs/config
+            git submodule update --init tools/boostdep
+            python tools/boostdep/depinst/depinst.py geometry -I index/test
+            ./bootstrap.sh
+            ./b2 headers
+      - run: mkdir $COVERAGE_DIR
+      - *persist_boost_coverage
+
+  algorithms:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms test/algorithms//boost-geometry-algorithms
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms
+  algorithms_area:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_area test/algorithms/area
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_area
+  algorithms_buffer:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to avoid fatal error: ... No space left on device
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_buffer test/algorithms/buffer 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_buffer
+  algorithms_covered_by:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_covered_by test/algorithms/covered_by
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_covered_by
+  algorithms_crosses:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_crosses test/algorithms/crosses
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_crosses
+  algorithms_detail:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_detail test/algorithms/detail
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_detail
+  algorithms_disjoint:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to decrease memory consumption causing gcc internal error
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_disjoint test/algorithms/disjoint 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_disjoint
+  algorithms_distance:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_distance test/algorithms/distance
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_distance
+  algorithms_envelope:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_envelope test/algorithms/envelope_expand
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_envelope
+  algorithms_equals:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_equals test/algorithms/equals
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_equals
+  algorithms_intersects:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_intersects test/algorithms/intersects
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_intersects
+  algorithms_length:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_length test/algorithms/length
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_length
+  algorithms_overlaps:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_overlaps test/algorithms/overlaps
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_overlaps
+  algorithms_overlay:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_overlay test/algorithms/overlay
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_overlay
+  algorithms_perimeter:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_perimeter test/algorithms/perimeter
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_perimeter
+  algorithms_relate:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_relate test/algorithms/relate
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_relate
+  algorithms_set:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to decrease memory consumption causing gcc internal error
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_set test/algorithms/set_operations 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_set
+  algorithms_similarity:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_similarity test/algorithms/similarity
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_similarity
+  algorithms_touches:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_touches test/algorithms/touches
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_touches
+  algorithms_within:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh algorithms_within test/algorithms/within
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/algorithms_within
+  arithmetic:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh arithmetic test/arithmetic
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/arithmetic
+  concepts:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh concepts test/concepts
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/concepts
+  core:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh core test/core
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/core
+  cs_undefined:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to decrease memory consumption causing gcc internal error
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh cs_undefined test/cs_undefined 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/cs_undefined
+  formulas:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh formulas test/formulas
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/formulas
+  geometries:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh geometries test/geometries
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/geometries
+  io:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh io test/io
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/io
+  iterators:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh iterators test/iterators
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/iterators
+  policies:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh policies test/policies
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/policies
+  srs:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to decrease memory consumption causing gcc internal error
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh srs test/srs 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/srs
+  strategies:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh strategies test/strategies
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/strategies
+  util:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh util test/util
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/util
+  views:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh views test/views
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/views
+
+  index_algorithms:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh index_algorithms index/test/algorithms
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/index_algorithms
+  index_rtree:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to decrease memory consumption causing gcc internal error
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh index_rtree index/test/rtree//boost-geometry-index-rtree 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/index_rtree
+  index_rtree_b2d:
+    <<: *config
+    steps:
+      - *attach_workspace
+      # 1 test at a time to decrease memory consumption causing gcc internal error
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh index_rtree_b2d index/test/rtree/generated/b2d 1
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/index_rtree_b2d
+  index_rtree_exceptions:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh index_rtree_exceptions index/test/rtree/exceptions
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/index_rtree_exceptions
+  index_detail:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ./$BOOST_DIR/libs/geometry/.circleci/run_test.sh index_detail index/test//boost-geometry-index-detail
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - shared-coverage/index_detail
+
+  coverage:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: ls -lah $COVERAGE_DIR
+      - run: sudo apt-get install lcov
+      - run: lcov --directory $COVERAGE_DIR --base-directory $BOOST_DIR --capture --output-file $COVERAGE_DIR/coverage.info
+      - run: lcov --extract $COVERAGE_DIR/coverage.info "*/boost/geometry/*" "*/libs/geometry/include/*" --output-file $COVERAGE_DIR/coverage.info
+      - run: sed -i 's/SF:.*boost\/geometry/SF:boost\/geometry/g' $COVERAGE_DIR/coverage.info
+#Coveralls
+      - run: gem install coveralls-lcov
+      - run: sudo apt-get install jq
+      - run: cd $BOOST_DIR/libs/geometry/include && coveralls-lcov --repo-token=$COVERALLS_REPO_TOKEN -v -n ../../../../$COVERAGE_DIR/coverage.info > ../../../../$COVERAGE_DIR/coverage.json
+      - run: jq -c ".service_name = \"circle-ci\" | .service_number = \"$CIRCLE_BUILD_NUM\" | .git .branch =\"$CIRCLE_BRANCH\"" $COVERAGE_DIR/coverage.json > $COVERAGE_DIR/processed.json
+      - run: curl --retry 3 -F "json_file=@$COVERAGE_DIR/processed.json" 'https://coveralls.io/api/v1/jobs'
+#Codecov
+      - run: curl -s https://codecov.io/bash > .codecov
+      - run: chmod +x .codecov
+      - run: cd $BOOST_DIR/libs/geometry/include && ../../../../.codecov -t $CODECOV_TOKEN -f ../../../../$COVERAGE_DIR/coverage.info -x gcov
+
+  minimal:
+    <<: *config
+    steps:
+      - *attach_workspace
+      - run: cd $BOOST_DIR && ./b2 libs/geometry/test//boost-geometry-minimal
+
+requires_0: &requires_0
+  requires:
+    - bootstrap
+
+requires_1: &requires_1
+  requires:
+    - concepts
+    - core
+    - geometries
+    - util
+
+requires_2: &requires_2
+  requires:
+    - algorithms_detail
+    - arithmetic
+    - formulas
+    - io
+    - iterators
+    - policies
+    - strategies
+    - views
+
+requires_3: &requires_3
+  requires:
+    - algorithms
+    - algorithms_area
+    - algorithms_buffer
+    - algorithms_covered_by
+    - algorithms_crosses
+    - algorithms_disjoint
+    - algorithms_distance
+    - algorithms_envelope
+    - algorithms_equals
+    - algorithms_intersects
+    - algorithms_length
+    - algorithms_overlaps
+    - algorithms_overlay
+    - algorithms_perimeter
+    - algorithms_relate
+    - algorithms_set
+    - algorithms_similarity
+    - algorithms_touches
+    - algorithms_within
+    - srs
+    - index_algorithms
+
+requires_4: &requires_4
+  requires:
+    - index_rtree
+    - index_rtree_b2d
+    - index_rtree_exceptions
+    - index_detail
+    - cs_undefined
+
+only_master_develop: &only_master_develop
+  filters:
+    branches:
+      only:
+        - develop
+        - master
+
+ignore_master_develop: &ignore_master_develop
+  filters:
+    branches:
+      ignore:
+        - develop
+        - master
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+# all branches: level 0, bootstrap
+      - bootstrap
+
+# master, develop: level 1
+      - concepts:
+          <<: *requires_0
+          <<: *only_master_develop
+      - core:
+          <<: *requires_0
+          <<: *only_master_develop
+      - geometries:
+          <<: *requires_0
+          <<: *only_master_develop
+      - util:
+          <<: *requires_0
+          <<: *only_master_develop
+# master, develop: level 2
+      - algorithms_detail:
+          <<: *requires_1
+          <<: *only_master_develop
+      - arithmetic:
+          <<: *requires_1
+          <<: *only_master_develop
+      - formulas:
+          <<: *requires_1
+          <<: *only_master_develop
+      - io:
+          <<: *requires_1
+          <<: *only_master_develop
+      - iterators:
+          <<: *requires_1
+          <<: *only_master_develop
+      - policies:
+          <<: *requires_1
+          <<: *only_master_develop
+      - strategies:
+          <<: *requires_1
+          <<: *only_master_develop
+      - views:
+          <<: *requires_1
+          <<: *only_master_develop
+# master, develop: level 3
+      - algorithms:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_area:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_buffer:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_covered_by:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_crosses:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_disjoint:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_distance:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_envelope:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_equals:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_intersects:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_length:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_overlaps:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_overlay:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_perimeter:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_relate:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_set:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_similarity:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_touches:
+          <<: *requires_2
+          <<: *only_master_develop
+      - algorithms_within:
+          <<: *requires_2
+          <<: *only_master_develop
+      - srs:
+          <<: *requires_2
+          <<: *only_master_develop
+      - index_algorithms:
+          <<: *requires_2
+          <<: *only_master_develop
+# master, develop: level 4
+      - index_rtree:
+          <<: *requires_3
+          <<: *only_master_develop
+      - index_rtree_b2d:
+          <<: *requires_3
+          <<: *only_master_develop
+      - index_rtree_exceptions:
+          <<: *requires_3
+          <<: *only_master_develop
+      - index_detail:
+          <<: *requires_3
+          <<: *only_master_develop
+      - cs_undefined:
+          <<: *requires_3
+          <<: *only_master_develop
+# master, develop: level 5, coverage
+      - coverage:
+          <<: *requires_4
+          <<: *only_master_develop
+
+# other branches: level 1, minimal
+      - minimal:
+          <<: *requires_0
+          <<: *ignore_master_develop

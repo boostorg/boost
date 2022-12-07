@@ -1,0 +1,105 @@
+##############################################################################
+# GitHub Actions Workflow for Boost.Geometry to build documentation
+#
+# Copyright (c) 2020 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (c) 2020 Adam Wulkiewicz, Lodz, Poland
+#
+# Use, modification and distribution is subject to the Boost Software License,
+# Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+##############################################################################
+name: documentation
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    paths:
+      - '.github/workflows/documentation.yml'
+      - 'doc/**'
+      - 'index.html'
+      - 'Jamfile*'
+      - 'meta/libraries.json'
+
+jobs:
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up environment
+      id: setenv
+      run: |
+        if [[ "$GITHUB_REF" == *master ]]; then
+          echo "BOOST_BRANCH=master" >> $GITHUB_ENV
+        else
+          echo "BOOST_BRANCH=develop" >> $GITHUB_ENV
+        fi
+        echo "BOOST_SELF=$(basename $GITHUB_WORKSPACE)" >> $GITHUB_ENV
+        echo "BOOST_ROOT=$GITHUB_WORKSPACE/boost-root" >> $GITHUB_ENV
+        echo "::set-output name=boost_self::$(basename $GITHUB_WORKSPACE)"
+        echo "::set-output name=boost_root::$GITHUB_WORKSPACE/boost-root"
+
+    - name: Clone boostorg/boost
+      run: |
+        git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git $BOOST_ROOT
+        cd $BOOST_ROOT
+        git submodule update -q --init libs/headers
+        git submodule update -q --init tools/boost_install
+        git submodule update -q --init tools/boostbook
+        git submodule update -q --init tools/boostdep
+        git submodule update -q --init tools/build
+        git submodule update -q --init tools/quickbook
+        mkdir -p libs/$BOOST_SELF
+
+    - uses: actions/checkout@v2
+      with:
+        path: ${{ steps.setenv.outputs.boost_root }}/libs/${{ steps.setenv.outputs.boost_self }}
+
+    - name: Run tools/boostdep/depinst/depinst.py
+      run: |
+        cd $BOOST_ROOT
+        python tools/boostdep/depinst/depinst.py ../tools/quickbook
+        python tools/boostdep/depinst/depinst.py --include benchmark --include example --include examples --include tools $BOOST_SELF
+
+    - name: Bootstrap boostorg/boost
+      run: |
+        gcc --version
+        cd $BOOST_ROOT
+        ./bootstrap.sh --with-toolset=gcc
+        ./b2 headers
+        test -f /usr/local/bin/b2 && rm -rf /usr/local/bin/b2
+        test -f /usr/local/bin/bjam && rm -rf /usr/local/bin/bjam
+        sudo cp $BOOST_ROOT/b2 /usr/local/bin/
+        ls -l /usr/local/bin/b2
+        b2 -v
+
+    - name: Install tools/quickbook
+      run: |
+        sudo apt-get -q -y --no-install-suggests --no-install-recommends install docbook-xml docbook-xsl doxygen xsltproc
+        echo "# $HOME/user-config.jam" > $HOME/user-config.jam
+        echo "using doxygen ;" >> $HOME/user-config.jam
+        echo -e "using boostbook\n  : /usr/share/xml/docbook/stylesheet/nwalsh\n  : /usr/share/xml/docbook/schema/dtd/4.2\n  ;" >> $HOME/user-config.jam
+        echo "using xsltproc ;" >> $HOME/user-config.jam
+        test -f $HOME/user-config.jam && cat $HOME/user-config.jam
+
+    - name: Install libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk
+      run: |
+        cd $BOOST_ROOT
+        $BOOST_ROOT/b2 variant=release libs/geometry/doc/src/docutils/tools/doxygen_xml2qbk
+        test -f /usr/local/bin/doxygen_xml2qbk && rm -rf /usr/local/bin/doxygen_xml2qbk
+        sudo cp $BOOST_ROOT/dist/bin/doxygen_xml2qbk /usr/local/bin/
+        ls -l /usr/local/bin/b2
+        doxygen_xml2qbk --version
+
+    - name: Build libs/geometry/doc/src/examples
+      run: |
+        cd $BOOST_ROOT
+        $BOOST_ROOT/b2 libs/geometry/doc/src/examples
+
+    - name: Run libs/geometry/doc/make_qbk.py
+      run: |
+        cd $BOOST_ROOT
+        cd libs/geometry/doc
+        python ./make_qbk.py
