@@ -1,0 +1,53 @@
+# Copyright 2016-2019 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+language: cpp
+
+sudo: false
+
+os: linux
+
+branches:
+  only:
+    - master
+    - develop
+    - /feature\/.*/
+
+env:
+  matrix:
+    - BOGUS_JOB=true
+
+matrix:
+
+  exclude:
+    - env: BOGUS_JOB=true
+
+  include:
+    - env: LIB=program_options
+    - env: LIB=program_options NAMESPACE=mybst152
+
+install:
+  - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
+  - cd ..
+  - git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init
+  - rm -rf tools/bcp/*
+  - cp -r $TRAVIS_BUILD_DIR/* tools/bcp
+  - ./bootstrap.sh
+  - ./b2 headers
+
+script:
+  - ./b2 -j3 tools/bcp
+  - mkdir ../bcp-output
+  - dist/bin/bcp ${NAMESPACE:+--namespace=$NAMESPACE --namespace-alias} $LIB build ../bcp-output
+  - cd ../bcp-output
+  - ./bootstrap.sh
+  - ./b2 -j3 libs/$LIB/build
+  - ./b2 -j3 --with-$LIB
+  - ./b2 -j3
+
+notifications:
+  email:
+    on_success: always
