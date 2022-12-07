@@ -1,0 +1,31 @@
+# Copyright 2017 Daniel James
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+      TOOLSET: msvc-10.0,msvc-11.0,msvc-12.0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-14.0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+
+install:
+  - curl -sSL -o c:\projects\boost.7z https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.7z
+  - 7z x -oc:\projects c:\projects\boost.7z
+  - rd /s /q c:\projects\boost_1_67_0\tools\quickbook
+  - mkdir c:\projects\boost_1_67_0\tools\quickbook
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% c:\projects\boost_1_67_0\tools\quickbook
+  - cd c:\projects\boost_1_67_0
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - b2 -j 3 tools/quickbook/test toolset=%TOOLSET%

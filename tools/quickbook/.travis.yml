@@ -1,0 +1,90 @@
+# Copyright (C) 2016 Daniel James.
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# Use Trusty to get a reasonably recent version of Boost.
+sudo: required
+dist: trusty
+
+language: c++
+
+matrix:
+    include:
+      - compiler: gcc
+        env: |
+          USER_CONFIG="using gcc : : g++-4.8 -fsanitize=address ;"
+      - compiler: gcc
+        env: |
+          USER_CONFIG="using gcc : : g++-4.4 ;"
+        addons:
+          apt:
+            packages:
+              - g++-4.4
+      - compiler: clang
+        env: |
+          USER_CONFIG="using clang : : clang++ -fsanitize=address ;"
+      - compiler: clang
+        env: |
+          USER_CONFIG="using clang : : clang++-3.4 -fsanitize=address ;"
+        addons:
+          apt:
+            sources:
+              - sourceline: 'ppa:h-rayflood/llvm'
+            packages:
+              - clang-3.4
+
+before_script:
+    - export BOOST_VERSION=1.67.0
+    - export BOOST_FILENAME=boost_1_67_0
+    - cd ${HOME}
+    - echo $USER_CONFIG > user-config.jam
+    - cat user-config.jam
+    - export BOOST_ROOT=${HOME}/boost
+    - |
+        if [ "$TRAVIS_EVENT_TYPE" == "cron" ]
+        then
+            if [ "$TRAVIS_BRANCH" == "master" ]
+            then
+                snapshot=master
+            else
+                snapshot=develop
+            fi
+        else
+            snapshot=stable
+        fi
+
+        if [ $snapshot == "stable" ]
+        then
+            download_url=https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_FILENAME}.tar.bz2/download
+        else
+            download_url=$(curl https://api.bintray.com/packages/boostorg/$snapshot/snapshot/files |
+                    python -c "import os.path, sys, json; x = json.load(sys.stdin); print '\n'.join(a['path'] for a in x if os.path.splitext(a['path'])[1] == '.bz2')" |
+                    head -n 1 |
+                    sed "s/^/http:\/\/dl.bintray.com\/boostorg\/$snapshot\//")
+        fi
+
+        mkdir $HOME/download
+        mkdir $HOME/extract
+        cd $HOME/download
+        echo "Downloading ${download_url}"
+        wget -O boost.tar.bz2 $download_url
+        cd $HOME/extract
+        tar -xjf $HOME/download/boost.tar.bz2
+        mv * ${BOOST_ROOT}
+    - cd $HOME
+    - rm -r ${BOOST_ROOT}/tools/quickbook
+    - mv ${TRAVIS_BUILD_DIR} ${BOOST_ROOT}/tools/quickbook
+    - cd ${BOOST_ROOT}/tools/build
+    - mkdir ${HOME}/opt
+    - ./bootstrap.sh
+    - ./b2 install --prefix=$HOME/opt
+
+script:
+    - cd ${BOOST_ROOT}/tools/quickbook/test
+    - ${HOME}/opt/bin/b2 -j 3 quick
+    - ${HOME}/opt/bin/b2 -j 3
+    - cd ${BOOST_ROOT}/tools/quickbook
+    - ${HOME}/opt/bin/b2 -j 3 dist-bin debug
+    - cd ${BOOST_ROOT}/tools/quickbook/test/python
+    - python run_tests.py ${BOOST_ROOT}/dist/bin/quickbook
+    - ${BOOST_ROOT}/tools/quickbook/build/warning-check
