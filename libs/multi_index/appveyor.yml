@@ -1,0 +1,37 @@
+# Copyright 2003-2021 Joaquín M López Muñoz.
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+#
+# See http://www.boost.org/libs/multi_index for library home page.
+
+version: 1.0.{build}-{branch}
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+      TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0,msvc-12.0,msvc-14.0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.1
+      CXXSTD: 14,17
+
+install:
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule update --init
+  - git rm --ignore-unmatch libs/multi_index/
+  - bootstrap
+  - b2 headers
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\multi_index\
+
+build: off
+
+test_script:
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 address-model=32 libs/multi_index/test toolset=%TOOLSET% %CXXSTD%
