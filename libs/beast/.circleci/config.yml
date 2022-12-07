@@ -1,0 +1,60 @@
+version: 2.0
+jobs:
+    build:
+      docker:
+        - image: madmongo1/fedora-devel:latest
+
+      working_directory: /tmp
+
+      steps:
+        - run:
+            name: fix ssh keys
+            working_directory: ~
+            command: |
+              ssh-keyscan github.com >> githubKey
+              ssh-keygen -lf githubKey
+              cat githubKey >> ~/.ssh/known_hosts
+
+        - run:
+            name: clone boost
+            working_directory: /tmp
+            command: |
+              BOOST_BRANCH=master
+              if [ "${CIRCLE_BRANCH}" != "master" -a "${CIRCLE_BRANCH}" != "refs/heads/master" ]
+              then
+                BOOST_BRANCH=develop
+              fi
+              git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git
+
+        - run:
+            name: update submodules
+            working_directory: /tmp/boost
+            command: |
+              git submodule update --init --recursive --depth 10 --jobs 4
+
+        - run:
+            name: checkout beast version
+            working_directory: /tmp/boost/libs/beast
+            command: |
+              git remote add circle ${CIRCLE_REPOSITORY_URL}
+              git fetch circle
+              git checkout circle/${CIRCLE_BRANCH}
+              git submodule update --init --recursive
+
+        - run:
+            name: bootstrap
+            working_directory: /tmp/boost
+            command: ./bootstrap.sh
+
+        - run:
+            name: copy headers
+            working_directory: /tmp/boost
+            command: ./b2 headers
+
+        - run:
+            name: build tests
+            working_directory: /tmp/boost
+            command: |
+              ./b2 -j 2 toolset=clang stdlib=libc++ cxxstd=latest cxxflags=-fcoroutines-ts variant=release,debug libs/beast/test
+              ./b2 -j 2 cxxstd=latest libs/beast/test
+              ./b2 -j 2 cxxstd=latest libs/beast/example

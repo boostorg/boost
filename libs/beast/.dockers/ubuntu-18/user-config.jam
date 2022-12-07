@@ -1,0 +1,11 @@
+import feature ;
+
+feature.feature asio.mode : dflt nodep nots ts nodep-nots nodep-ts : propagated composite ;
+feature.compose <asio.mode>nodep : <define>"BOOST_ASIO_NO_DEPRECATED" ;
+feature.compose <asio.mode>nots : <define>"BOOST_ASIO_NO_TS_EXECUTORS" ;
+feature.compose <asio.mode>ts : <define>"BOOST_ASIO_USE_TS_EXECUTOR_AS_DEFAULT" ;
+feature.compose <asio.mode>nodep-nots : <define>"BOOST_ASIO_NO_DEPRECATED" <define>"BOOST_ASIO_NO_TS_EXECUTORS" ;
+feature.compose <asio.mode>nodep-ts : <define>"BOOST_ASIO_NO_DEPRECATED" <define>"BOOST_ASIO_USE_TS_EXECUTOR_AS_DEFAULT" ;
+
+using clang :   : clang++ : <stdlib>"libc++" <cxxflags>"-Wno-c99-extensions" ;
+using gcc :   : g++ : <cxxflags>"-Wno-c99-extensions" ;

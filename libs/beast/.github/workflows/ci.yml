@@ -1,0 +1,453 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  UBSAN_OPTIONS: print_stacktrace=1
+
+jobs:
+  posix:
+    if: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+# gcc 4.7 not supported by beast
+# minimum requirement is gcc 4.8
+          - toolset: gcc-4.8
+            cxxstd: "11"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: g++-4.8
+            supported: true
+# gcc 4.9 not supported by beast
+# It dies with ICE when compiling
+          - toolset: gcc-5
+            cxxstd: "11,14,1z"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: g++-5
+            supported: true
+          - toolset: gcc-6
+            cxxstd: "11,14,1z"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: g++-6
+            supported: true
+          - toolset: gcc-7
+            cxxstd: "11,14,17"
+            os: ubuntu-18.04
+            install: g++-7
+            supported: true
+          - toolset: gcc-8
+            cxxstd: "11,14,17,2a"
+            os: ubuntu-18.04
+            install: g++-8
+            supported: true
+          - toolset: gcc-9
+            cxxstd: "11,14,17,2a"
+            os: ubuntu-18.04
+            install: g++-9
+            supported: true
+          - toolset: gcc-10
+            cxxstd: "11,14,17,2a"
+            os: ubuntu-18.04
+            install: g++-10
+            supported: true
+          - toolset: gcc-11
+            cxxstd: "11,14,17,20"
+            os: ubuntu-20.04
+            install: g++-11
+            supported: true
+# clang 3.5 not supported
+# It can't compile the websocket stream code
+          - toolset: clang
+            compiler: clang++-3.6
+            cxxstd: "11,14"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: clang-3.6
+            supported: true
+          - toolset: clang
+            compiler: clang++-3.7
+            cxxstd: "11,14"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: clang-3.7
+            supported: true
+          - toolset: clang
+            compiler: clang++-3.8
+            cxxstd: "11,14"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: clang-3.8
+            supported: true
+          - toolset: clang
+            compiler: clang++-3.9
+            cxxstd: "11,14"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: clang-3.9
+            supported: true
+          - toolset: clang
+            compiler: clang++-4.0
+            cxxstd: "11,14"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: clang-4.0
+            supported: true
+          - toolset: clang
+            compiler: clang++-5.0
+            cxxstd: "11,14,1z"
+            os: ubuntu-20.04
+            container: ubuntu:16.04
+            install: clang-5.0
+            supported: true
+          - toolset: clang
+            install: clang-6.0
+            compiler: clang++-6.0
+            cxxstd: "11,14,17"
+            os: ubuntu-18.04
+            supported: true
+          - toolset: clang
+            install: clang-7
+            compiler: clang++-7
+            cxxstd: "11,14"
+            os: ubuntu-18.04
+            supported: true
+          - toolset: clang
+            install: clang-8
+            compiler: clang++-8
+            cxxstd: "11,14,17"
+            os: ubuntu-20.04
+            supported: true
+          - toolset: clang
+            install: clang-9
+            compiler: clang++-9
+            cxxstd: "11,14,17,2a"
+            os: ubuntu-20.04
+            supported: "Causes segfault on GHA CI, not on official image"
+          - toolset: clang
+            install: clang-10
+            compiler: clang++-10
+            cxxstd: "11,14,17,2a"
+            os: ubuntu-20.04
+            supported: true
+          - toolset: clang
+            install: clang-11
+            compiler: clang++-11
+            cxxstd: "11,14,17,2a"
+            os: ubuntu-20.04
+            supported: true
+          - toolset: clang
+            install: clang-12
+            compiler: clang++-12
+            cxxstd: "11,14,17,20"
+            os: ubuntu-20.04
+            supported: true
+# macos
+          - description: macos-cxx11
+            toolset: clang
+            cxxstd: "11"
+            os: macos-10.15
+            supported: true
+          - description: macos-cxx14
+            toolset: clang
+            cxxstd: "14"
+            os: macos-10.15
+            supported: true
+          - description: macos-cxx17
+            toolset: clang
+            cxxstd: "17"
+            os: macos-10.15
+            supported: true
+          - description: macos-cxx2a
+            toolset: clang
+            cxxstd: "2a"
+            os: macos-10.15
+            supported: true
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Check if running in container
+        if: matrix.container != ''
+        run: echo "GHA_CONTAINER=${{ matrix.container }}" >> $GITHUB_ENV
+      - name: If running in container, upgrade packages
+        if: matrix.container != ''
+        run: |
+            apt-get -o Acquire::Retries=3 update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata && apt-get -o Acquire::Retries=3 install -y sudo software-properties-common wget curl apt-transport-https make apt-file sudo unzip libssl-dev build-essential autotools-dev autoconf automake g++ libc++-helpers python ruby cpio gcc-multilib g++-multilib pkgconf python3 ccache libpython-dev locales
+            sudo apt-add-repository ppa:git-core/ppa
+            sudo apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 -y install git
+            python_version=$(python3 -c 'import sys; print("{0.major}.{0.minor}".format(sys.version_info))')
+            sudo wget https://bootstrap.pypa.io/pip/$python_version/get-pip.py
+            sudo python3 get-pip.py
+            sudo /usr/local/bin/pip install cmake
+      - uses: actions/checkout@v2
+
+      - name: Install packages
+        if: matrix.install
+        run: |
+          for i in {1..3}; do sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" && break || sleep 2; done
+          sudo apt-get update
+          sudo apt-get install -y ${{matrix.install}}
+
+      - name: Setup Boost
+        shell: bash
+        run: |
+          if [[ $(uname) =~ [Ll]inux ]]; then
+            echo Installing locales for ${TRAVIS_OS_NAME} ...
+            sudo /usr/sbin/locale-gen fr_FR
+            sudo /usr/sbin/locale-gen en_GB
+            sudo locale -a
+            echo ...done with locales
+          fi
+          echo GITHUB_REPOSITORY: $GITHUB_REPOSITORY
+          LIBRARY=${GITHUB_REPOSITORY#*/}
+          echo LIBRARY: $LIBRARY
+          echo "LIBRARY=$LIBRARY" >> $GITHUB_ENV
+          echo GITHUB_BASE_REF: $GITHUB_BASE_REF
+          echo GITHUB_REF: $GITHUB_REF
+          REF=${GITHUB_BASE_REF:-$GITHUB_REF}
+          REF=${REFrefs/heads/}
+          echo REF: $REF
+          BOOST_BRANCH=develop && [ "$REF" == "master" ] && BOOST_BRANCH=master || true
+          echo BOOST_BRANCH: $BOOST_BRANCH
+          cd ..
+          git clone -b $BOOST_BRANCH --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          cp -r $GITHUB_WORKSPACE/* libs/$LIBRARY
+          git submodule update --init tools/boostdep
+          python tools/boostdep/depinst/depinst.py --git_args "--jobs 3" $LIBRARY
+          ./bootstrap.sh
+          ./b2 -d0 headers
+
+      - name: Macos specific
+        if: matrix.os == 'macos-10.15'
+        run: |
+          echo "macos - set up homebrew openssl"
+          cat > ~/user-config.jam <<EOF
+          import os ;
+          local OPENSSL_ROOT = [ os.environ OPENSSL_ROOT ] ;
+          project
+            : requirements
+              <include>/usr/local/opt/openssl/include
+              <variant>debug:<library-path>/usr/local/opt/openssl/lib
+              <target-os>windows<variant>debug:<library-path>/usr/local/opt/openssl/debug/lib
+              <variant>release:<library-path>/usr/local/opt/openssl/lib
+            ;
+          EOF
+
+      - name: Create user-config.jam
+        if: matrix.compiler
+        run: |
+          echo "using ${{matrix.toolset}} : : ${{matrix.compiler}} ;" >> ~/user-config.jam
+
+      - name: Run tests
+        shell: bash
+        run: |
+          cd ../boost-root
+          if [[ "${{matrix.supported}}" != "true" ]] ; then
+            echo "This configuration is not supported because ${{matrix.supported}}"
+            exit 0
+          fi
+          toolsets=$(sed 's/,/ /g' <<<"${{matrix.toolset}}")
+          standards=$(sed 's/,/ /g' <<<"${{matrix.cxxstd}}")
+          variants="debug release"
+          err=0
+          for toolset in ${toolsets} ; do
+            for standard in ${standards} ; do
+              for variant in ${variants} ; do
+                if [[ err -ne 0 ]] ; then
+                  echo "skipping: ${toolset} ${standard} ${variant}"
+                else
+                  echo "running: ${toolset} ${standard} ${variant}"
+                  ./b2 -j3 libs/$LIBRARY/test toolset=${toolset} cxxstd=${standard} variant=${variant}
+                  err=$?
+                fi
+              done
+            done
+          done
+          [[ $err -ne 0 ]] && false || true
+
+  windows:
+    if: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - description: msvc-14.1-cxx14-win32
+            toolset: msvc-14.1
+            cxxstd: "14"
+            addrmd: 32
+            os: windows-2016
+            cxxflags: ""
+            supported: true
+# msvc-141 ICEs when built with
+# optimisations on in c++17 configuration
+# both 32-bit and 64-bit arch
+          - description: msvc-14.1-cxx14-win64
+            toolset: msvc-14.1
+            cxxstd: "14"
+            addrmd: 64
+            os: windows-2016
+            cxxflags: ""
+            supported: true
+          - description: msvc-14.2-cxx14-win32
+            toolset: msvc-14.2
+            cxxstd: "14"
+            addrmd: 32
+            os: windows-2019
+            cxxflags: ""
+            supported: true
+          - description: msvc-14.2-cxx17-win32
+            toolset: msvc-14.2
+            cxxstd: "17"
+            addrmd: 32
+            os: windows-2019
+            cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+            supported: true
+          - description: msvc-14.2-cxx20-win32
+            toolset: msvc-14.2
+            cxxstd: "latest"
+            addrmd: 32
+            os: windows-2019
+            cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+            supported: true
+          - description: msvc-14.2-cxx14-win64
+            toolset: msvc-14.2
+            cxxstd: "14"
+            addrmd: 64
+            os: windows-2019
+            cxxflags: ""
+            supported: true
+          - description: msvc-14.2-cxx17-win64
+            toolset: msvc-14.2
+            cxxstd: "17"
+            addrmd: 64
+            os: windows-2019
+            cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+            supported: true
+          - description: msvc-14.2-cxx20-win64
+            toolset: msvc-14.2
+            cxxstd: "latest"
+            addrmd: 64
+            os: windows-2019
+            cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+            supported: true
+          # - description: msvc-14.3-cxx14-win32
+          #   toolset: msvc-14.3
+          #   cxxstd: "14"
+          #   addrmd: 32
+          #   os: windows-2022
+          #   cxxflags: ""
+          #   supported: true
+          # - description: msvc-14.3-cxx17-win32
+          #   toolset: msvc-14.3
+          #   cxxstd: "17"
+          #   addrmd: 32
+          #   os: windows-2022
+          #   cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+          #   supported: true
+          - description: msvc-14.3-cxx20-win32
+            toolset: msvc-14.3
+            cxxstd: "20"
+            addrmd: 32
+            os: windows-2022
+            cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+            supported: true
+          # - description: msvc-14.3-cxx14-win64
+          #   toolset: msvc-14.3
+          #   cxxstd: "14"
+          #   addrmd: 64
+          #   os: windows-2022
+          #   cxxflags: ""
+          #   supported: true
+          # - description: msvc-14.3-cxx17-win64
+          #   toolset: msvc-14.3
+          #   cxxstd: "17"
+          #   addrmd: 64
+          #   os: windows-2022
+          #   cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+          #   supported: true
+          - description: msvc-14.3-cxx20-win64
+            toolset: msvc-14.3
+            cxxstd: "20"
+            addrmd: 64
+            os: windows-2022
+            cxxflags: "cxxflags=-D_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING=1"
+            supported: true
+          - toolset: gcc
+            cxxstd: "11,14,17,2a"
+            addrmd: 64
+            os: windows-2019
+            cxxflags: "cxxflags=-Wa,-mbig-obj"
+            supported: "Too many unknowns to get this compiler working - gcc-8.1"
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup OpenSSL
+        shell: cmd
+        run: |
+          echo Install choco
+          powershell -Command iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+          if "${{matrix.addrmd}}" == "64" (
+            choco install --no-progress -y openssl --x64
+            mklink /D "C:\\OpenSSL" "C:\\Program Files\\OpenSSL-Win64"
+          ) else (
+            choco install --no-progress -y openssl --x86
+            mklink /D "C:\\OpenSSL" "C:\\Program Files (x86)\\OpenSSL-Win32"
+          )
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          echo GITHUB_REPOSITORY: %GITHUB_REPOSITORY%
+          for /f %%i in ("%GITHUB_REPOSITORY%") do set LIBRARY=%%~nxi
+          echo LIBRARY: %LIBRARY%
+          echo LIBRARY=%LIBRARY%>>%GITHUB_ENV%
+          echo GITHUB_BASE_REF: %GITHUB_BASE_REF%
+          echo GITHUB_REF: %GITHUB_REF%
+          if "%GITHUB_BASE_REF%" == "" set GITHUB_BASE_REF=%GITHUB_REF%
+          set BOOST_BRANCH=develop
+          for /f %%i in ("%GITHUB_BASE_REF%") do if "%%~nxi" == "master" set BOOST_BRANCH=master
+          echo BOOST_BRANCH: %BOOST_BRANCH%
+          cd ..
+          git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+          cd boost-root
+          xcopy /s /e /q %GITHUB_WORKSPACE% libs\%LIBRARY%\
+          git submodule update --init tools/boostdep
+          python tools/boostdep/depinst/depinst.py --git_args "--jobs 3" %LIBRARY%
+          copy libs\%LIBRARY%\tools\user-config.jam %USERPROFILE%\user-config.jam
+          set OPENSSL_ROOT=C:\OpenSSL
+          cmd /c bootstrap
+          b2 -d0 headers
+
+      - name: Run tests
+        shell: bash
+        run: |
+          echo "current directory: $(pwd)"
+          cd ../boost-root
+          export OPENSSL_ROOT="C:\\OpenSSL"
+          if [[ "${{matrix.supported}}" != "true" ]] ; then
+            echo "This configuration is not supported because ${{matrix.supported}}"
+            exit 0
+          fi
+          toolsets=$(sed 's/,/ /g' <<<"${{matrix.toolset}}")
+          standards=$(sed 's/,/ /g' <<<"${{matrix.cxxstd}}")
+          address_models=$(sed 's/,/ /g' <<<"${{matrix.addrmd}}")
+          variants="debug release"
+          for toolset in ${toolsets} ; do
+            for standard in ${standards} ; do
+              for address_model in ${address_models} ; do
+                for variant in ${variants} ; do
+                  echo "running: ${toolset} ${standard} ${address_model} ${variant}"
+                  ./b2 -j3 ${{matrix.cxxflags}} libs/$LIBRARY/test toolset=${toolset} cxxstd=${standard} address-model=${address_model} variant=${variant} || exit $?
+                done
+              done
+            done
+          done

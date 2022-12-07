@@ -1,0 +1,54 @@
+# Copyright 2016 Peter Dimov
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+#version: "{branch} (#{build})"
+
+shallow_clone: true
+
+platform:
+  #- x86
+  - x64
+
+configuration:
+  #- Debug
+  - Release
+
+environment:
+  OPENSSL_ROOT: C:\tools\vcpkg\installed\x64-windows
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      TOOLSET: msvc-14.0
+
+# VFALCO Appveyor has a 1 hour time limit, and
+#        I already test this configuration locally.
+#
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+#      TOOLSET: msvc-14.1
+
+# This configuration is not available yet
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+#      TOOLSET: msvc-14.2
+
+install:
+  - SET BOOST_BRANCH=develop
+  - IF "%APPVEYOR_REPO_BRANCH%" == "master" SET BOOST_BRANCH=master
+  - vcpkg install openssl --triplet x64-windows
+  - ps: cp tools\user-config.jam ~\user-config.jam
+  - CD ..
+  - bash -c '$APPVEYOR_BUILD_FOLDER/tools/get-boost.sh $APPVEYOR_REPO_BRANCH $APPVEYOR_BUILD_FOLDER'
+  - CD boost-root
+  - CMD /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - b2 --debug-configuration variant=release cxxstd=14 address-model=64 toolset=msvc-14.0 libs/beast/example -j3
+  - b2 --debug-configuration variant=release cxxstd=14 address-model=64 toolset=msvc-14.0 --verbose-test libs/beast/test//run-fat-tests -j3
+  - b2 --debug-configuration variant=release cxxstd=17 define="BOOST_BEAST_USE_STD_STRING_VIEW" address-model=64 toolset=msvc-14.1 libs/beast/example -j3
+  - b2 --debug-configuration variant=release cxxstd=17 define="BOOST_BEAST_USE_STD_STRING_VIEW" address-model=64 toolset=msvc-14.1 --verbose-test libs/beast/test//run-fat-tests -j3
+
+cache:
+- c:\tools\vcpkg\installed\
