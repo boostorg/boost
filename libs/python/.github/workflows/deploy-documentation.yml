@@ -1,0 +1,37 @@
+name: deploy documentation
+
+on: [push, pull_request]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup
+      run: |
+        sudo apt-get update
+        sudo apt-get install \
+          libboost1.71-tools-dev \
+          python3 \
+          python3-numpy \
+          python3-sphinx \
+          xsltproc \
+          docbook-xsl
+        sudo python3 -m pip install --upgrade pip
+        sudo python3 -m pip install faber
+    - name: build
+      run: |
+        sed -e "s/\$PYTHON/python3/g" .ci/faber > ~/.faber
+        faber --builddir=build doc.html
+        if [ "${GITHUB_REF##*/}" == master ]; then
+          echo "destination_dir=doc/html" >> $GITHUB_ENV
+        else
+          echo "destination_dir=doc/develop/html" >> $GITHUB_ENV
+        fi
+    - name: deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: build/doc/html
+        destination_dir: ${{ env.destination_dir }}
+        keep_files: true
