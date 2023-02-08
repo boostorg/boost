@@ -2,13 +2,15 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cppalliance/boost_superproject_build:python3-build2
+      - image: cppalliance/boost_superproject_build:20.04-v1
     parallelism: 2
     steps:
       - checkout
-      - run: wget "https://raw.githubusercontent.com/boostorg/release-tools/python3/ci_boost_common.py" -P ${HOME}
-      - run: wget "https://raw.githubusercontent.com/boostorg/release-tools/python3/ci_boost_release.py" -P ${HOME}
+      - run: wget "https://raw.githubusercontent.com/boostorg/release-tools/master/ci_boost_common.py" -P ${HOME}
+      - run: wget "https://raw.githubusercontent.com/boostorg/release-tools/master/ci_boost_release.py" -P ${HOME}
       - run: python3 ${HOME}/ci_boost_release.py checkout_post
       # - run: python3 ${HOME}/ci_boost_release.py dependencies_override
+      - run: '[ "$CIRCLE_NODE_INDEX" != "0" ] || EOL=LF python3 ${HOME}/ci_boost_release.py test_pre'
+      - run: '[ "$CIRCLE_NODE_INDEX" != "1" ] || EOL=CRLF python3 ${HOME}/ci_boost_release.py test_pre'
       - run: '[ "$CIRCLE_NODE_INDEX" != "0" ] || EOL=LF python3 ${HOME}/ci_boost_release.py test_override'
       - run: '[ "$CIRCLE_NODE_INDEX" != "1" ] || EOL=CRLF python3 ${HOME}/ci_boost_release.py test_override'
