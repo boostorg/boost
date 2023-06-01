@@ -995,7 +995,7 @@
             <test name="public_function-throwing_body_virtual_branch"/>
             <toolset name="qcc-4.7*"/>
             <note author="Lorenzo Caminiti">
-                This test fails because `std::uncaught_exception` seems to
+                This test fails because `std::unchaught_exception` seems to
                 always return zero on this compiler (even if the authors could
                 not find a direct reference to this possible compiler issue
                 online).
@@ -2259,6 +2259,19 @@
         </mark-unusable>
     </library>
 
+    <library name="functional/foward">
+        <mark-unusable>
+            <toolset name="msvc-7.0*"/>
+            <toolset name="msvc-7.1*"/>
+            <toolset name="sun-5.*"/>
+            <toolset name="vacpp*"/>
+            <toolset name="borland-*"/>
+            <note author="Tobias Schwinger">
+              This compiler is currently not supported.
+            </note>
+        </mark-unusable>
+    </library>
+
     <!-- functional/hash -->
     <library name="functional/hash">
         <mark-expected-failures>
@@ -2359,8 +2372,8 @@
             <toolset name="gcc-4.4~c++0x*"/>
             <toolset name="gcc-4.4~gnu0x*"/>
             <note author="Kohei Takahashi">
-                The compiler doesn't generate defaulted move ctor/assign thus
-                perform copy construction/assignment. Even though such case,
+                The compiler doesn't generate defaulted move ctor/assgin thus
+                perform copy construction/assginment. Even though such case,
                 the `inline` versions don't force generating move ctor/assign
                 to preserve trivial requirements. Since that is not documented
                 behaviour, it might be changed in future release.
@@ -3538,7 +3551,7 @@ for more information.
             <test name="lambda_tests15"/>
             <toolset name="msvc-12.0"/>
             <note author="Kohei Takahsahi">
-                Workaround: define BOOST_RESULT_OF_USE_TR1
+                Wrokaround: define BOOST_RESULT_OF_USE_TR1
             </note>
         </mark-expected-failures>
     </library>
