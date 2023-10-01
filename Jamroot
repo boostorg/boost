@@ -140,6 +140,7 @@ import "class" : new ;
 import property-set ;
 import threadapi-feature ;
 import option ;
+import property ;
 # Backslash because of `bcp --namespace`
 import tools/boost\_install/boost-install ;
 
@@ -180,6 +181,7 @@ project boost
       # Used to encode variant in target name. See the 'tag' rule below.
       <tag>@$(__name__).tag
       <conditional>@handle-static-runtime
+      <conditional>@clang-darwin-cxxstd-11
       # Comeau does not support shared lib
       <toolset>como:<link>static
       <toolset>como-linux:<define>_GNU_SOURCE=1
@@ -224,6 +226,20 @@ rule handle-static-runtime ( properties * )
         boostcpp.emit-shared-static-warning ;
         return <build>no ;
     }
+}
+
+rule clang-darwin-cxxstd-11 ( properties * )
+{
+    # AppleClang defaults to C++03
+
+    local result = [ property.select <cxxstd> : $(properties) ] ;
+
+    if <toolset-clang:platform>darwin in $(properties)
+    {
+        result ?= <cxxstd>11 ;
+    }
+
+    return $(result) ;
 }
 
 all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
