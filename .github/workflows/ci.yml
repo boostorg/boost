@@ -92,6 +92,7 @@ jobs:
           - os: macos-13
 
     runs-on: ${{matrix.os}}
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v3
@@ -148,6 +149,35 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: ubuntu-latest
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          cmake -DBUILD_TESTING=ON -DBOOST_EXCLUDE_LIBRARIES="lockfree;outcome;process;static_string;url" ..
+
+      - name: Build tests
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target tests
+
+      - name: Run tests
+        run: |
+          cd __build__
+          ctest --output-on-failure --no-tests=error -j 3
+
+  cmake-test-posix-quick:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
           - os: ubuntu-20.04
           - os: ubuntu-22.04
           - os: macos-11
@@ -170,14 +200,14 @@ jobs:
       - name: Build tests
         run: |
           cd __build__
-          cmake --build . -j 3 --target tests
+          cmake --build . -j 3 --target tests-quick
 
       - name: Run tests
         run: |
           cd __build__
           ctest --output-on-failure --no-tests=error -j 3 -R quick
 
-  cmake-test-windows:
+  cmake-test-windows-quick:
     strategy:
       fail-fast: false
       matrix:
@@ -195,12 +225,12 @@ jobs:
       - name: Configure Boost
         run: |
           mkdir __build__ && cd __build__
-          cmake -DBUILD_TESTING=ON -DBOOST_EXCLUDE_LIBRARIES="convert;outcome" ..
+          cmake -DBUILD_TESTING=ON ..
 
       - name: Build tests
         run: |
           cd __build__
-          cmake --build . -j 3 --target tests
+          cmake --build . -j 3 --target tests-quick
 
       - name: Run tests
         run: |
