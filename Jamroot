@@ -1,6 +1,6 @@
 # Copyright Vladimir Prus 2002-2006.
 # Copyright Dave Abrahams 2005-2006.
-# Copyright Rene Rivera 2005-2007.
+# Copyright René Ferdinand Rivera Morell 2005-2024.
 # Copyright Douglas Gregor 2005.
 #
 # Distributed under the Boost Software License, Version 1.0.
@@ -122,6 +122,8 @@
 #                           runtime.
 #
 
+require-b2 5 ;
+
 # TODO:
 #  - handle boost version
 #  - handle python options such as pydebug
@@ -149,7 +151,8 @@ constant BOOST_VERSION : 1.85.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 # Allow subprojects to simply `import config : requires ;` to get access to the requires rule
-modules.poke : BOOST_BUILD_PATH : $(BOOST_ROOT)/libs/config/checks [ modules.peek : BOOST_BUILD_PATH ] ;
+import-search $(BOOST_ROOT)/libs/config/checks ;
+import-search $(BOOST_ROOT)/libs/predef/tools/checks ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
 
@@ -194,6 +197,8 @@ project boost
       <threading>multi
     : build-dir bin.v2
     ;
+
+project-search /boost : libs ;
 
 # This rule is called by Boost.Build to determine the name of target. We use it
 # to encode the build variant, compiler name and boost version in the target
@@ -242,39 +247,53 @@ rule clang-darwin-cxxstd-11 ( properties * )
     return $(result) ;
 }
 
-all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
-    [ glob libs/*/build/Jamfile ] ] ;
-
-all-libraries = [ sequence.unique $(all-libraries) ] ;
+# Find all the libraries that have something to build (the old way).
+local all-libraries-to-build
+    = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
+        [ glob libs/*/build/Jamfile ] ] ;
+all-libraries-to-build = [ sequence.unique $(all-libraries-to-build) ] ;
 # The function_types library has a Jamfile, but it's used for maintenance
 # purposes, there's no library to build and install.
-all-libraries = [ set.difference $(all-libraries) : function_types ] ;
+all-libraries-to-build = [ set.difference $(all-libraries-to-build) : function_types ] ;
+
+# Find all the libraries that have a library-root build declaration (modular way).
+local all-libraries-modular-build
+    = [ MATCH .*libs/(.*)/build.jam : [ glob libs/*/build.jam ] ] ;
+
+# Modular and not are mutually exclusive as they have different lib targets.
+all-libraries-to-build = [ set.difference $(all-libraries-to-build) : $(all-libraries-modular-build) ] ;
+
+# ECHO "INFO: Build Libraries:" $(all-libraries-to-build) ;
+# ECHO "INFO: Modular Libraries:" $(all-libraries-modular-build) ;
 
 # Setup convenient aliases for all libraries.
 
-local rule explicit-alias ( id : targets + )
-{
-    alias $(id) : $(targets) ;
-    explicit $(id) ;
-}
-
 # First, the complicated libraries: where the target name in Jamfile is
 # different from its directory name.
-explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
-explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
-explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
-explicit-alias serialization : libs/serialization/build//boost_serialization ;
-explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
-for local l in $(all-libraries)
+explicit
+    [ alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ]
+    [ alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ]
+    [ alias unit_test_framework : libs/test/build//boost_unit_test_framework ]
+    [ alias serialization : libs/serialization/build//boost_serialization ]
+    [ alias wserialization : libs/serialization/build//boost_wserialization ]
+    ;
+for local l in $(all-libraries-to-build)
 {
     if ! $(l) in test graph serialization headers
     {
-        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
+        explicit [ alias $(l) : libs/$(l)/build//boost_$(l) ] ;
+    }
+}
+for local l in $(all-libraries-modular-build)
+{
+    if ! $(l) in test graph serialization headers
+    {
+        explicit [ alias $(l) : /boost/$(l)//boost_$(l) ] ;
     }
 }
 
 # Log has an additional target
-explicit-alias log_setup : libs/log/build//boost_log_setup ;
+explicit [ alias log_setup : libs/log/build//boost_log_setup ] ;
 
 rule do-nothing { }
 
@@ -294,7 +313,7 @@ generate headers : $(all-headers)-headers : <generating-rule>@generate-alias <ac
 explicit headers ;
 
 # Make project ids of all libraries known.
-for local l in $(all-libraries)
+for local l in $(all-libraries-to-build)
 {
     use-project /boost/$(l) : libs/$(l)/build ;
 }
@@ -341,4 +360,26 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries) ;
+boostcpp.declare-targets $(all-libraries-to-build) ;
+
+# Declare a Boost library and run related declaration rules. This should be
+# called from the libroot/build.jam to define the components of a Boost lib.
+# The first arg is the base ID of the library. Each subsequence arg is a
+# Boost (boost-x) declaration rule to call with arguments.
+#
+# For example:
+#
+# call-if : boost-library serialization
+#   : install boost_serialization boost_wserialization ;
+#
+rule boost-library ( id ? : options * : * )
+{
+    for n in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+    {
+        local option = $($(n)) ;
+        if $(option)
+        {
+            call-if : boost-$(option[1]) $(option[2-]) ;
+        }
+    }
+}
