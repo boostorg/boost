@@ -22,14 +22,14 @@ jobs:
 
       - name: Create archives
         run: |
-          tar -czf ${{ github.ref_name }}.tar.gz ${{ github.ref_name }}
-          tar -cJf ${{ github.ref_name }}.tar.xz ${{ github.ref_name }}
+          tar -czf ${{ github.ref_name }}-cmake.tar.gz ${{ github.ref_name }}
+          tar -cJf ${{ github.ref_name }}-cmake.tar.xz ${{ github.ref_name }}
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ github.ref_name }}.tar.gz
-            ${{ github.ref_name }}.tar.xz
+            ${{ github.ref_name }}-cmake.tar.gz
+            ${{ github.ref_name }}-cmake.tar.xz
 
   release-windows:
     runs-on: windows-latest
@@ -50,11 +50,11 @@ jobs:
       - name: Create archives
         shell: cmd
         run: |
-          7z a ${{ github.ref_name }}.zip ${{ github.ref_name }}
-          7z a ${{ github.ref_name }}.7z ${{ github.ref_name }}
+          7z a ${{ github.ref_name }}-cmake.zip ${{ github.ref_name }}
+          7z a ${{ github.ref_name }}-cmake.7z ${{ github.ref_name }}
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ github.ref_name }}.zip
-            ${{ github.ref_name }}.7z
+            ${{ github.ref_name }}-cmake.zip
+            ${{ github.ref_name }}-cmake.7z
