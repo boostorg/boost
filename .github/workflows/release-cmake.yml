@@ -81,6 +81,7 @@ jobs:
           cd ${{ github.ref_name }}
           cp -r libs/*/include/boost libs/numeric/*/include/boost .
           rm -rf libs/*/include libs/numeric/*/include
+          rm -f CMakeLists.txt
 
       - name: Create archives
         run: |
@@ -92,3 +93,39 @@ jobs:
           files: |
             ${{ github.ref_name }}-b2-nodocs.tar.gz
             ${{ github.ref_name }}-b2-nodocs.tar.xz
+
+  release-windows-b2-nodocs:
+    runs-on: windows-latest
+
+    needs: release-posix-b2-nodocs
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ github.ref_name }}
+          submodules: true
+
+      - name: Cleanup
+        shell: bash
+        run: |
+          find ${{ github.ref_name }} -name ".git" -prune -exec rm -rf {} +
+
+      - name: Move headers
+        shell: bash
+        run: |
+          cd ${{ github.ref_name }}
+          cp -r libs/*/include/boost libs/numeric/*/include/boost .
+          rm -rf libs/*/include libs/numeric/*/include
+          rm -f CMakeLists.txt
+
+      - name: Create archives
+        shell: cmd
+        run: |
+          7z a ${{ github.ref_name }}-b2-nodocs.zip ${{ github.ref_name }}
+          7z a ${{ github.ref_name }}-b2-nodocs.7z ${{ github.ref_name }}
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ github.ref_name }}-b2-nodocs.zip
+            ${{ github.ref_name }}-b2-nodocs.7z
