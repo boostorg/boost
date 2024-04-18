@@ -620,15 +620,18 @@ rule deduce-address-model ( properties * )
         : /boost/architecture//64 "64-bit" ] ;
     result = $(names[$(idx)]) ;
 
-    if $(result)
+    local am = [ property.select <address-model> : $(properties) ] ;
+    if ! $(am)
     {
-        # Normally, returning composite feature here is equivalent to forcing
-        # constituent properties as well. But we only want to indicate toolset
-        # deduced default, so also pick whatever address-model is explicitly
-        # specified, if any.
-        result = <deduced-address-model>$(result) [ property.select <address-model> : $(properties) ] ;
+        return <deduced-address-model>$(result) ;
     }
-    return $(result) ;
+
+    if $(am:G=) = $(result)
+    {
+        return <deduced-address-model>$(result) $(am) ;
+    }
+
+    return ;
 }
 
 rule address-model ( )
@@ -660,12 +663,18 @@ rule deduce-architecture ( properties * )
         : /boost/architecture//combined ] ;
     result = $(names[$(idx)]) ;
 
-    if $(result)
+    local arch = [ property.select <architecture> : $(properties) ] ;
+    if ! $(arch)
     {
-        # See comment in deduce-address-model.
-        result = <deduced-architecture>$(result) [ property.select <architecture> : $(properties) ] ;
+        return <deduced-architecture>$(result) ;
     }
-    return $(result) ;
+
+    if $(arch:G=) = $(result)
+    {
+        return <deduced-architecture>$(result) $(arch) ;
+    }
+
+    return ;
 }
 
 rule architecture ( )
