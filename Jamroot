@@ -148,12 +148,12 @@ import project ;
 import tools/boost\_install/boost-install ;
 
 path-constant BOOST_ROOT : . ;
-constant BOOST_VERSION : 1.85.0 ;
+constant BOOST_VERSION : 1.86.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 # Allow subprojects to simply `import config : requires ;` to get access to the requires rule
 import-search $(BOOST_ROOT)/libs/config/checks ;
-import-search $(BOOST_ROOT)/libs/predef/tools/checks ;
+import-search $(BOOST_ROOT)/libs/predef/tools/check ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
 
@@ -327,9 +327,6 @@ for local l in $(all-libraries-modular-build)
     }
 }
 
-# Log has an additional target
-explicit [ alias log_setup : libs/log/build//boost_log_setup ] ;
-
 rule do-nothing { }
 
 rule generate-alias ( project name : property-set : sources * )
@@ -360,7 +357,7 @@ if [ path.exists $(BOOST_ROOT)/tools/inspect/build ]
 
 if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
 {
-    use-project /boost/libs/wave/tool : libs/wave/tool/build ;
+    use-project /boost/libs/wave/tool : $(BOOST_ROOT)/libs/wave/tool/build ;
 }
 
 # Make the boost-install rule visible in subprojects
@@ -395,7 +392,7 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries-to-build) ;
+boostcpp.declare-targets $(all-libraries-to-build) $(all-libraries-modular-build) ;
 
 # Declare a Boost library and run related declaration rules. This should be
 # called from the libroot/build.jam to define the components of a Boost lib.
@@ -409,13 +406,26 @@ boostcpp.declare-targets $(all-libraries-to-build) ;
 #
 rule boost-library ( id ? : options * : * )
 {
+    # ECHO "INFO: Declare Boost library:" $(id) ;
+    local called-boost-install ;
     for n in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
     {
         local option = $($(n)) ;
         if $(option)
         {
             call-if : boost-$(option[1]) $(option[2-]) ;
+            if $(option[1]) = install
+            {
+                called-boost-install = true ;
+            }
         }
+    }
+    if ! $(called-boost-install)
+    {
+        # If the library didn't indicate an install build target it's likely
+        # header only. We should declare empty install targets to allow for
+        # generic handling.
+        boost-install.boost-install ;
     }
 }
 
@@ -450,4 +460,9 @@ for local lib in $(all-libraries-to-declare)
         alias $(BOOST_LIB_TARGET) ;
     }
     project.pop-current ;
+}
+
+if ! [ project.search /boost/tools/boost_install ]
+{
+    use-project /boost/tools/boost_install : tools/boost_install ;
 }
