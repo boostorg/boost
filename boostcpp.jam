@@ -616,7 +616,7 @@ for a in $(.deducible-architectures)
     feature.compose <x-deduced-platform>$(a)_64 : <architecture>$(a) <address-model>64 ;
 }
 
-rule deduce-platform ( properties * )
+rule deduce-architecture ( properties * )
 {
     local deduced-pl = [ property.select <x-deduced-platform> : $(properties) ] ;
     if $(deduced-pl)
@@ -669,7 +669,13 @@ rule deduce-platform ( properties * )
 }
 
 
+rule deduce-address-model ( properties * )
+{
+    # this rule is a noop and exists for legacy reasons
+}
+
 rule platform ( )
 {
-    return <conditional>@boostcpp.deduce-platform ;
+    return <conditional>@boostcpp.deduce-architecture
+        <conditional>@boostcpp.deduce-address-model ;
 }
