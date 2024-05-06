@@ -622,49 +622,38 @@ rule toolset-properties ( properties * )
     return [ property.select <target-os> <toolset> $(toolset-version-property) : $(properties) ] ;
 }
 
-feature.feature deduced-address-model : 32 64 : propagated optional composite hidden ;
-feature.compose <deduced-address-model>32 : <address-model>32 ;
-feature.compose <deduced-address-model>64 : <address-model>64 ;
-
-rule deduce-address-model ( properties * )
+.deducible-architectures = arm loongarch mips power riscv s390x sparc x86 combined ;
+feature.feature x-deduced-platform
+    : $(.deducible-architectures)_32 $(.deducible-architectures)_64
+    : composite implicit optional propagated ;
+for a in $(.deducible-architectures)
 {
-    local result ;
-    local filtered = [ toolset-properties $(properties) ] ;
-    local names = 32 64 ;
-    local idx = [ configure.find-builds "default address-model" : $(filtered)
-        : /boost/architecture//32 "32-bit"
-        : /boost/architecture//64 "64-bit" ] ;
-    result = $(names[$(idx)]) ;
-
-    if $(result)
-    {
-        # Normally, returning composite feature here is equivalent to forcing
-        # constituent properties as well. But we only want to indicate toolset
-        # deduced default, so also pick whatever address-model is explicitly
-        # specified, if any.
-        result = <deduced-address-model>$(result) [ property.select <address-model> : $(properties) ] ;
-    }
-    return $(result) ;
-}
-
-rule address-model ( )
-{
-    return <conditional>@boostcpp.deduce-address-model ;
-}
-
-local deducable-architectures = arm loongarch mips power riscv s390x sparc x86 combined ;
-feature.feature deduced-architecture : $(deducable-architectures) : propagated optional composite hidden ;
-for a in $(deducable-architectures)
-{
-    feature.compose <deduced-architecture>$(a) : <architecture>$(a) ;
+    feature.compose <x-deduced-platform>$(a)_32 : <architecture>$(a) <address-model>32 ;
+    feature.compose <x-deduced-platform>$(a)_64 : <architecture>$(a) <address-model>64 ;
 }
 
 rule deduce-architecture ( properties * )
 {
-    local result ;
+    local deduced-pl = [ property.select <x-deduced-platform> : $(properties) ] ;
+    if $(deduced-pl)
+    {
+        return $(deduced-pl) ;
+    }
+
     local filtered = [ toolset-properties $(properties) ] ;
-    local names = arm loongarch mips power riscv s390x sparc x86 combined ;
-    local idx = [ configure.find-builds "default architecture" : $(filtered)
+
+    local names = 32 64 ;
+    local idx = [ configure.find-builds "default address-model" : $(filtered)
+        : /boost/architecture//32 "32-bit"
+        : /boost/architecture//64 "64-bit" ] ;
+    local deduced-am = $(names[$(idx)]) ;
+    if ! $(deduced-am)
+    {
+        return ;
+    }
+
+    names = $(.deducible-architectures) ;
+    idx = [ configure.find-builds "default architecture" : $(filtered)
         : /boost/architecture//arm
         : /boost/architecture//loongarch
         : /boost/architecture//mips
@@ -674,17 +663,35 @@ rule deduce-architecture ( properties * )
         : /boost/architecture//sparc
         : /boost/architecture//x86
         : /boost/architecture//combined ] ;
-    result = $(names[$(idx)]) ;
-
-    if $(result)
+    local deduced-arch = $(names[$(idx)]) ;
+    if ! $(deduced-arch)
     {
-        # See comment in deduce-address-model.
-        result = <deduced-architecture>$(result) [ property.select <architecture> : $(properties) ] ;
+        return ;
     }
-    return $(result) ;
+
+    local requested-am = [ property.select <address-model> : $(properties) ] ;
+    requested-am ?= <address-model>$(deduced-am) ;
+
+    local requested-arch = [ property.select <architecture> : $(properties) ] ;
+    requested-arch ?= <architecture>$(deduced-arch) ;
+
+    deduced-pl = $(requested-arch:G=<x-deduced-platform>)_$(requested-am:G=) ;
+
+    if ! $(deduced-pl:G=) in [ feature.values <x-deduced-platform> ]
+    {
+        deduced-pl = ;
+    }
+    return $(deduced-pl) ;
 }
 
-rule architecture ( )
+
+rule deduce-address-model ( properties * )
 {
-    return <conditional>@boostcpp.deduce-architecture ;
+    # this rule is a noop and exists for legacy reasons
+}
+
+rule platform ( )
+{
+    return <conditional>@boostcpp.deduce-architecture
+        <conditional>@boostcpp.deduce-address-model ;
 }
