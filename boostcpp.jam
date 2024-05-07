@@ -263,11 +263,27 @@ rule python-tag ( name : type ? : property-set )
 rule declare_install_and_stage_proper_targets ( libraries * )
 {
     local p = [ project.current ] ;
+    local install-targets ;
+    local stage-targets ;
+    for local library in $(libraries)
+    {
+        local mp = [ project.search /boost/$(library) ] ;
+        if $(mp)
+        {
+            install-targets += /boost/$(library)//install ;
+            stage-targets += /boost/$(library)//stage ;
+        }
+        else
+        {
+            install-targets += libs/$(library)/build//install ;
+            stage-targets += libs/$(library)/build//stage ;
+        }
+    }
 
-    alias install-proper : libs/$(libraries)/build//install ;
+    alias install-proper : $(install-targets) ;
     $(p).mark-target-as-explicit install-proper ;
 
-    alias stage-proper : libs/$(libraries)/build//stage ;
+    alias stage-proper : $(stage-targets) ;
     $(p).mark-target-as-explicit stage-proper ;
 }
 
