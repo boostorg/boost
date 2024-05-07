@@ -1,6 +1,6 @@
 # Copyright Vladimir Prus 2002-2006.
 # Copyright Dave Abrahams 2005-2006.
-# Copyright Rene Rivera 2005-2007.
+# Copyright René Ferdinand Rivera Morell 2005-2024.
 # Copyright Douglas Gregor 2005.
 #
 # Distributed under the Boost Software License, Version 1.0.
@@ -122,6 +122,8 @@
 #                           runtime.
 #
 
+require-b2 5.1.0 ;
+
 # TODO:
 #  - handle boost version
 #  - handle python options such as pydebug
@@ -141,6 +143,7 @@ import property-set ;
 import threadapi-feature ;
 import option ;
 import property ;
+import project ;
 # Backslash because of `bcp --namespace`
 import tools/boost\_install/boost-install ;
 
@@ -149,7 +152,8 @@ constant BOOST_VERSION : 1.86.0 ;
 constant BOOST_JAMROOT_MODULE : $(__name__) ;
 
 # Allow subprojects to simply `import config : requires ;` to get access to the requires rule
-modules.poke : BOOST_BUILD_PATH : $(BOOST_ROOT)/libs/config/checks [ modules.peek : BOOST_BUILD_PATH ] ;
+import-search $(BOOST_ROOT)/libs/config/checks ;
+import-search $(BOOST_ROOT)/libs/predef/tools/check ;
 
 boostcpp.set-version $(BOOST_VERSION) ;
 
@@ -169,7 +173,7 @@ if $(all-headers)
     constant BOOST_MODULARLAYOUT : $(all-headers) ;
 }
 
-project boost
+project /boost
     : requirements <include>.
 
       [ boostcpp.platform ]
@@ -193,6 +197,13 @@ project boost
       <threading>multi
     : build-dir bin.v2
     ;
+
+# General, top-level, modular project searching. Also include tools in the
+# project search.
+project-search /boost : libs tools ;
+# Temporary custom project searching to account for special library paths.
+project-search /boost : libs/numeric ;
+project-search /boost/numeric_conversion : libs/numeric/conversion ;
 
 # This rule is called by Boost.Build to determine the name of target. We use it
 # to encode the build variant, compiler name and boost version in the target
@@ -241,39 +252,79 @@ rule clang-darwin-cxxstd-11 ( properties * )
     return $(result) ;
 }
 
-all-libraries = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
-    [ glob libs/*/build/Jamfile ] ] ;
+# All libraries.
+local all-libraries
+    = [ MATCH .*libs/(.*)/meta/libraries.json : [ glob libs/*/meta/libraries.json ] ] ;
 
-all-libraries = [ sequence.unique $(all-libraries) ] ;
+# Find all the libraries that have something to build (the old way).
+local all-libraries-to-build
+    = [ MATCH .*libs/(.*)/build/.* : [ glob libs/*/build/Jamfile.v2 ]
+        [ glob libs/*/build/Jamfile ] ] ;
+all-libraries-to-build = [ sequence.unique $(all-libraries-to-build) ] ;
 # The function_types library has a Jamfile, but it's used for maintenance
 # purposes, there's no library to build and install.
-all-libraries = [ set.difference $(all-libraries) : function_types ] ;
+all-libraries-to-build = [ set.difference $(all-libraries-to-build) : function_types ] ;
+
+# Find all the libraries that have a library-root build declaration (modular way).
+local all-libraries-modular-build
+    = [ MATCH .*libs/(.*)/build.jam : [ glob libs/*/build.jam ] ] ;
+
+# Modular and not are mutually exclusive as they have different lib targets.
+all-libraries-to-build = [ set.difference $(all-libraries-to-build) : $(all-libraries-modular-build) ] ;
+
+# The header only libraries that are not of the new modular form. For which we
+# will create synthetic projects and targets to simulate the new modular form.
+local all-libraries-to-declare
+    = [ set.difference $(all-libraries)
+        : $(all-libraries-modular-build) $(all-libraries-to-build) ] ;
+if ! [ glob libs/numeric/conversion/build.jam ]
+{
+    all-libraries-to-declare += numeric_conversion ;
+}
+if ! [ glob libs/numeric/interval/build.jam ]
+{
+    all-libraries-to-declare += interval ;
+}
+if ! [ glob libs/numeric/odeint/build.jam ]
+{
+    all-libraries-to-declare += odeint ;
+}
+if ! [ glob libs/numeric/ublas/build.jam ]
+{
+    all-libraries-to-declare += ublas ;
+}
+all-libraries-to-declare = [ SORT $(all-libraries-to-declare) ] ;
+
+# ECHO "INFO: Build Libraries:" [ SORT $(all-libraries-to-build) ] ;
+# ECHO "INFO: Modular Libraries:" [ SORT $(all-libraries-modular-build) ] ;
+# ECHO "INFO: Declared Libraries:" [ SORT $(all-libraries-to-declare) ] ;
+# EXIT : 0 ;
 
 # Setup convenient aliases for all libraries.
 
-local rule explicit-alias ( id : targets + )
-{
-    alias $(id) : $(targets) ;
-    explicit $(id) ;
-}
-
 # First, the complicated libraries: where the target name in Jamfile is
 # different from its directory name.
-explicit-alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ;
-explicit-alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ;
-explicit-alias unit_test_framework : libs/test/build//boost_unit_test_framework ;
-explicit-alias serialization : libs/serialization/build//boost_serialization ;
-explicit-alias wserialization : libs/serialization/build//boost_wserialization ;
-for local l in $(all-libraries)
+explicit
+    [ alias prg_exec_monitor : libs/test/build//boost_prg_exec_monitor ]
+    [ alias test_exec_monitor : libs/test/build//boost_test_exec_monitor ]
+    [ alias unit_test_framework : libs/test/build//boost_unit_test_framework ]
+    [ alias serialization : libs/serialization/build//boost_serialization ]
+    [ alias wserialization : libs/serialization/build//boost_wserialization ]
+    ;
+for local l in $(all-libraries-to-build)
 {
     if ! $(l) in test graph serialization headers
     {
-        explicit-alias $(l) : libs/$(l)/build//boost_$(l) ;
+        explicit [ alias $(l) : libs/$(l)/build//boost_$(l) ] ;
     }
 }
-
-# Log has an additional target
-explicit-alias log_setup : libs/log/build//boost_log_setup ;
+for local l in $(all-libraries-modular-build)
+{
+    if ! $(l) in test graph serialization headers
+    {
+        explicit [ alias $(l) : /boost/$(l)//boost_$(l) ] ;
+    }
+}
 
 rule do-nothing { }
 
@@ -293,7 +344,7 @@ generate headers : $(all-headers)-headers : <generating-rule>@generate-alias <ac
 explicit headers ;
 
 # Make project ids of all libraries known.
-for local l in $(all-libraries)
+for local l in $(all-libraries-to-build)
 {
     use-project /boost/$(l) : libs/$(l)/build ;
 }
@@ -305,7 +356,7 @@ if [ path.exists $(BOOST_ROOT)/tools/inspect/build ]
 
 if [ path.exists $(BOOST_ROOT)/libs/wave/tool/build ]
 {
-    use-project /boost/libs/wave/tool : libs/wave/tool/build ;
+    use-project /boost/libs/wave/tool : $(BOOST_ROOT)/libs/wave/tool/build ;
 }
 
 # Make the boost-install rule visible in subprojects
@@ -340,4 +391,77 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries) ;
+boostcpp.declare-targets $(all-libraries-to-build) $(all-libraries-modular-build) ;
+
+# Declare a Boost library and run related declaration rules. This should be
+# called from the libroot/build.jam to define the components of a Boost lib.
+# The first arg is the base ID of the library. Each subsequence arg is a
+# Boost (boost-x) declaration rule to call with arguments.
+#
+# For example:
+#
+# call-if : boost-library serialization
+#   : install boost_serialization boost_wserialization ;
+#
+rule boost-library ( id ? : options * : * )
+{
+    # ECHO "INFO: Declare Boost library:" $(id) ;
+    local called-boost-install ;
+    for n in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+    {
+        local option = $($(n)) ;
+        if $(option)
+        {
+            call-if : boost-$(option[1]) $(option[2-]) ;
+            if $(option[1]) = install
+            {
+                called-boost-install = true ;
+            }
+        }
+    }
+    if ! $(called-boost-install)
+    {
+        # If the library didn't indicate an install build target it's likely
+        # header only. We should declare empty install targets to allow for
+        # generic handling.
+        boost-install.boost-install ;
+    }
+}
+
+# Declare projects and targets for all placeholder, header only, not yet
+# modular libraries.
+#
+# NOTE: This has to be after the boost-* rule definitions to ensure that those
+# are available for import into the new projects.
+for local lib in $(all-libraries-to-declare)
+{
+    local lib-path
+        = [ path.join [ project.attribute $(__name__) location ] libs $(lib) ] ;
+    if $(lib) = numeric_conversion
+    {
+        lib-path = [ path.join [ project.attribute $(__name__) location ] libs/numeric/conversion ] ;
+    }
+    else if $(lib) in interval odeint ublas
+    {
+        lib-path = [ path.join [ project.attribute $(__name__) location ] libs/numeric/$(lib) ] ;
+    }
+    local lib-module
+        = [ project.load $(lib-path) : synthesize ] ;
+    modules.poke $(lib-module) : BOOST_LIB_PROJECT : /boost/$(lib) ;
+    modules.poke $(lib-module) : BOOST_LIB_TARGET : boost_$(lib) ;
+    project.push-current [ project.target $(lib-module) ] ;
+    module $(lib-module)
+    {
+        project $(BOOST_LIB_PROJECT)
+            : requirements
+                <dependency>/boost//headers
+            ;
+        alias $(BOOST_LIB_TARGET) ;
+    }
+    project.pop-current ;
+}
+
+if ! [ project.search /boost/tools/boost_install ]
+{
+    use-project /boost/tools/boost_install : tools/boost_install ;
+}
