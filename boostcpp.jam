@@ -185,7 +185,7 @@ else
 
 rule tag ( name : type ? : property-set )
 {
-    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
+    if $(type:E=x) in STATIC_LIB SHARED_LIB IMPORT_LIB
     {
         local args = $(.format-name-args) ;
         if $(layout) = versioned
