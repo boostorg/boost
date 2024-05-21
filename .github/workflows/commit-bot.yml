@@ -1,0 +1,101 @@
+name: Commit Bot
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  schedule:
+    - cron: "0,30 * * * *"
+
+concurrency:
+  group: ${{format('commit-bot-{0}:{1}', github.repository, github.ref)}}
+  cancel-in-progress: true
+
+jobs:
+  update-modules:
+    runs-on: ubuntu-latest
+    name: Commit Bot
+
+    steps:
+      - name: Check for module updates
+        id: branches
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            branches="${{ github.ref_name }}"
+          else
+            branches="master develop"
+          fi
+          echo "branches=$branches" >> $GITHUB_OUTPUT
+
+      - name: Checkout master repository
+        uses: actions/checkout@v4
+        if: contains(steps.branches.outputs.branches, 'master')
+        with:
+          ref: master
+          path: master
+
+      - name: Checkout develop repository
+        uses: actions/checkout@v4
+        if: contains(steps.branches.outputs.branches, 'develop')
+        with:
+          ref: develop
+          path: develop
+
+      - name: Check for module updates
+        run: |
+          branches="${{ steps.branches.outputs.branches }}"
+          
+          # Set up Git 
+          git config --global user.name "boost-commitbot"
+          git config --global user.email "boost-commitbot@example.com"
+          
+          # Update each branch
+          for branch in $branches; do
+            cd $branch
+            module_paths=$(git config --file .gitmodules --get-regexp '^submodule\..*\.path$')
+            while IFS=' ' read -r key path; do
+              submodule_name=$(echo "$key" | awk -F '.' '{print $2}')
+              submodule_path=$(echo "$path")
+              url=$(git config --file .gitmodules --get-regexp "^submodule\.$submodule_name\.url$" | awk '{print $2}')
+              hash=$(git ls-remote "$url" "refs/heads/$branch" | cut -f 1)
+              hash="${hash#"${hash%%[![:space:]]*}"}"
+              hash="${hash%"${hash##*[![:space:]]}"}"
+              commit_id="${hash:0:8}"
+              previous_hash=$(git ls-tree HEAD "$submodule_path" | awk '{print $3}')
+              previous_hash="${previous_hash#"${previous_hash%%[![:space:]]*}"}"
+              previous_hash="${previous_hash%"${previous_hash##*[![:space:]]}"}"
+              previous_commit_id="${previous_hash:0:8}"
+              if [ "$hash" == "$previous_hash" ]; then
+                  echo "$submodule_name ($commit_id): OK"
+              else
+                  echo "$submodule_name: $previous_commit_id -> $commit_id"
+                  set -x        
+                  set +e
+                  git submodule update --init "$submodule_path"
+                  git submodule update --remote "$submodule_path"
+                  git add "$submodule_path"
+                  git commit -m "Update $submodule_name from $branch"
+                  set -e
+                  set +x
+              fi
+            done <<< "$module_paths"
+            cd ..
+          done
+
+      - name: Push changes from master
+        uses: ad-m/github-push-action@v0.8.0
+        if: contains(steps.branches.outputs.branches, 'master')
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
+          directory: master
+
+      - name: Push changes from develop
+        uses: ad-m/github-push-action@v0.8.0
+        if: contains(steps.branches.outputs.branches, 'develop')
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: develop
+          directory: develop
+
