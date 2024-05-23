@@ -1,10 +1,7 @@
 name: Commit Bot
 
+# To avoid infinite loops, don't trigger on "push"
 on:
-  push:
-    branches:
-      - master
-      - develop
   schedule:
     - cron: "0,30 * * * *"
 
@@ -34,6 +31,7 @@ jobs:
         with:
           ref: master
           path: master
+          persist-credentials: false
 
       - name: Checkout develop repository
         uses: actions/checkout@v4
@@ -41,6 +39,7 @@ jobs:
         with:
           ref: develop
           path: develop
+          persist-credentials: false
 
       - name: Check for module updates
         run: |
@@ -58,6 +57,10 @@ jobs:
               submodule_name=$(echo "$key" | awk -F '.' '{print $2}')
               submodule_path=$(echo "$path")
               url=$(git config --file .gitmodules --get-regexp "^submodule\.$submodule_name\.url$" | awk '{print $2}')
+              if [[ ! "$url" =~ ^https:// ]]; then
+                  basicreponame=$(basename $url)
+                  url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY_OWNER}/${basicreponame}
+              fi
               hash=$(git ls-remote "$url" "refs/heads/$branch" | cut -f 1)
               hash="${hash#"${hash%%[![:space:]]*}"}"
               hash="${hash%"${hash##*[![:space:]]}"}"
@@ -87,7 +90,8 @@ jobs:
         uses: ad-m/github-push-action@v0.8.0
         if: contains(steps.branches.outputs.branches, 'master')
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CI_PAT }}
           branch: master
           directory: master
 
@@ -95,7 +99,8 @@ jobs:
         uses: ad-m/github-push-action@v0.8.0
         if: contains(steps.branches.outputs.branches, 'develop')
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CI_PAT }}
           branch: develop
           directory: develop
 
