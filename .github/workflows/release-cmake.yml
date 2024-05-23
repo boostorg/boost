@@ -23,13 +23,17 @@ jobs:
       - name: Create archives
         run: |
           tar -czf ${{ github.ref_name }}-cmake.tar.gz ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-cmake.tar.gz > ${{ github.ref_name }}-cmake.tar.gz.txt
           tar -cJf ${{ github.ref_name }}-cmake.tar.xz ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-cmake.tar.xz > ${{ github.ref_name }}-cmake.tar.xz.txt
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
             ${{ github.ref_name }}-cmake.tar.gz
+            ${{ github.ref_name }}-cmake.tar.gz.txt
             ${{ github.ref_name }}-cmake.tar.xz
+            ${{ github.ref_name }}-cmake.tar.xz.txt
 
   release-windows-cmake:
     runs-on: windows-latest
@@ -51,13 +55,17 @@ jobs:
         shell: cmd
         run: |
           7z a ${{ github.ref_name }}-cmake.zip ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-cmake.zip > ${{ github.ref_name }}-cmake.zip.txt
           7z a ${{ github.ref_name }}-cmake.7z ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-cmake.7z > ${{ github.ref_name }}-cmake.7z.txt
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
             ${{ github.ref_name }}-cmake.zip
+            ${{ github.ref_name }}-cmake.zip.txt
             ${{ github.ref_name }}-cmake.7z
+            ${{ github.ref_name }}-cmake.7z.txt
 
   release-posix-b2-nodocs:
     runs-on: ubuntu-latest
@@ -86,13 +94,17 @@ jobs:
       - name: Create archives
         run: |
           tar -czf ${{ github.ref_name }}-b2-nodocs.tar.gz ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-b2-nodocs.tar.gz > ${{ github.ref_name }}-b2-nodocs.tar.gz.txt
           tar -cJf ${{ github.ref_name }}-b2-nodocs.tar.xz ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-b2-nodocs.tar.xz > ${{ github.ref_name }}-b2-nodocs.tar.xz.txt
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
             ${{ github.ref_name }}-b2-nodocs.tar.gz
+            ${{ github.ref_name }}-b2-nodocs.tar.gz.txt
             ${{ github.ref_name }}-b2-nodocs.tar.xz
+            ${{ github.ref_name }}-b2-nodocs.tar.xz.txt
 
   release-windows-b2-nodocs:
     runs-on: windows-latest
@@ -122,10 +134,14 @@ jobs:
         shell: cmd
         run: |
           7z a ${{ github.ref_name }}-b2-nodocs.zip ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-b2-nodocs.zip > ${{ github.ref_name }}-b2-nodocs.zip.txt
           7z a ${{ github.ref_name }}-b2-nodocs.7z ${{ github.ref_name }}
+          sha256sum ${{ github.ref_name }}-b2-nodocs.7z > ${{ github.ref_name }}-b2-nodocs.7z.txt
 
       - uses: softprops/action-gh-release@v1
         with:
           files: |
             ${{ github.ref_name }}-b2-nodocs.zip
+            ${{ github.ref_name }}-b2-nodocs.zip.txt
             ${{ github.ref_name }}-b2-nodocs.7z
+            ${{ github.ref_name }}-b2-nodocs.7z.txt
