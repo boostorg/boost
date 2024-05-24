@@ -18,9 +18,9 @@ jobs:
         include:
           - os: ubuntu-20.04
           - os: ubuntu-22.04
-          - os: macos-11
           - os: macos-12
           - os: macos-13
+          - os: macos-14
 
     runs-on: ${{matrix.os}}
 
@@ -88,9 +88,9 @@ jobs:
         include:
           - os: ubuntu-20.04
           - os: ubuntu-22.04
-          - os: macos-11
           - os: macos-12
           - os: macos-13
+          - os: macos-14
 
     runs-on: ${{matrix.os}}
     timeout-minutes: 20
@@ -162,7 +162,7 @@ jobs:
       - name: Configure Boost
         run: |
           mkdir __build__ && cd __build__
-          cmake -DBUILD_TESTING=ON -DBOOST_EXCLUDE_LIBRARIES="cobalt;outcome;process;static_string" ..
+          cmake -DBUILD_TESTING=ON -DBOOST_EXCLUDE_LIBRARIES="process;geometry" ..
 
       - name: Build tests
         run: |
@@ -181,9 +181,9 @@ jobs:
         include:
           - os: ubuntu-20.04
           - os: ubuntu-22.04
-          - os: macos-11
           - os: macos-12
           - os: macos-13
+          - os: macos-14
 
     runs-on: ${{matrix.os}}
     timeout-minutes: 90
