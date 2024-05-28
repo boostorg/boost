@@ -1,11 +1,12 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
-      - image: cppalliance/boost_superproject_build:20.04-v4
+      - image: cppalliance/boost_superproject_build:22.04-v1
     parallelism: 2
     steps:
       - checkout
+      - run: ./.circleci/autocancel.sh || true
       - run: wget "https://raw.githubusercontent.com/boostorg/release-tools/master/ci_boost_common.py" -P ${HOME}
       - run: wget "https://raw.githubusercontent.com/boostorg/release-tools/master/ci_boost_release.py" -P ${HOME}
       - run: python3 ${HOME}/ci_boost_release.py checkout_post
