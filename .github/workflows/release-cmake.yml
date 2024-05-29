@@ -83,12 +83,13 @@ jobs:
         run: |
           find ${{ github.ref_name }} -name ".git" -prune -exec rm -rf {} +
 
-      - name: Move headers
+      - name: Move headers, remove docs
         shell: bash
         run: |
           cd ${{ github.ref_name }}
           cp -r libs/*/include/boost libs/numeric/*/include/boost .
           rm -rf libs/*/include libs/numeric/*/include
+          rm -rf libs/*/doc libs/numeric/*/doc
           rm -f CMakeLists.txt
 
       - name: Create archives
@@ -122,12 +123,13 @@ jobs:
         run: |
           find ${{ github.ref_name }} -name ".git" -prune -exec rm -rf {} +
 
-      - name: Move headers
+      - name: Move headers, remove docs
         shell: bash
         run: |
           cd ${{ github.ref_name }}
           cp -r libs/*/include/boost libs/numeric/*/include/boost .
           rm -rf libs/*/include libs/numeric/*/include
+          rm -rf libs/*/doc libs/numeric/*/doc
           rm -f CMakeLists.txt
 
       - name: Create archives
