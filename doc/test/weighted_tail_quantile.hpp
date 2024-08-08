@@ -27,6 +27,61 @@
 #include <boost/accumulators/statistics/tail.hpp>
 #include <boost/accumulators/statistics/tail_quantile.hpp>
 #include <boost/accumulators/statistics/parameters/quantile_probability.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/unique_ptr.hpp>
+#include <iostream>
+#include <memory>
+
+class MyBaseClass
+{
+public:
+    virtual ~MyBaseClass() {}
+    virtual void doSomething() = 0;
+};
+
+class MyDerivedClass : public MyBaseClass
+{
+public:
+    MyDerivedClass() : x(0) {}
+    int x;
+    void doSomething() override { std::cout << "MyDerivedClass::doSomething" << std::endl; }
+private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<MyBaseClass>(*this);
+        ar & x;
+    }
+};
+
+BOOST_CLASS_EXPORT(MyDerivedClass)
+
+int main()
+{
+    // Create a const reference to a polymorphic object
+    const MyBaseClass& obj = MyDerivedClass();
+
+    // Serialize the object
+    std::ostringstream oss;
+    boost::archive::text_oarchive oa(oss);
+    oa << obj; // This is where the error occurs
+
+    // Deserialize the object
+    std::istringstream iss(oss.str());
+    boost::archive::text_iarchive ia(iss);
+    std::unique_ptr<MyBaseClass> newObj;
+    ia >> newObj;
+
+    // Call a virtual function on the deserialized object
+    newObj->doSomething();
+
+    return 0;
+}
+
 
 #ifdef _MSC_VER
 # pragma warning(push)
