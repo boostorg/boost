@@ -461,7 +461,9 @@ for local lib in $(all-libraries-to-declare)
     project.pop-current ;
 }
 
-if ! [ project.search /boost/tools/boost_install ]
+# Backslash because of `bcp --namespace`
+
+if ! [ project.search /boost/tools/boost\_install ]
 {
-    use-project /boost/tools/boost_install : tools/boost_install ;
+    use-project /boost/tools/boost\_install : tools/boost\_install ;
 }
