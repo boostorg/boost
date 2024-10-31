@@ -433,17 +433,18 @@ rule boost-library ( id ? : options * : * )
 #
 # NOTE: This has to be after the boost-* rule definitions to ensure that those
 # are available for import into the new projects.
+local location = [ project.attribute $(__name__) location ] ;
 for local lib in $(all-libraries-to-declare)
 {
     local lib-path
-        = [ path.join [ project.attribute $(__name__) location ] libs $(lib) ] ;
+        = [ path.join $(location) libs $(lib) ] ;
     if $(lib) = numeric_conversion
     {
-        lib-path = [ path.join [ project.attribute $(__name__) location ] libs/numeric/conversion ] ;
+        lib-path = [ path.join $(location) libs/numeric/conversion ] ;
     }
     else if $(lib) in interval odeint ublas
     {
-        lib-path = [ path.join [ project.attribute $(__name__) location ] libs/numeric/$(lib) ] ;
+        lib-path = [ path.join $(location) libs/numeric/$(lib) ] ;
     }
     local lib-module
         = [ project.load $(lib-path) : synthesize ] ;
@@ -466,4 +467,19 @@ for local lib in $(all-libraries-to-declare)
 if ! [ project.search /boost/tools/boost\_install ]
 {
     use-project /boost/tools/boost\_install : tools/boost\_install ;
+}
+
+# Ensure "modular" libraries' projects are loaded before build request is
+# calculated. This is necessary for subprojects that define custom features
+# to be set by users on command line.
+# This part should stay at the bottom of the file, because subprojects may rely
+# on rules or constants from it.
+for local l in $(all-libraries-modular-build)
+{
+    # project.find returns the module for the project, which ensures that the
+    # project is loaded. The convoluted way the rule is invoked is due to the
+    # fact that project.find can only be called from a project target instance.
+    modules.call-in [ project.target $(__name__) ]
+        : project.find /boost/$(l)
+        : $(location) ;
 }
