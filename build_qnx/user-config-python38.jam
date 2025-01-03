@@ -1,0 +1,12 @@
+import os ;
+local QNX_HOST = [ os.environ QNX_HOST ] ;
+local QNX_TARGET = [ os.environ QNX_TARGET ] ;
+local CPUVARDIR = [ os.environ CPUVARDIR ] ;
+
+using python
+     : 3.8
+     : python3
+     : $(QNX_TARGET)/$(CPUVARDIR)/usr/include/python3.8 $(QNX_TARGET)/usr/include/python3.8 $(QNX_TARGET)/usr/include/$(CPUVARDIR)/python3.8
+     : $(QNX_TARGET)/$(CPUVARDIR)/usr/lib
+     : <target-os>qnxnto <toolset>qcc
+     ;
