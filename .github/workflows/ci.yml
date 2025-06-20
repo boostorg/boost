@@ -149,6 +149,39 @@ jobs:
           cd __build__
           cmake --build . -j 3 --target install
 
+  cmake-install-intel:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - container: intel/oneapi-hpckit:2025.0.2-0-devel-ubuntu24.04
+          - container: intel/oneapi-hpckit:2024.0.1-devel-ubuntu22.04
+
+    container:
+      image: ${{matrix.container}}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_CXX_COMPILER=icpx ..
+
+      - name: Build Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3
+
+      - name: Install Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target install
+
   cmake-test-posix:
     strategy:
       fail-fast: false
