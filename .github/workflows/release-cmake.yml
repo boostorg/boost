@@ -29,6 +29,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          make_latest: ${{ contains(github.ref_name, '.beta') && 'false' || 'true' }}
           files: |
             ${{ github.ref_name }}-cmake.tar.gz
             ${{ github.ref_name }}-cmake.tar.gz.txt
@@ -61,6 +62,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          make_latest: ${{ contains(github.ref_name, '.beta') && 'false' || 'true' }}
           files: |
             ${{ github.ref_name }}-cmake.zip
             ${{ github.ref_name }}-cmake.zip.txt
@@ -101,6 +103,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          make_latest: ${{ contains(github.ref_name, '.beta') && 'false' || 'true' }}
           files: |
             ${{ github.ref_name }}-b2-nodocs.tar.gz
             ${{ github.ref_name }}-b2-nodocs.tar.gz.txt
@@ -142,6 +145,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
+          make_latest: ${{ contains(github.ref_name, '.beta') && 'false' || 'true' }}
           files: |
             ${{ github.ref_name }}-b2-nodocs.zip
             ${{ github.ref_name }}-b2-nodocs.zip.txt
