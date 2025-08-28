@@ -243,3 +243,149 @@ jobs:
         run: |
           cd __build__
           ctest --output-on-failure --no-tests=error -j 3 -R quick -C Debug
+
+  # setup windows-11-arm as it is new and does not have all requirements pre-installed.
+  setup-windows-arm64:
+    runs-on: windows-11-arm
+    outputs:
+      vcpkg-root: ${{ steps.set-vcpkg-root.outputs.vcpkg-root }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install vcpkg
+        run: |
+          if (!(Test-Path C:\vcpkg)) {
+            git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+            C:\vcpkg\bootstrap-vcpkg.bat
+          }
+          else {
+             echo "vcpkg already installed"
+          }
+
+      - name: Restore vcpkg cache
+        id: cache-vcpkg
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:\vcpkg\downloads
+            C:\vcpkg\installed
+          key: vcpkg-${{ runner.os }}-arm64
+          restore-keys: |
+            vcpkg-${{ runner.os }}-arm64
+
+      - name: Install OpenSSL via vcpkg (if not cached)
+        if: steps.cache-vcpkg.outputs.cache-hit != 'true'
+        run: |
+          C:\vcpkg\vcpkg install openssl:arm64-windows
+
+      - name: Set vcpkg-root output
+        id: set-vcpkg-root
+        shell: pwsh
+        run: |
+          echo "Writing vcpkg-root=C:\vcpkg to GITHUB_OUTPUT"
+          echo "vcpkg-root=C:\vcpkg" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Log step output
+        run: |
+          echo "Step output is: ${{ steps.set-vcpkg-root.outputs.vcpkg-root }}"
+
+
+  b2-windows-arm64:
+    needs: setup-windows-arm64
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Boost
+        shell: cmd
+        run: |
+          bootstrap
+          b2 -d0 headers
+
+      # There is no mpi support yet for Windows arm64. So built without mpi for now
+      # pch needs to be turned off, otherwise few components fail.
+      # It requires additional parameters to be pass for selecting correct asm files for boost:context
+      - name: Build Boost
+        run: ./b2 -j2 toolset=msvc architecture=arm address-model=64 abi=ms pch=off --without-mpi --without-graph_parallel stage
+
+      - name: Install Boost
+        run: ./b2 -j2 toolset=msvc architecture=arm address-model=64 abi=ms pch=off --without-mpi --without-graph_parallel install
+
+      - name: Test Boost
+        run: |
+          cd status
+          ../b2 -j3 quick
+
+  # Win Arm64 CMake job
+  cmake-install-windows-arm64:
+    needs: setup-windows-arm64
+    runs-on: windows-11-arm
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Restore vcpkg cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:\vcpkg\downloads
+            C:\vcpkg\installed
+          key: vcpkg-${{ runner.os }}-arm64
+
+      # We are using vcpkg to install dependencies such as OpenSSL in  windows-11-arm runner.
+      - name: Configure Boost
+        run: |
+          mkdir __build__ && cd __build__
+          $vcpkgRoot="${{ needs.setup-windows-arm64.outputs.vcpkg-root }}"
+          cmake -DBUILD_SHARED_LIBS=ON `
+                -DCMAKE_TOOLCHAIN_FILE="$vcpkgRoot\scripts\buildsystems\vcpkg.cmake" `
+                -DVCPKG_TARGET_TRIPLET=arm64-windows ..
+
+      - name: Build Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3
+
+      - name: Install Boost
+        run: |
+          cd __build__
+          cmake --build . -j 3 --target install
+
+  # Win Arm64 CMake test job
+  cmake-test-windows-arm64-quick:
+    needs: setup-windows-arm64
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      # Restore cache
+      - uses: actions/cache@v3
+        with:
+          path: |
+            C:\vcpkg\downloads
+            C:\vcpkg\installed
+          key: vcpkg-${{ runner.os }}-arm64
+
+      # we are using vcpkg to install OpenSSL in  windows-11-arm runner.
+      - name: Configure Boost
+        run: |
+          mkdir __build__; cd __build__
+          $vcpkgRoot="${{ needs.setup-windows-arm64.outputs.vcpkg-root }}"
+          cmake -DBUILD_TESTING=ON -DCMAKE_TOOLCHAIN_FILE="$vcpkgRoot\scripts\buildsystems\vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=arm64-windows ..
+
+      - name: Build tests
+        run: |
+          cd __build__
+          cmake --build . -j2 --target tests-quick
+
+      - name: Run tests
+        run: |
+          cd __build__
+          ctest --output-on-failure --no-tests=error -j2 -R quick -C Debug
