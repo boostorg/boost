@@ -8,7 +8,7 @@ name: Commit Bot
 #   "If an action pushes code using the repository's GITHUB_TOKEN, a new workflow will not run"
 #
 # - Processing of either the 'master' or 'develop' branch may be stopped by creating the variables
-#   vars.block_master or vars.block_develop with any value.
+#   vars.block_master or vars.block_develop with the value "yes" (case-insensitive).
 #   https://github.com/boostorg/boost/settings/variables/actions
 #
 
@@ -33,24 +33,26 @@ jobs:
         run: |
             set -xe
             branches=""
+            block_master="${{ vars.block_master }}"
+            block_develop="${{ vars.block_develop }}"
             if [[ "${{ github.event_name }}" == "push" ]]; then
-                if [[ ! -n "${{ vars.block_master }}" && "${{ github.ref_name }}" == "master" ]]; then
+                # The job doesn't run on "push" so this will not execute.
+                if [[ ! ${block_master,,} =~ yes && "${{ github.ref_name }}" == "master" ]]; then
                     branches="master"
-                elif [[ ! -n "${{ vars.block_develop }}" && "${{ github.ref_name }}" == "develop" ]]; then
+                elif [[ ! ${block_develop,,} =~ yes && "${{ github.ref_name }}" == "develop" ]]; then
                     branches="develop"
-                else
-                    branches="${{ github.ref_name }}"
                 fi
             else
                 # from a schedule:
-                if [[ ! -n "${{ vars.block_master }}" ]]; then
+                if [[ ! ${block_master,,} =~ yes ]]; then
                     branches="master"
                 fi
-                if [[ ! -n "${{ vars.block_develop }}" ]]; then
+                if [[ ! ${block_develop,,} =~ yes ]]; then
                     branches="${branches} develop"
                 fi
             fi
             echo "branches=$branches" >> $GITHUB_OUTPUT
+            echo "branches is ${branches}"
 
       - name: Checkout master repository
         uses: actions/checkout@v4
