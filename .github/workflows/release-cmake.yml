@@ -23,17 +23,17 @@ jobs:
       - name: Create archives
         run: |
           tar -czf ${{ github.ref_name }}-cmake.tar.gz ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-cmake.tar.gz > ${{ github.ref_name }}-cmake.tar.gz.txt
+          sha256sum ${{ github.ref_name }}-cmake.tar.gz > ${{ github.ref_name }}-cmake.tar.gz.sha256
           tar -cJf ${{ github.ref_name }}-cmake.tar.xz ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-cmake.tar.xz > ${{ github.ref_name }}-cmake.tar.xz.txt
+          sha256sum ${{ github.ref_name }}-cmake.tar.xz > ${{ github.ref_name }}-cmake.tar.xz.sha256
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             ${{ github.ref_name }}-cmake.tar.gz
-            ${{ github.ref_name }}-cmake.tar.gz.txt
+            ${{ github.ref_name }}-cmake.tar.gz.sha256
             ${{ github.ref_name }}-cmake.tar.xz
-            ${{ github.ref_name }}-cmake.tar.xz.txt
+            ${{ github.ref_name }}-cmake.tar.xz.sha256
 
   release-windows-cmake:
     runs-on: windows-latest
@@ -55,17 +55,17 @@ jobs:
         shell: cmd
         run: |
           7z a ${{ github.ref_name }}-cmake.zip ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-cmake.zip > ${{ github.ref_name }}-cmake.zip.txt
+          sha256sum ${{ github.ref_name }}-cmake.zip > ${{ github.ref_name }}-cmake.zip.sha256
           7z a ${{ github.ref_name }}-cmake.7z ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-cmake.7z > ${{ github.ref_name }}-cmake.7z.txt
+          sha256sum ${{ github.ref_name }}-cmake.7z > ${{ github.ref_name }}-cmake.7z.sha256
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             ${{ github.ref_name }}-cmake.zip
-            ${{ github.ref_name }}-cmake.zip.txt
+            ${{ github.ref_name }}-cmake.zip.sha256
             ${{ github.ref_name }}-cmake.7z
-            ${{ github.ref_name }}-cmake.7z.txt
+            ${{ github.ref_name }}-cmake.7z.sha256
 
   release-posix-b2-nodocs:
     runs-on: ubuntu-latest
@@ -95,17 +95,17 @@ jobs:
       - name: Create archives
         run: |
           tar -czf ${{ github.ref_name }}-b2-nodocs.tar.gz ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-b2-nodocs.tar.gz > ${{ github.ref_name }}-b2-nodocs.tar.gz.txt
+          sha256sum ${{ github.ref_name }}-b2-nodocs.tar.gz > ${{ github.ref_name }}-b2-nodocs.tar.gz.sha256
           tar -cJf ${{ github.ref_name }}-b2-nodocs.tar.xz ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-b2-nodocs.tar.xz > ${{ github.ref_name }}-b2-nodocs.tar.xz.txt
+          sha256sum ${{ github.ref_name }}-b2-nodocs.tar.xz > ${{ github.ref_name }}-b2-nodocs.tar.xz.sha256
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             ${{ github.ref_name }}-b2-nodocs.tar.gz
-            ${{ github.ref_name }}-b2-nodocs.tar.gz.txt
+            ${{ github.ref_name }}-b2-nodocs.tar.gz.sha256
             ${{ github.ref_name }}-b2-nodocs.tar.xz
-            ${{ github.ref_name }}-b2-nodocs.tar.xz.txt
+            ${{ github.ref_name }}-b2-nodocs.tar.xz.sha256
 
   release-windows-b2-nodocs:
     runs-on: windows-latest
@@ -136,14 +136,14 @@ jobs:
         shell: cmd
         run: |
           7z a ${{ github.ref_name }}-b2-nodocs.zip ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-b2-nodocs.zip > ${{ github.ref_name }}-b2-nodocs.zip.txt
+          sha256sum ${{ github.ref_name }}-b2-nodocs.zip > ${{ github.ref_name }}-b2-nodocs.zip.sha256
           7z a ${{ github.ref_name }}-b2-nodocs.7z ${{ github.ref_name }}
-          sha256sum ${{ github.ref_name }}-b2-nodocs.7z > ${{ github.ref_name }}-b2-nodocs.7z.txt
+          sha256sum ${{ github.ref_name }}-b2-nodocs.7z > ${{ github.ref_name }}-b2-nodocs.7z.sha256
 
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             ${{ github.ref_name }}-b2-nodocs.zip
-            ${{ github.ref_name }}-b2-nodocs.zip.txt
+            ${{ github.ref_name }}-b2-nodocs.zip.sha256
             ${{ github.ref_name }}-b2-nodocs.7z
-            ${{ github.ref_name }}-b2-nodocs.7z.txt
+            ${{ github.ref_name }}-b2-nodocs.7z.sha256
