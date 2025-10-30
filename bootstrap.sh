@@ -365,7 +365,7 @@ import feature ;
 
 EOF
 if test "x$TOOLSET" != x; then
-  cat > project-config.jam <<EOF
+  cat >> project-config.jam <<EOF
   # Compiler configuration. This definition will be used unless
   # you already have defined some toolsets in your user-config.jam
   # file.
