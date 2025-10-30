@@ -21,6 +21,8 @@ PYTHON=python
 PYTHON_VERSION=
 PYTHON_ROOT=
 ICU_ROOT=
+WITH_CXX=
+WITH_CXXFLAGS=
 
 # Handle case where builtin shell version of echo command doesn't 
 # support -n.  Use the installed echo executable if there is one 
@@ -41,6 +43,14 @@ do
 
     -help | --help | -h)
       want_help=yes ;;
+
+    -cxx=* | --cxx=*)
+      WITH_CXX=`expr "x$option" : "x-*cxx=\(.*\)"`
+      ;;
+
+    -cxxflags=* | --cxxflags=*)
+      WITH_CXXFLAGS=`expr "x$option" : "x-*cxxflags=\(.*\)"`
+      ;;
 
     -prefix=* | --prefix=*)
       PREFIX=`expr "x$option" : "x-*prefix=\(.*\)"`
@@ -154,6 +164,10 @@ Configuration:
   -h, --help                display this help and exit
   --with-bjam=BJAM          use existing Boost.Jam executable (bjam)
                             [automatically built]
+  --cxx=CXX                 The compiler exec to use for bootstrapping instead
+                            of the detected compiler exec.
+  --cxxflags=CXXFLAGS       The compiler flags to use for bootstrapping in
+                            addition to the flags for the detected compiler.
   --with-toolset=TOOLSET    use specific TOOLSET to build B2 and as default
                             for building Boost
                             [automatically detected]
@@ -195,8 +209,11 @@ test -n "$want_help" && exit 0
 my_dir=$(dirname "$0")
 
 # Determine the toolset, if not already decided
-if test "x$TOOLSET" = x; then
-  guessed_toolset=`CXX= CXXFLAGS= $my_dir/tools/build/src/engine/build.sh --guess-toolset`
+if test "x$TOOLSET" = x && test "x$WITH_CXX" = x; then
+  set --
+  [ -z "$WITH_CXXFLAGS" ] || set -- "$@" "--cxxflags=$WITH_CXXFLAGS"
+
+  guessed_toolset=`CXX= CXXFLAGS= $my_dir/tools/build/src/engine/build.sh --guess-toolset "$@"`
   case $guessed_toolset in
     acc | clang | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
@@ -226,7 +243,11 @@ rm -f config.log
 if test "x$BJAM" = x; then
   $ECHO "Building B2 engine.."
   pwd=`pwd`
-  CXX= CXXFLAGS= "$my_dir/tools/build/src/engine/build.sh" ${TOOLSET}
+  set --
+  [ -z "$WITH_CXX" ] || set -- "$@" "--cxx=$WITH_CXX"
+  [ -z "$WITH_CXXFLAGS" ] || set -- "$@" "--cxxflags=$WITH_CXXFLAGS"
+    
+  CXX= CXXFLAGS= "$my_dir/tools/build/src/engine/build.sh" "$@" ${TOOLSET}
   if [ $? -ne 0 ]; then
       echo
       echo "Failed to build B2 build engine"
@@ -333,7 +354,7 @@ if test -r "project-config.jam"; then
   mv "project-config.jam" "project-config.jam.$counter"
 fi
 
-# Generate user-config.jam
+# Generate project-config.jam
 echo "Generating B2 configuration in project-config.jam for $TOOLSET..."
 cat > project-config.jam <<EOF
 # B2 Configuration
@@ -342,16 +363,20 @@ cat > project-config.jam <<EOF
 import option ;
 import feature ;
 
-# Compiler configuration. This definition will be used unless
-# you already have defined some toolsets in your user-config.jam
-# file.
-if ! $TOOLSET in [ feature.values <toolset> ]
-{
-    using $TOOLSET ; 
-}
-
-project : default-build <toolset>$TOOLSET ;
 EOF
+if test "x$TOOLSET" != x; then
+  cat > project-config.jam <<EOF
+  # Compiler configuration. This definition will be used unless
+  # you already have defined some toolsets in your user-config.jam
+  # file.
+  if ! $TOOLSET in [ feature.values <toolset> ]
+  {
+      using $TOOLSET ; 
+  }
+  
+  project : default-build <toolset>$TOOLSET ;
+EOF
+fi
 
 #  - Python configuration
 if test "x$flag_no_python" = x; then
