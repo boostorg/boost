@@ -20,6 +20,7 @@ LIBS=""
 PYTHON=python
 PYTHON_VERSION=
 PYTHON_ROOT=
+PYTHON_INCLUDES=
 ICU_ROOT=
 
 # Handle case where builtin shell version of echo command doesn't 
@@ -288,6 +289,12 @@ if test "x$flag_no_python" = x; then
         PYTHON_ROOT=`$PYTHON -c "import sys; print(sys.prefix)"`
         echo $PYTHON_ROOT
     fi    
+
+    if test "x$PYTHON_INCLUDES" = x; then
+        $ECHO -n "Detecting Python include... "
+	PYTHON_INCLUDES=`$PYTHON -c "import sys; python_version = \"%d.%d\" % (sys.version_info[0], sys.version_info[1]); print (\"%s/include/python%s%s\" % (sys.prefix, python_version, '' if sys._is_gil_enabled() else 't'))"`
+        echo $PYTHON_INCLUDES
+    fi
 fi
 
 # Configure ICU
@@ -361,7 +368,7 @@ if test "x$flag_no_python" = x; then
 import python ;
 if ! [ python.configured ]
 {
-    using python : $PYTHON_VERSION : "$PYTHON_ROOT" ;
+    using python : $PYTHON_VERSION : "$PYTHON_ROOT" : "$PYTHON_INCLUDES" ;
 }
 EOF
 fi
