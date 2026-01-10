@@ -602,7 +602,14 @@ rule declare-targets ( all-libraries * )
         ECHO The following libraries require building\: ;
         for local l in $(libraries)
         {
-            ECHO "    - $(l)" ;
+            if $(l) = function_types
+            {
+                continue ;
+            }
+            if [ path.glob $(BOOST_ROOT)/libs/$(l)/build : Jamfile Jamfile.v2 ]
+            {
+                echo "    - $(l)" ;
+            }
         }
         EXIT ;
     }
