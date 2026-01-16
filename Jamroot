@@ -270,13 +270,13 @@ local all-libraries-modular-build
     = [ MATCH .*libs/(.*)/build.jam : [ glob libs/*/build.jam ] ] ;
 
 # Modular and not are mutually exclusive as they have different lib targets.
-all-libraries-to-build = [ set.difference $(all-libraries-to-build) : $(all-libraries-modular-build) ] ;
+local all-libraries-old-build = [ set.difference $(all-libraries-to-build) : $(all-libraries-modular-build) ] ;
 
 # The header only libraries that are not of the new modular form. For which we
 # will create synthetic projects and targets to simulate the new modular form.
 local all-libraries-to-declare
     = [ set.difference $(all-libraries)
-        : $(all-libraries-modular-build) $(all-libraries-to-build) ] ;
+        : $(all-libraries-modular-build) $(all-libraries-old-build) ] ;
 if ! [ glob libs/numeric/conversion/build.jam ]
 {
     all-libraries-to-declare += numeric_conversion ;
@@ -295,7 +295,7 @@ if ! [ glob libs/numeric/ublas/build.jam ]
 }
 all-libraries-to-declare = [ SORT $(all-libraries-to-declare) ] ;
 
-# ECHO "INFO: Build Libraries:" [ SORT $(all-libraries-to-build) ] ;
+# ECHO "INFO: Build Libraries:" [ SORT $(all-libraries-old-build) ] ;
 # ECHO "INFO: Modular Libraries:" [ SORT $(all-libraries-modular-build) ] ;
 # ECHO "INFO: Declared Libraries:" [ SORT $(all-libraries-to-declare) ] ;
 # EXIT : 0 ;
@@ -311,7 +311,7 @@ explicit
     [ alias serialization : libs/serialization/build//boost_serialization ]
     [ alias wserialization : libs/serialization/build//boost_wserialization ]
     ;
-for local l in $(all-libraries-to-build)
+for local l in $(all-libraries-old-build)
 {
     if ! $(l) in test graph serialization headers
     {
@@ -344,7 +344,7 @@ generate headers : $(all-headers)-headers : <generating-rule>@generate-alias <ac
 explicit headers ;
 
 # Make project ids of all libraries known.
-for local l in $(all-libraries-to-build)
+for local l in $(all-libraries-old-build)
 {
     use-project /boost/$(l) : libs/$(l)/build ;
 }
@@ -391,7 +391,7 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries-to-build) $(all-libraries-modular-build) ;
+boostcpp.declare-targets $(all-libraries-to-build) ;
 
 # Declare a Boost library and run related declaration rules. This should be
 # called from the libroot/build.jam to define the components of a Boost lib.
