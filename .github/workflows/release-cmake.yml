@@ -5,12 +5,15 @@ on:
     tags:
       - boost-*
 
+permissions:
+  contents: write
+
 jobs:
   release-posix-cmake:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: ${{ github.ref_name }}
           submodules: true
@@ -27,7 +30,7 @@ jobs:
           tar -cJf ${{ github.ref_name }}-cmake.tar.xz ${{ github.ref_name }}
           sha256sum ${{ github.ref_name }}-cmake.tar.xz > ${{ github.ref_name }}-cmake.tar.xz.txt
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ github.ref_name }}-cmake.tar.gz
@@ -41,7 +44,7 @@ jobs:
     needs: release-posix-cmake
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: ${{ github.ref_name }}
           submodules: true
@@ -59,7 +62,7 @@ jobs:
           7z a ${{ github.ref_name }}-cmake.7z ${{ github.ref_name }}
           sha256sum ${{ github.ref_name }}-cmake.7z > ${{ github.ref_name }}-cmake.7z.txt
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ github.ref_name }}-cmake.zip
@@ -73,7 +76,7 @@ jobs:
     needs: release-windows-cmake
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: ${{ github.ref_name }}
           submodules: true
@@ -99,7 +102,7 @@ jobs:
           tar -cJf ${{ github.ref_name }}-b2-nodocs.tar.xz ${{ github.ref_name }}
           sha256sum ${{ github.ref_name }}-b2-nodocs.tar.xz > ${{ github.ref_name }}-b2-nodocs.tar.xz.txt
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ github.ref_name }}-b2-nodocs.tar.gz
@@ -113,7 +116,7 @@ jobs:
     needs: release-posix-b2-nodocs
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           path: ${{ github.ref_name }}
           submodules: true
@@ -140,7 +143,7 @@ jobs:
           7z a ${{ github.ref_name }}-b2-nodocs.7z ${{ github.ref_name }}
           sha256sum ${{ github.ref_name }}-b2-nodocs.7z > ${{ github.ref_name }}-b2-nodocs.7z.txt
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ github.ref_name }}-b2-nodocs.zip
