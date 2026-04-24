@@ -589,37 +589,28 @@ rule libraries-to-install ( existing-libs * )
     }
 }
 
-rule declare-targets ( all-libraries * )
+rule declare-targets ( modular-libraries * : compiled-libraries * )
 {
-    if ! predef in $(all-libraries)
-    {
-        all-libraries += predef ;
-    }
-
-    configure.register-components $(all-libraries) ;
+    configure.register-components $(compiled-libraries) ;
 
     # Select the libraries to install.
-    libraries = [ libraries-to-install $(all-libraries) ] ;
-    configure.components-building $(libraries) ;
+    local filtered = [ libraries-to-install $(compiled-libraries) ] ;
+    configure.components-building $(filtered) ;
 
     if [ option.get "show-libraries" : : true ]
     {
         ECHO The following libraries require building\: ;
-        for local l in $(libraries)
+        for local l in $(filtered)
         {
-            if $(l) = function_types
-            {
-                continue ;
-            }
-            if [ path.glob $(BOOST_ROOT)/libs/$(l)/build : Jamfile Jamfile.v2 ]
-            {
-                echo "    - $(l)" ;
-            }
+            echo "    - $(l)" ;
         }
         EXIT ;
     }
 
-    declare_top_level_targets $(libraries) ;
+    local header-only-modular = [ set.difference $(modular-libraries) :
+        $(compiled-libraries) ] ;
+
+    declare_top_level_targets $(filtered) $(header-only-modular) ;
 }
 
 # Returns the properties identifying the toolset. We'll use them
