@@ -591,6 +591,11 @@ rule libraries-to-install ( existing-libs * )
 
 rule declare-targets ( all-libraries * )
 {
+    if ! predef in $(all-libraries)
+    {
+        all-libraries += predef ;
+    }
+
     configure.register-components $(all-libraries) ;
 
     # Select the libraries to install.
