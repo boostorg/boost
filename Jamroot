@@ -406,7 +406,8 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
-boostcpp.declare-targets $(all-libraries-to-build) ;
+boostcpp.declare-targets $(all-libraries-modular-build) :
+    $(all-libraries-to-build) ;
 
 # Declare a Boost library and run related declaration rules. This should be
 # called from the libroot/build.jam to define the components of a Boost lib.
