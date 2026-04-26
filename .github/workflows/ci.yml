@@ -111,6 +111,43 @@ jobs:
           test -f ~/.local/lib/cmake/boost_system-*/boost_system-config.cmake
           test -f ~/.local/lib/cmake/boost_system-*/boost_system-config-version.cmake
 
+  b2-check-cmake-use-posix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install Boost
+        run: |
+          ./bootstrap.sh
+          ./b2 -j3 --prefix=$HOME/.local install
+
+      - name: Build Quickbook with CMake
+        run: |
+          cmake -S tools/quickbook -B __build__ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=~/.local
+          cmake --build __build__ --target install
+
+  b2-check-cmake-use-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install Boost
+        shell: cmd
+        run: |
+          cmd /c bootstrap
+          b2 -j3 install
+
+      - name: Build Quickbook with CMake
+        run: |
+          cmake -S tools/quickbook -B __build__ -DBoost_ROOT=C:/Boost -DCMAKE_INSTALL_PREFIX=C:/usr/local
+          cmake --build __build__ --target install --config Release
+
   cmake-install-posix:
     strategy:
       fail-fast: false
