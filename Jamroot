@@ -406,8 +406,13 @@ rule boost-lib ( name : sources * : requirements * : default-build * : usage-req
 
 # Declare special top-level targets that build and install the desired variants
 # of the libraries.
+local former-libraries-to-build ;
+if system in $(all-libraries)
+{
+    former-libraries-to-build += system ;
+}
 boostcpp.declare-targets $(all-libraries-modular-build) :
-    $(all-libraries-to-build) ;
+    [ SORT $(all-libraries-to-build) $(former-libraries-to-build) ] ;
 
 # Declare a Boost library and run related declaration rules. This should be
 # called from the libroot/build.jam to define the components of a Boost lib.
