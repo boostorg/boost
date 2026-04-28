@@ -148,6 +148,46 @@ jobs:
           cmake -S tools/quickbook -B __build__ -DBoost_ROOT=C:/Boost -DCMAKE_INSTALL_PREFIX=C:/usr/local
           cmake --build __build__ --target install --config Release
 
+  b2-cmake-use-lib-posix:
+    strategy:
+      fail-fast: false
+      matrix:
+        lib:
+          - atomic
+          - container
+          - date_time
+          - filesystem
+          - headers
+          - log
+          - program_options
+          - python
+          - random
+          #- regex
+          - serialization
+          - system
+          - test
+          - thread
+          - wave
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install Boost --with-library
+        run: |
+          ./bootstrap.sh
+          ./b2 -j3 --prefix=$HOME/.local --with-${{matrix.lib}} install
+
+      - name: Use library from CMake
+        run: |
+          cmake -S tools/boost_install/test/${{matrix.lib}} -B __build__ -DCMAKE_INSTALL_PREFIX=~/.local
+          cmake --build __build__
+          export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+          cmake --build __build__ --target check
+
   cmake-install-posix:
     strategy:
       fail-fast: false
