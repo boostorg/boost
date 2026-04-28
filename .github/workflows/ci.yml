@@ -102,14 +102,14 @@ jobs:
 
       - name: Check installed files
         run: |
-          test -f ~/.local/share/boost_predef/build.jam
-          test -f ~/.local/lib/cmake/BoostDetectToolset-*.cmake
-          test -f ~/.local/lib/cmake/Boost-*/BoostConfig.cmake
-          test -f ~/.local/lib/cmake/Boost-*/BoostConfigVersion.cmake
-          test -f ~/.local/lib/cmake/boost_headers-*/boost_headers-config.cmake
-          test -f ~/.local/lib/cmake/boost_headers-*/boost_headers-config-version.cmake
-          test -f ~/.local/lib/cmake/boost_system-*/boost_system-config.cmake
-          test -f ~/.local/lib/cmake/boost_system-*/boost_system-config-version.cmake
+          file -E ~/.local/share/boost_predef/build.jam
+          file -E ~/.local/lib/cmake/BoostDetectToolset-*.cmake
+          file -E ~/.local/lib/cmake/Boost-*/BoostConfig.cmake
+          file -E ~/.local/lib/cmake/Boost-*/BoostConfigVersion.cmake
+          file -E ~/.local/lib/cmake/boost_headers-*/boost_headers-config.cmake
+          file -E ~/.local/lib/cmake/boost_headers-*/boost_headers-config-version.cmake
+          file -E ~/.local/lib/cmake/boost_system-*/boost_system-config.cmake
+          file -E ~/.local/lib/cmake/boost_system-*/boost_system-config-version.cmake
 
   b2-check-cmake-use-posix:
     runs-on: ubuntu-latest
