@@ -25,32 +25,37 @@ Jamroot               # Boost.Build entry point
 
 ## Working with submodules
 
-Initialize a specific library and its dependencies:
+Submodule URLs are relative and resolve to `ilyasorokindev/<lib>.git`, which does not exist
+for most libraries. `git submodule update --init` is also blocked by a `.bmad` gitlink that
+has no entry in `.gitmodules`. Clone directly from boostorg instead:
+
 ```sh
-git submodule update --init libs/<name>
-# example:
-git submodule update --init libs/container libs/intrusive libs/move
+git clone --depth=1 https://github.com/boostorg/<name>.git libs/<name>
+# numeric libs: repo name differs from path
+git clone --depth=1 https://github.com/boostorg/numeric_conversion.git libs/numeric/conversion
 ```
 
-Initialize everything (slow — ~180 submodules):
+`tools/cmake` must also be cloned from boostorg (not a submodule fork):
 ```sh
-git submodule update --init
+git clone https://github.com/boostorg/cmake.git tools/cmake
 ```
 
 After pulling upstream changes to a submodule:
 ```sh
-git submodule update --remote libs/<name>
+git -C libs/<name> pull --depth=1 origin master
 ```
 
-## Build (CMake + Ninja + clang)
+## Build (CMake + clang)
 
-Configure from the repo root:
+Configure from the repo root (use `BOOST_INCLUDE_LIBRARIES` to limit scope):
 ```sh
 cmake -S . -B build \
-  -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++ \
   -DCMAKE_CXX_STANDARD=17 \
-  -DCMAKE_BUILD_TYPE=Debug
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DBUILD_TESTING=ON \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DBOOST_INCLUDE_LIBRARIES="container;move;intrusive;interprocess"
 ```
 
 Build all (or a specific target):
@@ -62,7 +67,6 @@ cmake --build build --target boost_container -j$(sysctl -n hw.logicalcpu)
 Build a single library in isolation (preferred for fast iteration):
 ```sh
 cmake -S libs/<name> -B build/<name> \
-  -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++ \
   -DCMAKE_CXX_STANDARD=17 \
   -DCMAKE_BUILD_TYPE=Debug \
