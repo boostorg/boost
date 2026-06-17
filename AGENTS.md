@@ -143,3 +143,22 @@ cd status && ../b2 -j4 toolset=clang cxxstd=17 quick
 | `-DBOOST_ENABLE_CMAKE=ON` | Enable CMake support inside a lib |
 | `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` | Generate `compile_commands.json` for clangd |
 | `-DCMAKE_BUILD_TYPE=RelWithDebInfo` | Optimized + debug symbols |
+
+## BMad Method
+
+Installed via `npx bmad-method install` — 44 skills available in `.claude/skills/`.
+
+Artifacts go to `_bmad-output/` (planning and implementation). Config in `_bmad/`.
+
+**Entry point:** invoke `/bmad-help` — it guides what to do next.
+
+**Key agents:**
+
+| Skill | Role |
+|-------|------|
+| `/bmad-agent-pm` | Product Manager — PRD, features |
+| `/bmad-agent-architect` | Architect — system design |
+| `/bmad-agent-dev` | Developer — story implementation |
+| `/bmad-agent-analyst` | Analyst — requirements elicitation |
+
+**Typical flow:** `/bmad-create-prd` → `/bmad-create-architecture` → `/bmad-create-epics-and-stories` → `/bmad-agent-dev`
