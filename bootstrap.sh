@@ -193,10 +193,19 @@ fi
 test -n "$want_help" && exit 0
 
 my_dir=$(dirname "$0")
+build_script=$my_dir/tools/build/src/engine/build.sh
+
+if [ ! -f "$build_script" ]; then
+  echo "
+  Build script ($build_script) missing, please check install instructions:
+   ./README
+  "
+  exit 1;
+fi
 
 # Determine the toolset, if not already decided
 if test "x$TOOLSET" = x; then
-  guessed_toolset=`CXX= CXXFLAGS= $my_dir/tools/build/src/engine/build.sh --guess-toolset`
+  guessed_toolset=`CXX= CXXFLAGS= $build_script --guess-toolset`
   case $guessed_toolset in
     acc | clang | gcc | como | mipspro | pathscale | pgi | qcc | vacpp )
     TOOLSET=$guessed_toolset
@@ -226,7 +235,7 @@ rm -f config.log
 if test "x$BJAM" = x; then
   $ECHO "Building B2 engine.."
   pwd=`pwd`
-  CXX= CXXFLAGS= "$my_dir/tools/build/src/engine/build.sh" ${TOOLSET}
+  CXX= CXXFLAGS= "$build_script" ${TOOLSET}
   if [ $? -ne 0 ]; then
       echo
       echo "Failed to build B2 build engine"
