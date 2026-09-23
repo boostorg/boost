@@ -55,7 +55,7 @@ jobs:
             echo "branches is ${branches}"
 
       - name: Checkout master repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: contains(steps.branches.outputs.branches, 'master')
         with:
           ref: master
@@ -63,7 +63,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout develop repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: contains(steps.branches.outputs.branches, 'develop')
         with:
           ref: develop
@@ -116,7 +116,7 @@ jobs:
           done
 
       - name: Push changes from master
-        uses: ad-m/github-push-action@v0.8.0
+        uses: ad-m/github-push-action@v1
         if: contains(steps.branches.outputs.branches, 'master')
         with:
           # github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -125,7 +125,7 @@ jobs:
           directory: master
 
       - name: Push changes from develop
-        uses: ad-m/github-push-action@v0.8.0
+        uses: ad-m/github-push-action@v1
         if: contains(steps.branches.outputs.branches, 'develop')
         with:
           # github_token: ${{ secrets.GITHUB_TOKEN }}
