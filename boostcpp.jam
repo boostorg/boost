@@ -625,7 +625,7 @@ rule toolset-properties ( properties * )
     return [ property.select <target-os> <toolset> $(toolset-version-property) : $(properties) ] ;
 }
 
-.deducible-architectures = arm loongarch mips power riscv s390x sparc x86 combined ;
+.deducible-architectures = alpha arm loongarch mips power riscv s390x sparc x86 combined ;
 feature.feature x-deduced-platform
     : $(.deducible-architectures)_32 $(.deducible-architectures)_64
     : composite implicit optional propagated ;
@@ -657,6 +657,7 @@ rule deduce-architecture ( properties * )
 
     names = $(.deducible-architectures) ;
     idx = [ configure.find-builds "default architecture" : $(filtered)
+        : /boost/architecture//alpha
         : /boost/architecture//arm
         : /boost/architecture//loongarch
         : /boost/architecture//mips
