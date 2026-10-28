@@ -164,8 +164,8 @@ Configuration:
   -h, --help                display this help and exit
   --with-bjam=BJAM          use existing Boost.Jam executable (bjam)
                             [automatically built]
-  --cxx=CXX                 The compiler exec to use for bootstrapping instead
-                            of the detected compiler exec.
+  --cxx=CXX                 The compiler executable to use for bootstrapping
+                            instead of the detected compiler executable.
   --cxxflags=CXXFLAGS       The compiler flags to use for bootstrapping in
                             addition to the flags for the detected compiler.
   --with-toolset=TOOLSET    use specific TOOLSET to build B2 and as default
