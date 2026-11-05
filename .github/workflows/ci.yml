@@ -79,7 +79,7 @@ jobs:
           ../b2 -j3 quick
 
   b2-check-installed-posix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
       - uses: actions/checkout@v7
@@ -93,7 +93,7 @@ jobs:
 
       - name: Test installed headers
         run: |
-          g++ -I ~/.local/include -I /usr/include/python3.12 -std=c++20 -c tools/boost_install/test/headers/include.cpp
+          g++ -I ~/.local/include -I /usr/include/python3.14 -std=c++20 -c tools/boost_install/test/headers/include.cpp
 
       - name: Check installed files
         run: |
